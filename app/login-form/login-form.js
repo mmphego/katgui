@@ -1,4 +1,4 @@
-angular.module('camgui').controller('LoginFormCtrl', function ($scope, $rootScope, $state, Session, AUTH_EVENTS, USER_ROLES, AuthService) {
+angular.module('katGui').controller('LoginFormCtrl', function ($scope, $rootScope, $state, Session, AUTH_EVENTS, USER_ROLES, AuthService) {
 
     $scope.title = 'kat gui';
     $scope.loginResult = "";
@@ -9,8 +9,7 @@ angular.module('camgui').controller('LoginFormCtrl', function ($scope, $rootScop
         password: ''
     };
 
-    $scope.login = function (credentials) {
-
+    $scope.loginGoogle = function() {
         var options = {
             'callback' : $scope.loginFinished,
             'clientid' : '626410560822-0tncuu7jhpbetei9v9uji2l5oit9np9l.apps.googleusercontent.com',
@@ -18,21 +17,24 @@ angular.module('camgui').controller('LoginFormCtrl', function ($scope, $rootScop
         };
 
         gapi.auth.signIn(options);
+    };
+
+    $scope.login = function (credentials) {
 
         //until we have a real login post to call
-//        var user = { name: credentials.username, role: USER_ROLES.expert};
-//
-//        if (user.name === '') {
-//            user.name = 'Username';
-//        }
-//
-//        Session.create('sessionid1', 'userid1', USER_ROLES.expert);
-//
-//        $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
-//        $scope.setCurrentUser(user);
-//
-//
-//        $state.go('landing');
+        var user = { name: credentials.username, role: USER_ROLES.expert};
+
+        if (user.name === '') {
+            user.name = 'Username';
+        }
+
+        Session.create('sessionid1', 'userid1', USER_ROLES.expert);
+
+        $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+        $scope.setCurrentUser(user);
+
+
+        $state.go('landing');
 
 //            AuthService.login(credentials).then(function (user) {
 //                $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
@@ -44,7 +46,7 @@ angular.module('camgui').controller('LoginFormCtrl', function ($scope, $rootScop
     };
 
     $scope.forgotPassword = function () {
-        //alert('nothing to see here yet...');
+        alert('nothing to see here yet...');
     };
 
     $scope.loginFinished = function(authResult) {

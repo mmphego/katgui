@@ -1,4 +1,4 @@
-angular.module('camgui').factory('AuthService', function ($http, Session, USER_ROLES) {
+angular.module('katGui').factory('AuthService', function ($http, Session, USER_ROLES) {
     var authService = {};
 
     authService.login = function (credentials) {

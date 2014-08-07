@@ -1,6 +1,6 @@
 describe('session', function() {
 
-  beforeEach(module('camgui'));
+  beforeEach(module('katGui'));
 
   it('should ...', inject(function(session) {
 

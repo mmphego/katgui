@@ -1,8 +1,8 @@
-angular.module('camgui', ['ui.bootstrap','ui.utils','ui.router','ngAnimate']);
+angular.module('katGui', ['ui.bootstrap','ui.utils','ui.router','ngAnimate']);
 
-var camGuiApp = angular.module('camgui');
+var katGuiApp = angular.module('katGui');
 
-camGuiApp.constant('AUTH_EVENTS', {
+katGuiApp.constant('AUTH_EVENTS', {
     loginSuccess: 'auth-login-success',
     loginFailed: 'auth-login-failed',
     logoutSuccess: 'auth-logout-success',
@@ -11,7 +11,7 @@ camGuiApp.constant('AUTH_EVENTS', {
     notAuthorized: 'auth-not-authorized'
 });
 
-camGuiApp.constant('USER_ROLES', {
+katGuiApp.constant('USER_ROLES', {
     noAuth: 'noAuth',
     all: '*',
     monitor: 'monitor',
@@ -21,9 +21,9 @@ camGuiApp.constant('USER_ROLES', {
     expert: 'expert'
 });
 
-camGuiApp.constant('UI_VERSION', '0.0.1 (Pre- Pre- Pre- Pre- Pre- Pre- Pre- alpha)');
+katGuiApp.constant('UI_VERSION', '0.0.1 (Pre- Pre- Pre- Pre- Pre- Pre- Pre- alpha)');
 
-camGuiApp.config(function($stateProvider, $urlRouterProvider, USER_ROLES) {
+katGuiApp.config(function($stateProvider, $urlRouterProvider, USER_ROLES) {
 
     $stateProvider.state('login', {
         url: '/login',
@@ -58,7 +58,7 @@ camGuiApp.config(function($stateProvider, $urlRouterProvider, USER_ROLES) {
 
 });
 
-camGuiApp.run(function($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
+katGuiApp.run(function($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
 
     $rootScope.safeApply = function(fn) {
         var phase = $rootScope.$$phase;
@@ -87,7 +87,7 @@ camGuiApp.run(function($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
 
 });
 
-camGuiApp.controller('ApplicationController', function ($scope, $state, USER_ROLES, AuthService, Session) {
+katGuiApp.controller('ApplicationController', function ($scope, $state, USER_ROLES, AuthService, Session) {
 
     $scope.currentUser = null;
     $scope.userRoles = USER_ROLES;

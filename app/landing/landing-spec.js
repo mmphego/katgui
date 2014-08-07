@@ -1,6 +1,6 @@
 describe('LandingCtrl', function() {
 
-	beforeEach(module('camgui'));
+	beforeEach(module('katGui'));
 
 	var scope,ctrl;
 

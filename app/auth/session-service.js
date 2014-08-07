@@ -1,4 +1,4 @@
-angular.module('camgui').service('Session', function () {
+angular.module('katGui').service('Session', function () {
 
     this.create = function (sessionId, userId, userRole) {
         this.id = sessionId;

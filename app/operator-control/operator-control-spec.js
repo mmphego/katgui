@@ -1,6 +1,6 @@
 describe('OperatorControlCtrl', function() {
 
-	beforeEach(module('camgui'));
+	beforeEach(module('katGui'));
 
 	var scope,ctrl;
 

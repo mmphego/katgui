@@ -5,22 +5,33 @@
             <h2>{{title}}</h2>
         </div>
 
+        <form name="loginForm" ng-submit="login(credentials)" novalidate>
+            <div class="input-group">
+                <input type="text" class="form-control login-control" ng-model="credentials.username" placeholder="Username">
+                <input type="password" class="form-control login-control" id="password" ng-model="credentials.password" placeholder="Password">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </form>
+
+
         <div id="gSignInWrapper">
-            <div id="googleButton" class="" ng-click="login()">
+            <div id="googleButton" class="" ng-click="loginGoogle()">
                 <span class="icon"></span>
                 <span class="buttonText">Sign in with Google</span>
             </div>
         </div>
 
         <div class="panel-footer">
+            <a href="" ng-click="forgotPassword()">Forgot your password?</a>
         </div>
     </div>
 
 
-
     <!--<div>-->
-        <!--<p>{{loginResult}}</p>-->
-        <!--<p>{{loginDetails}}</p>-->
+    <!--<p>{{loginResult}}</p>-->
+    <!--<p>{{loginDetails}}</p>-->
     <!--</div>-->
 
 </div>
