@@ -72,17 +72,17 @@ katGuiApp.run(function($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
     };
 
     $rootScope.$on('$stateChangeStart', function (event, next) {
-        var authorizedRoles = next.data.authorizedRoles;
-        if (!AuthService.isAuthorized(authorizedRoles) && next.data.authorizedRoles[0] !== USER_ROLES.noAuth) {
-            event.preventDefault();
-            if (AuthService.isAuthenticated()) {
-                // user is not allowed
-                $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
-            } else {
-                // user is not logged in
-                $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
-            }
-        }
+//        var authorizedRoles = next.data.authorizedRoles;
+//        if (!AuthService.isAuthorized(authorizedRoles) && next.data.authorizedRoles[0] !== USER_ROLES.noAuth) {
+//            event.preventDefault();
+//            if (AuthService.isAuthenticated()) {
+//                // user is not allowed
+//                $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+//            } else {
+//                // user is not logged in
+//                $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+//            }
+//        }
     });
 
 });

@@ -13,31 +13,15 @@
         </div>
 
         <table class="table">
-            <thead>
-            <tr>
-                <th>Receptor</th>
-                <th>State</th>
-                <th>Inhibited</th>
-            </tr>
-            </thead>
             <tbody>
-            <tr>
-                <td>atn1</td>
-                <td>STOW</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>atn2</td>
-                <td>STOP</td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>atn3</td>
-                <td></td>
-                <td></td>
-            </tr>
+                <tr ng-repeat="cols in receptors">
+                    <td ng-repeat="obj in cols">
+                        <receptor-state receptor="{{obj.receptor}}"></receptor-state>
+                    </td>
+                </tr>
             </tbody>
         </table>
+
     </div>
 
 </div>

@@ -9,6 +9,8 @@
 @import "app/operator-control/operator-control.less";
 @import "app/about/about.less";
 @import "app/weather/weather.less";
+@import "app/operator-control/receptor-state/receptor-state.less";
+@import "app/operator-control/receptors/receptors.less";
 /* Add Component LESS Above */
 
 /* Required for Angular UI Bootstrap */
@@ -29,3 +31,8 @@
 //		.translate(0,0);
 //	}
 //}
+
+@button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
+@receptor-state-border-color: darkgrey;
+@receptor-state-default-background-gradient: linear-gradient(to bottom, #9dd53a 0%,#7cbc0a 100%);
+@receptor-state-inhibited-background-gradient: linear-gradient(to bottom, #ffc578 0%,#fb9d23 100%);
