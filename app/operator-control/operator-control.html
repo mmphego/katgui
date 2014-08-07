@@ -1,0 +1,43 @@
+<div ng-controller="OperatorControlCtrl">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{title}}</h3>
+        </div>
+        <div class="panel-body panel-operator-controls">
+            <button class="btn btn-primary btn-lg" ng-click="">Inhibit All</button>
+            <button class="btn btn-primary btn-lg" ng-click="">Stow All</button>
+            <button class="btn btn-primary btn-lg" ng-click="">Stop All</button>
+            <button class="btn btn-primary btn-lg" ng-click="">Resume Operations</button>
+            <button class="btn btn-primary btn-lg" ng-click="">Shutdown Computing</button>
+        </div>
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Receptor</th>
+                <th>State</th>
+                <th>Inhibited</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>atn1</td>
+                <td>STOW</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>atn2</td>
+                <td>STOP</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>atn3</td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>

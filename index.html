@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html ng-app="camgui">
+<head>
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <link href="app.less" type="text/css" rel="stylesheet/less">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+</head>
+
+<!-- Place this asynchronous JavaScript just before your </body> tag -->
+<script type="text/javascript">
+    (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/client:plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+</script>
+
+<body ng-controller="ApplicationController">
+
+<!-- Livereload script for development only (stripped during dist build) -->
+<script src="http://localhost:35729/livereload.js" data-concat="false"></script>
+
+<!-- JS from Bower Components -->
+<script src="bower_components/less.js/dist/less-1.6.2.js" data-concat="false"></script>
+<script src="bower_components/jquery/jquery.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+<script src="bower_components/underscore/underscore.js"></script>
+<script src="bower_components/moment/moment.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="bower_components/angular-animate/angular-animate.js"></script>
+<script src="bower_components/angular-resource/angular-resource.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/angular-ui-utils/ui-utils.js"></script>
+<!-- Add New Bower Component JS Above -->
+
+
+<!-- Main App JS -->
+<script src="app.js"></script>
+<script src="app/login-form/login-form.js"></script>
+<script src="app/auth/auth-service.js"></script>
+<script src="app/auth/session-service.js"></script>
+<script src="app/landing/landing.js"></script>
+<script src="app/operator-control/operator-control.js"></script>
+<script src="app/about/about.js"></script>
+<script src="app/weather/weather.js"></script>
+<!-- Add New Component JS Above -->
+
+<nav class="navbar navbar-default" role="navigation" ng-show="userLoggedIn">
+    <div class="container-fluid">
+
+        <div class="navbar-header nav-username-center">
+            <a class="navbar-brand">{{currentUser.name}}</a>
+        </div>
+
+        <ul ng-if="userCanOperate" class="nav navbar-nav">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operator Control<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a ui-sref="operatorControl">Show Operator Controls</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Inhibit All</a></li>
+                    <li><a href="#">Stow All</a></li>
+                    <li><a href="#">Stop All</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Resume Operations</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#">Shutdown Computing</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="collapse navbar-collapse">
+
+            <ul ng-show="userLoggedIn" class="nav navbar-nav navbar-right">
+                <li ui-sref-active="active">
+                    <a ui-sref="landing">Landing Page</a>
+                </li>
+
+                <li ng-show="userLoggedIn" ui-sref-active="active">
+                    <a ui-sref="about">About</a>
+                </li>
+
+                <li ng-show="!userLoggedIn" ui-sref-active="active">
+                    <a ui-sref="login">Login</a>
+                </li>
+                <li ng-show="userLoggedIn" ui-sref-active="active">
+                    <a ng-click="logout()">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div>
+    <div id="content" class="container">
+        <div class="row">
+            <div ui-view>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
