@@ -28,6 +28,7 @@
         "xit": true,
         "spyOn": true,
         "angular": true,
-        "gapi": true
+        "gapi": true,
+        "alert": true
     }
 }
