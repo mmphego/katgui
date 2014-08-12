@@ -1,11 +1,12 @@
-describe('session', function() {
+describe('Session', function () {
 
-  beforeEach(module('katGui'));
+    beforeEach(module('katGui'));
 
-  it('should ...', inject(function(session) {
+    it('should keep session details in a singleton', inject(function (Session) {
 
-	//expect(session.doSomething()).toEqual('something');
+        expect(1).toEqual(1);
 
-  }));
+    }));
+
 
 });

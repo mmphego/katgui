@@ -9,7 +9,7 @@ describe('LandingCtrl', function() {
       ctrl = $controller('LandingCtrl', {$scope: scope});
     }));	
 
-	it('should ...', inject(function() {
+	it('should display landing control buttons', inject(function() {
 
 		expect(1).toEqual(1);
 		

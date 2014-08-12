@@ -7,12 +7,14 @@ describe('LoginFormCtrl', function() {
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
       ctrl = $controller('LoginFormCtrl', {$scope: scope});
-    }));	
+    }));
 
-	it('should ...', inject(function() {
 
-		expect(1).toEqual(1);
-		
-	}));
+    it('should ensure user can log in', function() {
+        // expect current scope to contain username
+    });
+    it('should ensure path has changed', function() {
+        // expect path to equal '/dashboard'
+    });
 
 });

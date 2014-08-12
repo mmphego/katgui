@@ -7,7 +7,7 @@
 
         <form name="loginForm" ng-submit="login(credentials)" novalidate>
             <div class="input-group">
-                <input type="text" class="form-control login-control" ng-model="credentials.username" placeholder="Username">
+                <input type="text" class="form-control login-control" ng-model="credentials.username" placeholder="Username" focus>
                 <input type="password" class="form-control login-control" id="password" ng-model="credentials.password" placeholder="Password">
             </div>
             <div>
@@ -27,11 +27,5 @@
             <a href="" ng-click="forgotPassword()">Forgot your password?</a>
         </div>
     </div>
-
-
-    <!--<div>-->
-    <!--<p>{{loginResult}}</p>-->
-    <!--<p>{{loginDetails}}</p>-->
-    <!--</div>-->
 
 </div>

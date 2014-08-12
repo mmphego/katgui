@@ -5,8 +5,10 @@ angular.module('katGui').directive('receptorState', function() {
 
 		},
 		templateUrl: 'app/operator-control/receptor-state/receptor-state.html',
-		link: function(scope, element, attrs, fn) {
-            scope.receptor = JSON.parse(attrs.receptor);
+		link: function(scope, element, attrs) {
+            scope.name = attrs.receptorname;
+            scope.state = attrs.receptorstate;
+            scope.inhibited = attrs.inhibited;
 		}
 	};
 });

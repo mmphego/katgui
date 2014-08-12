@@ -1,18 +1,20 @@
-describe('AboutCtrl', function() {
+describe('AboutCtrl', function () {
 
-	beforeEach(module('katGui'));
+    beforeEach(module('katGui'));
 
-	var scope,ctrl;
+    var scope, ctrl, location;
 
-    beforeEach(inject(function($rootScope, $controller) {
-      scope = $rootScope.$new();
-      ctrl = $controller('AboutCtrl', {$scope: scope});
-    }));	
+    beforeEach(inject(function ($rootScope, $controller, $location) {
+        scope = $rootScope.$new();
+        location = $location;
+        ctrl = $controller('AboutCtrl', {$scope: scope});
+    }));
 
-	it('should ...', inject(function() {
+    it('should bind the content', inject(function () {
 
-		expect(1).toEqual(1);
-		
-	}));
+        location.path('/about');
+        expect(location.path()).toBe('/about');
+        expect(scope.title).toBe('About KatGui');
+    }));
 
 });

@@ -16,7 +16,7 @@
             <tbody>
                 <tr ng-repeat="cols in receptors">
                     <td ng-repeat="obj in cols">
-                        <receptor-state receptor="{{obj.receptor}}"></receptor-state>
+                        <receptor-state receptorName="{{obj.receptor.name}}" receptorState="{{obj.receptor.state}}" inhibited="{{obj.receptor.inhibited}}"></receptor-state>
                     </td>
                 </tr>
             </tbody>

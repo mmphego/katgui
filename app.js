@@ -21,7 +21,7 @@ katGuiApp.constant('USER_ROLES', {
     expert: 'expert'
 });
 
-katGuiApp.constant('UI_VERSION', '0.0.1 (Pre- Pre- Pre- Pre- Pre- Pre- Pre- alpha)');
+katGuiApp.constant('UI_VERSION', '0.0.1');
 
 katGuiApp.config(function($stateProvider, $urlRouterProvider, USER_ROLES) {
 

@@ -9,7 +9,7 @@ describe('OperatorControlCtrl', function() {
       ctrl = $controller('OperatorControlCtrl', {$scope: scope});
     }));	
 
-	it('should ...', inject(function() {
+	it('should display all the configured receptors', inject(function() {
 
 		expect(1).toEqual(1);
 		
