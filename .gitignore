@@ -8,4 +8,5 @@ bower_components
 report
 coverage
 metrics
-test-results
+test-results/coverage.xml
+test-results/junit.xml
