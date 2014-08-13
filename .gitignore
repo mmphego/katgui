@@ -5,3 +5,7 @@ dist
 bower_components
 .idea
 .DS_Store
+report
+coverage
+metrics
+test-results

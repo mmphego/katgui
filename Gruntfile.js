@@ -10,7 +10,7 @@ var pkg = require('./package.json');
 //This enables users to create any directory structure they desire.
 var createFolderGlobs = function (fileTypePatterns) {
     fileTypePatterns = Array.isArray(fileTypePatterns) ? fileTypePatterns : [fileTypePatterns];
-    var ignore = ['node_modules', 'bower_components', 'dist', 'temp'];
+    var ignore = ['node_modules', 'bower_components', 'dist', 'temp', 'test-results'];
     var fs = require('fs');
     return fs.readdirSync(process.cwd())
         .map(function (file) {
@@ -176,16 +176,16 @@ module.exports = function (grunt) {
         karma: {
             options: {
                 frameworks: ['jasmine'],
+
                 preprocessors: {
-                    '**/*.html': ['ng-html2js']
+                    '**/*.html': ['ng-html2js'],
+                    '!(bower_components)/**/!(*.spec).js': 'coverage'
                 },
+
                 ngHtml2JsPreprocessor: {
-//                    cacheIdFromPath : function(filepath) {
-//                        return filepath.substr(filepath.indexOf("appname")+8);
-//                    },
                     moduleName: 'templates'
-//                    stripPrefix: 'app/'
                 },
+
                 files: [  //this files data is also updated in the watch handler, if updated change there too
                     '<%= dom_munger.data.appjs %>',
                     'bower_components/angular-mocks/angular-mocks.js',
@@ -193,10 +193,25 @@ module.exports = function (grunt) {
                     createFolderGlobs('*.html'),
                     createFolderGlobs('*-spec.js')
                 ],
-                logLevel: 'ERROR',
-                reporters: ['mocha'],
+
+                port: 9876,
+                colors: true,
+                logLevel: 'INFO',
+                reporters: ['mocha', 'junit', 'coverage'],
                 autoWatch: false, //watching is handled by grunt-contrib-watch
-                singleRun: true
+                singleRun: true,
+
+                //collect junit report for jenkins integration
+                junitReporter: {
+                    outputFile: 'test-results/junit.xml',
+                    suite: ''
+                },
+
+                coverageReporter: {
+                    reporters: [
+                        { type: 'cobertura', dir: 'test-results/', subdir: '.', file : 'coverage.xml' }
+                    ]
+                }
             },
             all_tests: {
                 browsers: ['PhantomJS']
