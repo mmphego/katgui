@@ -179,7 +179,8 @@ module.exports = function (grunt) {
 
                 preprocessors: {
                     '**/*.html': ['ng-html2js'],
-                    '!(bower_components)/**/!(*.spec).js': 'coverage'
+                    'app/**/!(*.spec).js': 'coverage',
+                    'app.js': 'coverage'
                 },
 
                 ngHtml2JsPreprocessor: {
@@ -209,6 +210,8 @@ module.exports = function (grunt) {
 
                 coverageReporter: {
                     reporters: [
+                        { type: 'text', dir: 'test-results/', subdir: 'text', file : 'coverage.txt' },
+                        { type: 'html', dir: 'test-results/', subdir: 'html', file : 'coverage.html' },
                         { type: 'cobertura', dir: 'test-results/', subdir: '.', file : 'cobertura.xml' }
                     ]
                 }
