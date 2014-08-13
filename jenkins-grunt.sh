@@ -1,7 +1,13 @@
-export PATH=/usr/local/bin:/path/to/node:/path/to/node_bin:/path/to/phantomjs:/path/to/jscoverage:$PATH;
+#!/usr/bin/bash
 
-npm install -g grunt-cli
+# Install the npm requirments as defined in package.json
 npm install
+
+# Install the bower requirements
 bower install
-grunt build
-grunt test
+
+# Setup the environment
+grunt --no-color build
+
+# Run the tests
+grunt --no-color test
