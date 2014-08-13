@@ -1,4 +1,4 @@
-angular.module('katGui').directive('receptorState', function() {
+angular.module('katGui.receptorState', ['katGui']).directive('receptorState', function() {
 	return {
 		restrict: 'E',
 		scope: {

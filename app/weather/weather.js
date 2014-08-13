@@ -1,4 +1,4 @@
-angular.module('katGui').controller('WeatherCtrl',function($scope){
+angular.module('katGui.weather', ['katGui']).controller('WeatherCtrl',function($scope){
 
 
 });

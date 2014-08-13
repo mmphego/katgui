@@ -1,4 +1,4 @@
-angular.module('katGui').directive('focus', function() {
+angular.module('katGui.util', ['katGui']).directive('focus', function() {
 	return {
 		restrict: 'A',
         scope: {},

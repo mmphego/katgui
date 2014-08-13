@@ -1,6 +1,6 @@
 describe('Directive: receptorState', function () {
 
-    beforeEach(module('katGui'));
+    beforeEach(module('katGui.receptorState'));
     beforeEach(module('templates'));
 
     var scope, compile, httpBackend;

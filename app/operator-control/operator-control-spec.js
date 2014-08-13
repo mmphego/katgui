@@ -1,6 +1,6 @@
 describe('OperatorControlCtrl', function() {
 
-	beforeEach(module('katGui'));
+	beforeEach(module('katGui.operatorControl'));
 
 	var scope,ctrl;
 

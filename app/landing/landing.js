@@ -1,4 +1,4 @@
-angular.module('katGui').controller('LandingCtrl',function($scope, $state){
+angular.module('katGui.landing', ['katGui']).controller('LandingCtrl',function($scope, $state){
 
     $scope.operatorControl = function() {
         $state.go('operatorControl');

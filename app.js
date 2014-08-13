@@ -1,4 +1,10 @@
-angular.module('katGui', ['ui.bootstrap','ui.utils','ui.router','ngAnimate']);
+angular.module('katGui', ['ui.bootstrap','ui.utils','ui.router','ngAnimate',
+    'katGui.login',
+    'katGui.about',
+    'katGui.landing',
+    'katGui.operatorControl',
+    'katGui.util',
+    'katGui.receptorState']);
 
 var katGuiApp = angular.module('katGui');
 

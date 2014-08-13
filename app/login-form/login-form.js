@@ -1,4 +1,4 @@
-angular.module('katGui').controller('LoginFormCtrl', function ($scope, $rootScope, $state, Session, AUTH_EVENTS, USER_ROLES, AuthService) {
+angular.module('katGui.login', ['katGui']).controller('LoginFormCtrl', function ($scope, $rootScope, $state, Session, AUTH_EVENTS, USER_ROLES, AuthService) {
 
     $scope.title = 'kat gui';
     $scope.loginResult = "";

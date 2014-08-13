@@ -1,6 +1,6 @@
 describe('WeatherCtrl', function() {
 
-	beforeEach(module('katGui'));
+    beforeEach(module('katGui.weather'));
 
 	var scope,ctrl;
 

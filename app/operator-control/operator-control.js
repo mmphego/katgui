@@ -1,4 +1,4 @@
-angular.module('katGui').controller('OperatorControlCtrl', function ($scope) {
+angular.module('katGui.operatorControl', ['katGui']).controller('OperatorControlCtrl', function ($scope) {
 
     $scope.title = 'Operator Controls';
 
@@ -47,7 +47,6 @@ angular.module('katGui').controller('OperatorControlCtrl', function ($scope) {
     var maxCols = 8;
     var maxRows = 8;
     var counter = 0;
-    var doBreak = false;
     var dataLength = $scope.receptorsData.length;
 
     for (var i = 0; i < maxRows; i++) {
@@ -58,11 +57,10 @@ angular.module('katGui').controller('OperatorControlCtrl', function ($scope) {
                 $scope.receptors[i][j] = obj;
                 counter++;
             } else {
-                doBreak = true;
                 break;
             }
         }
-        if (doBreak) {
+        if (counter >= dataLength) {
             break;
         }
     }
