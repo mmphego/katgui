@@ -179,7 +179,7 @@ module.exports = function (grunt) {
 
                 preprocessors: {
                     '**/*.html': ['ng-html2js'],
-                    'app/**/!(*.spec).js': 'coverage',
+                    'app/**/!(*-spec).js': 'coverage',
                     'app.js': 'coverage'
                 },
 
