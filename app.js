@@ -1,4 +1,4 @@
-angular.module('katGui', ['ui.bootstrap','ui.utils','ui.router','ngAnimate',
+angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate',
     'katGui.login',
     'katGui.about',
     'katGui.landing',
@@ -29,7 +29,7 @@ katGuiApp.constant('USER_ROLES', {
 
 katGuiApp.constant('UI_VERSION', '0.0.1');
 
-katGuiApp.config(function($stateProvider, $urlRouterProvider, USER_ROLES) {
+katGuiApp.config(function ($stateProvider, $urlRouterProvider, USER_ROLES) {
 
     $stateProvider.state('login', {
         url: '/login',
@@ -52,6 +52,13 @@ katGuiApp.config(function($stateProvider, $urlRouterProvider, USER_ROLES) {
             authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
         }
     });
+    $stateProvider.state('sensorGraph', {
+        url: '/sensorGraph',
+        templateUrl: 'app/sensor-graph/sensor-graph.html',
+        data: {
+            authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+        }
+    });
     $stateProvider.state('about', {
         url: '/about',
         templateUrl: 'app/about/about.html',
@@ -64,9 +71,9 @@ katGuiApp.config(function($stateProvider, $urlRouterProvider, USER_ROLES) {
 
 });
 
-katGuiApp.run(function($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
+katGuiApp.run(function ($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
 
-    $rootScope.safeApply = function(fn) {
+    $rootScope.safeApply = function (fn) {
         var phase = $rootScope.$$phase;
         if (phase === '$apply' || phase === '$digest') {
             if (fn && (typeof(fn) === 'function')) {
