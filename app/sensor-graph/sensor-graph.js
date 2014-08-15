@@ -1,23 +1,69 @@
-angular.module('katGui').controller('SensorGraphCtrl', function ($scope) {
+angular.module('katGui').controller('SensorGraphCtrl', function ($scope, $interval, DataService) {
 
-    $scope.d3Data = [
-        {name: "Greg", score: 98},
-        {name: "Ari", score: 96},
-        {name: 'Q', score: 75},
-        {name: "Loser", score: 48}
+    $scope.currentSensorFindSearch = 'wind.speed';
+    $scope.currentSensorDataSearch = 'anc.averaged.1minute.asc.wind.speed';
+    $scope.currentSensorMetaDataSearch = 'anc.averaged.1minute.asc.wind.speed';
+
+    $scope.d3LineData = [
     ];
 
-    $scope.d3LineData=[
-        {hour: 1,sales: 54},
-        {hour: 2,sales: 66},
-        {hour: 3,sales: 77},
-        {hour: 4,sales: 70},
-        {hour: 5,sales: 60},
-        {hour: 6,sales: 63},
-        {hour: 7,sales: 55},
-        {hour: 8,sales: 47},
-        {hour: 9,sales: 55},
-        {hour: 10,sales: 30}
-    ];
+    $scope.d3LineDataSize = 10;
+    $scope.d3LineLastX = 10;
 
+
+    $scope.findSensorByString = function () {
+        $scope.findSensorMessage = null;
+
+        DataService.findSensor($scope.currentSensorFindSearch)
+            .success(function (findSensorResult) {
+                $scope.findSensorMessage = findSensorResult;
+            })
+            .error(function (error) {
+                $scope.findSensorMessage = 'error retrieving sensor meta data, see console';
+                console.log(error);
+            });
+    };
+
+    $scope.getSensorMetaData = function () {
+        $scope.sensorMetaData = null;
+
+        DataService.sensorMetaData($scope.currentSensorMetaDataSearch)
+            .success(function (metaDataResult) {
+                $scope.sensorMetaData = metaDataResult;
+            })
+            .error(function (error) {
+                $scope.sensorMetaData = 'error retrieving sensor meta data, see console';
+                console.log(error);
+            });
+    };
+
+    $scope.getSensorData = function () {
+        $scope.sensorData = null;
+
+        DataService.sensorData($scope.currentSensorDataSearch)
+            .success(function (dataResult) {
+                $scope.sensorData = dataResult;
+            })
+            .error(function (error) {
+                $scope.sensorData = 'error retrieving sensor meta data, see console';
+                console.log(error);
+            });
+    };
+
+    $scope.mapSensorData = function () {
+        $scope.d3LineData = $scope.sensorData.data;
+        $scope.d3LineDataSize = $scope.d3LineData.length;
+    };
+
+//    $interval(function() {
+//        var max = 100,
+//            min = 0;
+//        var randomVal = Math.floor(Math.random() * (max - min + 1)) + min;
+//        $scope.d3LineData.shift();
+//
+//        $scope.d3LineLastX++;
+//        $scope.d3LineData.push({x: $scope.d3LineLastX, y: randomVal});
+//
+//        $scope.d3LineDataSize++;
+//    }, 1000);
 });

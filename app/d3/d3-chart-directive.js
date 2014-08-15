@@ -1,21 +1,23 @@
-angular.module('katGui').directive('d3Line', function ($parse, $window, d3Service) {
+angular.module('katGui').directive('d3Line', function ($window, d3Service) {
     return{
         restrict: 'EA',
-//        scope: {
-//            data: '='
-//        },
+        scope: {
+            data: '=',
+            datasize: '='
+        },
         replace: false,
         link: function (scope, elem, attrs) {
             d3Service.d3().then(function (d3) {
-                var exp = $parse(attrs.data);
 
-                var dataToPlot = exp(scope);
                 var pathClass = "line";
-                var xScale, yScale, xAxisGen, yAxisGen, valueLine;
+                var xScale, yScale, xAxis, yAxis, valueLine;
+                var numberOfTicks = 10;
 
-                var	margin = {top: 30, right: 20, bottom: 30, left: 50},
-                    width = 600 - margin.left - margin.right,
-                    height = 270 - margin.top - margin.bottom;
+                var timeFormat = d3.time.format("%H:%M:%S %d-%m-%Y");
+
+                var margin = {top: 30, right: 20, bottom: 30, left: 50},
+                    width = elem.parent()[0].offsetWidth - margin.left - margin.right,
+                    height = 500 - margin.top - margin.bottom;
 
                 var svg = d3.select(elem[0])
                     .append("svg")
@@ -24,175 +26,101 @@ angular.module('katGui').directive('d3Line', function ($parse, $window, d3Servic
                     .append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                scope.$watchCollection(exp, function (newVal, oldVal) {
-                    dataToPlot = newVal;
-                    redrawLineChart();
-                });
+                scope.$watch('datasize', function (newVal, oldVal) {
+                    drawLineChart();
+                }, true);
 
                 function setChartParameters() {
 
                     xScale = d3.scale.linear()
-                        .domain([dataToPlot[0].hour, dataToPlot[dataToPlot.length - 1].hour])
+                        .domain([scope.data[0].sample_ts, scope.data[scope.data.length - 1].sample_ts])
                         .range([0, width]);
 
                     yScale = d3.scale.linear()
-                        .domain([0, d3.max(dataToPlot, function (d) {
-                            return d.sales;
+                        .domain([0, d3.max(scope.data, function (d) {
+                            return parseInt(d.value);
                         })])
                         .range([height, 0]);
 
-                    xAxisGen = d3.svg.axis()
+                    xAxis = d3.svg.axis()
                         .scale(xScale)
                         .orient("bottom")
-                        .ticks(5);
+                        .tickSize(-height, 0, 0)
+                        .ticks(numberOfTicks)
+                        .tickFormat(function (d) {
+                            return timeFormat(new Date(d * 1000));
+                        });
 
-                    yAxisGen = d3.svg.axis()
+
+                    yAxis = d3.svg.axis()
                         .scale(yScale)
+                        .tickSize(-width, 0, 0)
                         .orient("left")
-                        .ticks(5);
+                        .ticks(numberOfTicks);
 
                     valueLine = d3.svg.line()
                         .x(function (d) {
-                            return xScale(d.hour);
+                            return xScale(d.sample_ts);
                         })
                         .y(function (d) {
-                            return yScale(d.sales);
+                            return yScale(parseInt(d.value));
                         });
                 }
 
                 function drawLineChart() {
 
-                    setChartParameters();
+                    if (scope.data.length > 0) {
 
-                    svg.append("svg:g")
-                        .attr("class", "x axis")
-                        .attr("transform", "translate(0,"+height+")")
-                        .call(xAxisGen);
 
-                    svg.append("svg:g")
-                        .attr("class", "y axis")
-                        .call(yAxisGen);
+                        setChartParameters();
 
-                    svg.append("svg:path")
-                        .attr({
-                            d: valueLine(dataToPlot),
-                            "stroke": "blue",
-                            "stroke-width": 2,
-                            "fill": "none",
-                            "class": pathClass
-                        });
+                        svg.append("svg:g")
+                            .attr("class", "axis")
+                            .attr("transform", "translate(0," + height + ")")
+                            .call(xAxis);
+
+                        svg.append("svg:g")
+                            .attr("class", "axis")
+                            .call(yAxis);
+
+                        svg.append("rect")
+                            .attr("x", 0)
+                            .attr("y", 0)
+                            .attr("height", height)
+                            .attr("width", width)
+                            .attr("class", "gridrect");
+
+                        svg.append("svg:path")
+                            .attr({
+                                d: valueLine(scope.data),
+                                "stroke": "blue",
+                                "stroke-width": 2,
+                                "fill": "none",
+                                "class": pathClass
+                            });
+
+                    }
                 }
 
-                function redrawLineChart() {
-
-                    setChartParameters();
-
-                    svg.selectAll("g.y.axis").call(yAxisGen);
-
-                    svg.selectAll("g.x.axis").call(xAxisGen);
-
-                    svg.selectAll("." + pathClass)
-                        .attr({
-                            d: valueLine(dataToPlot)
-                        });
-                }
-
-                drawLineChart();
             });
         }
     };
 });
 
 
-angular.module('katGui').directive('d3Bars', function ($window, $timeout, d3Service) {
-    return {
-        restrict: 'EA',
-        scope: {
-            data: '='
-        },
-        link: function (scope, ele, attrs) {
-            d3Service.d3().then(function (d3) {
+//function redrawLineChart() {
+//
+//    if (scope.data !== null && scope.data !== undefined && scope.data.length > 0) {
+//        setChartParameters();
+//
+//        svg.selectAll("g.y.axis").call(yAxis);
+//
+//        svg.selectAll("g.x.axis").call(xAxis);
+//
+//        svg.selectAll("." + pathClass)
+//            .attr({
+//                d: valueLine(scope.data)
+//            });
+//    }
+//}
 
-                var renderTimeout;
-                var margin = parseInt(attrs.margin) || 20,
-                    barHeight = parseInt(attrs.barHeight) || 20,
-                    barPadding = parseInt(attrs.barPadding) || 5;
-
-                var svg = d3.select(ele[0])
-                    .append('svg')
-                    .style('width', '100%');
-
-                $window.onresize = function () {
-                    scope.$apply();
-                };
-
-                scope.$watch(function () {
-                    return angular.element($window)[0].innerWidth;
-                }, function () {
-                    scope.render(scope.data);
-                });
-
-                scope.$watch('data', function (newData) {
-                    scope.render(newData);
-                }, true);
-
-                scope.render = function (data) {
-                    svg.selectAll('*').remove();
-
-                    if (!data) {
-                        return;
-                    }
-                    if (renderTimeout) {
-                        clearTimeout(renderTimeout);
-                    }
-
-                    renderTimeout = $timeout(function () {
-                        var width = d3.select(ele[0])[0][0].offsetWidth - margin,
-                            height = scope.data.length * (barHeight + barPadding),
-                            color = d3.scale.category20(),
-                            xScale = d3.scale.linear()
-                                .domain([0, d3.max(data, function (d) {
-                                    return d.score;
-                                })])
-                                .range([0, width]);
-
-                        svg.attr('height', height);
-
-                        svg.selectAll('rect')
-                            .data(data)
-                            .enter()
-                            .append('rect')
-                            .on('click', function (d, i) {
-                                return scope.onClick({item: d});
-                            })
-                            .attr('height', barHeight)
-                            .attr('width', 140)
-                            .attr('x', Math.round(margin / 2))
-                            .attr('y', function (d, i) {
-                                return i * (barHeight + barPadding);
-                            })
-                            .attr('fill', function (d) {
-                                return color(d.score);
-                            })
-                            .transition()
-                            .duration(1000)
-                            .attr('width', function (d) {
-                                return xScale(d.score);
-                            });
-                        svg.selectAll('text')
-                            .data(data)
-                            .enter()
-                            .append('text')
-                            .attr('fill', '#fff')
-                            .attr('y', function (d, i) {
-                                return i * (barHeight + barPadding) + 15;
-                            })
-                            .attr('x', 15)
-                            .text(function (d) {
-                                return d.name + " (scored: " + d.score + ")";
-                            });
-                    }, 200);
-                };
-            });
-        }};
-});
