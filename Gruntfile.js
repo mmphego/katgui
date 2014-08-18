@@ -10,7 +10,7 @@ var pkg = require('./package.json');
 //This enables users to create any directory structure they desire.
 var createFolderGlobs = function (fileTypePatterns) {
     fileTypePatterns = Array.isArray(fileTypePatterns) ? fileTypePatterns : [fileTypePatterns];
-    var ignore = ['node_modules', 'bower_components', 'dist', 'temp', 'test-results'];
+    var ignore = ['node_modules', 'bower_components', 'dist', 'temp', 'test-results', 'images'];
     var fs = require('fs');
     return fs.readdirSync(process.cwd())
         .map(function (file) {
@@ -104,7 +104,7 @@ module.exports = function (grunt) {
             read: {
                 options: {
                     read: [
-                        {selector: 'script[data-concat!="false"]', attribute: 'src', writeto: 'appjs'},
+                        {selector: 'script[data-concat!="false"]', attribute: 'src', writeto: 'appjs',isPath:true},
                         {selector: 'link[rel="stylesheet"][data-concat!="false"]', attribute: 'href', writeto: 'appcss'}
                     ]
                 },
@@ -178,9 +178,10 @@ module.exports = function (grunt) {
                 frameworks: ['jasmine'],
 
                 preprocessors: {
-                    '**/*.html': ['ng-html2js'],
-                    'app/**/!(*-spec).js': 'coverage',
-                    'app.js': 'coverage'
+                    '**/*.html': 'ng-html2js',
+                    '**/*.js': 'coverage',
+                    '!**-spec.js': 'coverage'
+//                    'app.js': 'coverage'
                 },
 
                 ngHtml2JsPreprocessor: {
@@ -190,7 +191,7 @@ module.exports = function (grunt) {
                 files: [  //this files data is also updated in the watch handler, if updated change there too
                     '<%= dom_munger.data.appjs %>',
                     'bower_components/angular-mocks/angular-mocks.js',
-                    'app/util/*.js',
+                    'util/*.js',
                     createFolderGlobs('*.html'),
                     createFolderGlobs('*-spec.js')
                 ],

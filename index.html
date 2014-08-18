@@ -10,10 +10,13 @@
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
 <script type="text/javascript">
-    (function() {
-        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    (function () {
+        var po = document.createElement('script');
+        po.type = 'text/javascript';
+        po.async = true;
         po.src = 'https://apis.google.com/js/client:plusone.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
     })();
 </script>
 
@@ -29,6 +32,7 @@
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
 <script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-mocks/angular-mocks.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -39,19 +43,19 @@
 
 <!-- Main App JS -->
 <script src="app.js"></script>
-<script src="app/landing/landing.js"></script>
-<script src="app/about/about.js"></script>
-<script src="app/login-form/login-form.js"></script>
-<script src="app/weather/weather.js"></script>
-<script src="app/operator-control/receptor-state/receptor-state.js"></script>
-<script src="app/operator-control/operator-control.js"></script>
-<script src="app/util/focus-directive.js"></script>
-<script src="app/auth/auth-service.js"></script>
-<script src="app/data/data-service.js"></script>
-<script src="app/auth/session-service.js"></script>
-<script src="app/sensor-graph/sensor-graph.js"></script>
-<script src="app/d3/d3-chart-directive.js"></script>
-<script src="app/d3/d3-service.js"></script>
+<script src="landing/landing.js"></script>
+<script src="about/about.js"></script>
+<script src="login-form/login-form.js"></script>
+<script src="weather/weather.js"></script>
+<script src="operator-control/receptor-state/receptor-state.js"></script>
+<script src="operator-control/operator-control.js"></script>
+<script src="util/focus-directive.js"></script>
+<script src="auth/auth-service.js"></script>
+<script src="data/data-service.js"></script>
+<script src="auth/session-service.js"></script>
+<script src="sensor-graph/sensor-graph.js"></script>
+<script src="d3/d3-chart-directive.js"></script>
+<script src="d3/d3-service.js"></script>
 <!-- Add New Component JS Above -->
 
 <nav class="navbar navbar-default" role="navigation" ng-show="userLoggedIn">
