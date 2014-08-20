@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.d3', ['katGui'])
 
     .directive('d3Line', function ($window, d3Service) {
         return{
@@ -15,7 +15,7 @@ angular.module('katGui')
                     var xScale, yScale, xAxis, yAxis, valueLine;
                     var numberOfTicks = 10;
 
-                    var timeFormat = d3.time.format("%H:%M:%S %d-%m-%Y");
+                    var timeFormat = d3.time.format("%H:%M:%S");
 
                     var margin = {top: 30, right: 20, bottom: 30, left: 50},
                         width = elem.parent()[0].offsetWidth - margin.left - margin.right,

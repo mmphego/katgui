@@ -1,6 +1,6 @@
 describe('Directive: d3-chart', function() {
 
-  beforeEach(module('katGui'));
+  beforeEach(module('katGui.d3'));
 
   var scope,compile;
 

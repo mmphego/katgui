@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.landing', ['katGui'])
 
     .controller('LandingCtrl', function ($scope, $state) {
 

@@ -1,4 +1,15 @@
-angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
+angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate',
+    'katGui.about',
+    'katGui.auth',
+    'katGui.d3',
+    'katGui.data',
+    'katGui.landing',
+    'katGui.login',
+    'katGui.operator.control',
+    'katGui.operator.receptorstate',
+    'katGui.session',
+    'katGui.util',
+    'katGui.weather'])
 
     .constant('UI_VERSION', '0.0.1')
 

@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.session', ['katGui'])
 
     .service('Session', function () {
 

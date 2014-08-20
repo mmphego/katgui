@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.operator.receptorstate', ['katGui'])
 
     .directive('receptorState', function () {
         return {
@@ -11,6 +11,10 @@ angular.module('katGui')
                 scope.name = attrs.receptorname;
                 scope.state = attrs.receptorstate;
                 scope.inhibited = attrs.inhibited;
+
+                scope.alertMessage = function() {
+
+                };
             }
         };
     });

@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.operator.control', ['katGui'])
 
     .controller('OperatorControlCtrl', function ($scope) {
 

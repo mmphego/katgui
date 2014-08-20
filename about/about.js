@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.about', ['katGui'])
 
     .controller('AboutCtrl', function ($scope, UI_VERSION) {
 

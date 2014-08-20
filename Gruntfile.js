@@ -104,7 +104,7 @@ module.exports = function (grunt) {
             read: {
                 options: {
                     read: [
-                        {selector: 'script[data-concat!="false"]', attribute: 'src', writeto: 'appjs',isPath:true},
+                        {selector: 'script[data-concat!="false"]', attribute: 'src', writeto: 'appjs', isPath: true},
                         {selector: 'link[rel="stylesheet"][data-concat!="false"]', attribute: 'href', writeto: 'appcss'}
                     ]
                 },
@@ -211,9 +211,9 @@ module.exports = function (grunt) {
 
                 coverageReporter: {
                     reporters: [
-                        { type: 'text', dir: 'test-results/', subdir: 'text', file : 'coverage.txt' },
-                        { type: 'html', dir: 'test-results/', subdir: 'html', file : 'coverage.html' },
-                        { type: 'cobertura', dir: 'test-results/', subdir: '.', file : 'cobertura.xml' }
+                        { type: 'text', dir: 'test-results/', subdir: 'text', file: 'coverage.txt' },
+                        { type: 'html', dir: 'test-results/', subdir: 'html', file: 'coverage.html' },
+                        { type: 'cobertura', dir: 'test-results/', subdir: '.', file: 'cobertura.xml' }
                     ]
                 }
             },
