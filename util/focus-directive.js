@@ -1,4 +1,4 @@
-angular.module('katGui.util', ['katGui'])
+angular.module('katGui')
 
     .directive('focus', function () {
         return {

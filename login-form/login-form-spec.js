@@ -1,6 +1,6 @@
 describe('LoginFormCtrl', function() {
 
-	beforeEach(module('katGui.login'));
+	beforeEach(module('katGui'));
 
 	var scope,ctrl;
 

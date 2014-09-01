@@ -1,4 +1,4 @@
-angular.module('katGui.operator.receptorstate', ['katGui'])
+angular.module('katGui')
 
     .directive('receptorState', function () {
         return {

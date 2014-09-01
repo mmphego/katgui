@@ -1,4 +1,4 @@
-angular.module('katGui.d3', ['katGui'])
+angular.module('katGui')
 
     .directive('d3Line', function ($window, d3Service) {
         return{

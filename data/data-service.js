@@ -1,4 +1,4 @@
-angular.module('katGui.data', ['katGui'])
+angular.module('katGui')
 
     .factory('DataService', function ($http) {
 

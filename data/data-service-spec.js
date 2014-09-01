@@ -1,6 +1,6 @@
 describe('DataService', function() {
 
-    beforeEach(module('katGui.data'));
+    beforeEach(module('katGui'));
 
     it('should...', inject(function(AuthService) {
 

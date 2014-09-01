@@ -40,7 +40,6 @@
 <script src="bower_components/angular-ui-utils/ui-utils.js"></script>
 <!-- Add New Bower Component JS Above -->
 
-
 <!-- Main App JS -->
 <script src="app.js"></script>
 <script src="about/about.js"></script>
@@ -56,48 +55,56 @@
 <script src="sensor-graph/sensor-graph.js"></script>
 <script src="d3/d3-chart-directive.js"></script>
 <script src="d3/d3-service.js"></script>
+<script src="admin/admin.js"></script>
 <!-- Add New Component JS Above -->
 
-<nav class="navbar navbar-default" role="navigation" ng-show="userLoggedIn">
+<nav ng-show="userLoggedIn && !navbarCollapsed" class="navbar navbar-default" role="navigation">
+
     <div class="container-fluid">
 
-        <div class="navbar-header nav-username-center">
-            <a class="navbar-brand">{{currentUser.name}}</a>
-        </div>
+        <div ng-if="userCanOperate" class="nav navbar-nav btn-group" style="margin-left: 10px;">
 
-        <ul ng-if="userCanOperate" class="nav navbar-nav">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Operator Control<span class="caret"></span></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a ui-sref="operatorControl">Show Operator Controls</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Inhibit All</a></li>
-                    <li><a href="#">Stow All</a></li>
-                    <li><a href="#">Stop All</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Resume Operations</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Shutdown Computing</a></li>
-                </ul>
-            </li>
-        </ul>
+            <button type="button" class="btn btn-default navbar-btn" ng-click="stateGo('operatorControl')">Operator
+                Control
+            </button>
+            <button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Inhibit All</a></li>
+                <li><a href="#">Stow All</a></li>
+                <li><a href="#">Stop All</a></li>
+                <li class="divider"></li>
+                <li><a href="#">Resume Operations</a></li>
+                <li class="divider"></li>
+                <li><a href="#">Shutdown Computing</a></li>
+            </ul>
+        </div>
 
         <div class="collapse navbar-collapse">
 
-            <ul ng-show="userLoggedIn" class="nav navbar-nav navbar-right">
-                <li ui-sref-active="active">
-                    <a ui-sref="landing">Landing Page</a>
+            <ul ng-if="userLoggedIn" class="nav navbar-nav navbar-right">
+                <li>
+                    <a ng-click="stateGo('landing')">Landing Page</a>
                 </li>
 
-                <li ng-show="userLoggedIn" ui-sref-active="active">
-                    <a ui-sref="about">About</a>
+                <li ng-show="!userLoggedIn">
+                    <a ng-click="stateGo('login')">Login</a>
                 </li>
+                <li ng-show="userLoggedIn">
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
+                            {{currentUser.name}} <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a ng-click="stateGo('admin')">User Administration</a></li>
+                            <li><a ng-click="stateGo('about')">About</a></li>
+                            <li class="divider"></li>
+                            <li><a ng-click="logout()">Logout</a></li>
+                        </ul>
+                    </div>
 
-                <li ng-show="!userLoggedIn" ui-sref-active="active">
-                    <a ui-sref="login">Login</a>
-                </li>
-                <li ng-show="userLoggedIn" ui-sref-active="active">
-                    <a ng-click="logout()">Logout</a>
                 </li>
             </ul>
         </div>
@@ -112,6 +119,10 @@
         </div>
     </div>
 </div>
+
+<a class="navbar-collapse-button unselectable" ng-click="navbarCollapsed = !navbarCollapsed">
+    <span class="glyphicon" ng-class="{ 'glyphicon-chevron-up': !navbarCollapsed && userLoggedIn,  'glyphicon-chevron-down': navbarCollapsed && userLoggedIn}"></span>
+</a>
 
 </body>
 </html>

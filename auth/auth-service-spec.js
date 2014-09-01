@@ -1,6 +1,6 @@
 describe('AuthService', function() {
 
-  beforeEach(module('katGui.auth'));
+  beforeEach(module('katGui'));
 
   it('should authenticate login credentials', inject(function(AuthService) {
 

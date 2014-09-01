@@ -1,4 +1,4 @@
-angular.module('katGui.auth', ['katGui'])
+angular.module('katGui')
 
     .factory('AuthService', function ($http, Session, USER_ROLES) {
         var authService = {};

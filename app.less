@@ -11,14 +11,55 @@
 @import "weather/weather.less";
 @import "operator-control/receptor-state/receptor-state.less";
 @import "sensor-graph/sensor-graph.less";
+@import "admin/admin.less";
 /* Add Component LESS Above */
+
+@button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
+@receptor-state-border-color: darkgrey;
+@receptor-state-default-background-gradient: linear-gradient(to bottom, #9dd53a 0%,#7cbc0a 100%);
+@receptor-state-inhibited-background-gradient: linear-gradient(to bottom, #ffc578 0%,#fb9d23 100%);
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot');
+  src: url('bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff') format('woff'), url('bower_components/bootstrap/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('bower_components/bootstrap/fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+}
 
 /* Required for Angular UI Bootstrap */
 .nav, .pagination, .carousel a { cursor: pointer; }
 
 .nav-username-center {
   text-align: center;
+  vertical-align: center;
 }
+
+.navbar-collapse-button {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+}
+
+.unselectable {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+//.ng-hide-add, .ng-hide-remove {
+//  display: block !important;
+//}
+
+//.animateHide {
+//  transition: 1s linear all;
+//  height: @navbar-height;
+//  overflow: hidden;
+//}
+//
+//.animateHide.ng-hide {
+//  height: 0px;
+//}
+
 
 /* Personal preference for BS modal.  The LESS below makes the backdrop white and
    causes the modal to fade in rather than slide in. */
@@ -31,8 +72,3 @@
 //		.translate(0,0);
 //	}
 //}
-
-@button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
-@receptor-state-border-color: darkgrey;
-@receptor-state-default-background-gradient: linear-gradient(to bottom, #9dd53a 0%,#7cbc0a 100%);
-@receptor-state-inhibited-background-gradient: linear-gradient(to bottom, #ffc578 0%,#fb9d23 100%);

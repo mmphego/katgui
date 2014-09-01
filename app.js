@@ -1,15 +1,4 @@
-angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate',
-    'katGui.about',
-    'katGui.auth',
-    'katGui.d3',
-    'katGui.data',
-    'katGui.landing',
-    'katGui.login',
-    'katGui.operator.control',
-    'katGui.operator.receptorstate',
-    'katGui.session',
-    'katGui.util',
-    'katGui.weather'])
+angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
 
     .constant('UI_VERSION', '0.0.1')
 
@@ -39,6 +28,13 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate',
             templateUrl: 'login-form/login-form.html',
             data: {
                 authorizedRoles: [USER_ROLES.noAuth]
+            }
+        });
+        $stateProvider.state('admin', {
+            url: '/admin',
+            templateUrl: 'admin/admin.html',
+            data: {
+                authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
         $stateProvider.state('landing', {
@@ -101,15 +97,21 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate',
 //        }
         });
 
+        $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams) {
+            console.log('$stateChangeError - debugging required. Event: ');
+            console.log(event);
+        });
+
     })
 
-    .controller('ApplicationController', function ($scope, $state, USER_ROLES, AuthService, Session) {
+    .controller('ApplicationController', function ($rootScope, $scope, $state, USER_ROLES, AuthService, Session) {
 
         $scope.currentUser = null;
         $scope.userRoles = USER_ROLES;
         $scope.isAuthorized = AuthService.isAuthorized;
         $scope.userCanOperate = false;
         $scope.userLoggedIn = false;
+        $scope.navbarCollapsed = false;
 
         $scope.setCurrentUser = function (user) {
             $scope.currentUser = user;
@@ -127,6 +129,10 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate',
             Session.destroy();
             gapi.auth.signOut();
             $state.go('login');
+        };
+
+        $rootScope.stateGo = function (newState) {
+            $state.go(newState);
         };
 
     });

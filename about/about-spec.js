@@ -1,6 +1,6 @@
 describe('AboutCtrl', function () {
 
-    beforeEach(module('katGui.about'));
+    beforeEach(module('katGui'));
 
     var scope, ctrl, location;
 
