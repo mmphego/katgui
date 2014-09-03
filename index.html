@@ -31,6 +31,7 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
+<script src="bower_components/sockjs/sockjs.min.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
@@ -56,7 +57,13 @@
 <script src="d3/d3-chart-directive.js"></script>
 <script src="d3/d3-service.js"></script>
 <script src="admin/admin.js"></script>
+<script src="alarms/alarms.js"></script>
+<script src="alarms/alarm-service.js"></script>
+<script src="alarms/alarms-notify.js"></script>
 <!-- Add New Component JS Above -->
+
+<!--ng-show="userLoggedIn"-->
+<div alarm></div>
 
 <nav ng-show="userLoggedIn && !navbarCollapsed" class="navbar navbar-default" role="navigation">
 

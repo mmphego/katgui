@@ -1,0 +1,47 @@
+<div ng-controller="AlarmsCtrl">
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Alarms
+        </div>
+        <div class="panel-body">
+            <button class="btn btn-primary">Known</button>
+            <button class="btn btn-primary">Acknowledge</button>
+            <button class="btn btn-primary">Clear</button>
+            <button class="btn btn-primary">Something</button>
+            <button class="btn btn-primary">Another thing</button>
+        </div>
+
+        <table class="table" width="100%">
+            <col style="width: 30px;">
+            <col style="width: 200px;">
+            <col style="width: 100px;">
+            <col style="width: 100px;">
+            <col style="width: 200px;">
+            <col style="width: auto;">
+            <thead>
+            <tr>
+                <th><input type="checkbox" ng-model="selectAll"></th>
+                <th>Date</th>
+                <th>Severity</th>
+                <th>Priority</th>
+                <th>Alarm Name</th>
+                <th>Message</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="alarm in alarmsData">
+                <td><input type="checkbox" ng-model="alarm.selected"></td>
+                <td>{{alarm.date}}</td>
+                <td>{{alarm.severity}}</td>
+                <td>{{alarm.priority}}</td>
+                <td>{{alarm.name}}</td>
+                <td>{{alarm.message}}</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <button class="btn btn-primary" ng-click="addAlarmTest()">Add some alarms</button>
+</div>

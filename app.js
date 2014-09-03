@@ -37,6 +37,13 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
                 authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
+        $stateProvider.state('alarms', {
+            url: '/alarms',
+            templateUrl: 'alarms/alarms.html',
+            data: {
+                authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
         $stateProvider.state('landing', {
             url: '/landing',
             templateUrl: 'landing/landing.html',
@@ -104,7 +111,7 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
 
     })
 
-    .controller('ApplicationController', function ($rootScope, $scope, $state, USER_ROLES, AuthService, Session) {
+    .controller('ApplicationController', function ($rootScope, $scope, $state, USER_ROLES, AuthService, Session, AlarmService) {
 
         $scope.currentUser = null;
         $scope.userRoles = USER_ROLES;

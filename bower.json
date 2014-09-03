@@ -23,5 +23,8 @@
     "less.js": "latest",
     "font-awesome": "latest",
     "d3": "latest"
+  },
+  "devDependencies": {
+    "sockjs": "~0.3.4"
   }
 }

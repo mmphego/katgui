@@ -1,0 +1,94 @@
+@alarm-error-bg: red;
+@alarm-warning-bg: orange;
+@alarm-info-bg: lightblue;
+@alarm-success-bg: lightgreen;
+
+.alarm {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  float: right;
+  width: 35%;
+  height: 100%;
+  overflow: auto;
+}
+
+.alarm-styles(@color, @textColor) {
+  #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 7.5%));
+  border-color: darken(@color, 15%);
+  color: @textColor;
+}
+
+// Apply the mixin to the alarms
+.alarm-success    { .alarm-styles(@alarm-success-bg, black); }
+.alarm-info       { .alarm-styles(@alarm-info-bg, black); }
+.alarm-warning    { .alarm-styles(@alarm-warning-bg, black); }
+.alarm-error      { .alarm-glowing; }
+
+.alarm-item {
+  padding: 10px;
+  margin-top: 2px;
+  border: none;
+  border-radius: 10px;
+}
+
+.alarm-item.ng-enter, .alarm-item.ng-leave {
+  -webkit-transition: .2s linear all;
+  transition: .2s linear all
+}
+
+.alarm-item.ng-enter, .alarm-item.ng-leave.ng-leave-active {
+  opacity: 0
+}
+
+.alarm-item.ng-leave, .alarm-item.ng-enter.ng-enter-active {
+  opacity: 1
+}
+
+@-webkit-keyframes glowing {
+  0% { background-color: #7F0400; -webkit-box-shadow: 0 0 3px #7F0400; }
+  50% { background-color: red; -webkit-box-shadow: 0 0 10px red; }
+  100% { background-color: #7F0400; -webkit-box-shadow: 0 0 3px #7F0400; }
+}
+
+@keyframes glowing {
+  0% { background-color: #7F0400; box-shadow: 0 0 3px #7F0400; }
+  50% { background-color: #E30000; box-shadow: 0 0 10px #E30000; }
+  100% { background-color: #7F0400; box-shadow: 0 0 3px #7F0400; }
+}
+
+.alarm-glowing {
+  -webkit-animation: glowing 1s infinite;
+  animation: glowing 1s infinite;
+  border: none;
+  background-color: #7F0400;
+  color: white;
+}
+
+.alarm-close {
+  float: right;
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1;
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  opacity: .4;
+}
+.alarm-close:hover,
+.alarm-close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: .8;
+}
+button.alarm-close {
+  -webkit-appearance: none;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+}
+
+
+
+
