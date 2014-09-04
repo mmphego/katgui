@@ -135,6 +135,7 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
             $scope.setCurrentUser(null);
             Session.destroy();
             gapi.auth.signOut();
+            AlarmService.disconnectListener();
             $state.go('login');
         };
 

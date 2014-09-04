@@ -1,16 +1,55 @@
-@alarm-error-bg: red;
-@alarm-warning-bg: orange;
+@alarm-error-bg: orange;
+@alarm-warning-bg: yellow;
 @alarm-info-bg: lightblue;
-@alarm-success-bg: lightgreen;
+@alarm-maintenance-bg: #c300c3;
+@alarm-critical-bg: red;
+@alarm-unknown-bg: lightgrey;
 
 .alarm {
   position: fixed;
-  top: 10px;
+  top: 55px;
   right: 10px;
   float: right;
   width: 35%;
   height: 100%;
   overflow: auto;
+  opacity: 0.8;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+
+  .datestamp {
+    top: 5px;
+    right: 5px;
+    font: 12px Arial;
+    width: 100%;
+  }
+
+  .timestamp {
+    top: 5px;
+    left: 5px;
+    font: 12px Arial;
+  }
+
+  .severitystamp {
+    margin-top: -23px;
+    top: 5px;
+    text-align: center;
+    width: 100%;
+    font: 26px Arial;
+    font-style: italic;
+    font-weight: bold;
+//    text-decoration: underline;
+  }
+
+  h3 {
+    opacity: 1;
+    font-weight: bold;
+  }
+
+  span {
+    font: 18px Arial;
+    opacity: 1;
+  }
 }
 
 .alarm-styles(@color, @textColor) {
@@ -20,10 +59,13 @@
 }
 
 // Apply the mixin to the alarms
-.alarm-success    { .alarm-styles(@alarm-success-bg, black); }
-.alarm-info       { .alarm-styles(@alarm-info-bg, black); }
-.alarm-warning    { .alarm-styles(@alarm-warning-bg, black); }
-.alarm-error      { .alarm-glowing; }
+.alarm-critical    { .alarm-glowing-critical }
+.alarm-error       { .alarm-glowing-error }
+.alarm-info        { .alarm-styles(@alarm-info-bg, black); }
+.alarm-nominal     { .alarm-styles(@alarm-info-bg, black); }
+.alarm-maintenance { .alarm-styles(@alarm-maintenance-bg, black); }
+.alarm-warning     { .alarm-styles(@alarm-warning-bg, black); }
+.alarm-unknown     { .alarm-styles(@alarm-unknown-bg, black); }
 
 .alarm-item {
   padding: 10px;
@@ -45,24 +87,48 @@
   opacity: 1
 }
 
-@-webkit-keyframes glowing {
-  0% { background-color: #7F0400; -webkit-box-shadow: 0 0 3px #7F0400; }
-  50% { background-color: red; -webkit-box-shadow: 0 0 10px red; }
-  100% { background-color: #7F0400; -webkit-box-shadow: 0 0 3px #7F0400; }
+@-webkit-keyframes glowing-error {
+  0% { background-color: orange; }
+  50% { background-color: orangered; }
+  100% { background-color: orange; }
 }
 
-@keyframes glowing {
-  0% { background-color: #7F0400; box-shadow: 0 0 3px #7F0400; }
-  50% { background-color: #E30000; box-shadow: 0 0 10px #E30000; }
-  100% { background-color: #7F0400; box-shadow: 0 0 3px #7F0400; }
+@keyframes glowing-error {
+  0% { background-color: orange; }
+  50% { background-color: orangered; }
+  100% { background-color: orange; }
 }
 
-.alarm-glowing {
-  -webkit-animation: glowing 1s infinite;
-  animation: glowing 1s infinite;
+.alarm-glowing-error {
+  -webkit-animation: glowing-error 1s infinite;
+  animation: glowing-error 1s infinite;
   border: none;
-  background-color: #7F0400;
+  background-color: @alarm-error-bg;
+  color: black;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+@-webkit-keyframes glowing-critical {
+  0% { background-color: #7F0400; }
+  50% { background-color: red; }
+  100% { background-color: #7F0400; }
+}
+
+@keyframes glowing-critical {
+  0% { background-color: #7F0400; }
+  50% { background-color: red; }
+  100% { background-color: #7F0400; }
+}
+
+.alarm-glowing-critical {
+  -webkit-animation: glowing-critical 1s infinite;
+  animation: glowing-critical 1s infinite;
+  border: none;
+  background-color: @alarm-critical-bg;
   color: white;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .alarm-close {
@@ -82,11 +148,18 @@
   opacity: .8;
 }
 button.alarm-close {
+//  position: relative;
+//  display: inline-block;
   -webkit-appearance: none;
   padding: 0;
   cursor: pointer;
   background: transparent;
   border: 0;
+}
+
+ul {
+  float: right;
+  list-style: none;
 }
 
 

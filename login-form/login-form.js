@@ -1,6 +1,6 @@
 angular.module('katGui')
 
-    .controller('LoginFormCtrl', function ($scope, $rootScope, $state, Session, AUTH_EVENTS, USER_ROLES, AuthService) {
+    .controller('LoginFormCtrl', function ($scope, $rootScope, $state, Session, AUTH_EVENTS, USER_ROLES, AuthService, AlarmService) {
 
         $scope.title = 'kat gui';
         $scope.loginResult = "";
@@ -35,7 +35,7 @@ angular.module('katGui')
             $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
             $scope.setCurrentUser(user);
 
-
+            AlarmService.connectListener();
             $state.go('landing');
 
 //            AuthService.login(credentials).then(function (user) {

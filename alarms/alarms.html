@@ -22,15 +22,53 @@
             <thead>
             <tr>
                 <th><input type="checkbox" ng-model="selectAll"></th>
-                <th>Date</th>
-                <th>Severity</th>
-                <th>Priority</th>
-                <th>Alarm Name</th>
-                <th>Message</th>
+                <th>
+                    <a href="" ng-click="orderByField='date'; reverseSort = !reverseSort">Date
+                    <span ng-show="orderByField === 'date'">
+                        <span ng-show="!reverseSort">^</span>
+                        <span ng-show="reverseSort">v</span>
+                    </span>
+                    </a>
+                </th>
+                <th>
+                    <a href="" ng-click="orderByField='severity'; reverseSort = !reverseSort">Severity
+                    <span ng-show="orderByField === 'severity'">
+                        <span ng-show="!reverseSort">^</span>
+                        <span ng-show="reverseSort">v</span>
+                    </span>
+                    </a>
+                </th>
+
+                <th>
+                    <a href="" ng-click="orderByField='priority'; reverseSort = !reverseSort">Priority
+                    <span ng-show="orderByField === 'priority'">
+                        <span ng-show="!reverseSort">^</span>
+                        <span ng-show="reverseSort">v</span>
+                    </span>
+                    </a>
+                </th>
+
+                <th>
+                    <a href="" ng-click="orderByField='name'; reverseSort = !reverseSort">Alarm Name
+                    <span ng-show="orderByField === 'name'">
+                        <span ng-show="!reverseSort">^</span>
+                        <span ng-show="reverseSort">v</span>
+                    </span>
+                    </a>
+                </th>
+
+                <th>
+                    <a href="" ng-click="orderByField='message'; reverseSort = !reverseSort">Message
+                    <span ng-show="orderByField === 'message'">
+                        <span ng-show="!reverseSort">^</span>
+                        <span ng-show="reverseSort">v</span>
+                    </span>
+                    </a>
+                </th>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="alarm in alarmsData">
+            <tr ng-repeat="alarm in alarmsData | orderBy:orderByField:reverseSort">
                 <td><input type="checkbox" ng-model="alarm.selected"></td>
                 <td>{{alarm.date}}</td>
                 <td>{{alarm.severity}}</td>
@@ -41,7 +79,8 @@
             </tbody>
         </table>
 
+        <div ng-if="alarmsData.length === 0"><h3><i>No alarms found!</i></h3></div>
+
     </div>
 
-    <button class="btn btn-primary" ng-click="addAlarmTest()">Add some alarms</button>
 </div>

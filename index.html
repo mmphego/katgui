@@ -62,9 +62,6 @@
 <script src="alarms/alarms-notify.js"></script>
 <!-- Add New Component JS Above -->
 
-<!--ng-show="userLoggedIn"-->
-<div alarm></div>
-
 <nav ng-show="userLoggedIn && !navbarCollapsed" class="navbar navbar-default" role="navigation">
 
     <div class="container-fluid">
@@ -130,6 +127,9 @@
 <a class="navbar-collapse-button unselectable" ng-click="navbarCollapsed = !navbarCollapsed">
     <span class="glyphicon" ng-class="{ 'glyphicon-chevron-up': !navbarCollapsed && userLoggedIn,  'glyphicon-chevron-down': navbarCollapsed && userLoggedIn}"></span>
 </a>
+
+<!--ng-show="userLoggedIn"-->
+<div alarm></div>
 
 </body>
 </html>

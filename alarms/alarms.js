@@ -1,21 +1,15 @@
-//var mockData = [
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' },
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' },
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' },
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' },
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' },
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' },
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' },
-//    {date: moment(new Date()).format('DD/MM/YYYY hh:mm:ss'), name: 'testAlarm', severity: 'severity', priority: 'priority', message: 'message' }
-//];
-
-
 angular.module('katGui')
 
-    .controller('AlarmsCtrl', function ($scope, alarms) {
+    .controller('AlarmsCtrl', function ($rootScope, $scope, AlarmService) {
 
-//        $scope.alarmsData = mockData;
         $scope.selectAll = false;
+        $scope.alarmsData = [];
+        $scope.orderByField = 'date';
+        $scope.reverseSort = true;
+
+        if (!AlarmService.isConnected()) {
+            AlarmService.connectListener();
+        }
 
         $scope.$watch('selectAll', function (newVal) {
 
@@ -28,12 +22,8 @@ angular.module('katGui')
             }
         });
 
-        $scope.addAlarmTest = function () {
-
-            alarms.addErrorMessage('error message');
-            alarms.addInfoMessage('info message');
-            alarms.addWarnMessage('warn message');
-            alarms.addSuccessMessage('success message');
-        };
+        $rootScope.$on('alarmMessage', function (event, message) {
+            $scope.alarmsData.push(message);
+        });
 
     });
