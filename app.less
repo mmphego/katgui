@@ -13,6 +13,7 @@
 @import "sensor-graph/sensor-graph.less";
 @import "admin/admin.less";
 @import "alarms/alarms.less";
+@import "widgets/navigation/navigation-widget.less";
 /* Add Component LESS Above */
 
 @button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
@@ -22,11 +23,17 @@
 
 //@darker-dark-grey: darken(darkgrey, 7.5%);
 
-@body-gradient-start: #FAFAFA;
-@body-gradient-end: #D9D9D9;
-@navbar-default-bg: transparent;
-@navbar-background-image: linear-gradient(to bottom, #377CA8 0%, #327299 100%);
-@navbar-default-border: #7A7A7A;
+@body-gradient-start: #cacaca;
+@body-gradient-end: #737373;
+@panel-gradient-start: #FAFAFA;
+@panel-gradient-end: #D9D9D9;
+
+@navbar-default-bg: #3071a9;
+@navbar-default-border: #285e8e;
+
+//@navbar-default-bg: transparent;
+//@navbar-background-image: linear-gradient(to bottom, #377CA8 0%, #327299 100%);
+//@navbar-default-border: #7A7A7A;
 
 @font-face {
   font-family: 'Glyphicons Halflings';
@@ -45,11 +52,17 @@
 .navbar-collapse-button {
   position: absolute;
   top: 5px;
-  left: 50%;
+  left: 5px;
+  color: lightgrey;
+}
+
+.navbar-collapse-button:hover {
+  color: darkgray;
 }
 
 .navbar {
-  background-image: @navbar-background-image;
+//  background-image: @navbar-background-image;
+
   top: 0px;
   margin: 0;
   border: 0px solid black;
@@ -65,6 +78,7 @@
 
 body {
   background: transparent;
+  padding-top: 0px !important;
 
   .panel {
     margin-top: 5px;
@@ -78,8 +92,8 @@ html {
 
   .panel {
     background-color: transparent;
-    background-image: -webkit-radial-gradient(center top, ellipse farthest-corner, @body-gradient-start 0%, @body-gradient-end 100%);
-    background-image: radial-gradient(ellipse farthest-corner at center top, @body-gradient-start 0%, @body-gradient-end 100%);
+    background-image: -webkit-radial-gradient(center top, ellipse farthest-corner, @panel-gradient-start 0%, @panel-gradient-end 100%);
+    background-image: radial-gradient(ellipse farthest-corner at center top, @panel-gradient-start 0%, @panel-gradient-end 100%);
   }
 }
 

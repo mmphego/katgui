@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <link href="app.less" type="text/css" rel="stylesheet/less">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet" type="text/css">
 </head>
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
@@ -31,7 +32,7 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
-<script src="bower_components/sockjs/sockjs.min.js"></script>
+<script src="bower_components/sockjs/sockjs.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
@@ -39,7 +40,16 @@
 <script src="bower_components/angular-resource/angular-resource.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/angular-ui-utils/ui-utils.js"></script>
+<script src="bower_components/angular-local-storage/angular-local-storage.js"></script>
+<script src="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.js"></script>
 <!-- Add New Bower Component JS Above -->
+
+<!-- build:js js/jquery.ui.sortable.min.js -->
+<script type="text/javascript" src="bower_components/jquery-ui/ui/jquery.ui.core.js"></script>
+<script type="text/javascript" src="bower_components/jquery-ui/ui/jquery.ui.widget.js"></script>
+<script type="text/javascript" src="bower_components/jquery-ui/ui/jquery.ui.mouse.js"></script>
+<script type="text/javascript" src="bower_components/jquery-ui/ui/jquery.ui.sortable.js"></script>
+<!-- endbuild -->
 
 <!-- Main App JS -->
 <script src="app.js"></script>
@@ -60,9 +70,11 @@
 <script src="alarms/alarms.js"></script>
 <script src="alarms/alarm-service.js"></script>
 <script src="alarms/alarms-notify.js"></script>
+<script src="widgets/navigation/navigation-widget.js"></script>
+<script src="widgets/dashboard-structures.js"></script>
 <!-- Add New Component JS Above -->
-
-<nav ng-show="userLoggedIn && !navbarCollapsed" class="navbar navbar-default" role="navigation">
+<!--ng-show="userLoggedIn && !navbarCollapsed"-->
+<nav ng-show="!navbarCollapsed" class="navbar navbar-default" role="navigation">
 
     <div class="container-fluid">
 
@@ -88,28 +100,31 @@
 
         <div class="collapse navbar-collapse">
 
-            <ul ng-if="userLoggedIn" class="nav navbar-nav navbar-right">
+            <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a ng-click="stateGo('landing')">Landing Page</a>
+                    <button type="button" class="btn btn-default navbar-btn" ng-click="stateGo('landing')">Landing Page
+                    </button>
                 </li>
 
-                <li ng-show="!userLoggedIn">
-                    <a ng-click="stateGo('login')">Login</a>
+                <!--ng-show="!userLoggedIn"-->
+                <li >
+                    <button type="button" class="btn btn-default navbar-btn" ng-click="stateGo('login')">Login
+                    </button>
                 </li>
-                <li ng-show="userLoggedIn">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">
-                            {{currentUser.name}} <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a ng-click="stateGo('admin')">User Administration</a></li>
-                            <li><a ng-click="stateGo('about')">About</a></li>
-                            <li class="divider"></li>
-                            <li><a ng-click="logout()">Logout</a></li>
-                        </ul>
-                    </div>
+                <!--<li ng-show="userLoggedIn">-->
+                    <!--<div class="btn-group">-->
+                        <!--<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">-->
+                            <!--{{currentUser.name}} <span class="caret"></span>-->
+                        <!--</button>-->
+                        <!--<ul class="dropdown-menu" role="menu">-->
+                            <!--<li><a ng-click="stateGo('admin')">User Administration</a></li>-->
+                            <!--<li><a ng-click="stateGo('about')">About</a></li>-->
+                            <!--<li class="divider"></li>-->
+                            <!--<li><a ng-click="logout()">Logout</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
 
-                </li>
+                <!--</li>-->
             </ul>
         </div>
     </div>
@@ -124,12 +139,13 @@
     </div>
 </div>
 
+<!--!navbarCollapsed && userLoggedIn-->
 <a class="navbar-collapse-button unselectable" ng-click="navbarCollapsed = !navbarCollapsed">
-    <span class="glyphicon" ng-class="{ 'glyphicon-chevron-up': !navbarCollapsed && userLoggedIn,  'glyphicon-chevron-down': navbarCollapsed && userLoggedIn}"></span>
+    <span class="glyphicon" ng-class="{ 'glyphicon-chevron-up': !navbarCollapsed,  'glyphicon-chevron-down': navbarCollapsed}"></span>
 </a>
 
 <!--ng-show="userLoggedIn"-->
-<div alarm></div>
+<div style="pointer-events: none;" alarm></div>
 
 </body>
 </html>

@@ -1,4 +1,7 @@
-angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
+angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate', 'adf',
+    'katGui.widgets.navigationWidget',
+    'katGui.dashboardStructure',
+    'katGui.landing'])
 
     .constant('UI_VERSION', '0.0.1')
 
@@ -74,7 +77,6 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
         });
         /* Add New States Above */
         $urlRouterProvider.otherwise('/login');
-
     })
 
     .run(function ($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
@@ -111,7 +113,7 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate'])
 
     })
 
-    .controller('ApplicationController', function ($rootScope, $scope, $state, USER_ROLES, AuthService, Session, AlarmService) {
+    .controller('ApplicationController', function ($rootScope, $scope, $state, $location, USER_ROLES, AuthService, Session, AlarmService) {
 
         $scope.currentUser = null;
         $scope.userRoles = USER_ROLES;
