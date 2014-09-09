@@ -31,6 +31,8 @@ var createFolderGlobs = function (fileTypePatterns) {
 
 module.exports = function (grunt) {
 
+//    grunt.loadNpmTasks('grunt-ng-annotate');
+
     // load all grunt tasks
     require('load-grunt-tasks')(grunt);
 

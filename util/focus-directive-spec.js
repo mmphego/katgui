@@ -1,7 +1,6 @@
 describe('Directive: focus', function () {
 
-    beforeEach(module('katGui'));
-    beforeEach(module('templates'));
+    beforeEach(module('katGui.util'));
 
     var scope, compile;
 

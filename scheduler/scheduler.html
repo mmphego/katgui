@@ -1,0 +1,48 @@
+<div class="scheduler-container" ng-controller="SchedulerCtrl">
+
+    <div class="dropdown">
+        <a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="">
+            Click here to show calendar
+        </a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+            <datetimepicker data-ng-model="data.date"
+                            data-datetimepicker-config="{ dropdownSelector: '.dropdown-toggle' }"></datetimepicker>
+        </ul>
+    </div>
+
+    <div class="panel panel-default panel-content">
+        <div class="panel-heading">
+            <div class="draft-controls">
+                <button ng-click="addDraftSchedule()"><span class="glyphicon-plus"></span></button>
+            </div>
+            <div class="panel-heading-text-drafts">
+                Schedule Drafts
+            </div>
+        </div>
+        <div class="gridStyle" ng-grid="gridOptionsDrafts"></div>
+    </div>
+
+    <div class="no-style-centered">
+        <button ng-class="{disabled: draftSelections.length === 0}" ng-click="moveDraftsToSchedule()">
+            <span class="glyphicon-chevron-down"></span>
+            <span class="glyphicon-chevron-down"></span>
+        </button>
+
+        <button ng-class="{disabled: scheduleSelections.length === 0}" ng-click="moveSchedulesToDraft()">
+            <span class="glyphicon-chevron-up"></span>
+            <span class="glyphicon-chevron-up"></span>
+        </button>
+    </div>
+
+    <div class="panel panel-default panel-content">
+        <div class="panel-heading">
+            <h3 class="panel-title">Observation Schedule</h3>
+        </div>
+
+        <div class="gridStyle" ng-grid="gridOptionsSchedules"></div>
+
+    </div>
+
+
+</div>
+

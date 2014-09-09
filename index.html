@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="katGui">
+<html ng-app="katGui" ng-strict-di>
 <head>
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +7,8 @@
     <link href="app.less" type="text/css" rel="stylesheet/less">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/ng-grid/ng-grid.min.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" rel="stylesheet" type="text/css">
 </head>
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
@@ -35,6 +37,7 @@
 <script src="bower_components/sockjs/sockjs.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
+<script src="bower_components/ng-grid/ng-grid-2.0.13.min.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -42,6 +45,7 @@
 <script src="bower_components/angular-ui-utils/ui-utils.js"></script>
 <script src="bower_components/angular-local-storage/angular-local-storage.js"></script>
 <script src="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.js"></script>
+<script src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
 <!-- Add New Bower Component JS Above -->
 
 <!-- build:js js/jquery.ui.sortable.min.js -->
@@ -72,13 +76,40 @@
 <script src="alarms/alarms-notify.js"></script>
 <script src="widgets/navigation/navigation-widget.js"></script>
 <script src="widgets/dashboard-structures.js"></script>
+<script src="scheduler/scheduler.js"></script>
 <!-- Add New Component JS Above -->
 <!--ng-show="userLoggedIn && !navbarCollapsed"-->
 <nav ng-show="!navbarCollapsed" class="navbar navbar-default" role="navigation">
 
     <div class="container-fluid">
 
-        <div ng-if="userCanOperate" class="nav navbar-nav btn-group" style="margin-left: 10px;">
+        <!--ng-if="userCanOperate"-->
+
+        <!--!navbarCollapsed && userLoggedIn-->
+        <div class="nav navbar-nav btn-group navbar-actions-group">
+
+            <button class="unselectable navbar-actions-button navbar-btn dropdown-toggle" data-toggle="dropdown">
+                <i class="glyphicon glyphicon-list"></i>
+            </button>
+
+            <ul class="dropdown-menu actions-container" role="menu">
+                <li><a href="" ng-click="stateGo('landing')">Landing</a></li>
+                <li class="divider"></li>
+                <li><a href="" ng-click="stateGo('alarms')">Alarms</a></li>
+                <li><a href="">Health And State</a></li>
+                <li><a href="" ng-click="stateGo('operatorControl')">Operator Control</a></li>
+                <li><a href="" ng-click="stateGo('scheduler')">Scheduler</a></li>
+                <li class="divider"></li>
+                <li><a href="" ng-click="stateGo('sensorGraph')">Sensor Graphs</a></li>
+                <li><a href="">Weather</a></li>
+                <li class="divider"></li>
+                <li><a href="">Log Reports</a></li>
+                <li><a href="">Source Catalogues</a></li>
+                <li><a href="" ng-click="stateGo('admin')">User Admin</a></li>
+            </ul>
+        </div>
+
+        <div class="nav navbar-nav btn-group" style="margin-left: 20px;">
 
             <button type="button" class="btn btn-default navbar-btn" ng-click="stateGo('operatorControl')">Operator
                 Control
@@ -102,8 +133,23 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <button type="button" class="btn btn-default navbar-btn" ng-click="stateGo('landing')">Landing Page
-                    </button>
+                    <a class="navbar-anchor"><span>UTC: {{utcTime}}</span></a>
+                </li>
+                <li>
+                    <a class="navbar-anchor"><span>Local: {{localTime}}</span></a>
+                </li>
+                <li>
+                    <a class="unselectable navbar-anchor" ng-click="stateGo('landing')"><span>Landing Page</span>
+                    </a>
+                </li>
+
+                <li>
+                    <div>
+                        <button class="unselectable navbar-alarms-warning-icon navbar-btn" ng-click="stateGo('alarms')">
+                            <i class="glyphicon glyphicon-warning-sign"></i>
+                        </button>
+                        <span ng-if="newAlarmCount > 0" class="badge alarm-badge">{{newAlarmCount}}</span>
+                    </div>
                 </li>
 
                 <!--ng-show="!userLoggedIn"-->
@@ -140,9 +186,10 @@
 </div>
 
 <!--!navbarCollapsed && userLoggedIn-->
-<a class="navbar-collapse-button unselectable" ng-click="navbarCollapsed = !navbarCollapsed">
-    <span class="glyphicon" ng-class="{ 'glyphicon-chevron-up': !navbarCollapsed,  'glyphicon-chevron-down': navbarCollapsed}"></span>
-</a>
+
+<button class="unselectable navbar-collapse-button navbar-btn" ng-click="navbarCollapsed = !navbarCollapsed" data-toggle="dropdown">
+    <i class="glyphicon" ng-class="{ 'glyphicon-collapse-up': !navbarCollapsed,  'glyphicon-collapse-down': navbarCollapsed}"></i>
+</button>
 
 <!--ng-show="userLoggedIn"-->
 <div style="pointer-events: none;" alarm></div>

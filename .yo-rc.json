@@ -1,10 +1,10 @@
 {
   "generator-cg-angular": {
     "uirouter": true,
-    "partialDirectory": "partial/",
-    "directiveDirectory": "directive/",
-    "filterDirectory": "filter/",
-    "serviceDirectory": "service/",
+    "partialDirectory": "/",
+    "directiveDirectory": "/",
+    "filterDirectory": "/",
+    "serviceDirectory": "/",
     "inject": {
       "js": {
         "file": "index.html",

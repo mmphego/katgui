@@ -1,7 +1,13 @@
-angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate', 'adf',
+angular.module('katGui.util', []);
+angular.module('katGui.scheduler', []);
+
+angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
+    'ui.utils', 'ui.router', 'ngAnimate', 'ngGrid', 'adf',
     'katGui.widgets.navigationWidget',
     'katGui.dashboardStructure',
-    'katGui.landing'])
+    'katGui.landing',
+    'katGui.util',
+    'katGui.scheduler'])
 
     .constant('UI_VERSION', '0.0.1')
 
@@ -61,6 +67,13 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate', 
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
+        $stateProvider.state('scheduler', {
+            url: '/scheduler',
+            templateUrl: 'scheduler/scheduler.html',
+            data: {
+                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
         $stateProvider.state('sensorGraph', {
             url: '/sensorGraph',
             templateUrl: 'sensor-graph/sensor-graph.html',
@@ -106,14 +119,14 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate', 
 //        }
         });
 
-        $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams) {
+        $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {
             console.log('$stateChangeError - debugging required. Event: ');
             console.log(event);
         });
 
     })
 
-    .controller('ApplicationController', function ($rootScope, $scope, $state, $location, USER_ROLES, AuthService, Session, AlarmService) {
+    .controller('ApplicationController', function ($rootScope, $scope, $state, $location, $interval, USER_ROLES, AuthService, Session, AlarmService) {
 
         $scope.currentUser = null;
         $scope.userRoles = USER_ROLES;
@@ -121,6 +134,8 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate', 
         $scope.userCanOperate = false;
         $scope.userLoggedIn = false;
         $scope.navbarCollapsed = false;
+        $scope.actionMenuOpen = false;
+        $rootScope.newAlarmCount = 0;
 
         $scope.setCurrentUser = function (user) {
             $scope.currentUser = user;
@@ -145,4 +160,11 @@ angular.module('katGui', ['ui.bootstrap', 'ui.utils', 'ui.router', 'ngAnimate', 
             $state.go(newState);
         };
 
+        $rootScope.utcTime = moment.utc(new Date()).format('hh:mm:ss');
+        $rootScope.localTime = moment().format('hh:mm:ss');
+
+        $interval(function () {
+            $rootScope.utcTime = moment.utc(new Date()).format('hh:mm:ss');
+            $rootScope.localTime = moment().format('hh:mm:ss');
+        }, 1000); //update clock every second
     });
