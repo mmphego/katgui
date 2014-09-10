@@ -88,6 +88,13 @@ angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
                 authorizedRoles: [USER_ROLES.all]
             }
         });
+        $stateProvider.state('weather', {
+            url: '/weather',
+            templateUrl: 'weather/weather.html',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
         /* Add New States Above */
         $urlRouterProvider.otherwise('/login');
     })

@@ -101,11 +101,13 @@
                 <li><a href="" ng-click="stateGo('scheduler')">Scheduler</a></li>
                 <li class="divider"></li>
                 <li><a href="" ng-click="stateGo('sensorGraph')">Sensor Graphs</a></li>
-                <li><a href="">Weather</a></li>
+                <li><a href="" ng-click="stateGo('weather')">Weather</a></li>
                 <li class="divider"></li>
                 <li><a href="">Log Reports</a></li>
                 <li><a href="">Source Catalogues</a></li>
                 <li><a href="" ng-click="stateGo('admin')">User Admin</a></li>
+                <li class="divider"></li>
+                <li><a href="" ng-click="stateGo('about')">About katGUI</a></li>
             </ul>
         </div>
 
@@ -176,13 +178,8 @@
     </div>
 </nav>
 
-<div>
-    <div id="content" class="container">
-        <div class="row">
-            <div ui-view>
-            </div>
-        </div>
-    </div>
+<div ui-view>
+
 </div>
 
 <!--!navbarCollapsed && userLoggedIn-->

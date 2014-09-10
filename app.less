@@ -26,12 +26,14 @@
 //@darker-dark-grey: darken(darkgrey, 7.5%);
 
 @body-gradient-start: #cacaca;
-@body-gradient-end: #737373;
+@body-gradient-end: #9a9a9a;
 @panel-gradient-start: #FAFAFA;
 @panel-gradient-end: #D9D9D9;
 
 @navbar-default-bg: #3071a9;
 @navbar-default-border: #285e8e;
+
+@app-min-width: 770px;
 
 //@navbar-default-bg: transparent;
 //@navbar-background-image: linear-gradient(to bottom, #377CA8 0%, #327299 100%);
@@ -139,6 +141,7 @@
   margin-bottom: 10px;
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
+  min-width: @app-min-width;
 }
 
 .unselectable {
@@ -156,6 +159,7 @@ body {
   background: lightgrey;
   padding-top: 0px !important;
   height: 0px;
+  min-width: @app-min-width;
 
   .panel {
     background-color: transparent;
@@ -176,6 +180,13 @@ body {
 
 .animateHide.ng-hide {
   height: 0px;
+}
+
+.view-container {
+  width: 90%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Personal preference for BS modal.  The LESS below makes the backdrop white and

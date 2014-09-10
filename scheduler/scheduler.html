@@ -1,40 +1,57 @@
-<div class="scheduler-container" ng-controller="SchedulerCtrl">
+<div class="view-container" style="min-width: 1300px;" ng-controller="SchedulerCtrl">
 
-    <div id="schedulerDatePickerMenu" class="datepickerMenu" ng-show="showDatePicker"><datetimepicker data-ng-model="currentSelectedDate" data-on-set-time="onTimeSet"></datetimepicker></div>
-
-    <div class="panel panel-default panel-content">
-        <div class="panel-heading">
-            <div class="draft-controls">
-                <button ng-click="addDraftSchedule()"><span class="glyphicon-plus"></span></button>
-            </div>
-            <div class="panel-heading-text-drafts">
-                Schedule Drafts
-            </div>
-        </div>
-        <div class="gridStyle" ng-grid="gridOptionsDrafts"></div>
+    <div id="schedulerDatePickerMenu" class="datepickerMenu" ng-show="showDatePicker">
+        <datetimepicker data-ng-model="currentSelectedDate" data-on-set-time="onTimeSet"></datetimepicker>
     </div>
 
-    <div class="no-style-centered">
-        <button ng-class="{disabled: draftSelections.length === 0}" ng-click="moveDraftsToSchedule()">
-            <span class="glyphicon-chevron-down"></span>
-            <span class="glyphicon-chevron-down"></span>
-        </button>
-
-        <button ng-class="{disabled: scheduleSelections.length === 0}" ng-click="moveSchedulesToDraft()">
-            <span class="glyphicon-chevron-up"></span>
-            <span class="glyphicon-chevron-up"></span>
-        </button>
-    </div>
-
-    <div class="panel panel-default panel-content">
-        <div class="panel-heading">
-            <h3 class="panel-title">Observation Schedule</h3>
+    <div class="scheduler-container">
+        <div class="panel panel-default panel-content">
+            <div class="panel-heading">
+                <div class="draft-controls">
+                    <button ng-click="addDraftSchedule()"><span class="glyphicon-plus"></span></button>
+                </div>
+                <div class="panel-heading-text-drafts">
+                    Schedule Drafts
+                </div>
+            </div>
+            <div class="gridStyle" ng-grid="gridOptionsDrafts"></div>
         </div>
 
-        <div class="gridStyle" ng-grid="gridOptionsSchedules"></div>
+        <div class="no-style-centered">
+            <button ng-class="{disabled: draftSelections.length === 0}" ng-click="moveDraftsToSchedule()">
+                <span class="glyphicon-chevron-down"></span>
+                <span class="glyphicon-chevron-down"></span>
+            </button>
+
+            <button ng-class="{disabled: scheduleSelections.length === 0}" ng-click="moveSchedulesToDraft()">
+                <span class="glyphicon-chevron-up"></span>
+                <span class="glyphicon-chevron-up"></span>
+            </button>
+        </div>
+
+        <div class="panel panel-default panel-content">
+            <div class="panel-heading">
+                <h3 class="panel-title">Observation Schedule</h3>
+            </div>
+
+            <div class="gridStyle" ng-grid="gridOptionsSchedules"></div>
+
+        </div>
 
     </div>
 
+    <div class="schedule-block-details">
+        <div class="panel panel-default panel-content">
+            <div class="panel-heading">
+                <div class="panel-heading-text-drafts">
+                    Schedule Block Details
+                </div>
+            </div>
+            <div class="">
+                <textarea>{{selectedScheduleBlockDetails}}</textarea>
+            </div>
+        </div>
 
+    </div>
 </div>
 

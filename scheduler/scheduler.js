@@ -9,10 +9,12 @@ angular.module('katGui.scheduler')
 
         $scope.types = SCHEDULE_BLOCK_TYPES;
 
-        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow()"><span class="glyphicon glyphicon-trash"></span></button>';
+        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow()"><span class="glyphicon glyphicon-trash"></span></button>' +
+            '<button value="moveToSchedule" class="btn btn-default btn-trash" ng-click="moveDraftRowToSchedule()"><span class="glyphicon glyphicon-chevron-down"></span></button>';
         var checkboxHeaderTemplate = '<input class="ngSelectionHeader" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"/>';
         var dropdownTemplate = '<select class="grid-dropdown" ng-model="COL_FIELD" ng-options="type for type in types"></select>';
-        var datetimepickerTemplate = '<button class="btn-custom-datetimepicker" ng-click="openDatePicker(row, $event)"><span ng-if="!COL_FIELD">No Date</span><span ng-if="COL_FIELD">{{COL_FIELD}}</span><span class="glyphicon glyphicon-chevron-down"></span></button>';
+        var datetimepickerTemplate = '<button class="btn-custom-datetimepicker" ng-click="openDatePicker(row, $event)">' +
+            '<span ng-if="!COL_FIELD">Select Date</span><span ng-if="COL_FIELD">{{COL_FIELD | date:\'dd/MM/yyyy HH:mm\'}}</span><span class="glyphicon glyphicon-chevron-down"></span></button>';
         var lastId = 0;
 
         $scope.draftSelections = [];
@@ -22,6 +24,8 @@ angular.module('katGui.scheduler')
 
         $scope.showDatePicker = false;
         $scope.currentSelectedDate = new Date();
+
+        $scope.selectedScheduleBlockDetails = "line1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world";
 
         $scope.openDatePicker = function (row, $event) {
 
@@ -35,10 +39,7 @@ angular.module('katGui.scheduler')
                 var left = $event.target.parentNode.offsetParent.offsetLeft + $event.target.parentNode.offsetLeft;
                 var top = $event.target.parentNode.offsetParent.offsetParent.offsetTop;
 
-                var offset = {
-                    x: 12,
-                    y: 115
-                };
+                var offset = { x: 85, y: 185 };
 
                 var overLayCSS = {
                     left: left + offset.x + 'px',
@@ -71,12 +72,12 @@ angular.module('katGui.scheduler')
             data: 'scheduleDraftData',
             columnDefs: [
                 {field: 'id', displayName: 'ID', width: 120},
-                {field: 'desiredTime', displayName: 'Desired Time', width: 220, cellTemplate: datetimepickerTemplate },
+                {field: 'desiredTime', displayName: 'Desired Time', width: 160, cellTemplate: datetimepickerTemplate },
                 {field: 'state', displayName: 'State', width: 80},
                 {field: 'owner', displayName: 'Owner', width: 120},
                 {field: 'type', displayName: 'Type', width: 140, cellTemplate: dropdownTemplate},
                 {field: 'description', displayName: 'Description', enableCellEdit: true},
-                {field: 'remove', displayName: '', cellTemplate: draftActionsTemplate, width: 30, maxWidth: 30 }
+                {field: 'remove', displayName: '', cellTemplate: draftActionsTemplate, width: 50, maxWidth: 50 }
             ],
             selectedItems: $scope.draftSelections,
             checkboxHeaderTemplate: checkboxHeaderTemplate,
@@ -104,10 +105,15 @@ angular.module('katGui.scheduler')
         };
 
 
-        $scope.removeDraftRow = function (i) {
+        $scope.removeDraftRow = function () {
             var index = this.row.rowIndex;
             $scope.gridOptionsDrafts.selectItem(index, false);
             $scope.scheduleDraftData.splice(index, 1);
+        };
+
+        $scope.moveDraftRowToSchedule = function () {
+            $scope.scheduleData = _.union($scope.scheduleData, this.row.entity);
+            $scope.scheduleDraftData.splice(this.row.rowIndex, 1);
         };
 
         $scope.addDraftSchedule = function () {
