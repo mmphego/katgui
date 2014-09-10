@@ -9,17 +9,10 @@ angular.module('katGui.scheduler')
 
         $scope.types = SCHEDULE_BLOCK_TYPES;
 
-        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow($index)"><span class="glyphicon glyphicon-trash"></span></button>';
+        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow()"><span class="glyphicon glyphicon-trash"></span></button>';
         var checkboxHeaderTemplate = '<input class="ngSelectionHeader" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"/>';
         var dropdownTemplate = '<select class="grid-dropdown" ng-model="COL_FIELD" ng-options="type for type in types"></select>';
-        var datetimepickerTemplate = '<div class="dropdown">' +
-            '<a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="">Click here</a>' +
-            '<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">' +
-                '<datetimepicker data-ng-model="data.date"' +
-                'data-datetimepicker-config="{ dropdownSelector: \'.dropdown-toggle\' }"></datetimepicker>' +
-            '</ul>' +
-        '</div>';
-
+        var datetimepickerTemplate = '<button class="btn-custom-datetimepicker" ng-click="openDatePicker(row, $event)"><span ng-if="!COL_FIELD">No Date</span><span ng-if="COL_FIELD">{{COL_FIELD}}</span><span class="glyphicon glyphicon-chevron-down"></span></button>';
         var lastId = 0;
 
         $scope.draftSelections = [];
@@ -27,14 +20,61 @@ angular.module('katGui.scheduler')
         $scope.scheduleData = [];
         $scope.scheduleDraftData = [];
 
+        $scope.showDatePicker = false;
+        $scope.currentSelectedDate = new Date();
+
+        $scope.openDatePicker = function (row, $event) {
+
+            if ($scope.currentRowDatePickerIndex !== row.rowIndex) {
+
+                var existingVal = row.entity.desiredTime;
+                if (existingVal.length > 0) {
+                    $scope.currentSelectedDate = existingVal;
+                }
+
+                var left = $event.target.parentNode.offsetParent.offsetLeft + $event.target.parentNode.offsetLeft;
+                var top = $event.target.parentNode.offsetParent.offsetParent.offsetTop;
+
+                var offset = {
+                    x: 12,
+                    y: 115
+                };
+
+                var overLayCSS = {
+                    left: left + offset.x + 'px',
+                    top: top + offset.y + 'px'
+                };
+
+                angular.element(document.getElementById('schedulerDatePickerMenu')).css(overLayCSS);
+
+                $scope.currentRowDatePickerIndex = row.rowIndex;
+                $scope.showDatePicker = true;
+            } else {
+                //the same row's button was clicked, so close the popup
+                $scope.showDatePicker = false;
+                $scope.currentRowDatePickerIndex = -1;
+            }
+        };
+
+        $scope.onTimeSet = function (newDate) {
+
+            if ($scope.currentRowDatePickerIndex < $scope.scheduleDraftData.length) {
+                $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = newDate;
+            }
+
+            $scope.showDatePicker = false;
+            $scope.currentSelectedDate = new Date();
+            $scope.currentRowDatePickerIndex = -1;
+        };
+
         $scope.gridOptionsDrafts = {
             data: 'scheduleDraftData',
             columnDefs: [
                 {field: 'id', displayName: 'ID', width: 120},
-                {field: 'desiredTime', displayName: 'Desired Time', width: 120, cellTemplate: datetimepickerTemplate },
+                {field: 'desiredTime', displayName: 'Desired Time', width: 220, cellTemplate: datetimepickerTemplate },
                 {field: 'state', displayName: 'State', width: 80},
                 {field: 'owner', displayName: 'Owner', width: 120},
-                {field: 'type', displayName: 'Type', enableCellEdit: true, width: 140, cellTemplate: dropdownTemplate},
+                {field: 'type', displayName: 'Type', width: 140, cellTemplate: dropdownTemplate},
                 {field: 'description', displayName: 'Description', enableCellEdit: true},
                 {field: 'remove', displayName: '', cellTemplate: draftActionsTemplate, width: 30, maxWidth: 30 }
             ],
@@ -64,7 +104,7 @@ angular.module('katGui.scheduler')
         };
 
 
-        $scope.removeDraftRow = function () {
+        $scope.removeDraftRow = function (i) {
             var index = this.row.rowIndex;
             $scope.gridOptionsDrafts.selectItem(index, false);
             $scope.scheduleDraftData.splice(index, 1);

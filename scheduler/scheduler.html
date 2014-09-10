@@ -1,14 +1,6 @@
 <div class="scheduler-container" ng-controller="SchedulerCtrl">
 
-    <div class="dropdown">
-        <a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="">
-            Click here to show calendar
-        </a>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-            <datetimepicker data-ng-model="data.date"
-                            data-datetimepicker-config="{ dropdownSelector: '.dropdown-toggle' }"></datetimepicker>
-        </ul>
-    </div>
+    <div id="schedulerDatePickerMenu" class="datepickerMenu" ng-show="showDatePicker"><datetimepicker data-ng-model="currentSelectedDate" data-on-set-time="onTimeSet"></datetimepicker></div>
 
     <div class="panel panel-default panel-content">
         <div class="panel-heading">

@@ -4,8 +4,16 @@
   padding: 10px;
   position: absolute;
   left: 0px;
-  width: 800px;
+  width: 1000px;
   border-radius: 5px;
+
+  .ngCell {
+    overflow: visible;
+  }
+
+  .ngViewport {
+    overflow: visible;
+  }
 }
 
 .draft-controls {
@@ -72,9 +80,35 @@
   left: 0px;
   display: block;
   width: 99%;
-  height: 27px;
-  padding: 6px 12px;
+  height: 29px;
+  padding: 4px 10px;
   background-color: #ffffff;
   background-image: none;
   border-radius: 4px;
+}
+
+.datepickerMenu {
+  position: absolute;
+  z-index: 1000;
+  border: 1px solid darkgrey;
+  border-radius: 4px;
+  background-color: white;
+  -webkit-box-shadow: 3px 3px 5px 0px rgba(50, 50, 50, 0.75);
+  box-shadow:         3px 3px 5px 0px rgba(50, 50, 50, 0.75);
+}
+
+.btn-custom-datetimepicker {
+  .btn;
+  .btn-default;
+  height: 29px;
+  padding: 4px 10px;
+  width: 99%;
+  text-align: left;
+
+  .glyphicon {
+    position: absolute;
+    float: right;
+    right: 9px;
+    top: 8px;
+  }
 }
