@@ -23,21 +23,17 @@
 @receptor-state-default-background-gradient: linear-gradient(to bottom, #9dd53a 0%, #7cbc0a 100%);
 @receptor-state-inhibited-background-gradient: linear-gradient(to bottom, #ffc578 0%, #fb9d23 100%);
 
-//@darker-dark-grey: darken(darkgrey, 7.5%);
 
 @body-gradient-start: #cacaca;
 @body-gradient-end: #9a9a9a;
 @panel-gradient-start: #FAFAFA;
 @panel-gradient-end: #D9D9D9;
 
-@navbar-default-bg: #3071a9;
-@navbar-default-border: #285e8e;
+@btn-primary-color: #f0f0f0;
+@btn-primary-bg: #4a7fb0;
+@btn-primary-border: darken(@btn-primary-bg, 5%);
 
 @app-min-width: 770px;
-
-//@navbar-default-bg: transparent;
-//@navbar-background-image: linear-gradient(to bottom, #377CA8 0%, #327299 100%);
-//@navbar-default-border: #7A7A7A;
 
 @font-face {
   font-family: 'Glyphicons Halflings';
@@ -59,7 +55,7 @@
   position: absolute;
   top: -5px;
   left: 2px;
-  color: lightgrey;
+  color: gray;
   cursor: pointer;
   border: 0;
   background: none;
@@ -67,24 +63,30 @@
   i {
     font-size: 16px;
   }
-}
 
-.navbar-collapse-button:focus {
-  outline: none;
+  &:hover {
+    color: darkgray;
+  }
+
+  &:focus {
+    outline: none;
+  }
 }
 
 .navbar-actions-button {
-  //  position: absolute;
-  //  top: 25px;
   margin-left: -13px;
   margin-top: 25px;
-  color: lightgrey;
+  color: gray;
   cursor: pointer;
   border: 0;
   background: none;
 
   i {
     font-size: 16px;
+  }
+
+  &:hover {
+    color: darkgray;
   }
 }
 
@@ -95,7 +97,7 @@
 }
 
 .navbar-alarms-warning-icon {
-  color: lightgrey;
+  color: gray;
   border: 0;
   background: none;
   margin-right: 10px;
@@ -123,17 +125,12 @@
 
 .navbar-anchor {
   > span {
-    color: lightgrey;
+    color: grey;
   }
 
   > span:hover {
-    color: darkgrey;
+    color: darkgray;
   }
-}
-
-.navbar-actions-button:hover,
-.navbar-collapse-button:hover {
-  color: darkgray;
 }
 
 .navbar {
@@ -189,14 +186,13 @@ body {
   margin-right: auto;
 }
 
-/* Personal preference for BS modal.  The LESS below makes the backdrop white and
-   causes the modal to fade in rather than slide in. */
-//@modal-backdrop-bg: white;
-//.modal {
-//	&.fade {
-//		.transition(opacity .3s);
-//	}
-//	&.fade .modal-dialog {
-//		.translate(0,0);
-//	}
-//}
+.btn-navbar-fill {
+  height: 55px;
+  border: 1px solid lighten(darkgray, 20%);
+  background: lighten(darkgray, 25%);
+  border-radius: 0px;
+
+  &:hover {
+    background: lighten(darkgray, 20%);
+  }
+}
