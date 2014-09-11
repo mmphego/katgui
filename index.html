@@ -6,9 +6,11 @@
     <meta charset="utf-8">
     <link href="app.less" type="text/css" rel="stylesheet/less">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
-    <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet"
+          type="text/css">
     <link href="bower_components/ng-grid/ng-grid.min.css" rel="stylesheet" type="text/css">
-    <link href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" rel="stylesheet"
+          type="text/css">
 </head>
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
@@ -86,7 +88,7 @@
         <!--ng-if="userCanOperate"-->
 
         <!--!navbarCollapsed && userLoggedIn-->
-        <div class="nav navbar-nav btn-group navbar-actions-group">
+        <div class="btn-group navbar-actions-group navbar-header">
 
             <button class="unselectable navbar-actions-button navbar-btn dropdown-toggle" data-toggle="dropdown">
                 <i class="glyphicon glyphicon-list"></i>
@@ -111,7 +113,7 @@
             </ul>
         </div>
 
-        <div class="nav navbar-nav btn-group" style="margin-left: 20px;">
+        <div class="btn-group navbar-nav nav operator-control-btn-contrainer">
 
             <button type="button" class="btn btn-navbar-fill" ng-click="stateGo('operatorControl')">Operator
                 Control
@@ -131,50 +133,48 @@
             </ul>
         </div>
 
-        <div class="collapse navbar-collapse">
 
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a class="navbar-anchor"><span>UTC: {{utcTime}}</span></a>
-                </li>
-                <li>
-                    <a class="navbar-anchor"><span>Local: {{localTime}}</span></a>
-                </li>
-                <li>
-                    <a class="unselectable navbar-anchor" ng-click="stateGo('landing')"><span>Landing Page</span>
-                    </a>
-                </li>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a class="navbar-anchor">UTC: {{utcTime}}</a>
+            </li>
+            <li>
+                <a class="navbar-anchor">Local: {{localTime}}</a>
+            </li>
+            <li>
+                <a class="unselectable navbar-anchor" ng-click="stateGo('landing')">Landing Page
+                </a>
+            </li>
 
-                <li>
-                    <div>
-                        <button class="unselectable navbar-alarms-warning-icon navbar-btn" ng-click="stateGo('alarms')">
-                            <i class="glyphicon glyphicon-warning-sign"></i>
-                        </button>
-                        <span ng-if="newAlarmCount > 0" class="badge alarm-badge">{{newAlarmCount}}</span>
-                    </div>
-                </li>
-
-                <!--ng-show="!userLoggedIn"-->
-                <li >
-                    <button type="button" class="btn btn-navbar-fill" ng-click="stateGo('login')">Login
+            <li>
+                <div class="alarms-warning-container">
+                    <button class="unselectable navbar-alarms-warning-icon navbar-btn" ng-click="stateGo('alarms')">
+                        <i class="glyphicon glyphicon-warning-sign"></i>
                     </button>
-                </li>
-                <!--<li ng-show="userLoggedIn">-->
-                    <!--<div class="btn-group">-->
-                        <!--<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">-->
-                            <!--{{currentUser.name}} <span class="caret"></span>-->
-                        <!--</button>-->
-                        <!--<ul class="dropdown-menu" role="menu">-->
-                            <!--<li><a ng-click="stateGo('admin')">User Administration</a></li>-->
-                            <!--<li><a ng-click="stateGo('about')">About</a></li>-->
-                            <!--<li class="divider"></li>-->
-                            <!--<li><a ng-click="logout()">Logout</a></li>-->
-                        <!--</ul>-->
-                    <!--</div>-->
+                    <span ng-if="newAlarmCount > 0" class="badge alarm-badge">{{newAlarmCount}}</span>
+                </div>
+            </li>
 
-                <!--</li>-->
-            </ul>
-        </div>
+            <!--ng-show="!userLoggedIn"-->
+            <li>
+                <button type="button" class="btn btn-navbar-fill" ng-click="stateGo('login')">Login
+                </button>
+            </li>
+            <!--<li ng-show="userLoggedIn">-->
+            <!--<div class="btn-group">-->
+            <!--<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">-->
+            <!--{{currentUser.name}} <span class="caret"></span>-->
+            <!--</button>-->
+            <!--<ul class="dropdown-menu" role="menu">-->
+            <!--<li><a ng-click="stateGo('admin')">User Administration</a></li>-->
+            <!--<li><a ng-click="stateGo('about')">About</a></li>-->
+            <!--<li class="divider"></li>-->
+            <!--<li><a ng-click="logout()">Logout</a></li>-->
+            <!--</ul>-->
+            <!--</div>-->
+
+            <!--</li>-->
+        </ul>
     </div>
 </nav>
 
@@ -184,8 +184,10 @@
 
 <!--!navbarCollapsed && userLoggedIn-->
 
-<button class="unselectable navbar-collapse-button navbar-btn" ng-click="navbarCollapsed = !navbarCollapsed" data-toggle="dropdown">
-    <i class="glyphicon" ng-class="{ 'glyphicon-collapse-up': !navbarCollapsed,  'glyphicon-collapse-down': navbarCollapsed}"></i>
+<button class="unselectable navbar-collapse-button navbar-btn" ng-click="navbarCollapsed = !navbarCollapsed"
+        data-toggle="dropdown">
+    <i class="glyphicon"
+       ng-class="{ 'glyphicon-collapse-up': !navbarCollapsed,  'glyphicon-collapse-down': navbarCollapsed}"></i>
 </button>
 
 <!--ng-show="userLoggedIn"-->

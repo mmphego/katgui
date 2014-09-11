@@ -48,7 +48,7 @@ angular.module('katGui.scheduler')
 
                 angular.element(document.getElementById('schedulerDatePickerMenu')).css(overLayCSS);
 
-                $scope.currentRowDatePickerIndex = row.rowIndex;
+                $scope.currentRowDatePickerIndex = $scope.scheduleDraftData.indexOf(row.entity);
                 $scope.showDatePicker = true;
             } else {
                 //the same row's button was clicked, so close the popup
@@ -59,6 +59,8 @@ angular.module('katGui.scheduler')
 
         $scope.onTimeSet = function (newDate) {
 
+
+            //TODO this updates the wrong element in the dataset when the grid is sorted
             if ($scope.currentRowDatePickerIndex < $scope.scheduleDraftData.length) {
                 $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = newDate;
             }
