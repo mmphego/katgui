@@ -1,5 +1,4 @@
 angular.module('katGui.util', []);
-angular.module('katGui.scheduler', []);
 
 angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
     'ui.utils', 'ui.router', 'ngAnimate', 'ngGrid', 'adf',

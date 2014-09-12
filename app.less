@@ -16,6 +16,7 @@
 @import "alarms/alarms.less";
 @import "widgets/navigation/navigation-widget.less";
 @import "scheduler/scheduler.less";
+@import "util/gantt/gantt.less";
 /* Add Component LESS Above */
 
 @button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
@@ -94,6 +95,7 @@
   position: fixed;
   top: 47px;
   left: 0px;
+  z-index: 1000;
 }
 
 .alarms-warning-container {
@@ -137,8 +139,9 @@
   }
 }
 
+@navbar-default-bg: rgba(240, 240, 240, 0.5);
+
 .navbar {
-  border: 0px solid black;
   margin-bottom: 10px;
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
@@ -157,7 +160,7 @@
 }
 
 body {
-  background: lightgrey;
+  background: url('images/bg-body.png') repeat left top #f2f2f2;
   padding-top: 0px !important;
   height: 0px;
   min-width: @app-min-width;
@@ -201,6 +204,6 @@ body {
   }
 }
 
-.operator-control-btn-contrainer {
+.operator-control-btn-container {
   margin-left: 15px;
 }
