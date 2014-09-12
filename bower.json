@@ -11,7 +11,7 @@
         "jquery": "~2.0",
         "underscore": "~1.5",
         "bootstrap": "latest",
-        "angular": "~1.2",
+        "angular": "1.2.24",
         "angular-ui-router": "latest",
         "angular-animate": "~1.2",
         "angular-resource": "~1.2",
@@ -32,5 +32,9 @@
         "jquery-ui": "~1.11.1",
         "ng-grid": "~2.0.13",
         "angular-bootstrap-datetimepicker": "latest"
+    },
+    "resolutions": {
+        "jquery-ui": "1.11.1",
+        "angular": "1.2.24"
     }
 }

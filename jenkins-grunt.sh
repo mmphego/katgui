@@ -2,12 +2,17 @@
 
 # Install the npm requirments as defined in package.json
 npm install
+npm install bower
+npm install grunt-cli
 
 # Install the bower requirements
-bower install
+./node_modules/bower/bin/bower install
 
+GRUNT_ARGS=''
 # Setup the environment
-grunt --no-color build
+./node_modules/grunt-cli/bin/grunt $GRUNT_ARGS build
 
 # Run the tests
-grunt --no-color test
+./node_modules/grunt-cli/bin/grunt $GRUNT_ARGS test
+
+#
