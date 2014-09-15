@@ -14,7 +14,8 @@ angular.module('katGui')
                 {field: 'severity', displayName: 'Severity', width: 120 },
                 {field: 'priority', displayName: 'Priority', width: 120},
                 {field: 'name', displayName: 'Alarm Name', width: 120},
-                {field: 'message', displayName: 'Message', width: 120}],
+                {field: 'message', displayName: 'Message', width: 120}
+            ],
             enableRowSelection: false
         };
 
@@ -35,13 +36,16 @@ angular.module('katGui')
 
         $rootScope.$on('alarmMessage', function (event, message) {
 
-            if (message.priority === 'new' &&
-                (message.severity === 'warn' ||
-                    message.severity === 'error' ||
-                    message.severity === 'critical')) {
-                $rootScope.newAlarmCount++;
-            }
+            if (message.priority === 'new') {
 
+                if (message.severity === 'warn') {
+                    $rootScope.newAlarmWarnCount++;
+                } else if (message.severity === 'error') {
+                    $rootScope.newAlarmErrorCount++;
+                } else if (message.severity === 'critical') {
+                    $rootScope.newAlarmCritCount++;
+                }
+            }
             $scope.alarmsData.push(message);
         });
 

@@ -141,7 +141,9 @@ angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
         $scope.userLoggedIn = false;
         $scope.navbarCollapsed = false;
         $scope.actionMenuOpen = false;
-        $rootScope.newAlarmCount = 0;
+        $rootScope.newAlarmWarnCount = 0;
+        $rootScope.newAlarmErrorCount = 0;
+        $rootScope.newAlarmCritCount = 0;
 
         $scope.setCurrentUser = function (user) {
             $scope.currentUser = user;

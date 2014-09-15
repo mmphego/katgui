@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link href="app.less" type="text/css" rel="stylesheet/less">
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <!--<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">-->
     <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet"
           type="text/css">
     <link href="bower_components/ng-grid/ng-grid.min.css" rel="stylesheet" type="text/css">
@@ -14,16 +14,16 @@
 </head>
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
-<script type="text/javascript">
-    (function () {
-        var po = document.createElement('script');
-        po.type = 'text/javascript';
-        po.async = true;
-        po.src = 'https://apis.google.com/js/client:plusone.js';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(po, s);
-    })();
-</script>
+<!--<script type="text/javascript">-->
+    <!--(function () {-->
+        <!--var po = document.createElement('script');-->
+        <!--po.type = 'text/javascript';-->
+        <!--po.async = true;-->
+        <!--po.src = 'https://apis.google.com/js/client:plusone.js';-->
+        <!--var s = document.getElementsByTagName('script')[0];-->
+        <!--s.parentNode.insertBefore(po, s);-->
+    <!--})();-->
+<!--</script>-->
 
 <body ng-controller="ApplicationController">
 
@@ -153,7 +153,9 @@
                     <button class="unselectable navbar-alarms-warning-icon navbar-btn" ng-click="stateGo('alarms')">
                         <i class="glyphicon glyphicon-warning-sign"></i>
                     </button>
-                    <span ng-if="newAlarmCount > 0" class="badge alarm-badge">{{newAlarmCount}}</span>
+                    <span ng-if="newAlarmWarnCount > 0" class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
+                    <span ng-if="newAlarmErrorCount > 0" class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
+                    <span ng-if="newAlarmCritCount > 0" class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>
                 </div>
             </li>
 

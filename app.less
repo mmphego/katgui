@@ -33,7 +33,9 @@
 @btn-primary-bg: #4a7fb0;
 @btn-primary-border: darken(@btn-primary-bg, 5%);
 @navbar-height: 50px;
-@navbar-default-bg: rgba(200, 200, 200, 0.5);
+@navbar-default-bg: rgba(255, 255, 255, 1.0);
+
+@navbar-text-hover-color: darken(grey, 25%);
 
 @app-min-width: 770px;
 
@@ -67,7 +69,7 @@
   }
 
   &:hover {
-    color: black;
+    color: @navbar-text-hover-color;
   }
 
   &:focus {
@@ -88,7 +90,7 @@
   }
 
   &:hover {
-    color: black;
+    color: @navbar-text-hover-color;
   }
 }
 
@@ -116,7 +118,7 @@
   }
 
   &:hover {
-    color: black;
+    color: @navbar-text-hover-color;
   }
 
   &:focus {
@@ -126,16 +128,31 @@
 
 .alarm-badge {
   position: absolute;
-  top: 10px;
   right: 2px;
-  background-color: orangered;
+  border: 1px solid #dfdfdf;
+}
+
+.alarm-badge-warn {
+  top: 0px;
+  background-color: yellow;
+  color: rgb(55, 55, 55);
+}
+
+.alarm-badge-error {
+  top: 15px;
+  background-color: orange;
+}
+
+.alarm-badge-crit {
+  top: 30px;
+  background-color: red;
 }
 
 .navbar-anchor {
   color: grey;
 
   &:hover {
-    color: black;
+    color: @navbar-text-hover-color;
   }
 }
 
@@ -144,7 +161,7 @@
   border-left: 1px solid darken(@navbar-default-bg, 10%);
 
   &:hover {
-    color: black;
+    color: @navbar-text-hover-color;
   }
 }
 
@@ -152,6 +169,9 @@
   margin-bottom: 10px;
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
+  border-bottom-color: darken(@navbar-default-bg, 25%);
+  border-left-color: darken(@navbar-default-bg, 25%);
+  border-right-color: darken(@navbar-default-bg, 25%);
   min-width: @app-min-width;
   background-image: radial-gradient(ellipse farthest-corner at center center, @navbar-default-bg 0%, darken(@navbar-default-bg, 5%) 100%);
 }
