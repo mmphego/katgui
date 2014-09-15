@@ -67,7 +67,7 @@
   }
 
   &:hover {
-    color: darkgray;
+    color: black;
   }
 
   &:focus {
@@ -88,7 +88,7 @@
   }
 
   &:hover {
-    color: darkgray;
+    color: black;
   }
 }
 
@@ -100,7 +100,7 @@
 }
 
 .alarms-warning-container {
-  border-left: 1px solid lighten(darkgray, 20%);
+  border-left: 1px solid darken(@navbar-default-bg, 10%);
 }
 
 .navbar-alarms-warning-icon {
@@ -109,14 +109,14 @@
   background: none;
   margin-right: 10px;
   margin-left: 10px;
-//  margin-top: 12px;
+  //  margin-top: 12px;
 
   i {
     font-size: 24px;
   }
 
   &:hover {
-    color: darkgray;
+    color: black;
   }
 
   &:focus {
@@ -132,11 +132,19 @@
 }
 
 .navbar-anchor {
-  border-left: 1px solid lighten(darkgray, 20%);
   color: grey;
 
   &:hover {
-    color: darkgray;
+    color: black;
+  }
+}
+
+.navbar-border-anchor {
+  color: grey;
+  border-left: 1px solid darken(@navbar-default-bg, 10%);
+
+  &:hover {
+    color: black;
   }
 }
 
@@ -145,6 +153,7 @@
   border-top-left-radius: 0px;
   border-top-right-radius: 0px;
   min-width: @app-min-width;
+  background-image: radial-gradient(ellipse farthest-corner at center center, @navbar-default-bg 0%, darken(@navbar-default-bg, 5%) 100%);
 }
 
 .unselectable {
@@ -194,12 +203,12 @@ body {
 
 .btn-navbar-fill {
   height: 50px;
-  border: 1px solid lighten(darkgray, 20%);
-  background: lighten(darkgray, 25%);
+  border: 1px solid darken(@navbar-default-bg, 10%);
+  background: darken(@navbar-default-bg, 5%);
   border-radius: 0px;
 
   &:hover {
-    background: lighten(darkgray, 20%);
+    background: darken(@navbar-default-bg, 15%);
   }
 }
 
