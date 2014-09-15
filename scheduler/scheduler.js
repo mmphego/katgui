@@ -75,7 +75,7 @@ angular.module('katGui.scheduler', ['gantt'])
                 }
 
 
-                var offset = { x: 0, y: 325 };
+                var offset = { x: 0, y: 30 };
 
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
