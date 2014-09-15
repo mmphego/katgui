@@ -221,14 +221,17 @@ body {
   margin-right: auto;
 }
 
+@btn-navbar-bg: rgba(220, 235, 255, 0.51);
+
 .btn-navbar-fill {
   height: 50px;
-  border: 1px solid darken(@navbar-default-bg, 10%);
-  background: darken(@navbar-default-bg, 5%);
+  border: 1px solid lighten(#d3d3d3, 5%);
+  background: @btn-navbar-bg;
   border-radius: 0px;
 
   &:hover {
-    background: darken(@navbar-default-bg, 15%);
+    background: darken(@btn-navbar-bg, 10%);
+    border: 1px solid #d3d3d3;
   }
 }
 
