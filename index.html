@@ -138,10 +138,10 @@
 
         <ul class="nav navbar-nav navbar-right">
             <li>
-                <a class="navbar-anchor">UTC: {{utcTime}}</a>
-            </li>
-            <li>
-                <a class="navbar-anchor">Local: {{localTime}}</a>
+                <div style="margin-top: 5px;">
+                <a class="navbar-anchor">{{utcTime}} (UTC)</a><br/>
+                <a class="navbar-anchor">{{localTime}} (Local)</a>
+                </div>
             </li>
             <li>
                 <a class="unselectable navbar-anchor" ng-click="stateGo('landing')">Landing Page
