@@ -7,6 +7,12 @@ function getSampleData() {
                 // Dates can be specified as string, timestamp or javascript date object. The data attribute can be used to attach a custom object
                 {"id": "f55549b5-e449-4b0c-9f4b-8b33381f7d76", "subject": "scheduleblock1", "color": "#93C47D", "from": "2014-10-07T09:00:00", "to": "2014-10-07T10:00:00", "data": "Can contain any custom data or object"},
             ], "data": "Can contain any custom data or object"},
+            {"id": "bffa16c6-c134-4443-8e6e-b09410c37c9f", "description": "Sub-Array 4", "order": 13, "tasks": [
+                {"id": "2f4ec0f1-cd7a-441a-8288-e788ec112af9", "subject": "scheduleblock7", "color": "#F1C232", "from": new Date(2014,9,8,12,0,0), "to": new Date(2014,9,8,14,0,0)}
+            ]},
+            {"id": "ec0c5e31-449f-42d0-9e81-45c66322b640", "description": "Sub-Array 5", "order": 14, "tasks": [
+                {"id": "edf2cece-2d17-436f-bead-691edbc7386b", "subject": "scheduleblock18", "color": "#F1C232", "from": new Date(2014,9,9,14,30,0), "to": new Date(2014,9,9,18,0,0)}
+            ]},
             {"id": "c65c2672-445d-4297-a7f2-30de241b3145", "description": "Sub-Array 2", "order": 2, "tasks": [
                 {"id": "4e197e4d-02a4-490e-b920-4881c3ba8eb7", "subject": "scheduleblock3", "color": "#9FC5F8", "from": new Date(2014,9,7,9,0,0), "to": new Date(2014,9,7,10,0,0)},
                 {"id": "451046c0-9b17-4eaf-aee0-4e17fcfce6ae", "subject": "scheduleblock4", "color": "#9FC5F8", "from": new Date(2014,9,7,10,0,0), "to": new Date(2014,9,7,11,0,0)},
@@ -14,12 +20,6 @@ function getSampleData() {
             ]},
             {"id": "33e1af55-52c6-4ccd-b261-1f4484ed5773", "description": "Sub-Array 3", "order": 12, "tasks": [
                 {"id": "656b9240-00da-42ff-bfbd-dfe7ba393528", "subject": "scheduleblock6", "color": "#F1C232", "from": new Date(2014,9,8,9,0,0), "to": new Date(2014,9,8,12,0,0)}
-            ]},
-            {"id": "bffa16c6-c134-4443-8e6e-b09410c37c9f", "description": "Sub-Array 4", "order": 13, "tasks": [
-                {"id": "2f4ec0f1-cd7a-441a-8288-e788ec112af9", "subject": "scheduleblock7", "color": "#F1C232", "from": new Date(2014,9,8,12,0,0), "to": new Date(2014,9,8,14,0,0)}
-            ]},
-            {"id": "ec0c5e31-449f-42d0-9e81-45c66322b640", "description": "Sub-Array 5", "order": 14, "tasks": [
-                {"id": "edf2cece-2d17-436f-bead-691edbc7386b", "subject": "scheduleblock18", "color": "#F1C232", "from": new Date(2014,9,9,14,30,0), "to": new Date(2014,9,9,18,0,0)}
             ]}
         ]};
 }
@@ -56,6 +56,8 @@ angular.module('katGui.scheduler', ['gantt'])
 
         $scope.openDatePicker = function (row, $event) {
 
+            //TODO keyboard shortcut like escape to close datepicker
+
             if ($scope.currentRowDatePickerIndex !== row.rowIndex) {
 
                 var existingVal = row.entity.desiredTime;
@@ -63,14 +65,21 @@ angular.module('katGui.scheduler', ['gantt'])
                     $scope.currentSelectedDate = existingVal;
                 }
 
-                var left = $event.target.parentNode.offsetParent.offsetLeft + $event.target.parentNode.offsetLeft;
-                var top = $event.target.parentNode.offsetParent.offsetParent.offsetTop;
+                var rect = { left: 0, top: 0 };
 
-                var offset = { x: 85, y: 185 };
+                if ($event.target.nodeName !== "BUTTON") {
+                    //we clicked on the buttons content, so the target's parent is the button
+                    rect = $event.target.parentNode.getBoundingClientRect();
+                } else {
+                    rect = $event.target.getBoundingClientRect();
+                }
+
+
+                var offset = { x: 0, y: 325 };
 
                 var overLayCSS = {
-                    left: left + offset.x + 'px',
-                    top: top + offset.y + 'px'
+                    left: rect.left + offset.x + 'px',
+                    top: rect.top + offset.y + 'px'
                 };
 
                 angular.element(document.getElementById('schedulerDatePickerMenu')).css(overLayCSS);
@@ -169,11 +178,8 @@ angular.module('katGui.scheduler', ['gantt'])
             $scope.scheduleSelections.length = 0;
         };
 
-
-
-
         //gantt chart functions
-        $scope.mode = "custom";
+        $scope.mode = "name";
         $scope.scale = "hour";
         $scope.maxHeight = 0;
         $scope.showWeekends = true;

@@ -1,117 +1,123 @@
 <div class="view-container" style="min-width: 1300px;" ng-controller="SchedulerCtrl">
 
-    <div>
-        <h3>Gantt</h3>
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            <h3>Schedule Blocks</h3>
 
-        <form role="form" class="form-inline">
-            <div class="form-group">
-                <span class="help-block">View scale</span>
-                <select class="form-control" style="width: 100px;" ng-model="scale" ng-options="s for s in ['hour', 'day', 'week', 'month']"></select>
+            <div class="schedules-panel-heading-controls">
+                <span class="">Scale</span>
+                <select class="form-control" style="display: inline; width: 100px;" ng-model="scale"
+                        ng-options="s for s in ['hour', 'day', 'week', 'month']"></select>
+                <span class="">Sort</span>
+                <select class="form-control" style="display: inline; width: 100px;" ng-model="mode"
+                        ng-options="m for m in ['name', 'date', 'custom']"></select>
             </div>
-            <div class="form-group">
-                <span class="help-block">Sort order</span>
-                <select class="form-control" style="width: 100px;" ng-model="mode" ng-options="m for m in ['name', 'date', 'custom']"></select>
-            </div>
-            <!--<div class="form-group text-center">-->
-                <!--<span class="help-block">Additional options</span>-->
-                <!--<div class="btn-group">-->
-                    <!--<button ng-show="showWeekends" class="btn btn-default" ng-click="showWeekends = false">Hide weekends</button>-->
-                    <!--<button ng-show="showWeekends == false" class="btn btn-default" ng-click="showWeekends = true">Show weekends</button>-->
-                    <!--<button ng-show="showNonWorkHours == false" class="btn btn-default" ng-click="showNonWorkHours = true; subScale = 6">Show non working hours</button>-->
-                    <!--<button ng-show="showNonWorkHours" class="btn btn-default" ng-click="showNonWorkHours = false; subScale = 8">Hide non working hours</button>-->
-                <!--</div>-->
-            <!--</div>-->
-        </form>
-        <hr>
-        <gantt first-day-of-week="1"
-               load-data="loadData = fn"
-               remove-data="removeData = fn"
-               clear-data="clearData = fn"
-               sort-mode="mode"
-               view-scale="scale"
-               column-width="scale === 'month' && 20 || (scale === 'week' && 10 || 4)"
-               column-sub-scale="scale === 'week' && 7 || 6"
-               work-hours="[8,9,10,11,12,13,14,15]"
-               show-non-work-hours="showNonWorkHours"
-               weekend-days="[0,6]"
-               show-weekends="showWeekends"
-               max-height="maxHeight"
-               on-gantt-ready="addSamples()"
-               on-label-clicked="labelEvent(event)"
-               on-label-dbl-clicked="labelEvent(event)"
-               on-label-context-clicked="labelEvent(event)"
-               on-label-header-clicked="labelHeaderEvent(event)"
-               on-label-header-dbl-clicked="labelHeaderEvent(event)"
-               on-label-header-context-clicked="labelHeaderEvent(event)"
-               on-row-added="rowEvent(event)"
-               on-row-clicked="rowEvent(event)"
-               on-row-dbl-clicked="rowEvent(event)"
-               on-row-context-clicked="rowEvent(event)"
-               on-row-updated="rowEvent(event)"
-               on-scroll="scrollEvent(event)"
-               on-task-clicked="taskEvent(event)"
-               on-task-dbl-clicked="taskEvent(event)"
-               on-task-context-clicked="taskEvent(event)"
-               on-task-updated="taskEvent(event)"
-               template-url="util/gantt/gantt.template.html">
-        </gantt>
-        <hr>
+        </div>
+
+        <div class="panel-body">
+            <gantt first-day-of-week="1"
+                   load-data="loadData = fn"
+                   remove-data="removeData = fn"
+                   clear-data="clearData = fn"
+                   sort-mode="mode"
+                   view-scale="scale"
+                   column-width="scale === 'month' && 20 || (scale === 'week' && 10 || 4)"
+                   column-sub-scale="scale === 'week' && 7 || 6"
+                   work-hours="[8,9,10,11,12,13,14,15]"
+                   show-non-work-hours="showNonWorkHours"
+                   weekend-days="[0,6]"
+                   show-weekends="showWeekends"
+                   max-height="maxHeight"
+                   on-gantt-ready="addSamples()"
+                   on-label-clicked="labelEvent(event)"
+                   on-label-dbl-clicked="labelEvent(event)"
+                   on-label-context-clicked="labelEvent(event)"
+                   on-label-header-clicked="labelHeaderEvent(event)"
+                   on-label-header-dbl-clicked="labelHeaderEvent(event)"
+                   on-label-header-context-clicked="labelHeaderEvent(event)"
+                   on-row-added="rowEvent(event)"
+                   on-row-clicked="rowEvent(event)"
+                   on-row-dbl-clicked="rowEvent(event)"
+                   on-row-context-clicked="rowEvent(event)"
+                   on-row-updated="rowEvent(event)"
+                   on-scroll="scrollEvent(event)"
+                   on-task-clicked="taskEvent(event)"
+                   on-task-dbl-clicked="taskEvent(event)"
+                   on-task-context-clicked="taskEvent(event)"
+                   on-task-updated="taskEvent(event)"
+                   template-url="util/gantt/gantt.template.html">
+            </gantt>
+        </div>
+
     </div>
 
     <div id="schedulerDatePickerMenu" class="datepickerMenu" ng-show="showDatePicker">
         <datetimepicker data-ng-model="currentSelectedDate" data-on-set-time="onTimeSet"></datetimepicker>
     </div>
 
-    <div class="scheduler-container">
-        <div class="panel panel-default panel-content">
-            <div class="panel-heading">
-                <div class="draft-controls">
-                    <button ng-click="addDraftSchedule()"><span class="glyphicon-plus"></span></button>
-                </div>
-                <div class="panel-heading-text-drafts">
-                    Schedule Drafts
-                </div>
-            </div>
-            <div class="gridStyle" ng-grid="gridOptionsDrafts"></div>
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            <h3>Scheduler</h3>
         </div>
+        <div class="panel-body">
+            <table>
+                <tr>
+                    <td>
+                        <div class="panel panel-default panel-content">
+                            <div class="panel-heading">
+                                <div class="draft-controls">
+                                    <button ng-click="addDraftSchedule()"><span class="glyphicon-plus"></span></button>
+                                </div>
+                                <div class="panel-heading-text-drafts">
+                                    Schedule Drafts
+                                </div>
+                            </div>
+                            <div class="gridStyle" ng-grid="gridOptionsDrafts"></div>
+                        </div>
 
-        <div class="no-style-centered">
-            <button ng-class="{disabled: draftSelections.length === 0}" ng-click="moveDraftsToSchedule()">
-                <span class="glyphicon-chevron-down"></span>
-                <span class="glyphicon-chevron-down"></span>
-            </button>
+                        <div class="no-style-centered">
+                            <button ng-class="{disabled: draftSelections.length === 0}" ng-click="moveDraftsToSchedule()">
+                                <span class="glyphicon-chevron-down"></span>
+                                <span class="glyphicon-chevron-down"></span>
+                            </button>
 
-            <button ng-class="{disabled: scheduleSelections.length === 0}" ng-click="moveSchedulesToDraft()">
-                <span class="glyphicon-chevron-up"></span>
-                <span class="glyphicon-chevron-up"></span>
-            </button>
-        </div>
+                            <button ng-class="{disabled: scheduleSelections.length === 0}"
+                                    ng-click="moveSchedulesToDraft()">
+                                <span class="glyphicon-chevron-up"></span>
+                                <span class="glyphicon-chevron-up"></span>
+                            </button>
+                        </div>
 
-        <div class="panel panel-default panel-content">
-            <div class="panel-heading">
-                <h3 class="panel-title">Observation Schedule</h3>
-            </div>
+                        <div class="panel panel-default panel-content">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Observation Schedule</h3>
+                            </div>
 
-            <div class="gridStyle" ng-grid="gridOptionsSchedules"></div>
+                            <div class="gridStyle" ng-grid="gridOptionsSchedules"></div>
 
+                        </div>
+                    </td>
+                    <td>
+                        <div class="schedule-block-details">
+                            <div class="panel panel-default panel-content">
+                                <div class="panel-heading">
+                                    <div class="panel-heading-text-drafts">
+                                        Schedule Block Details
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <textarea>{{selectedScheduleBlockDetails}}</textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                    </td>
+                </tr>
+
+
+            </table>
         </div>
 
     </div>
-
-    <div class="schedule-block-details">
-        <div class="panel panel-default panel-content">
-            <div class="panel-heading">
-                <div class="panel-heading-text-drafts">
-                    Schedule Block Details
-                </div>
-            </div>
-            <div class="">
-                <textarea>{{selectedScheduleBlockDetails}}</textarea>
-            </div>
-        </div>
-
-    </div>
-
 
 </div>
-
