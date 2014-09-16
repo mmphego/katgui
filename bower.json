@@ -1,40 +1,40 @@
 {
-    "name": "katgui",
-    "version": "0.0.0",
-    "main": "index.html",
-    "ignore": [
-        "**/.*",
-        "node_modules",
-        "bower_components"
-    ],
-    "dependencies": {
-        "jquery": "~2.0",
-        "underscore": "~1.5",
-        "bootstrap": "latest",
-        "angular": "1.2.24",
-        "angular-ui-router": "latest",
-        "angular-animate": "~1.2",
-        "angular-resource": "~1.2",
-        "angular-cookies": "~1.2",
-        "angular-mocks": "~1.2",
-        "angular-ui-utils": "~0.1",
-        "angular-bootstrap": "~0.11.0",
-        "moment": "latest",
-        "less.js": "latest",
-        "font-awesome": "latest",
-        "jquery-ui": "~1.10.3",
-        "d3": "latest"
-    },
-    "devDependencies": {
-        "sockjs": "~0.3.4",
-        "angular-local-storage": "~0.0.7",
-        "angular-dashboard-framework": "~0.1.0",
-        "jquery-ui": "~1.11.1",
-        "ng-grid": "~2.0.13",
-        "angular-bootstrap-datetimepicker": "latest"
-    },
-    "resolutions": {
-        "jquery-ui": "1.11.1",
-        "angular": "1.2.24"
-    }
+  "name": "katgui",
+  "version": "0.0.0",
+  "main": "index.html",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "jquery": "~2.0",
+    "underscore": "~1.5",
+    "bootstrap": "latest",
+    "angular": "1.2.24",
+    "angular-ui-router": "latest",
+    "angular-animate": "~1.2",
+    "angular-resource": "~1.2",
+    "angular-cookies": "~1.2",
+    "angular-mocks": "1.2.24",
+    "angular-ui-utils": "~0.1",
+    "angular-bootstrap": "~0.11.0",
+    "moment": "latest",
+    "less.js": "latest",
+    "font-awesome": "latest",
+    "jquery-ui": "~1.10.3",
+    "d3": "latest"
+  },
+  "devDependencies": {
+    "sockjs": "~0.3.4",
+    "angular-dashboard-framework": "~0.1.0",
+    "jquery-ui": "~1.11.1",
+    "ng-grid": "~2.0.13",
+    "angular-bootstrap-datetimepicker": "latest",
+    "ngstorage": "~0.3.0"
+  },
+  "resolutions": {
+    "jquery-ui": "1.11.1",
+    "angular": "1.2.24"
+  }
 }

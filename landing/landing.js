@@ -1,42 +1,60 @@
-angular.module('katGui.landing', ['LocalStorageModule'])
-
-    .config(['localStorageServiceProvider', function (localStorageServiceProvider) {
-        localStorageServiceProvider.setPrefix('adf');
-    }])
-
-    .controller('LandingCtrl', function ($scope, localStorageService) {
-
-        var name = 'katGuiLandingDashboard';
-        var dashboardModel = localStorageService.get(name);
-
-        if (!dashboardModel) {
-            dashboardModel = {
-                title: "Dashboard",
-                structure: "12/4-4-4",
-                rows: [
+function getDefaultDashboard() {
+    return {
+        title: "Dashboard",
+        structure: "12/4-4-4",
+        rows: [
+            {
+                columns: [
                     {
-                        columns: [
+                        widgets: [
                             {
-                                widgets: [
-                                    {
-                                        type: "NavigationWidget",
-                                        config: {},
-                                        title: "Navigation Controls"
-                                    }
-                                ]
+                                type: "NavigationWidget",
+                                config: {},
+                                title: "Navigation Controls"
+                            }
+                        ]
+                    },
+                    {
+                        widgets: [
+                            {
+                                type: "GanttWidget",
+                                config: {},
+                                title: "Schedule Blocks"
                             }
                         ]
                     }
                 ]
-            };
+            }
+        ]
+    };
+}
+
+angular.module('katGui.landing', ['ngStorage'])
+
+    .controller('LandingCtrl', function ($rootScope, $scope, $localStorage, $window, $timeout) {
+
+        $scope.name = 'katGuiLandingDashboard';
+
+        if (!$localStorage[$scope.name] || $localStorage[$scope.name].loadDefault) {
+            $localStorage[$scope.name] = getDefaultDashboard();
+            $localStorage[$scope.name].loadDefault = false;
         }
 
-        $scope.name = name;
-        $scope.dashboardModel = dashboardModel;
+        $scope.dashboardModel = $localStorage[$scope.name];
         $scope.collapsible = false;
 
         $scope.$on('adfDashboardChanged', function (event, name, model) {
-            localStorageService.set(name, model);
+            $localStorage[name] = model;
         });
+
+        $scope.deleteDashboardLocalStorage = function () {
+
+            $localStorage[$scope.name].loadDefault = true;
+
+            //TODO: fix this dirty hack to reload the dashboard defaults
+            $timeout(function () {
+                $window.location.reload();
+            }, 500);
+        };
 
     });

@@ -1,0 +1,51 @@
+<div class="panel panel-default" ng-controller="GanttWidgetCtrl">
+
+    <div class="panel-heading">
+        <!--<h3>Current Schedule Blocks</h3>-->
+
+        <div class="">
+            <span class="">Scale</span>
+            <select class="form-control" style="display: inline; width: 100px;" ng-model="scale"
+                    ng-options="s for s in ['hour', 'day', 'week', 'month']"></select>
+            <span class="">Sort</span>
+            <select class="form-control" style="display: inline; width: 100px;" ng-model="mode"
+                    ng-options="m for m in ['name', 'date', 'custom']"></select>
+        </div>
+    </div>
+
+    <div class="panel-body">
+        <gantt first-day-of-week="1"
+               load-data="loadData = fn"
+               remove-data="removeData = fn"
+               clear-data="clearData = fn"
+               sort-mode="mode"
+               view-scale="scale"
+               column-width="scale === 'month' && 20 || (scale === 'week' && 10 || 4)"
+               column-sub-scale="scale === 'week' && 7 || 6"
+               work-hours="[8,9,10,11,12,13,14,15]"
+               show-non-work-hours="showNonWorkHours"
+               weekend-days="[0,6]"
+               show-weekends="showWeekends"
+               max-height="maxHeight"
+               on-gantt-ready="addSamples()"
+               on-label-clicked="labelEvent(event)"
+               on-label-dbl-clicked="labelEvent(event)"
+               on-label-context-clicked="labelEvent(event)"
+               on-label-header-clicked="labelHeaderEvent(event)"
+               on-label-header-dbl-clicked="labelHeaderEvent(event)"
+               on-label-header-context-clicked="labelHeaderEvent(event)"
+               on-row-added="rowEvent(event)"
+               on-row-clicked="rowEvent(event)"
+               on-row-dbl-clicked="rowEvent(event)"
+               on-row-context-clicked="rowEvent(event)"
+               on-row-updated="rowEvent(event)"
+               on-scroll="scrollEvent(event)"
+               on-task-clicked="taskEvent(event)"
+               on-task-dbl-clicked="taskEvent(event)"
+               on-task-context-clicked="taskEvent(event)"
+               on-task-updated="taskEvent(event)"
+               template-url="util/gantt/gantt.template.html">
+        </gantt>
+    </div>
+
+</div>

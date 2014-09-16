@@ -1,8 +1,7 @@
-angular.module('katGui.util', []);
-
 angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
     'ui.utils', 'ui.router', 'ngAnimate', 'ngGrid', 'adf',
     'katGui.widgets.navigationWidget',
+    'katGui.widgets.ganttWidget',
     'katGui.dashboardStructure',
     'katGui.landing',
     'katGui.util',
@@ -99,17 +98,6 @@ angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
     })
 
     .run(function ($rootScope, AUTH_EVENTS, USER_ROLES, AuthService) {
-
-        $rootScope.safeApply = function (fn) {
-            var phase = $rootScope.$$phase;
-            if (phase === '$apply' || phase === '$digest') {
-                if (fn && (typeof(fn) === 'function')) {
-                    fn();
-                }
-            } else {
-                this.$apply(fn);
-            }
-        };
 
         $rootScope.$on('$stateChangeStart', function (event, next) {
 //        var authorizedRoles = next.data.authorizedRoles;

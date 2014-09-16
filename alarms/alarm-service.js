@@ -1,6 +1,6 @@
 angular.module('katGui')
 
-    .factory('AlarmService', function ($rootScope, alarms, UI_VERSION) {
+    .factory('AlarmService', function ($rootScope, $timeout, alarms, UI_VERSION) {
 
         var urlBase = 'http://localhost:8889';
         var alarmService = {};
@@ -18,7 +18,7 @@ angular.module('katGui')
 
                 jsonObj = [].concat(jsonObj);
 
-                $rootScope.safeApply(function () {
+                $timeout(function () {
                     jsonObj.forEach(function (obj) {
 
                         if (obj.date) {
