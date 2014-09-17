@@ -4,8 +4,8 @@ angular.module('katGui')
         function ($rootScope) {
             return {
                 restrict: 'A',
-                template: '<div class="alarm">' +
-                    '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeClasses(message)">' +
+                template: '<div ng-class="getActiveClass()">' +
+                    '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeSeverityClasses(message)">' +
                     '       <div>' +
                     '           <ul>' +
                     '               <li class=""><button class="alarm-close" ng-click="acknowledgeMessage(message)">Acknowledge</button></li>' +
@@ -25,6 +25,7 @@ angular.module('katGui')
                     '$scope', '$timeout',
                     function ($scope, $timeout) {
 
+                        $scope.largeAlarms = true;
                         $scope.messages = [];
 
                         function addMessage(message) {
@@ -61,7 +62,7 @@ angular.module('katGui')
                             }
                         };
 
-                        $scope.computeClasses = function (message) {
+                        $scope.computeSeverityClasses = function (message) {
                             return {
                                 'alarm-critical': message.severity === 'critical',
                                 'alarm-error': message.severity === 'error',
@@ -71,6 +72,10 @@ angular.module('katGui')
                                 'alarm-nominal': message.severity === 'nominal',
                                 'alarm-unknown': message.severity === 'unknown'
                             };
+                        };
+
+                        $scope.getActiveClass = function () {
+                            return $scope.largeAlarms ? 'large-alarm' : 'small-alarm';
                         };
                     }
                 ]

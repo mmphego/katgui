@@ -5,7 +5,7 @@
 @alarm-critical-bg: red;
 @alarm-unknown-bg: lightgrey;
 
-.alarm {
+.large-alarm {
   position: fixed;
   top: 55px;
   right: 10px;
@@ -49,6 +49,54 @@
 
   span {
     font: 18px Arial;
+    opacity: 1;
+  }
+}
+
+.small-alarm {
+  position: fixed;
+  top: 55px;
+  right: 10px;
+  float: right;
+  width: 100px;
+  height: 100%;
+  overflow: auto;
+  opacity: 0.8;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  z-index: 1000;
+
+  .datestamp {
+    top: 5px;
+    right: 5px;
+    font: 12px Arial;
+    width: 100%;
+  }
+
+  .timestamp {
+    top: 5px;
+    left: 5px;
+    font: 12px Arial;
+  }
+
+  .severitystamp {
+    margin-top: -23px;
+    top: 5px;
+    text-align: center;
+    width: 100%;
+    font: 16px Arial;
+    font-style: italic;
+    font-weight: bold;
+    //    text-decoration: underline;
+  }
+
+  h3 {
+    opacity: 1;
+    font-weight: bold;
+  }
+
+  span {
+    font: 16px Arial;
     opacity: 1;
   }
 }
@@ -141,14 +189,15 @@
   color: #000;
   text-shadow: 0 1px 0 #fff;
   opacity: .4;
+
+  &:hover, &focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: .8;
+  }
 }
-.alarm-close:hover,
-.alarm-close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-  opacity: .8;
-}
+
 button.alarm-close {
 //  position: relative;
 //  display: inline-block;
