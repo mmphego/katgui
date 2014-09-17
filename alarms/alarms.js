@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.alarms', [])
 
     .controller('AlarmsCtrl', function ($rootScope, $scope, AlarmService) {
 

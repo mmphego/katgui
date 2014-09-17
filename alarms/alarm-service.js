@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.alarms')
 
     .factory('AlarmService', function ($rootScope, $timeout, alarms, UI_VERSION) {
 

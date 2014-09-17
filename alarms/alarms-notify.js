@@ -1,4 +1,5 @@
-angular.module('katGui')
+angular.module('katGui.alarms')
+
     .directive('alarm', [
         '$rootScope',
         function ($rootScope) {

@@ -1,5 +1,7 @@
+
 angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
     'ui.utils', 'ui.router', 'ngAnimate', 'ngGrid', 'adf',
+    'katGui.alarms',
     'katGui.widgets.navigationWidget',
     'katGui.widgets.ganttWidget',
     'katGui.dashboardStructure',
