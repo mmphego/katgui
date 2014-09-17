@@ -34,63 +34,63 @@ angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
 
         $stateProvider.state('login', {
             url: '/login',
-            templateUrl: 'login-form/login-form.html',
+            templateUrl: 'app/login-form/login-form.html',
             data: {
                 authorizedRoles: [USER_ROLES.noAuth]
             }
         });
         $stateProvider.state('admin', {
             url: '/admin',
-            templateUrl: 'admin/admin.html',
+            templateUrl: 'app/admin/admin.html',
             data: {
                 authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
         $stateProvider.state('alarms', {
             url: '/alarms',
-            templateUrl: 'alarms/alarms.html',
+            templateUrl: 'app/alarms/alarms.html',
             data: {
                 authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
         $stateProvider.state('landing', {
             url: '/landing',
-            templateUrl: 'landing/landing.html',
+            templateUrl: 'app/landing/landing.html',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
         });
         $stateProvider.state('operatorControl', {
             url: '/operatorControl',
-            templateUrl: 'operator-control/operator-control.html',
+            templateUrl: 'app/operator-control/operator-control.html',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
         $stateProvider.state('scheduler', {
             url: '/scheduler',
-            templateUrl: 'scheduler/scheduler.html',
+            templateUrl: 'app/scheduler/scheduler.html',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
         $stateProvider.state('sensorGraph', {
             url: '/sensorGraph',
-            templateUrl: 'sensor-graph/sensor-graph.html',
+            templateUrl: 'app/sensor-graph/sensor-graph.html',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
         $stateProvider.state('about', {
             url: '/about',
-            templateUrl: 'about/about.html',
+            templateUrl: 'app/about/about.html',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
         });
         $stateProvider.state('weather', {
             url: '/weather',
-            templateUrl: 'weather/weather.html',
+            templateUrl: 'app/weather/weather.html',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

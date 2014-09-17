@@ -5,7 +5,7 @@ angular.module('katGui.widgets.navigationWidget', ['adf.provider'])
             .widget('NavigationWidget', {
                 title: 'Navigation Widget',
                 description: 'Container for navigation controls/buttons',
-                templateUrl: 'widgets/navigation/navigation-widget.html',
+                templateUrl: 'app/widgets/navigation/navigation-widget.html',
                 controller: 'NavigationWidgetCtrl'
             });
     })

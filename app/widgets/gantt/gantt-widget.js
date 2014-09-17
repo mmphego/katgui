@@ -31,7 +31,7 @@ angular.module('katGui.widgets.ganttWidget', ['adf.provider'])
             .widget('GanttWidget', {
                 title: 'Schedule Blocks Widget',
                 description: 'Container for displaying schedule blocks',
-                templateUrl: 'widgets/gantt/gantt-widget.html',
+                templateUrl: 'app/widgets/gantt/gantt-widget.html',
                 controller: 'GanttWidgetCtrl'
             });
     })
