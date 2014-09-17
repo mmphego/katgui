@@ -1,6 +1,6 @@
 angular.module('katGui.alarms')
 
-    .factory('AlarmService', function ($rootScope, $timeout, alarms, UI_VERSION) {
+    .factory('AlarmService', function ($rootScope, $timeout, alarms) {
 
         var urlBase = 'http://localhost:8889';
         var alarmService = {};
@@ -10,7 +10,7 @@ angular.module('katGui.alarms')
             conn = new SockJS(urlBase + '/alarm');
 
             conn.onopen = function () {
-                conn.send('katGui version: ' + UI_VERSION + ' says hi.');
+                conn.send('katGui says hi.');
             };
 
             conn.onmessage = function (e) {
