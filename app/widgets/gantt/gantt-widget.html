@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="panel-body">
+    <div class="panel-body" style="background-color: white;">
         <gantt first-day-of-week="1"
                load-data="loadData = fn"
                remove-data="removeData = fn"
@@ -22,12 +22,12 @@
                view-scale="scale"
                column-width="scale === 'month' && 20 || (scale === 'week' && 10 || 4)"
                column-sub-scale="scale === 'week' && 7 || 6"
-               work-hours="[8,9,10,11,12,13,14,15]"
+               work-hours="[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]"
                show-non-work-hours="showNonWorkHours"
                weekend-days="[0,6]"
                show-weekends="showWeekends"
                max-height="maxHeight"
-               on-gantt-ready="addSamples()"
+               on-gantt-ready="ganttInitialized()"
                on-label-clicked="labelEvent(event)"
                on-label-dbl-clicked="labelEvent(event)"
                on-label-context-clicked="labelEvent(event)"
@@ -44,7 +44,7 @@
                on-task-dbl-clicked="taskEvent(event)"
                on-task-context-clicked="taskEvent(event)"
                on-task-updated="taskEvent(event)"
-               template-url="app/util/gantt/gantt.template.html">
+               template-url="bower_components/angular-gantt/template/gantt.tmpl.html">
         </gantt>
     </div>
 

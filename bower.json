@@ -31,7 +31,8 @@
     "jquery-ui": "~1.11.1",
     "ng-grid": "~2.0.13",
     "angular-bootstrap-datetimepicker": "latest",
-    "ngstorage": "~0.3.0"
+    "ngstorage": "~0.3.0",
+    "angular-gantt": "~0.6.2"
   },
   "resolutions": {
     "jquery-ui": "1.11.1",

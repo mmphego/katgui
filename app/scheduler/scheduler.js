@@ -1,4 +1,4 @@
-angular.module('katGui.scheduler', ['gantt'])
+angular.module('katGui.scheduler', [])
 
     .constant('SCHEDULE_BLOCK_TYPES', [
         'MAINTENANCE',

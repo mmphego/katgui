@@ -9,7 +9,7 @@ describe('WeatherCtrl', function() {
       ctrl = $controller('WeatherCtrl', {$scope: scope});
     }));	
 
-	it('should do nothing yet...', inject(function() {
+	it('should ...', inject(function() {
 
 		expect(1).toEqual(1);
 		

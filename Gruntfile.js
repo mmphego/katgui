@@ -180,7 +180,7 @@ module.exports = function (grunt) {
                 frameworks: ['jasmine'],
 
                 preprocessors: {
-                    '**/*.html': 'ng-html2js',
+                    'app/**/*.html': 'ng-html2js',
                     'app/**/!(*-spec).js': 'coverage'
                 },
 

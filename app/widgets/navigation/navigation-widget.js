@@ -10,9 +10,9 @@ angular.module('katGui.widgets.navigationWidget', ['adf.provider'])
             });
     })
 
-    .controller('NavigationWidgetCtrl', function($rootScope, $scope){
+    .controller('NavigationWidgetCtrl', function($rootScope, $scope, $state){
 
         $scope.stateGo = function (newState) {
-          $rootScope.stateGo(newState);
+            $state.go(newState);
         };
     });
