@@ -1,4 +1,4 @@
-angular.module('katGui.scheduler', [])
+angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
     .constant('SCHEDULE_BLOCK_TYPES', [
         'MAINTENANCE',

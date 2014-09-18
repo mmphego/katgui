@@ -1,5 +1,5 @@
 
-angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
+angular.module('katGui', ['ui.bootstrap',
     'ui.utils', 'ui.router', 'ngAnimate', 'ngGrid', 'adf',
     'katGui.alarms',
     'katGui.widgets.navigationWidget',
@@ -115,14 +115,14 @@ angular.module('katGui', ['ui.bootstrap', 'ui.bootstrap.datetimepicker',
 //        }
         });
 
-        $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {
-            console.log('$stateChangeError - debugging required. Event: ');
-            console.log(event);
-        });
+//        $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {
+//            console.log('$stateChangeError - debugging required. Event: ');
+//            console.log(event);
+//        });
 
     })
 
-    .controller('ApplicationController', function ($rootScope, $scope, $state, $location, $interval, USER_ROLES, AuthService, Session, AlarmService) {
+    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, USER_ROLES, AuthService, Session, AlarmService) {
 
         $scope.currentUser = null;
         $scope.userRoles = USER_ROLES;

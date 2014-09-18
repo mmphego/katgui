@@ -1,5 +1,6 @@
 describe('SchedulerCtrl', function() {
 
+    beforeEach(module('ui.bootstrap.datetimepicker'));
 	beforeEach(module('katGui.scheduler'));
 
 	var scope,ctrl;
@@ -11,7 +12,7 @@ describe('SchedulerCtrl', function() {
 
 	it('should ...', inject(function() {
 
-		expect(1).toEqual(1);
+//		scope.openDatePicker({ rowIndex: 0, entity: { desiredTime: '' } }, { target : { nodeName: 'BUTTON'} });
 		
 	}));
 

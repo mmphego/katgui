@@ -1,40 +1,40 @@
+var defaultDashboardConfig = {
+    title: "Dashboard",
+    structure: "12/4-4-4",
+    rows: [
+        {
+            columns: [
+                {
+                    widgets: [
+                        {
+                            type: "NavigationWidget",
+                            config: {},
+                            title: "Navigation Controls"
+                        }
+                    ]
+                },
+                {
+                    widgets: [
+                        {
+                            type: "GanttWidget",
+                            config: {},
+                            title: "Schedule Blocks"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+
 angular.module('katGui.landing', ['ngStorage'])
 
     .controller('LandingCtrl', function ($rootScope, $scope, $localStorage, $window, $timeout) {
 
         $scope.name = 'katGuiLandingDashboard';
 
-        if (!$localStorage[$scope.name] || $localStorage[$scope.name].loadDefault) {
-            //load default dashboard
-            $localStorage[$scope.name] = {
-                title: "Dashboard",
-                structure: "12/4-4-4",
-                rows: [
-                    {
-                        columns: [
-                            {
-                                widgets: [
-                                    {
-                                        type: "NavigationWidget",
-                                        config: {},
-                                        title: "Navigation Controls"
-                                    }
-                                ]
-                            },
-                            {
-                                widgets: [
-                                    {
-                                        type: "GanttWidget",
-                                        config: {},
-                                        title: "Schedule Blocks"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            };
-            $localStorage[$scope.name].loadDefault = false;
+        if (!$localStorage[$scope.name]) {
+            $localStorage[$scope.name] = defaultDashboardConfig;
         }
 
         $scope.dashboardModel = $localStorage[$scope.name];
@@ -42,12 +42,15 @@ angular.module('katGui.landing', ['ngStorage'])
 
         $scope.$on('adfDashboardChanged', function (event, name, model) {
             $localStorage[name] = model;
+            $scope.dashboardModel = model;
+            console.log(name);
+            console.log(model);
         });
 
         $scope.deleteDashboardLocalStorage = function () {
 
-            $localStorage[$scope.name].loadDefault = true;
-
+            delete $localStorage[$scope.name];
+            $scope.dashboardModel = defaultDashboardConfig;
             //TODO: fix this dirty hack to reload the dashboard defaults
             $timeout(function () {
                 $window.location.reload();
