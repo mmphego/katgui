@@ -37,7 +37,7 @@ describe('ApplicationCtrl', function () {
     }));
 
 //    it('should update the current time', inject(function () {
-//
-//
+
+
 //    }));
 });

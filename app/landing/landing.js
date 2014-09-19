@@ -43,8 +43,6 @@ angular.module('katGui.landing', ['ngStorage'])
         $scope.$on('adfDashboardChanged', function (event, name, model) {
             $localStorage[name] = model;
             $scope.dashboardModel = model;
-            console.log(name);
-            console.log(model);
         });
 
         $scope.deleteDashboardLocalStorage = function () {

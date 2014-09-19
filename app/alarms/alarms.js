@@ -19,7 +19,7 @@ angular.module('katGui.alarms', [])
             enableRowSelection: false
         };
 
-        if (!AlarmService.isConnected()) {
+        if (!AlarmService.connection) {
             AlarmService.connectListener();
         }
 

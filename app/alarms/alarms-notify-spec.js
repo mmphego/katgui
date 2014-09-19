@@ -3,12 +3,12 @@ describe('Directive: alarms notify', function () {
     beforeEach(module('katGui.alarms'));
     beforeEach(module('templates'));
 
-    var scope, compile, alarmsService, element;
+    var scope, compile, alarms, element;
 
-    beforeEach(inject(function ($rootScope, $compile, alarms) {
+    beforeEach(inject(function ($rootScope, $compile, _alarms_) {
         scope = $rootScope.$new();
         compile = $compile;
-        alarmsService = alarms;
+        alarms = _alarms_;
 
         var strAlarmsNotify = '<div alarm></div>';
         element = compile(strAlarmsNotify)(scope);
@@ -21,7 +21,7 @@ describe('Directive: alarms notify', function () {
     it ('should display alarm when alarm is received and priority is new', function () {
 
         var alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "critical", "name": "alarm name"};
-        alarmsService.addAlarmMessage(alarmObj);
+        alarms.addAlarmMessage(alarmObj);
         scope.$digest();
 
         expect(element.scope().messages[0]).toBe(alarmObj);
@@ -33,12 +33,44 @@ describe('Directive: alarms notify', function () {
     it ('should NOT display alarm when alarm is received and priority is NOT new', function () {
 
         var alarmObj2 = {"date": 1410948999.507357, "priority": "known", "message": "alarm message2", "severity": "critical", "name": "alarm name2"};
-        alarmsService.addAlarmMessage(alarmObj2);
+        alarms.addAlarmMessage(alarmObj2);
         scope.$digest();
 
         expect(element.scope().messages[0]).toBe(alarmObj2);
         expect(element.text()).not.toContain("alarm message2");
         expect(element.text()).not.toContain("alarm name2");
     });
+
+});
+
+describe('AlarmsNotifyCtrl', function () {
+
+    beforeEach(module('katGui.alarms'));
+
+    var scope, ctrl, location, alarmsService;
+
+    beforeEach(inject(function ($rootScope, $controller, $location) {
+        scope = $rootScope.$new();
+        location = $location;
+
+        ctrl = $controller('AlarmsNotifyCtrl', {$scope: scope, AlarmService: alarmsService});
+    }));
+
+    it('should add an alarm message', inject(function () {
+
+        var alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "critical", "name": "alarm name"};
+        scope.addAlarmMessage(alarmObj);
+        scope.$digest();
+        expect(scope.messages[0]).toBe(alarmObj);
+    }));
+
+    it('should remove an alarm message after acknowledge', inject(function () {
+
+        var alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "critical", "name": "alarm name"};
+        scope.addAlarmMessage(alarmObj);
+        expect(scope.messages[0]).toBe(alarmObj);
+        scope.acknowledgeMessage(alarmObj);
+        expect(scope.messages.length).toBe(0);
+    }));
 
 });
