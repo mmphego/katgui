@@ -9,11 +9,11 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.types = SCHEDULE_BLOCK_TYPES;
 
-        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow()"><span class="glyphicon glyphicon-trash"></span></button>' +
-            '<button value="moveToSchedule" class="btn btn-default btn-trash" ng-click="moveDraftRowToSchedule()"><span class="glyphicon glyphicon-chevron-down"></span></button>';
+        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow(this.row.rowIndex)"><span class="glyphicon glyphicon-trash"></span></button>' +
+            '<button value="moveToSchedule" class="btn btn-default btn-trash" ng-click="moveDraftRowToSchedule(this.row.index)"><span class="glyphicon glyphicon-chevron-down"></span></button>';
         var checkboxHeaderTemplate = '<input class="ngSelectionHeader" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"/>';
         var dropdownTemplate = '<select class="grid-dropdown" ng-model="COL_FIELD" ng-options="type for type in types"></select>';
-        var datetimepickerTemplate = '<button class="btn-custom-datetimepicker" ng-click="openDatePicker(row, $event)">' +
+        var datetimepickerTemplate = '<button id="btn-custom-sel-temp" class="btn-custom-datetimepicker" ng-click="openDatePicker(row.rowIndex, $event);">' +
             '<span ng-if="!COL_FIELD">Select Date</span><span ng-if="COL_FIELD">{{COL_FIELD | date:\'dd/MM/yyyy HH:mm\'}}</span><span class="glyphicon glyphicon-chevron-down"></span></button>';
         var lastId = 0;
 
@@ -27,26 +27,17 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.selectedScheduleBlockDetails = "line1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world";
 
-        $scope.openDatePicker = function (row, $event) {
+        $scope.openDatePicker = function (rowIndex, $event) {
 
             //TODO keyboard shortcut like escape to close datepicker
+            if ($scope.currentRowDatePickerIndex !== rowIndex) {
 
-            if ($scope.currentRowDatePickerIndex !== row.rowIndex) {
-
-                var existingVal = row.entity.desiredTime;
+                var existingVal = $scope.scheduleDraftData[rowIndex].desiredTime;
                 if (existingVal.length > 0) {
                     $scope.currentSelectedDate = existingVal;
                 }
 
-                var rect = { left: 0, top: 0 };
-
-                if ($event.target.nodeName !== "BUTTON") {
-                    //we clicked on the buttons content, so the target's parent is the button
-                    rect = $event.target.parentNode.getBoundingClientRect();
-                } else {
-                    rect = $event.target.getBoundingClientRect();
-                }
-
+                var rect = $event.currentTarget.getBoundingClientRect();
 
                 var offset = { x: 0, y: 30 };
 
@@ -57,7 +48,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
                 angular.element(document.getElementById('schedulerDatePickerMenu')).css(overLayCSS);
 
-                $scope.currentRowDatePickerIndex = $scope.scheduleDraftData.indexOf(row.entity);
+                $scope.currentRowDatePickerIndex = $scope.scheduleDraftData.indexOf($scope.scheduleDraftData[rowIndex]);
                 $scope.showDatePicker = true;
             } else {
                 //the same row's button was clicked, so close the popup
@@ -68,10 +59,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.onTimeSet = function (newDate) {
 
-            if ($scope.currentRowDatePickerIndex < $scope.scheduleDraftData.length) {
-                $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = newDate;
-            }
-
+            $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = newDate;
             $scope.showDatePicker = false;
             $scope.currentSelectedDate = new Date();
             $scope.currentRowDatePickerIndex = -1;
@@ -113,16 +101,13 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             enableColumnResize: true
         };
 
-
-        $scope.removeDraftRow = function () {
-            var index = this.row.rowIndex;
-            $scope.gridOptionsDrafts.selectItem(index, false);
-            $scope.scheduleDraftData.splice(index, 1);
+        $scope.removeDraftRow = function (rowIndex) {
+            $scope.scheduleDraftData.splice(rowIndex, 1);
         };
 
-        $scope.moveDraftRowToSchedule = function () {
-            $scope.scheduleData = _.union($scope.scheduleData, this.row.entity);
-            $scope.scheduleDraftData.splice(this.row.rowIndex, 1);
+        $scope.moveDraftRowToSchedule = function (rowIndex) {
+            $scope.scheduleData = _.union($scope.scheduleData, $scope.scheduleDraftData[rowIndex]);
+            $scope.scheduleDraftData.splice(rowIndex, 1);
         };
 
         $scope.addDraftSchedule = function () {
