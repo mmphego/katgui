@@ -138,31 +138,28 @@ angular.module('katGui', ['ui.bootstrap',
         $scope.setCurrentUser = function (user) {
             $scope.currentUser = user;
             $scope.userLoggedIn = user !== null;
-
             $scope.userCanOperate = !!user && ($scope.currentUser.role !== USER_ROLES.all && $scope.currentUser.role !== USER_ROLES.monitor);
-
-            if (!$scope.$$phase) {
-                $scope.$apply();
-            }
         };
 
         $scope.logout = function () {
             $scope.setCurrentUser(null);
             Session.destroy();
-            gapi.auth.signOut();
+//            gapi.auth.signOut();
             AlarmService.disconnectListener();
             $state.go('login');
         };
 
-        $rootScope.stateGo = function (newState) {
+        $scope.stateGo = function (newState) {
             $state.go(newState);
         };
 
         $rootScope.utcTime = moment.utc(new Date()).format('hh:mm:ss');
         $rootScope.localTime = moment().format('hh:mm:ss');
 
-        $interval(function () {
+        var updateTimeDisplay = function () {
             $rootScope.utcTime = moment.utc(new Date()).format('hh:mm:ss');
             $rootScope.localTime = moment().format('hh:mm:ss');
-        }, 1000); //update clock every second
+        };
+
+        $interval(updateTimeDisplay, 1000); //update clock every second
     });

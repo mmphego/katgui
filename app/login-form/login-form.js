@@ -11,15 +11,15 @@ angular.module('katGui')
             password: ''
         };
 
-        $scope.loginGoogle = function () {
-            var options = {
-                'callback': $scope.loginFinished,
-                'clientid': '626410560822-0tncuu7jhpbetei9v9uji2l5oit9np9l.apps.googleusercontent.com',
-                'cookiepolicy': 'single_host_origin'
-            };
-
-            gapi.auth.signIn(options);
-        };
+//        $scope.loginGoogle = function () {
+//            var options = {
+//                'callback': $scope.loginFinished,
+//                'clientid': '626410560822-0tncuu7jhpbetei9v9uji2l5oit9np9l.apps.googleusercontent.com',
+//                'cookiepolicy': 'single_host_origin'
+//            };
+//
+//            gapi.auth.signIn(options);
+//        };
 
         $scope.login = function (credentials) {
 
@@ -59,7 +59,7 @@ angular.module('katGui')
 
                 if (authResult['status']['signed_in']) {
                     $scope.loginResult = 'User granted access:';
-                    gapi.auth.setToken(authResult);
+                    //gapi.auth.setToken(authResult);
 
                     Session.create(authResult['sessionState'], authResult['client_id'], USER_ROLES.expert);
 
@@ -68,17 +68,17 @@ angular.module('katGui')
                     var user = { name: '', role: USER_ROLES.all};
                     $scope.setCurrentUser(user);
 
-                    gapi.client.load('plus', 'v1', function () {
-                        var request = gapi.client.plus.people.get({
-                            'userId': 'me'
-                        });
-                        request.execute(function (resp) {
-                            var user = { name: resp.displayName, role: USER_ROLES.expert};
-                            $scope.setCurrentUser(user);
-
-                            console.log('Retrieved profile for: ' + resp.displayName);
-                        });
-                    });
+//                    gapi.client.load('plus', 'v1', function () {
+//                        var request = gapi.client.plus.people.get({
+//                            'userId': 'me'
+//                        });
+//                        request.execute(function (resp) {
+//                            var user = { name: resp.displayName, role: USER_ROLES.expert};
+//                            $scope.setCurrentUser(user);
+//
+//                            console.log('Retrieved profile for: ' + resp.displayName);
+//                        });
+//                    });
 
                     $state.go('landing');
 
