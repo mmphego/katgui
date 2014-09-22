@@ -12,6 +12,10 @@
     <link href="bower_components/angular-gantt/assets/gantt.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" rel="stylesheet"
           type="text/css">
+
+    <!-- build:css fonts/fontawesome.css -->
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <!-- endbuild -->
 </head>
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
@@ -95,7 +99,7 @@
         <div class="btn-group navbar-actions-group navbar-header">
 
             <button class="unselectable navbar-actions-button navbar-btn dropdown-toggle" data-toggle="dropdown">
-                <i class="glyphicon glyphicon-list"></i>
+                <i class="fa fa-navicon"></i>
             </button>
 
             <ul class="dropdown-menu actions-container" role="menu">
@@ -153,7 +157,7 @@
             <li>
                 <div class="alarms-warning-container">
                     <button class="unselectable navbar-alarms-warning-icon navbar-btn" ng-click="stateGo('alarms')">
-                        <i class="glyphicon glyphicon-warning-sign"></i>
+                        <i class="fa fa-warning"></i>
                     </button>
                     <span ng-if="newAlarmWarnCount > 0" class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
                     <span ng-if="newAlarmErrorCount > 0" class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
@@ -192,8 +196,8 @@
 
 <button class="unselectable navbar-collapse-button navbar-btn" ng-click="navbarCollapsed = !navbarCollapsed"
         data-toggle="dropdown">
-    <i class="glyphicon"
-       ng-class="{ 'glyphicon-collapse-up': !navbarCollapsed,  'glyphicon-collapse-down': navbarCollapsed}"></i>
+    <i class="fa"
+       ng-class="{ 'fa-caret-square-o-up': !navbarCollapsed,  'fa-caret-square-o-down': navbarCollapsed}"></i>
 </button>
 
 <!--ng-show="userLoggedIn"-->

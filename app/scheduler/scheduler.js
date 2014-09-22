@@ -9,12 +9,12 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.types = SCHEDULE_BLOCK_TYPES;
 
-        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow(this.row.rowIndex)"><span class="glyphicon glyphicon-trash"></span></button>' +
-            '<button value="moveToSchedule" class="btn btn-default btn-trash" ng-click="moveDraftRowToSchedule(this.row.index)"><span class="glyphicon glyphicon-chevron-down"></span></button>';
+        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow(this.row.rowIndex)"><span class="fa fa-trash-o"></span></button>' +
+            '<button value="moveToSchedule" class="btn btn-default btn-trash" ng-click="moveDraftRowToSchedule(this.row.index)"><span class="fa fa-chevron-down"></span></button>';
         var checkboxHeaderTemplate = '<input class="ngSelectionHeader" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"/>';
         var dropdownTemplate = '<select class="grid-dropdown" ng-model="COL_FIELD" ng-options="type for type in types"></select>';
         var datetimepickerTemplate = '<button id="btn-custom-sel-temp" class="btn-custom-datetimepicker" ng-click="openDatePicker(row.rowIndex, $event);">' +
-            '<span ng-if="!COL_FIELD">Select Date</span><span ng-if="COL_FIELD">{{COL_FIELD | date:\'dd/MM/yyyy HH:mm\'}}</span><span class="glyphicon glyphicon-chevron-down"></span></button>';
+            '<span ng-if="!COL_FIELD">Select Date</span><span ng-if="COL_FIELD">{{COL_FIELD | date:\'dd/MM/yyyy HH:mm\'}}</span><span class="fa fa-chevron-down"></span></button>';
         var lastId = 0;
 
         $scope.draftSelections = [];

@@ -77,7 +77,7 @@ module.exports = function (grunt) {
                 options: {
                 },
                 files: {
-                    'temp/app.css': 'app.less'
+                    'temp/app.css': 'app/app.less'
                 }
             }
         },
@@ -87,18 +87,21 @@ module.exports = function (grunt) {
                     module: pkg.name,
                     htmlmin: '<%= htmlmin.main.options %>'
                 },
-                src: [createFolderGlobs('*.html'), '!index.html', '!_SpecRunner.html'],
-                dest: 'temp/templates.js'
+                src: [createFolderGlobs('*.html'), '!index.html', '!_SpecRunner.html', 'bower_components/angular-gantt/template/gantt.tmpl.html'],
+                dest: 'dist/templates.js'
             }
         },
         copy: {
             main: {
                 files: [
-                    {src: ['img/**'], dest: 'dist/'},
-                    {src: ['bower_components/font-awesome/fonts/**'], dest: 'dist/', filter: 'isFile', expand: true}
-                    //{src: ['bower_components/angular-ui-utils/ui-utils-ieshiv.min.js'], dest: 'dist/'},
-                    //{src: ['bower_components/select2/*.png','bower_components/select2/*.gif'], dest:'dist/css/',flatten:true,expand:true},
-                    //{src: ['bower_components/angular-mocks/angular-mocks.js'], dest: 'dist/'}
+                    {
+                        src: ['bower_components/font-awesome/fonts/**'],
+                        dest: 'dist/fonts', flatten: true, expand: true
+                    },
+                    {
+                        src: ['bower_components/d3/d3.min.js'],
+                        dest: 'dist/bower_components/d3', flatten: true, expand: true
+                    }
                 ]
             }
         },
@@ -132,11 +135,17 @@ module.exports = function (grunt) {
         },
         concat: {
             main: {
-                src: ['<%= dom_munger.data.appjs %>', '<%= ngtemplates.main.dest %>'],
+                src: ['<%= dom_munger.data.appjs %>', '<%= ngtemplates.main.dest %>' ],
                 dest: 'temp/app.full.js'
             }
         },
-        ngmin: {
+//        ngmin: {
+//            main: {
+//                src: 'temp/app.full.js',
+//                dest: 'temp/app.full.js'
+//            }
+//        },
+        ngAnnotate: {
             main: {
                 src: 'temp/app.full.js',
                 dest: 'temp/app.full.js'
@@ -168,9 +177,10 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     {
-                        expand: true, cwd: 'dist/',
-                        src: ['**/{*.png,*.jpg}'],
-                        dest: 'dist/'
+                        expand: true,
+                        cwd: 'app/images/',
+                        src: '**/*.{png,jpg,gif}',
+                        dest: 'dist/images/'
                     }
                 ]
             }
@@ -249,7 +259,7 @@ module.exports = function (grunt) {
 //        }
     });
 
-    grunt.registerTask('build', ['jshint', 'clean:before', 'less', 'dom_munger', 'ngtemplates', 'cssmin', 'concat', 'ngmin', 'uglify', 'copy', 'htmlmin', 'imagemin', 'clean:after']);
+    grunt.registerTask('build', ['jshint', 'clean:before', 'less', 'dom_munger', 'ngtemplates', 'cssmin', 'concat', 'ngAnnotate', 'uglify', 'copy', 'htmlmin', 'imagemin', 'clean:after']);
     grunt.registerTask('serve', ['dom_munger:read', 'jshint', 'connect', 'watch']);
     grunt.registerTask('test', ['dom_munger:read', 'karma:all_tests']);
     grunt.registerTask('p:test', ['protractor_webdriver', 'protractor']);
