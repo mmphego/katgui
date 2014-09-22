@@ -23,6 +23,17 @@ angular.module('katGui.alarms')
 
         $rootScope.$on('alarmMessage', function (event, message) {
             $scope.addAlarmMessage(message);
+
+            if (message.priority === 'new') {
+
+                if (message.severity === 'warn') {
+                    $rootScope.newAlarmWarnCount++;
+                } else if (message.severity === 'error') {
+                    $rootScope.newAlarmErrorCount++;
+                } else if (message.severity === 'critical') {
+                    $rootScope.newAlarmCritCount++;
+                }
+            }
         });
 
         $scope.acknowledgeMessage = function (message) {

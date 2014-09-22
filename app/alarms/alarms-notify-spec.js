@@ -45,13 +45,15 @@ describe('Directive: alarms notify', function () {
 
 describe('AlarmsNotifyCtrl', function () {
 
+    beforeEach(module('katGui'));
     beforeEach(module('katGui.alarms'));
 
-    var scope, ctrl, location, alarmsService;
+    var rootScope, scope, ctrl, location, alarmsService;
 
     beforeEach(inject(function ($rootScope, $controller, $location) {
         scope = $rootScope.$new();
         location = $location;
+        rootScope = $rootScope;
 
         ctrl = $controller('AlarmsNotifyCtrl', {$scope: scope, AlarmService: alarmsService});
     }));
@@ -64,6 +66,24 @@ describe('AlarmsNotifyCtrl', function () {
         expect(scope.messages[0]).toBe(alarmObj);
     }));
 
+    it('should add ttl to alarm message for unknown, nominal and maintenance alarms', inject(function () {
+
+        var alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "unknown", "name": "alarm name"};
+        scope.addAlarmMessage(alarmObj);
+        scope.$digest();
+        expect(scope.messages[0].ttl).toBeDefined();
+
+        var alarmObj2 = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "nominal", "name": "alarm name"};
+        scope.addAlarmMessage(alarmObj2);
+        scope.$digest();
+        expect(scope.messages[1].ttl).toBeDefined();
+
+        var alarmObj3 = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "maintenance", "name": "alarm name"};
+        scope.addAlarmMessage(alarmObj3);
+        scope.$digest();
+        expect(scope.messages[2].ttl).toBeDefined();
+    }));
+
     it('should remove an alarm message after acknowledge', inject(function () {
 
         var alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "critical", "name": "alarm name"};
@@ -73,4 +93,38 @@ describe('AlarmsNotifyCtrl', function () {
         expect(scope.messages.length).toBe(0);
     }));
 
+
+    it('should increment alarm message count on rootScope', inject(function () {
+
+        rootScope.newAlarmCritCount = 0;
+        rootScope.newAlarmWarnCount = 0;
+        rootScope.newAlarmErrorCount = 0;
+
+        var alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "critical", "name": "alarm name"};
+        rootScope.$broadcast('alarmMessage', alarmObj);
+        scope.$digest();
+        expect(rootScope.newAlarmCritCount).toBe(1);
+
+        alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "warn", "name": "alarm name"};
+        rootScope.$broadcast('alarmMessage', alarmObj);
+        scope.$digest();
+        expect(rootScope.newAlarmWarnCount).toBe(1);
+
+        alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "error", "name": "alarm name"};
+        rootScope.$broadcast('alarmMessage', alarmObj);
+        scope.$digest();
+        expect(rootScope.newAlarmErrorCount).toBe(1);
+
+        alarmObj = {"date": 1410948999.507357, "priority": "new", "message": "alarm message", "severity": "bogus", "name": "alarm name"};
+        rootScope.$broadcast('alarmMessage', alarmObj);
+        scope.$digest();
+        expect(rootScope.newAlarmErrorCount).toBe(1);
+        expect(rootScope.newAlarmWarnCount).toBe(1);
+        expect(rootScope.newAlarmCritCount).toBe(1);
+
+        alarmObj = {"date": 1410948999.507357, "priority": "known", "message": "alarm message", "severity": "error", "name": "alarm name"};
+        rootScope.$broadcast('alarmMessage', alarmObj);
+        scope.$digest();
+        expect(rootScope.newAlarmErrorCount).toBe(1);
+    }));
 });

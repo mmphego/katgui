@@ -1,11 +1,13 @@
 angular.module('katGui.alarms', [])
 
-    .controller('AlarmsCtrl', function ($rootScope, $scope, AlarmService) {
+    .controller('AlarmsCtrl', function ($rootScope, $scope) {
 
         $scope.selectAll = false;
         $scope.alarmsData = [];
+        $scope.selectedAlarms = [];
         $scope.orderByField = 'date';
         $scope.reverseSort = true;
+        var checkboxHeaderTemplate = '<input class="ngSelectionHeader" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"/>';
 
         $scope.gridOptionsAlarms = {
             data: 'alarmsData',
@@ -16,36 +18,14 @@ angular.module('katGui.alarms', [])
                 {field: 'name', displayName: 'Alarm Name', width: 120},
                 {field: 'message', displayName: 'Message', width: 120}
             ],
-            enableRowSelection: false
+            selectedItems: $scope.selectedAlarms,
+            enableRowSelection: false,
+            checkboxHeaderTemplate: checkboxHeaderTemplate,
+            showSelectionCheckbox: true
         };
-
-        if (!AlarmService.connection) {
-            AlarmService.connectListener();
-        }
-
-        $scope.$watch('selectAll', function (newVal) {
-
-            if ($scope.alarmsData) {
-                $scope.alarmsData.forEach(function (alarm) {
-                    if (alarm.selected !== newVal) {
-                        alarm.selected = newVal;
-                    }
-                });
-            }
-        });
 
         $rootScope.$on('alarmMessage', function (event, message) {
 
-            if (message.priority === 'new') {
-
-                if (message.severity === 'warn') {
-                    $rootScope.newAlarmWarnCount++;
-                } else if (message.severity === 'error') {
-                    $rootScope.newAlarmErrorCount++;
-                } else if (message.severity === 'critical') {
-                    $rootScope.newAlarmCritCount++;
-                }
-            }
             $scope.alarmsData.push(message);
         });
 

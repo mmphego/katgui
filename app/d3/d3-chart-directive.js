@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.d3', [])
 
     .directive('d3Line', function ($window, d3Service) {
         return{
@@ -8,7 +8,8 @@ angular.module('katGui')
                 datasize: '='
             },
             replace: false,
-            link: function (scope, elem, attrs) {
+            link: function (scope, elem) {
+
                 d3Service.d3().then(function (d3) {
 
                     var pathClass = "line";
@@ -28,7 +29,7 @@ angular.module('katGui')
                         .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                    scope.$watch('datasize', function (newVal, oldVal) {
+                    scope.$watch('datasize', function () {
                         drawLineChart();
                     }, true);
 
