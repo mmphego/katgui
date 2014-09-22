@@ -9,10 +9,29 @@ describe('SensorGraphCtrl', function() {
       ctrl = $controller('SensorGraphCtrl', {$scope: scope});
     }));	
 
-	it('should ...', inject(function() {
+	it('should find sensor by string', inject(function() {
 
-		expect(1).toEqual(1);
+		scope.findSensorByString();
 		
 	}));
+
+    it('should get sensor meta data', inject(function() {
+
+        scope.getSensorMetaData();
+
+    }));
+
+    it('should get sensor data', inject(function() {
+
+        scope.getSensorData();
+
+    }));
+
+    it('should map sensor data', inject(function() {
+
+        scope.sensorData = { data: [] };
+        scope.mapSensorData();
+
+    }));
 
 });

@@ -24,16 +24,13 @@ angular.module('katGui')
         $scope.login = function (credentials) {
 
             //until we have a real login post to call
-            var user = { name: credentials.username, role: USER_ROLES.expert};
+//            var user = { name: credentials.username, role: USER_ROLES.expert};
 
-            if (user.name === '') {
-                user.name = 'Username';
-            }
 
             Session.create('sessionid1', 'userid1', USER_ROLES.expert);
 
-            $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
-            $scope.setCurrentUser(user);
+//            $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+//            $rootScope.setCurrentUser(user);
 
             AlarmService.connectListener();
             $state.go('landing');
@@ -48,48 +45,48 @@ angular.module('katGui')
         };
 
         $scope.forgotPassword = function () {
-            alert('nothing to see here yet...');
+//            alert('nothing to see here yet...');
         };
 
-        $scope.loginFinished = function (authResult) {
-            if (authResult) {
-                console.log(authResult);
-
-                $scope.loginResult = "";
-
-                if (authResult['status']['signed_in']) {
-                    $scope.loginResult = 'User granted access:';
-                    //gapi.auth.setToken(authResult);
-
-                    Session.create(authResult['sessionState'], authResult['client_id'], USER_ROLES.expert);
-
-                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
-
-                    var user = { name: '', role: USER_ROLES.all};
-                    $scope.setCurrentUser(user);
-
-//                    gapi.client.load('plus', 'v1', function () {
-//                        var request = gapi.client.plus.people.get({
-//                            'userId': 'me'
-//                        });
-//                        request.execute(function (resp) {
-//                            var user = { name: resp.displayName, role: USER_ROLES.expert};
-//                            $scope.setCurrentUser(user);
+//        $scope.loginFinished = function (authResult) {
+//            if (authResult) {
+//                console.log(authResult);
 //
-//                            console.log('Retrieved profile for: ' + resp.displayName);
-//                        });
-//                    });
-
-                    $state.go('landing');
-
-                } else {
-                    $scope.loginResult = 'Access denied: ' + authResult['error'];
-                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
-                }
-                $scope.loginDetails = authResult;
-            } else {
-                $scope.loginResult = 'Empty authResult';
-                $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
-            }
-        };
+//                $scope.loginResult = "";
+//
+//                if (authResult['status']['signed_in']) {
+//                    $scope.loginResult = 'User granted access:';
+//                    //gapi.auth.setToken(authResult);
+//
+//                    Session.create(authResult['sessionState'], authResult['client_id'], USER_ROLES.expert);
+//
+//                    $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+//
+//                    var user = { name: '', role: USER_ROLES.all};
+//                    $scope.setCurrentUser(user);
+//
+////                    gapi.client.load('plus', 'v1', function () {
+////                        var request = gapi.client.plus.people.get({
+////                            'userId': 'me'
+////                        });
+////                        request.execute(function (resp) {
+////                            var user = { name: resp.displayName, role: USER_ROLES.expert};
+////                            $scope.setCurrentUser(user);
+////
+////                            console.log('Retrieved profile for: ' + resp.displayName);
+////                        });
+////                    });
+//
+//                    $state.go('landing');
+//
+//                } else {
+//                    $scope.loginResult = 'Access denied: ' + authResult['error'];
+//                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
+//                }
+//                $scope.loginDetails = authResult;
+//            } else {
+//                $scope.loginResult = 'Empty authResult';
+//                $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
+//            }
+//        };
     });

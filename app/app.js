@@ -136,13 +136,13 @@ angular.module('katGui', ['ui.bootstrap',
         $rootScope.newAlarmErrorCount = 0;
         $rootScope.newAlarmCritCount = 0;
 
-        $scope.setCurrentUser = function (user) {
+        $rootScope.setCurrentUser = function (user) {
             $scope.currentUser = user;
             $scope.userLoggedIn = user !== null;
             $scope.userCanOperate = !!user && ($scope.currentUser.role !== USER_ROLES.all && $scope.currentUser.role !== USER_ROLES.monitor);
         };
 
-        $scope.logout = function () {
+        $rootScope.logout = function () {
             $scope.setCurrentUser(null);
             Session.destroy();
 //            gapi.auth.signOut();

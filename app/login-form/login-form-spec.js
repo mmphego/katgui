@@ -1,20 +1,24 @@
-describe('LoginFormCtrl', function() {
+describe('LoginFormCtrl', function () {
 
-	beforeEach(module('katGui'));
+    beforeEach(module('katGui'));
 
-	var scope,ctrl;
+    var scope, ctrl, location, USER_ROLES;
 
-    beforeEach(inject(function($rootScope, $controller) {
-      scope = $rootScope.$new();
-      ctrl = $controller('LoginFormCtrl', {$scope: scope});
+    beforeEach(inject(function ($rootScope, $controller, $location, $templateCache, _USER_ROLES_) {
+        scope = $rootScope.$new();
+        $templateCache.put('app/landing/landing.html', '');
+        ctrl = $controller('LoginFormCtrl', {$scope: scope});
+        USER_ROLES = _USER_ROLES_;
+        location = $location;
     }));
 
 
-    it('should ensure user can log in', function() {
-        // expect current scope to contain username
-    });
-    it('should ensure path has changed', function() {
-        // expect path to equal '/dashboard'
+    it('should ensure user can log in and redirect to landing url', function () {
+        var mockCredentials = { name: 'testUserName', role: USER_ROLES.expert};
+        scope.login(mockCredentials);
+        scope.$digest();
+//        expect(scope.currentUser).toBe(mockCredentials);
+        expect(location.path()).toBe('/landing');
     });
 
 });
