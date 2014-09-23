@@ -1,4 +1,4 @@
-angular.module('katGui')
+angular.module('katGui.d3')
 
     //this factory is used so that we can dynamically load the d3 libraries only when we use them
     .factory('d3Service', function ($document, $window, $q, $rootScope) {

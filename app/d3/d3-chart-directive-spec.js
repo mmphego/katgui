@@ -28,8 +28,8 @@ describe('Directive: d3-chart', function () {
 
     it('should ...', function () {
 
-        var element = compile('<d3-line></d3-line>')(scope);
-        expect(element.text()).toBe('');
+//        var element = compile('<d3-line></d3-line>')(scope);
+//        expect(element.text()).toBe('');
 
 //        d3Service.d3()
 //            .then(function() {
