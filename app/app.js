@@ -3,6 +3,7 @@ angular.module('katGui', ['ui.bootstrap',
     'ui.utils', 'ui.router', 'ngAnimate', 'ngGrid', 'adf',
     'katGui.alarms',
     'katGui.d3',
+    'katGui.health',
     'katGui.widgets.navigationWidget',
     'katGui.widgets.ganttWidget',
     'katGui.dashboardStructure',
@@ -52,6 +53,13 @@ angular.module('katGui', ['ui.bootstrap',
             templateUrl: 'app/alarms/alarms.html',
             data: {
                 authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
+        $stateProvider.state('health', {
+            url: '/health',
+            templateUrl: 'app/health/health.html',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
             }
         });
         $stateProvider.state('landing', {
