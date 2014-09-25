@@ -110,20 +110,3 @@ angular.module('katGui.d3', [])
         };
     });
 
-
-//function redrawLineChart() {
-//
-//    if (scope.data !== null && scope.data !== undefined && scope.data.length > 0) {
-//        setChartParameters();
-//
-//        svg.selectAll("g.y.axis").call(yAxis);
-//
-//        svg.selectAll("g.x.axis").call(xAxis);
-//
-//        svg.selectAll("." + pathClass)
-//            .attr({
-//                d: valueLine(scope.data)
-//            });
-//    }
-//}
-
