@@ -34,7 +34,7 @@
 @btn-primary-border: darken(@btn-primary-bg, 5%);
 @navbar-height: 50px;
 @navbar-default-bg: rgba(255, 255, 255, 1.0);
-@navbar-btn-bg: rgba(220, 235, 255, 0.5);
+@navbar-btn-bg: rgba(150, 190, 255, 0.50);
 @navbar-text-hover-color: darken(grey, 25%);
 
 @app-min-width: 770px;
@@ -225,13 +225,13 @@ body {
 
 .btn-navbar-fill {
   height: 50px;
-  border: 1px solid lighten(#d3d3d3, 5%);
+  border: 1px solid darken(@navbar-btn-bg, 5%);
   background: @navbar-btn-bg;
   border-radius: 0px;
 
   &:hover {
     background: darken(@navbar-btn-bg, 10%);
-    border: 1px solid #d3d3d3;
+    border: 1px solid darken(@navbar-btn-bg, 15%);
   }
 }
 

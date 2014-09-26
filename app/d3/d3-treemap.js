@@ -25,6 +25,11 @@ angular.module('katGui.d3')
                         }
                     }, true);
 
+                    var tooltip = d3.select(element[0]).append("div")
+                        .attr("class", "treemap-tooltip")
+                        .style("visibility", "hidden")
+                        .style("background-color", "#ffffff");
+
                     chart(scope.data);
 
                     function chart(root) {
@@ -57,7 +62,7 @@ angular.module('katGui.d3')
                             .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
                             .round(false);
 
-                        scope.svg = d3.select(element[0]).append("svg")
+                        var svg = d3.select(element[0]).append("svg")
                             .attr("id", "treemapHealthChart")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.bottom + margin.top)
@@ -68,7 +73,7 @@ angular.module('katGui.d3')
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                             .style("shape-rendering", "crispEdges");
 
-                        var grandparent = scope.svg.append("g")
+                        var grandparent = svg.append("g")
                             .attr("class", "grandparent");
 
                         grandparent.append("rect")
@@ -131,7 +136,7 @@ angular.module('katGui.d3')
                                 .select("text")
                                 .text(name(d));
 
-                            var g1 = scope.svg.insert("g", ".grandparent")
+                            var g1 = svg.insert("g", ".grandparent")
                                 .datum(d)
                                 .attr("class", "depth");
 
@@ -160,11 +165,12 @@ angular.module('katGui.d3')
 
                             g.append("rect")
                                 .attr("class", "parent")
-                                .call(rect)
-                                .append("title")
-                                .text(function (d) {
-                                    return formatNumber(d.value);
-                                });
+                                .call(rect);
+                            //dont need this, just gives an annoying tooltip
+//                                .append("title")
+//                                .text(function (d) {
+//                                    return formatNumber(d.value);
+//                                });
 
                             g.append("text")
                                 .attr("dy", ".75em")
@@ -174,6 +180,8 @@ angular.module('katGui.d3')
                                 .call(text);
 
                             function transition(d) {
+                                tooltip.style("visibility", "hidden");
+
                                 if (transitioning || !d) {
                                     return;
                                 }
@@ -188,10 +196,10 @@ angular.module('katGui.d3')
                                 y.domain([d.y, d.y + d.dy]);
 
                                 // Enable anti-aliasing during the transition.
-                                scope.svg.style("shape-rendering", null);
+                                svg.style("shape-rendering", null);
 
                                 // Draw child nodes on top of parent nodes.
-                                scope.svg.selectAll(".depth").sort(function (a, b) {
+                                svg.selectAll(".depth").sort(function (a, b) {
                                     //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
                                     return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
                                 });
@@ -207,7 +215,7 @@ angular.module('katGui.d3')
 
                                 // Remove the old node when the transition is finished.
                                 t1.remove().each("end", function () {
-                                    scope.svg.style("shape-rendering", "crispEdges");
+                                    svg.style("shape-rendering", "crispEdges");
                                     transitioning = false;
                                 });
                             }
@@ -225,9 +233,10 @@ angular.module('katGui.d3')
                         }
 
                         function rect(r) {
-                            r.attr("x", function (d) {
-                                return x(d.x);
-                            })
+                            r
+                                .attr("x", function (d) {
+                                    return x(d.x);
+                                })
                                 .attr("y", function (d) {
                                     return y(d.y);
                                 })
@@ -237,6 +246,24 @@ angular.module('katGui.d3')
                                 .attr("height", function (d) {
                                     return y(d.y + d.dy) - y(d.y);
                                 });
+
+                            //r.on is not defined while transitioning, so check it!
+                            if (r.on) {
+
+                                r
+                                    .on("mouseover", function (d) {
+                                        tooltip.html(d.name + " value: " + d.value);
+                                        tooltip.style("visibility", "visible");
+                                    })
+                                    .on("mousemove", function () {
+                                        tooltip
+                                            .style("top", (d3.event.pageY + 10) + "px")
+                                            .style("left", (d3.event.pageX + 10) + "px");
+                                    })
+                                    .on("mouseout", function () {
+                                        tooltip.style("visibility", "hidden");
+                                    });
+                            }
                         }
 
                         function name(d) {

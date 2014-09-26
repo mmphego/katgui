@@ -28,26 +28,26 @@ angular.module('katGui.health', ['katGui.d3'])
                         {
                             "name": "cluster",
                             "children": [
-                                {"name": "AgglomerativeCluster", "value": 1000},
-                                {"name": "CommunityStructure", "value": 1000},
-                                {"name": "HierarchicalCluster", "value": 1000},
-                                {"name": "MergeEdge", "value": 1000}
+                                {"name": "AgglomerativeCluster", "value": 100},
+                                {"name": "CommunityStructure", "value": 100},
+                                {"name": "HierarchicalCluster", "value": 100},
+                                {"name": "MergeEdge", "value": 100}
                             ]
                         },
                         {
                             "name": "graph",
                             "children": [
-                                {"name": "BetweennessCentrality", "value": 1000},
-                                {"name": "LinkDistance", "value": 1000},
-                                {"name": "MaxFlowMinCut", "value": 1000},
-                                {"name": "ShortestPaths", "value": 1000},
-                                {"name": "SpanningTree", "value": 1000}
+                                {"name": "BetweennessCentrality", "value": 100},
+                                {"name": "LinkDistance", "value": 100},
+                                {"name": "MaxFlowMinCut", "value": 100},
+                                {"name": "ShortestPaths", "value": 100},
+                                {"name": "SpanningTree", "value": 100}
                             ]
                         },
                         {
                             "name": "optimization",
                             "children": [
-                                {"name": "AspectRatioBanker", "value": 1000}
+                                {"name": "AspectRatioBanker", "value": 100}
                             ]
                         }
                     ]
@@ -55,31 +55,31 @@ angular.module('katGui.health', ['katGui.d3'])
                 {
                     "name": "ANT2",
                     "children": [
-                        {"name": "Easing", "value": 500},
-                        {"name": "FunctionSequence", "value": 500},
+                        {"name": "Easing", "value": 50},
+                        {"name": "FunctionSequence", "value": 50},
                         {
                             "name": "Interpolate",
                             "children": [
-                                {"name": "ArrayInterpolator", "value": 500},
-                                {"name": "ColorInterpolator", "value": 500},
-                                {"name": "DateInterpolator", "value": 500},
-                                {"name": "Interpolator", "value": 500},
-                                {"name": "MatrixInterpolator", "value": 500},
-                                {"name": "NumberInterpolator", "value": 500},
-                                {"name": "ObjectInterpolator", "value": 500},
-                                {"name": "PointInterpolator", "value": 500},
-                                {"name": "RectangleInterpolator", "value": 500}
+                                {"name": "ArrayInterpolator", "value": 50},
+                                {"name": "ColorInterpolator", "value": 50},
+                                {"name": "DateInterpolator", "value": 50},
+                                {"name": "Interpolator", "value": 50},
+                                {"name": "MatrixInterpolator", "value": 50},
+                                {"name": "NumberInterpolator", "value": 50},
+                                {"name": "ObjectInterpolator", "value": 50},
+                                {"name": "PointInterpolator", "value": 50},
+                                {"name": "RectangleInterpolator", "value": 50}
                             ]
                         },
-                        {"name": "ISchedulable", "value": 500},
-                        {"name": "Parallel", "value": 500},
-                        {"name": "Pause", "value": 500},
-                        {"name": "Scheduler", "value": 500},
-                        {"name": "Sequence", "value": 500},
-                        {"name": "Transition", "value": 500},
-                        {"name": "Transitioner", "value": 500},
-                        {"name": "TransitionEvent", "value": 500},
-                        {"name": "Tween", "value": 500}
+                        {"name": "ISchedulable", "value": 50},
+                        {"name": "Parallel", "value": 50},
+                        {"name": "Pause", "value": 50},
+                        {"name": "Scheduler", "value": 50},
+                        {"name": "Sequence", "value": 50},
+                        {"name": "Transition", "value": 50},
+                        {"name": "Transitioner", "value": 50},
+                        {"name": "TransitionEvent", "value": 50},
+                        {"name": "Tween", "value": 50}
                     ]
                 },
                 {
@@ -88,90 +88,90 @@ angular.module('katGui.health', ['katGui.d3'])
                         {
                             "name": "converters",
                             "children": [
-                                {"name": "Converters", "value": 1000},
-                                {"name": "DelimitedTextConverter", "value": 1000},
-                                {"name": "GraphMLConverter", "value": 1000},
-                                {"name": "IDataConverter", "value": 1000},
-                                {"name": "JSONConverter", "value": 1000}
+                                {"name": "Converters", "value": 100},
+                                {"name": "DelimitedTextConverter", "value": 100},
+                                {"name": "GraphMLConverter", "value": 100},
+                                {"name": "IDataConverter", "value": 100},
+                                {"name": "JSONConverter", "value": 100}
                             ]
                         },
-                        {"name": "DataField", "value": 1000},
-                        {"name": "DataSchema", "value": 1000},
-                        {"name": "DataSet", "value": 1000},
-                        {"name": "DataSource", "value": 1000},
-                        {"name": "DataTable", "value": 1000}
+                        {"name": "DataField", "value": 100},
+                        {"name": "DataSchema", "value": 100},
+                        {"name": "DataSet", "value": 100},
+                        {"name": "DataSource", "value": 100},
+                        {"name": "DataTable", "value": 100}
                     ]
                 },
                 {
                     "name": "ANT4",
                     "children": [
-                        {"name": "DirtySprite", "value": 2000},
-                        {"name": "LineSprite", "value": 3000},
-                        {"name": "RectSprite", "value": 2000},
-                        {"name": "TextSprite", "value": 3000}
+                        {"name": "DirtySprite", "value": 200},
+                        {"name": "LineSprite", "value": 300},
+                        {"name": "RectSprite", "value": 200},
+                        {"name": "TextSprite", "value": 300}
                     ]
                 },
                 {
                     "name": "ANT5",
                     "children": [
-                        {"name": "DragForce", "value": 1000},
-                        {"name": "GravityForce", "value": 1000},
-                        {"name": "IForce", "value": 1000},
-                        {"name": "NBodyForce", "value": 1000},
-                        {"name": "Particle", "value": 1000},
-                        {"name": "Simulation", "value": 1000},
-                        {"name": "Spring", "value": 1000},
-                        {"name": "SpringForce", "value": 3000}
+                        {"name": "DragForce", "value": 100},
+                        {"name": "GravityForce", "value": 100},
+                        {"name": "IForce", "value": 100},
+                        {"name": "NBodyForce", "value": 100},
+                        {"name": "Particle", "value": 100},
+                        {"name": "Simulation", "value": 100},
+                        {"name": "Spring", "value": 100},
+                        {"name": "SpringForce", "value": 300}
                     ]
                 },
                 {
                     "name": "ANT7",
                     "children": [
-                        {"name": "AggregateExpression", "value": 250},
-                        {"name": "And", "value": 250},
-                        {"name": "Arithmetic", "value": 250},
-                        {"name": "Average", "value": 250},
-                        {"name": "BinaryExpression", "value": 250},
-                        {"name": "Comparison", "value": 250},
-                        {"name": "CompositeExpression", "value": 250},
-                        {"name": "Count", "value": 250},
-                        {"name": "DateUtil", "value": 250},
-                        {"name": "Distinct", "value": 250},
-                        {"name": "Expression", "value": 250},
-                        {"name": "ExpressionIterator", "value": 250},
-                        {"name": "Fn", "value": 250},
-                        {"name": "If", "value": 250},
-                        {"name": "IsA", "value": 250},
-                        {"name": "Literal", "value": 250},
-                        {"name": "Match", "value": 250},
-                        {"name": "Maximum", "value": 250},
+                        {"name": "AggregateExpression", "value": 25},
+                        {"name": "And", "value": 25},
+                        {"name": "Arithmetic", "value": 25},
+                        {"name": "Average", "value": 25},
+                        {"name": "BinaryExpression", "value": 25},
+                        {"name": "Comparison", "value": 25},
+                        {"name": "CompositeExpression", "value": 25},
+                        {"name": "Count", "value": 25},
+                        {"name": "DateUtil", "value": 25},
+                        {"name": "Distinct", "value": 25},
+                        {"name": "Expression", "value": 25},
+                        {"name": "ExpressionIterator", "value": 25},
+                        {"name": "Fn", "value": 25},
+                        {"name": "If", "value": 25},
+                        {"name": "IsA", "value": 25},
+                        {"name": "Literal", "value": 25},
+                        {"name": "Match", "value": 25},
+                        {"name": "Maximum", "value": 25},
                         {
                             "name": "methods",
                             "children": [
-                                {"name": "add", "value": 250},
-                                {"name": "and", "value": 250},
-                                {"name": "average", "value": 250},
-                                {"name": "count", "value": 250},
-                                {"name": "distinct", "value": 250},
-                                {"name": "div", "value": 250},
-                                {"name": "eq", "value": 250},
-                                {"name": "fn", "value": 250},
-                                {"name": "gt", "value": 250},
-                                {"name": "gte", "value": 250},
-                                {"name": "iff", "value": 250},
-                                {"name": "isa", "value": 250}
+                                {"name": "add", "value": 25},
+                                {"name": "and", "value": 25},
+                                {"name": "average", "value": 25},
+                                {"name": "count", "value": 25},
+                                {"name": "distinct", "value": 25},
+                                {"name": "div", "value": 25},
+                                {"name": "eq", "value": 25},
+                                {"name": "fn", "value": 25},
+                                {"name": "gt", "value": 25},
+                                {"name": "gte", "value": 25},
+                                {"name": "iff", "value": 25},
+                                {"name": "isa", "value": 25}
                             ]
                         },
-                        {"name": "Minimum", "value": 250},
-                        {"name": "Not", "value": 250},
-                        {"name": "Or", "value": 250},
-                        {"name": "Query", "value": 250},
-                        {"name": "Range", "value": 250},
-                        {"name": "StringUtil", "value": 250},
-                        {"name": "Sum", "value": 250},
-                        {"name": "Variable", "value": 250},
-                        {"name": "Variance", "value": 250},
-                        {"name": "Xor", "value": 250}
+                        {"name": "Minimum", "value": 25},
+                        {"name": "Not", "value": 25},
+                        {"name": "Or", "value": 25},
+                        {"name": "Query", "value": 25},
+                        {"name": "Range", "value": 25},
+                        {"name": "StringUtil", "value": 25},
+                        {"name": "Sum", "value": 25},
+                        {"name": "Variable", "value": 25},
+                        {"name": "Variance", "value": 25},
+                        {"name": "Xor", "value": 25}
                     ]
                 },
                 {
@@ -180,27 +180,27 @@ angular.module('katGui.health', ['katGui.d3'])
                         {
                             "name": "axis",
                             "children": [
-                                {"name": "Axes", "value": 1000},
-                                {"name": "Axis", "value": 1000},
-                                {"name": "AxisGridLine", "value": 1000},
-                                {"name": "AxisLabel", "value": 500},
-                                {"name": "CartesianAxes", "value": 500}
+                                {"name": "Axes", "value": 100},
+                                {"name": "Axis", "value": 100},
+                                {"name": "AxisGridLine", "value": 100},
+                                {"name": "AxisLabel", "value": 50},
+                                {"name": "CartesianAxes", "value": 50}
                             ]
                         },
                         {
                             "name": "controls",
                             "children": [
-                                {"name": "AnchorControl", "value": 1000},
-                                {"name": "ClickControl", "value": 500},
-                                {"name": "Control", "value": 500},
-                                {"name": "ControlList", "value": 500},
-                                {"name": "DragControl", "value": 500},
-                                {"name": "ExpandControl", "value": 500},
-                                {"name": "HoverControl", "value": 500},
-                                {"name": "IControl", "value": 500},
-                                {"name": "PanZoomControl", "value": 500},
-                                {"name": "SelectionControl", "value": 500},
-                                {"name": "TooltipControl", "value": 500}
+                                {"name": "AnchorControl", "value": 100},
+                                {"name": "ClickControl", "value": 50},
+                                {"name": "Control", "value": 50},
+                                {"name": "ControlList", "value": 50},
+                                {"name": "DragControl", "value": 50},
+                                {"name": "ExpandControl", "value": 50},
+                                {"name": "HoverControl", "value": 50},
+                                {"name": "IControl", "value": 50},
+                                {"name": "PanZoomControl", "value": 50},
+                                {"name": "SelectionControl", "value": 50},
+                                {"name": "TooltipControl", "value": 50}
                             ]
                         }
                     ]
@@ -211,27 +211,27 @@ angular.module('katGui.health', ['katGui.d3'])
                         {
                             "name": "axis",
                             "children": [
-                                {"name": "Axes", "value": 1000},
-                                {"name": "Axis", "value": 1000},
-                                {"name": "AxisGridLine", "value": 1000},
-                                {"name": "AxisLabel", "value": 500},
-                                {"name": "CartesianAxes", "value": 500}
+                                {"name": "Axes", "value": 100},
+                                {"name": "Axis", "value": 100},
+                                {"name": "AxisGridLine", "value": 100},
+                                {"name": "AxisLabel", "value": 50},
+                                {"name": "CartesianAxes", "value": 50}
                             ]
                         },
                         {
                             "name": "controls",
                             "children": [
-                                {"name": "AnchorControl", "value": 1000},
-                                {"name": "ClickControl", "value": 500},
-                                {"name": "Control", "value": 500},
-                                {"name": "ControlList", "value": 500},
-                                {"name": "DragControl", "value": 500},
-                                {"name": "ExpandControl", "value": 500},
-                                {"name": "HoverControl", "value": 500},
-                                {"name": "IControl", "value": 500},
-                                {"name": "PanZoomControl", "value": 500},
-                                {"name": "SelectionControl", "value": 500},
-                                {"name": "TooltipControl", "value": 500}
+                                {"name": "AnchorControl", "value": 100},
+                                {"name": "ClickControl", "value": 50},
+                                {"name": "Control", "value": 50},
+                                {"name": "ControlList", "value": 50},
+                                {"name": "DragControl", "value": 50},
+                                {"name": "ExpandControl", "value": 50},
+                                {"name": "HoverControl", "value": 50},
+                                {"name": "IControl", "value": 50},
+                                {"name": "PanZoomControl", "value": 50},
+                                {"name": "SelectionControl", "value": 50},
+                                {"name": "TooltipControl", "value": 50}
                             ]
                         }
                     ]
@@ -242,27 +242,27 @@ angular.module('katGui.health', ['katGui.d3'])
                         {
                             "name": "axis",
                             "children": [
-                                {"name": "Axes", "value": 1000},
-                                {"name": "Axis", "value": 1000},
-                                {"name": "AxisGridLine", "value": 1000},
-                                {"name": "AxisLabel", "value": 500},
-                                {"name": "CartesianAxes", "value": 500}
+                                {"name": "Axes", "value": 100},
+                                {"name": "Axis", "value": 100},
+                                {"name": "AxisGridLine", "value": 100},
+                                {"name": "AxisLabel", "value": 50},
+                                {"name": "CartesianAxes", "value": 50}
                             ]
                         },
                         {
                             "name": "controls",
                             "children": [
-                                {"name": "AnchorControl", "value": 1000},
-                                {"name": "ClickControl", "value": 500},
-                                {"name": "Control", "value": 500},
-                                {"name": "ControlList", "value": 500},
-                                {"name": "DragControl", "value": 500},
-                                {"name": "ExpandControl", "value": 500},
-                                {"name": "HoverControl", "value": 500},
-                                {"name": "IControl", "value": 500},
-                                {"name": "PanZoomControl", "value": 500},
-                                {"name": "SelectionControl", "value": 500},
-                                {"name": "TooltipControl", "value": 500}
+                                {"name": "AnchorControl", "value": 100},
+                                {"name": "ClickControl", "value": 50},
+                                {"name": "Control", "value": 50},
+                                {"name": "ControlList", "value": 50},
+                                {"name": "DragControl", "value": 50},
+                                {"name": "ExpandControl", "value": 50},
+                                {"name": "HoverControl", "value": 50},
+                                {"name": "IControl", "value": 50},
+                                {"name": "PanZoomControl", "value": 50},
+                                {"name": "SelectionControl", "value": 50},
+                                {"name": "TooltipControl", "value": 50}
                             ]
                         }
                     ]
