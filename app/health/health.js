@@ -1,11 +1,22 @@
 angular.module('katGui.health', ['katGui.d3'])
 
-    .controller('HealthCtrl', function ($scope) {
+    .controller('HealthCtrl', function ($scope, $window) {
 
         $scope.treemapDisplayValue = 'size';
 
-        $scope.treeWidth = 1600;
-        $scope.treeHeight = 900;
+        $scope.treeChartSize = { width: $window.innerWidth, height: $window.innerHeight };
+
+        $scope.$watch(function () {
+            return $window.innerWidth;
+        }, function (value) {
+            $scope.treeChartSize.width = value - 7;
+        });
+
+        $scope.$watch(function () {
+            return $window.innerHeight;
+        }, function (value) {
+            $scope.treeChartSize.height = value - 70;
+        });
 
         $scope.d3TreemapData =
         {
@@ -17,7 +28,7 @@ angular.module('katGui.health', ['katGui.d3'])
                         {
                             "name": "cluster",
                             "children": [
-                                {"name": "AgglomerativeCluster", "value": 1007},
+                                {"name": "AgglomerativeCluster", "value": 1000},
                                 {"name": "CommunityStructure", "value": 1000},
                                 {"name": "HierarchicalCluster", "value": 1000},
                                 {"name": "MergeEdge", "value": 1000}
@@ -44,10 +55,10 @@ angular.module('katGui.health', ['katGui.d3'])
                 {
                     "name": "ANT2",
                     "children": [
-                        {"name": "Easing", "value": 506},
+                        {"name": "Easing", "value": 500},
                         {"name": "FunctionSequence", "value": 500},
                         {
-                            "name": "interpolate",
+                            "name": "Interpolate",
                             "children": [
                                 {"name": "ArrayInterpolator", "value": 500},
                                 {"name": "ColorInterpolator", "value": 500},
@@ -77,7 +88,7 @@ angular.module('katGui.health', ['katGui.d3'])
                         {
                             "name": "converters",
                             "children": [
-                                {"name": "Converters", "value": 1005},
+                                {"name": "Converters", "value": 1000},
                                 {"name": "DelimitedTextConverter", "value": 1000},
                                 {"name": "GraphMLConverter", "value": 1000},
                                 {"name": "IDataConverter", "value": 1000},
@@ -94,7 +105,7 @@ angular.module('katGui.health', ['katGui.d3'])
                 {
                     "name": "ANT4",
                     "children": [
-                        {"name": "DirtySprite", "value": 2004},
+                        {"name": "DirtySprite", "value": 2000},
                         {"name": "LineSprite", "value": 3000},
                         {"name": "RectSprite", "value": 2000},
                         {"name": "TextSprite", "value": 3000}
@@ -103,7 +114,7 @@ angular.module('katGui.health', ['katGui.d3'])
                 {
                     "name": "ANT5",
                     "children": [
-                        {"name": "DragForce", "value": 1003},
+                        {"name": "DragForce", "value": 1000},
                         {"name": "GravityForce", "value": 1000},
                         {"name": "IForce", "value": 1000},
                         {"name": "NBodyForce", "value": 1000},
@@ -114,9 +125,9 @@ angular.module('katGui.health', ['katGui.d3'])
                     ]
                 },
                 {
-                    "name": "ANT6",
+                    "name": "ANT7",
                     "children": [
-                        {"name": "AggregateExpression", "value": 252},
+                        {"name": "AggregateExpression", "value": 250},
                         {"name": "And", "value": 250},
                         {"name": "Arithmetic", "value": 250},
                         {"name": "Average", "value": 250},
@@ -164,12 +175,74 @@ angular.module('katGui.health', ['katGui.d3'])
                     ]
                 },
                 {
-                    "name": "ANT7",
+                    "name": "ANT6",
                     "children": [
                         {
                             "name": "axis",
                             "children": [
-                                {"name": "Axes", "value": 1001},
+                                {"name": "Axes", "value": 1000},
+                                {"name": "Axis", "value": 1000},
+                                {"name": "AxisGridLine", "value": 1000},
+                                {"name": "AxisLabel", "value": 500},
+                                {"name": "CartesianAxes", "value": 500}
+                            ]
+                        },
+                        {
+                            "name": "controls",
+                            "children": [
+                                {"name": "AnchorControl", "value": 1000},
+                                {"name": "ClickControl", "value": 500},
+                                {"name": "Control", "value": 500},
+                                {"name": "ControlList", "value": 500},
+                                {"name": "DragControl", "value": 500},
+                                {"name": "ExpandControl", "value": 500},
+                                {"name": "HoverControl", "value": 500},
+                                {"name": "IControl", "value": 500},
+                                {"name": "PanZoomControl", "value": 500},
+                                {"name": "SelectionControl", "value": 500},
+                                {"name": "TooltipControl", "value": 500}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ANT9",
+                    "children": [
+                        {
+                            "name": "axis",
+                            "children": [
+                                {"name": "Axes", "value": 1000},
+                                {"name": "Axis", "value": 1000},
+                                {"name": "AxisGridLine", "value": 1000},
+                                {"name": "AxisLabel", "value": 500},
+                                {"name": "CartesianAxes", "value": 500}
+                            ]
+                        },
+                        {
+                            "name": "controls",
+                            "children": [
+                                {"name": "AnchorControl", "value": 1000},
+                                {"name": "ClickControl", "value": 500},
+                                {"name": "Control", "value": 500},
+                                {"name": "ControlList", "value": 500},
+                                {"name": "DragControl", "value": 500},
+                                {"name": "ExpandControl", "value": 500},
+                                {"name": "HoverControl", "value": 500},
+                                {"name": "IControl", "value": 500},
+                                {"name": "PanZoomControl", "value": 500},
+                                {"name": "SelectionControl", "value": 500},
+                                {"name": "TooltipControl", "value": 500}
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "ANT8",
+                    "children": [
+                        {
+                            "name": "axis",
+                            "children": [
+                                {"name": "Axes", "value": 1000},
                                 {"name": "Axis", "value": 1000},
                                 {"name": "AxisGridLine", "value": 1000},
                                 {"name": "AxisLabel", "value": 500},

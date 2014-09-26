@@ -5,24 +5,38 @@ angular.module('katGui.d3')
             restrict: 'EA',
             scope: {
                 data: '=',
-                displayValue: '=',
-                chartWidth: '=',
-                chartHeight: '='
+                chartSize: '='
             },
-            replace: true,
+            replace: false,
             link: function (scope, element) {
 
                 d3Service.d3().then(function (d3) {
+
+                    var width, height, inited = false;
+
+                    var margin = {top: 20, right: 0, bottom: 0, left: 0},
+                        formatNumber = d3.format(",d"),
+                        transitioning;
+
+                    scope.$watch('chartSize', function () {
+                        if (scope.chartSize.width !== width || scope.chartSize.height !== height + margin.top) {
+                            d3.select("#treemapHealthChart").remove();
+                            chart(scope.data);
+                        }
+                    }, true);
 
                     chart(scope.data);
 
                     function chart(root) {
 
-                        var margin = {top: 20, right: 0, bottom: 0, left: 0},
-                            width = scope.chartWidth,
-                            height = scope.chartHeight - margin.top - margin.bottom,
-                            formatNumber = d3.format(",d"),
-                            transitioning;
+                        if (!inited) {
+                            inited = true;
+                            //we should only accumulate the data once, not on every redraw
+                            accumulate(root);
+                        }
+
+                        width = scope.chartSize.width;
+                        height = scope.chartSize.height - margin.top - margin.bottom;
 
                         var x = d3.scale.linear()
                             .domain([0, width])
@@ -37,12 +51,14 @@ angular.module('katGui.d3')
                                 return depth ? null : d._children;
                             })
                             .sort(function (a, b) {
-                                return a.value - b.value;
+                                //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
+                                return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
                             })
                             .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
                             .round(false);
 
-                        var svg = d3.select(element[0]).append("svg")
+                        scope.svg = d3.select(element[0]).append("svg")
+                            .attr("id", "treemapHealthChart")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.bottom + margin.top)
                             .attr("class", "health-chart")
@@ -52,7 +68,7 @@ angular.module('katGui.d3')
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                             .style("shape-rendering", "crispEdges");
 
-                        var grandparent = svg.append("g")
+                        var grandparent = scope.svg.append("g")
                             .attr("class", "grandparent");
 
                         grandparent.append("rect")
@@ -65,9 +81,7 @@ angular.module('katGui.d3')
                             .attr("y", 6 - margin.top)
                             .attr("dy", ".75em");
 
-
                         initialize(root);
-                        accumulate(root);
                         layout(root);
                         display(root);
 
@@ -117,7 +131,7 @@ angular.module('katGui.d3')
                                 .select("text")
                                 .text(name(d));
 
-                            var g1 = svg.insert("g", ".grandparent")
+                            var g1 = scope.svg.insert("g", ".grandparent")
                                 .datum(d)
                                 .attr("class", "depth");
 
@@ -174,11 +188,12 @@ angular.module('katGui.d3')
                                 y.domain([d.y, d.y + d.dy]);
 
                                 // Enable anti-aliasing during the transition.
-                                svg.style("shape-rendering", null);
+                                scope.svg.style("shape-rendering", null);
 
                                 // Draw child nodes on top of parent nodes.
-                                svg.selectAll(".depth").sort(function (a, b) {
-                                    return a.depth - b.depth;
+                                scope.svg.selectAll(".depth").sort(function (a, b) {
+                                    //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
+                                    return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
                                 });
 
                                 // Fade-in entering text.
@@ -192,7 +207,7 @@ angular.module('katGui.d3')
 
                                 // Remove the old node when the transition is finished.
                                 t1.remove().each("end", function () {
-                                    svg.style("shape-rendering", "crispEdges");
+                                    scope.svg.style("shape-rendering", "crispEdges");
                                     transitioning = false;
                                 });
                             }
