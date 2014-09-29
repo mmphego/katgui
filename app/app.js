@@ -1,6 +1,8 @@
 
-angular.module('katGui', ['ui.bootstrap',
-    'ui.utils', 'ui.router', 'ngAnimate', 'ngGrid', 'adf',
+angular.module('katGui', [
+    'ui.bootstrap', 'ui.utils', 'ui.router',
+    'adf',
+    'ngAnimate', 'ngGrid',
     'katGui.alarms',
     'katGui.d3',
     'katGui.health',

@@ -5,43 +5,60 @@ angular.module('katGui.d3')
             restrict: 'EA',
             scope: {
                 data: '=',
-                chartSize: '='
+                chartSize: '=',
+                mapType: '='
             },
             replace: false,
             link: function (scope, element) {
 
                 d3Service.d3().then(function (d3) {
 
-                    var width, height, inited = false;
+                    var cacheData = JSON.parse(JSON.stringify(scope.data));
+
+                    var width, height, inited = false, r = 720, node, root;
 
                     var margin = {top: 20, right: 0, bottom: 0, left: 0},
-                        formatNumber = d3.format(",d"),
                         transitioning;
 
                     scope.$watch('chartSize', function () {
                         if (scope.chartSize.width !== width || scope.chartSize.height !== height + margin.top) {
                             d3.select("#treemapHealthChart").remove();
-                            chart(scope.data);
+                            chart(cacheData);
                         }
                     }, true);
+
+                    scope.$watch('mapType', function (newVal, oldVal) {
+                        if (oldVal !== newVal) {
+                            inited = false;
+                            d3.select("#treemapHealthChart").remove();
+                            cacheData = null;
+                            cacheData = JSON.parse(JSON.stringify(scope.data));
+                            chart(cacheData);
+                        }
+                    });
 
                     var tooltip = d3.select(element[0]).append("div")
                         .attr("class", "treemap-tooltip")
                         .style("visibility", "hidden")
                         .style("background-color", "#ffffff");
 
-                    chart(scope.data);
+                    chart(cacheData);
 
-                    function chart(root) {
+                    function chart(data) {
 
-                        if (!inited) {
+                        node = root = data;
+
+                        if (!inited && scope.mapType === 'tree') {
                             inited = true;
                             //we should only accumulate the data once, not on every redraw
-                            accumulate(root);
+                            //TODO: unless we get new data - we'll know how once the backend gives us data
+                            accumulate(data);
                         }
 
                         width = scope.chartSize.width;
                         height = scope.chartSize.height - margin.top - margin.bottom;
+
+                        r = height - 10;
 
                         var x = d3.scale.linear()
                             .domain([0, width])
@@ -51,16 +68,35 @@ angular.module('katGui.d3')
                             .domain([0, height])
                             .range([0, height]);
 
-                        var treemap = d3.layout.treemap()
-                            .children(function (d, depth) {
-                                return depth ? null : d._children;
-                            })
-                            .sort(function (a, b) {
-                                //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
-                                return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
-                            })
-                            .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
-                            .round(false);
+                        if (scope.mapType === 'pack') {
+                            x = d3.scale.linear().range([0, r]);
+                            y = d3.scale.linear().range([0, r]);
+                        }
+
+                        var mapLayout;
+
+                        if (scope.mapType === 'tree') {
+                            mapLayout = d3.layout.treemap()
+                                .children(function (d, depth) {
+                                    return depth ? null : d._children;
+                                })
+                                .sort(function (a, b) {
+                                    //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
+                                    return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
+                                })
+                                .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
+                                .round(false);
+                        } else if (scope.mapType === 'pack') {
+                            mapLayout = d3.layout.pack()
+                                .size([r, r])
+                                .value(function (d) {
+                                    return d.value;
+                                });
+                        } else {
+                            console.log('wrong maptype!');
+                            return;
+                        }
+
 
                         var svg = d3.select(element[0]).append("svg")
                             .attr("id", "treemapHealthChart")
@@ -69,32 +105,40 @@ angular.module('katGui.d3')
                             .attr("class", "health-chart")
                             .style("margin-left", -margin.left + "px")
                             .style("margin.right", -margin.right + "px")
-                            .append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-                            .style("shape-rendering", "crispEdges");
+                            .append("g");
 
-                        var grandparent = svg.append("g")
-                            .attr("class", "grandparent");
+                        if (scope.mapType === 'pack') {
+                            svg.attr("transform", "translate(" + (width - r) / 2 + "," + (height - r) / 2 + ")");
+                        } else {
+                            svg.style("shape-rendering", "crispEdges");
+                            svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                            var grandparent = svg.append("g")
+                                .attr("class", "grandparent");
 
-                        grandparent.append("rect")
-                            .attr("y", -margin.top)
-                            .attr("width", width)
-                            .attr("height", margin.top);
+                            grandparent.append("rect")
+                                .attr("y", -margin.top)
+                                .attr("width", width)
+                                .attr("height", margin.top);
 
-                        grandparent.append("text")
-                            .attr("x", 6)
-                            .attr("y", 6 - margin.top)
-                            .attr("dy", ".75em");
+                            grandparent.append("text")
+                                .attr("x", 6)
+                                .attr("y", 6 - margin.top)
+                                .attr("dy", ".75em");
+                        }
 
-                        initialize(root);
-                        layout(root);
-                        display(root);
+                        if (scope.mapType === 'pack') {
+                            displayPack(data);
+                        } else {
+                            initialize(data);
+                            layout(data);
+                            display(data);
+                        }
 
-                        function initialize(root) {
-                            root.x = root.y = 0;
-                            root.dx = width;
-                            root.dy = height;
-                            root.depth = 0;
+                        function initialize(data) {
+                            data.x = data.y = 0;
+                            data.dx = width;
+                            data.dy = height;
+                            data.depth = 0;
                         }
 
                         // Aggregate the values for internal nodes. This is normally done by the
@@ -117,7 +161,7 @@ angular.module('katGui.d3')
                         // coordinates. This lets us use a viewport to zoom.
                         function layout(d) {
                             if (d._children) {
-                                treemap.nodes({_children: d._children});
+                                mapLayout.nodes({_children: d._children});
                                 d._children.forEach(function (c) {
                                     c.x = d.x + c.x * d.dx;
                                     c.y = d.y + c.y * d.dy;
@@ -142,7 +186,7 @@ angular.module('katGui.d3')
 
                             var g = g1.selectAll("g")
                                 .data(d._children)
-                                .enter().append("g");
+                                .enter().append("svg").append("g");
 
                             g.filter(function (d) {
                                 return d._children;
@@ -163,21 +207,38 @@ angular.module('katGui.d3')
                                 .attr("class", "child")
                                 .call(rect);
 
+
+                            //overlay each direct child with its text in the center
+//                            g.selectAll(".children")
+//                                .data(function (d) {
+//                                    return d._children || [d];
+//                                })
+//                                .enter().append("text")
+//                                .attr("x", function (d, i) {
+//                                    return d.x + this.parentNode.children[i].width.baseVal.value / 2;
+//                                })
+//                                .attr("y", function (d, i) {
+//                                    return d.y + this.parentNode.children[i].height.baseVal.value / 2;
+//                                })
+//                                .attr("text-anchor", "middle")
+//                                .text(function (d) {
+//                                    return d.name;
+//                                });
+
                             g.append("rect")
                                 .attr("class", "parent")
                                 .call(rect);
-                            //dont need this, just gives an annoying tooltip
-//                                .append("title")
-//                                .text(function (d) {
-//                                    return formatNumber(d.value);
-//                                });
+
 
                             g.append("text")
                                 .attr("dy", ".75em")
                                 .text(function (d) {
                                     return d.name;
+//                                    return d.depth === 1 && d._children ? d.name : "";
                                 })
+                                .classed("text-parent-node", true)
                                 .call(text);
+
 
                             function transition(d) {
                                 tooltip.style("visibility", "hidden");
@@ -267,8 +328,94 @@ angular.module('katGui.d3')
                         }
 
                         function name(d) {
-                            return d.parent ? name(d.parent) + "." + d.name
-                                : d.name;
+                            return d.parent ? name(d.parent) + "." + d.name : d.name;
+                        }
+
+                        function displayPack(dataT) {
+
+                            var nodes = mapLayout.nodes(dataT);
+
+                            svg.selectAll("circle")
+                                .data(nodes)
+                                .enter().append("svg:circle")
+                                .attr("class", function (d) {
+                                    return d.children ? "parent" : "child";
+                                })
+                                .attr("cx", function (d) {
+                                    return d.x;
+                                })
+                                .attr("cy", function (d) {
+                                    return d.y;
+                                })
+                                .attr("r", function (d) {
+                                    return d.r;
+                                })
+                                .on("click", function (d) {
+                                    return zoomPack(node === d ? root : d);
+                                });
+
+                            svg.selectAll("text")
+                                .data(nodes)
+                                .enter().append("svg:text")
+                                .attr("class", function (d) {
+                                    return d.children ? "parent" : "child";
+                                })
+                                .attr("x", function (d) {
+                                    return d.x;
+                                })
+                                .attr("y", function (d) {
+                                    return d.y;
+                                })
+                                .attr("dy", ".35em")
+                                .attr("text-anchor", "middle")
+                                .style("opacity", function (d) {
+                                    return d.r > 20 ? 1 : 0;
+                                })
+                                .text(function (d) {
+                                    return d.name;
+                                });
+
+                            d3.select(window).on("click", function () {
+                                zoomPack(root);
+                            });
+                        }
+
+                        function zoomPack(d, i) {
+                            if (scope.mapType !== 'pack') {
+                                return;
+                            }
+
+                            var k = r / d.r / 2;
+                            x.domain([d.x - d.r, d.x + d.r]);
+                            y.domain([d.y - d.r, d.y + d.r]);
+
+                            var t = svg.transition()
+                                .duration(d3.event.altKey ? 7500 : 750);
+
+                            t.selectAll("circle")
+                                .attr("cx", function (d) {
+                                    return x(d.x);
+                                })
+                                .attr("cy", function (d) {
+                                    return y(d.y);
+                                })
+                                .attr("r", function (d) {
+                                    return k * d.r;
+                                });
+
+                            t.selectAll("text")
+                                .attr("x", function (d) {
+                                    return x(d.x);
+                                })
+                                .attr("y", function (d) {
+                                    return y(d.y);
+                                })
+                                .style("opacity", function (d) {
+                                    return k * d.r > 20 ? 1 : 0;
+                                });
+
+                            node = d;
+                            d3.event.stopPropagation();
                         }
                     }
 

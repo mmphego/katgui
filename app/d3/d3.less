@@ -11,6 +11,10 @@ text {
   font-weight: bold;
 }
 
+.text-parent-node {
+  font-size: 18px;
+}
+
 rect {
   fill: none;
   stroke: #fff;
@@ -55,4 +59,33 @@ rect.parent,
   padding: 6px;
   opacity: 0.9;
   z-index: 1000px;
+}
+
+//svg {
+//  overflow: auto;
+//}
+
+text.parent {
+  fill: black;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #999;
+  pointer-events: all;
+}
+
+circle.parent {
+  fill: #1f77b4;
+  fill-opacity: .1;
+  stroke: steelblue;
+}
+
+circle.parent:hover {
+  stroke: #ff7f0e;
+  stroke-width: .5px;
+}
+
+circle.child {
+  pointer-events: none;
 }

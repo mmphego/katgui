@@ -1,5 +1,6 @@
 <div class="view-container-full" ng-controller="HealthCtrl">
 
-    <d3-treemap data="d3TreemapData" chart-size="treeChartSize"></d3-treemap>
+    <select class="form-control" style="width: 100px;" ng-model="mapType" ng-options="item.value as item.name for item in items"></select>
+    <d3-treemap data="d3TreemapData" chart-size="treeChartSize" map-type="mapType"></d3-treemap>
 
 </div>

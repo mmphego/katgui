@@ -18,6 +18,13 @@ angular.module('katGui.health', ['katGui.d3'])
             $scope.treeChartSize.height = value - 70;
         });
 
+        $scope.items = [
+            { value: 'tree', name: 'Tree' },
+            { value: 'pack', name: 'Pack' }
+        ];
+
+        $scope.mapType = 'tree';
+
         $scope.d3TreemapData =
         {
             "name": "Sub-Array 1",
@@ -125,6 +132,37 @@ angular.module('katGui.health', ['katGui.d3'])
                     ]
                 },
                 {
+                    "name": "ANT6",
+                    "children": [
+                        {
+                            "name": "axis",
+                            "children": [
+                                {"name": "Axes", "value": 100},
+                                {"name": "Axis", "value": 100},
+                                {"name": "AxisGridLine", "value": 100},
+                                {"name": "AxisLabel", "value": 50},
+                                {"name": "CartesianAxes", "value": 50}
+                            ]
+                        },
+                        {
+                            "name": "controls",
+                            "children": [
+                                {"name": "AnchorControl", "value": 100},
+                                {"name": "ClickControl", "value": 50},
+                                {"name": "Control", "value": 50},
+                                {"name": "ControlList", "value": 50},
+                                {"name": "DragControl", "value": 50},
+                                {"name": "ExpandControl", "value": 50},
+                                {"name": "HoverControl", "value": 50},
+                                {"name": "IControl", "value": 50},
+                                {"name": "PanZoomControl", "value": 50},
+                                {"name": "SelectionControl", "value": 50},
+                                {"name": "TooltipControl", "value": 50}
+                            ]
+                        }
+                    ]
+                },
+                {
                     "name": "ANT7",
                     "children": [
                         {"name": "AggregateExpression", "value": 25},
@@ -175,7 +213,7 @@ angular.module('katGui.health', ['katGui.d3'])
                     ]
                 },
                 {
-                    "name": "ANT6",
+                    "name": "ANT8",
                     "children": [
                         {
                             "name": "axis",
@@ -207,37 +245,6 @@ angular.module('katGui.health', ['katGui.d3'])
                 },
                 {
                     "name": "ANT9",
-                    "children": [
-                        {
-                            "name": "axis",
-                            "children": [
-                                {"name": "Axes", "value": 100},
-                                {"name": "Axis", "value": 100},
-                                {"name": "AxisGridLine", "value": 100},
-                                {"name": "AxisLabel", "value": 50},
-                                {"name": "CartesianAxes", "value": 50}
-                            ]
-                        },
-                        {
-                            "name": "controls",
-                            "children": [
-                                {"name": "AnchorControl", "value": 100},
-                                {"name": "ClickControl", "value": 50},
-                                {"name": "Control", "value": 50},
-                                {"name": "ControlList", "value": 50},
-                                {"name": "DragControl", "value": 50},
-                                {"name": "ExpandControl", "value": 50},
-                                {"name": "HoverControl", "value": 50},
-                                {"name": "IControl", "value": 50},
-                                {"name": "PanZoomControl", "value": 50},
-                                {"name": "SelectionControl", "value": 50},
-                                {"name": "TooltipControl", "value": 50}
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "ANT8",
                     "children": [
                         {
                             "name": "axis",
