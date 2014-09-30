@@ -418,7 +418,7 @@ angular.module('katGui.d3')
                                 .attr("dy", ".35em")
                                 .attr("text-anchor", "middle")
                                 .style("opacity", function (d) {
-                                    return d.r > 20 ? 1 : 0;
+                                    return d.r > 40 ? 1 : 0;
                                 })
                                 .text(function (d) {
                                     return d.name;
@@ -540,15 +540,19 @@ angular.module('katGui.d3')
                                 .attr("y", function(d) { return y(d.y); })
                                 .attr("dy", ".2em")
                                 .style("opacity", function(d) {
-                                    return d.dx * kx > 14.5 ? 1 : 0;
+                                    return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
                                 })
                                 .text(function(d) { return d.name; })
-                                .style("writing-mode", function (d) {
-                                    return d.dx * kx < 70 ? "tb" : "none";
-                                })
                                 .attr("text-anchor", "middle")
                                 .attr("transform", function (d) {
-                                    return "translate(" + (x(d.x + d.dx) - x(d.x)) / 2 + "," + (y(d.y + d.dy) - y(d.y)) / 2 + ")";
+                                    var halfWidth = (x(d.x + d.dx) - x(d.x)) / 2,
+                                        halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
+
+                                    var strTranslate = "translate(" + halfWidth + "," + halfHeight  + ")";
+                                    if (halfWidth < 60) {
+                                        strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
+                                    }
+                                    return strTranslate;
                                 });
 
                             function icicleClicked(d) {
@@ -567,16 +571,19 @@ angular.module('katGui.d3')
                                     .attr("x", function(d) { return x(d.x); })
                                     .attr("y", function(d) { return y(d.y); })
                                     .style("opacity", function(d) {
-                                        return d.dx * kx > 14.5 ? 1 : 0;
-                                    })
-                                    .style("writing-mode", function (d) {
-                                        return (x(d.x + d.dx) - x(d.x)) < 70 ? "tb" : "none";
+                                        return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
                                     })
                                     .attr("text-anchor", "middle")
                                     .attr("transform", function (d) {
-                                        return "translate(" + (x(d.x + d.dx) - x(d.x)) / 2 + ", " + (y(d.y + d.dy) - y(d.y)) / 2 + ")";
-                                    });
+                                        var halfWidth = (x(d.x + d.dx) - x(d.x)) / 2,
+                                            halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
+                                        var strTranslate = "translate(" + halfWidth + "," + halfHeight  + ")";
+                                        if (halfWidth < 60) {
+                                            strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
+                                        }
+                                        return strTranslate;
+                                    });
                                 d3.event.stopPropagation();
                             }
                         }
@@ -666,7 +673,8 @@ angular.module('katGui.d3')
                             function colour(d) {
                                 if (d.children) {
                                     // There is a maximum of two children!
-                                    var colours = d.children.map(colour),
+//                                    var colours = d.children.map(colour),
+                                    var colours = ['green', 'lightgreen'],
                                         a = d3.hsl(colours[0]),
                                         b = d3.hsl(colours[1]);
                                     // L*a*b* might be better here...
