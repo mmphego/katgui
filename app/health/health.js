@@ -20,7 +20,10 @@ angular.module('katGui.health', ['katGui.d3'])
 
         $scope.items = [
             { value: 'tree', name: 'Tree' },
-            { value: 'pack', name: 'Pack' }
+            { value: 'pack', name: 'Pack' },
+            { value: 'partition', name: 'Partition' },
+            { value: 'icicle', name: 'Icicle' },
+            { value: 'wheel', name: 'Wheel' }
         ];
 
         $scope.mapType = 'tree';

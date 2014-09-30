@@ -15,7 +15,8 @@ angular.module('katGui.d3')
 
                     var cacheData = JSON.parse(JSON.stringify(scope.data));
 
-                    var width, height, inited = false, r = 720, node, root;
+                    var width, height, inited = false, r = 720, node, root, padding = 5, duration = 500;
+                    var arc;
 
                     var margin = {top: 20, right: 0, bottom: 0, left: 0},
                         transitioning;
@@ -31,7 +32,6 @@ angular.module('katGui.d3')
                         if (oldVal !== newVal) {
                             inited = false;
                             d3.select("#treemapHealthChart").remove();
-                            cacheData = null;
                             cacheData = JSON.parse(JSON.stringify(scope.data));
                             chart(cacheData);
                         }
@@ -46,6 +46,7 @@ angular.module('katGui.d3')
 
                     function chart(data) {
 
+                        var radius = height / 2;
                         node = root = data;
 
                         if (!inited && scope.mapType === 'tree') {
@@ -71,6 +72,12 @@ angular.module('katGui.d3')
                         if (scope.mapType === 'pack') {
                             x = d3.scale.linear().range([0, r]);
                             y = d3.scale.linear().range([0, r]);
+                        } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
+                            x = d3.scale.linear().range([0, width]);
+                            y = d3.scale.linear().range([0, height]);
+                        } else if (scope.mapType === 'wheel') {
+                            x = d3.scale.linear().range([0, 2 * Math.PI]);
+                            y = d3.scale.pow().exponent(1.3).domain([0, 1]).range([0, radius]);
                         }
 
                         var mapLayout;
@@ -92,24 +99,44 @@ angular.module('katGui.d3')
                                 .value(function (d) {
                                     return d.value;
                                 });
+                        } else if (scope.mapType === 'partition') {
+                            mapLayout = d3.layout.partition()
+                                .value(function(d) { return d.value; });
+                        } else if (scope.mapType === 'icicle') {
+                            mapLayout = d3.layout.partition()
+                                .value(function(d) { return d.value; });
+                        }else if (scope.mapType === 'wheel') {
+                            mapLayout = d3.layout.partition()
+                                .sort(null)
+                                .value(function(d) { return 5.8 - d.depth; });
+
                         } else {
                             console.log('wrong maptype!');
                             return;
                         }
 
 
-                        var svg = d3.select(element[0]).append("svg")
-                            .attr("id", "treemapHealthChart")
-                            .attr("width", width + margin.left + margin.right)
-                            .attr("height", height + margin.bottom + margin.top)
-                            .attr("class", "health-chart")
-                            .style("margin-left", -margin.left + "px")
-                            .style("margin.right", -margin.right + "px")
-                            .append("g");
+                        var svg;
 
                         if (scope.mapType === 'pack') {
+                            svg = d3.select(element[0]).append("svg")
+                                .attr("id", "treemapHealthChart")
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", height + margin.bottom + margin.top)
+                                .attr("class", "health-chart")
+                                .style("margin-left", -margin.left + "px")
+                                .style("margin.right", -margin.right + "px")
+                                .append("g");
                             svg.attr("transform", "translate(" + (width - r) / 2 + "," + (height - r) / 2 + ")");
-                        } else {
+                        } else if (scope.mapType === 'tree') {
+                            svg = d3.select(element[0]).append("svg")
+                                .attr("id", "treemapHealthChart")
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", height + margin.bottom + margin.top)
+                                .attr("class", "health-chart")
+                                .style("margin-left", -margin.left + "px")
+                                .style("margin.right", -margin.right + "px")
+                                .append("g");
                             svg.style("shape-rendering", "crispEdges");
                             svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                             var grandparent = svg.append("g")
@@ -124,10 +151,33 @@ angular.module('katGui.d3')
                                 .attr("x", 6)
                                 .attr("y", 6 - margin.top)
                                 .attr("dy", ".75em");
+                        } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
+                            svg = d3.select(element[0]).append("svg")
+                                .attr("id", "treemapHealthChart")
+                                .attr("width", width + margin.left + margin.right)
+                                .attr("height", height + margin.bottom + margin.top)
+                                .attr("class", "health-chart")
+                                .style("margin-left", -margin.left + "px")
+                                .style("margin.right", -margin.right + "px")
+                                .append("g");
+                        } else if (scope.mapType === 'wheel') {
+                            svg = d3.select(element[0]).append("svg")
+                                .attr("id", "treemapHealthChart")
+                                .attr("class", "health-chart")
+                                .attr("width", width + padding * 2)
+                                .attr("height", height + padding * 2)
+                                .append("g")
+                                .attr("transform", "translate(" + [radius + padding, radius + padding] + ")");
                         }
 
                         if (scope.mapType === 'pack') {
                             displayPack(data);
+                        } else  if (scope.mapType === 'partition') {
+                            displayPartition();
+                        } else  if (scope.mapType === 'icicle') {
+                            displayIcicle();
+                        } else if (scope.mapType === 'wheel') {
+                            displayWheel(data);
                         } else {
                             initialize(data);
                             layout(data);
@@ -150,7 +200,6 @@ angular.module('katGui.d3')
                                 return p + accumulate(v);
                             }, 0) : d.value;
                         }
-
 
                         // Compute the treemap layout recursively such that each group of siblings
                         // uses the same size (1×1) rather than the dimensions of the parent cell.
@@ -249,8 +298,8 @@ angular.module('katGui.d3')
                                 transitioning = true;
 
                                 var g2 = display(d),
-                                    t1 = g1.transition().duration(750),
-                                    t2 = g2.transition().duration(750);
+                                    t1 = g1.transition().duration(duration),
+                                    t2 = g2.transition().duration(duration);
 
                                 // Update the domain only after entering new elements.
                                 x.domain([d.x, d.x + d.dx]);
@@ -390,7 +439,7 @@ angular.module('katGui.d3')
                             y.domain([d.y - d.r, d.y + d.r]);
 
                             var t = svg.transition()
-                                .duration(d3.event.altKey ? 7500 : 750);
+                                .duration(duration);
 
                             t.selectAll("circle")
                                 .attr("cx", function (d) {
@@ -416,6 +465,235 @@ angular.module('katGui.d3')
 
                             node = d;
                             d3.event.stopPropagation();
+                        }
+
+                        function displayPartition() {
+                            var g = svg.selectAll("g")
+                                .data(mapLayout.nodes(root))
+                                .enter().append("svg:g")
+                                .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
+                                .on("click", click);
+
+                            var kx = width / root.dx,
+                                ky = height / 1;
+
+                            g.append("svg:rect")
+                                .attr("width", root.dy * kx)
+                                .attr("height", function(d) { return d.dx * ky; })
+                                .attr("class", function(d) { return d.children ? "part-parent" : "child"; });
+
+                            g.append("svg:text")
+                                .attr("transform", transform)
+                                .attr("dy", ".35em")
+                                .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; })
+                                .text(function(d) { return d.name; });
+
+                            d3.select(window)
+                                .on("click", function() { click(root); });
+
+                            function click(d) {
+                                if (!d.children) { return; }
+
+                                kx = (d.y ? width - 40 : width) / (1 - d.y);
+                                ky = height / d.dx;
+                                x.domain([d.y, 1]).range([d.y ? 40 : 0, width]);
+                                y.domain([d.x, d.x + d.dx]);
+
+                                var t = g.transition()
+                                    .duration(duration)
+                                    .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; });
+
+                                t.select("rect")
+                                    .attr("width", d.dy * kx)
+                                    .attr("height", function(d) { return d.dx * ky; });
+
+                                t.select("text")
+                                    .attr("transform", transform)
+                                    .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; });
+
+                                d3.event.stopPropagation();
+                            }
+
+                            function transform(d) {
+                                return "translate(8," + d.dx * ky / 2 + ")";
+                            }
+                        }
+
+                        function displayIcicle() {
+
+                            var g = svg.selectAll("g")
+                                .data(mapLayout.nodes(root))
+                                .enter().append("rect")
+                                .attr("x", function(d) { return x(d.x); })
+                                .attr("y", function(d) { return y(d.y); })
+                                .attr("width", function(d) { return x(d.dx); })
+                                .attr("height", function(d) { return y(d.dy); })
+                                .attr("class", function(d) { return d.children ? "part-parent" : "child"; })
+                                .on("click", icicleClicked);
+
+                            var kx = width / root.dx;
+
+                            var t = svg.selectAll("g")
+                                .data(mapLayout.nodes(root)).enter()
+                                .append("svg:text")
+                                .attr("x", function(d) { return x(d.x); })
+                                .attr("y", function(d) { return y(d.y); })
+                                .attr("dy", ".2em")
+                                .style("opacity", function(d) {
+                                    return d.dx * kx > 14.5 ? 1 : 0;
+                                })
+                                .text(function(d) { return d.name; })
+                                .style("writing-mode", function (d) {
+                                    return d.dx * kx < 70 ? "tb" : "none";
+                                })
+                                .attr("text-anchor", "middle")
+                                .attr("transform", function (d) {
+                                    return "translate(" + (x(d.x + d.dx) - x(d.x)) / 2 + "," + (y(d.y + d.dy) - y(d.y)) / 2 + ")";
+                                });
+
+                            function icicleClicked(d) {
+                                x.domain([d.x, d.x + d.dx]);
+                                y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);
+
+                                g.transition()
+                                    .duration(duration)
+                                    .attr("x", function(d) { return x(d.x); })
+                                    .attr("y", function(d) { return y(d.y); })
+                                    .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
+                                    .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+
+                                t.transition()
+                                    .duration(duration)
+                                    .attr("x", function(d) { return x(d.x); })
+                                    .attr("y", function(d) { return y(d.y); })
+                                    .style("opacity", function(d) {
+                                        return d.dx * kx > 14.5 ? 1 : 0;
+                                    })
+                                    .style("writing-mode", function (d) {
+                                        return (x(d.x + d.dx) - x(d.x)) < 70 ? "tb" : "none";
+                                    })
+                                    .attr("text-anchor", "middle")
+                                    .attr("transform", function (d) {
+                                        return "translate(" + (x(d.x + d.dx) - x(d.x)) / 2 + ", " + (y(d.y + d.dy) - y(d.y)) / 2 + ")";
+                                    });
+
+                                d3.event.stopPropagation();
+                            }
+                        }
+
+                        function displayWheel(data) {
+                            var nodes = mapLayout.nodes(data);
+
+                            var arc = d3.svg.arc()
+                                .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+                                .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+                                .innerRadius(function(d) { return Math.max(0, d.y ? y(d.y) : d.y); })
+                                .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+
+                            var path = svg.selectAll("path").data(nodes);
+                            path.enter().append("path")
+                                .attr("id", function(d, i) { return "path-" + i; })
+                                .attr("d", arc)
+                                .attr("fill-rule", "evenodd")
+                                .style("fill", colour)
+                                .on("click", click);
+
+                            var text = svg.selectAll("text").data(nodes);
+                            var textEnter = text.enter().append("text")
+                                .style("fill-opacity", 1)
+                                .style("fill", function(d) {
+                                    return brightness(d3.rgb(colour(d))) < 125 ? "#eee" : "#000";
+                                })
+                                .attr("text-anchor", function(d) {
+                                    return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+                                })
+                                .attr("dy", ".2em")
+                                .attr("transform", function(d) {
+                                    var multiline = (d.name || "").split(" ").length > 1,
+                                        angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
+                                        rotate = angle + (multiline ? -0.5 : 0);
+                                    return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+                                })
+                                .on("click", click);
+                            textEnter.append("tspan")
+                                .attr("x", 0)
+                                .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
+                            textEnter.append("tspan")
+                                .attr("x", 0)
+                                .attr("dy", "1em")
+                                .text(function(d) { return d.depth ? d.name.split(" ")[1] || "" : ""; });
+
+                            function click(d) {
+                                path.transition()
+                                    .duration(duration)
+                                    .attrTween("d", arcTween(d));
+
+                                // Somewhat of a hack as we rely on arcTween updating the scales.
+                                text.style("visibility", function(e) {
+                                    return isParentOf(d, e) ? null : d3.select(this).style("visibility");
+                                })
+                                    .transition()
+                                    .duration(duration)
+                                    .attrTween("text-anchor", function(d) {
+                                        return function() {
+                                            return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
+                                        };
+                                    })
+                                    .attrTween("transform", function(d) {
+                                        var multiline = (d.name || "").split(" ").length > 1;
+                                        return function() {
+                                            var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
+                                                rotate = angle + (multiline ? -0.5 : 0);
+                                            return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+                                        };
+                                    })
+                                    .style("fill-opacity", function(e) { return isParentOf(d, e) ? 1 : 1e-6; })
+                                    .each("end", function(e) {
+                                        d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
+                                    });
+                            }
+
+                            function isParentOf(p, c) {
+                                if (p === c) { return true; }
+                                if (p.children) {
+                                    return p.children.some(function(d) {
+                                        return isParentOf(d, c);
+                                    });
+                                }
+                                return false;
+                            }
+
+                            function colour(d) {
+                                if (d.children) {
+                                    // There is a maximum of two children!
+                                    var colours = d.children.map(colour),
+                                        a = d3.hsl(colours[0]),
+                                        b = d3.hsl(colours[1]);
+                                    // L*a*b* might be better here...
+                                    return d3.hsl((a.h + b.h) / 2, a.s * 1.2, a.l / 1.2);
+                                }
+                                return d.colour || "#fff";
+                            }
+
+                            // Interpolate the scales!
+                            function arcTween(d) {
+                                var my = maxY(d),
+                                    xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+                                    yd = d3.interpolate(y.domain(), [d.y, my]),
+                                    yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+                                return function(d) {
+                                    return function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+                                };
+                            }
+
+                            function maxY(d) {
+                                return d.children ? Math.max.apply(Math, d.children.map(maxY)) : d.y + d.dy;
+                            }
+
+                            // http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
+                            function brightness(rgb) {
+                                return rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114;
+                            }
                         }
                     }
 
