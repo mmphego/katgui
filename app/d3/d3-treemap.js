@@ -78,6 +78,9 @@ angular.module('katGui.d3')
                         } else if (scope.mapType === 'wheel') {
                             x = d3.scale.linear().range([0, 2 * Math.PI]);
                             y = d3.scale.pow().exponent(1.3).domain([0, 1]).range([0, radius]);
+                        } else if (scope.mapType === 'sunburst') {
+                            x = d3.scale.linear().range([0, 2 * Math.PI]);
+                            y = d3.scale.linear().range([0, radius]);
                         }
 
                         var mapLayout;
@@ -105,16 +108,17 @@ angular.module('katGui.d3')
                         } else if (scope.mapType === 'icicle') {
                             mapLayout = d3.layout.partition()
                                 .value(function(d) { return d.value; });
-                        }else if (scope.mapType === 'wheel') {
+                        } else if (scope.mapType === 'wheel') {
                             mapLayout = d3.layout.partition()
                                 .sort(null)
                                 .value(function(d) { return 5.8 - d.depth; });
-
-                        } else {
+                        } else if (scope.mapType === 'sunburst') {
+                            mapLayout =  d3.layout.partition()
+                                .value(function(d) { return d.value; });
+                        }else {
                             console.log('wrong maptype!');
                             return;
                         }
-
 
                         var svg;
 
@@ -160,7 +164,7 @@ angular.module('katGui.d3')
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
                                 .append("g");
-                        } else if (scope.mapType === 'wheel') {
+                        } else if (scope.mapType === 'wheel' || scope.mapType === 'sunburst') {
                             svg = d3.select(element[0]).append("svg")
                                 .attr("id", "treemapHealthChart")
                                 .attr("class", "health-chart")
@@ -178,6 +182,8 @@ angular.module('katGui.d3')
                             displayIcicle();
                         } else if (scope.mapType === 'wheel') {
                             displayWheel(data);
+                        } else if (scope.mapType === 'sunburst') {
+                            displaySunburst(data);
                         } else {
                             initialize(data);
                             layout(data);
@@ -603,6 +609,7 @@ angular.module('katGui.d3')
                                 .attr("d", arc)
                                 .attr("fill-rule", "evenodd")
                                 .style("fill", colour)
+//                                .attr("transform", "translate(" + width/4+ ", 0)")
                                 .on("click", click);
 
                             var text = svg.selectAll("text").data(nodes);
@@ -619,7 +626,7 @@ angular.module('katGui.d3')
                                     var multiline = (d.name || "").split(" ").length > 1,
                                         angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
                                         rotate = angle + (multiline ? -0.5 : 0);
-                                    return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
+                                    return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ") translate(0, 0)";
                                 })
                                 .on("click", click);
                             textEnter.append("tspan")
@@ -701,6 +708,67 @@ angular.module('katGui.d3')
                             // http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
                             function brightness(rgb) {
                                 return rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114;
+                            }
+                        }
+
+                        function displaySunburst(data) {
+                            var arc = d3.svg.arc()
+                                .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
+                                .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
+                                .innerRadius(function(d) { return Math.max(0, y(d.y)); })
+                                .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+
+                            var g = svg.selectAll("g")
+                                .data(mapLayout.nodes(data))
+                                .enter().append("g");
+
+                            var path = g.append("path")
+                                .attr("d", arc)
+                                .style("fill", function(d) { return (d.children ? "green" : "#eee"); })
+                                .on("click", click);
+
+                            var text = g.append("text")
+                                .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
+                                .attr("x", function(d) { return y(d.y); })
+                                .attr("dx", "6") // margin
+                                .attr("dy", ".35em") // vertical-align
+//                                .style("stroke", function(d) { return (d.children ? "white" : "black"); })
+//                                .style("stroke-color", function(d) { return (d.children ? "white" : "black"); })
+                                .text(function(d) { return d.name; });
+
+                            function click(d) {
+                                // fade out all text elements
+                                text.transition().attr("opacity", 0);
+
+                                path.transition()
+                                    .duration(750)
+                                    .attrTween("d", arcTween(d))
+                                    .each("end", function(e, i) {
+                                        // check if the animated element's data e lies within the visible angle span given in d
+                                        if (e.x >= d.x && e.x < (d.x + d.dx)) {
+                                            // get a selection of the associated text element
+                                            var arcText = d3.select(this.parentNode).select("text");
+                                            // fade in the text element and recalculate positions
+                                            arcText.transition().duration(750)
+                                                .attr("opacity", 1)
+                                                .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")"; })
+                                                .attr("x", function(d) { return y(d.y); });
+                                        }
+                                    });
+                            }
+
+                            function arcTween(d) {
+                                var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+                                    yd = d3.interpolate(y.domain(), [d.y, 1]),
+                                    yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+                                return function(d, i) {
+                                    return i ? function(t) { return arc(d); }
+                                        : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+                                };
+                            }
+
+                            function computeTextRotation(d) {
+                                return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
                             }
                         }
                     }

@@ -19,11 +19,12 @@ angular.module('katGui.health', ['katGui.d3'])
         });
 
         $scope.items = [
-            { value: 'tree', name: 'Tree' },
+            { value: 'tree', name: 'Treemap' },
             { value: 'pack', name: 'Pack' },
             { value: 'partition', name: 'Partition' },
             { value: 'icicle', name: 'Icicle' },
-            { value: 'wheel', name: 'Wheel' }
+            { value: 'wheel', name: 'Wheel' },
+            { value: 'sunburst', name: 'Sunburst' }
         ];
 
         $scope.mapType = 'tree';
@@ -48,7 +49,12 @@ angular.module('katGui.health', ['katGui.d3'])
                             "name": "graph",
                             "children": [
                                 {"name": "BetweennessCentrality", "value": 100},
-                                {"name": "LinkDistance", "value": 100},
+                                {"name": "LinkDistance", "children": [
+                                    {"name": "AgglomerativeCluster", "value": 25},
+                                    {"name": "CommunityStructure", "value": 25},
+                                    {"name": "HierarchicalCluster", "value": 25},
+                                    {"name": "MergeEdge", "value": 25}
+                                ]},
                                 {"name": "MaxFlowMinCut", "value": 100},
                                 {"name": "ShortestPaths", "value": 100},
                                 {"name": "SpanningTree", "value": 100}
@@ -118,7 +124,14 @@ angular.module('katGui.health', ['katGui.d3'])
                         {"name": "DirtySprite", "value": 200},
                         {"name": "LineSprite", "value": 300},
                         {"name": "RectSprite", "value": 200},
-                        {"name": "TextSprite", "value": 300}
+                        {
+                            "name": "TextSprite",
+                            "children": [
+                                {"name": "DragForce", "value": 100},
+                                {"name": "GravityForce", "value": 100},
+                                {"name": "IForce", "value": 100}
+                            ]
+                        }
                     ]
                 },
                 {

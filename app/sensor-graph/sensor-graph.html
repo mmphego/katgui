@@ -1,46 +1,48 @@
 <div class="view-container" ng-controller="SensorGraphCtrl">
     <!--<d3-bars data="d3Data"></d3-bars>-->
 
-    <d3-line data="d3LineData" datasize="d3LineDataSize"></d3-line>
+    <d3-wind-rose data="d3WindRoseData"></d3-wind-rose>
 
-    <div>
-        <div>
-            <input type="text" class="form-control" ng-model="currentSensorFindSearch" placeholder="String (ex. wind)">
-        </div>
-        <button class="btn btn-primary" ng-click="findSensorByString()">Find Sensor By String</button>
-        <br/>
+    <!--<d3-line data="d3LineData" datasize="d3LineDataSize"></d3-line>-->
 
-        <div ng-if="findSensorMessage">
-            {{findSensorMessage}}
-        </div>
-    </div>
+    <!--<div>-->
+        <!--<div>-->
+            <!--<input type="text" class="form-control" ng-model="currentSensorFindSearch" placeholder="String (ex. wind)">-->
+        <!--</div>-->
+        <!--<button class="btn btn-primary" ng-click="findSensorByString()">Find Sensor By String</button>-->
+        <!--<br/>-->
 
-    <br/>
+        <!--<div ng-if="findSensorMessage">-->
+            <!--{{findSensorMessage}}-->
+        <!--</div>-->
+    <!--</div>-->
 
-    <div>
-        <div>
-            <input type="text" class="form-control" ng-model="currentSensorMetaDataSearch" placeholder="Sensor Name (ex. anc.averaged.1minute.asc.wind.speed)">
-        </div>
-        <button class="btn btn-primary" ng-click="getSensorMetaData()">Get Sensor Meta Data</button>
-        <br/>
+    <!--<br/>-->
 
-        <div ng-if="sensorMetaData">
-            {{sensorMetaData}}
-        </div>
-    </div>
+    <!--<div>-->
+        <!--<div>-->
+            <!--<input type="text" class="form-control" ng-model="currentSensorMetaDataSearch" placeholder="Sensor Name (ex. anc.averaged.1minute.asc.wind.speed)">-->
+        <!--</div>-->
+        <!--<button class="btn btn-primary" ng-click="getSensorMetaData()">Get Sensor Meta Data</button>-->
+        <!--<br/>-->
 
-    <br/>
+        <!--<div ng-if="sensorMetaData">-->
+            <!--{{sensorMetaData}}-->
+        <!--</div>-->
+    <!--</div>-->
 
-    <div>
-        <div>
-            <input type="text" class="form-control" ng-model="currentSensorDataSearch" placeholder="Sensor Name (ex. anc.averaged.1minute.asc.wind.speed)">
-        </div>
-        <button class="btn btn-primary" ng-click="getSensorData()">Get Sensor Data</button>
-        <button class="btn btn-primary" ng-click="mapSensorData()">Map Sensor Data</button>
-        <br/>
+    <!--<br/>-->
 
-        <div ng-if="sensorData">
-            {{sensorData}}
-        </div>
-    </div>
+    <!--<div>-->
+        <!--<div>-->
+            <!--<input type="text" class="form-control" ng-model="currentSensorDataSearch" placeholder="Sensor Name (ex. anc.averaged.1minute.asc.wind.speed)">-->
+        <!--</div>-->
+        <!--<button class="btn btn-primary" ng-click="getSensorData()">Get Sensor Data</button>-->
+        <!--<button class="btn btn-primary" ng-click="mapSensorData()">Map Sensor Data</button>-->
+        <!--<br/>-->
+
+        <!--<div ng-if="sensorData">-->
+            <!--{{sensorData}}-->
+        <!--</div>-->
+    <!--</div>-->
 </div>

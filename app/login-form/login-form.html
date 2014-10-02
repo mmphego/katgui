@@ -1,31 +1,29 @@
-<div class="" ng-controller="LoginFormCtrl">
+<div class="material-whiteframe-z4 login-form" ng-controller="LoginFormCtrl">
 
-    <div class="panel-login panel panel-default">
-        <div class="panel-heading">
-            <h2>{{title}}</h2>
-        </div>
 
-        <form name="loginForm" ng-submit="login(credentials)" novalidate>
-            <div class="input-group">
-                <input type="text" class="form-control login-control" ng-model="credentials.username" placeholder="Username" focus>
-                <input type="password" class="form-control login-control" id="password" ng-model="credentials.password" placeholder="Password">
-            </div>
-            <div>
-                <button type="submit" class="btn btn-primary">Login</button>
-            </div>
+    <div layout="vertical" layout-align="center center">
+        <material-toolbar class="material-theme-dark material-tall" layout-align="center center">
+            <h1>katGUI</h1>
+
+
+        </material-toolbar>
+        <form ng-submit="login(credentials)">
+            <material-content layout="vertical" layout-align="center center">
+
+                <material-input-group class="material-input-group-theme-light">
+
+                    <label for="usernameInput">Username</label>
+                    <material-input id="usernameInput" type="text" ng-model="credentials.username"></material-input>
+                    <label for="passwordInput">Password</label>
+                    <material-input id="passwordInput" type="password" ng-model="credentials.password"></material-input>
+
+                </material-input-group>
+
+                <material-button type="submit" class="material-button-raised material-button-colored">Login
+                </material-button>
+
+                <a style="margin-top: 10px;" href="" ng-click="forgotPassword()">Forgot your password?</a>
+            </material-content>
         </form>
-
-
-        <!--<div id="gSignInWrapper">-->
-            <!--<div id="googleButton" class="" ng-click="loginGoogle()">-->
-                <!--<span class="icon"></span>-->
-                <!--<span class="buttonText">Sign in with Google</span>-->
-            <!--</div>-->
-        <!--</div>-->
-
-        <div class="panel-footer">
-            <a href="" ng-click="forgotPassword()">Forgot your password?</a>
-        </div>
     </div>
-
 </div>

@@ -1,60 +1,44 @@
-.panel-login {
+.login-form, .layout-content {
+  max-width: 800px;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15px;
+}
 
-  text-align: center;
+.login-form material-button {
+  width: 10em;
+  margin:auto;
+}
+
+.login-form input {
+  width: 30em;
+}
+
+.login-form section {
   width: 300px;
-  background-color: #ffffff;
-  border: 1px solid #dddddd;
-  border-radius: 4px;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-
-  position: absolute;
-  left: 50%;
-  margin-top: 20px;
-  margin-left: -150px;
-  padding: 0px;
 }
 
-.login-label {
- // width: 95px;
+.login-form section material-button {
+  display: block;
+  margin: 1em;
+  line-height: 25px;
 }
 
-.login-control {
-  width: 203px;
+.login-form section {
+  background: #f7f7f7;
+  border-radius: 3px;
+  text-align: center;
+  margin: 1em;
+  position: relative !important;
+  padding-bottom: 10px;
 }
 
-#googleButton {
-  display: inline-block;
-  background: #dd4b39;
-  color: white;
-
-  border-radius: 5px;
-  white-space: nowrap;
-  margin: 10px;
-  cursor: pointer;
-}
-#googleButton:hover {
-  background: #e74b37;
+.login-form material-content {
+  padding-bottom: 15px;
 
 }
-span.label {
-  font-weight: bold;
-}
-span.icon {
-  background: url('/app/images/branding/g+32.png') transparent 5px 50% no-repeat;
-  display: inline-block;
-  vertical-align: middle;
-  width: 35px;
-  height: 35px;
-  border-right: #bb3f30 1px solid;
-}
-span.buttonText {
-  display: inline-block;
-  vertical-align: middle;
-  padding-left: 32px;
-  padding-right: 35px;
-  font-size: 14px;
-  font-weight: bold;
-  /* Use the Roboto font that is loaded in the <head> */
-  font-family: 'Roboto',arial,sans-serif;
+
+.login-form material-input-group {
+  font-size: 18px;
 }

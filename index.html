@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="katGui" ng-strict-di>
+<html ng-app="katGui">
 <head>
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +12,7 @@
     <link href="bower_components/angular-gantt/assets/gantt.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" rel="stylesheet"
           type="text/css">
+    <link href="bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css">
 
     <!-- build:css fonts/fontawesome.css -->
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
@@ -36,13 +37,15 @@
 <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
 
 <!-- JS from Bower Components -->
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-material/angular-material.js"></script>
 <script src="bower_components/less.js/dist/less-1.6.2.js" data-concat="false"></script>
 <script src="bower_components/jquery/jquery.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
 <script src="bower_components/sockjs/sockjs.js"></script>
-<script src="bower_components/angular/angular.js"></script>
+
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
 <script src="bower_components/ng-grid/ng-grid-2.0.13.min.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
@@ -76,6 +79,7 @@
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/d3/d3-chart-directive.js"></script>
 <script src="app/d3/d3-treemap.js"></script>
+<script src="app/d3/d3-wind-rose.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/admin/admin.js"></script>
 <script src="app/alarms/alarms.js"></script>
@@ -187,9 +191,8 @@
     </div>
 </nav>
 
-<div ui-view>
-
-</div>
+<material-content ui-view scroll-y flex class="material-content-padding">
+</material-content>
 
 <!--!navbarCollapsed && userLoggedIn-->
 
