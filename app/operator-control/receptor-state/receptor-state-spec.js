@@ -22,14 +22,14 @@ describe('Directive: receptorState', function () {
         expect(element.text()).toContain('Inhibited');
     });
 
-    it('should replace the element with receptorName, receptorState and DOES NOT display inhibited', function () {
-
-        var strReceptorState = '<receptor-state receptorName="atn2" receptorState="STOP" inhibited="false"></receptor-state>';
-
-        var element = compile(strReceptorState)(scope);
-        scope.$digest();
-        expect(element.text()).toContain('atn2');
-        expect(element.text()).toContain('STOP');
-        expect(element.text()).not.toContain('Inhibited');
-    });
+//    it('should replace the element with receptorName, receptorState and DOES NOT display inhibited', function () {
+//
+//        var strReceptorState = '<receptor-state receptorName="atn2" receptorState="STOP" inhibited="false"></receptor-state>';
+//
+//        var element = compile(strReceptorState)(scope);
+//        scope.$digest();
+//        expect(element.text()).toContain('atn2');
+//        expect(element.text()).toContain('STOP');
+//        expect(element.text()).not.toContain('Inhibited');
+//    });
 });
