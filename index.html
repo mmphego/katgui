@@ -92,11 +92,11 @@
 <!-- Add New Component JS Above -->
 
 <section layout="horizontal" layout-fill>
-    <material-sidenav layout="vertical" ng-show="showSideNav && !navbarCollapsed">
+    <material-sidenav layout="vertical" ng-show="showSideNav && !navbarCollapsed" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <material-toolbar class="material-theme-light material-medium-tall">
             <h1 class="material-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
         </material-toolbar>
-        <material-content class="material-content-padding" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <material-content class="material-content-padding">
             <material-list>
                 <material-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('landing') }" ng-click="stateGo('landing')">Home</button>
