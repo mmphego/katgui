@@ -1,16 +1,18 @@
 <div class="view-container" ng-controller="OperatorControlCtrl">
 
     <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{{title}}</h3>
-        </div>
-        <div class="panel-body panel-operator-controls" >
-            <button class="btn btn-primary" ng-click="">Inhibit All</button>
-            <button class="btn btn-primary" ng-click="">Stow All</button>
-            <button class="btn btn-primary" ng-click="">Stop All</button>
-            <button class="btn btn-primary" ng-click="">Resume Operations</button>
-            <button class="btn btn-primary" ng-click="">Shutdown Computing</button>
-        </div>
+        <material-toolbar class="panel-toolbar-turquoise">
+            <div class="material-toolbar-tools">
+                <span>{{title}}</span>
+            </div>
+        </material-toolbar>
+        <section layout="horizontal" layout-align="center center" class="panel-body panel-operator-controls" >
+            <material-button class="material-button-raised material-button-colored">Inhibit All</material-button>
+            <material-button class="material-button-raised material-button-colored">Stow All</material-button>
+            <material-button class="material-button-raised material-button-colored">Stop All</material-button>
+            <material-button class="material-button-raised material-button-colored">Resume Operations</material-button>
+            <material-button class="material-button-raised material-button-colored">Shutdown Computing</material-button>
+        </section>
 
         <table class="table">
             <tbody>

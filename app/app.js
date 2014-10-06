@@ -135,7 +135,7 @@ angular.module('katGui', [ 'ngMaterial',
 
     .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, USER_ROLES, AuthService, Session, AlarmService) {
 
-        $scope.showSideNav = false;
+        $scope.showSideNav = true;
         $scope.navbarCollapsed = false;
 
         $scope.currentUser = null;

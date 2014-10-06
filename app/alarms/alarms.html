@@ -1,21 +1,22 @@
 <div class="view-container" ng-controller="AlarmsCtrl">
 
     <div class="panel panel-default">
-        <div class="panel-heading">
-            Alarms
-        </div>
-        <div class="">
-            <button class="btn btn-primary">Known</button>
-            <button class="btn btn-primary">Acknowledge</button>
-            <button class="btn btn-primary">Clear</button>
-            <button class="btn btn-primary">Something</button>
-            <button class="btn btn-primary">Another thing</button>
-        </div>
+        <material-toolbar class="panel-toolbar-turquoise">
+            <div class="material-toolbar-tools">
+                <span>Alarms</span>
+            </div>
+        </material-toolbar>
+        <section layout="horizontal" layout-align="center center" class="panel-body alarms-buttons">
+            <material-button class="material-button-raised material-button-colored">Known</material-button>
+            <material-button class="material-button-raised material-button-colored">Acknowledge</material-button>
+            <material-button class="material-button-raised material-button-colored">Clear</material-button>
+            <material-button class="material-button-raised material-button-colored">Something</material-button>
+            <material-button class="material-button-raised material-button-colored">Another thing</material-button>
+        </section>
 
         <div class="alarmsGridStyle" ng-grid="gridOptionsAlarms"></div>
 
         <div ng-if="alarmsData.length === 0"><h3 style="width: 100%; text-align: center;">Could not retrieve alarms</h3></div>
 
     </div>
-
 </div>

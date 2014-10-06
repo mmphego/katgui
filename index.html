@@ -4,6 +4,7 @@
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
+    <link href="bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
     <!--<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">-->
     <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet"
@@ -12,7 +13,6 @@
     <link href="bower_components/angular-gantt/assets/gantt.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" rel="stylesheet"
           type="text/css">
-    <link href="bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css">
 
     <!-- build:css fonts/fontawesome.css -->
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
@@ -91,12 +91,12 @@
 <script src="app/widgets/gantt/gantt-widget.js"></script>
 <!-- Add New Component JS Above -->
 
-<section layout="horizontal" flex>
+<section layout="horizontal" layout-fill>
     <material-sidenav layout="vertical" ng-show="showSideNav && !navbarCollapsed">
         <material-toolbar class="material-theme-light material-medium-tall">
             <h1 class="material-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
         </material-toolbar>
-        <material-content class="material-content-padding material-whiteframe-z2">
+        <material-content class="material-content-padding" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
             <material-list>
                 <material-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('landing') }" ng-click="stateGo('landing')">Home</button>
@@ -146,17 +146,17 @@
                     <i class="fa fa-navicon"></i>
                 </button>
 
-                <div class="btn-group operator-control-btn-container"
+                <div class="btn-group"
                      ng-class="{open: operatorControlHover || operatorControlMenuHover}" layout="horizontal">
 
-                    <material-button class="material-button-raised material-button-colored"
+                    <material-button style="height: 40px;" class="material-button-raised material-button-colored"
                                      ng-mouseenter="operatorControlHover = true"
                                      ng-mouseleave="operatorControlHover = false"
                                      ng-click="operatorControlHover = false; operatorControlMenuHover = false; stateGo('operatorControl')">
                         <span>Operator Control</span>
                     </material-button>
 
-                    <material-content flex style="margin: -1px -1px 0" class="dropdown-menu"
+                    <material-content flex style="margin: -7px -1px 0;" class="dropdown-menu"
                                       ng-mouseenter="operatorControlMenuHover = true"
                                       ng-mouseleave="operatorControlMenuHover = false"
                                       role="menu">
@@ -186,8 +186,8 @@
                 <span flex></span>
 
                 <div>
-                    <a class="toolbar-anchor">{{utcTime}}</a><a style="font-size: 9pt;"> UTC</a><br/>
-                    <a class="toolbar-anchor">{{localTime}}</a><a style="font-size: 9pt;"> Local</a>
+                    <a class="toolbar-anchor">{{utcTime}}</a><a class="toolbar-anchor" style="font-size: 9pt;"> UTC</a><br/>
+                    <a class="toolbar-anchor">{{localTime}}</a><a class="toolbar-anchor" style="font-size: 9pt;"> Local</a>
                 </div>
 
                 <button class="button-toolbar-flat-icon"
