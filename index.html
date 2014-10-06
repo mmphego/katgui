@@ -92,11 +92,11 @@
 <!-- Add New Component JS Above -->
 
 <section layout="horizontal" flex>
-    <material-sidenav ng-show="showSideNav && !navbarCollapsed">
-        <material-toolbar class="material-theme-light">
-            <h1 class="material-toolbar-tools">Navigation</h1>
+    <material-sidenav layout="vertical" ng-show="showSideNav && !navbarCollapsed">
+        <material-toolbar class="material-theme-light material-medium-tall">
+            <h1 class="material-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
         </material-toolbar>
-        <material-content class="material-content-padding material-whiteframe-z2" style="height: 100%">
+        <material-content class="material-content-padding material-whiteframe-z2">
             <material-list>
                 <material-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('landing') }" ng-click="stateGo('landing')">Home</button>
@@ -133,23 +133,6 @@
                 </material-item>
 
             </material-list>
-            <ul class="dropdown-menu actions-container" role="menu">
-                <li><a href="" ng-click="stateGo('landing')">Landing</a></li>
-                <li class="divider"></li>
-                <li><a href="" ng-click="stateGo('alarms')">Alarms</a></li>
-                <li><a href="" ng-click="stateGo('health')">Health And State</a></li>
-                <li><a href="" ng-click="stateGo('operatorControl')">Operator Control</a></li>
-                <li><a href="" ng-click="stateGo('scheduler')">Scheduler</a></li>
-                <li class="divider"></li>
-                <li><a href="" ng-click="stateGo('sensorGraph')">Sensor Graphs</a></li>
-                <li><a href="" ng-click="stateGo('weather')">Weather</a></li>
-                <li class="divider"></li>
-                <li><a href="">Log Reports</a></li>
-                <li><a href="">Source Catalogues</a></li>
-                <li><a href="" ng-click="stateGo('admin')">User Admin</a></li>
-                <li class="divider"></li>
-                <li><a href="" ng-click="stateGo('about')">About katGUI</a></li>
-            </ul>
         </material-content>
     </material-sidenav>
 
@@ -166,14 +149,14 @@
                 <div class="btn-group operator-control-btn-container"
                      ng-class="{open: operatorControlHover || operatorControlMenuHover}" layout="horizontal">
 
-                    <material-button class="material-button-raised material-button-colored btn-toolbar"
+                    <material-button class="material-button-raised material-button-colored"
                                      ng-mouseenter="operatorControlHover = true"
                                      ng-mouseleave="operatorControlHover = false"
                                      ng-click="operatorControlHover = false; operatorControlMenuHover = false; stateGo('operatorControl')">
                         <span>Operator Control</span>
                     </material-button>
 
-                    <material-content flex style="margin: -1px -6px 0" class="dropdown-menu"
+                    <material-content flex style="margin: -1px -1px 0" class="dropdown-menu"
                                       ng-mouseenter="operatorControlMenuHover = true"
                                       ng-mouseleave="operatorControlMenuHover = false"
                                       role="menu">
@@ -203,8 +186,8 @@
                 <span flex></span>
 
                 <div>
-                    <a class="navbar-anchor">{{utcTime}}</a><a style="font-size: 9pt;"> UTC</a><br/>
-                    <a class="navbar-anchor">{{localTime}}</a><a style="font-size: 9pt;"> Local</a>
+                    <a class="toolbar-anchor">{{utcTime}}</a><a style="font-size: 9pt;"> UTC</a><br/>
+                    <a class="toolbar-anchor">{{localTime}}</a><a style="font-size: 9pt;"> Local</a>
                 </div>
 
                 <button class="button-toolbar-flat-icon"

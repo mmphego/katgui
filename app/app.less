@@ -44,11 +44,6 @@
   cursor: pointer;
 }
 
-.nav-username-center {
-  text-align: center;
-  vertical-align: center;
-}
-
 .toolbar-collapse-button {
   position: fixed;
   top: 0px;
@@ -76,30 +71,6 @@
 
 .toolbar-collapse-button-grey {
   color: lightgrey;
-}
-
-.navbar-actions-button {
-  margin-left: -13px;
-  margin-top: 25px;
-  color: gray;
-  cursor: pointer;
-  border: 0;
-  background: none;
-
-  i {
-    font-size: 16px;
-  }
-
-  &:hover {
-    color: @navbar-text-hover-color;
-  }
-}
-
-.actions-container {
-  position: fixed;
-  top: 47px;
-  left: 0px;
-  z-index: 1000;
 }
 
 .button-toolbar-flat-icon {
@@ -146,74 +117,19 @@
   background-color: red;
 }
 
-.navbar-anchor {
-  color: grey;
+.toolbar-anchor {
+  color: white;
 
   &:hover {
-    color: @navbar-text-hover-color;
+    color: lightgrey;
   }
-}
-
-.navbar-border-anchor {
-  color: grey;
-  border-left: 1px solid darken(@navbar-default-bg, 10%);
-
-  &:hover {
-    color: @navbar-text-hover-color;
-  }
-}
-
-.navbar {
-  margin-bottom: 10px;
-  border-top: none;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-color: darken(@navbar-default-bg, 25%);
-  border-left-color: darken(@navbar-default-bg, 25%);
-  border-right-color: darken(@navbar-default-bg, 25%);
-  min-width: @app-min-width;
-  background-image: radial-gradient(ellipse farthest-corner at center center, @navbar-default-bg 0%, darken(@navbar-default-bg, 5%) 100%);
-}
-
-.unselectable {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.navbar-actions-group {
-  height: 0px;
 }
 
 body {
   background: url('images/bg-body.png') repeat left top #f2f2f2;
-//  padding-top: 0px !important;
-//  height: 0px;
   font-family: RobotoDraft;
-
   min-width: @app-min-width;
-
-  .panel {
-    background-color: transparent;
-    background-image: -webkit-radial-gradient(center top, ellipse farthest-corner, @panel-gradient-start 0%, @panel-gradient-end 100%);
-    background-image: radial-gradient(ellipse farthest-corner at center top, @panel-gradient-start 0%, @panel-gradient-end 100%);
-  }
 }
-
-//.ng-hide-add, .ng-hide-remove {
-//  display: block !important;
-//}
-//
-//.animateHide {
-//  transition: 1s linear all;
-//  height: @navbar-height;
-//  overflow: hidden;
-//}
-//
-//.animateHide.ng-hide {
-//  height: 0px;
-//}
 
 .view-container {
   width: 90%;
@@ -228,15 +144,6 @@ body {
   margin-left: 3px;
   margin-right: 3px;
   margin-bottom: 3px;
-}
-
-.btn-toolbar {
-  height: 50px;
-  color: black;
-}
-
-.operator-control-btn-container {
-//  margin-left: 35px;
 }
 
 .menu-item {
