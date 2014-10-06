@@ -14,16 +14,22 @@
             <material-button class="material-button-raised material-button-colored">Shutdown Computing</material-button>
         </section>
 
-        <table class="table">
-            <tbody>
-                <tr ng-repeat="cols in receptors">
-                    <td ng-repeat="obj in cols">
-                        <receptor-state receptorName="{{obj.receptor.name}}" receptorState="{{obj.receptor.state}}" inhibited="{{obj.receptor.inhibited}}"></receptor-state>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <!--<table class="table">-->
+            <!--<tbody>-->
+                <!--<tr ng-repeat="cols in receptors">-->
+                    <!--<td ng-repeat="obj in cols">-->
+                        <!--<receptor-state receptorName="{{obj.receptor.name}}" receptorState="{{obj.receptor.state}}" inhibited="{{obj.receptor.inhibited}}"></receptor-state>-->
+                    <!--</td>-->
+                <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
 
+        <div style="margin: 5px; display: inline-block;">
+            <material-list ng-repeat="obj in receptorsData">
+                <receptor-state receptorName="{{obj.name}}" receptorState="{{obj.state}}"
+                                inhibited="{{obj.inhibited}}"></receptor-state>
+            </material-list>
+        </div>
     </div>
 
 </div>

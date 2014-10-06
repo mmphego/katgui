@@ -65,7 +65,7 @@ angular.module('katGui', [ 'ngMaterial',
             }
         });
         $stateProvider.state('landing', {
-            url: '/landing',
+            url: '/home',
             templateUrl: 'app/landing/landing.html',
             data: {
                 authorizedRoles: [USER_ROLES.all]

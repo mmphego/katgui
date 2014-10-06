@@ -15,6 +15,8 @@ angular.module('katGui')
                 scope.alertMessage = function() {
 
                 };
+
+
             }
         };
     });
