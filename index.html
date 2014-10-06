@@ -21,14 +21,14 @@
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
 <!--<script type="text/javascript">-->
-    <!--(function () {-->
-        <!--var po = document.createElement('script');-->
-        <!--po.type = 'text/javascript';-->
-        <!--po.async = true;-->
-        <!--po.src = 'https://apis.google.com/js/client:plusone.js';-->
-        <!--var s = document.getElementsByTagName('script')[0];-->
-        <!--s.parentNode.insertBefore(po, s);-->
-    <!--})();-->
+<!--(function () {-->
+<!--var po = document.createElement('script');-->
+<!--po.type = 'text/javascript';-->
+<!--po.async = true;-->
+<!--po.src = 'https://apis.google.com/js/client:plusone.js';-->
+<!--var s = document.getElementsByTagName('script')[0];-->
+<!--s.parentNode.insertBefore(po, s);-->
+<!--})();-->
 <!--</script>-->
 
 <body ng-controller="ApplicationCtrl">
@@ -91,20 +91,48 @@
 <script src="app/widgets/gantt/gantt-widget.js"></script>
 <!-- Add New Component JS Above -->
 
-<!--ng-show="userLoggedIn && !navbarCollapsed"-->
-<nav ng-show="!navbarCollapsed" class="navbar navbar-default" role="navigation">
+<section layout="horizontal" flex>
+    <material-sidenav ng-show="showSideNav && !navbarCollapsed">
+        <material-toolbar class="material-theme-light">
+            <h1 class="material-toolbar-tools">Navigation</h1>
+        </material-toolbar>
+        <material-content class="material-content-padding material-whiteframe-z2" style="height: 100%">
+            <material-list>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('landing') }" ng-click="stateGo('landing')">Home</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('alarms') }" ng-click="stateGo('alarms')">Alarms</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('health') }" ng-click="stateGo('health')">Health And State</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('operatorControl') }" ng-click="stateGo('operatorControl')">Operator Control</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('scheduler') }" ng-click="stateGo('scheduler')">Scheduler</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('sensorGraph') }" ng-click="stateGo('sensorGraph')">Sensor Graphs</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('weather') }" ng-click="stateGo('weather')">Weather</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item">Log Reports</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item">Source Catalogues</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('admin') }" ng-click="stateGo('admin')">User Admin</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('about') }" ng-click="stateGo('about')">About katGUI</button>
+                </material-item>
 
-    <div class="container-fluid">
-
-        <!--ng-if="userCanOperate"-->
-
-        <!--!navbarCollapsed && userLoggedIn-->
-        <div class="btn-group navbar-actions-group navbar-header">
-
-            <button class="unselectable navbar-actions-button navbar-btn dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-navicon"></i>
-            </button>
-
+            </material-list>
             <ul class="dropdown-menu actions-container" role="menu">
                 <li><a href="" ng-click="stateGo('landing')">Landing</a></li>
                 <li class="divider"></li>
@@ -122,84 +150,96 @@
                 <li class="divider"></li>
                 <li><a href="" ng-click="stateGo('about')">About katGUI</a></li>
             </ul>
-        </div>
+        </material-content>
+    </material-sidenav>
 
-        <div class="btn-group navbar-nav nav operator-control-btn-container">
+    <section layout="vertical" flex>
+        <material-toolbar ng-show="!navbarCollapsed" class="material-theme-dark">
+            <div class="material-toolbar-tools" layout="horizontal">
 
-            <button type="button" class="btn btn-navbar-fill" ng-click="stateGo('operatorControl')">Operator
-                Control
-            </button>
-            <button type="button" class="btn btn-navbar-fill dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
-                <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Inhibit All</a></li>
-                <li><a href="#">Stow All</a></li>
-                <li><a href="#">Stop All</a></li>
-                <li class="divider"></li>
-                <li><a href="#">Resume Operations</a></li>
-                <li class="divider"></li>
-                <li><a href="#">Shutdown Computing</a></li>
-            </ul>
-        </div>
+                <button class="button-toolbar-flat-icon"
+                        style="margin-left: 0px; padding: 0px;"
+                        ng-click="showSideNav = !showSideNav">
+                    <i class="fa fa-navicon"></i>
+                </button>
 
+                <div class="btn-group operator-control-btn-container"
+                     ng-class="{open: operatorControlHover || operatorControlMenuHover}" layout="horizontal">
 
-        <ul class="nav navbar-nav navbar-right">
-            <li>
-                <div style="margin-top: 5px; margin-right: 10px;">
-                <a class="navbar-anchor">{{utcTime}} (UTC)</a><br/>
-                <a class="navbar-anchor">{{localTime}} (Local)</a>
+                    <material-button class="material-button-raised material-button-colored btn-toolbar"
+                                     ng-mouseenter="operatorControlHover = true"
+                                     ng-mouseleave="operatorControlHover = false"
+                                     ng-click="operatorControlHover = false; operatorControlMenuHover = false; stateGo('operatorControl')">
+                        <span>Operator Control</span>
+                    </material-button>
+
+                    <material-content flex style="margin: -1px -6px 0" class="dropdown-menu"
+                                      ng-mouseenter="operatorControlMenuHover = true"
+                                      ng-mouseleave="operatorControlMenuHover = false"
+                                      role="menu">
+                        <material-list>
+                            <material-item>
+                                <button ink-ripple class="menu-item">Inhibit All</button>
+                            </material-item>
+                            <material-item>
+                                <button ink-ripple class="menu-item">Stow All</button>
+                            </material-item>
+                            <material-item>
+                                <button ink-ripple class="menu-item">Stop All</button>
+                            </material-item>
+                            <i class="divider menu-item"></i>
+                            <material-item>
+                                <button ink-ripple class="menu-item">Resume Operations</button>
+                            </material-item>
+                            <i class="divider menu-item"></i>
+                            <material-item>
+                                <button ink-ripple class="menu-item">Shutdown Computing</button>
+                            </material-item>
+                        </material-list>
+                    </material-content>
+
                 </div>
-            </li>
-            <li>
-                <a class="unselectable navbar-border-anchor" ng-click="stateGo('landing')">Landing Page
-                </a>
-            </li>
 
-            <li>
+                <span flex></span>
+
+                <div>
+                    <a class="navbar-anchor">{{utcTime}}</a><a style="font-size: 9pt;"> UTC</a><br/>
+                    <a class="navbar-anchor">{{localTime}}</a><a style="font-size: 9pt;"> Local</a>
+                </div>
+
+                <button class="button-toolbar-flat-icon"
+                        style="border-left: 1px solid white;"
+                        ng-click="stateGo('landing')"><span>Home</span>
+                </button>
+
                 <div class="alarms-warning-container">
-                    <button class="unselectable navbar-alarms-warning-icon navbar-btn" ng-click="stateGo('alarms')">
+                    <button class="unselectable button-toolbar-flat-icon navbar-btn"
+                            ng-click="stateGo('alarms')"
+                            style="border-left: 1px solid white;">
                         <i class="fa fa-warning"></i>
                     </button>
-                    <span ng-if="newAlarmWarnCount > 0" class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
-                    <span ng-if="newAlarmErrorCount > 0" class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
-                    <span ng-if="newAlarmCritCount > 0" class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>
+                    <span ng-if="newAlarmWarnCount > 0"
+                          class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
+            <span ng-if="newAlarmErrorCount > 0"
+                  class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
+                    <span ng-if="newAlarmCritCount > 0"
+                          class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>
                 </div>
-            </li>
+            </div>
 
-            <!--ng-show="!userLoggedIn"-->
-            <li>
-                <button type="button" class="btn btn-navbar-fill" ng-click="stateGo('login')">Login
-                </button>
-            </li>
-            <!--<li ng-show="userLoggedIn">-->
-            <!--<div class="btn-group">-->
-            <!--<button type="button" class="btn btn-default dropdown-toggle navbar-btn" data-toggle="dropdown">-->
-            <!--{{currentUser.name}} <span class="caret"></span>-->
-            <!--</button>-->
-            <!--<ul class="dropdown-menu" role="menu">-->
-            <!--<li><a ng-click="stateGo('admin')">User Administration</a></li>-->
-            <!--<li><a ng-click="stateGo('about')">About</a></li>-->
-            <!--<li class="divider"></li>-->
-            <!--<li><a ng-click="logout()">Logout</a></li>-->
-            <!--</ul>-->
-            <!--</div>-->
+        </material-toolbar>
+        <material-content ui-view scroll-y flex class="material-content-padding">
+        </material-content>
+    </section>
+</section>
 
-            <!--</li>-->
-        </ul>
-    </div>
-</nav>
-
-<material-content ui-view scroll-y flex class="material-content-padding">
-</material-content>
 
 <!--!navbarCollapsed && userLoggedIn-->
 
-<button class="unselectable navbar-collapse-button navbar-btn" ng-click="navbarCollapsed = !navbarCollapsed"
-        data-toggle="dropdown">
+<button class="unselectable toolbar-collapse-button"
+        ng-click="navbarCollapsed = !navbarCollapsed">
     <i class="fa"
-       ng-class="{ 'fa-caret-square-o-up': !navbarCollapsed,  'fa-caret-square-o-down': navbarCollapsed}"></i>
+       ng-class="{ 'fa-caret-square-o-up': !navbarCollapsed,  'fa-caret-square-o-down': navbarCollapsed, 'toolbar-collapse-button-grey': navbarCollapsed}"></i>
 </button>
 
 <!--ng-show="userLoggedIn"-->

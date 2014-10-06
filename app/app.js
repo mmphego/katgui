@@ -135,12 +135,15 @@ angular.module('katGui', [ 'ngMaterial',
 
     .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, USER_ROLES, AuthService, Session, AlarmService) {
 
+        $scope.showSideNav = false;
+        $scope.navbarCollapsed = false;
+
         $scope.currentUser = null;
         $scope.userRoles = USER_ROLES;
         $scope.isAuthorized = AuthService.isAuthorized;
         $scope.userCanOperate = false;
         $scope.userLoggedIn = false;
-        $scope.navbarCollapsed = false;
+
         $scope.actionMenuOpen = false;
         $rootScope.newAlarmWarnCount = 0;
         $rootScope.newAlarmErrorCount = 0;
@@ -162,6 +165,10 @@ angular.module('katGui', [ 'ngMaterial',
 
         $scope.stateGo = function (newState) {
             $state.go(newState);
+        };
+
+        $scope.isPageSelected = function (page) {
+            return $state.current.name === page;
         };
 
         $rootScope.utcTime = moment.utc(new Date()).format('hh:mm:ss');
