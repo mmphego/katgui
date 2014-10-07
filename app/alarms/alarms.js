@@ -2,6 +2,17 @@ angular.module('katGui.alarms', [])
 
     .controller('AlarmsCtrl', function ($rootScope, $scope) {
 
+        if (!$rootScope.showLargeAlarms) {
+            $rootScope.showLargeAlarms = false;
+            $scope.showLargeAlarms = false;
+        }
+
+        $scope.$watch('showLargeAlarms', function (newVal, oldVal) {
+            if (newVal !== oldVal) {
+                $rootScope.showLargeAlarms = newVal;
+            }
+        });
+
         $scope.selectAll = false;
         $scope.alarmsData = [];
         $scope.selectedAlarms = [];

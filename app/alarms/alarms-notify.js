@@ -1,9 +1,31 @@
 angular.module('katGui.alarms')
 
-    .controller('AlarmsNotifyCtrl', function ($rootScope, $scope, $timeout) {
+    .controller('AlarmsNotifyCtrl', function ($rootScope, $scope, $timeout, alarms) {
 
-        $scope.largeAlarms = true;
         $scope.messages = [];
+
+
+//        $timeout(function () {
+//            //test code alarms
+//            var testData = '[{"date": 1412676372.745636, "priority": "new", "message": "This is a very long message to test overflow in the notify alarms class... you know", "severity": "critical", "name": "sheepsheepsheepsheepsheepsheepsheepsheepsheep"}, {"date": 1412676372.74568, "priority": "new", "message": "hqpbygqbtgnfttxqdvue", "severity": "unknown", "name": "snow"}, {"date": 1412676372.745728, "priority": "cleared", "message": "wfufnftdjnuxpmzcciyr", "severity": "nominal", "name": "humidity"}, {"date": 1412676372.745751, "priority": "new", "message": "jwfuwauvgccjfbuivcfa", "severity": "error", "name": "rain"}, {"date": 1412676372.745774, "priority": "new", "message": "exijrrxixlivodaxqfzo", "severity": "warn", "name": "sprinboks"}, {"date": 1412676372.745804, "priority": "new", "message": "hqlrafkzndcnvlimzqkl", "severity": "unknown", "name": "reindeer"}, {"date": 1412676372.745848, "priority": "new", "message": "wdkzvsnsjcdvdlypphch", "severity": "maintenance", "name": "hail"}]';
+//            var jsonObj = JSON.parse(testData);
+//            jsonObj = [].concat(jsonObj);
+//            jsonObj.forEach(function (obj) {
+//
+//                if (obj.date) {
+//                    obj.date = moment.utc(obj.date, 'X').format('hh:mm:ss DD-MM-YYYY');
+//                }
+//
+//                alarms.addAlarmMessage(obj);
+//            });
+//
+//            if (!$rootScope.$$phase) {
+//                $rootScope.$digest();
+//            }
+//            //test code alarms
+//
+//        }, 250);
+
 
         $scope.addAlarmMessage = function (message) {
             $scope.messages.push(message);
@@ -60,7 +82,7 @@ angular.module('katGui.alarms')
         };
 
         $scope.getActiveClass = function () {
-            return $scope.largeAlarms ? 'large-alarm' : 'small-alarm';
+            return $rootScope.showLargeAlarms ? 'large-alarm' : 'small-alarm';
         };
     })
 
@@ -71,14 +93,14 @@ angular.module('katGui.alarms')
                 '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeSeverityClasses(message)">' +
                 '       <div>' +
                 '           <ul>' +
-                '               <li class=""><button class="alarm-close" ng-click="acknowledgeMessage(message)">Acknowledge</button></li>' +
-                '               <li class=""><button class="alarm-close" ng-click="deleteMessage(message)">Known</button></li>' +
+                '               <li class="li-inline"><button class="alarm-close" ng-click="acknowledgeMessage(message)">Ack</button></li>' +
+                '               <li class="li-inline"><button class="alarm-close" ng-click="deleteMessage(message)">Knw</button></li>' +
                 '           </ul>' +
                 '       </div>' +
-                '       <span class="datestamp">{{message.date}}</span>' +
-                '       <div class="severitystamp">{{message.severity}}</div>' +
-                '       <div><h3>{{message.name}}</h3><br/>' +
-                '       <span>{{message.message}}</span>' +
+                '       <div class="datestamp"><span>{{message.date}}</span></div>' +
+                '       <div class="severitystamp"><span>{{message.severity}}</span></div>' +
+                '       <div><span class="alarm-message-name">{{message.name}}</span>' +
+                '       <div class="alarm-message"><span>{{message.message}}</span></div>' +
                 '       </div>' +
                 '   </div>' +
                 '</div>',

@@ -1,158 +1,128 @@
-@alarm-error-bg: orange;
-@alarm-warning-bg: yellow;
-@alarm-info-bg: lightblue;
-@alarm-maintenance-bg: #c300c3;
-@alarm-critical-bg: red;
-@alarm-unknown-bg: lightgrey;
+@alarm-error-bg: #ff9800;
+@alarm-warning-bg: #ffeb3b;
+@alarm-info-bg: #03a9f4;
+@alarm-maintenance-bg: #9c27b0;
+@alarm-critical-bg: #e51c23;
+@alarm-unknown-bg: #607d8b;
 
 .large-alarm {
   position: fixed;
-  top: 55px;
-  right: 10px;
+  top: 64px;
+  right: 2px;
   float: right;
-  width: 35%;
-  height: 100%;
+  width: 400px;
   overflow: auto;
-  opacity: 0.8;
+  opacity: 0.95;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   z-index: 1000;
 
-  .datestamp {
-    top: 5px;
-    right: 5px;
-    font: 12px Arial;
-    width: 100%;
-  }
-
-  .timestamp {
-    top: 5px;
-    left: 5px;
-    font: 12px Arial;
+  span {
+    overflow: hidden;
   }
 
   .severitystamp {
-    margin-top: -23px;
-    top: 5px;
-    text-align: center;
+    font-weight: bold;
+  }
+
+
+  .alarm-message-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
     width: 100%;
-    font: 26px Arial;
-    font-style: italic;
-    font-weight: bold;
-//    text-decoration: underline;
+    display: block;
+    overflow: hidden;
+    font-size: 28px;
   }
 
-  h3 {
-    opacity: 1;
-    font-weight: bold;
-  }
-
-  span {
-    font: 18px Arial;
-    opacity: 1;
+  .alarm-message {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    display: block;
+    overflow: hidden;
+    font-size: 16px;
   }
 }
 
 .small-alarm {
   position: fixed;
-  top: 55px;
-  right: 10px;
+  top: 64px;
+  right: 2px;
   float: right;
-  width: 100px;
-  height: 100%;
+  width: 280px;
+//  height: 60px;
   overflow: auto;
-  opacity: 0.8;
+  opacity: 0.95;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
   z-index: 1000;
 
   .datestamp {
-    top: 5px;
-    right: 5px;
-    font: 12px Arial;
-    width: 100%;
+   display: none;
   }
 
   .timestamp {
-    top: 5px;
-    left: 5px;
-    font: 12px Arial;
+    display: none;
   }
 
   .severitystamp {
-    margin-top: -23px;
-    top: 5px;
-    text-align: center;
+    display: none;
+  }
+
+  .alarm-message {
+    display: none;
+  }
+
+  .alarm-message-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
     width: 100%;
-    font: 16px Arial;
-    font-style: italic;
-    font-weight: bold;
-    //    text-decoration: underline;
-  }
-
-  h3 {
-    opacity: 1;
-    font-weight: bold;
-  }
-
-  span {
-    font: 16px Arial;
-    opacity: 1;
+    display: block;
+    overflow: hidden;
+    font-size: 24px;
   }
 }
 
 .alarm-styles(@color, @textColor) {
-  #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 7.5%));
-  border-color: darken(@color, 15%);
+  background-color: @color;
   color: @textColor;
 }
 
 // Apply the mixin to the alarms
 .alarm-critical    { .alarm-glowing-critical }
 .alarm-error       { .alarm-glowing-error }
-.alarm-info        { .alarm-styles(@alarm-info-bg, black); }
-.alarm-nominal     { .alarm-styles(@alarm-info-bg, black); }
-.alarm-maintenance { .alarm-styles(@alarm-maintenance-bg, black); }
+.alarm-info        { .alarm-styles(@alarm-info-bg, white); }
+.alarm-nominal     { .alarm-styles(@alarm-info-bg, white); }
+.alarm-maintenance { .alarm-styles(@alarm-maintenance-bg, white); }
 .alarm-warning     { .alarm-styles(@alarm-warning-bg, black); }
-.alarm-unknown     { .alarm-styles(@alarm-unknown-bg, black); }
+.alarm-unknown     { .alarm-styles(@alarm-unknown-bg, white); }
 
 .alarm-item {
-  padding: 10px;
+  padding: 3px;
   margin-top: 2px;
   border: none;
-  border-radius: 10px;
+  border-radius: 2px;
   pointer-events: auto;
 }
 
-.alarm-item.ng-enter, .alarm-item.ng-leave {
-  -webkit-transition: .2s linear all;
-  transition: .2s linear all
-}
-
-.alarm-item.ng-enter, .alarm-item.ng-leave.ng-leave-active {
-  opacity: 0
-}
-
-.alarm-item.ng-leave, .alarm-item.ng-enter.ng-enter-active {
-  opacity: 1
-}
-
 @-webkit-keyframes glowing-error {
-  0% { background-color: orange; }
-  50% { background-color: orangered; }
-  100% { background-color: orange; }
+  0% { background-color: #ff9800; }
+  50% { background-color: #e65100; }
+  100% { background-color: #ff9800; }
 }
 
 @keyframes glowing-error {
-  0% { background-color: orange; }
-  50% { background-color: orangered; }
-  100% { background-color: orange; }
+  0% { background-color: #ff9800; }
+  50% { background-color: #e65100; }
+  100% { background-color: #ff9800; }
 }
 
 .alarm-glowing-error {
-  -webkit-animation: glowing-error 1s infinite;
-  animation: glowing-error 1s infinite;
-  border: none;
+//  -webkit-animation: glowing-error 1s;
+//  animation: glowing-error 1s;
+//  -webkit-animation-iteration-count: 10;
+//  animation-iteration-count: 10;
   background-color: @alarm-error-bg;
   color: black;
   transform: translateZ(0);
@@ -160,20 +130,22 @@
 }
 
 @-webkit-keyframes glowing-critical {
-  0% { background-color: #7F0400; }
-  50% { background-color: red; }
-  100% { background-color: #7F0400; }
+  0% { background-color: #e51c23; }
+  50% { background-color: #b0120a; }
+  100% { background-color: #e51c23; }
 }
 
 @keyframes glowing-critical {
-  0% { background-color: #7F0400; }
-  50% { background-color: red; }
-  100% { background-color: #7F0400; }
+  0% { background-color: #e51c23; }
+  50% { background-color: #b0120a; }
+  100% { background-color: #e51c23; }
 }
 
 .alarm-glowing-critical {
-  -webkit-animation: glowing-critical 1s infinite;
-  animation: glowing-critical 1s infinite;
+//  -webkit-animation: glowing-critical 1s;
+//  animation: glowing-critical 1s;
+//  -webkit-animation-iteration-count: 10;
+//  animation-iteration-count: 10;
   border: none;
   background-color: @alarm-critical-bg;
   color: white;
@@ -199,8 +171,6 @@
 }
 
 button.alarm-close {
-//  position: relative;
-//  display: inline-block;
   -webkit-appearance: none;
   padding: 0;
   cursor: pointer;
@@ -211,6 +181,10 @@ button.alarm-close {
 ul {
   float: right;
   list-style: none;
+
+  .li-inline {
+    display: inline;
+  }
 }
 
 .alarmsGridStyle {

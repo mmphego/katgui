@@ -24,15 +24,17 @@
     "font-awesome": "latest",
     "jquery-ui": "~1.10.3",
     "d3": "latest",
-    "angular-material": "~0.0.3"
+    "angular-material": "master"
   },
   "devDependencies": {
     "sockjs": "~0.3.4",
-    "angular-dashboard-framework": "~0.3.1",
+    "angular-dashboard-framework": "master",
     "ng-grid": "~2.0.13",
     "angular-bootstrap-datetimepicker": "latest",
     "ngstorage": "~0.3.0",
-    "angular-gantt": "~0.6.4"
+    "angular-gantt": "~0.6.4",
+    "angular-aria": "~1.3.0-rc.4",
+    "hammerjs": "~2.0.4"
   },
   "resolutions": {
     "angular": "~1.3.0",

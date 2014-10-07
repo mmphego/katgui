@@ -1,5 +1,4 @@
 @import "../bower_components/bootstrap/less/bootstrap";
-//@import "bower_components/bootstrap/less/theme.less";
 @import "../bower_components/font-awesome/less/font-awesome";
 
 /* Component LESS */
@@ -41,6 +40,10 @@
 /* Required for Angular UI Bootstrap */
 .nav, .pagination, .carousel a {
   cursor: pointer;
+}
+
+.avoid-clicks {
+  pointer-events: none;
 }
 
 .toolbar-collapse-button {
@@ -97,23 +100,24 @@
 .alarm-badge {
   position: absolute;
   right: 2px;
-  border: 1px solid #dfdfdf;
+  color: black;
+  .avoid-clicks;
 }
 
 .alarm-badge-warn {
-  top: 0px;
-  background-color: yellow;
-  color: rgb(55, 55, 55);
+  top: 5px;
+  background-color: #ffeb3b;
 }
 
 .alarm-badge-error {
-  top: 15px;
-  background-color: orange;
+  top: 23px;
+  background-color: #ffc107;
 }
 
 .alarm-badge-crit {
-  top: 30px;
-  background-color: red;
+  top: 41px;
+  background-color: #e51c23;
+  color: white;
 }
 
 .toolbar-anchor {
@@ -128,6 +132,7 @@ body {
   background: #fff;
   font-family: RobotoDraft;
   min-width: @app-min-width;
+  padding: 0 !important;
 }
 
 .view-container {
