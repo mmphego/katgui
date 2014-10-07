@@ -18,7 +18,7 @@ describe('LoginFormCtrl', function () {
         scope.login(mockCredentials);
         scope.$digest();
 //        expect(scope.currentUser).toBe(mockCredentials);
-        expect(location.path()).toBe('/landing');
+        expect(location.path()).toBe('/home');
     });
 
 });

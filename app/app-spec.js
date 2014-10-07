@@ -25,7 +25,7 @@ describe('ApplicationCtrl', function () {
 
         scope.stateGo('landing');
         scope.$digest();
-        expect(location.path()).toBe('/landing');
+        expect(location.path()).toBe('/home');
     }));
 
     it('should log you out and redirect to login page', inject(function () {
