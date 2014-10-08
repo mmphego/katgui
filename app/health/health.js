@@ -1,22 +1,41 @@
 angular.module('katGui.health', ['katGui.d3'])
 
-    .controller('HealthCtrl', function ($scope, $window) {
+    .controller('HealthCtrl', function ($rootScope, $scope, $window, $timeout) {
+
+        var heightOffset = 60,
+            widthOffset = 35,
+            heightOffsetCollapsed = 40,
+            widthOffsetCollapsed = 35;
 
         $scope.treemapDisplayValue = 'size';
+        $scope.showSelect = true;
+        $scope.treeContainerDiv = angular.element('#ui-view-container-div')[0];
 
-        $scope.treeChartSize = { width: $window.innerWidth, height: $window.innerHeight };
+        $scope.treeChartSize = { width: $window.innerWidth - 500, height: $window.innerHeight - 160 };
 
-        $scope.$watch(function () {
-            return $window.innerWidth;
-        }, function (value) {
-            $scope.treeChartSize.width = value - 7;
-        });
+        //add the watchers on the next $digest cycle
+        $timeout(function() {
+            $scope.$watch(function () {
+                return $window.innerWidth;
+            }, function () {
+                calcTreeChartSize(250);
+            });
 
-        $scope.$watch(function () {
-            return $window.innerHeight;
-        }, function (value) {
-            $scope.treeChartSize.height = value - 70;
-        });
+            $scope.$watch(function () {
+                return $window.innerHeight;
+            }, function () {
+                calcTreeChartSize(250);
+            });
+
+            $rootScope.$watch('showSideNav', function(value) {
+                calcTreeChartSize(500);
+                $scope.showSelect = value;
+            });
+            $rootScope.$watch('showNavbar', function(value) {
+                calcTreeChartSize(500);
+                $scope.showSelect = value;
+            });
+        }, 1);
 
         $scope.items = [
             { value: 'tree', name: 'Treemap' },
@@ -28,6 +47,32 @@ angular.module('katGui.health', ['katGui.d3'])
         ];
 
         $scope.mapType = 'tree';
+
+        function calcTreeChartSize(delay) {
+            //defer the calculation so that the view can update
+            //if we do it too fast some of the watch functions run this before
+            //the layout actually changed
+            $timeout(function() {
+
+                if ($rootScope.showSideNav && $rootScope.showNavbar) {
+                    $scope.treeChartSize = {
+                        width: $scope.treeContainerDiv.clientWidth - widthOffset,
+                        height: $scope.treeContainerDiv.clientHeight - heightOffset
+                    };
+                } else if (!$rootScope.showSideNav && $rootScope.showNavbar) {
+                    $scope.treeChartSize = {
+                        width: $scope.treeContainerDiv.clientWidth - widthOffsetCollapsed,
+                        height: $scope.treeContainerDiv.clientHeight - heightOffset
+                    };
+                } else if (!$rootScope.showNavbar) {
+                    $scope.treeChartSize = {
+                        width: $scope.treeContainerDiv.clientWidth - widthOffsetCollapsed,
+                        height: $scope.treeContainerDiv.clientHeight - heightOffsetCollapsed
+                    };
+                }
+
+            }, delay);
+        }
 
         $scope.d3TreemapData =
         {

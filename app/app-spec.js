@@ -1,7 +1,9 @@
 describe('ApplicationCtrl', function () {
 
+//    beforeEach(module('ngMaterial'));
     beforeEach(module('ui.router'));
     beforeEach(module('katGui'));
+
 
     var scope, ctrl, location, state;
 

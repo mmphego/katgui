@@ -57,7 +57,7 @@ angular.module('katGui.d3')
                         }
 
                         width = scope.chartSize.width;
-                        height = scope.chartSize.height - margin.top - margin.bottom;
+                        height = scope.chartSize.height;
 
                         r = height - 10;
 
@@ -125,8 +125,8 @@ angular.module('katGui.d3')
                         if (scope.mapType === 'pack') {
                             svg = d3.select(element[0]).append("svg")
                                 .attr("id", "treemapHealthChart")
-                                .attr("width", width + margin.left + margin.right)
-                                .attr("height", height + margin.bottom + margin.top)
+                                .attr("width", width)
+                                .attr("height", height)
                                 .attr("class", "health-chart")
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
@@ -135,8 +135,8 @@ angular.module('katGui.d3')
                         } else if (scope.mapType === 'tree') {
                             svg = d3.select(element[0]).append("svg")
                                 .attr("id", "treemapHealthChart")
-                                .attr("width", width + margin.left + margin.right)
-                                .attr("height", height + margin.bottom + margin.top)
+                                .attr("width", width)
+                                .attr("height", height)
                                 .attr("class", "health-chart")
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
@@ -158,8 +158,8 @@ angular.module('katGui.d3')
                         } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
                             svg = d3.select(element[0]).append("svg")
                                 .attr("id", "treemapHealthChart")
-                                .attr("width", width + margin.left + margin.right)
-                                .attr("height", height + margin.bottom + margin.top)
+                                .attr("width", width)
+                                .attr("height", height)
                                 .attr("class", "health-chart")
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
@@ -681,7 +681,7 @@ angular.module('katGui.d3')
                                 if (d.children) {
                                     // There is a maximum of two children!
 //                                    var colours = d.children.map(colour),
-                                    var colours = ['green', 'lightgreen'],
+                                    var colours = ['#259b24', 'lightgreen'],
                                         a = d3.hsl(colours[0]),
                                         b = d3.hsl(colours[1]);
                                     // L*a*b* might be better here...
@@ -724,7 +724,7 @@ angular.module('katGui.d3')
 
                             var path = g.append("path")
                                 .attr("d", arc)
-                                .style("fill", function(d) { return (d.children ? "green" : "#eee"); })
+                                .style("fill", function(d) { return (d.children ? "#259b24" : "#eee"); })
                                 .on("click", click);
 
                             var text = g.append("text")

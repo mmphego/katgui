@@ -133,10 +133,20 @@ angular.module('katGui', [ 'ngMaterial',
 
     })
 
-    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, USER_ROLES, AuthService, Session, AlarmService) {
+    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $materialSidenav, USER_ROLES, AuthService, Session, AlarmService) {
 
         $scope.showSideNav = true;
-        $scope.navbarCollapsed = false;
+        $scope.showNavbar = true;
+        $rootScope.showSideNav = true;
+        $rootScope.showNavbar = true;
+
+        //so that other views can $watch the rootScope values
+        $scope.$watch('showSideNav', function (value) {
+            $rootScope.showSideNav = value;
+        });
+        $scope.$watch('showNavbar', function (value) {
+            $rootScope.showNavbar = value;
+        });
 
         $scope.currentUser = null;
         $scope.userRoles = USER_ROLES;
@@ -153,6 +163,10 @@ angular.module('katGui', [ 'ngMaterial',
             $scope.currentUser = user;
             $scope.userLoggedIn = user !== null;
             $scope.userCanOperate = !!user && ($scope.currentUser.role !== USER_ROLES.all && $scope.currentUser.role !== USER_ROLES.monitor);
+        };
+
+        $scope.toggleSidenav = function () {
+            $materialSidenav('left-sidenav').toggle();
         };
 
         $rootScope.logout = function () {
