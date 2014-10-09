@@ -5,63 +5,78 @@ angular.module('katGui')
         $scope.title = 'Operator Controls';
 
         //test data
-        $scope.receptorsData = [{
-    name: "atn1",
-    state: "STOW",
-    inhibited: false
-}, {
-    name: "atn2",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn3",
-    state: "STOW",
-    inhibited: false
-}, {
-    name: "atn4",
-    state: "STOW",
-    inhibited: false
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn6",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn7",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}, {
-    name: "atn5",
-    state: "STOW",
-    inhibited: true
-}];
+        $scope.receptorsData = [
+            {
+                name: "ant1",
+                state: "STOW",
+                inhibited: false
+            },
+            {
+                name: "ant2",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant3",
+                state: "STOW",
+                inhibited: false
+            },
+            {
+                name: "ant4",
+                state: "STOW",
+                inhibited: false
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant6",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant7",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            },
+            {
+                name: "ant5",
+                state: "STOW",
+                inhibited: true
+            }
+        ];
 
 
         $scope.receptors = [];
@@ -87,61 +102,3 @@ angular.module('katGui')
             }
         }
     });
-
-//$scope.receptorsData = [{
-//    name: "atn1",
-//    state: "STOW",
-//    inhibited: false
-//}, {
-//    name: "atn2",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn3",
-//    state: "STOW",
-//    inhibited: false
-//}, {
-//    name: "atn4",
-//    state: "STOW",
-//    inhibited: false
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn6",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn7",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}, {
-//    name: "atn5",
-//    state: "STOW",
-//    inhibited: true
-//}];

@@ -75,9 +75,6 @@ angular.module('katGui.d3')
                         } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
                             x = d3.scale.linear().range([0, width]);
                             y = d3.scale.linear().range([0, height]);
-                        } else if (scope.mapType === 'wheel') {
-                            x = d3.scale.linear().range([0, 2 * Math.PI]);
-                            y = d3.scale.pow().exponent(1.3).domain([0, 1]).range([0, radius]);
                         } else if (scope.mapType === 'sunburst') {
                             x = d3.scale.linear().range([0, 2 * Math.PI]);
                             y = d3.scale.linear().range([0, radius]);
@@ -108,10 +105,6 @@ angular.module('katGui.d3')
                         } else if (scope.mapType === 'icicle') {
                             mapLayout = d3.layout.partition()
                                 .value(function(d) { return d.value; });
-                        } else if (scope.mapType === 'wheel') {
-                            mapLayout = d3.layout.partition()
-                                .sort(null)
-                                .value(function(d) { return 5.8 - d.depth; });
                         } else if (scope.mapType === 'sunburst') {
                             mapLayout =  d3.layout.partition()
                                 .value(function(d) { return d.value; });
@@ -164,7 +157,7 @@ angular.module('katGui.d3')
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
                                 .append("g");
-                        } else if (scope.mapType === 'wheel' || scope.mapType === 'sunburst') {
+                        } else if (scope.mapType === 'sunburst') {
                             svg = d3.select(element[0]).append("svg")
                                 .attr("id", "treemapHealthChart")
                                 .attr("class", "health-chart")
@@ -180,8 +173,6 @@ angular.module('katGui.d3')
                             displayPartition();
                         } else  if (scope.mapType === 'icicle') {
                             displayIcicle();
-                        } else if (scope.mapType === 'wheel') {
-                            displayWheel(data);
                         } else if (scope.mapType === 'sunburst') {
                             displaySunburst(data);
                         } else {
@@ -233,6 +224,7 @@ angular.module('katGui.d3')
                                 .datum(d.parent)
                                 .on("click", transition)
                                 .select("text")
+                                .style("fill", "#fff")
                                 .text(name(d));
 
                             var g1 = svg.insert("g", ".grandparent")
@@ -373,8 +365,8 @@ angular.module('katGui.d3')
                                     })
                                     .on("mousemove", function () {
                                         tooltip
-                                            .style("top", (d3.event.pageY + 10) + "px")
-                                            .style("left", (d3.event.pageX + 10) + "px");
+                                            .style("top", (d3.event.layerY + 10) + "px")
+                                            .style("left", (d3.event.layerX + 10) + "px");
                                     })
                                     .on("mouseout", function () {
                                         tooltip.style("visibility", "hidden");
@@ -424,7 +416,7 @@ angular.module('katGui.d3')
                                 .attr("dy", ".35em")
                                 .attr("text-anchor", "middle")
                                 .style("opacity", function (d) {
-                                    return d.r > 40 ? 1 : 0;
+                                    return d.r > 60 ? 1 : 0;
                                 })
                                 .text(function (d) {
                                     return d.name;
@@ -466,7 +458,7 @@ angular.module('katGui.d3')
                                     return y(d.y);
                                 })
                                 .style("opacity", function (d) {
-                                    return k * d.r > 20 ? 1 : 0;
+                                    return k * d.r > 50 ? 1 : 0;
                                 });
 
                             node = d;
@@ -594,123 +586,6 @@ angular.module('katGui.d3')
                             }
                         }
 
-                        function displayWheel(data) {
-                            var nodes = mapLayout.nodes(data);
-
-                            var arc = d3.svg.arc()
-                                .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-                                .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-                                .innerRadius(function(d) { return Math.max(0, d.y ? y(d.y) : d.y); })
-                                .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
-
-                            var path = svg.selectAll("path").data(nodes);
-                            path.enter().append("path")
-                                .attr("id", function(d, i) { return "path-" + i; })
-                                .attr("d", arc)
-                                .attr("fill-rule", "evenodd")
-                                .style("fill", colour)
-//                                .attr("transform", "translate(" + width/4+ ", 0)")
-                                .on("click", click);
-
-                            var text = svg.selectAll("text").data(nodes);
-                            var textEnter = text.enter().append("text")
-                                .style("fill-opacity", 1)
-                                .style("fill", function(d) {
-                                    return brightness(d3.rgb(colour(d))) < 125 ? "#eee" : "#000";
-                                })
-                                .attr("text-anchor", function(d) {
-                                    return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-                                })
-                                .attr("dy", ".2em")
-                                .attr("transform", function(d) {
-                                    var multiline = (d.name || "").split(" ").length > 1,
-                                        angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-                                        rotate = angle + (multiline ? -0.5 : 0);
-                                    return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ") translate(0, 0)";
-                                })
-                                .on("click", click);
-                            textEnter.append("tspan")
-                                .attr("x", 0)
-                                .text(function(d) { return d.depth ? d.name.split(" ")[0] : ""; });
-                            textEnter.append("tspan")
-                                .attr("x", 0)
-                                .attr("dy", "1em")
-                                .text(function(d) { return d.depth ? d.name.split(" ")[1] || "" : ""; });
-
-                            function click(d) {
-                                path.transition()
-                                    .duration(duration)
-                                    .attrTween("d", arcTween(d));
-
-                                // Somewhat of a hack as we rely on arcTween updating the scales.
-                                text.style("visibility", function(e) {
-                                    return isParentOf(d, e) ? null : d3.select(this).style("visibility");
-                                })
-                                    .transition()
-                                    .duration(duration)
-                                    .attrTween("text-anchor", function(d) {
-                                        return function() {
-                                            return x(d.x + d.dx / 2) > Math.PI ? "end" : "start";
-                                        };
-                                    })
-                                    .attrTween("transform", function(d) {
-                                        var multiline = (d.name || "").split(" ").length > 1;
-                                        return function() {
-                                            var angle = x(d.x + d.dx / 2) * 180 / Math.PI - 90,
-                                                rotate = angle + (multiline ? -0.5 : 0);
-                                            return "rotate(" + rotate + ")translate(" + (y(d.y) + padding) + ")rotate(" + (angle > 90 ? -180 : 0) + ")";
-                                        };
-                                    })
-                                    .style("fill-opacity", function(e) { return isParentOf(d, e) ? 1 : 1e-6; })
-                                    .each("end", function(e) {
-                                        d3.select(this).style("visibility", isParentOf(d, e) ? null : "hidden");
-                                    });
-                            }
-
-                            function isParentOf(p, c) {
-                                if (p === c) { return true; }
-                                if (p.children) {
-                                    return p.children.some(function(d) {
-                                        return isParentOf(d, c);
-                                    });
-                                }
-                                return false;
-                            }
-
-                            function colour(d) {
-                                if (d.children) {
-                                    // There is a maximum of two children!
-//                                    var colours = d.children.map(colour),
-                                    var colours = ['#259b24', 'lightgreen'],
-                                        a = d3.hsl(colours[0]),
-                                        b = d3.hsl(colours[1]);
-                                    // L*a*b* might be better here...
-                                    return d3.hsl((a.h + b.h) / 2, a.s * 1.2, a.l / 1.2);
-                                }
-                                return d.colour || "#fff";
-                            }
-
-                            // Interpolate the scales!
-                            function arcTween(d) {
-                                var my = maxY(d),
-                                    xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-                                    yd = d3.interpolate(y.domain(), [d.y, my]),
-                                    yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-                                return function(d) {
-                                    return function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
-                                };
-                            }
-
-                            function maxY(d) {
-                                return d.children ? Math.max.apply(Math, d.children.map(maxY)) : d.y + d.dy;
-                            }
-
-                            // http://www.w3.org/WAI/ER/WD-AERT/#color-contrast
-                            function brightness(rgb) {
-                                return rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114;
-                            }
-                        }
-
                         function displaySunburst(data) {
                             var arc = d3.svg.arc()
                                 .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
@@ -724,7 +599,7 @@ angular.module('katGui.d3')
 
                             var path = g.append("path")
                                 .attr("d", arc)
-                                .style("fill", function(d) { return (d.children ? "#259b24" : "#eee"); })
+                                .style("fill", function(d) { return (d.children ? "#259b24" : "transparent"); })
                                 .on("click", click);
 
                             var text = g.append("text")

@@ -42,7 +42,6 @@ angular.module('katGui.health', ['katGui.d3'])
             { value: 'pack', name: 'Pack' },
             { value: 'partition', name: 'Partition' },
             { value: 'icicle', name: 'Icicle' },
-            { value: 'wheel', name: 'Wheel' },
             { value: 'sunburst', name: 'Sunburst' }
         ];
 
