@@ -9,14 +9,16 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.types = SCHEDULE_BLOCK_TYPES;
 
-        var draftActionsTemplate = '<button value="remove" class="btn btn-default btn-trash" ng-click="removeDraftRow(this.row.rowIndex)"><span class="fa fa-trash-o"></span></button>' +
-            '<button value="moveToSchedule" class="btn btn-default btn-trash" ng-click="moveDraftRowToSchedule(this.row.index)"><span class="fa fa-chevron-down"></span></button>';
-        var checkboxHeaderTemplate = '<input class="ngSelectionHeader" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"/>';
-//        var checkboxHeaderTemplate = '<material-checkbox style="padding:0; margin: 0;" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"></material-checkbox>';
-        var dropdownTemplate = '<select class="grid-dropdown" ng-model="COL_FIELD" ng-options="type for type in types"></select>';
-        var datetimepickerTemplate = '<button id="btn-custom-sel-temp" class="btn-custom-datetimepicker" ng-click="openDatePicker(row.rowIndex, $event);">' +
-            '<span ng-if="!COL_FIELD">Select Date</span><span ng-if="COL_FIELD">{{COL_FIELD | date:\'dd/MM/yyyy HH:mm\'}}</span><span class="fa fa-chevron-down"></span></button>';
         var lastId = 0;
+
+        $scope.idSelectedScheduleDraft = null;
+        $scope.setSelectedScheduleDraft = function (idSelectedDraft, dontDeselectOnSame) {
+            if ($scope.idSelectedScheduleDraft === idSelectedDraft && !dontDeselectOnSame) {
+                $scope.idSelectedScheduleDraft = null;
+            } else {
+                $scope.idSelectedScheduleDraft = idSelectedDraft;
+            }
+        };
 
         $scope.draftSelections = [];
         $scope.scheduleSelections = [];
@@ -28,81 +30,91 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.selectedScheduleBlockDetails = "line1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world";
 
-        $scope.openDatePicker = function (rowIndex, $event) {
+        $scope.openTypePicker = function (rowIndex, $event) {
 
-            //TODO keyboard shortcut like escape to close datepicker
-            if ($scope.currentRowDatePickerIndex !== rowIndex) {
-
-                var existingVal = $scope.scheduleDraftData[rowIndex].desiredTime;
-                if (existingVal.length > 0) {
-                    $scope.currentSelectedDate = existingVal;
-                }
-
+            if ($scope.currentRowTypePickerIndex !== rowIndex) {
+                $scope.setSelectedScheduleDraft($scope.scheduleDraftData[rowIndex].id, true);
+                closeDatePickerMenu();
                 var rect = $event.currentTarget.getBoundingClientRect();
-
                 var offset = { x: 0, y: 30 };
-
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
                 };
+                angular.element(document.getElementById('schedulerTypePickerMenu')).css(overLayCSS);
+                $scope.currentRowTypePickerIndex = $scope.scheduleDraftData.indexOf($scope.scheduleDraftData[rowIndex]);
+                $scope.showTypePicker = true;
+            } else {
+                //the same row's button was clicked, so close the popup
+                closeTypeMenu();
+            }
 
+            $event.stopPropagation();
+        };
+
+        $scope.openDatePicker = function (rowIndex, $event) {
+
+            //TODO keyboard shortcut like escape to close datepicker
+            if ($scope.currentRowDatePickerIndex !== rowIndex) {
+                $scope.setSelectedScheduleDraft($scope.scheduleDraftData[rowIndex].id, true);
+                closeTypeMenu();
+                var existingVal = $scope.scheduleDraftData[rowIndex].desiredTime;
+                if (existingVal.length > 0) {
+                    $scope.currentSelectedDate = existingVal;
+                }
+                var rect = $event.currentTarget.getBoundingClientRect();
+                var offset = { x: 0, y: 30 };
+                var overLayCSS = {
+                    left: rect.left + offset.x + 'px',
+                    top: rect.top + offset.y + 'px'
+                };
                 angular.element(document.getElementById('schedulerDatePickerMenu')).css(overLayCSS);
-
                 $scope.currentRowDatePickerIndex = $scope.scheduleDraftData.indexOf($scope.scheduleDraftData[rowIndex]);
                 $scope.showDatePicker = true;
             } else {
                 //the same row's button was clicked, so close the popup
-                $scope.showDatePicker = false;
-                $scope.currentRowDatePickerIndex = -1;
+                closeDatePickerMenu();
             }
+
+            $event.stopPropagation();
         };
 
-        $scope.onTimeSet = function (newDate) {
+        angular.element('#schedule-draft-data-list').bind("scroll", function() {
+            closeTypeMenu();
+        });
 
-            $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = newDate;
+        angular.element('body').bind("click", function(e) {
+            if (!e.target.parentNode.classList.contains('schedule-item-input') &&
+                !e.target.parentNode.parentNode.classList.contains('schedule-item-input')) {
+
+                closeTypeMenu();
+                closeDatePickerMenu();
+            }
+        });
+
+        $scope.onTimeSet = function (newDate, oldDate) {
+
+            $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = moment(newDate).format('DD/MM/YYYY, HH:mm');
             $scope.showDatePicker = false;
             $scope.currentSelectedDate = new Date();
             $scope.currentRowDatePickerIndex = -1;
         };
 
-        $scope.gridOptionsDrafts = {
-            data: 'scheduleDraftData',
-            columnDefs: [
-                {field: 'id', displayName: 'ID', width: 120},
-                {field: 'desiredTime', displayName: 'Desired Time', width: 160, cellTemplate: datetimepickerTemplate },
-                {field: 'state', displayName: 'State', width: 80},
-                {field: 'owner', displayName: 'Owner', width: 120},
-                {field: 'type', displayName: 'Type', width: 140, cellTemplate: dropdownTemplate},
-                {field: 'description', displayName: 'Description', enableCellEdit: true},
-                {field: 'remove', displayName: '', cellTemplate: draftActionsTemplate, width: 50, maxWidth: 50 }
-            ],
-            selectedItems: $scope.draftSelections,
-            checkboxHeaderTemplate: checkboxHeaderTemplate,
-            showSelectionCheckbox: true,
-            selectWithCheckboxOnly: true,
-            enableColumnResize: true
-        };
-
-        $scope.gridOptionsSchedules = {
-            data: 'scheduleData',
-            columnDefs: [
-                {field: 'id', displayName: 'ID', width: 120},
-                {field: 'desiredTime', displayName: 'Desired Time', width: 120 },
-                {field: 'state', displayName: 'State', width: 80},
-                {field: 'owner', displayName: 'Owner', width: 120},
-                {field: 'ready', displayName: 'Ready', width: 80},
-                {field: 'type', displayName: 'Type', width: 120},
-                {field: 'description', displayName: 'Description' }
-            ],
-            selectedItems: $scope.scheduleSelections,
-            checkboxHeaderTemplate: checkboxHeaderTemplate,
-            showSelectionCheckbox: true,
-            selectWithCheckboxOnly: false,
-            enableColumnResize: true
+        $scope.setScheduleDraftType = function (type) {
+            var item = _.find($scope.scheduleDraftData, function (obj) {
+                return obj.id === $scope.idSelectedScheduleDraft;
+            });
+            item.type = type;
         };
 
         $scope.removeDraftRow = function (rowIndex) {
+            if ($scope.idSelectedScheduleDraft === $scope.scheduleDraftData[rowIndex].id) {
+                if ($scope.scheduleDraftData.length > rowIndex + 1) {
+                    $scope.idSelectedScheduleDraft = $scope.scheduleDraftData[rowIndex + 1].id;
+                } else if ($scope.scheduleDraftData.length === rowIndex + 1 && rowIndex > 0) {
+                    $scope.idSelectedScheduleDraft = $scope.scheduleDraftData[rowIndex - 1].id;
+                }
+            }
             $scope.scheduleDraftData.splice(rowIndex, 1);
         };
 
@@ -113,7 +125,15 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.addDraftSchedule = function () {
 
-            var newDraft = { id: 'scheduleblock' + lastId++, desiredTime: '', state: 'DRAFT', owner: 'userName', type: 'MANUAL', description: 'some description' };
+            var newDraft = {
+                id: 'scheduleblock' + lastId++,
+                desiredTime: '',
+                state: 'DRAFT',
+                owner: 'userName',
+                type: 'MANUAL',
+                description: 'some description some description some description some description some description some description some description some description some description some description some description',
+                script: 'some random scripty goodness'
+            };
             $scope.scheduleDraftData.push(newDraft);
         };
 
@@ -136,5 +156,25 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
             $scope.scheduleSelections.length = 0;
         };
+
+        function closeTypeMenu () {
+            if ($scope.showTypePicker) {
+                $scope.showTypePicker = false;
+                $scope.currentRowTypePickerIndex = -1;
+                if (!$scope.$$phase) {
+                    $scope.$apply();
+                }
+            }
+        }
+
+        function closeDatePickerMenu () {
+            if ($scope.showDatePicker) {
+                $scope.showDatePicker = false;
+                $scope.currentRowDatePickerIndex = -1;
+                if (!$scope.$$phase) {
+                    $scope.$apply();
+                }
+            }
+        }
 
     });

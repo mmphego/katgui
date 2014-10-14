@@ -1,8 +1,3 @@
-.schedules-panel-heading-controls {
-  float: left;
-  margin-top: -40px;
-}
-
 .schedule-block-details {
 
   textarea {
@@ -10,24 +5,6 @@
     width: 340px;
     resize: none;
 
-  }
-}
-
-.draft-controls {
-  margin-top: -6px;
-  float: left;
-  button {
-    .btn;
-    .btn-default;
-  }
-}
-
-.panel-content {
-  margin-bottom: 5px;
-  margin-top: 5px;
-
-  h3 {
-    text-align: center;
   }
 }
 
@@ -43,26 +20,55 @@
   font-size: 16px;
 }
 
-.no-style-centered {
-  width: 205px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+.gridStyle {
 
-  button {
-    .btn;
-    .btn-default;
-    width: 100px;
 
-    &:focus {
+}
+
+.schedule-draft-data-list {
+
+  padding: 0;
+  margin-bottom: 5px;
+  max-width: 800px;
+
+  material-list {
+    height: 600px;
+    overflow: auto;
+
+    material-item {
+      cursor: pointer;
       outline: none;
     }
   }
-}
 
-.gridStyle {
-  border: 1px solid rgb(212, 212, 212);
-  height: 300px;
+  .schedule-block-id {
+    font-size: 1.5em;
+  }
+
+  .schedule-draft-item {
+    border: 1px solid #d3d3d3;
+  }
+
+  .schedule-type-dropdown {
+    margin-right: 5px;
+    width: 150px;
+    border: 0;
+  }
+
+  .schedule-item-input {
+    height: 32px;
+  }
+
+  .schedule-item-input-group {
+    margin-left: 35px;
+  }
+
+  .selected-schedule-row {
+    material-item-content {
+      background-color: #e1f5fe;
+    }
+
+  }
 }
 
 .grid-dropdown {
@@ -79,13 +85,10 @@
 .datepickerMenu {
   position: fixed;
   z-index: 1000;
-  border: 1px solid darkgrey;
+//  border: 1px solid darkgrey;
   border-radius: 4px;
   background-color: white;
-  -webkit-box-shadow: 3px 3px 5px 0px rgba(50, 50, 50, 0.75);
-  box-shadow: 3px 3px 5px 0px rgba(50, 50, 50, 0.75);
-
-
+  margin-top: 5px;
 }
 
 .glyphicon {
@@ -122,3 +125,5 @@
     top: 8px;
   }
 }
+
+

@@ -42,37 +42,37 @@ angular.module('katGui')
                 inhibited: true
             },
             {
-                name: "ant5",
+                name: "ant8",
                 state: "STOW",
                 inhibited: true
             },
             {
-                name: "ant5",
+                name: "ant9",
                 state: "STOW",
                 inhibited: true
             },
             {
-                name: "ant5",
+                name: "ant10",
                 state: "STOW",
                 inhibited: true
             },
             {
-                name: "ant5",
+                name: "ant11",
                 state: "STOW",
                 inhibited: true
             },
             {
-                name: "ant5",
+                name: "ant12",
                 state: "STOW",
                 inhibited: true
             },
             {
-                name: "ant5",
+                name: "ant13",
                 state: "STOW",
                 inhibited: true
             },
             {
-                name: "ant5",
+                name: "ant14",
                 state: "STOW",
                 inhibited: true
             }

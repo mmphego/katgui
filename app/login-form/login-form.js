@@ -45,7 +45,7 @@ angular.module('katGui')
         };
 
         $scope.forgotPassword = function () {
-//            alert('nothing to see here yet...');
+            alert('nothing to see here yet...');
         };
 
 //        $scope.loginFinished = function (authResult) {
