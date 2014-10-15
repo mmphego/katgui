@@ -33,7 +33,7 @@
                     <material-item ng-repeat="item in scheduleDraftData track by item.id" ng-click="setSelectedScheduleDraft(item)"
                                    ng-class="{'selected-schedule-row': item === selectedScheduleDraft}">
                         <material-item-content>
-                            <div class="material-tile-content schedule-draft-item" style="padding: 8px;">
+                            <div class="material-tile-content schedule-draft-item" style="padding: 2px;">
                                 <span class="schedule-block-id">{{item.id}}:</span>
 
                                 <div layout="horizontal" style="float:right;">
@@ -70,9 +70,9 @@
                                         </material-tooltip>
                                     </material-button>
                                 </div>
-
-                                <div style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
-                                    {{item.description}}
+                                <!--style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"-->
+                                <div style="margin-right: 450px;">
+                                    <input layout-fill style="text-overflow: ellipsis;" inline-edit type="text" ng-model="item.description" class="inactive-text-input"/>
                                 </div>
                             </div>
                         </material-item-content>
@@ -137,14 +137,14 @@
                                  <!--ng-class="{disabled: scheduleSelections.length === 0}"-->
                                  <!--ng-click="moveDraftsToSchedule()">-->
                     <!--<span class="fa fa-chevron-down"></span>-->
-                    <!--&lt;!&ndash;<span class="fa fa-chevron-down"></span>&ndash;&gt;-->
+                    <!--<!--<span class="fa fa-chevron-down"></span>-->-->
                 <!--</material-button>-->
 
                 <!--<material-button style="margin-left: 3px;" class="material-button-raised material-button-colored"-->
                                  <!--ng-class="{disabled: scheduleSelections.length === 0}"-->
                                  <!--ng-click="moveSchedulesToDraft()">-->
                     <!--<span class="fa fa-chevron-up"></span>-->
-                    <!--&lt;!&ndash;<span class="fa fa-chevron-up"></span>&ndash;&gt;-->
+                    <!--<!--<span class="fa fa-chevron-up"></span>-->-->
                 <!--</material-button>-->
             <!--</div>-->
 

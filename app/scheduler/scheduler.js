@@ -43,7 +43,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         $scope.openTypePicker = function (rowIndex, $event) {
 
             if ($scope.currentRowTypePickerIndex !== rowIndex) {
-                $scope.setSelectedScheduleDraft($scope.scheduleDraftData[rowIndex].id, true);
+                $scope.setSelectedScheduleDraft($scope.scheduleDraftData[rowIndex], true);
                 closeDatePickerMenu();
                 var rect = $event.currentTarget.getBoundingClientRect();
                 var offset = { x: 0, y: 30 };
@@ -66,7 +66,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
             //TODO keyboard shortcut like escape to close datepicker
             if ($scope.currentRowDatePickerIndex !== rowIndex) {
-                $scope.setSelectedScheduleDraft($scope.scheduleDraftData[rowIndex].id, true);
+                $scope.setSelectedScheduleDraft($scope.scheduleDraftData[rowIndex], true);
                 closeTypeMenu();
                 var existingVal = $scope.scheduleDraftData[rowIndex].desiredTime;
                 if (existingVal.length > 0) {
@@ -91,6 +91,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         angular.element('#schedule-draft-data-list-id').bind("scroll", function() {
             closeTypeMenu();
+            closeDatePickerMenu();
         });
 
         angular.element('body').bind("click", function(e) {
@@ -111,10 +112,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         };
 
         $scope.setScheduleDraftType = function (type) {
-            var item = _.find($scope.scheduleDraftData, function (obj) {
-                return obj.id === $scope.selectedScheduleDraft;
-            });
-            item.type = type;
+            $scope.scheduleDraftData[$scope.scheduleDraftData.indexOf($scope.selectedScheduleDraft)].type = type;
         };
 
         $scope.removeDraftRow = function (rowIndex) {
@@ -141,7 +139,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
                 state: 'DRAFT',
                 owner: 'userName',
                 type: 'MANUAL',
-                description: 'some description some description some description some description some description some description some description some description some description some description some description',
+                description: 'Click here to change the description',
                 script: 'some random scripty goodness ' + lastId
             };
             lastId++;
