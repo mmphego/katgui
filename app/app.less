@@ -133,6 +133,7 @@ body {
   font-family: RobotoDraft;
   min-width: @app-min-width;
   padding: 0 !important;
+  overflow: hidden;
 }
 
 .view-container {
@@ -196,6 +197,11 @@ material-sidenav {
   font-size: 1.5em;
 }
 
+.panel-toolbar-small {
+  min-height: 35px;
+  max-height: 35px;
+}
+
 .centered-content {
   display: flex;
   flex-wrap: wrap;
@@ -206,4 +212,15 @@ material-sidenav {
   font-size: 24px;
   margin-top: 5px;
   margin-left: 2px;
+}
+
+.material-fab-fa-icon-small {
+  font-size: 14px;
+//  margin-top: 0px;
+  margin-left: 1px;
+}
+
+.material-button-fab-small {
+  width: 38px !important;
+  height: 38px !important;
 }

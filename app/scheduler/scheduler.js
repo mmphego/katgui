@@ -11,14 +11,8 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         var lastId = 0;
 
-        $scope.idSelectedScheduleDraft = null;
-        $scope.setSelectedScheduleDraft = function (idSelectedDraft, dontDeselectOnSame) {
-            if ($scope.idSelectedScheduleDraft === idSelectedDraft && !dontDeselectOnSame) {
-                $scope.idSelectedScheduleDraft = null;
-            } else {
-                $scope.idSelectedScheduleDraft = idSelectedDraft;
-            }
-        };
+        $scope.selectedItemScript = "";
+        $scope.selectedDraft = null;
 
         $scope.draftSelections = [];
         $scope.scheduleSelections = [];
@@ -28,7 +22,23 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         $scope.showDatePicker = false;
         $scope.currentSelectedDate = new Date();
 
-        $scope.selectedScheduleBlockDetails = "line1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world\nline1: something\nline2: something else\nhello: world";
+        $scope.selectedScheduleDraft = null;
+        $scope.setSelectedScheduleDraft = function (selectedDraft, dontDeselectOnSame) {
+            if ($scope.selectedScheduleDraft === selectedDraft && !dontDeselectOnSame) {
+                $scope.selectedScheduleDraft = null;
+            } else {
+                $scope.selectedScheduleDraft = selectedDraft;
+            }
+        };
+
+        $scope.selectedSchedule = null;
+        $scope.setSelectedSchedule = function (selectedSchedule, dontDeselectOnSame) {
+            if ($scope.selectedSchedule === selectedSchedule && !dontDeselectOnSame) {
+                $scope.selectedSchedule = null;
+            } else {
+                $scope.selectedSchedule = selectedSchedule;
+            }
+        };
 
         $scope.openTypePicker = function (rowIndex, $event) {
 
@@ -79,7 +89,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             $event.stopPropagation();
         };
 
-        angular.element('#schedule-draft-data-list').bind("scroll", function() {
+        angular.element('#schedule-draft-data-list-id').bind("scroll", function() {
             closeTypeMenu();
         });
 
@@ -94,7 +104,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.onTimeSet = function (newDate, oldDate) {
 
-            $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = moment(newDate).format('DD/MM/YYYY, HH:mm');
+            $scope.scheduleDraftData[$scope.currentRowDatePickerIndex].desiredTime = moment(newDate).format('DD/MM/YYYY HH:mm');
             $scope.showDatePicker = false;
             $scope.currentSelectedDate = new Date();
             $scope.currentRowDatePickerIndex = -1;
@@ -102,17 +112,17 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         $scope.setScheduleDraftType = function (type) {
             var item = _.find($scope.scheduleDraftData, function (obj) {
-                return obj.id === $scope.idSelectedScheduleDraft;
+                return obj.id === $scope.selectedScheduleDraft;
             });
             item.type = type;
         };
 
         $scope.removeDraftRow = function (rowIndex) {
-            if ($scope.idSelectedScheduleDraft === $scope.scheduleDraftData[rowIndex].id) {
+            if ($scope.selectedScheduleDraft === $scope.scheduleDraftData[rowIndex]) {
                 if ($scope.scheduleDraftData.length > rowIndex + 1) {
-                    $scope.idSelectedScheduleDraft = $scope.scheduleDraftData[rowIndex + 1].id;
+                    $scope.selectedScheduleDraft = $scope.scheduleDraftData[rowIndex + 1];
                 } else if ($scope.scheduleDraftData.length === rowIndex + 1 && rowIndex > 0) {
-                    $scope.idSelectedScheduleDraft = $scope.scheduleDraftData[rowIndex - 1].id;
+                    $scope.selectedScheduleDraft = $scope.scheduleDraftData[rowIndex - 1];
                 }
             }
             $scope.scheduleDraftData.splice(rowIndex, 1);
@@ -126,14 +136,15 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         $scope.addDraftSchedule = function () {
 
             var newDraft = {
-                id: 'scheduleblock' + lastId++,
+                id: 'scheduleblock' + lastId,
                 desiredTime: '',
                 state: 'DRAFT',
                 owner: 'userName',
                 type: 'MANUAL',
                 description: 'some description some description some description some description some description some description some description some description some description some description some description',
-                script: 'some random scripty goodness'
+                script: 'some random scripty goodness ' + lastId
             };
+            lastId++;
             $scope.scheduleDraftData.push(newDraft);
         };
 
