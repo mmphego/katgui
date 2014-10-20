@@ -22,7 +22,7 @@
                     <div class="material-toolbar-tools">
                         <span>Schedule Drafts</span>
                         <span flex></span>
-                        <material-button class="material-button-fab material-theme-light-blue material-button-fab-small"
+                        <material-button style="margin-right: 17px;" class="material-button-fab material-theme-light-blue material-button-fab-small"
                                          ng-click="addDraftSchedule()">
                             <span class="fa fa-plus material-fab-fa-icon-small"></span>
                         </material-button>
@@ -34,7 +34,14 @@
                                    ng-class="{'selected-schedule-row': item === selectedScheduleDraft}">
                         <material-item-content>
                             <div class="material-tile-content schedule-draft-item" style="padding: 2px;">
-                                <span class="schedule-block-id">{{item.id}}:</span>
+
+                                    <span class="schedule-block-id">{{item.id}}:</span>
+
+                                    <div style="font-size: 10px; font-weight: bold; display: inline-block; color: grey; vertical-align: middle">
+                                    ({{item.owner}} - {{item.state}})
+                                    </div>
+
+
 
                                 <div layout="horizontal" style="float:right;">
                                     <div layout="vertical">
@@ -49,29 +56,28 @@
                                                              ng-click="openDatePicker($index, $event);">
                                                 <span ng-if="item.desiredTime">{{item.desiredTime}}</span>
                                                 <span ng-if="!item.desiredTime">Select Time</span>
-                                                <span flex></span>
                                                 <span class="caret"></span>
                                             </material-button>
                                         </div>
                                         <div style="text-align: right; margin-top: 5px;">
-                                            <h4>{{item.owner}} - {{item.state}}</h4>
+
                                         </div>
                                     </div>
-                                    <material-button style="margin-left: 10px;" class="material-button-fab" ng-click="moveDraftRowToSchedule($index)">
-                                        <span class="fa fa-chevron-down material-fab-fa-icon"></span>
+                                    <material-button style="margin-left: 10px;" class="material-button-fab material-button-fab-small" ng-click="moveDraftRowToSchedule($index)">
+                                        <span class="fa fa-chevron-down material-fab-fa-icon-small"></span>
                                         <material-tooltip>
                                             Move Draft to Schedule
                                         </material-tooltip>
                                     </material-button>
-                                    <material-button style="margin-left: 10px;" class="material-button-fab material-theme-red" ng-click="removeDraftRow($index)">
-                                        <span class="fa fa-minus material-fab-fa-icon"></span>
+                                    <material-button style="margin-left: 10px;" class="material-button-fab material-theme-red material-button-fab-small" ng-click="removeDraftRow($index)">
+                                        <span class="fa fa-minus material-fab-fa-icon-small"></span>
                                         <material-tooltip>
                                             Delete Draft
                                         </material-tooltip>
                                     </material-button>
                                 </div>
                                 <!--style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"-->
-                                <div style="margin-right: 450px;">
+                                <div style="margin-right: 450px; margin-top: -8px; margin-left: 12px;">
                                     <input layout-fill style="text-overflow: ellipsis;" inline-edit type="text" ng-model="item.description" class="inactive-text-input"/>
                                 </div>
                             </div>
@@ -137,14 +143,14 @@
                                  <!--ng-class="{disabled: scheduleSelections.length === 0}"-->
                                  <!--ng-click="moveDraftsToSchedule()">-->
                     <!--<span class="fa fa-chevron-down"></span>-->
-                    <!--<!--<span class="fa fa-chevron-down"></span>-->-->
+                    <!--<!--<span class="fa fa-chevron-down"></span>-->
                 <!--</material-button>-->
 
                 <!--<material-button style="margin-left: 3px;" class="material-button-raised material-button-colored"-->
                                  <!--ng-class="{disabled: scheduleSelections.length === 0}"-->
                                  <!--ng-click="moveSchedulesToDraft()">-->
                     <!--<span class="fa fa-chevron-up"></span>-->
-                    <!--<!--<span class="fa fa-chevron-up"></span>-->-->
+                    <!--<!--<span class="fa fa-chevron-up"></span>-->
                 <!--</material-button>-->
             <!--</div>-->
 

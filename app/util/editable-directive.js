@@ -6,7 +6,8 @@ angular.module('katGui.util')
 
                 element.bind('keydown', function (event) {
 
-                    if (event.which === 27) {
+                    //enter or escape
+                    if (event.which === 27 || event.which === 13) {
                         event.target.blur();
                         event.preventDefault();
                     }
