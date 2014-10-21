@@ -74,6 +74,7 @@
 <script src="app/auth/auth-service.js"></script>
 <script src="app/landing/landing.js"></script>
 <script src="app/weather/weather.js"></script>
+<script src="app/video/video.js"></script>
 <script src="app/operator-control/operator-control.js"></script>
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/editable-directive.js"></script>
@@ -119,6 +120,9 @@
                 </material-item>
                 <material-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('sensorGraph') }" ng-click="stateGo('sensorGraph')">Sensor Graphs</button>
+                </material-item>
+                <material-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('video') }" ng-click="stateGo('video')">Video</button>
                 </material-item>
                 <material-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('weather') }" ng-click="stateGo('weather')">Weather</button>
@@ -215,7 +219,7 @@
             </div>
 
         </material-toolbar>
-        <material-content id="ui-view-container-div" ui-view scroll-y scroll-x flex class="material-content-padding">
+        <material-content id="ui-view-container-div" ui-view flex class="material-content-padding">
         </material-content>
     </section>
 </section>

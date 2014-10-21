@@ -11,7 +11,8 @@ angular.module('katGui', [ 'ngMaterial',
     'katGui.dashboardStructure',
     'katGui.landing',
     'katGui.util',
-    'katGui.scheduler'])
+    'katGui.scheduler',
+    'katGui.video'])
 
     .constant('UI_VERSION', '0.0.1')
 
@@ -95,6 +96,13 @@ angular.module('katGui', [ 'ngMaterial',
         $stateProvider.state('about', {
             url: '/about',
             templateUrl: 'app/about/about.html',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
+        $stateProvider.state('video', {
+            url: '/video',
+            templateUrl: 'app/video/video.html',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

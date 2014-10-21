@@ -140,7 +140,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
                 owner: 'userName',
                 type: 'MANUAL',
                 description: 'Click here to change the description',
-                script: 'some random scripty goodness ' + lastId
+                script: 'some script content ' + lastId
             };
             lastId++;
             $scope.scheduleDraftData.push(newDraft);
