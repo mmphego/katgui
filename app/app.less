@@ -229,3 +229,73 @@ material-sidenav {
   border: none;
   background-color: transparent;
 }
+
+/* After the transition this will be the only class remaining */
+.slideInVertically {
+  transition: min-height cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.25s, max-height cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.25s;
+  max-height: 64px;
+  min-height: 64px;
+}
+
+/* Initial state when showing */
+.slideInVertically.ng-hide-remove {
+  max-height: 0px;
+  min-height: 0px;
+
+  material-button {
+    opacity: 0;
+  }
+}
+
+/* Will transition towards this state */
+.slideInVertically.ng-hide-add.ng-hide-add-active {
+  max-height: 0px;
+  min-height: 0px;
+
+  material-button {
+    opacity: 0;
+  }
+}
+
+/* Will transition towards this state */
+.slideInVertically.ng-hide-remove.ng-hide-remove-active {
+  max-height: 64px;
+  min-height: 64px;
+
+  material-button {
+    opacity: 1;
+  }
+}
+
+/* After the transition this will be the only class remaining */
+.slideInSideNav {
+  transition: all 0.25s ease-out, all 0.25s ease-out !important;
+  max-width: 304px;
+  min-width: 304px;
+  overflow: hidden;
+
+  material-content {
+    overflow: hidden;
+
+  }
+}
+
+/* Initial state when showing */
+.slideInSideNav.ng-hide-remove {
+  max-width: 0px;
+  min-width: 0px;
+}
+
+/* Will transition towards this state */
+.slideInSideNav.ng-hide-add.ng-hide-add-active {
+  max-width: 0px;
+  min-width: 0px;
+}
+
+/* Will transition towards this state */
+.slideInSideNav.ng-hide-remove.ng-hide-remove-active {
+  max-width: 304px;
+  min-width: 304px;
+}
+
+//.slideInHorizontally

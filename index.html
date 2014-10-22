@@ -97,7 +97,8 @@
 <!-- Add New Component JS Above -->
 
 <section layout="horizontal" layout-fill>
-    <material-sidenav component-id="left-sidenav" layout="vertical" ng-show="showSideNav && showNavbar" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <!--dont use material-whiteframe class because it leaves black artifacts-->
+    <material-sidenav class="slideInSideNav" component-id="left-sidenav" layout="vertical" ng-show="showSideNav && showNavbar" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <material-toolbar class="material-theme-light material-medium-tall">
             <h1 class="material-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
         </material-toolbar>
@@ -145,7 +146,7 @@
     </material-sidenav>
 
     <section layout="vertical" flex>
-        <material-toolbar ng-show="showNavbar" class="material-theme-dark">
+        <material-toolbar ng-show="showNavbar" class="material-theme-dark slideInVertically">
             <div class="material-toolbar-tools" layout="horizontal">
 
                 <button class="button-toolbar-flat-icon"
