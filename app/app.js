@@ -141,7 +141,7 @@ angular.module('katGui', [ 'ngMaterial',
 
     })
 
-    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $materialSidenav, USER_ROLES, AuthService, Session, AlarmService) {
+    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, USER_ROLES, AuthService, Session, AlarmService) {
 
         $scope.showSideNav = true;
         $scope.showNavbar = true;
@@ -174,7 +174,7 @@ angular.module('katGui', [ 'ngMaterial',
         };
 
         $scope.toggleSidenav = function () {
-            $materialSidenav('left-sidenav').toggle();
+            $mdSidenav('left-sidenav').toggle();
         };
 
         $rootScope.logout = function () {

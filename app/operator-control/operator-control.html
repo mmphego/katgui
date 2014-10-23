@@ -1,28 +1,28 @@
 <div class="view-container" ng-controller="OperatorControlCtrl">
 
-    <div class="material-whiteframe-z1">
-        <material-toolbar class="panel-toolbar">
-            <div class="material-toolbar-tools">
+    <div class="md-whiteframe-z1">
+        <md-toolbar class="panel-toolbar">
+            <div class="md-toolbar-tools">
                 <span>{{title}}</span>
             </div>
-        </material-toolbar>
+        </md-toolbar>
         <section layout="horizontal" layout-align="center center" class="panel-body panel-operator-controls">
-            <material-button class="material-button-raised material-button-colored">Inhibit All</material-button>
-            <material-button class="material-button-raised material-button-colored">Stow All</material-button>
-            <material-button class="material-button-raised material-button-colored">Stop All</material-button>
-            <material-button class="material-button-raised material-button-colored">Resume Operations</material-button>
-            <material-button class="material-button-raised material-button-colored">Shutdown Computing</material-button>
+            <md-button class="md-button-raised md-button-colored">Inhibit All</md-button>
+            <md-button class="md-button-raised md-button-colored">Stow All</md-button>
+            <md-button class="md-button-raised md-button-colored">Stop All</md-button>
+            <md-button class="md-button-raised md-button-colored">Resume Operations</md-button>
+            <md-button class="md-button-raised md-button-colored">Shutdown Computing</md-button>
         </section>
 
-        <material-list class="receptor-state-list">
-            <material-item ng-repeat="obj in receptorsData track by $id(obj)" class="receptor-state-div">
+        <md-list class="receptor-state-list">
+            <md-item ng-repeat="obj in receptorsData track by $id(obj)" class="receptor-state-div">
                 <h2>{{obj.name}}</h2>
                 <span>{{obj.state}}</span>
                 <div ng-if="obj.inhibited" class="inhibited">
                     <span>Inhibited</span>
                 </div>
-            </material-item>
-        </material-list>
+            </md-item>
+        </md-list>
     </div>
 
 </div>

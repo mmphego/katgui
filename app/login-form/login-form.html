@@ -1,29 +1,29 @@
-<div class="material-whiteframe-z4 login-form" ng-controller="LoginFormCtrl">
+<div class="md-whiteframe-z4 login-form" ng-controller="LoginFormCtrl">
 
 
     <div layout="vertical" layout-align="center center">
-        <material-toolbar class="material-theme-dark material-tall" layout-align="center center">
+        <md-toolbar class="md-theme-dark md-tall" layout-align="center center">
             <h1>katGUI</h1>
 
 
-        </material-toolbar>
+        </md-toolbar>
         <form ng-submit="login(credentials)">
-            <material-content layout="vertical" layout-align="center center">
+            <md-content layout="vertical" layout-align="center center">
 
-                <material-input-group class="material-input-group-theme-light">
+                <md-input-group class="md-input-group-theme-light">
 
                     <label for="usernameInput">Username</label>
-                    <material-input id="usernameInput" type="text" ng-model="credentials.username"></material-input>
+                    <md-input id="usernameInput" type="text" ng-model="credentials.username"></md-input>
                     <label for="passwordInput">Password</label>
-                    <material-input id="passwordInput" type="password" ng-model="credentials.password"></material-input>
+                    <md-input id="passwordInput" type="password" ng-model="credentials.password"></md-input>
 
-                </material-input-group>
+                </md-input-group>
 
-                <material-button type="submit" class="material-button-raised material-button-colored">Login
-                </material-button>
+                <md-button type="submit" class="md-button-raised md-button-colored">Login
+                </md-button>
 
                 <a style="margin-top: 10px;" href="" ng-click="forgotPassword()">Forgot your password?</a>
-            </material-content>
+            </md-content>
         </form>
     </div>
 </div>

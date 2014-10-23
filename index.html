@@ -97,57 +97,57 @@
 <!-- Add New Component JS Above -->
 
 <section layout="horizontal" layout-fill>
-    <!--dont use material-whiteframe class because it leaves black artifacts-->
-    <material-sidenav class="slideInSideNav" component-id="left-sidenav" layout="vertical" ng-show="showSideNav && showNavbar" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-        <material-toolbar class="material-theme-light material-medium-tall">
-            <h1 class="material-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
-        </material-toolbar>
-        <material-content class="material-content-padding">
-            <material-list>
-                <material-item>
+    <!--dont use md-whiteframe class because it leaves black artifacts-->
+    <md-sidenav class="slideInSideNav" component-id="left-sidenav" layout="vertical" ng-show="showSideNav && showNavbar" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <md-toolbar class="md-theme-light md-medium-tall">
+            <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
+        </md-toolbar>
+        <md-content class="md-content-padding">
+            <md-list>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('landing') }" ng-click="stateGo('landing')">Home</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('alarms') }" ng-click="stateGo('alarms')">Alarms</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('health') }" ng-click="stateGo('health')">Health And State</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('operatorControl') }" ng-click="stateGo('operatorControl')">Operator Control</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('scheduler') }" ng-click="stateGo('scheduler')">Scheduler</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('sensorGraph') }" ng-click="stateGo('sensorGraph')">Sensor Graphs</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('video') }" ng-click="stateGo('video')">Video</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('weather') }" ng-click="stateGo('weather')">Weather</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item">Log Reports</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item">Source Catalogues</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('admin') }" ng-click="stateGo('admin')">User Admin</button>
-                </material-item>
-                <material-item>
+                </md-item>
+                <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('about') }" ng-click="stateGo('about')">About katGUI</button>
-                </material-item>
+                </md-item>
 
-            </material-list>
-        </material-content>
-    </material-sidenav>
+            </md-list>
+        </md-content>
+    </md-sidenav>
 
     <section layout="vertical" flex>
-        <material-toolbar ng-show="showNavbar" class="material-theme-dark slideInVertically">
-            <div class="material-toolbar-tools" layout="horizontal">
+        <md-toolbar ng-show="showNavbar" class="md-theme-dark slideInVertically">
+            <div class="md-toolbar-tools" layout="horizontal">
 
                 <button class="button-toolbar-flat-icon"
                         style="margin-left: 0px; padding: 0px;"
@@ -158,37 +158,37 @@
                 <div class="btn-group"
                      ng-class="{open: operatorControlHover || operatorControlMenuHover}" layout="horizontal">
 
-                    <material-button style="height: 40px;" class="material-button-raised material-button-colored"
+                    <md-button style="height: 40px;" class="md-button-raised md-button-colored"
                                      ng-mouseenter="operatorControlHover = true"
                                      ng-mouseleave="operatorControlHover = false"
                                      ng-click="operatorControlHover = false; operatorControlMenuHover = false; stateGo('operatorControl')">
                         <span>Operator Control</span>
-                    </material-button>
+                    </md-button>
 
-                    <material-content flex style="margin: -7px -1px 0;" class="dropdown-menu"
+                    <md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"
                                       ng-mouseenter="operatorControlMenuHover = true"
                                       ng-mouseleave="operatorControlMenuHover = false"
                                       role="menu">
-                        <material-list>
-                            <material-item>
+                        <md-list>
+                            <md-item>
                                 <button ink-ripple class="menu-item">Inhibit All</button>
-                            </material-item>
-                            <material-item>
+                            </md-item>
+                            <md-item>
                                 <button ink-ripple class="menu-item">Stow All</button>
-                            </material-item>
-                            <material-item>
+                            </md-item>
+                            <md-item>
                                 <button ink-ripple class="menu-item">Stop All</button>
-                            </material-item>
+                            </md-item>
                             <i class="divider menu-item"></i>
-                            <material-item>
+                            <md-item>
                                 <button ink-ripple class="menu-item">Resume Operations</button>
-                            </material-item>
+                            </md-item>
                             <i class="divider menu-item"></i>
-                            <material-item>
+                            <md-item>
                                 <button ink-ripple class="menu-item">Shutdown Computing</button>
-                            </material-item>
-                        </material-list>
-                    </material-content>
+                            </md-item>
+                        </md-list>
+                    </md-content>
 
                 </div>
 
@@ -219,9 +219,9 @@
                 </div>
             </div>
 
-        </material-toolbar>
-        <material-content id="ui-view-container-div" ui-view flex class="material-content-padding">
-        </material-content>
+        </md-toolbar>
+        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding">
+        </md-content>
     </section>
 </section>
 

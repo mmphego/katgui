@@ -1,18 +1,18 @@
 <div class="view-container" ng-controller="AlarmsCtrl">
 
-    <div class="material-whiteframe-z1">
-        <material-toolbar class="panel-toolbar">
-            <div class="material-toolbar-tools">
+    <div class="md-whiteframe-z1">
+        <md-toolbar class="panel-toolbar">
+            <div class="md-toolbar-tools">
                 <span>Alarms</span>
             </div>
-        </material-toolbar>
+        </md-toolbar>
         <section layout="horizontal" layout-align="center center" class="panel-body alarms-buttons">
-            <material-button class="material-button-raised material-button-colored">Known</material-button>
-            <material-button class="material-button-raised material-button-colored">Acknowledge</material-button>
-            <material-button class="material-button-raised material-button-colored">Clear</material-button>
-            <material-button class="material-button-raised material-button-colored">Something</material-button>
-            <material-button class="material-button-raised material-button-colored">Another thing</material-button>
-            <material-checkbox ng-model="showLargeAlarms" aria-label="Show Detailed Alarms">Show Detailed Alarms</material-checkbox>
+            <md-button class="md-button-raised md-button-colored">Known</md-button>
+            <md-button class="md-button-raised md-button-colored">Acknowledge</md-button>
+            <md-button class="md-button-raised md-button-colored">Clear</md-button>
+            <md-button class="md-button-raised md-button-colored">Something</md-button>
+            <md-button class="md-button-raised md-button-colored">Another thing</md-button>
+            <md-checkbox ng-model="showLargeAlarms" aria-label="Show Detailed Alarms">Show Detailed Alarms</md-checkbox>
         </section>
 
         <div class="alarmsGridStyle" ng-grid="gridOptionsAlarms"></div>
