@@ -43,20 +43,21 @@
 <script src="bower_components/jquery-ui/ui/jquery.ui.sortable.js"></script>
 
 <!-- JS from Bower Components -->
-<script src="bower_components/angular/angular.js"></script>
-<script src="bower_components/hammerjs/hammer.js"></script>
-<script src="bower_components/angular-material/angular-material.js"></script>
 <script src="bower_components/less.js/dist/less-1.6.2.js" data-concat="false"></script>
 
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
 <script src="bower_components/sockjs/sockjs.js"></script>
-<script src="bower_components/angular-aria/angular-aria.js"></script>
+
+<script src="/bower_components/angular/angular.js"></script>
+<script src="/bower_components/angular-aria/angular-aria.js"></script>
+<script src="/bower_components/angular-animate/angular-animate.js"></script>
+<script src="/bower_components/hammerjs/hammer.js"></script>
+<script src="/bower_components/angular-material/angular-material.js"></script>
 
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-<script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/angular-ui-utils/ui-utils.js"></script>
@@ -159,10 +160,11 @@
                      ng-class="{open: operatorControlHover || operatorControlMenuHover}" layout="horizontal">
 
                     <md-button style="height: 40px;" class="md-button-raised md-button-colored"
+                               aria-label="Operator Control"
                                      ng-mouseenter="operatorControlHover = true"
                                      ng-mouseleave="operatorControlHover = false"
                                      ng-click="operatorControlHover = false; operatorControlMenuHover = false; stateGo('operatorControl')">
-                        <span>Operator Control</span>
+                        Operator Control
                     </md-button>
 
                     <md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"

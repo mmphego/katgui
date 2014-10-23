@@ -22,7 +22,7 @@
             <div class="md-toolbar-tools">
                 <span>Schedule Drafts</span>
                 <span flex></span>
-                <md-button style="margin-right: 17px;" class="md-button-fab md-theme-light-blue md-button-fab-small"
+                <md-button aria-label="Create A Draft" style="margin-right: 17px;" class="md-button-fab md-theme-light-blue md-button-fab-small"
                                  ng-click="addDraftSchedule()">
                     <span class="fa fa-plus md-fab-fa-icon-small"></span>
                 </md-button>
@@ -44,13 +44,13 @@
                         <div layout="horizontal" style="float:right;">
                             <div layout="vertical">
                                 <div layout="horizontal">
-                                    <md-button style="width: 122px;" class="md-button-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"
+                                    <md-button aria-label="Select a Date and Time" style="width: 122px;" class="md-button-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"
                                                      ng-click="openTypePicker($index, $event);">
                                         {{item.type}}
                                         <span flex></span>
                                         <span class="caret"></span>
                                     </md-button>
-                                    <md-button style="margin-left: 5px; width: 180px;" class="md-button-raised schedule-item-input"
+                                    <md-button aria-label="Select a Date and Time" style="margin-left: 5px; width: 180px;" class="md-button-raised schedule-item-input"
                                                      ng-click="openDatePicker($index, $event);">
                                         <span ng-if="item.desiredTime">{{item.desiredTime}}</span>
                                         <span ng-if="!item.desiredTime">Select Time</span>
@@ -61,13 +61,13 @@
 
                                 </div>
                             </div>
-                            <md-button style="margin-left: 10px;" class="md-button-fab md-button-fab-small" ng-click="moveDraftRowToSchedule($index)">
+                            <md-button aria-label="Move Draft To Schedule" style="margin-left: 10px;" class="md-button-fab md-button-fab-small" ng-click="moveDraftRowToSchedule($index)">
                                 <span class="fa fa-chevron-down md-fab-fa-icon-small"></span>
                                 <md-tooltip>
                                     Move Draft to Schedule
                                 </md-tooltip>
                             </md-button>
-                            <md-button style="margin-left: 10px;" class="md-button-fab md-theme-red md-button-fab-small" ng-click="removeDraftRow($index)">
+                            <md-button aria-label="Delete Draft" style="margin-left: 10px;" class="md-button-fab md-theme-red md-button-fab-small" ng-click="removeDraftRow($index)">
                                 <span class="fa fa-minus md-fab-fa-icon-small"></span>
                                 <md-tooltip>
                                     Delete Draft
@@ -102,27 +102,27 @@
                         <div layout="horizontal" style="float:right;">
                             <div layout="vertical">
                                 <div layout="horizontal">
-                                    <md-button disabled style="width: 122px;" class="md-button-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"
-                                                     ng-click="openTypePicker($index, $event);">
-                                        {{item.type}}
-                                        <span flex></span>
-                                        <span class="caret"></span>
-                                    </md-button>
-                                    <md-button disabled style="margin-right: 5px; width: 180px;" class="md-button-raised schedule-item-input"
-                                                     ng-click="openDatePicker($index, $event);">
-                                        <span ng-if="item.desiredTime">{{item.desiredTime}}</span>
-                                        <span ng-if="!item.desiredTime">Select Time</span>
-                                        <span flex></span>
-                                        <span class="caret"></span>
-                                    </md-button>
+                                    <!--<md-button disabled style="width: 122px;" class="md-button-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"-->
+                                                     <!--ng-click="openTypePicker($index, $event);">-->
+                                        <!--{{item.type}}-->
+                                        <!--<span flex></span>-->
+                                        <!--<span class="caret"></span>-->
+                                    <!--</md-button>-->
+                                    <!--<md-button disabled style="margin-right: 5px; width: 180px;" class="md-button-raised schedule-item-input"-->
+                                                     <!--ng-click="openDatePicker($index, $event);">-->
+                                        <!--<span ng-if="item.desiredTime">{{item.desiredTime}}</span>-->
+                                        <!--<span ng-if="!item.desiredTime">Select Time</span>-->
+                                        <!--<span flex></span>-->
+                                        <!--<span class="caret"></span>-->
+                                    <!--</md-button>-->
                                 </div>
                                 <div style="text-align: right; margin-top: 5px;">
                                     <h4>{{item.owner}} - {{item.state}}</h4>
                                 </div>
                             </div>
-                            <md-button disabled style="margin-left: 10px;" class="md-button-fab md-theme-red" ng-click="removeDraftRow($index)">
-                                <span class="fa fa-minus md-fab-fa-icon"></span>
-                            </md-button>
+                            <!--<md-button aria-label="" disabled style="margin-left: 10px;" class="md-button-fab md-theme-red" ng-click="removeDraftRow($index)">-->
+                                <!--<span class="fa fa-minus md-fab-fa-icon"></span>-->
+                            <!--</md-button>-->
                         </div>
 
                         <div style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
