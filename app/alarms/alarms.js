@@ -13,31 +13,31 @@ angular.module('katGui.alarms', [])
             }
         });
 
-        $scope.selectAll = false;
         $scope.alarmsData = [];
-        $scope.selectedAlarms = [];
-        $scope.orderByField = 'date';
-        $scope.reverseSort = true;
-        var checkboxHeaderTemplate = '<input class="ngSelectionHeader" type="checkbox" ng-model="allSelected" ng-change="toggleSelectAll(allSelected)"/>';
+        $scope.knownAlarmsData = [];
 
-        $scope.gridOptionsAlarms = {
-            data: 'alarmsData',
-            columnDefs: [
-                {field: 'date', displayName: 'Date', width: 150},
-                {field: 'severity', displayName: 'Severity', width: 120 },
-                {field: 'priority', displayName: 'Priority', width: 120},
-                {field: 'name', displayName: 'Alarm Name', width: 120},
-                {field: 'message', displayName: 'Message', width: 120}
-            ],
-            selectedItems: $scope.selectedAlarms,
-            enableRowSelection: false,
-            checkboxHeaderTemplate: checkboxHeaderTemplate,
-            showSelectionCheckbox: true
+        $scope.toggleSelectAllKnownAlarms = function (lastState) {
+
+            $scope.knownAlarmsData.forEach(function(item) {
+                item.selected = lastState;
+            });
+        };
+
+        $scope.toggleSelectAllAlarms = function (lastState) {
+
+            $scope.alarmsData.forEach(function(item) {
+                item.selected = lastState;
+            });
         };
 
         $rootScope.$on('alarmMessage', function (event, message) {
 
-            $scope.alarmsData.push(message);
+            if (message.priority === 'known') {
+                $scope.knownAlarmsData.push(message);
+            } else {
+                $scope.alarmsData.push(message);
+            }
+
         });
 
     });

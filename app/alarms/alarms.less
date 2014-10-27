@@ -4,202 +4,340 @@
 @alarm-maintenance-bg: #9c27b0;
 @alarm-critical-bg: #e51c23;
 @alarm-unknown-bg: #607d8b;
+@alarm-nominal-bg: #607d8b;
 
 .large-alarm {
-  position: fixed;
-  top: 64px;
-  right: 2px;
-  float: right;
-  width: 400px;
-  overflow: auto;
-  opacity: 0.95;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  z-index: 1000;
+    position: fixed;
+    top: 64px;
+    right: 2px;
+    float: right;
+    width: 400px;
+    overflow: auto;
+    opacity: 0.95;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    z-index: 1000;
 
-  span {
-    overflow: hidden;
-  }
+    span {
+        overflow: hidden;
+    }
 
-  .severitystamp {
-    font-weight: bold;
-  }
+    .severitystamp {
+        font-weight: bold;
+    }
 
+    .alarm-message-name {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+        display: block;
+        overflow: hidden;
+        font-size: 28px;
+    }
 
-  .alarm-message-name {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 100%;
-    display: block;
-    overflow: hidden;
-    font-size: 28px;
-  }
-
-  .alarm-message {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 100%;
-    display: block;
-    overflow: hidden;
-    font-size: 16px;
-  }
+    .alarm-message {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+        display: block;
+        overflow: hidden;
+        font-size: 16px;
+    }
 }
 
 .small-alarm {
-  position: fixed;
-  top: 64px;
-  right: 2px;
-  float: right;
-  width: 280px;
-//  height: 60px;
-  overflow: auto;
-  opacity: 0.95;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  z-index: 1000;
+    position: fixed;
+    top: 64px;
+    right: 2px;
+    float: right;
+    width: 280px;
+    //  height: 60px;
+    overflow: auto;
+    opacity: 0.95;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    z-index: 1000;
 
-  .datestamp {
-   display: none;
-  }
+    .datestamp {
+        display: none;
+    }
 
-  .timestamp {
-    display: none;
-  }
+    .timestamp {
+        display: none;
+    }
 
-  .severitystamp {
-    display: none;
-  }
+    .severitystamp {
+        display: none;
+    }
 
-  .alarm-message {
-    display: none;
-  }
+    .alarm-message {
+        display: none;
+    }
 
-  .alarm-message-name {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 100%;
-    display: block;
-    overflow: hidden;
-    font-size: 24px;
-  }
+    .alarm-message-name {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+        display: block;
+        overflow: hidden;
+        font-size: 24px;
+    }
 }
 
 .alarm-styles(@color, @textColor) {
-  background-color: @color;
-  color: @textColor;
+    background-color: @color;
+    color: @textColor;
 }
 
 // Apply the mixin to the alarms
-.alarm-critical    { .alarm-glowing-critical }
-.alarm-error       { .alarm-glowing-error }
-.alarm-info        { .alarm-styles(@alarm-info-bg, white); }
-.alarm-nominal     { .alarm-styles(@alarm-info-bg, white); }
-.alarm-maintenance { .alarm-styles(@alarm-maintenance-bg, white); }
-.alarm-warning     { .alarm-styles(@alarm-warning-bg, black); }
-.alarm-unknown     { .alarm-styles(@alarm-unknown-bg, white); }
+.alarm-critical {
+    .alarm-glowing-critical
+}
+
+.alarm-error {
+    .alarm-glowing-error
+}
+
+.alarm-info {
+    .alarm-styles(@alarm-info-bg, white);
+}
+
+.alarm-nominal {
+    .alarm-styles(@alarm-info-bg, white);
+}
+
+.alarm-maintenance {
+    .alarm-styles(@alarm-maintenance-bg, white);
+}
+
+.alarm-warning {
+    .alarm-styles(@alarm-warning-bg, black);
+}
+
+.alarm-unknown {
+    .alarm-styles(@alarm-unknown-bg, white);
+}
 
 .alarm-item {
-  padding: 3px;
-  margin-top: 2px;
-  border: none;
-  border-radius: 2px;
-  pointer-events: auto;
+    padding: 3px;
+    margin-top: 2px;
+    border: none;
+    border-radius: 2px;
+    pointer-events: auto;
 }
 
 @-webkit-keyframes glowing-error {
-  0% { background-color: #ff9800; }
-  50% { background-color: #e65100; }
-  100% { background-color: #ff9800; }
+    0% {
+        background-color: #ff9800;
+    }
+    50% {
+        background-color: #e65100;
+    }
+    100% {
+        background-color: #ff9800;
+    }
 }
 
 @keyframes glowing-error {
-  0% { background-color: #ff9800; }
-  50% { background-color: #e65100; }
-  100% { background-color: #ff9800; }
+    0% {
+        background-color: #ff9800;
+    }
+    50% {
+        background-color: #e65100;
+    }
+    100% {
+        background-color: #ff9800;
+    }
 }
 
 .alarm-glowing-error {
-//  -webkit-animation: glowing-error 1s;
-//  animation: glowing-error 1s;
-//  -webkit-animation-iteration-count: 10;
-//  animation-iteration-count: 10;
-  background-color: @alarm-error-bg;
-  color: black;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+    //  -webkit-animation: glowing-error 1s;
+    //  animation: glowing-error 1s;
+    //  -webkit-animation-iteration-count: 10;
+    //  animation-iteration-count: 10;
+    background-color: @alarm-error-bg;
+    color: black;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 @-webkit-keyframes glowing-critical {
-  0% { background-color: #e51c23; }
-  50% { background-color: #b0120a; }
-  100% { background-color: #e51c23; }
+    0% {
+        background-color: #e51c23;
+    }
+    50% {
+        background-color: #b0120a;
+    }
+    100% {
+        background-color: #e51c23;
+    }
 }
 
 @keyframes glowing-critical {
-  0% { background-color: #e51c23; }
-  50% { background-color: #b0120a; }
-  100% { background-color: #e51c23; }
+    0% {
+        background-color: #e51c23;
+    }
+    50% {
+        background-color: #b0120a;
+    }
+    100% {
+        background-color: #e51c23;
+    }
 }
 
 .alarm-glowing-critical {
-//  -webkit-animation: glowing-critical 1s;
-//  animation: glowing-critical 1s;
-//  -webkit-animation-iteration-count: 10;
-//  animation-iteration-count: 10;
-  border: none;
-  background-color: @alarm-critical-bg;
-  color: white;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+    //  -webkit-animation: glowing-critical 1s;
+    //  animation: glowing-critical 1s;
+    //  -webkit-animation-iteration-count: 10;
+    //  animation-iteration-count: 10;
+    border: none;
+    background-color: @alarm-critical-bg;
+    color: white;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .alarm-close {
-  float: right;
-  font-size: 18px;
-  font-weight: bold;
-  line-height: 1;
-  color: #000;
-  text-shadow: 0 1px 0 #fff;
-  opacity: .4;
-
-  &:hover, &focus {
+    float: right;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
     color: #000;
-    text-decoration: none;
-    cursor: pointer;
-    opacity: .8;
-  }
+    text-shadow: 0 1px 0 #fff;
+    opacity: .4;
+
+    &:hover, &focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+        opacity: .8;
+    }
 }
 
 button.alarm-close {
-  -webkit-appearance: none;
-  padding: 0;
-  cursor: pointer;
-  background: transparent;
-  border: 0;
+    -webkit-appearance: none;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
 }
 
 ul {
-  float: right;
-  list-style: none;
+    float: right;
+    list-style: none;
 
-  .li-inline {
-    display: inline;
-  }
+    .li-inline {
+        display: inline;
+    }
 }
 
 .alarmsGridStyle {
-  border: 1px solid rgb(212,212,212);
-  height: 600px;
+    border: 1px solid rgb(212, 212, 212);
+    height: 600px;
 }
 
 .alarms-buttons {
 
-  md-button {
-    width: 10em;
-    margin-right: 10px;
-  }
+    padding-left: 8px;
+    padding-right: 8px;
+
+    md-button {
+        width: 10em;
+        margin-right: 10px;
+    }
 
 }
+
+.alarms-list-large {
+    min-height: 550px;
+    max-height: 550px;
+}
+
+.alarms-list-small {
+    min-height: 250px;
+    max-height: 250px;
+}
+
+.alarms-list {
+    overflow: auto;
+
+    .alarms-list-item-content {
+        padding: 6px;
+    }
+
+    .background-div {
+        top: 0px;
+        left: 0px;
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        z-index: 0;
+    }
+
+    .alarm-list-item-badge-warn {
+        background: linear-gradient(150deg, rgba(255, 235, 59, 1) 0%, rgba(255, 235, 59, 0) 5%, rgba(255, 235, 59, 0) 100%);
+    }
+    .background-gradient-div-warn {
+        background: linear-gradient(150deg, rgba(255, 235, 59, 0.01) 0%, rgba(255, 235, 59, 0.01) 90%, rgba(255, 235, 59, 1) 100%);
+    }
+
+    .alarm-list-item-badge-error {
+        background: linear-gradient(150deg, rgba(255, 152, 0, 1) 0%, rgba(255, 152, 0, 0) 5%, rgba(255, 152, 0, 0) 100%);
+    }
+    .background-gradient-div-error {
+        background: linear-gradient(150deg, rgba(255, 152, 0, 0.01) 0%, rgba(255, 152, 0, 0.01) 90%, rgba(255, 152, 0, 1) 100%);
+    }
+
+    .alarm-list-item-badge-critical {
+        background: linear-gradient(150deg, rgba(229, 28, 35, 1) 0%, rgba(229, 28, 35, 0) 5%, rgba(229, 28, 35, 0) 100%);
+    }
+    .background-gradient-div-critical {
+        background: linear-gradient(150deg, rgba(229, 28, 35, 0.01) 0%, rgba(229, 28, 35, 0.01) 90%, rgba(229, 28, 35, 1) 100%);
+    }
+
+    .alarm-list-item-badge-maintenance {
+        background: linear-gradient(150deg, rgba(156, 39, 176, 1) 0%, rgba(156, 39, 176, 0) 5%, rgba(156, 39, 176, 0) 100%);
+    }
+    .background-gradient-div-maintenance {
+        background: linear-gradient(150deg, rgba(156, 39, 176, 0.01) 0%, rgba(156, 39, 176, 0.01) 90%, rgba(156, 39, 176, 1) 100%);
+    }
+
+    .alarm-list-item-badge-nominal {
+        background: linear-gradient(150deg, rgba(96, 125, 139, 1) 0%, rgba(96, 125, 139, 0) 5%, rgba(96, 125, 139, 0) 100%);
+    }
+    .background-gradient-div-nominal {
+        background: linear-gradient(150deg, rgba(96, 125, 139, 0.01) 0%, rgba(96, 125, 139, 0.01) 90%, rgba(96, 125, 139, 1) 100%);
+    }
+
+    .alarm-list-item-badge-unknown {
+        background: linear-gradient(150deg, rgba(96, 125, 139, 1) 0%, rgba(96, 125, 139, 0) 5%, rgba(96, 125, 139, 0) 100%);
+    }
+    .background-gradient-div-unknown {
+        background: linear-gradient(150deg, rgba(96, 125, 139, 0.01) 0%, rgba(96, 125, 139, 0.01) 90%, rgba(96, 125, 139, 1) 100%);
+    }
+
+    .selected-alarm-list-item {
+        background-color: #e1f5fe;
+    }
+
+    .alarms-list-item-icon {
+        width: 26px;
+        font-size: 20px;
+        z-index: 1;
+        text-align: center;
+
+        &:hover {
+            font-size: 28px;
+        }
+    }
+
+    md-item-content {
+        border-bottom: 1px solid lightgrey;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
+
 
 
 
