@@ -4,10 +4,10 @@
         <md-toolbar class="panel-toolbar">
             <div class="md-toolbar-tools" layout="horizontal">
                <span>
-                    <md-checkbox style="margin: 0" ng-model="selectAllAlarms" ng-click="toggleSelectAllAlarms(!selectAllAlarms)" aria-label="Select All Alarms"></md-checkbox>
+                    <md-checkbox class="md-checkbox-no-label" ng-model="selectAllAlarms" ng-click="toggleSelectAllAlarms(!selectAllAlarms)" aria-label="Select All Alarms"></md-checkbox>
                     <md-tooltip>Select All Alarms</md-tooltip>
                 </span>
-                <span flex>Current Alarms</span>
+                <span flex><b>Current Alarms</b></span>
                 <section layout="horizontal" layout-align="center center" class="alarms-buttons">
                     <md-button aria-label="Add as Known" class="md-button-raised md-button-colored">Add as Known</md-button>
                     <md-button aria-label="Acknowledge" class="md-button-raised md-button-colored">Acknowledge</md-button>
@@ -81,10 +81,10 @@
         <md-toolbar class="panel-toolbar">
             <div class="md-toolbar-tools" layout="horizontal">
                 <span>
-                    <md-checkbox style="margin: 0" ng-model="selectAllKnownAlarms" aria-label="Select All Known Alarms" ng-click="toggleSelectAllKnownAlarms(!selectAllKnownAlarms)"></md-checkbox>
+                    <md-checkbox class="md-checkbox-no-label" ng-model="selectAllKnownAlarms" aria-label="Select All Known Alarms" ng-click="toggleSelectAllKnownAlarms(!selectAllKnownAlarms)"></md-checkbox>
                     <md-tooltip>Select All Known Alarms</md-tooltip>
                 </span>
-                <span flex>Known Alarms</span>
+                <span flex><b>Known Alarms</b></span>
                 <section layout="horizontal" layout-align="center center" class="alarms-buttons">
                     <md-button aria-label="Cancel Known" class="md-button-raised md-button-colored">Cancel Known</md-button>
                     <md-checkbox ng-model="showKnownNominalAlarms" aria-label="Show Nominal">Show Nominal</md-checkbox>
