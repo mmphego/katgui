@@ -2,7 +2,7 @@
 angular.module('katGui', [ 'ngMaterial',
     'ui.bootstrap', 'ui.utils', 'ui.router',
     'adf',
-    'ngAnimate', 'ngGrid',
+    'ngAnimate',
     'katGui.alarms',
     'katGui.d3',
     'katGui.health',
