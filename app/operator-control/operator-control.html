@@ -15,12 +15,15 @@
         </section>
 
         <md-list class="receptor-state-list">
-            <md-item ng-repeat="obj in receptorsData track by $id(obj)" class="receptor-state-div">
-                <h2>{{obj.name}}</h2>
-                <span>{{obj.state}}</span>
-                <div ng-if="obj.inhibited" class="inhibited">
-                    <span>Inhibited</span>
-                </div>
+            <md-item ng-repeat="rec in receptorsData track by $id(rec.name)">
+                <md-item-content class="receptor-state-div" layout="vertical">
+                    <p style="margin-top: 4px;">{{rec.since}}</p>
+                    <p style="font-size: 26px;"><b>{{rec.name}}</b></p>
+                    <p class="flash-receptor-state receptor-{{rec.state}}"><i>{{rec.state}}</i></p>
+                    <div ng-show="rec.inhibited" class="inhibited">
+                        <span>Inhibited</span>
+                    </div>
+                </md-item-content>
             </md-item>
         </md-list>
     </div>

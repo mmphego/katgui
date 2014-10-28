@@ -11,8 +11,10 @@
         <md-content>
             <form ng-submit="login(credentials)" layout="vertical" layout-align="center center">
 
-                <md-text-float class="long" label="Username" ng-model="credentials.username"></md-text-float>
-                <md-text-float class="long" label="Password" type="password" ng-model="credentials.password"></md-text-float>
+                <!--<md-text-float  label="Username" ng-model="credentials.username"></md-text-float>-->
+                <!--<md-text-float class="long" label="Password" type="password" ng-model="credentials.password"></md-text-float>-->
+                <input style="margin-top: 16px; margin-bottom: 8px; width: 340px" type="text" ng-model="credentials.username" placeholder="Username"/>
+                <input style="margin: 16px;  width: 340px" type="password" ng-model="credentials.password" placeholder="Password"/>
 
                 <md-button aria-label="Login" type="submit" class="md-button-raised md-button-colored">Login</md-button>
 

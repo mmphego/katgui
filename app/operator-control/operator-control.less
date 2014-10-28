@@ -1,31 +1,88 @@
 .panel-operator-controls {
-  md-button {
-    width: 12em;
-    margin-right: 10px;
-  }
+    md-button {
+        min-width: 180px;
+        margin-left: 8px;
+        margin-right: 8px;
+    }
 }
 
 .inhibited {
-  background: #ffc107;
-  color: black;
-  width: 100%;
-  padding: 2px;
+    transition: all 1s;
+    background: #ffc107;
+    color: black;
+    width: 100%;
+//    padding: 2px;
+    opacity: 1;
 }
 
+/* Initial state when showing */
+.inhibited.ng-hide-remove {
+   opacity: 0;
+}
+
+/* Will transition towards this state */
+.inhibited.ng-hide-add.ng-hide-add-active {
+    opacity: 0;
+}
+
+/* Will transition towards this state */
+.inhibited.ng-hide-remove.ng-hide-remove-active {
+    opacity: 1;
+}
+
+
 .receptor-state-div {
-  text-align: center;
-  position: relative;
-  display: inline-block;
-  background: #259b24;
-  color: white;
-  min-width: 10%;
-  top: 0;
-  min-height: 90px;
-  margin: 3px;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    background: #259b24;
+    color: white;
+    min-width: 140px;
+    top: 0;
+    min-height: 130px;
+    margin: 3px;
 }
 
 .receptor-state-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+@-webkit-keyframes flash-black {
+    0% {
+        background-color: #259b24;
+    }
+    50% {
+        background-color: #212121;
+    }
+    100% {
+        background-color: #259b24;
+    }
+}
+
+@-webkit-keyframes flash-blue {
+    0% {
+        background-color: #259b24;
+    }
+    50% {
+        background-color: #01579b;
+    }
+    100% {
+        background-color: #259b24;
+    }
+}
+
+.flash-receptor-state {
+    background-color: #259b24;
+}
+
+.flash-receptor-state.receptor-STOP {
+    animation: flash-black 1s;
+    -webkit-animation: flash-black 1s;
+}
+
+.flash-receptor-state.receptor-STOW {
+    animation: flash-blue 1s;
+    -webkit-animation: flash-blue 1s;
 }

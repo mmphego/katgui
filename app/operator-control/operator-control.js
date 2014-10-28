@@ -1,80 +1,39 @@
 angular.module('katGui')
 
-    .controller('OperatorControlCtrl', function ($scope) {
+    .controller('OperatorControlCtrl', function ($rootScope, $scope, $interval) {
 
         $scope.title = 'Operator Controls';
 
-        //test data
+        var nowStr = moment(new Date()).format('HH:mm:ss DD-MM-YYYY');
+
         $scope.receptorsData = [
             {
-                name: "ant1",
-                state: "STOW",
-                inhibited: false
+                name: "m000",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
             },
             {
-                name: "ant2",
-                state: "STOW",
-                inhibited: true
+                name: "m001",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
             },
             {
-                name: "ant3",
-                state: "STOW",
-                inhibited: false
+                name: "m062",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
             },
             {
-                name: "ant4",
-                state: "STOW",
-                inhibited: false
-            },
-            {
-                name: "ant5",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant6",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant7",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant8",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant9",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant10",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant11",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant12",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant13",
-                state: "STOW",
-                inhibited: true
-            },
-            {
-                name: "ant14",
-                state: "STOW",
-                inhibited: true
+                name: "m063",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
             }
         ];
 
@@ -101,4 +60,42 @@ angular.module('katGui')
                 break;
             }
         }
+
+        $rootScope.$on('receptorMessage', function (event, message) {
+
+            var sensorNameList = message.sensor.split(':');
+            var sensor = sensorNameList[0];
+            var sensorName = sensorNameList[1];
+            $scope.receptorsData.forEach(function (item) {
+
+                if (item.name === sensor) {
+                    if (sensorName === 'mode' && item.state !== message.value) {
+                        item.state = message.value;
+                    } else if (sensorName === 'inhibited' && item.inhibited !== message.value) {
+                        item.inhibited = message.value;
+                    }
+
+                    item.lastUpdate = moment(message.time, 'X').format('HH:mm:ss DD-MM-YYYY');
+                }
+
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+
+        });
+
+        $interval(function() {
+
+            $scope.receptorsData.forEach(function (item) {
+                var ms = moment(new Date()).diff(moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY'));
+                var d = moment.duration(ms);
+                item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
+            });
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        }, 1000);
     });

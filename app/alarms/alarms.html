@@ -14,8 +14,8 @@
                     <md-button aria-label="Add as Known" class="md-button-raised md-button-colored">Add as Known</md-button>
                     <md-button aria-label="Acknowledge" class="md-button-raised md-button-colored">Acknowledge</md-button>
                     <md-button aria-label="Clear" class="md-button-raised md-button-colored">Clear</md-button>
-                    <md-checkbox ng-model="showClearedAlarms" aria-label="Show Cleared Alarms">Show Cleared Alarms</md-checkbox>
-                    <md-checkbox ng-model="showLargeAlarms" aria-label="Show Detailed Alarm Notifications">Show Detailed Alarm Notifications</md-checkbox>
+                    <md-checkbox class="alarms-tools-checkbox" ng-model="showClearedAlarms" aria-label="Show Cleared Alarms">Show Cleared Alarms</md-checkbox>
+                    <md-checkbox class="alarms-tools-checkbox" ng-model="showLargeAlarms" aria-label="Show Detailed Alarm Notifications">Show Detailed Alarm Notifications</md-checkbox>
                     <input type="search" ng-model="q" placeholder="Search Alarms..."/>
                     <span flex></span>
                 </section>
@@ -92,8 +92,8 @@
                 <span flex></span>
                 <section layout="horizontal" layout-align="center center" class="alarms-buttons">
                     <md-button aria-label="Cancel Known" class="md-button-raised md-button-colored">Cancel Known</md-button>
-                    <md-checkbox ng-model="showKnownNominalAlarms" aria-label="Show Nominal">Show Nominal</md-checkbox>
-                    <md-checkbox ng-model="showKnownMaintenanceAlarms" aria-label="Show Maintenance">Show Maintenance</md-checkbox>
+                    <md-checkbox class="alarms-tools-checkbox" ng-model="showKnownNominalAlarms" aria-label="Show Nominal">Show Nominal</md-checkbox>
+                    <md-checkbox class="alarms-tools-checkbox" ng-model="showKnownMaintenanceAlarms" aria-label="Show Maintenance">Show Maintenance</md-checkbox>
                     <input type="search" ng-model="q2" placeholder="Search Known Alarms..."/>
                     <span flex></span>
                 </section>

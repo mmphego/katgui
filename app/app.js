@@ -141,7 +141,7 @@ angular.module('katGui', [ 'ngMaterial',
 
     })
 
-    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, USER_ROLES, AuthService, Session, AlarmService) {
+    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, $timeout, USER_ROLES, AuthService, Session, AlarmService, MonitorService) {
 
         $scope.showSideNav = true;
         $scope.showNavbar = true;
@@ -182,6 +182,7 @@ angular.module('katGui', [ 'ngMaterial',
             Session.destroy();
 //            gapi.auth.signOut();
             AlarmService.disconnectListener();
+            MonitorService.disconnectListener();
             $state.go('login');
         };
 
@@ -202,4 +203,72 @@ angular.module('katGui', [ 'ngMaterial',
         };
 
         $interval(updateTimeDisplay, 1000); //update clock every second
+
+        $timeout(function() {
+            MonitorService.connectListener();
+        }, 500);
+    })
+
+
+    .factory('MonitorService', function ($rootScope, alarms) {
+
+        var urlBase = 'http://192.168.10.127:8030';
+        var monitorService = {};
+        monitorService.connection = null;
+
+        monitorService.onSockJSOpen = function () {
+            if (monitorService.connection && monitorService.connection.readyState) {
+
+                var jsonRPC = { 'jsonrpc':'2.0',
+                    'method':'psubscribe',
+                    'params':['kataware:alarm*'],
+                    'id': 'abe3d23201' };
+
+                monitorService.connection.send(JSON.stringify(jsonRPC));
+
+                jsonRPC = { 'jsonrpc':'2.0',
+                    'method':'subscribe',
+                    'params':[['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited']],
+                    'id': 'abe3d23201' };
+                monitorService.connection.send(JSON.stringify(jsonRPC));
+                console.log('Monitor Connection Established.');
+            }
+        };
+
+        monitorService.onSockJSClose = function () {
+            console.log('Disconnecting Monitor Connection');
+            monitorService.connection = null;
+        };
+
+        monitorService.onSockJSMessage = function (e) {
+            //console.log(e);
+
+            var message = JSON.parse(e.data);
+
+            if (!message['jsonrpc']) {
+                if (message.sensor.indexOf('kataware:') === 0) {
+                    alarms.addAlarmMessage(message);
+                } else {
+                    $rootScope.$broadcast('receptorMessage', message);
+                }
+            }
+        };
+
+        monitorService.connectListener = function () {
+            console.log('Monitor Connecting...');
+            monitorService.connection = new SockJS(urlBase + '/monitor');
+            monitorService.connection.onopen = monitorService.onSockJSOpen;
+            monitorService.connection.onmessage = monitorService.onSockJSMessage;
+            monitorService.connection.onclose = monitorService.onSockJSClose;
+
+            return monitorService.connection !== null;
+        };
+
+        monitorService.disconnectListener = function () {
+            if (monitorService.connection) {
+                monitorService.connection.close();
+            }
+        };
+
+        return monitorService;
     });
