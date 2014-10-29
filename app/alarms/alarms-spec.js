@@ -4,15 +4,14 @@ describe('AlarmsCtrl', function () {
 //        $provide.constant('UI_VERSION', '0.0.1t');
     });
 
-    var scope, ctrl, location, alarmsService, _alarms_;
+    var scope, ctrl, location, _alarms_;
 
-    beforeEach(inject(function ($rootScope, $controller, $location, alarms, $injector) {
+    beforeEach(inject(function ($rootScope, $controller, $location, alarms) {
         scope = $rootScope.$new();
         location = $location;
         _alarms_ = alarms;
-        alarmsService = $injector.get('AlarmService');
 
-        ctrl = $controller('AlarmsCtrl', {$scope: scope, AlarmService: alarmsService});
+        ctrl = $controller('AlarmsCtrl', {$scope: scope});
     }));
 
     it('should bind the content', inject(function () {

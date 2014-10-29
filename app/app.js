@@ -141,7 +141,7 @@ angular.module('katGui', [ 'ngMaterial',
 
     })
 
-    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, $timeout, USER_ROLES, AuthService, Session, AlarmService, MonitorService) {
+    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, $timeout, USER_ROLES, AuthService, Session, MonitorService) {
 
         $scope.showSideNav = true;
         $scope.showNavbar = true;
@@ -181,7 +181,7 @@ angular.module('katGui', [ 'ngMaterial',
             $scope.setCurrentUser(null);
             Session.destroy();
 //            gapi.auth.signOut();
-            AlarmService.disconnectListener();
+//            AlarmService.disconnectListener();
             MonitorService.disconnectListener();
             $state.go('login');
         };

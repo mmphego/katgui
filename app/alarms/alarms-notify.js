@@ -1,6 +1,6 @@
 angular.module('katGui.alarms')
 
-    .controller('AlarmsNotifyCtrl', function ($rootScope, $scope, $timeout, alarms) {
+    .controller('AlarmsNotifyCtrl', function ($rootScope, $scope, $timeout) {
 
         $scope.messages = [];
 
