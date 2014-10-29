@@ -247,7 +247,26 @@ angular.module('katGui', [ 'ngMaterial',
 
             if (!message['jsonrpc']) {
                 if (message.sensor.indexOf('kataware:') === 0) {
-                    alarms.addAlarmMessage(message);
+
+                    var alarmName = message.sensor.split(':')[1];
+                    //var alarmStatus = message.status;
+                    var alarmDate = message.time;
+                    var alarmValue = message.value.split(',');
+                    var severity = alarmValue[0];
+                    var priority = alarmValue[1];
+                    var description = alarmValue[2];
+
+                    var alarmObj = {
+                        priority: priority,
+                        severity: severity,
+                        name: alarmName,
+                        dateUnix: alarmDate,
+                        date: moment.utc(alarmDate, 'X').format('HH:mm:ss DD-MM-YYYY'),
+                        message: description
+                    };
+
+                    alarms.addAlarmMessage(alarmObj);
+
                 } else {
                     $rootScope.$broadcast('receptorMessage', message);
                 }

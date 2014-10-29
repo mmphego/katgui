@@ -45,7 +45,7 @@
                             <span class="fa fa-question-circle" ng-switch-when="unknown">
                                 <md-tooltip>Unknown</md-tooltip>
                             </span>
-                            <span class="fa fa-ellipsis-h" ng-switch-when="nominal">
+                            <span class="fa fa-thumbs-up" ng-switch-when="nominal">
                                 <md-tooltip>Nominal</md-tooltip>
                             </span>
                             <span class="fa fa-fire" ng-switch-when="critical">
@@ -57,8 +57,8 @@
                         </div>
                         <div class="md-tile-content alarms-list-item-content" layout="horizontally" layout-padding style="z-index: 1">
                             <h3 flex style="max-width: 170px;"><b>{{item.date}}</b></h3>
-                            <h4 flex style="max-width: 160px;"><i>{{item.priority}}</i></h4>
-                            <h4 flex style="max-width: 160px;">{{item.name}}</h4>
+                            <h4 flex style="max-width: 100px; text-overflow: ellipsis"><i>{{item.priority}}</i></h4>
+                            <h4 flex style="max-width: 260px; text-overflow: ellipsis">{{item.name}}</h4>
                             <h4 flex>{{item.message}}</h4>
                         </div>
 
@@ -124,7 +124,7 @@
                             <span class="fa fa-question-circle" ng-switch-when="unknown">
                                 <md-tooltip>Unknown</md-tooltip>
                             </span>
-                            <span class="fa fa-ellipsis-h" ng-switch-when="nominal">
+                            <span class="fa fa-thumbs-up" ng-switch-when="nominal">
                                 <md-tooltip>Nominal</md-tooltip>
                             </span>
                             <span class="fa fa-fire" ng-switch-when="critical">
