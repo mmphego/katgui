@@ -35,7 +35,12 @@ angular.module('katGui', [ 'ngMaterial',
         expert: 'expert'
     })
 
-    .config(function ($stateProvider, $urlRouterProvider, USER_ROLES) {
+    .config(function ($stateProvider, $urlRouterProvider, $compileProvider, USER_ROLES) {
+
+        //disable this in production for performance boost
+        //batarang uses this for scope inspection
+        //https://docs.angularjs.org/guide/production
+        //$compileProvider.debugInfoEnabled(false);
 
         $stateProvider.state('login', {
             url: '/login',

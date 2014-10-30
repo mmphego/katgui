@@ -36,10 +36,13 @@ angular.module('katGui.alarms', [])
 
             if (message.priority === 'known') {
 
-                //todo: only change the values that changed
                 for (var i = 0; i < $scope.knownAlarmsData.length; i++) {
                     if ($scope.knownAlarmsData[i].name === message.name) {
-                        $scope.knownAlarmsData[i] = message;
+                        $scope.knownAlarmsData[i].priority = message.priority;
+                        $scope.knownAlarmsData[i].severity = message.severity;
+                        $scope.knownAlarmsData[i].dateUnix = message.dateUnix;
+                        $scope.knownAlarmsData[i].date = message.date;
+                        $scope.knownAlarmsData[i].description = message.description;
                         found = true;
                         break;
                     }
@@ -50,10 +53,13 @@ angular.module('katGui.alarms', [])
                 }
             } else {
 
-                //todo: only change the values that changed
                 for (var j = 0; j < $scope.alarmsData.length; j++) {
                     if ($scope.alarmsData[j].name === message.name) {
-                        $scope.alarmsData[j] = message;
+                        $scope.alarmsData[j].priority = message.priority;
+                        $scope.alarmsData[j].severity = message.severity;
+                        $scope.alarmsData[j].dateUnix = message.dateUnix;
+                        $scope.alarmsData[j].date = message.date;
+                        $scope.alarmsData[j].description = message.description;
                         found = true;
                         break;
                     }
@@ -62,13 +68,7 @@ angular.module('katGui.alarms', [])
                 if (!found) {
                     $scope.alarmsData.push(message);
                 }
-
             }
-
-            //if (!$scope.$$phase) {
-            //    $scope.$digest();
-            //}
-
         });
 
     });
