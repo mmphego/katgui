@@ -39,7 +39,7 @@
     color: white;
     min-width: 140px;
     top: 0;
-    min-height: 130px;
+    min-height: 131px;
     margin: 3px;
 }
 
@@ -74,16 +74,20 @@
 }
 
 .flash-receptor-state {
-    background-color: #259b24;
+    background: #259b24;
+    transition: all 1s;
+
 }
 
 .flash-receptor-state.receptor-STOP {
     width: 100%;
-    animation: flash-black 1s;
-    -webkit-animation: flash-black 1s;
+//    animation: flash-black 1s;
+//    -webkit-animation: flash-black 1s;
+    background: #212121;
 }
 
 .flash-receptor-state.receptor-STOW {
-    animation: flash-blue 1s;
-    -webkit-animation: flash-blue 1s;
+//    animation: flash-blue 1s;
+//    -webkit-animation: flash-blue 1s;
+    background: #01579b;
 }
