@@ -3,9 +3,15 @@
 
     <div ng-show="showVideoControls" class="video-pan-controls" layout="horizontal">
         <div layout="horizontal" layout-align="center end">
+            <md-slider class="md-theme-light" style="background: transparent; width: 250px;" flex min="0" max="100" ng-model="zoom" aria-label="Zoom Slider">
+            </md-slider>
             <md-button ng-click="rememberPos()" aria-label="Remember Current Position" class="md-theme-light md-button-fab md-button-fab-small">
                 <span class="fa fa-save md-fab-fa-icon-small"></span>
                 <md-tooltip>Remember Current Position</md-tooltip>
+            </md-button>
+            <md-button ng-click="clearPos()" aria-label="Clear Current Position" class="md-theme-light md-button-fab md-button-fab-small">
+                <span class="fa fa-trash-o md-fab-fa-icon-small"></span>
+                <md-tooltip>Clear Current Position</md-tooltip>
             </md-button>
             <md-button ng-click="cyclePos()" aria-label="Cycle Through Positions" class="md-theme-light md-button-fab md-button-fab-small">
                 <span class="fa fa-refresh md-fab-fa-icon-small"></span>
@@ -46,5 +52,7 @@
                 <md-tooltip>Tilt Far Down</md-tooltip>
             </md-button>
         </div>
+
+        <!--floodlights button-->
     </div>
 </div>

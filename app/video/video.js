@@ -45,4 +45,8 @@ angular.module('katGui.video', [])
             console.log('cyclePos');
         };
 
+        $scope.cyclePos = function () {
+            console.log('clearPos');
+        };
+
     });
