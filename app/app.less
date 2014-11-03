@@ -1,6 +1,5 @@
 @import "../bower_components/bootstrap/less/bootstrap";
 @import "../bower_components/font-awesome/less/font-awesome";
-
 /* Component LESS */
 @import "login-form/login-form";
 @import "landing/landing";
@@ -16,8 +15,8 @@
 @import "widgets/gantt/gantt-widget";
 @import "health/health";
 @import "d3/d3";
-/* Add Component LESS Above */
 
+/* Add Component LESS Above */
 
 @button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
 @receptor-state-border-color: darkgrey;
@@ -41,263 +40,225 @@
 
 /* Required for Angular UI Bootstrap */
 .nav, .pagination, .carousel a {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .avoid-clicks {
-  pointer-events: none;
+    pointer-events: none;
 }
 
 .toolbar-collapse-button {
-  position: absolute;
-  top: 0px;
-  left: 50%;
-  margin-left: auto;
-  margin-right: auto;
-  color: white;
-  cursor: pointer;
-  border: 0;
-  background: none;
-  z-index: 1000;
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    color: white;
+    cursor: pointer;
+    border: 0;
+    background: none;
+    z-index: 1000;
 
-  i {
-    font-size: 16px;
-  }
+    i {
+        font-size: 16px;
+    }
 
-  &:hover {
-    color: @navbar-text-hover-color;
-  }
+    &:hover {
+        color: @navbar-text-hover-color;
+    }
 
-  &:focus {
-    outline: none;
-  }
+    &:focus {
+        outline: none;
+    }
 }
 
 .toolbar-collapse-button-grey {
-  color: lightgrey;
+    color: lightgrey;
 }
 
 .button-toolbar-flat-icon {
-  border: 0;
-  color: white;
-  background: none;
-  padding-left: 20px;
-  padding-right: 0px;
-  height: 55px;
-  //  margin-top: 12px;
+    border: 0;
+    color: white;
+    background: none;
+    padding-left: 20px;
+    padding-right: 0px;
+    height: 55px;
+    //  margin-top: 12px;
 
-  i {
-    font-size: 29px;
-  }
+    span {
+        font-size: 29px;
+    }
 
-  &:hover {
-    color: @navbar-text-hover-color;
-  }
+    &:hover {
+        color: @navbar-text-hover-color;
+    }
 
-  &:focus {
-    outline: none;
-  }
+    &:focus {
+        outline: none;
+    }
 }
 
 .alarm-badge {
-  position: absolute;
-  right: 2px;
-  color: black;
-  .avoid-clicks;
+    position: absolute;
+    right: 2px;
+    color: black;
+    .avoid-clicks;
 }
 
 .alarm-badge-warn {
-  top: 5px;
-  background-color: #ffeb3b;
+    top: 5px;
+    background-color: #ffeb3b;
 }
 
 .alarm-badge-error {
-  top: 23px;
-  background-color: #ffc107;
+    top: 23px;
+    background-color: #ffc107;
 }
 
 .alarm-badge-crit {
-  top: 41px;
-  background-color: #e51c23;
-  color: white;
+    top: 41px;
+    background-color: #e51c23;
+    color: white;
 }
 
 .toolbar-time-span {
-  color: white;
+    color: white;
 
-  &:hover {
-    color: lightgrey;
-  }
+    &:hover {
+        color: lightgrey;
+    }
 }
 
 body {
-  background: #fff;
-  font-family: RobotoDraft;
-  min-width: @app-min-width;
-  padding: 0 !important;
-  overflow-y: hidden;
+    background: #fff;
+    font-family: RobotoDraft;
+    min-width: @app-min-width;
+    padding: 0 !important;
+    overflow-y: hidden;
 }
 
 .view-container {
-  width: 95%;
-  height: 100%;
-  margin-top: 15px;
-  margin-left: auto;
-  margin-right: auto;
+    width: 95%;
+    height: 100%;
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .view-container-full {
-  width: 100%;
-  height: 100%;
-  margin: 1px;
+    width: 100%;
+    height: 100%;
+    margin: 1px;
 }
 
 .menu-item {
-  background-color: #fff;
-  border-width: 0;
-  cursor: pointer;
-  display: block;
-  color: #333;
-  font-size: inherit;
-  line-height: 40px;
-  max-height: 40px;
-  margin: 0;
-  outline: 0;
-  padding: 0 28px;
-  position: relative;
-  text-align: left;
-  text-decoration: none;
-  width: 100%;
-  z-index: 1;
-  -webkit-transition: .2s linear;
-  -webkit-transition-property: max-height,background-color;
-  -moz-transition: .2s linear;
-  -moz-transition-property: max-height,background-color;
-  transition: .2s linear;
-  transition-property: max-height,background-color;
+    background-color: #fff;
+    border-width: 0;
+    cursor: pointer;
+    display: block;
+    color: #333;
+    font-size: inherit;
+    line-height: 40px;
+    max-height: 40px;
+    margin: 0;
+    outline: 0;
+    padding: 0 28px;
+    position: relative;
+    text-align: left;
+    text-decoration: none;
+    width: 100%;
+    z-index: 1;
+    -webkit-transition: .2s linear;
+    -webkit-transition-property: max-height, background-color;
+    -moz-transition: .2s linear;
+    -moz-transition-property: max-height, background-color;
+    transition: .2s linear;
+    transition-property: max-height, background-color;
 
-  &:hover {
-    color: #999;
-  }
+    &:hover {
+        color: #999;
+    }
 }
 
 md-sidenav {
-  transition: none !important;
-  height: 100%;
+    //  transition: none !important;
+    //  height: 100%;
 
-  .menu-item.active {
-    background-color: #eee;
-    font-weight: 700;
-    color: #4285f4;
-  }
+    .menu-item.active {
+        background-color: #eee;
+        font-weight: 700;
+        color: #4285f4;
+    }
 }
 
 .panel-toolbar {
-  background: #283593;
-  color: #fff;
-  z-index: 1;
-  font-size: 1.5em;
+    background: #283593;
+    color: #fff;
+    z-index: 1;
+    font-size: 1.5em;
 }
 
 .panel-toolbar-small {
-  min-height: 35px;
-  max-height: 35px;
+    min-height: 35px;
+    max-height: 35px;
 }
 
 .centered-content {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .md-fab-fa-icon {
-  font-size: 24px;
-  margin-top: 5px;
-  margin-left: 2px;
+    font-size: 24px;
+    margin-top: 5px;
+    margin-left: 2px;
 }
 
 .md-fab-fa-icon-small {
-  font-size: 14px;
-//  margin-top: 0px;
-  margin-left: 1px;
+    font-size: 14px;
+    //  margin-top: 0px;
+    margin-left: 1px;
 }
 
 .md-button-fab-small {
-  width: 38px !important;
-  height: 38px !important;
+    width: 38px !important;
+    height: 38px !important;
 }
 
 .inactive-text-input {
-  border: none;
-  background-color: transparent;
+    border: none;
+    background-color: transparent;
 }
 
 /* After the transition this will be the only class remaining */
 .slideInVertically {
-  transition: min-height cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.25s, max-height cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.25s;
-  max-height: 64px;
-  min-height: 64px;
+    transition: all 0.25s ease-out;
+    max-height: 64px;
+    min-height: 64px;
+    opacity: 1;
+    overflow: visible;
 }
 
 /* Initial state when showing */
 .slideInVertically.ng-hide-remove {
-  max-height: 0px;
-  min-height: 0px;
-
-  md-button {
-    opacity: 0;
-  }
+    max-height: 0px;
+    min-height: 0px;
+    overflow: hidden;
 }
 
 /* Will transition towards this state */
 .slideInVertically.ng-hide-add.ng-hide-add-active {
-  max-height: 0px;
-  min-height: 0px;
-
-  md-button {
-    opacity: 0;
-  }
+    max-height: 0px;
+    min-height: 0px;
+    overflow: hidden;
 }
 
 /* Will transition towards this state */
 .slideInVertically.ng-hide-remove.ng-hide-remove-active {
-  max-height: 64px;
-  min-height: 64px;
-
-  md-button {
-    opacity: 1;
-  }
-}
-
-/* After the transition this will be the only class remaining */
-.slideInSideNav {
-  transition: all 0.25s ease-out, all 0.25s ease-out !important;
-  max-width: 304px;
-  min-width: 304px;
-  overflow: hidden;
-
-  md-content {
-    overflow: hidden;
-
-  }
-}
-
-/* Initial state when showing */
-.slideInSideNav.ng-hide-remove {
-  max-width: 0px;
-  min-width: 0px;
-}
-
-/* Will transition towards this state */
-.slideInSideNav.ng-hide-add.ng-hide-add-active {
-  max-width: 0px;
-  min-width: 0px;
-}
-
-/* Will transition towards this state */
-.slideInSideNav.ng-hide-remove.ng-hide-remove-active {
-  max-width: 304px;
-  min-width: 304px;
+    max-height: 64px;
+    min-height: 64px;
+    overflow: visible;
 }
 
 .md-checkbox-no-label {

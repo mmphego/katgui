@@ -7,6 +7,7 @@
     <link href="bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-material/themes/indigo-theme.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-material/themes/blue-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/light-blue-dark-theme.css" rel="stylesheet" type="text/css">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet"
@@ -102,8 +103,8 @@
 
 <section layout="horizontal" layout-fill>
     <!--dont use md-whiteframe class because it leaves black artifacts-->
-    <md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical"  style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-        <md-toolbar class="md-theme-light md-medium-tall">
+    <md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
             <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
         </md-toolbar>
         <md-content class="md-content-padding">
@@ -130,16 +131,16 @@
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('video') }" ng-click="sideNavStateGo('video')">Video</button>
                 </md-item>
                 <!--<md-item>-->
-                    <!--<button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('weather') }" ng-click="sideNavStateGo('weather')">Weather</button>-->
+                <!--<button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('weather') }" ng-click="sideNavStateGo('weather')">Weather</button>-->
                 <!--</md-item>-->
                 <!--<md-item>-->
-                    <!--<button ink-ripple class="menu-item">Log Reports</button>-->
+                <!--<button ink-ripple class="menu-item">Log Reports</button>-->
                 <!--</md-item>-->
                 <!--<md-item>-->
-                    <!--<button ink-ripple class="menu-item">Source Catalogues</button>-->
+                <!--<button ink-ripple class="menu-item">Source Catalogues</button>-->
                 <!--</md-item>-->
                 <!--<md-item>-->
-                    <!--<button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('admin') }" ng-click="sideNavStateGo('admin')">User Admin</button>-->
+                <!--<button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('admin') }" ng-click="sideNavStateGo('admin')">User Admin</button>-->
                 <!--</md-item>-->
                 <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('about') }" ng-click="sideNavStateGo('about')">About katGUI</button>
@@ -149,14 +150,31 @@
         </md-content>
     </md-sidenav>
 
+    <md-sidenav class="md-sidenav-right" component-id="right-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
+            <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">User Details</h1>
+        </md-toolbar>
+        <md-content class="md-content-padding">
+            <md-list>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('admin') }" ng-click="sideNavRightStateGo('admin')">User Admin</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-click="logout()">Logout</button>
+                </md-item>
+
+            </md-list>
+        </md-content>
+    </md-sidenav>
+
     <section layout="vertical" flex>
-        <md-toolbar ng-show="showNavbar" class="md-theme-dark slideInVertically">
+        <md-toolbar ng-show="showNavbar" class="slideInVertically">
             <div class="md-toolbar-tools" layout="horizontal">
 
                 <button class="button-toolbar-flat-icon"
                         style="margin-left: 0px; padding: 0px;"
-                        ng-click="toggleSidenav()">
-                    <i class="fa fa-navicon"></i>
+                        ng-click="toggleLeftSidenav()">
+                    <span class="fa fa-navicon"></span>
                 </button>
 
                 <div class="btn-group"
@@ -164,35 +182,23 @@
 
                     <md-button style="height: 40px;" md-theme="blue" class="md-primary md-raised"
                                aria-label="Operator Control"
-                                     ng-mouseenter="operatorControlHover = true"
-                                     ng-mouseleave="operatorControlHover = false"
-                                     ng-click="operatorControlHover = false; operatorControlMenuHover = false; stateGo('operatorControl')">
+                               ng-mouseenter="operatorControlHover = true"
+                               ng-mouseleave="operatorControlHover = false"
+                               ng-click="operatorControlHover = false; operatorControlMenuHover = false; stateGo('operatorControl')">
                         Operator Control
                     </md-button>
 
                     <md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"
-                                      ng-mouseenter="operatorControlMenuHover = true"
-                                      ng-mouseleave="operatorControlMenuHover = false"
-                                      role="menu">
-                        <md-list>
-                            <md-item>
-                                <button ink-ripple class="menu-item">Inhibit All</button>
-                            </md-item>
-                            <md-item>
-                                <button ink-ripple class="menu-item">Stow All</button>
-                            </md-item>
-                            <md-item>
-                                <button ink-ripple class="menu-item">Stop All</button>
-                            </md-item>
-                            <i class="divider menu-item"></i>
-                            <md-item>
-                                <button ink-ripple class="menu-item">Resume Operations</button>
-                            </md-item>
-                            <i class="divider menu-item"></i>
-                            <md-item>
-                                <button ink-ripple class="menu-item">Shutdown Computing</button>
-                            </md-item>
-                        </md-list>
+                                ng-mouseenter="operatorControlMenuHover = true"
+                                ng-mouseleave="operatorControlMenuHover = false"
+                                role="menu">
+                        <div md-theme="default" style="color: rgba(0,0,0,0.73)" layout="vertical">
+                            <md-button ng-click="inhibitAll()">Inhibit All</md-button>
+                            <md-button ng-click="stowAll()">Stow All</md-button>
+                            <md-button ng-click="stopAll()">Stop All</md-button>
+                            <md-button ng-click="resumeOperations()">Resume Operations</md-button>
+                            <md-button disabled ng-click="shutdownComputing()">Shutdown Computing</md-button>
+                        </div>
                     </md-content>
 
                 </div>
@@ -205,23 +211,25 @@
                 </div>
 
                 <button class="button-toolbar-flat-icon"
-                        style="border-left: 1px solid white;"
                         ng-click="stateGo('landing')"><span>Home</span>
                 </button>
 
                 <div class="alarms-warning-container">
                     <button class="unselectable button-toolbar-flat-icon navbar-btn"
-                            ng-click="stateGo('alarms')"
-                            style="border-left: 1px solid white;">
-                        <i class="fa fa-warning"></i>
+                            ng-click="stateGo('alarms')">
+                        <span class="fa fa-warning"></span>
                     </button>
                     <span ng-if="newAlarmWarnCount > 0"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
-            <span ng-if="newAlarmErrorCount > 0"
-                  class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
+                    <span ng-if="newAlarmErrorCount > 0"
+                          class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
                     <span ng-if="newAlarmCritCount > 0"
                           class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>
                 </div>
+
+                <button class="button-toolbar-flat-icon" ng-click="toggleRightSidenav()">
+                    <span class="fa fa-user"></span>
+                </button>
             </div>
 
         </md-toolbar>

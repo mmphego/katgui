@@ -148,15 +148,9 @@ angular.module('katGui', [ 'ngMaterial',
 
     .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, $timeout, USER_ROLES, AuthService, Session, MonitorService, ControlService) {
 
-        //$scope.showSideNav = true;
         $scope.showNavbar = true;
-        //$rootScope.showSideNav = true;
         $rootScope.showNavbar = true;
 
-        //so that other views can $watch the rootScope values
-        //$scope.$watch('showSideNav', function (value) {
-        //    $rootScope.showSideNav = value;
-        //});
         $scope.$watch('showNavbar', function (value) {
             $rootScope.showNavbar = value;
         });
@@ -178,17 +172,21 @@ angular.module('katGui', [ 'ngMaterial',
             $scope.userCanOperate = !!user && ($scope.currentUser.role !== USER_ROLES.all && $scope.currentUser.role !== USER_ROLES.monitor);
         };
 
-        $scope.toggleSidenav = function () {
+        $scope.toggleLeftSidenav = function () {
             $mdSidenav('left-sidenav').toggle();
+        };
+
+        $scope.toggleRightSidenav = function () {
+            $mdSidenav('right-sidenav').toggle();
         };
 
         $rootScope.logout = function () {
             $scope.setCurrentUser(null);
             Session.destroy();
 //            gapi.auth.signOut();
-//            AlarmService.disconnectListener();
-//            MonitorService.disconnectListener();
-//            ControlService.disconnectListener();
+            MonitorService.disconnectListener();
+            ControlService.disconnectListener();
+            $mdSidenav('right-sidenav').close();
             $state.go('login');
         };
 
@@ -199,11 +197,46 @@ angular.module('katGui', [ 'ngMaterial',
 
         $scope.sideNavStateGo = function (newState) {
             $scope.stateGo(newState);
-            $scope.toggleSidenav();
+            $mdSidenav('left-sidenav').close();
+        };
+
+        $scope.sideNavRightStateGo = function (newState) {
+            $scope.stateGo(newState);
+            $mdSidenav('right-sidenav').close();
         };
 
         $scope.isPageSelected = function (page) {
             return $state.current.name === page;
+        };
+
+        $scope.operatorActionMenuItemSelected = function () {
+            $state.go('operatorControl');
+            $scope.operatorControlMenuHover = false;
+        };
+
+        $scope.inhibitAll = function () {
+            ControlService.inhibitAll();
+            $scope.operatorActionMenuItemSelected();
+        };
+
+        $scope.stowAll = function () {
+            ControlService.stowAll();
+            $scope.operatorActionMenuItemSelected();
+        };
+
+        $scope.stopAll = function () {
+            ControlService.stopAll();
+            $scope.operatorActionMenuItemSelected();
+        };
+
+        $scope.resumeOperations = function () {
+            ControlService.resumeOperations();
+            $scope.operatorActionMenuItemSelected();
+        };
+
+        $scope.shutdownComputing = function () {
+            ControlService.shutdownComputing();
+            $scope.operatorActionMenuItemSelected();
         };
 
         $rootScope.utcTime = moment.utc(new Date()).format('hh:mm:ss');

@@ -53,7 +53,7 @@ angular.module('katGui')
             controlService.sendControlCommand('sys', 'operator-resume-operations', '');
         };
 
-        controlService.shutdownComputing = function () {
+            controlService.shutdownComputing = function () {
             controlService.sendControlCommand('sys', 'operator-shutdown-computing', '');
         };
 
