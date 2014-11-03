@@ -10,25 +10,33 @@ angular.module('katGui')
 
         monitorService.onSockJSOpen = function () {
             if (monitorService.connection && monitorService.connection.readyState) {
-
-                var jsonRPC = {
-                    'jsonrpc': '2.0',
-                    'method': 'psubscribe',
-                    'params': ['kataware:alarm*'],
-                    'id': 'abe3d23201'
-                };
-
-                monitorService.connection.send(JSON.stringify(jsonRPC));
-
-                jsonRPC = {
-                    'jsonrpc': '2.0',
-                    'method': 'subscribe',
-                    'params': [['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited']],
-                    'id': 'abe3d23201'
-                };
-                monitorService.connection.send(JSON.stringify(jsonRPC));
                 console.log('Monitor Connection Established.');
+                monitorService.subscribeToAlarms();
             }
+        };
+
+        monitorService.subscribeToAlarms = function () {
+            console.log('Monitor subscribed to kataware:alarm*...');
+            var jsonRPC = {
+                'jsonrpc': '2.0',
+                'method': 'psubscribe',
+                'params': ['kataware:alarm*'],
+                'id': 'abe3d23201'
+            };
+            monitorService.connection.send(JSON.stringify(jsonRPC));
+        };
+
+        monitorService.subscribeToReceptorUpdates = function () {
+            var connectionParams = ['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited'];
+            console.log('Monitor subscribed to ' + connectionParams);
+
+            var jsonRPC = {
+                'jsonrpc': '2.0',
+                'method': 'subscribe',
+                'params': [connectionParams],
+                'id': 'abe3d23201'
+            };
+            monitorService.connection.send(JSON.stringify(jsonRPC));
         };
 
         monitorService.onSockJSClose = function () {

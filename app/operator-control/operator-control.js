@@ -1,42 +1,44 @@
 angular.module('katGui')
 
-    .controller('OperatorControlCtrl', function ($rootScope, $scope, $interval, ControlService) {
+    .controller('OperatorControlCtrl', function ($rootScope, $scope, $interval, MonitorService, ControlService) {
 
         $scope.title = 'Operator Controls';
 
+        MonitorService.subscribeToReceptorUpdates();
+
         var nowStr = moment(new Date()).format('HH:mm:ss DD-MM-YYYY');
 
-        //$scope.receptorsData = [
-        //    {
-        //        name: "m000",
-        //        state: "STOP",
-        //        inhibited: false,
-        //        since: '0:00:00',
-        //        lastUpdate: nowStr
-        //    },
-        //    {
-        //        name: "m001",
-        //        state: "STOP",
-        //        inhibited: false,
-        //        since: '0:00:00',
-        //        lastUpdate: nowStr
-        //    },
-        //    {
-        //        name: "m062",
-        //        state: "STOP",
-        //        inhibited: false,
-        //        since: '0:00:00',
-        //        lastUpdate: nowStr
-        //    },
-        //    {
-        //        name: "m063",
-        //        state: "STOP",
-        //        inhibited: false,
-        //        since: '0:00:00',
-        //        lastUpdate: nowStr
-        //    }
-        //];
-        $scope.receptorsData = $rootScope.receptorsData;
+        $scope.receptorsData = [
+            {
+                name: "m000",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            },
+            {
+                name: "m001",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            },
+            {
+                name: "m062",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            },
+            {
+                name: "m063",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            }
+        ];
+        //$scope.receptorsData = $rootScope.receptorsData;
 
         $scope.receptors = [];
 
