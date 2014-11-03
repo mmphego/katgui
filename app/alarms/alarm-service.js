@@ -67,7 +67,7 @@ angular.module('katGui.alarms')
 
         this.$get = [
             '$rootScope',
-            function ($rootScope) {
+            function ($rootScope, ControlService) {
 
                 var api = {};
 
@@ -75,6 +75,10 @@ angular.module('katGui.alarms')
                     var _config = config || {};
                     alarmObj.ttl = _config.ttl || _ttl;
                     $rootScope.$broadcast('alarmMessage', alarmObj);
+                };
+
+                api.addKnown = function (alarmName) {
+                    ControlService.addKnownAlarm(alarmName);
                 };
 
                 return api;

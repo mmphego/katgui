@@ -44,13 +44,13 @@
                         <div layout="horizontal" style="float:right;">
                             <div layout="vertical">
                                 <div layout="horizontal">
-                                    <md-button aria-label="Select a Date and Time" style="width: 122px;" class="md-button-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"
+                                    <md-button aria-label="Select a Date and Time" style="width: 122px;" class="md-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"
                                                      ng-click="openTypePicker($index, $event);">
                                         {{item.type}}
                                         <span flex></span>
                                         <span class="caret"></span>
                                     </md-button>
-                                    <md-button aria-label="Select a Date and Time" style="margin-left: 5px; width: 180px;" class="md-button-raised schedule-item-input"
+                                    <md-button aria-label="Select a Date and Time" style="margin-left: 5px; width: 180px;" class="md-raised schedule-item-input"
                                                      ng-click="openDatePicker($index, $event);">
                                         <span ng-if="item.desiredTime">{{item.desiredTime}}</span>
                                         <span ng-if="!item.desiredTime">Select Time</span>
@@ -102,13 +102,13 @@
                         <div layout="horizontal" style="float:right;">
                             <div layout="vertical">
                                 <div layout="horizontal">
-                                    <!--<md-button disabled style="width: 122px;" class="md-button-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"-->
+                                    <!--<md-button disabled style="width: 122px;" class="md-raised dropdown-toggle schedule-item-input" type="button" data-toggle="dropdown"-->
                                                      <!--ng-click="openTypePicker($index, $event);">-->
                                         <!--{{item.type}}-->
                                         <!--<span flex></span>-->
                                         <!--<span class="caret"></span>-->
                                     <!--</md-button>-->
-                                    <!--<md-button disabled style="margin-right: 5px; width: 180px;" class="md-button-raised schedule-item-input"-->
+                                    <!--<md-button disabled style="margin-right: 5px; width: 180px;" class="md-raised schedule-item-input"-->
                                                      <!--ng-click="openDatePicker($index, $event);">-->
                                         <!--<span ng-if="item.desiredTime">{{item.desiredTime}}</span>-->
                                         <!--<span ng-if="!item.desiredTime">Select Time</span>-->
@@ -136,14 +136,14 @@
 
 
     <!--<div class="centered-content">-->
-    <!--<md-button class="md-button-raised md-button-colored"-->
+    <!--<md-button class="md-raised md-button-colored"-->
     <!--ng-class="{disabled: scheduleSelections.length === 0}"-->
     <!--ng-click="moveDraftsToSchedule()">-->
     <!--<span class="fa fa-chevron-down"></span>-->
     <!--<!--<span class="fa fa-chevron-down"></span>-->
     <!--</md-button>-->
 
-    <!--<md-button style="margin-left: 3px;" class="md-button-raised md-button-colored"-->
+    <!--<md-button style="margin-left: 3px;" class="md-raised md-button-colored"-->
     <!--ng-class="{disabled: scheduleSelections.length === 0}"-->
     <!--ng-click="moveSchedulesToDraft()">-->
     <!--<span class="fa fa-chevron-up"></span>-->
@@ -166,14 +166,14 @@
 
 
 <!--<div class="centered-content">-->
-<!--<md-button class="md-button-raised md-button-colored"-->
+<!--<md-button class="md-raised md-button-colored"-->
 <!--ng-attr-value="{{draftSelections.length === 0 && 'disabled'}}"-->
 <!--ng-click="moveDraftsToSchedule()">-->
 <!--<span class="fa fa-chevron-down"></span>-->
 <!--<span class="fa fa-chevron-down"></span>-->
 <!--</md-button>-->
 
-<!--<md-button style="margin-left: 3px;" class="md-button-raised md-button-colored"-->
+<!--<md-button style="margin-left: 3px;" class="md-raised md-button-colored"-->
 <!--ng-class="{disabled: scheduleSelections.length === 0}"-->
 <!--ng-click="moveSchedulesToDraft()">-->
 <!--<span class="fa fa-chevron-up"></span>-->

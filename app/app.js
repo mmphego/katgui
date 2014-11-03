@@ -146,17 +146,17 @@ angular.module('katGui', [ 'ngMaterial',
 
     })
 
-    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, $timeout, USER_ROLES, AuthService, Session, MonitorService) {
+    .controller('ApplicationCtrl', function ($rootScope, $scope, $state, $location, $interval, $mdSidenav, $timeout, USER_ROLES, AuthService, Session, MonitorService, ControlService) {
 
-        $scope.showSideNav = true;
+        //$scope.showSideNav = true;
         $scope.showNavbar = true;
-        $rootScope.showSideNav = true;
+        //$rootScope.showSideNav = true;
         $rootScope.showNavbar = true;
 
         //so that other views can $watch the rootScope values
-        $scope.$watch('showSideNav', function (value) {
-            $rootScope.showSideNav = value;
-        });
+        //$scope.$watch('showSideNav', function (value) {
+        //    $rootScope.showSideNav = value;
+        //});
         $scope.$watch('showNavbar', function (value) {
             $rootScope.showNavbar = value;
         });
@@ -187,12 +187,14 @@ angular.module('katGui', [ 'ngMaterial',
             Session.destroy();
 //            gapi.auth.signOut();
 //            AlarmService.disconnectListener();
-            MonitorService.disconnectListener();
+//            MonitorService.disconnectListener();
+//            ControlService.disconnectListener();
             $state.go('login');
         };
 
         $scope.stateGo = function (newState) {
             $state.go(newState);
+            $scope.toggleSidenav();
         };
 
         $scope.isPageSelected = function (page) {
@@ -210,6 +212,105 @@ angular.module('katGui', [ 'ngMaterial',
         $interval(updateTimeDisplay, 1000); //update clock every second
 
         $timeout(function() {
-            MonitorService.connectListener();
+            //MonitorService.connectListener();
+            //ControlService.connectListener();
         }, 500);
+
+        var nowStr = moment(new Date()).format('HH:mm:ss DD-MM-YYYY');
+
+        $rootScope.receptorsData = [
+            {
+                name: "m000",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            },
+            {
+                name: "m001",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            },
+            {
+                name: "m062",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            },
+            {
+                name: "m063",
+                state: "STOP",
+                inhibited: false,
+                since: '0:00:00',
+                lastUpdate: nowStr
+            }
+        ];
+
+        $rootScope.$on('receptorMessage', function (event, message) {
+
+            var sensorNameList = message.name.split(':');
+            var sensor = sensorNameList[0];
+            var sensorName = sensorNameList[1];
+            $rootScope.receptorsData.forEach(function (item) {
+
+                if (item.name === sensor) {
+                    if (sensorName === 'mode' && item.state !== message.value) {
+                        item.state = message.value;
+                    } else if (sensorName === 'inhibited' && item.inhibited !== message.value) {
+                        item.inhibited = message.value;
+                    }
+
+                    item.lastUpdate = moment(message.time, 'X').format('HH:mm:ss DD-MM-YYYY');
+                }
+
+            });
+        });
+
+        $rootScope.alarmsData = [];
+        $rootScope.knownAlarmsData = [];
+
+        $rootScope.$on('alarmMessage', function (event, message) {
+
+            var found = false;
+
+            if (message.priority === 'known') {
+
+                for (var i = 0; i < $rootScope.knownAlarmsData.length; i++) {
+                    if ($rootScope.knownAlarmsData[i].name === message.name) {
+                        $rootScope.knownAlarmsData[i].priority = message.priority;
+                        $rootScope.knownAlarmsData[i].severity = message.status;
+                        $rootScope.knownAlarmsData[i].dateUnix = message.dateUnix;
+                        $rootScope.knownAlarmsData[i].date = message.date;
+                        $rootScope.knownAlarmsData[i].description = message.value;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    $rootScope.knownAlarmsData.push(message);
+                }
+            } else {
+
+                for (var j = 0; j < $rootScope.alarmsData.length; j++) {
+                    if ($rootScope.alarmsData[j].name === message.name) {
+                        $rootScope.alarmsData[j].priority = message.priority;
+                        $rootScope.alarmsData[j].severity = message.status;
+                        $rootScope.alarmsData[j].dateUnix = message.dateUnix;
+                        $rootScope.alarmsData[j].date = message.date;
+                        $rootScope.alarmsData[j].description = message.value;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    $rootScope.alarmsData.push(message);
+                }
+            }
+
+        });
     });

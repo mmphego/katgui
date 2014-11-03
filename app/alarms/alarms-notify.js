@@ -1,6 +1,6 @@
 angular.module('katGui.alarms')
 
-    .controller('AlarmsNotifyCtrl', function ($rootScope, $scope, $timeout) {
+    .controller('AlarmsNotifyCtrl', function ($rootScope, $scope, $timeout, ControlService) {
 
         $scope.messages = [];
 
@@ -59,10 +59,14 @@ angular.module('katGui.alarms')
         });
 
         $scope.acknowledgeMessage = function (message) {
+
+            ControlService.addKnownAlarm(message.name);
             $scope.deleteMessage(message);
         };
 
-        $scope.deleteMessage = function (message) {
+        $scope.knowMessage = function (message) {
+            ControlService.addKnownAlarm(message.name);
+
             var index = $scope.messages.indexOf(message);
             if (index > -1) {
                 $scope.messages.splice(index, 1);
@@ -94,7 +98,7 @@ angular.module('katGui.alarms')
                 '       <div>' +
                 '           <ul>' +
                 '               <li class="li-inline"><button class="alarm-close" ng-click="acknowledgeMessage(message)">Ack</button></li>' +
-                '               <li class="li-inline"><button class="alarm-close" ng-click="deleteMessage(message)">Knw</button></li>' +
+                '               <li class="li-inline"><button class="alarm-close" ng-click="knowMessage(message)">Knw</button></li>' +
                 '           </ul>' +
                 '       </div>' +
                 '       <div class="datestamp"><span>{{message.date}}</span></div>' +

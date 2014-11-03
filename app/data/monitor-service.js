@@ -1,3 +1,5 @@
+
+
 angular.module('katGui')
 
     .factory('MonitorService', function ($rootScope, alarms) {
@@ -35,34 +37,48 @@ angular.module('katGui')
         };
 
         monitorService.onSockJSMessage = function (e) {
-            //console.log(e);
+            console.log(e);
 
-            var message = JSON.parse(e.data);
+            var messages = JSON.parse(e.data);
 
-            if (!message['jsonrpc']) {
-                if (message.sensor.indexOf('kataware:') === 0) {
+            if (!messages['jsonrpc']) {
 
-                    var alarmName = message.sensor.split(':')[1];
-                    //var alarmStatus = message.status;
-                    var alarmDate = message.time;
-                    var alarmValue = message.value.split(',');
-                    var severity = alarmValue[0];
-                    var priority = alarmValue[1];
-                    var description = alarmValue[2];
+                messages = [].concat(messages);
 
-                    var alarmObj = {
-                        priority: priority,
-                        severity: severity,
-                        name: alarmName,
-                        dateUnix: alarmDate,
-                        date: moment.utc(alarmDate, 'X').format('HH:mm:ss DD-MM-YYYY'),
-                        message: description
-                    };
+                if (messages) {
 
-                    alarms.addAlarmMessage(alarmObj);
+                    messages.forEach(function (message) {
 
-                } else {
-                    $rootScope.$broadcast('receptorMessage', message);
+                        var messageObj = message;
+
+                        if (_.isString(message)) {
+                            messageObj = JSON.parse(message);
+                        }
+
+                        console.log(messageObj);
+
+                        if (messageObj.name.indexOf('kataware:') === 0 &&
+                            messageObj.status !== 'nominal' &&
+                            messageObj.status !== 'unknown') {
+
+                            var alarmValues = messageObj.value.split(',');
+                            var alarmPriority = 'unknown';
+                            if (alarmValues.length > 2) {
+                                alarmPriority = alarmValues[1];
+                            }
+                            messageObj.severity = messageObj.status;
+                            messageObj.priority = alarmPriority;
+                            messageObj.message = messageObj.value;
+
+                            messageObj.name = messageObj.name.replace('kataware:alarm.', '');
+
+                            messageObj.dateUnix = messageObj.time;
+                            messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-YYYY');
+                            alarms.addAlarmMessage(messageObj);
+                        } else {
+                            $rootScope.$broadcast('receptorMessage', messageObj);
+                        }
+                    });
                 }
             }
         };

@@ -1,42 +1,42 @@
 angular.module('katGui')
 
-    .controller('OperatorControlCtrl', function ($rootScope, $scope, $interval) {
+    .controller('OperatorControlCtrl', function ($rootScope, $scope, $interval, ControlService) {
 
         $scope.title = 'Operator Controls';
 
         var nowStr = moment(new Date()).format('HH:mm:ss DD-MM-YYYY');
 
-        $scope.receptorsData = [
-            {
-                name: "m000",
-                state: "STOP",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
-            },
-            {
-                name: "m001",
-                state: "STOP",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
-            },
-            {
-                name: "m062",
-                state: "STOP",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
-            },
-            {
-                name: "m063",
-                state: "STOP",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
-            }
-        ];
-
+        //$scope.receptorsData = [
+        //    {
+        //        name: "m000",
+        //        state: "STOP",
+        //        inhibited: false,
+        //        since: '0:00:00',
+        //        lastUpdate: nowStr
+        //    },
+        //    {
+        //        name: "m001",
+        //        state: "STOP",
+        //        inhibited: false,
+        //        since: '0:00:00',
+        //        lastUpdate: nowStr
+        //    },
+        //    {
+        //        name: "m062",
+        //        state: "STOP",
+        //        inhibited: false,
+        //        since: '0:00:00',
+        //        lastUpdate: nowStr
+        //    },
+        //    {
+        //        name: "m063",
+        //        state: "STOP",
+        //        inhibited: false,
+        //        since: '0:00:00',
+        //        lastUpdate: nowStr
+        //    }
+        //];
+        $scope.receptorsData = $rootScope.receptorsData;
 
         $scope.receptors = [];
 
@@ -63,7 +63,7 @@ angular.module('katGui')
 
         $rootScope.$on('receptorMessage', function (event, message) {
 
-            var sensorNameList = message.sensor.split(':');
+            var sensorNameList = message.name.split(':');
             var sensor = sensorNameList[0];
             var sensorName = sensorNameList[1];
             $scope.receptorsData.forEach(function (item) {
@@ -98,4 +98,26 @@ angular.module('katGui')
                 $scope.$digest();
             }
         }, 1000);
+
+
+        $scope.stowAll = function () {
+            ControlService.stowAll();
+        };
+
+        $scope.inhibitAll = function () {
+            ControlService.inhibitAll();
+        };
+
+        $scope.stopAll = function () {
+            ControlService.stopAll();
+        };
+
+        $scope.resumeOperations = function () {
+            ControlService.resumeOperations();
+        };
+
+        $scope.shutdownComputing = function () {
+            ControlService.shutdownComputing();
+        };
+
     });

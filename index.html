@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link href="bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/indigo-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/blue-theme.css" rel="stylesheet" type="text/css">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet"
@@ -30,7 +32,7 @@
 <!--})();-->
 <!--</script>-->
 
-<body ng-controller="ApplicationCtrl">
+<body ng-controller="ApplicationCtrl" md-theme="indigo">
 
 <!-- Livereload script for development only (stripped during dist build) -->
 <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
@@ -79,6 +81,7 @@
 <script src="app/util/editable-directive.js"></script>
 <script src="app/data/data-service.js"></script>
 <script src="app/data/monitor-service.js"></script>
+<script src="app/data/control-service.js"></script>
 <script src="app/health/health.js"></script>
 <script src="app/auth/session-service.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
@@ -87,6 +90,7 @@
 <script src="app/d3/d3-wind-rose.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/admin/admin.js"></script>
+<script src="app/util/util.js"></script>
 <script src="app/alarms/alarms.js"></script>
 <script src="app/alarms/alarm-service.js"></script>
 <script src="app/alarms/alarms-notify.js"></script>
@@ -98,7 +102,7 @@
 
 <section layout="horizontal" layout-fill>
     <!--dont use md-whiteframe class because it leaves black artifacts-->
-    <md-sidenav class="slideInSideNav" component-id="left-sidenav" layout="vertical" ng-show="showSideNav && showNavbar" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical"  style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar class="md-theme-light md-medium-tall">
             <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
         </md-toolbar>
@@ -151,14 +155,14 @@
 
                 <button class="button-toolbar-flat-icon"
                         style="margin-left: 0px; padding: 0px;"
-                        ng-click="showSideNav = !showSideNav">
+                        ng-click="toggleSidenav()">
                     <i class="fa fa-navicon"></i>
                 </button>
 
                 <div class="btn-group"
                      ng-class="{open: operatorControlHover || operatorControlMenuHover}" layout="horizontal">
 
-                    <md-button style="height: 40px;" class="md-button-raised md-button-colored"
+                    <md-button style="height: 40px;" md-theme="blue" class="md-primary md-raised"
                                aria-label="Operator Control"
                                      ng-mouseenter="operatorControlHover = true"
                                      ng-mouseleave="operatorControlHover = false"

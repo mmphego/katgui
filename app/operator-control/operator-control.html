@@ -6,12 +6,12 @@
                 <span>{{title}}</span>
             </div>
         </md-toolbar>
-        <section layout="horizontal" layout-align="center center" class="panel-body panel-operator-controls">
-            <md-button disabled aria-label="Inhibit All" class="md-button-raised md-button-colored">Inhibit All</md-button>
-            <md-button disabled aria-label="Stow All" class="md-button-raised md-button-colored">Stow All</md-button>
-            <md-button disabled aria-label="Stop All" class="md-button-raised md-button-colored">Stop All</md-button>
-            <md-button disabled aria-label="Resume Operations" class="md-button-raised md-button-colored">Resume Operations</md-button>
-            <md-button disabled aria-label="Shutdown Computing" class="md-button-raised md-button-colored">Shutdown Computing</md-button>
+        <section md-theme="blue" layout="horizontal" layout-align="center center" class="panel-body panel-operator-controls">
+            <md-button ng-click="inhibitAll()" aria-label="Inhibit All" class="md-raised md-primary">Inhibit All</md-button>
+            <md-button ng-click="stowAll()" aria-label="Stow All" class="md-raised md-primary">Stow All</md-button>
+            <md-button ng-click="stopAll()" aria-label="Stop All" class="md-raised md-primary">Stop All</md-button>
+            <md-button ng-click="resumeOperations()" aria-label="Resume Operations" class="md-raised md-primary">Resume Operations</md-button>
+            <md-button disabled ng-click="shutdownComputing()" aria-label="Shutdown Computing" class="md-raised md-primary">Shutdown Computing</md-button>
         </section>
 
         <md-list class="receptor-state-list">

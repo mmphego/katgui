@@ -14,11 +14,11 @@ describe('AlarmsCtrl', function () {
         ctrl = $controller('AlarmsCtrl', {$scope: scope});
     }));
 
-    it('should bind the content', inject(function () {
-
-        location.path('/alarms');
-        expect(location.path()).toBe('/alarms');
-    }));
+    //it('should bind the content', inject(function () {
+    //
+    //    location.path('/alarms');
+    //    expect(location.path()).toBe('/alarms');
+    //}));
 
     //it('should add and display an alarm when received', inject(function () {
     //
