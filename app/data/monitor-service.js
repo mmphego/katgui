@@ -4,6 +4,7 @@ angular.module('katGui')
 
     .factory('MonitorService', function ($rootScope, alarms) {
 
+        var pendingSubscribeObjects = [];
         var urlBase = 'http://192.168.10.127:8030';
         var monitorService = {};
         monitorService.connection = null;
@@ -12,6 +13,13 @@ angular.module('katGui')
             if (monitorService.connection && monitorService.connection.readyState) {
                 console.log('Monitor Connection Established.');
                 monitorService.subscribeToAlarms();
+
+                pendingSubscribeObjects.forEach(function (obj) {
+                    obj.subscribeName = null;
+                    monitorService.connection.send(JSON.stringify(obj));
+                });
+
+                pendingSubscribeObjects = [];
             }
         };
 
@@ -34,9 +42,14 @@ angular.module('katGui')
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
                 'params': [connectionParams],
+                'subscribeName': 'subscribeToReceptorUpdates',
                 'id': 'abe3d23201'
             };
-            monitorService.connection.send(JSON.stringify(jsonRPC));
+            if (monitorService.connection && monitorService.connection.readyState) {
+                monitorService.connection.send(JSON.stringify(jsonRPC));
+            } else {
+                pendingSubscribeObjects.push(jsonRPC);
+            }
         };
 
         monitorService.onSockJSClose = function () {

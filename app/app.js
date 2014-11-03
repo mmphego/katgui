@@ -219,7 +219,7 @@ angular.module('katGui', [ 'ngMaterial',
         $timeout(function() {
             MonitorService.connectListener();
             ControlService.connectListener();
-        }, 500);
+        }, 200);
 
         $rootScope.alarmsData = [];
         $rootScope.knownAlarmsData = [];
