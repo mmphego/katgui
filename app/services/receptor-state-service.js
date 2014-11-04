@@ -36,8 +36,9 @@ angular.module('katGui')
             }
         ];
 
-        $rootScope.$on('receptorMessage', function (event, message) {
+        $rootScope.$on('receptorMessage', this.receptorMessageReceived);
 
+        this.receptorMessageReceived = function(event, message) {
             var sensorNameList = message.name.split(':');
             var sensor = sensorNameList[0];
             var sensorName = sensorNameList[1];
@@ -54,15 +55,7 @@ angular.module('katGui')
                 }
 
             });
-        });
-
-        function updateReceptorLastChangeDate() {
-            this.receptorsData.forEach(function (item) {
-                var ms = moment(new Date()).diff(moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY'));
-                var d = moment.duration(ms);
-                item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
-            });
-        }
+        };
 
         return this;
     });

@@ -11,7 +11,6 @@
     background: #ffc107;
     color: black;
     width: 100%;
-//    padding: 2px;
     opacity: 1;
 }
 
@@ -29,7 +28,6 @@
 .inhibited.ng-hide-remove.ng-hide-remove-active {
     opacity: 1;
 }
-
 
 .receptor-state-div {
     text-align: center;
@@ -52,45 +50,16 @@
     justify-content: center;
 }
 
-@-webkit-keyframes flash-black {
-    0% {
-        background-color: #259b24;
-    }
-    50% {
-        background-color: #212121;
-    }
-    100% {
-        background-color: #259b24;
-    }
-}
-
-@-webkit-keyframes flash-blue {
-    0% {
-        background-color: #259b24;
-    }
-    50% {
-        background-color: #01579b;
-    }
-    100% {
-        background-color: #259b24;
-    }
-}
-
 .flash-receptor-state {
     background: #259b24;
     transition: all 1s;
-
 }
 
-.flash-receptor-state.receptor-STOP {
+.flash-receptor-state.receptor-stop-state {
     width: 100%;
-//    animation: flash-black 1s;
-//    -webkit-animation: flash-black 1s;
     background: #212121;
 }
 
-.flash-receptor-state.receptor-STOW {
-//    animation: flash-blue 1s;
-//    -webkit-animation: flash-blue 1s;
+.flash-receptor-state.receptor-stow-state {
     background: #01579b;
 }

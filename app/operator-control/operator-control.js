@@ -33,5 +33,4 @@ angular.module('katGui')
                 item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
             });
         }
-
     });

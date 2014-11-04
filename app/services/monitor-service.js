@@ -1,6 +1,6 @@
 angular.module('katGui')
 
-    .factory('MonitorService', function ($rootScope, alarms) {
+    .service('MonitorService', function ($rootScope, alarms) {
 
         var pendingSubscribeObjects = [];
         var urlBase = 'http://192.168.10.127:8030';

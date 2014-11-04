@@ -22,8 +22,7 @@
                     <div style="min-height: 25px">
                         <p ng-show="rec.inhibited" class="inhibited">Inhibited</p>
                     </div>
-                    <!--todo: add ng-class to receptorstate styling-->
-                    <p class="flash-receptor-state receptor-{{rec.state}}"><i>{{rec.state}}</i></p>
+                    <p class="flash-receptor-state" ng-class="{'receptor-stop-state': rec.state==='STOP', 'receptor-stow-state': rec.state==='STOW'}"><b>{{rec.state}}</b></p>
                 </md-item-content>
             </md-item>
         </md-list>
