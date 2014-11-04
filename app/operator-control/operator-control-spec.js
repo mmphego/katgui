@@ -1,18 +1,20 @@
-describe('OperatorControlCtrl', function() {
+describe('OperatorControlCtrl', function () {
 
-	beforeEach(module('katGui'));
+    beforeEach(module('katGui'));
 
-	var scope,ctrl;
+    var scope, ctrl, MonitorService, ControlService;
 
-    beforeEach(inject(function($rootScope, $controller) {
-      scope = $rootScope.$new();
-      ctrl = $controller('OperatorControlCtrl', {$scope: scope});
+    beforeEach(inject(function ($rootScope, $controller, _MonitorService_, _ControlService_) {
+        scope = $rootScope.$new();
+        MonitorService = _MonitorService_;
+        ControlService = _ControlService_;
+        ctrl = $controller('OperatorControlCtrl', {$scope: scope, MonitorService: MonitorService, ControlService: ControlService});
     }));
 
-	//it('should display all the configured receptors', inject(function() {
-    //
-	//	expect(1).toEqual(1);
-	//
-	//}));
+    it('should display all the configured receptors', inject(function() {
+
+
+
+    }));
 
 });

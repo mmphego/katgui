@@ -250,8 +250,8 @@ angular.module('katGui', [ 'ngMaterial',
         $interval(updateTimeDisplay, 1000); //update clock every second
 
         $timeout(function() {
-            MonitorService.connectListener();
-            ControlService.connectListener();
+            //MonitorService.connectListener();
+            //ControlService.connectListener();
         }, 200);
 
         $rootScope.alarmsData = [];

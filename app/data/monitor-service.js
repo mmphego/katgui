@@ -1,5 +1,3 @@
-
-
 angular.module('katGui')
 
     .factory('MonitorService', function ($rootScope, alarms) {
@@ -35,8 +33,8 @@ angular.module('katGui')
         };
 
         monitorService.subscribeToReceptorUpdates = function () {
+
             var connectionParams = ['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited'];
-            console.log('Monitor subscribed to ' + connectionParams);
 
             var jsonRPC = {
                 'jsonrpc': '2.0',
@@ -45,6 +43,7 @@ angular.module('katGui')
                 'subscribeName': 'subscribeToReceptorUpdates',
                 'id': 'abe3d23201'
             };
+
             if (monitorService.connection && monitorService.connection.readyState) {
                 monitorService.connection.send(JSON.stringify(jsonRPC));
             } else {

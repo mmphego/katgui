@@ -3,7 +3,7 @@
     <div class="md-whiteframe-z1">
         <md-toolbar class="panel-toolbar">
             <div class="md-toolbar-tools">
-                <span>{{title}}</span>
+                <span>Operator Controls</span>
             </div>
         </md-toolbar>
         <section md-theme="blue" layout="horizontal" layout-align="center center" class="panel-body panel-operator-controls">
@@ -18,10 +18,11 @@
             <md-item ng-repeat="rec in receptorsData track by $id(rec.name)">
                 <md-item-content class="receptor-state-div md-whiteframe-z1" layout="vertical">
                     <p style="">{{rec.since}}<md-tooltip>Time since last status change</md-tooltip></p>
-                    <p style="font-size: 26px;"><b>{{rec.name}}</b></p>
+                    <p style="font-size: 26px;"><b>{{::rec.name}}</b></p>
                     <div style="min-height: 25px">
                         <p ng-show="rec.inhibited" class="inhibited">Inhibited</p>
                     </div>
+                    <!--todo: add ng-class to receptorstate styling-->
                     <p class="flash-receptor-state receptor-{{rec.state}}"><i>{{rec.state}}</i></p>
                 </md-item-content>
             </md-item>

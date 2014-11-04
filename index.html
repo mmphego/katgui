@@ -83,6 +83,7 @@
 <script src="app/data/data-service.js"></script>
 <script src="app/data/monitor-service.js"></script>
 <script src="app/data/control-service.js"></script>
+<script src="app/data/receptor-state-service.js"></script>
 <script src="app/health/health.js"></script>
 <script src="app/auth/session-service.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
@@ -130,18 +131,6 @@
                 <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('video') }" ng-click="sideNavStateGo('video')">Video</button>
                 </md-item>
-                <!--<md-item>-->
-                <!--<button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('weather') }" ng-click="sideNavStateGo('weather')">Weather</button>-->
-                <!--</md-item>-->
-                <!--<md-item>-->
-                <!--<button ink-ripple class="menu-item">Log Reports</button>-->
-                <!--</md-item>-->
-                <!--<md-item>-->
-                <!--<button ink-ripple class="menu-item">Source Catalogues</button>-->
-                <!--</md-item>-->
-                <!--<md-item>-->
-                <!--<button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('admin') }" ng-click="sideNavStateGo('admin')">User Admin</button>-->
-                <!--</md-item>-->
                 <md-item>
                     <button ink-ripple class="menu-item" ng-class="{ active: isPageSelected('about') }" ng-click="sideNavStateGo('about')">About katGUI</button>
                 </md-item>
@@ -193,11 +182,11 @@
                                 ng-mouseleave="operatorControlMenuHover = false"
                                 role="menu">
                         <div md-theme="default" style="color: rgba(0,0,0,0.73)" layout="vertical">
-                            <md-button ng-click="inhibitAll()">Inhibit All</md-button>
-                            <md-button ng-click="stowAll()">Stow All</md-button>
-                            <md-button ng-click="stopAll()">Stop All</md-button>
-                            <md-button ng-click="resumeOperations()">Resume Operations</md-button>
-                            <md-button disabled ng-click="shutdownComputing()">Shutdown Computing</md-button>
+                            <md-button ng-click="inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>
+                            <md-button ng-click="stowAll()" aria-label="Stow All">Stow All</md-button>
+                            <md-button ng-click="stopAll()" aria-label="Stop All">Stop All</md-button>
+                            <md-button ng-click="resumeOperations()" aria-label="Resume Operations">Resume Operations</md-button>
+                            <md-button disabled ng-click="shutdownComputing()" aria-label="Shutdown Computing">Shutdown Computing</md-button>
                         </div>
                     </md-content>
 
