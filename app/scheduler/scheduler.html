@@ -15,12 +15,12 @@
                         </md-button>
                     </div>
                 </md-toolbar>
-                <md-list id="schedule-draft-data-list-id" class="md-whiteframe-z1" style="padding: 0;">
+                <md-list id="schedule-draft-data-list-id" class="md-whiteframe-z1" style="padding: 0; direction: rtl">
 
                     <md-item ng-repeat="item in scheduleDraftData track by item.id" ng-click="setSelectedScheduleDraft(item)"
                              ng-class="{'selected-schedule-row': item === selectedScheduleDraft}">
                         <md-item-content>
-                            <div class="md-tile-content schedule-draft-item" style="padding: 2px; min-width: 1050px;" layout="horizontal" layout-align="center center">
+                            <div class="md-tile-content schedule-draft-item" style="padding: 2px; min-width: 1050px; direction: ltr" layout="horizontal" layout-align="center center">
 
                                 <div layout="vertical" class="schedule-block-name-div">
                                     <div class="schedule-block-id-text">{{item.id}}:</div>
