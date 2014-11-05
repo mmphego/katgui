@@ -139,12 +139,12 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         $scope.addDraftSchedule = function () {
 
             var newDraft = {
-                id: 'scheduleblock' + lastId,
+                id: 'scheduleblockscheduleblockscheduleblock' + lastId,
                 desiredTime: '',
                 state: 'DRAFT',
                 owner: 'userName',
                 type: 'MANUAL',
-                description: 'Click here to change the description',
+                //description: 'Click here to change the description',
                 script: 'some script content ' + lastId
             };
             lastId++;

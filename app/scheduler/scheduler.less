@@ -42,19 +42,34 @@
         md-item {
             cursor: pointer;
             outline: none;
+
+            input {
+                width: 100%;
+            }
         }
     }
 
-    .schedule-block-id {
+    .schedule-block-id-text {
         font-size: 1.25em;
-        margin-left: 8px;
         font-weight: bold;
+        text-overflow: ellipsis;
+        overflow: hidden;
 
+        &:hover {
+            overflow: visible;
+            z-index: 1000;
+        }
+    }
+
+    .schedule-block-name-div {
+        max-width: 200px;
+        min-width: 200px;
+        width: 200px;
     }
 
     .schedule-draft-item {
         border-bottom: 1px solid #d3d3d3;
-        height: 45px;
+        height: 48px;
     }
 
     .schedule-type-dropdown {
@@ -140,6 +155,11 @@
 }
 
 .highlight-script-window {
-    background-color: #e1f5fe !important;;
+    background-color: #e1f5fe !important;
+}
+
+.highlight-script-window-with-box-shadow {
+    background-color: #e1f5fe !important;
+    box-shadow: 0px 2px 40px 0 #000;
 }
 
