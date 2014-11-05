@@ -1,5 +1,7 @@
-var toString = Object.prototype.toString;
+angular.module('katGui.util', []);
+
+var objToString = Object.prototype.toString;
 
 _.isString = function (obj) {
-    return toString.call(obj) === '[object String]';
+    return objToString.call(obj) === '[object String]';
 };

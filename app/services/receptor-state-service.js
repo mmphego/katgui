@@ -34,6 +34,987 @@ angular.module('katGui')
                 since: '0:00:00',
                 lastUpdate: nowStr
             }
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m000",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m062",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m063",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m000",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m062",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m063",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m000",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m062",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m063",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0001",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0011",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0621",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0631",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0002",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0012",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0622",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0632",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0003",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0013",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0623",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0633",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0004",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0014",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0624",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //},
+            //{
+            //    name: "m0634",
+            //    state: "STOP",
+            //    inhibited: false,
+            //    since: '0:00:00',
+            //    lastUpdate: nowStr
+            //}
         ];
 
         $rootScope.$on('receptorMessage', this.receptorMessageReceived);

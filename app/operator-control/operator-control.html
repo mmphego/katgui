@@ -1,4 +1,4 @@
-<div class="view-container" ng-controller="OperatorControlCtrl" style="min-width: 1000px;">
+<div flex layout-padding ng-controller="OperatorControlCtrl" style="min-width: 1000px;">
 
     <div class="md-whiteframe-z1">
         <md-toolbar class="panel-toolbar">
@@ -15,7 +15,7 @@
         </section>
 
         <md-list class="receptor-state-list">
-            <md-item ng-repeat="rec in receptorsData track by $id(rec.name)">
+            <md-item ng-repeat="rec in receptorsData track by $id(rec)">
                 <md-item-content class="receptor-state-div md-whiteframe-z1" layout="vertical">
                     <p style="">{{rec.since}}<md-tooltip>Time since last status change</md-tooltip></p>
                     <p style="font-size: 26px;"><b>{{::rec.name}}</b></p>

@@ -127,6 +127,11 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         };
 
         $scope.moveDraftRowToSchedule = function (rowIndex) {
+
+            if ($scope.selectedScheduleDraft === $scope.scheduleDraftData[rowIndex]) {
+                $scope.selectedScheduleDraft = null;
+            }
+
             $scope.scheduleData = _.union($scope.scheduleData, $scope.scheduleDraftData[rowIndex]);
             $scope.scheduleDraftData.splice(rowIndex, 1);
         };
@@ -139,7 +144,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
                 state: 'DRAFT',
                 owner: 'userName',
                 type: 'MANUAL',
-                //description: 'Click here to change the description',
+                description: 'Click here to change the description',
                 script: 'some script content ' + lastId
             };
             lastId++;
