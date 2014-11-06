@@ -26,6 +26,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         vm.selectedScheduleDraft = null;
         vm.setSelectedScheduleDraft = function (selectedDraft, dontDeselectOnSame) {
+            vm.selectedSchedule = null;
             if (vm.selectedScheduleDraft === selectedDraft && !dontDeselectOnSame) {
                 vm.selectedScheduleDraft = null;
             } else {
@@ -35,6 +36,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
 
         vm.selectedSchedule = null;
         vm.setSelectedSchedule = function (selectedSchedule, dontDeselectOnSame) {
+            vm.selectedScheduleDraft = null;
             if (vm.selectedSchedule === selectedSchedule && !dontDeselectOnSame) {
                 vm.selectedSchedule = null;
             } else {
@@ -89,6 +91,25 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             }
 
             $event.stopPropagation();
+        };
+
+        vm.executeSchedule = function (rowIndex, $event) {
+            vm.setSelectedSchedule(vm.scheduleData[rowIndex], true);
+            for (var i = 0; i < vm.scheduleData.length; i++) {
+                if (vm.selectedSchedule !== vm.scheduleData[i]) {
+                    vm.scheduleData[i].executing = false;
+                }
+            }
+            vm.selectedSchedule.executing = true;
+            $event.stopPropagation();
+        };
+
+        vm.moveScheduleRowToFinished = function (rowIndex, $event) {
+            if (vm.selectedSchedule === vm.scheduleData[rowIndex]) {
+                vm.selectedSchedule = null;
+            }
+            $event.stopPropagation();
+            //move to finished block
         };
 
         angular.element('#schedule-draft-data-list-id').bind("scroll", function() {
@@ -146,7 +167,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
                 state: 'DRAFT',
                 owner: 'userName',
                 type: 'MANUAL',
-                //description: 'Click here to change the description',
+                description: '',
                 script: 'some script content ' + lastId
             };
             lastId++;

@@ -49,49 +49,67 @@
         }
     }
 
-    .schedule-block-id-text {
-        font-size: 1.25em;
-        font-weight: bold;
-        text-overflow: ellipsis;
-        overflow: hidden;
 
-        &:hover {
-            overflow: visible;
-            z-index: 1000;
-        }
+}
+
+.schedule-block-id-text {
+    font-size: 1.25em;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    &:hover {
+        overflow: visible;
+        z-index: 1000;
     }
+}
 
-    .schedule-block-name-div {
-        max-width: 200px;
-        min-width: 200px;
-        width: 200px;
+.schedule-block-name-div {
+    max-width: 200px;
+    min-width: 200px;
+    width: 200px;
+}
+
+.schedule-draft-item {
+    border-bottom: 1px solid #d3d3d3;
+    height: 48px;
+}
+
+.schedule-item {
+    border-bottom: 1px solid #d3d3d3;
+    height: 48px;
+}
+
+.schedule-type-dropdown {
+    margin-right: 5px;
+    width: 150px;
+    border: 0;
+}
+
+.schedule-item-input {
+    height: 32px;
+    margin-top: 4px;
+}
+
+.schedule-item-input-group {
+    margin-left: 35px;
+}
+
+.selected-schedule-row {
+    md-item-content {
+        background: #B3E5FC;
     }
+}
 
-    .schedule-draft-item {
-        border-bottom: 1px solid #d3d3d3;
-        height: 48px;
+.schedule-row-executing {
+    md-item-content {
+        background: #66BB6A !important;
     }
+}
 
-    .schedule-type-dropdown {
-        margin-right: 5px;
-        width: 150px;
-        border: 0;
-    }
-
-    .schedule-item-input {
-        height: 32px;
-        margin-top: 4px;
-    }
-
-    .schedule-item-input-group {
-        margin-left: 35px;
-    }
-
-    .selected-schedule-row {
-        md-item-content {
-            background-color: #B3E5FC;
-        }
-
+.schedule-row-executing-and-selected {
+    md-item-content {
+        background: linear-gradient(to right, rgba(102,187,106,1) 0%,rgba(102,187,106,1) 25%,rgba(179,229,252,0.52) 50%,rgba(179,229,252,0.5) 51%,rgba(179,229,252,1) 75%,rgba(179,229,252,1) 100%)
     }
 }
 
