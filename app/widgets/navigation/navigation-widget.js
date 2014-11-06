@@ -10,6 +10,7 @@
                 title: 'Navigation Widget',
                 description: 'Container for navigation controls/buttons',
                 templateUrl: 'app/widgets/navigation/navigation-widget.html',
+                controllerAs: 'vm',
                 controller: 'NavigationWidgetCtrl'
             });
     }
