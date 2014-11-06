@@ -106,129 +106,130 @@
 
 <!--<section >-->
 <!--dont use md-whiteframe class because it leaves black artifacts-->
-<md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-    <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
-        <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
-    </md-toolbar>
-    <md-content class="md-content-padding">
-        <md-list>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('landing') }" ng-click="vm.sideNavStateGo('landing')">Home</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('alarms') }" ng-click="vm.sideNavStateGo('alarms')">Alarms</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('health') }" ng-click="vm.sideNavStateGo('health')">Health And State</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('operatorControl') }" ng-click="vm.sideNavStateGo('operatorControl')">Operator Control</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('scheduler') }" ng-click="vm.sideNavStateGo('scheduler')">Scheduler</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('sensorGraph') }" ng-click="vm.sideNavStateGo('sensorGraph')">Sensor Graphs</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('video') }" ng-click="vm.sideNavStateGo('video')">Video</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('about') }" ng-click="vm.sideNavStateGo('about')">About katGUI</button>
-            </md-item>
+<div layout="horizontal" layout-fill>
+    <md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
+            <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
+        </md-toolbar>
+        <md-content class="md-content-padding">
+            <md-list>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('landing') }" ng-click="vm.sideNavStateGo('landing')">Home</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('alarms') }" ng-click="vm.sideNavStateGo('alarms')">Alarms</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('health') }" ng-click="vm.sideNavStateGo('health')">Health And State</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('operatorControl') }" ng-click="vm.sideNavStateGo('operatorControl')">Operator Control</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('scheduler') }" ng-click="vm.sideNavStateGo('scheduler')">Scheduler</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('sensorGraph') }" ng-click="vm.sideNavStateGo('sensorGraph')">Sensor Graphs</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('video') }" ng-click="vm.sideNavStateGo('video')">Video</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('about') }" ng-click="vm.sideNavStateGo('about')">About katGUI</button>
+                </md-item>
 
-        </md-list>
-    </md-content>
-</md-sidenav>
+            </md-list>
+        </md-content>
+    </md-sidenav>
 
-<md-sidenav class="md-sidenav-right" component-id="right-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-    <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
-        <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">User Details</h1>
-    </md-toolbar>
-    <md-content class="md-content-padding">
-        <md-list>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('admin') }" ng-click="vm.sideNavRightStateGo('admin')">User Admin</button>
-            </md-item>
-            <md-item>
-                <button ink-ripple class="menu-item" ng-click="vm.logout()">Logout</button>
-            </md-item>
+    <md-sidenav class="md-sidenav-right" component-id="right-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
+            <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">User Details</h1>
+        </md-toolbar>
+        <md-content class="md-content-padding">
+            <md-list>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-class="{ active: vm.isPageSelected('admin') }" ng-click="vm.sideNavRightStateGo('admin')">User Admin</button>
+                </md-item>
+                <md-item>
+                    <button ink-ripple class="menu-item" ng-click="vm.logout()">Logout</button>
+                </md-item>
 
-        </md-list>
-    </md-content>
-</md-sidenav>
+            </md-list>
+        </md-content>
+    </md-sidenav>
 
-<div layout="vertical" flex>
-    <md-toolbar ng-show="vm.showNavbar" class="slideInVertically">
-        <div class="md-toolbar-tools" layout="horizontal">
+    <div layout="vertical" flex>
+        <md-toolbar ng-show="vm.showNavbar" class="slideInVertically">
+            <div class="md-toolbar-tools" layout="horizontal">
 
-            <button class="button-toolbar-flat-icon"
-                    style="margin-left: 0px; padding: 0px;"
-                    ng-click="vm.toggleLeftSidenav()">
-                <span class="fa fa-navicon"></span>
-            </button>
-
-            <div class="btn-group"
-                 ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="horizontal">
-
-                <md-button style="height: 40px;" md-theme="blue" class="md-primary md-raised"
-                           aria-label="Operator Control"
-                           ng-mouseenter="vm.operatorControlHover = true"
-                           ng-mouseleave="vm.operatorControlHover = false"
-                           ng-click="vm.operatorControlHover = false; vm.operatorControlMenuHover = false; vm.stateGo('operatorControl')">
-                    Operator Control
-                </md-button>
-
-                <md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"
-                            ng-mouseenter="vm.operatorControlMenuHover = true"
-                            ng-mouseleave="vm.operatorControlMenuHover = false"
-                            role="menu">
-                    <div md-theme="default" style="color: rgba(0,0,0,0.73)" layout="vertical">
-                        <md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>
-                        <md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>
-                        <md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>
-                        <md-button ng-click="vm.resumeOperations()" aria-label="Resume Operations">Resume Operations</md-button>
-                        <md-button disabled ng-click="vm.shutdownComputing()" aria-label="Shutdown Computing">Shutdown Computing</md-button>
-                    </div>
-                </md-content>
-
-            </div>
-
-            <span flex></span>
-
-            <div>
-                <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> UTC</span><br/>
-                <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> Local</span>
-            </div>
-
-            <button class="button-toolbar-flat-icon"
-                    ng-click="vm.stateGo('landing')"><span>Home</span>
-            </button>
-
-            <div class="alarms-warning-container">
-                <button class="unselectable button-toolbar-flat-icon navbar-btn"
-                        ng-click="vm.stateGo('alarms')">
-                    <span class="fa fa-warning"></span>
+                <button class="button-toolbar-flat-icon"
+                        style="margin-left: 0px; padding: 0px;"
+                        ng-click="vm.toggleLeftSidenav()">
+                    <span class="fa fa-navicon"></span>
                 </button>
+
+                <div class="btn-group"
+                     ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="horizontal">
+
+                    <md-button style="height: 40px;" md-theme="blue" class="md-primary md-raised"
+                               aria-label="Operator Control"
+                               ng-mouseenter="vm.operatorControlHover = true"
+                               ng-mouseleave="vm.operatorControlHover = false"
+                               ng-click="vm.operatorControlHover = false; vm.operatorControlMenuHover = false; vm.stateGo('operatorControl')">
+                        Operator Control
+                    </md-button>
+
+                    <md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"
+                                ng-mouseenter="vm.operatorControlMenuHover = true"
+                                ng-mouseleave="vm.operatorControlMenuHover = false"
+                                role="menu">
+                        <div md-theme="default" style="color: rgba(0,0,0,0.73)" layout="vertical">
+                            <md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>
+                            <md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>
+                            <md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>
+                            <md-button ng-click="vm.resumeOperations()" aria-label="Resume Operations">Resume Operations</md-button>
+                            <md-button disabled ng-click="vm.shutdownComputing()" aria-label="Shutdown Computing">Shutdown Computing</md-button>
+                        </div>
+                    </md-content>
+
+                </div>
+
+                <span flex></span>
+
+                <div>
+                    <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> UTC</span><br/>
+                    <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> Local</span>
+                </div>
+
+                <button class="button-toolbar-flat-icon"
+                        ng-click="vm.stateGo('landing')"><span>Home</span>
+                </button>
+
+                <div class="alarms-warning-container">
+                    <button class="unselectable button-toolbar-flat-icon navbar-btn"
+                            ng-click="vm.stateGo('alarms')">
+                        <span class="fa fa-warning"></span>
+                    </button>
                     <span ng-if="vm.newAlarmWarnCount > 0"
                           class="badge alarm-badge alarm-badge-warn">{{vm.newAlarmWarnCount}}</span>
                     <span ng-if="vm.newAlarmErrorCount > 0"
                           class="badge alarm-badge alarm-badge-error">{{vm.newAlarmErrorCount}}</span>
                     <span ng-if="vm.newAlarmCritCount > 0"
                           class="badge alarm-badge alarm-badge-crit">{{vm.newAlarmCritCount}}</span>
+                </div>
+
+                <button class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()">
+                    <span class="fa fa-user"></span>
+                </button>
             </div>
 
-            <button class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()">
-                <span class="fa fa-user"></span>
-            </button>
+        </md-toolbar>
+        <div id="ui-view-container-div" ui-view flex class="md-content-padding" style="overflow: auto;">
         </div>
-
-    </md-toolbar>
-    <md-content id="ui-view-container-div" ui-view scroll-y flex class="md-content-padding" style="overflow: auto">
-    </md-content>
+    </div>
+    <!--</section>-->
 </div>
-<!--</section>-->
-
 <button class="unselectable toolbar-collapse-button"
         ng-click="vm.showNavbar = !vm.showNavbar">
     <i class="fa"

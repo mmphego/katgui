@@ -8,7 +8,7 @@
         return {
             restrict: 'A',
             template: [
-                '<div ng-class="getActiveClass()">',
+            '<div ng-class="getActiveClass()">',
             '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeSeverityClasses(message)">',
             '       <div>',
             '           <ul>',
@@ -22,7 +22,8 @@
             '       <div class="alarm-message"><span>{{message.message}}</span></div>',
             '       </div>',
             '   </div>',
-            '</div>'].join(),
+            '</div>'
+            ].join(''),
             replace: false,
             scope: true,
             controller: 'AlarmsNotifyCtrl as vm'
