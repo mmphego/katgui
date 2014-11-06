@@ -1,9 +1,11 @@
-angular.module('katGui')
+(function () {
 
-    .factory('AuthService', function ($http, Session, USER_ROLES) {
-        var authService = {};
+    angular.module('katGui')
+        .service('AuthService', AuthService);
 
-        authService.login = function (credentials) {
+    function AuthService($http, Session, USER_ROLES) {
+
+        this.login = function (credentials) {
             return $http
                 .post('/login', credentials)
                 .then(function (res) {
@@ -12,19 +14,20 @@ angular.module('katGui')
                 });
         };
 
-        authService.isAuthenticated = function () {
+        this.isAuthenticated = function () {
             return !!Session.userId;
         };
 
-        authService.isAuthorized = function (authorizedRoles) {
+        this.isAuthorized = function (authorizedRoles) {
 
             if (!angular.isArray(authorizedRoles)) {
                 authorizedRoles = [authorizedRoles];
             }
 
-            return (authService.isAuthenticated() &&
-                (authorizedRoles.indexOf(Session.userRole) !== -1 || authorizedRoles[0] === USER_ROLES.all));
+            return (this.isAuthenticated() &&
+            (authorizedRoles.indexOf(Session.userRole) !== -1 || authorizedRoles[0] === USER_ROLES.all));
         };
 
-        return authService;
-    });
+        return this;
+    }
+})();

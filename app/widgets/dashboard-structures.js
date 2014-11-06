@@ -1,5 +1,9 @@
-angular.module('katGui.dashboardStructure', ['adf'])
-    .config(function(dashboardProvider){
+(function () {
+
+    angular.module('katGui.dashboardStructure', ['adf'])
+        .config(configureDashboard);
+
+    function configureDashboard(dashboardProvider) {
 
         dashboardProvider
             .structure('6-6', {
@@ -68,6 +72,5 @@ angular.module('katGui.dashboardStructure', ['adf'])
                 }]
             });
 
-    });
-
-
+    }
+})();

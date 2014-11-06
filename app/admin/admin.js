@@ -1,5 +1,10 @@
-angular.module('katGui')
-    .controller('AdminCtrl', function ($scope) {
+(function () {
+    angular.module('katGui')
+        .controller('AdminCtrl', AdminCtrl);
 
+    function AdminCtrl() {
 
-    });
+        var vm = this;
+    }
+
+})();

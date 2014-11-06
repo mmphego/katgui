@@ -1,6 +1,10 @@
-angular.module('katGui.widgets.ganttWidget', ['adf.provider', 'gantt'])
+(function () {
 
-    .config(function (dashboardProvider) {
+angular.module('katGui.widgets.ganttWidget', ['adf.provider', 'gantt'])
+    .config(configureGanttWidget)
+    .controller('GanttWidgetCtrl', GanttWidgetCtrl);
+
+    function configureGanttWidget(dashboardProvider) {
         dashboardProvider
             .widget('GanttWidget', {
                 title: 'Schedule Blocks Widget',
@@ -8,9 +12,11 @@ angular.module('katGui.widgets.ganttWidget', ['adf.provider', 'gantt'])
                 templateUrl: 'app/widgets/gantt/gantt-widget.html',
                 controller: 'GanttWidgetCtrl'
             });
-    })
+    }
 
-    .controller('GanttWidgetCtrl', function ($scope) {
+    function GanttWidgetCtrl($scope) {
+
+        var vm = this;
 
         var sampleData = [
             // Order is optional. If not specified it will be assigned automatically
@@ -41,37 +47,37 @@ angular.module('katGui.widgets.ganttWidget', ['adf.provider', 'gantt'])
             ]}
         ];
 
-        $scope.mode = "name";
-        $scope.scale = "hour";
-        $scope.maxHeight = 0;
-        $scope.showWeekends = true;
-        $scope.showNonWorkHours = true;
-        $scope.scheduleData = [];
+        vm.mode = "name";
+        vm.scale = "hour";
+        vm.maxHeight = 0;
+        vm.showWeekends = true;
+        vm.showNonWorkHours = true;
+        vm.scheduleData = [];
 
-        $scope.ganttInitialized = function () {
+        vm.ganttInitialized = function () {
             $scope.loadData(sampleData);
         };
 
-//        $scope.loadData = function (data) {
-//            $scope.scheduleData = data;
+//        vm.loadData = function (data) {
+//            vm.scheduleData = data;
 //        };
 
-//        $scope.labelEvent = function(event) {
+//        vm.labelEvent = function(event) {
 //            // A label has been clicked.
 //            console.log('Label event (by user: ' + event.userTriggered + '): ' + event.row.description + ' (Custom data: ' + event.row.data + ')');
 //        };
 //
-//        $scope.labelHeaderEvent = function(event) {
+//        vm.labelHeaderEvent = function(event) {
 //            // The label header has been clicked.
 //            console.log('Label header event. Mouse: ' + event.evt.clientX + '/' + event.evt.clientY);
 //        };
 //
-//        $scope.rowEvent = function(event) {
+//        vm.rowEvent = function(event) {
 //            // A row has been added, updated or clicked. Use this event to save back the updated row e.g. after a user re-ordered it.
 //            console.log('Row event (by user: ' + event.userTriggered + '): ' + event.date + ' '  + event.row.description + ' (Custom data: ' + event.row.data + ')');
 //        };
 //
-//        $scope.scrollEvent = function(event) {
+//        vm.scrollEvent = function(event) {
 //            if (angular.equals(event.direction, "left")) {
 //                // Raised if the user scrolled to the left side of the Gantt. Use this event to load more data.
 //                console.log('Scroll event: Left');
@@ -81,8 +87,10 @@ angular.module('katGui.widgets.ganttWidget', ['adf.provider', 'gantt'])
 //            }
 //        };
 //
-//        $scope.taskEvent = function(event) {
+//        vm.taskEvent = function(event) {
 //            // A task has been updated or clicked.
 //            console.log('Task event (by user: ' + event.userTriggered + '): ' + event.task.subject + ' (Custom data: ' + event.task.data + ')');
 //        };
-    });
+    }
+
+})();

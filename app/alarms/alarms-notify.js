@@ -1,9 +1,37 @@
-angular.module('katGui.alarms')
+(function () {
 
-    .controller('AlarmsNotifyCtrl', function ($rootScope, $scope, $timeout, ControlService) {
+    angular.module('katGui.alarms')
+        .controller('AlarmsNotifyCtrl', AlarmsNotifyCtrl)
+        .directive('alarm', AlarmDirective);
 
-        $scope.messages = [];
+    function AlarmDirective() {
+        return {
+            restrict: 'A',
+            template: '<div ng-class="getActiveClass()">' +
+            '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeSeverityClasses(message)">' +
+            '       <div>' +
+            '           <ul>' +
+            '               <li class="li-inline"><button class="alarm-close" ng-click="acknowledgeMessage(message)">Ack</button></li>' +
+            '               <li class="li-inline"><button class="alarm-close" ng-click="knowMessage(message)">Knw</button></li>' +
+            '           </ul>' +
+            '       </div>' +
+            '       <div class="datestamp"><span>{{message.date}}</span></div>' +
+            '       <div class="severitystamp"><span>{{message.severity}}</span></div>' +
+            '       <div><span class="alarm-message-name">{{message.name}}</span>' +
+            '       <div class="alarm-message"><span>{{message.message}}</span></div>' +
+            '       </div>' +
+            '   </div>' +
+            '</div>',
+            replace: false,
+            scope: true,
+            controller: 'AlarmsNotifyCtrl as vm'
+        };
+    }
 
+    function AlarmsNotifyCtrl($rootScope, $timeout, ControlService) {
+
+        var vm = this;
+        vm.messages = [];
 
 //        $timeout(function () {
 //            //test code alarms
@@ -27,8 +55,8 @@ angular.module('katGui.alarms')
 //        }, 250);
 
 
-        $scope.addAlarmMessage = function (message) {
-            $scope.messages.push(message);
+        vm.addAlarmMessage = function (message) {
+            vm.messages.push(message);
 
             if (message.severity === 'unknown' ||
                 message.severity === 'nominal' ||
@@ -38,13 +66,13 @@ angular.module('katGui.alarms')
 
             if (message.ttl && message.ttl !== -1) {
                 $timeout(function () {
-                    $scope.deleteMessage(message);
+                    vm.deleteMessage(message);
                 }, message.ttl);
             }
         };
 
         $rootScope.$on('alarmMessage', function (event, message) {
-            $scope.addAlarmMessage(message);
+            vm.addAlarmMessage(message);
 
             if (message.priority === 'new') {
 
@@ -58,22 +86,22 @@ angular.module('katGui.alarms')
             }
         });
 
-        $scope.acknowledgeMessage = function (message) {
+        vm.acknowledgeMessage = function (message) {
 
             ControlService.addKnownAlarm(message.name);
-            $scope.deleteMessage(message);
+            vm.deleteMessage(message);
         };
 
-        $scope.knowMessage = function (message) {
+        vm.knowMessage = function (message) {
             ControlService.addKnownAlarm(message.name);
 
-            var index = $scope.messages.indexOf(message);
+            var index = vm.messages.indexOf(message);
             if (index > -1) {
-                $scope.messages.splice(index, 1);
+                vm.messages.splice(index, 1);
             }
         };
 
-        $scope.computeSeverityClasses = function (message) {
+        vm.computeSeverityClasses = function (message) {
             return {
                 'alarm-critical': message.severity === 'critical',
                 'alarm-error': message.severity === 'error',
@@ -85,31 +113,10 @@ angular.module('katGui.alarms')
             };
         };
 
-        $scope.getActiveClass = function () {
+        vm.getActiveClass = function () {
             return $rootScope.showLargeAlarms ? 'large-alarm' : 'small-alarm';
         };
-    })
+    }
+})();
 
-    .directive('alarm', function () {
-        return {
-            restrict: 'A',
-            template: '<div ng-class="getActiveClass()">' +
-                '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeSeverityClasses(message)">' +
-                '       <div>' +
-                '           <ul>' +
-                '               <li class="li-inline"><button class="alarm-close" ng-click="acknowledgeMessage(message)">Ack</button></li>' +
-                '               <li class="li-inline"><button class="alarm-close" ng-click="knowMessage(message)">Knw</button></li>' +
-                '           </ul>' +
-                '       </div>' +
-                '       <div class="datestamp"><span>{{message.date}}</span></div>' +
-                '       <div class="severitystamp"><span>{{message.severity}}</span></div>' +
-                '       <div><span class="alarm-message-name">{{message.name}}</span>' +
-                '       <div class="alarm-message"><span>{{message.message}}</span></div>' +
-                '       </div>' +
-                '   </div>' +
-                '</div>',
-            replace: false,
-            scope: true,
-            controller: 'AlarmsNotifyCtrl'
-        };
-    });
+

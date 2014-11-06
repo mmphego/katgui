@@ -1,10 +1,15 @@
-angular.module('katGui.alarms', [])
+(function () {
 
-    .controller('AlarmsCtrl', function ($rootScope, $scope, ControlService) {
+    angular.module('katGui.alarms', [])
+        .controller('AlarmsCtrl', AlarmsCtrl);
+
+    function AlarmsCtrl($rootScope, $scope, ControlService) {
+
+        var vm = this;
 
         if (!$rootScope.showLargeAlarms) {
             $rootScope.showLargeAlarms = false;
-            $scope.showLargeAlarms = false;
+            vm.showLargeAlarms = false;
         }
 
         $scope.$watch('showLargeAlarms', function (newVal, oldVal) {
@@ -13,19 +18,19 @@ angular.module('katGui.alarms', [])
             }
         });
 
-        $scope.alarmsData = $rootScope.alarmsData;
-        $scope.knownAlarmsData = $rootScope.knownAlarmsData;
+        vm.alarmsData = $rootScope.alarmsData;
+        vm.knownAlarmsData = $rootScope.knownAlarmsData;
 
-        $scope.toggleSelectAllKnownAlarms = function (lastState) {
+        vm.toggleSelectAllKnownAlarms = function (lastState) {
 
-            $scope.knownAlarmsData.forEach(function (item) {
+            vm.knownAlarmsData.forEach(function (item) {
                 item.selected = lastState;
             });
         };
 
-        $scope.toggleSelectAllAlarms = function (lastState) {
+        vm.toggleSelectAllAlarms = function (lastState) {
 
-            $scope.alarmsData.forEach(function (item) {
+            vm.alarmsData.forEach(function (item) {
                 item.selected = lastState;
             });
         };
@@ -36,24 +41,24 @@ angular.module('katGui.alarms', [])
 
             if (message.priority === 'known') {
 
-                for (var i = 0; i < $scope.knownAlarmsData.length; i++) {
-                    if ($scope.knownAlarmsData[i].name === message.name) {
-                        $scope.knownAlarmsData[i].priority = message.priority;
-                        $scope.knownAlarmsData[i].severity = message.status;
-                        $scope.knownAlarmsData[i].dateUnix = message.dateUnix;
-                        $scope.knownAlarmsData[i].date = message.date;
-                        $scope.knownAlarmsData[i].description = message.value;
+                for (var i = 0; i < vm.knownAlarmsData.length; i++) {
+                    if (vm.knownAlarmsData[i].name === message.name) {
+                        vm.knownAlarmsData[i].priority = message.priority;
+                        vm.knownAlarmsData[i].severity = message.status;
+                        vm.knownAlarmsData[i].dateUnix = message.dateUnix;
+                        vm.knownAlarmsData[i].date = message.date;
+                        vm.knownAlarmsData[i].description = message.value;
                         found = true;
                         break;
                     }
                 }
 
                 if (!found) {
-                    $scope.knownAlarmsData.push(message);
+                    vm.knownAlarmsData.push(message);
                 }
 
-                //for (var k = 0; k < $scope.alarmsData.length; k++) {
-                //    if ($scope.alarmsData[k].name === message.name) {
+                //for (var k = 0; k < vm.alarmsData.length; k++) {
+                //    if (vm.alarmsData[k].name === message.name) {
                 //
                 //    }
                 //}
@@ -61,20 +66,20 @@ angular.module('katGui.alarms', [])
                 //todo: remove from alarmsData
             } else {
 
-                for (var j = 0; j < $scope.alarmsData.length; j++) {
-                    if ($scope.alarmsData[j].name === message.name) {
-                        $scope.alarmsData[j].priority = message.priority;
-                        $scope.alarmsData[j].severity = message.status;
-                        $scope.alarmsData[j].dateUnix = message.dateUnix;
-                        $scope.alarmsData[j].date = message.date;
-                        $scope.alarmsData[j].description = message.value;
+                for (var j = 0; j < vm.alarmsData.length; j++) {
+                    if (vm.alarmsData[j].name === message.name) {
+                        vm.alarmsData[j].priority = message.priority;
+                        vm.alarmsData[j].severity = message.status;
+                        vm.alarmsData[j].dateUnix = message.dateUnix;
+                        vm.alarmsData[j].date = message.date;
+                        vm.alarmsData[j].description = message.value;
                         found = true;
                         break;
                     }
                 }
 
                 if (!found) {
-                    $scope.alarmsData.push(message);
+                    vm.alarmsData.push(message);
                 }
 
                 //todo: remove from knownalarmsData
@@ -82,40 +87,41 @@ angular.module('katGui.alarms', [])
 
         });
 
-        $scope.clearSelectedAlarms = function () {
+        vm.clearSelectedAlarms = function () {
 
-            for (var j = 0; j < $scope.alarmsData.length; j++) {
-                if ($scope.alarmsData[j].selected) {
-                    ControlService.clearAlarm($scope.alarmsData[j].name);
+            for (var j = 0; j < vm.alarmsData.length; j++) {
+                if (vm.alarmsData[j].selected) {
+                    ControlService.clearAlarm(vm.alarmsData[j].name);
                 }
             }
         };
 
-        $scope.acknowledgeSelectedAlarms = function () {
+        vm.acknowledgeSelectedAlarms = function () {
 
-            for (var j = 0; j < $scope.alarmsData.length; j++) {
-                if ($scope.alarmsData[j].selected) {
-                    ControlService.acknowledgeAlarm($scope.alarmsData[j].name);
+            for (var j = 0; j < vm.alarmsData.length; j++) {
+                if (vm.alarmsData[j].selected) {
+                    ControlService.acknowledgeAlarm(vm.alarmsData[j].name);
                 }
             }
         };
 
-        $scope.knowSelectedAlarms = function () {
+        vm.knowSelectedAlarms = function () {
 
-            for (var j = 0; j < $scope.alarmsData.length; j++) {
-                if ($scope.alarmsData[j].selected) {
-                    ControlService.addKnownAlarm($scope.alarmsData[j].name);
+            for (var j = 0; j < vm.alarmsData.length; j++) {
+                if (vm.alarmsData[j].selected) {
+                    ControlService.addKnownAlarm(vm.alarmsData[j].name);
                 }
             }
         };
 
-        $scope.cancelKnowSelectedAlarms = function () {
+        vm.cancelKnowSelectedAlarms = function () {
 
-            for (var j = 0; j < $scope.knownAlarmsData.length; j++) {
-                if ($scope.knownAlarmsData[j].selected) {
-                    ControlService.cancelKnowAlarm($scope.knownAlarmsData[j].name);
+            for (var j = 0; j < vm.knownAlarmsData.length; j++) {
+                if (vm.knownAlarmsData[j].selected) {
+                    ControlService.cancelKnowAlarm(vm.knownAlarmsData[j].name);
                 }
             }
         };
 
-    });
+    }
+})();

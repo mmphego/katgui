@@ -43,14 +43,14 @@ describe('LandingCtrl', function () {
 
     it('should save dashboard config on dashboard change', inject(function () {
 
-        scope.$broadcast('adfDashboardChanged', scope.name, defaultDashboardConfig);
+        scope.$broadcast('adfDashboardChanged', ctrl.name, defaultDashboardConfig);
         scope.$digest();
-        expect(localStorage[scope.name]).toBe(defaultDashboardConfig);
+        expect(localStorage[ctrl.name]).toBe(defaultDashboardConfig);
     }));
 
     it('should set loadDefault property to local storage when resetting dasboard config', inject(function () {
 
-        scope.deleteDashboardLocalStorage();
+        ctrl.deleteDashboardLocalStorage();
         scope.$digest();
         expect(localStorage[scope.name]).toBe(undefined);
 

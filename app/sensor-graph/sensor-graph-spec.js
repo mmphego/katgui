@@ -7,30 +7,30 @@ describe('SensorGraphCtrl', function() {
     beforeEach(inject(function($rootScope, $controller) {
       scope = $rootScope.$new();
       ctrl = $controller('SensorGraphCtrl', {$scope: scope});
-    }));	
+    }));
 
 	it('should find sensor by string', inject(function() {
 
-		scope.findSensorByString();
-		
+        ctrl.findSensorByString();
+
 	}));
 
     it('should get sensor meta data', inject(function() {
 
-        scope.getSensorMetaData();
+        ctrl.getSensorMetaData();
 
     }));
 
     it('should get sensor data', inject(function() {
 
-        scope.getSensorData();
+        ctrl.getSensorData();
 
     }));
 
     it('should map sensor data', inject(function() {
 
-        scope.sensorData = { data: [] };
-        scope.mapSensorData();
+        ctrl.sensorData = { data: [] };
+        ctrl.mapSensorData();
 
     }));
 

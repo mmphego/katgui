@@ -1,52 +1,59 @@
-angular.module('katGui.video', [])
-
+(function () {
 
     //ssh to the box, do
     //motion -n -c /var/kat/vds_motion.conf
-    .controller('VideoCtrl', function ($scope) {
+    angular.module('katGui.video', [])
+        .controller('VideoCtrl', VideoCtrl);
 
-        //$scope.panLeft = function () {
+    function VideoCtrl() {
+
+        var vm = this;
+
+        //vm.panLeft = function () {
         //    console.log('pan left');
         //};
         //
-        //$scope.panFarLeft = function () {
+        //vm.panFarLeft = function () {
         //    console.log('pan far left');
         //};
         //
-        //$scope.panRight = function () {
+        //vm.panRight = function () {
         //    console.log('pan right');
         //};
         //
-        //$scope.panFarRight = function () {
+        //vm.panFarRight = function () {
         //    console.log('pan far right');
         //};
         //
-        //$scope.tiltUp = function () {
+        //vm.tiltUp = function () {
         //    console.log('tilt up');
         //};
         //
-        //$scope.tiltFarUp = function () {
+        //vm.tiltFarUp = function () {
         //    console.log('tilt far up');
         //};
         //
-        //$scope.tiltDown = function () {
+        //vm.tiltDown = function () {
         //    console.log('tilt down');
         //};
         //
-        //$scope.tiltFarDown = function () {
+        //vm.tiltFarDown = function () {
         //    console.log('tilt far down');
         //};
         //
-        //$scope.rememberPos = function () {
+        //vm.rememberPos = function () {
         //    console.log('rememberPos');
         //};
         //
-        //$scope.cyclePos = function () {
+        //vm.cyclePos = function () {
         //    console.log('cyclePos');
         //};
         //
-        //$scope.cyclePos = function () {
+        //vm.cyclePos = function () {
         //    console.log('clearPos');
         //};
 
-    });
+    }
+})();
+
+

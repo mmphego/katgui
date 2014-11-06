@@ -1,6 +1,10 @@
-angular.module('katGui.widgets.navigationWidget', ['adf.provider'])
+(function () {
 
-    .config(function(dashboardProvider) {
+    angular.module('katGui.widgets.navigationWidget', ['adf.provider'])
+        .config(configureNavigationWidget)
+        .controller('NavigationWidgetCtrl', NavigationWidgetCtrl);
+
+    function configureNavigationWidget(dashboardProvider) {
         dashboardProvider
             .widget('NavigationWidget', {
                 title: 'Navigation Widget',
@@ -8,11 +12,14 @@ angular.module('katGui.widgets.navigationWidget', ['adf.provider'])
                 templateUrl: 'app/widgets/navigation/navigation-widget.html',
                 controller: 'NavigationWidgetCtrl'
             });
-    })
+    }
 
-    .controller('NavigationWidgetCtrl', function($rootScope, $scope, $state){
+    function NavigationWidgetCtrl($state) {
 
-        $scope.stateGo = function (newState) {
+        var vm = this;
+
+        vm.stateGo = function (newState) {
             $state.go(newState);
         };
-    });
+    }
+})();

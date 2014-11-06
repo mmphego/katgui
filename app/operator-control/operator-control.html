@@ -1,4 +1,4 @@
-<div flex layout-padding ng-controller="OperatorControlCtrl" style="min-width: 1000px;">
+<div flex layout-padding ng-controller="OperatorControlCtrl as vm" style="min-width: 1000px;">
 
     <div class="md-whiteframe-z1">
         <md-toolbar class="panel-toolbar">
@@ -7,15 +7,15 @@
             </div>
         </md-toolbar>
         <section md-theme="blue" layout="horizontal" layout-align="center center" class="panel-body panel-operator-controls">
-            <md-button ng-click="inhibitAll()" aria-label="Inhibit All" class="md-raised md-primary">Inhibit All</md-button>
-            <md-button ng-click="stowAll()" aria-label="Stow All" class="md-raised md-primary">Stow All</md-button>
-            <md-button ng-click="stopAll()" aria-label="Stop All" class="md-raised md-primary">Stop All</md-button>
-            <md-button ng-click="resumeOperations()" aria-label="Resume Operations" class="md-raised md-primary">Resume Operations</md-button>
+            <md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All" class="md-raised md-primary">Inhibit All</md-button>
+            <md-button ng-click="vm.stowAll()" aria-label="Stow All" class="md-raised md-primary">Stow All</md-button>
+            <md-button ng-click="vm.stopAll()" aria-label="Stop All" class="md-raised md-primary">Stop All</md-button>
+            <md-button ng-click="vm.resumeOperations()" aria-label="Resume Operations" class="md-raised md-primary">Resume Operations</md-button>
             <md-button disabled ng-click="shutdownComputing()" aria-label="Shutdown Computing" class="md-raised md-primary">Shutdown Computing</md-button>
         </section>
 
         <md-list class="receptor-state-list">
-            <md-item ng-repeat="rec in receptorsData track by $id(rec)">
+            <md-item ng-repeat="rec in vm.receptorsData track by $id(rec)">
                 <md-item-content class="receptor-state-div md-whiteframe-z1" layout="vertical">
                     <p style="">{{rec.since}}<md-tooltip>Time since last status change</md-tooltip></p>
                     <p style="font-size: 26px;"><b>{{::rec.name}}</b></p>

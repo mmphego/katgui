@@ -1,8 +1,11 @@
-angular.module('katGui')
+(function () {
+    angular.module('katGui')
+        .controller('AboutCtrl', AboutCtrl);
 
-    .controller('AboutCtrl', function ($scope, UI_VERSION) {
+    function AboutCtrl(UI_VERSION) {
 
-        $scope.title = 'About KatGui';
-        $scope.uiVersion = UI_VERSION;
-        $scope.serverVersion = 'No clue!';
-    });
+        var vm = this;
+        vm.uiVersion = UI_VERSION;
+        vm.serverVersion = 'No clue!';
+    }
+})();

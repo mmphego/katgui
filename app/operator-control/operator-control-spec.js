@@ -145,7 +145,7 @@ describe('OperatorControlCtrl', function () {
     }));
 
     it('should have the configured receptors', inject(function () {
-        expect(scope.receptorsData.length).not.toBe(0);
+        expect(ctrl.receptorsData.length).not.toBe(0);
     }));
 
     //it('should update the time since state change', inject(function () {
@@ -157,36 +157,36 @@ describe('OperatorControlCtrl', function () {
 
         it('should inhibit all receptors', inject(function () {
 
-            scope.inhibitAll();
+            ctrl.inhibitAll();
 
-            scope.receptorsData.forEach(function (receptor) {
+            ctrl.receptorsData.forEach(function (receptor) {
                 expect(receptor.state).toBe('STOP');
                 expect(receptor.inhibited).toBeTruthy();
             });
         }));
 
         it('should issue stow all', inject(function () {
-            scope.stowAll();
+            ctrl.stowAll();
 
-            scope.receptorsData.forEach(function (receptor) {
+            ctrl.receptorsData.forEach(function (receptor) {
                 expect(receptor.state).toBe('STOW');
                 expect(receptor.inhibited).toBeFalsy();
             });
         }));
 
         it('should issue stop all', inject(function () {
-            scope.stopAll();
+            ctrl.stopAll();
 
-            scope.receptorsData.forEach(function (receptor) {
+            ctrl.receptorsData.forEach(function (receptor) {
                 expect(receptor.state).toBe('STOW');
                 expect(receptor.inhibited).toBeTruthy();
             });
         }));
 
         it('should issue resume operations', inject(function () {
-            scope.resumeOperations();
+            ctrl.resumeOperations();
 
-            scope.receptorsData.forEach(function (receptor) {
+            ctrl.receptorsData.forEach(function (receptor) {
                 expect(receptor.state).toBe('STOP');
                 expect(receptor.inhibited).toBeFalsy();
             });

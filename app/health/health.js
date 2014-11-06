@@ -1,20 +1,25 @@
-angular.module('katGui.health', ['katGui.d3'])
+(function () {
 
-    .controller('HealthCtrl', function ($rootScope, $scope, $window, $timeout) {
+    angular.module('katGui.health', ['katGui.d3'])
+        .controller('HealthCtrl', HealthCtrl);
+
+    function HealthCtrl($rootScope, $scope, $window, $timeout) {
+
+        var vm = this;
 
         var heightOffset = 60,
             widthOffset = 35,
             heightOffsetCollapsed = 40,
             widthOffsetCollapsed = 35;
 
-        $scope.treemapDisplayValue = 'size';
-        $scope.showSelect = true;
-        $scope.treeContainerDiv = angular.element('#ui-view-container-div')[0];
+        vm.treemapDisplayValue = 'size';
+        vm.showSelect = true;
+        vm.treeContainerDiv = angular.element('#ui-view-container-div')[0];
 
-        $scope.treeChartSize = { width: $window.innerWidth - 500, height: $window.innerHeight - 160 };
+        vm.treeChartSize = {width: $window.innerWidth - 500, height: $window.innerHeight - 160};
 
         //add the watchers on the next $digest cycle
-        $timeout(function() {
+        $timeout(function () {
             $scope.$watch(function () {
                 return $window.innerWidth;
             }, function () {
@@ -27,53 +32,53 @@ angular.module('katGui.health', ['katGui.d3'])
                 calcTreeChartSize(250);
             });
 
-            $rootScope.$watch('showSideNav', function(value) {
+            $rootScope.$watch('showSideNav', function (value) {
                 calcTreeChartSize(500);
-                $scope.showSelect = value;
+                vm.showSelect = value;
             });
-            $rootScope.$watch('showNavbar', function(value) {
+            $rootScope.$watch('showNavbar', function (value) {
                 calcTreeChartSize(500);
-                $scope.showSelect = value;
+                vm.showSelect = value;
             });
         }, 1);
 
-        $scope.items = [
-            { value: 'tree', name: 'Treemap' },
-            { value: 'pack', name: 'Pack' },
-            { value: 'partition', name: 'Partition' },
-            { value: 'icicle', name: 'Icicle' },
-            { value: 'sunburst', name: 'Sunburst' }
+        vm.items = [
+            {value: 'tree', name: 'Treemap'},
+            {value: 'pack', name: 'Pack'},
+            {value: 'partition', name: 'Partition'},
+            {value: 'icicle', name: 'Icicle'},
+            {value: 'sunburst', name: 'Sunburst'}
         ];
 
-        $scope.mapType = 'tree';
+        vm.mapType = 'tree';
 
         function calcTreeChartSize(delay) {
             //defer the calculation so that the view can update
             //if we do it too fast some of the watch functions run this before
             //the layout actually changed
-            $timeout(function() {
+            $timeout(function () {
 
                 if ($rootScope.showSideNav && $rootScope.showNavbar) {
-                    $scope.treeChartSize = {
-                        width: $scope.treeContainerDiv.clientWidth - widthOffset,
-                        height: $scope.treeContainerDiv.clientHeight - heightOffset
+                    vm.treeChartSize = {
+                        width: vm.treeContainerDiv.clientWidth - widthOffset,
+                        height: vm.treeContainerDiv.clientHeight - heightOffset
                     };
                 } else if (!$rootScope.showSideNav && $rootScope.showNavbar) {
-                    $scope.treeChartSize = {
-                        width: $scope.treeContainerDiv.clientWidth - widthOffsetCollapsed,
-                        height: $scope.treeContainerDiv.clientHeight - heightOffset
+                    vm.treeChartSize = {
+                        width: vm.treeContainerDiv.clientWidth - widthOffsetCollapsed,
+                        height: vm.treeContainerDiv.clientHeight - heightOffset
                     };
                 } else if (!$rootScope.showNavbar) {
-                    $scope.treeChartSize = {
-                        width: $scope.treeContainerDiv.clientWidth - widthOffsetCollapsed,
-                        height: $scope.treeContainerDiv.clientHeight - heightOffsetCollapsed
+                    vm.treeChartSize = {
+                        width: vm.treeContainerDiv.clientWidth - widthOffsetCollapsed,
+                        height: vm.treeContainerDiv.clientHeight - heightOffsetCollapsed
                     };
                 }
 
             }, delay);
         }
 
-        $scope.d3TreemapData =
+        vm.d3TreemapData =
         {
             "name": "Sub-Array 1",
             "children": [
@@ -93,12 +98,14 @@ angular.module('katGui.health', ['katGui.d3'])
                             "name": "graph",
                             "children": [
                                 {"name": "BetweennessCentrality", "value": 100},
-                                {"name": "LinkDistance", "children": [
+                                {
+                                    "name": "LinkDistance", "children": [
                                     {"name": "AgglomerativeCluster", "value": 25},
                                     {"name": "CommunityStructure", "value": 25},
                                     {"name": "HierarchicalCluster", "value": 25},
                                     {"name": "MergeEdge", "value": 25}
-                                ]},
+                                ]
+                                },
                                 {"name": "MaxFlowMinCut", "value": 100},
                                 {"name": "ShortestPaths", "value": 100},
                                 {"name": "SpanningTree", "value": 100}
@@ -336,4 +343,5 @@ angular.module('katGui.health', ['katGui.d3'])
                 }
             ]
         };
-    });
+    }
+})();

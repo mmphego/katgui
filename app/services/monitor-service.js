@@ -1,27 +1,30 @@
-angular.module('katGui')
+(function () {
 
-    .service('MonitorService', function ($rootScope, alarms) {
+    angular.module('katGui')
+        .service('MonitorService', MonitorService);
+
+    function MonitorService($rootScope, alarms) {
 
         var pendingSubscribeObjects = [];
         var urlBase = 'http://192.168.10.127:8030';
-        var monitorService = {};
-        monitorService.connection = null;
 
-        monitorService.onSockJSOpen = function () {
-            if (monitorService.connection && monitorService.connection.readyState) {
+        this.connection = null;
+
+        this.onSockJSOpen = function () {
+            if (this.connection && this.connection.readyState) {
                 console.log('Monitor Connection Established.');
-                monitorService.subscribeToAlarms();
+                this.subscribeToAlarms();
 
                 pendingSubscribeObjects.forEach(function (obj) {
                     obj.subscribeName = null;
-                    monitorService.connection.send(JSON.stringify(obj));
+                    this.connection.send(JSON.stringify(obj));
                 });
 
                 pendingSubscribeObjects = [];
             }
         };
 
-        monitorService.subscribeToAlarms = function () {
+        this.subscribeToAlarms = function () {
             console.log('Monitor subscribed to kataware:alarm*...');
             var jsonRPC = {
                 'jsonrpc': '2.0',
@@ -29,10 +32,10 @@ angular.module('katGui')
                 'params': ['kataware:alarm*'],
                 'id': 'abe3d23201'
             };
-            monitorService.connection.send(JSON.stringify(jsonRPC));
+            this.connection.send(JSON.stringify(jsonRPC));
         };
 
-        monitorService.subscribeToReceptorUpdates = function () {
+        this.subscribeToReceptorUpdates = function () {
 
             var connectionParams = ['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited'];
 
@@ -44,19 +47,19 @@ angular.module('katGui')
                 'id': 'abe3d23201'
             };
 
-            if (monitorService.connection && monitorService.connection.readyState) {
-                monitorService.connection.send(JSON.stringify(jsonRPC));
+            if (this.connection && this.connection.readyState) {
+                this.connection.send(JSON.stringify(jsonRPC));
             } else {
                 pendingSubscribeObjects.push(jsonRPC);
             }
         };
 
-        monitorService.onSockJSClose = function () {
+        this.onSockJSClose = function () {
             console.log('Disconnecting Monitor Connection');
-            monitorService.connection = null;
+            this.connection = null;
         };
 
-        monitorService.onSockJSMessage = function (e) {
+        this.onSockJSMessage = function (e) {
             console.log(e);
 
             var messages = JSON.parse(e.data);
@@ -103,21 +106,22 @@ angular.module('katGui')
             }
         };
 
-        monitorService.connectListener = function () {
+        this.connectListener = function () {
             console.log('Monitor Connecting...');
-            monitorService.connection = new SockJS(urlBase + '/monitor');
-            monitorService.connection.onopen = monitorService.onSockJSOpen;
-            monitorService.connection.onmessage = monitorService.onSockJSMessage;
-            monitorService.connection.onclose = monitorService.onSockJSClose;
+            this.connection = new SockJS(urlBase + '/monitor');
+            this.connection.onopen = this.onSockJSOpen;
+            this.connection.onmessage = this.onSockJSMessage;
+            this.connection.onclose = this.onSockJSClose;
 
-            return monitorService.connection !== null;
+            return this.connection !== null;
         };
 
-        monitorService.disconnectListener = function () {
-            if (monitorService.connection) {
-                monitorService.connection.close();
+        this.disconnectListener = function () {
+            if (this.connection) {
+                this.connection.close();
             }
         };
 
-        return monitorService;
-    });
+        return this;
+    }
+})();

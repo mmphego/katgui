@@ -20,7 +20,7 @@ describe('NavigationWidgetCtrl', function () {
 
     it('should navigate to state when link is triggered', inject(function () {
 
-        scope.stateGo(testState);
+        ctrl.stateGo(testState);
         scope.$digest();
         expect(location.path()).toBe('/' + testState);
     }));

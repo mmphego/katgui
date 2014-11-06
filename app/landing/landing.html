@@ -1,6 +1,4 @@
-<div class="view-container" ng-controller="LandingCtrl">
-
-    <a class="btn-delete-dashboard-pref" ng-click="deleteDashboardLocalStorage()"><span class="fa fa-trash-o"></span></a>
-    <adf-dashboard name="{{name}}" adf-model="dashboardModel"></adf-dashboard>
-
+<div class="view-container" ng-controller="LandingCtrl as vm">
+    <a class="btn-delete-dashboard-pref" ng-click="vm.deleteDashboardLocalStorage()"><span class="fa fa-trash-o"></span></a>
+    <adf-dashboard name="{{name}}" adf-model="vm.dashboardModel"></adf-dashboard>
 </div>

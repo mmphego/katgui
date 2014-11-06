@@ -1,6 +1,8 @@
-angular.module('katGui')
+(function () {
+    angular.module('katGui')
+        .service('Session', SessionService);
 
-    .service('Session', function () {
+    function SessionService() {
 
         this.create = function (sessionId, userId, userRole) {
             this.id = sessionId;
@@ -13,4 +15,5 @@ angular.module('katGui')
             this.userRole = null;
         };
         return this;
-    });
+    }
+})();

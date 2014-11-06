@@ -1,6 +1,9 @@
-angular.module('katGui')
+(function () {
 
-    .controller('WeatherCtrl', function ($scope) {
+    angular.module('katGui')
+        .controller('WeatherCtrl', WeatherCtrl);
 
+    function WeatherCtrl() {
 
-    });
+    }
+})();

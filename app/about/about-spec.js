@@ -14,7 +14,6 @@ describe('AboutCtrl', function () {
 
         location.path('/about');
         expect(location.path()).toBe('/about');
-        expect(scope.title).toBe('About KatGui');
     }));
 
 });

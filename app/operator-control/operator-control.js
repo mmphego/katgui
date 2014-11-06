@@ -1,26 +1,31 @@
-angular.module('katGui')
+(function () {
 
-    .controller('OperatorControlCtrl', function ($rootScope, $scope, $interval, ReceptorStateService, ControlService) {
+    angular.module('katGui')
+        .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-        $scope.receptorsData = ReceptorStateService.receptorsData;
+    function OperatorControlCtrl($interval, ReceptorStateService, ControlService) {
 
-        $scope.stowAll = function () {
+        var vm = this;
+
+        vm.receptorsData = ReceptorStateService.receptorsData;
+
+        vm.stowAll = function () {
             ControlService.stowAll();
         };
 
-        $scope.inhibitAll = function () {
+        vm.inhibitAll = function () {
             ControlService.inhibitAll();
         };
 
-        $scope.stopAll = function () {
+        vm.stopAll = function () {
             ControlService.stopAll();
         };
 
-        $scope.resumeOperations = function () {
+        vm.resumeOperations = function () {
             ControlService.resumeOperations();
         };
 
-        $scope.shutdownComputing = function () {
+        vm.shutdownComputing = function () {
             ControlService.shutdownComputing();
         };
 
@@ -33,4 +38,5 @@ angular.module('katGui')
                 item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
             });
         }
-    });
+    }
+})();

@@ -1,6 +1,6 @@
-<div class="view-container" ng-controller="AboutCtrl">
-    <h1>{{title}}</h1>
+<div class="view-container" ng-controller="AboutCtrl as vm">
+    <h1>About katGUI</h1>
     <hr/>
-    <p ng-if="uiVersion">Current UI version: {{uiVersion}}</p>
-    <p ng-if="serverVersion">Current server version: {{serverVersion}}</p>
+    <p ng-if="uiVersion">Current UI version: {{::vm.uiVersion}}</p>
+    <p ng-if="serverVersion">Current server version: {{::vm.serverVersion}}</p>
 </div>

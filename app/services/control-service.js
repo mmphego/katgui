@@ -1,93 +1,97 @@
-angular.module('katGui')
+(function () {
 
-    .service('ControlService', function () {
+    angular.module('katGui')
+        .service('ControlService', ControlService);
+
+    function ControlService() {
 
         var urlBase = 'http://192.168.10.127:8020';
-        var controlService = {};
-        controlService.connection = null;
+        this.connection = null;
 
-        controlService.onSockJSOpen = function () {
-            if (controlService.connection && controlService.connection.readyState) {
+        this.onSockJSOpen = function () {
+            if (this.connection && this.connection.readyState) {
                 console.log('Control Connection Established.');
             }
         };
 
-        controlService.onSockJSClose = function () {
+        this.onSockJSClose = function () {
             console.log('Disconnecting Monitor Connection');
-            controlService.connection = null;
+            this.connection = null;
         };
 
-        controlService.onSockJSMessage = function (e) {
+        this.onSockJSMessage = function (e) {
             console.log(e);
         };
 
-        controlService.connectListener = function () {
+        this.connectListener = function () {
             console.log('Control Connecting...');
-            controlService.connection = new SockJS(urlBase + '/control');
-            controlService.connection.onopen = controlService.onSockJSOpen;
-            controlService.connection.onmessage = controlService.onSockJSMessage;
-            controlService.connection.onclose = controlService.onSockJSClose;
+            this.connection = new SockJS(urlBase + '/control');
+            this.connection.onopen = this.onSockJSOpen;
+            this.connection.onmessage = this.onSockJSMessage;
+            this.connection.onclose = this.onSockJSClose;
 
-            return controlService.connection !== null;
+            return this.connection !== null;
         };
 
-        controlService.disconnectListener = function () {
-            if (controlService.connection) {
-                controlService.connection.close();
+        this.disconnectListener = function () {
+            if (this.connection) {
+                this.connection.close();
             }
         };
 
-        controlService.stowAll = function () {
-            return controlService.sendControlCommand('sys', 'operator-stow-antennas', '');
+        this.stowAll = function () {
+            return this.sendControlCommand('sys', 'operator-stow-antennas', '');
         };
 
-        controlService.inhibitAll = function () {
-            return controlService.sendControlCommand('sys', 'operator-inhibit-antennas', '');
+        this.inhibitAll = function () {
+            return this.sendControlCommand('sys', 'operator-inhibit-antennas', '');
         };
 
-        controlService.stopAll = function () {
-            return controlService.sendControlCommand('sys', 'operator-stop-observations', '');
+        this.stopAll = function () {
+            return this.sendControlCommand('sys', 'operator-stop-observations', '');
         };
 
-        controlService.resumeOperations = function () {
-            return controlService.sendControlCommand('sys', 'operator-resume-operations', '');
+        this.resumeOperations = function () {
+            return this.sendControlCommand('sys', 'operator-resume-operations', '');
         };
 
-        controlService.shutdownComputing = function () {
-            return controlService.sendControlCommand('sys', 'operator-shutdown-computing', '');
+        this.shutdownComputing = function () {
+            return this.sendControlCommand('sys', 'operator-shutdown-computing', '');
         };
 
-        controlService.acknowledgeAlarm = function (alarmName) {
-            return controlService.sendControlCommand('kataware', 'alarm-ack', alarmName);
+        this.acknowledgeAlarm = function (alarmName) {
+            return this.sendControlCommand('kataware', 'alarm-ack', alarmName);
         };
 
-        controlService.addKnownAlarm = function (alarmName) {
-            return controlService.sendControlCommand('kataware', 'alarm-know', alarmName);
+        this.addKnownAlarm = function (alarmName) {
+            return this.sendControlCommand('kataware', 'alarm-know', alarmName);
         };
 
-        controlService.cancelKnowAlarm = function (alarmName) {
-            return controlService.sendControlCommand('kataware', 'alarm-cancel-know', alarmName);
+        this.cancelKnowAlarm = function (alarmName) {
+            return this.sendControlCommand('kataware', 'alarm-cancel-know', alarmName);
         };
 
-        controlService.clearAlarm = function (alarmName) {
-            return controlService.sendControlCommand('kataware', 'alarm-clear', alarmName);
+        this.clearAlarm = function (alarmName) {
+            return this.sendControlCommand('kataware', 'alarm-clear', alarmName);
         };
 
-        controlService.sendControlCommand = function (module, funcName, funcParams) {
+        this.sendControlCommand = function (module, funcName, funcParams) {
 
-            if (controlService.connection) {
+            if (this.connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': 'katcp_request',
                     'params': [module, funcName, funcParams]
                 };
 
-                controlService.connection.send(JSON.stringify(jsonRPC));
+                this.connection.send(JSON.stringify(jsonRPC));
                 return true;
             } else {
                 return false;
             }
         };
 
-        return controlService;
-    });
+        return this;
+    }
+
+})();

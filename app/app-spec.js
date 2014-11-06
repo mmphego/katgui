@@ -20,21 +20,21 @@ describe('ApplicationCtrl', function () {
 
         var mockUser = { name: 'testUser', role: 'testRole'};
         scope.setCurrentUser(mockUser);
-        expect(scope.currentUser).toBe(mockUser);
+        expect(ctrl.currentUser).toBe(mockUser);
     }));
 
     it('should navigate to landing state when logged in', inject(function () {
 
-        scope.stateGo('landing');
+        ctrl.stateGo('landing');
         scope.$digest();
         expect(location.path()).toBe('/home');
     }));
 
     it('should log you out and redirect to login page', inject(function () {
 
-        scope.logout();
+        ctrl.logout();
         scope.$digest();
-        expect(scope.currentUser).toBeFalsy();
+        expect(ctrl.currentUser).toBeFalsy();
         expect(location.path()).toBe('/login');
     }));
 

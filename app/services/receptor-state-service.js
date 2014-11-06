@@ -1,6 +1,9 @@
-angular.module('katGui')
+(function () {
 
-    .service('ReceptorStateService', function ($rootScope, MonitorService) {
+    angular.module('katGui')
+        .service('ReceptorStateService', ReceptorStateService);
+
+    function ReceptorStateService($rootScope, MonitorService) {
 
         MonitorService.subscribeToReceptorUpdates();
 
@@ -1019,7 +1022,7 @@ angular.module('katGui')
 
         $rootScope.$on('receptorMessage', this.receptorMessageReceived);
 
-        this.receptorMessageReceived = function(event, message) {
+        this.receptorMessageReceived = function (event, message) {
             var sensorNameList = message.name.split(':');
             var sensor = sensorNameList[0];
             var sensorName = sensorNameList[1];
@@ -1039,4 +1042,5 @@ angular.module('katGui')
         };
 
         return this;
-    });
+    }
+})();
