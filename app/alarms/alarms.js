@@ -35,7 +35,7 @@
             });
         };
 
-        $rootScope.$on('alarmMessage', function (event, message) {
+        var unbindAlarmMessage = $rootScope.$on('alarmMessage', function (event, message) {
 
             var found = false;
 
@@ -86,6 +86,8 @@
             }
 
         });
+
+        $scope.$on('$destroy', unbindAlarmMessage);
 
         vm.clearSelectedAlarms = function () {
 

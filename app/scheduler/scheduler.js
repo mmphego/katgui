@@ -177,9 +177,9 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             if (vm.showTypePicker) {
                 vm.showTypePicker = false;
                 vm.currentRowTypePickerIndex = -1;
-                if (!$scope.$$phase) {
-                    $scope.$apply();
-                }
+                //if (!$scope.$$phase) {
+                //    $scope.$digest();
+                //}
             }
         }
 
@@ -187,9 +187,9 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             if (vm.showDatePicker) {
                 vm.showDatePicker = false;
                 vm.currentRowDatePickerIndex = -1;
-                if (!$scope.$$phase) {
-                    $scope.$apply();
-                }
+                //if (!$scope.$$phase) {
+                //    $scope.$digest();
+                //}
             }
         }
 

@@ -14,7 +14,7 @@
                 api.addAlarmMessage = function (alarmObj, config) {
                     var _config = config || {};
                     alarmObj.ttl = _config.ttl || _ttl;
-                    $rootScope.$broadcast('alarmMessage', alarmObj);
+                    $rootScope.$emit('alarmMessage', alarmObj);
                 };
 
                 api.addKnown = function (alarmName) {

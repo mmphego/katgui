@@ -99,7 +99,7 @@
                             messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-YYYY');
                             alarms.addAlarmMessage(messageObj);
                         } else {
-                            $rootScope.$broadcast('receptorMessage', messageObj);
+                            $rootScope.$emit('receptorMessage', messageObj);
                         }
                     });
                 }

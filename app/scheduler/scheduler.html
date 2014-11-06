@@ -27,7 +27,7 @@
                                     <span>({{item.owner}} - {{item.state}})</span>
                                 </div>
 
-                                <md-text-float flex layout-fill style="margin-top: -5px; margin-left: 18px; min-width: 450px;" ng-model="item.description" class="" label="Description"></md-text-float>
+                                <md-text-float ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex layout-fill style="margin-top: -5px; margin-left: 18px; min-width: 450px;" ng-model="item.description" class="" label="Description"></md-text-float>
 
                                 <md-button aria-label="Select a Date and Time" style="width: 122px;" class="dropdown-toggle schedule-item-input" type="button"
                                            data-toggle="dropdown"

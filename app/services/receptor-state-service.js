@@ -1020,6 +1020,7 @@
             //}
         ];
 
+        //no need to unbind singleton
         $rootScope.$on('receptorMessage', this.receptorMessageReceived);
 
         this.receptorMessageReceived = function (event, message) {

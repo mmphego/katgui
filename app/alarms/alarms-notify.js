@@ -7,28 +7,29 @@
     function AlarmDirective() {
         return {
             restrict: 'A',
-            template: '<div ng-class="getActiveClass()">' +
-            '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeSeverityClasses(message)">' +
-            '       <div>' +
-            '           <ul>' +
-            '               <li class="li-inline"><button class="alarm-close" ng-click="acknowledgeMessage(message)">Ack</button></li>' +
-            '               <li class="li-inline"><button class="alarm-close" ng-click="knowMessage(message)">Knw</button></li>' +
-            '           </ul>' +
-            '       </div>' +
-            '       <div class="datestamp"><span>{{message.date}}</span></div>' +
-            '       <div class="severitystamp"><span>{{message.severity}}</span></div>' +
-            '       <div><span class="alarm-message-name">{{message.name}}</span>' +
-            '       <div class="alarm-message"><span>{{message.message}}</span></div>' +
-            '       </div>' +
-            '   </div>' +
-            '</div>',
+            template: [
+                '<div ng-class="getActiveClass()">',
+            '   <div class="alarm-item" ng-repeat="message in messages" ng-if="message.priority === \'new\'" ng-class="computeSeverityClasses(message)">',
+            '       <div>',
+            '           <ul>',
+            '               <li class="li-inline"><button class="alarm-close" ng-click="acknowledgeMessage(message)">Ack</button></li>',
+            '               <li class="li-inline"><button class="alarm-close" ng-click="knowMessage(message)">Knw</button></li>',
+            '           </ul>',
+            '       </div>',
+            '       <div class="datestamp"><span>{{message.date}}</span></div>',
+            '       <div class="severitystamp"><span>{{message.severity}}</span></div>',
+            '       <div><span class="alarm-message-name">{{message.name}}</span>',
+            '       <div class="alarm-message"><span>{{message.message}}</span></div>',
+            '       </div>',
+            '   </div>',
+            '</div>'].join(),
             replace: false,
             scope: true,
             controller: 'AlarmsNotifyCtrl as vm'
         };
     }
 
-    function AlarmsNotifyCtrl($rootScope, $timeout, ControlService) {
+    function AlarmsNotifyCtrl($scope, $rootScope, $timeout, ControlService) {
 
         var vm = this;
         vm.messages = [];
@@ -71,7 +72,7 @@
             }
         };
 
-        $rootScope.$on('alarmMessage', function (event, message) {
+        var unbindAlarmMessage = $rootScope.$on('alarmMessage', function (event, message) {
             vm.addAlarmMessage(message);
 
             if (message.priority === 'new') {
@@ -85,6 +86,8 @@
                 }
             }
         });
+
+        $scope.$on('$destroy', unbindAlarmMessage);
 
         vm.acknowledgeMessage = function (message) {
 

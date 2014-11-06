@@ -148,7 +148,7 @@
         $rootScope.alarmsData = [];
         $rootScope.knownAlarmsData = [];
 
-        $rootScope.$on('alarmMessage', function (event, message) {
+        var unbindAlarmMessage = $rootScope.$on('alarmMessage', function (event, message) {
 
             var found = false;
 
@@ -189,6 +189,8 @@
             }
 
         });
+
+        $scope.$on('$destroy', unbindAlarmMessage);
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, USER_ROLES) {
@@ -287,10 +289,10 @@
 //            event.preventDefault();
 //            if (AuthService.isAuthenticated()) {
 //                // user is not allowed
-//                $rootScope.$broadcast(AUTH_EVENTS.notAuthorized);
+//                $rootScope.$emit(AUTH_EVENTS.notAuthorized);
 //            } else {
 //                // user is not logged in
-//                $rootScope.$broadcast(AUTH_EVENTS.notAuthenticated);
+//                $rootScope.$emit(AUTH_EVENTS.notAuthenticated);
 //            }
 //        }
         });
