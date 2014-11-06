@@ -211,12 +211,15 @@
                             ng-click="vm.stateGo('alarms')">
                         <span class="fa fa-warning"></span>
                     </button>
-                    <span ng-if="vm.newAlarmWarnCount > 0"
-                          class="badge alarm-badge alarm-badge-warn">{{vm.newAlarmWarnCount}}</span>
-                    <span ng-if="vm.newAlarmErrorCount > 0"
-                          class="badge alarm-badge alarm-badge-error">{{vm.newAlarmErrorCount}}</span>
-                    <span ng-if="vm.newAlarmCritCount > 0"
-                          class="badge alarm-badge alarm-badge-crit">{{vm.newAlarmCritCount}}</span>
+                    <span ng-if="newAlarmWarnCount > 0"
+                    class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
+                    <span ng-if="newAlarmErrorCount > 0"
+                    class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
+                    <span ng-if="newAlarmCritCount > 0"
+                    class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>
+                    <!--<span class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>-->
+                    <!--<span class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>-->
+                    <!--<span class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>-->
                 </div>
 
                 <button class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()">
