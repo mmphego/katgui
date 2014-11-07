@@ -15,11 +15,12 @@
                                 <span class="fa fa-plus"></span>
                                 <md-tooltip>Create A Schedule Draft</md-tooltip>
                             </md-button>
+                            <md-text-float md-theme="none" style="font-size: 12px; margin-top: -20px;" type="search" ng-model="vm.q" label="Search Drafts..."></md-text-float>
                         </div>
                     </md-toolbar>
                     <md-list id="schedule-draft-data-list-id" class="md-whiteframe-z1" style="padding: 0; direction: rtl">
 
-                        <md-item ng-repeat="item in vm.scheduleDraftData track by item.id" ng-click="vm.setSelectedScheduleDraft(item)"
+                        <md-item ng-repeat="item in vm.scheduleDraftData | filter:vm.q" ng-click="vm.setSelectedScheduleDraft(item)"
                                  ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}">
                             <md-item-content>
                                 <div class="md-tile-content schedule-draft-item" style="padding: 2px; min-width: 1050px; direction: ltr" layout="horizontal" layout-align="center center">
@@ -74,12 +75,14 @@
                     <md-toolbar class="panel-toolbar panel-toolbar-small">
                         <div class="md-toolbar-tools">
                             <span>Schedule Observations</span>
+                            <span flex></span>
+                            <md-text-float md-theme="none" style="font-size: 12px; margin-top: -20px;" type="search" ng-model="vm.q2" label="Search Schedules..."></md-text-float>
                         </div>
                     </md-toolbar>
 
                     <md-list style="padding: 0px; direction: rtl">
 
-                        <md-item ng-repeat="item in vm.scheduleData track by item.id" ng-click="vm.setSelectedSchedule(item); "
+                        <md-item ng-repeat="item in vm.scheduleData | filter:vm.q2" ng-click="vm.setSelectedSchedule(item); "
                                  ng-class="{'selected-schedule-row': !item.executing && item === vm.selectedSchedule,
                              'schedule-row-executing': item.executing && item !== vm.selectedSchedule,
                              'schedule-row-executing-and-selected': item.executing && item === vm.selectedSchedule}">
