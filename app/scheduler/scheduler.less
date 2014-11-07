@@ -188,10 +188,12 @@
 }
 
 .schedule-block-list {
-    min-height: 375px;
+    margin-top: 4px;
+    min-height: 100px;
     height: 375px;
+    padding: 0 !important;
     md-list {
-        height: 375px;
+        height: 100%;
         overflow: auto;
     }
 }
@@ -206,5 +208,17 @@
         height: 375px;
         overflow: auto;
     }
+}
+
+#schedule-horizontal-draft-resizer {
+    height: 6px;
+    left: 0;
+    right: 0;
+    background-color: #f3f3f3;
+    cursor: row-resize;
+}
+
+#schedule-horizontal-draft-resizer:hover, #schedule-vertical-draft-resizer:hover {
+    background-color: #d3d3d3;
 }
 
