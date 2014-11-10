@@ -80,7 +80,7 @@
                         </div>
                     </md-toolbar>
 
-                    <md-list style="padding: 0px; direction: rtl">
+                    <md-list flex style="padding: 0px; direction: rtl">
 
                         <md-item ng-repeat="item in vm.scheduleData | filter:vm.q2" ng-click="vm.setSelectedSchedule(item); "
                                  ng-class="{'selected-schedule-row': !item.executing && item === vm.selectedSchedule,
