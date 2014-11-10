@@ -14,8 +14,8 @@
             <md-item ng-repeat="user in vm.userData">
                 <md-item-content flex layout="horizontal" ng-click="vm.editUser(user)">
                     <div flex class="user-cell">
-                        <md-text-float label="Username" ng-if="user.editing" ng-model="user.username"></md-text-float>
-                        <span class="cell-span" ng-if="!user.editing">{{user.username}}<md-tooltip>Username</md-tooltip></span>
+                        <md-text-float ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"></md-text-float>
+                        <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
                     </div>
                     <div flex class="user-cell">
                         <md-text-float label="Email" ng-if="user.editing" ng-model="user.email"></md-text-float>
@@ -35,13 +35,20 @@
                                 Save User Changes
                             </md-tooltip>
                         </md-button>
-                        <md-button md-theme="red" aria-label="Cancel User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
-                                   ng-click="vm.revertUser(user)">
-                            <span class="fa fa-times"></span>
+                        <md-button md-theme="amber" aria-label="Undo User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
+                                   ng-click="vm.undoUserChanges(user)">
+                            <span class="fa fa-undo"></span>
                             <md-tooltip>
-                                Cancel User Changes
+                                Undo User Changes
                             </md-tooltip>
                         </md-button>
+                        <!--<md-button md-theme="red" aria-label="Disable User" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"-->
+                                   <!--ng-click="vm.deleteUser(user)">-->
+                            <!--<span class="fa fa-times"></span>-->
+                            <!--<md-tooltip>-->
+                                <!--Disable User-->
+                            <!--</md-tooltip>-->
+                        <!--</md-button>-->
                     </div>
                 </md-item-content>
             </md-item>
