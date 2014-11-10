@@ -106,7 +106,7 @@
 
 <!--<section >-->
 <!--dont use md-whiteframe class because it leaves black artifacts-->
-<div layout="horizontal" layout-fill>
+<md-content layout="horizontal" layout-fill>
     <md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
             <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
@@ -144,7 +144,7 @@
 
     <md-sidenav class="md-sidenav-right" component-id="right-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
-            <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">User Details</h1>
+            <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">User Navigation</h1>
         </md-toolbar>
         <md-content class="md-content-padding">
             <md-list>
@@ -160,14 +160,14 @@
     </md-sidenav>
 
     <div layout="vertical" flex>
-        <md-toolbar ng-show="vm.showNavbar" class="slideInVertically">
+        <md-toolbar ng-show="vm.showNavbar" class="slideInVertically md-whiteframe-z1">
             <div class="md-toolbar-tools" layout="horizontal">
 
-                <button class="button-toolbar-flat-icon"
+                <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
                         style="margin-left: 0px; padding: 0px;"
                         ng-click="vm.toggleLeftSidenav()">
                     <span class="fa fa-navicon"></span>
-                </button>
+                </md-button>
 
                 <div class="btn-group"
                      ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="horizontal">
@@ -202,15 +202,15 @@
                     <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> Local</span>
                 </div>
 
-                <button class="button-toolbar-flat-icon"
+                <md-button aria-label="Home" class="button-toolbar-flat-icon"
                         ng-click="vm.stateGo('landing')"><span>Home</span>
-                </button>
+                </md-button>
 
                 <div class="alarms-warning-container">
-                    <button class="unselectable button-toolbar-flat-icon navbar-btn"
+                    <md-button aria-label="Alarms" class="button-toolbar-flat-icon"
                             ng-click="vm.stateGo('alarms')">
                         <span class="fa fa-warning"></span>
-                    </button>
+                    </md-button>
                     <span ng-if="newAlarmWarnCount > 0"
                     class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>
                     <span ng-if="newAlarmErrorCount > 0"
@@ -222,17 +222,17 @@
                     <!--<span class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>-->
                 </div>
 
-                <button class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()">
+                <md-button aria-label="Right Navbar" class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()">
                     <span class="fa fa-user"></span>
-                </button>
+                </md-button>
             </div>
 
         </md-toolbar>
-        <div id="ui-view-container-div" ui-view flex class="md-content-padding" style="overflow: auto;">
-        </div>
+        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" style="overflow: auto;">
+        </md-content>
     </div>
     <!--</section>-->
-</div>
+</md-content>
 <button class="unselectable toolbar-collapse-button"
         ng-click="vm.showNavbar = !vm.showNavbar">
     <i class="fa"

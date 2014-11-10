@@ -3,6 +3,7 @@
         'ui.bootstrap', 'ui.utils', 'ui.router',
         'adf',
         'ngAnimate',
+        'katGui.admin',
         'katGui.alarms',
         'katGui.d3',
         'katGui.health',

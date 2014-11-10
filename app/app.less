@@ -77,19 +77,12 @@
 }
 
 .button-toolbar-flat-icon {
-    border: 0;
-    color: white;
-    background: none;
     padding-left: 2px;
     padding-right: 2px;
     height: 55px;
 
     span {
         font-size: 29px;
-    }
-
-    &:hover {
-        color: @navbar-text-hover-color;
     }
 
     &:focus {
@@ -132,8 +125,6 @@ body {
     font-family: RobotoDraft;
     min-width: @app-min-width;
     padding: 0 !important;
-//    overflow-y: hidden;
-//    overflow: hidden;
 }
 
 .view-container {
@@ -181,8 +172,6 @@ body {
 }
 
 md-sidenav {
-    //  transition: none !important;
-    //  height: 100%;
 
     .menu-item.active {
         background-color: #eee;
@@ -268,3 +257,8 @@ md-sidenav {
     }
 }
 
+.alarms-warning-container {
+    md-button {
+        margin-top: 8px;
+    }
+}

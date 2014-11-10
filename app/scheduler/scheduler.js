@@ -7,7 +7,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         'MANUAL'])
     .controller('SchedulerCtrl', SchedulerCtrl);
 
-    function SchedulerCtrl(SCHEDULE_BLOCK_TYPES) {
+    function SchedulerCtrl($scope, SCHEDULE_BLOCK_TYPES) {
 
         var vm = this;
         vm.types = SCHEDULE_BLOCK_TYPES;
@@ -131,8 +131,8 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         });
 
         angular.element('body').bind("click", function(e) {
-            if (!e.target.parentNode.classList.contains('schedule-item-input') &&
-                !e.target.parentNode.parentNode.classList.contains('schedule-item-input')) {
+            if (!e.target.parentNode.classList.contains('schedule-item-input')) {// &&
+                //!e.target.parentNode.parentNode.classList.contains('schedule-item-input')) {
 
                 closeTypeMenu();
                 closeDatePickerMenu();
@@ -193,12 +193,19 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
                 vm.showTypePicker = false;
                 vm.currentRowTypePickerIndex = -1;
             }
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
         }
 
         function closeDatePickerMenu () {
             if (vm.showDatePicker) {
                 vm.showDatePicker = false;
                 vm.currentRowDatePickerIndex = -1;
+            }
+            if (!$scope.$$phase) {
+                $scope.$digest();
             }
         }
 

@@ -1,13 +1,51 @@
-<div class="view-container panel panel-default" ng-controller="AdminCtrl">
+<div class="view-container" ng-controller="AdminCtrl as vm">
 
-    <div class="panel-heading">
-        A heading for our panel
+    <div class="md-whiteframe-z1" layout="vertical">
+        <md-toolbar class="panel-toolbar">
+            <div class="md-toolbar-tools" layout="horizontal">
+                <span flex>Users</span>
+                <md-button md-theme="default" aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()">
+                    <span class="fa fa-plus"></span>
+                    <md-tooltip>Create A User</md-tooltip>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-list flex class="user-list">
+            <md-item ng-repeat="user in vm.userData">
+                <md-item-content flex layout="horizontal" ng-click="vm.editUser(user)">
+                    <div flex class="user-cell">
+                        <md-text-float label="Username" ng-if="user.editing" ng-model="user.username"></md-text-float>
+                        <span class="cell-span" ng-if="!user.editing">{{user.username}}<md-tooltip>Username</md-tooltip></span>
+                    </div>
+                    <div flex class="user-cell">
+                        <md-text-float label="Email" ng-if="user.editing" ng-model="user.email"></md-text-float>
+                        <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
+                    </div>
+                    <div flex class="user-cell">
+                        <md-text-float label="Role" ng-if="user.editing" ng-model="user.role"></md-text-float>
+                        <span class="cell-span" ng-if="!user.editing">{{user.role}}<md-tooltip>Role</md-tooltip></span>
+                    </div>
+
+                    <span flex></span>
+                    <div flex ng-if="user.editing" class="user-editing-buttons">
+                        <md-button md-theme="green" aria-label="Save User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
+                                   ng-click="vm.saveUser(user, $event)">
+                            <span class="fa fa-check"></span>
+                            <md-tooltip>
+                                Save User Changes
+                            </md-tooltip>
+                        </md-button>
+                        <md-button md-theme="red" aria-label="Cancel User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
+                                   ng-click="vm.revertUser(user)">
+                            <span class="fa fa-times"></span>
+                            <md-tooltip>
+                                Cancel User Changes
+                            </md-tooltip>
+                        </md-button>
+                    </div>
+                </md-item-content>
+            </md-item>
+        </md-list>
     </div>
-    <div class="panel-body">
-        <p>this is where we'll put some controls</p>
-    </div>
 
-    <table class="table">
-
-    </table>
 </div>
