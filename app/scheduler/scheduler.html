@@ -11,7 +11,7 @@
                         <div class="md-toolbar-tools">
                             <span>Schedule Drafts</span>
                             <span flex></span>
-                            <md-button md-theme="default" aria-label="Create A Draft" style="margin-right: 17px;" class="" ng-click="vm.addDraftSchedule()">
+                            <md-button aria-label="Create A Draft" style="margin-right: 17px;" class="" ng-click="vm.addDraftSchedule()">
                                 <span class="fa fa-plus"></span>
                                 <md-tooltip>Create A Schedule Draft</md-tooltip>
                             </md-button>
@@ -47,7 +47,7 @@
                                         <span class="caret"></span>
                                     </md-button>
 
-                                    <md-button md-theme="default" aria-label="Move Draft To Schedule" style="margin-left: 10px;" class="md-fab md-button-fab-small"
+                                    <md-button aria-label="Move Draft To Schedule" style="margin-left: 10px;" class="md-fab md-button-fab-small"
                                                ng-click="vm.moveDraftRowToSchedule($index)">
                                         <span class="fa fa-chevron-down md-fab-fa-icon-small"></span>
                                         <md-tooltip>
@@ -98,7 +98,7 @@
                                     <span style="margin-right: 16px;">{{item.type}}</span>
                                     <span ng-if="item.desiredTime">{{item.desiredTime}}</span>
 
-                                    <md-button md-theme="default" aria-label="Move Schedule To Draft" style="margin-left: 10px;" class="md-fab md-button-fab-small"
+                                    <md-button aria-label="Move Schedule To Draft" style="margin-left: 10px;" class="md-fab md-button-fab-small"
                                                ng-click="vm.moveScheduleRowToDraft($index, $event)">
                                         <span class="fa fa-chevron-up md-fab-fa-icon-small"></span>
                                         <md-tooltip>
@@ -114,7 +114,7 @@
                                         </md-tooltip>
                                     </md-button>
 
-                                    <md-button md-theme="default" aria-label="Move Schedule To Finished" style="margin-left: 10px;" class="md-fab md-button-fab-small"
+                                    <md-button aria-label="Move Schedule To Finished" style="margin-left: 10px;" class="md-fab md-button-fab-small"
                                                ng-click="vm.moveScheduleRowToFinished($index, $event)">
                                         <span class="fa fa-chevron-down md-fab-fa-icon-small"></span>
                                         <md-tooltip>

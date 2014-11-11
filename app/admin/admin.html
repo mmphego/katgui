@@ -4,7 +4,7 @@
         <md-toolbar class="panel-toolbar">
             <div class="md-toolbar-tools" layout="horizontal">
                 <span flex>Users</span>
-                <md-button md-theme="default" aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()">
+                <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()">
                     <span class="fa fa-plus"></span>
                     <md-tooltip>Create A User</md-tooltip>
                 </md-button>
@@ -50,6 +50,7 @@
                             <!--</md-tooltip>-->
                         <!--</md-button>-->
                     </div>
+                    <md-tooltip ng-if="!user.editing">Click to Edit</md-tooltip>
                 </md-item-content>
             </md-item>
         </md-list>

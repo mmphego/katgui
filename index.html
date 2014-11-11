@@ -6,10 +6,16 @@
     <meta charset="utf-8">
     <link href="bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-material/themes/indigo-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/amber-theme.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-material/themes/blue-theme.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-material/themes/light-blue-dark-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/blue-grey-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/deep-purple-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/lime-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/purple-theme.css" rel="stylesheet" type="text/css">
+    <link href="bower_components/angular-material/themes/grey-theme.css" rel="stylesheet" type="text/css">
     <link href="bower_components/angular-material/themes/red-theme.css" rel="stylesheet" type="text/css">
-    <link href="bower_components/angular-material/themes/amber-theme.css" rel="stylesheet" type="text/css">
+
     <link href="bower_components/angular-material/themes/green-theme.css" rel="stylesheet" type="text/css">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
@@ -36,7 +42,7 @@
 <!--})();-->
 <!--</script>-->
 
-<body ng-controller="ApplicationCtrl as vm" md-theme="indigo" layout="horizontal">
+<body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" layout="horizontal">
 
 <!-- Livereload script for development only (stripped during dist build) -->
 <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
@@ -109,7 +115,7 @@
 <!--dont use md-whiteframe class because it leaves black artifacts-->
 <md-content layout="horizontal" layout-fill>
     <md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-        <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
+        <md-toolbar md-theme="{{themeSecondary}}" class="md-medium-tall">
             <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">katGUI</h1>
         </md-toolbar>
         <md-content class="md-content-padding">
@@ -144,7 +150,7 @@
     </md-sidenav>
 
     <md-sidenav class="md-sidenav-right" component-id="right-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-        <md-toolbar md-theme="light-blue-dark" class="md-medium-tall">
+        <md-toolbar md-theme="{{themeSecondary}}" class="md-medium-tall">
             <h1 class="md-toolbar-tools" style="padding-top:25px; padding-left: 25px; font-size: 1.5em;">User Navigation</h1>
         </md-toolbar>
         <md-content class="md-content-padding">
@@ -173,7 +179,7 @@
                 <div class="btn-group"
                      ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="horizontal">
 
-                    <md-button style="height: 40px;" md-theme="blue" class="md-primary md-raised"
+                    <md-button style="height: 40px;" md-theme="{{themePrimaryButtons}}" class="md-primary md-raised"
                                aria-label="Operator Control"
                                ng-mouseenter="vm.operatorControlHover = true"
                                ng-mouseleave="vm.operatorControlHover = false"
@@ -185,7 +191,7 @@
                                 ng-mouseenter="vm.operatorControlMenuHover = true"
                                 ng-mouseleave="vm.operatorControlMenuHover = false"
                                 role="menu">
-                        <div md-theme="default" style="color: rgba(0,0,0,0.73)" layout="vertical">
+                        <div style="color: rgba(0,0,0,0.73)" layout="vertical">
                             <md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>
                             <md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>
                             <md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>

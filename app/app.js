@@ -40,6 +40,11 @@
 
         var vm = this;
 
+        //defaults: primary = indigo, secondary = light-blue-dark, primary-buttons = blue
+        $rootScope.themePrimary = "blue-grey";
+        $rootScope.themeSecondary = "deep-purple";
+        $rootScope.themePrimaryButtons = "indigo";
+
         vm.showNavbar = true;
         $rootScope.showNavbar = true;
 
@@ -194,12 +199,14 @@
         $scope.$on('$destroy', unbindAlarmMessage);
     }
 
-    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, USER_ROLES) {
+    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, USER_ROLES) {
 
         //disable this in production for performance boost
         //batarang uses this for scope inspection
         //https://docs.angularjs.org/guide/production
         //$compileProvider.debugInfoEnabled(false);
+
+        //$mdThemingProvider.alwaysWatchTheme(true);
 
         $stateProvider.state('login', {
             url: '/login',

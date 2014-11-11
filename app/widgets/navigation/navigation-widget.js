@@ -15,9 +15,12 @@
             });
     }
 
-    function NavigationWidgetCtrl($state) {
+    //include rootscope for theming binding
+    function NavigationWidgetCtrl($rootScope, $state) {
 
         var vm = this;
+
+        vm.themePrimaryButtons = $rootScope.themePrimaryButtons;
 
         vm.stateGo = function (newState) {
             $state.go(newState);
