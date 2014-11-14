@@ -1,9 +1,9 @@
-<div class="panel panel-default" style="box-shadow: none;" ng-controller="GanttWidgetCtrl as vm">
+<div layout="vertical" class="" style="box-shadow: none;" ng-controller="GanttWidgetCtrl as vm">
 
-    <div class="panel-heading">
+    <md-toolbar class="widget-toolbar">
         <!--<h3>Current Schedule Blocks</h3>-->
 
-        <div class="">
+        <div style="margin-left: 300px; margin-top: 8px;">
             <span class="">Scale</span>
             <select class="form-control" style="display: inline; width: 100px;" ng-model="vm.scale"
                     ng-options="s for s in ['hour', 'day', 'week', 'month']"></select>
@@ -11,7 +11,7 @@
             <select class="form-control" style="display: inline; width: 100px;" ng-model="vm.mode"
                     ng-options="m for m in ['name', 'date', 'custom']"></select>
         </div>
-    </div>
+    </md-toolbar>
 
     <div class="panel-body" style="background-color: white;">
         <gantt first-day-of-week="1"

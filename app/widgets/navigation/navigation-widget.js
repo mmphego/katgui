@@ -21,6 +21,15 @@
         var vm = this;
 
         vm.themePrimaryButtons = $rootScope.themePrimaryButtons;
+        vm.themePrimary = $rootScope.themePrimary;
+
+        $rootScope.$watch('themePrimaryButtons', function (newVal) {
+            vm.themePrimaryButtons = newVal;
+        });
+
+        $rootScope.$watch('themePrimary', function (newVal) {
+            vm.themePrimary = newVal;
+        });
 
         vm.stateGo = function (newState) {
             $state.go(newState);

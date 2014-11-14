@@ -1,0 +1,22 @@
+<div flex style="padding: 24px;" ng-controller="ConfigCtrl as vm">
+
+    <div layout="vertical" class="md-whiteframe-z1">
+        <md-toolbar md-theme="{{themePrimary}}">
+            <div class="md-toolbar-tools">
+                <span flex>Configuration Options</span>
+            </div>
+        </md-toolbar>
+        <md-content layout="vertical" layout-padding>
+            <div class="config-div-item">
+                <h3 flex>Themes</h3>
+                <select style="width: 200px; margin-left: 8px;" class="form-control" ng-model="vm.selectedTheme" ng-options="theme.name for theme in vm.themes" ng-change="vm.selectedThemeChanged(vm.selectedTheme)"></select>
+            </div>
+            <div class="config-div-item" style="border: 0">
+                <h3>Alarms</h3>
+                <md-checkbox class="alarms-tools-checkbox" ng-model="vm.showLargeAlarms" aria-label="Show Detailed Alarm Notifications">Show Detailed Alarm Notifications</md-checkbox>
+            </div>
+
+        </md-content>
+    </div>
+
+</div>

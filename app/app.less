@@ -8,6 +8,7 @@
 @import "weather/weather";
 @import "sensor-graph/sensor-graph";
 @import "admin/admin";
+@import "config/config";
 @import "alarms/alarms";
 @import "widgets/navigation/navigation-widget";
 @import "scheduler/scheduler";
@@ -51,6 +52,8 @@
     position: absolute;
     top: 0px;
     left: 50%;
+    width: 46px;
+    height: 25px;
     margin-left: auto;
     margin-right: auto;
     color: white;
@@ -58,6 +61,7 @@
     border: 0;
     background: none;
     z-index: 1000;
+    color: #FAFAFA;
 
     i {
         font-size: 16px;
@@ -73,13 +77,20 @@
 }
 
 .toolbar-collapse-button-grey {
-    color: lightgrey;
+    color: transparent;
+    width: 100%;
+    left: 23px;
+
+    &:hover {
+        color: #E0E0E0;
+    }
 }
 
 .button-toolbar-flat-icon {
     padding-left: 2px;
     padding-right: 2px;
     height: 55px;
+    width: 55px;
 
     span {
         font-size: 29px;
@@ -142,32 +153,48 @@ body {
     margin: 5px;
 }
 
+.side-nav-title {
+    padding-top:10px;
+    padding-left: 25px;
+    font-size: 1.5em;
+}
+
 .menu-item {
-    background-color: #fff;
-    border-width: 0;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     cursor: pointer;
-    display: block;
-    color: #333;
-    font-size: inherit;
-    line-height: 40px;
-    max-height: 40px;
-    margin: 0;
-    outline: 0;
-    padding: 0 28px;
-    position: relative;
-    text-align: left;
-    text-decoration: none;
-    width: 100%;
-    z-index: 1;
-    -webkit-transition: .2s linear;
-    -webkit-transition-property: max-height, background-color;
-    -moz-transition: .2s linear;
-    -moz-transition-property: max-height, background-color;
-    transition: .2s linear;
-    transition-property: max-height, background-color;
+    color: #757575;
+    height: 48px;
+    padding-left: 24px;
+
+    button {
+        margin-left: 24px;
+        background-color: #fff;
+        border-width: 0;
+        display: block;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    span {
+        width: 27px;
+        font-size: 20px;
+        text-align: center;
+    }
 
     &:hover {
-        color: #999;
+        background-color: #F5F5F5;
+
+        button {
+            background-color: #F5F5F5;
+        }
+    }
+
+    &:active {
+        background-color: #E0E0E0;
+
+        button {
+            background-color: #E0E0E0;
+        }
     }
 }
 
@@ -185,6 +212,30 @@ md-sidenav {
     color: #fff;
     z-index: 1;
     font-size: 1.5em;
+}
+
+.panel-body {
+    padding: 0;
+}
+
+.panel-heading {
+    margin-top: 16px;
+    margin-left: 16px;
+    background: transparent !important;
+    height: 0;
+    padding: 0;
+    border: 0;
+    position: absolute;
+    z-index: 3;
+    span {
+        margin-left: 32px;
+        
+    }
+}
+
+.widget-toolbar {
+    min-height: 48px;
+    max-height: 48px;
 }
 
 .panel-toolbar-small {
@@ -223,8 +274,9 @@ md-sidenav {
 /* After the transition this will be the only class remaining */
 .slideInVertically {
     transition: all 0.25s ease-out;
-    max-height: 64px;
-    min-height: 64px;
+    max-height: 56px;
+    min-height: 56px;
+    margin-bottom: 16px;
     opacity: 1;
     overflow: visible;
 }
@@ -233,6 +285,7 @@ md-sidenav {
 .slideInVertically.ng-hide-remove {
     max-height: 0px;
     min-height: 0px;
+    margin-bottom: 0px;
     overflow: hidden;
 }
 
@@ -240,13 +293,15 @@ md-sidenav {
 .slideInVertically.ng-hide-add.ng-hide-add-active {
     max-height: 0px;
     min-height: 0px;
+    margin-bottom: 0px;
     overflow: hidden;
 }
 
 /* Will transition towards this state */
 .slideInVertically.ng-hide-remove.ng-hide-remove-active {
-    max-height: 64px;
-    min-height: 64px;
+    max-height: 56px;
+    min-height: 56px;
+    margin-bottom: 16px;
     overflow: visible;
 }
 
@@ -258,7 +313,11 @@ md-sidenav {
 }
 
 .alarms-warning-container {
-    md-button {
-        margin-top: 8px;
-    }
+//    button {
+//        margin-top: 8px;
+//    }
+}
+
+.dashboard-container h1 {
+    min-height: 12px;
 }

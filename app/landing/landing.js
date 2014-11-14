@@ -4,7 +4,7 @@
         .controller('LandingCtrl', LandingCtrl);
 
     var defaultDashboardConfig = {
-        title: "Dashboard",
+        title: " ",
         structure: "12/4-4-4",
         rows: [
             {

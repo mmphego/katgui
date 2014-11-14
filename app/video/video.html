@@ -1,7 +1,7 @@
 <div style="position: relative;" class="view-container-full" ng-controller="VideoCtrl as vm" ng-mouseenter="vm.showVideoControls = true" ng-mouseleave="vm.showVideoControls = false">
     <img width="100%" alt="Could not load video image..." src="http://192.168.10.68:8081/"/>
 
-    <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="horizontal">
+    <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="horizontal" md-theme-watch="true">
         <div layout="horizontal" layout-align="center end">
             <md-slider style="background: transparent; width: 250px;" flex min="0" max="100" ng-model="vm.zoom" aria-label="Zoom Slider">
             </md-slider>

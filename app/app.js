@@ -5,6 +5,7 @@
         'ngAnimate',
         'katGui.admin',
         'katGui.alarms',
+        'katGui.config',
         'katGui.d3',
         'katGui.health',
         'katGui.widgets.navigationWidget',
@@ -32,21 +33,52 @@
             control: 'control',
             expert: 'expert'
         })
+        .constant('THEMES', [
+            {
+                name: 'Blue-Grey',
+                primary: 'blue-grey',
+                secondary: 'deep-purple',
+                primaryButtons: 'indigo'
+            },
+            {
+                name: 'Indigo',
+                primary: 'indigo',
+                secondary: 'teal',
+                primaryButtons: 'blue'
+            },
+            {
+                name: 'Teal',
+                primary: 'teal',
+                secondary: 'amber',
+                primaryButtons: 'indigo'
+            }]
+        )
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, USER_ROLES, AuthService, Session, MonitorService, ControlService) {
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, USER_ROLES, AuthService, Session, MonitorService, ControlService) {
 
         var vm = this;
 
-        //defaults: primary = indigo, secondary = light-blue-dark, primary-buttons = blue
-        $rootScope.themePrimary = "blue-grey";
-        $rootScope.themeSecondary = "deep-purple";
-        $rootScope.themePrimaryButtons = "indigo";
+        var theme = _.find(THEMES, function (theme) {
+            return $localStorage['selectedTheme'] === theme.name;
+        });
+
+        if (!theme) {
+            theme = THEMES[0];
+        }
+
+        $rootScope.themePrimary = theme.primary;
+        $rootScope.themeSecondary = theme.secondary;
+        $rootScope.themePrimaryButtons = theme.primaryButtons;
 
         vm.showNavbar = true;
         $rootScope.showNavbar = true;
+        $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
+        if (typeof $rootScope.showLargeAlarms === 'undefined') {
+            $rootScope.showLargeAlarms = false;
+        }
 
         $scope.$watch('showNavbar', function (value) {
             $rootScope.showNavbar = value;
@@ -106,6 +138,10 @@
             return $state.current.name === page;
         };
 
+        vm.currentStateUpperCase = function () {
+            return $state.current.title;
+        };
+
         vm.operatorActionMenuItemSelected = function () {
             $state.go('operatorControl');
             vm.operatorControlMenuHover = false;
@@ -147,8 +183,8 @@
         $interval(updateTimeDisplay, 1000); //update clock every second
 
         $timeout(function () {
-            //MonitorService.connectListener();
-            //ControlService.connectListener();
+            MonitorService.connectListener();
+            ControlService.connectListener();
         }, 200);
 
         $rootScope.alarmsData = [];
@@ -206,11 +242,12 @@
         //https://docs.angularjs.org/guide/production
         //$compileProvider.debugInfoEnabled(false);
 
-        //$mdThemingProvider.alwaysWatchTheme(true);
+        $mdThemingProvider.alwaysWatchTheme(true);
 
         $stateProvider.state('login', {
             url: '/login',
             templateUrl: 'app/login-form/login-form.html',
+            title: 'Login',
             data: {
                 authorizedRoles: [USER_ROLES.noAuth]
             }
@@ -218,6 +255,7 @@
         $stateProvider.state('admin', {
             url: '/admin',
             templateUrl: 'app/admin/admin.html',
+            title: 'User Admin',
             data: {
                 authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
@@ -225,13 +263,23 @@
         $stateProvider.state('alarms', {
             url: '/alarms',
             templateUrl: 'app/alarms/alarms.html',
+            title: 'Alarms',
             data: {
                 authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
+        $stateProvider.state('config', {
+            url: '/config',
+            templateUrl: 'app/config/config.html',
+            title: 'Configure katGUI',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
             }
         });
         $stateProvider.state('health', {
             url: '/health',
             templateUrl: 'app/health/health.html',
+            title: 'Health & State',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -239,6 +287,7 @@
         $stateProvider.state('landing', {
             url: '/home',
             templateUrl: 'app/landing/landing.html',
+            title: 'Home',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -246,6 +295,7 @@
         $stateProvider.state('operatorControl', {
             url: '/operatorControl',
             templateUrl: 'app/operator-control/operator-control.html',
+            title: 'Operator Control',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
@@ -253,6 +303,7 @@
         $stateProvider.state('scheduler', {
             url: '/scheduler',
             templateUrl: 'app/scheduler/scheduler.html',
+            title: 'Scheduler',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
@@ -260,6 +311,7 @@
         $stateProvider.state('sensorGraph', {
             url: '/sensorGraph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
+            title: 'Sensor Graphs',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
@@ -267,6 +319,7 @@
         $stateProvider.state('about', {
             url: '/about',
             templateUrl: 'app/about/about.html',
+            title: 'About',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -274,6 +327,7 @@
         $stateProvider.state('video', {
             url: '/video',
             templateUrl: 'app/video/video.html',
+            title: 'Video',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -281,6 +335,7 @@
         $stateProvider.state('weather', {
             url: '/weather',
             templateUrl: 'app/weather/weather.html',
+            title: 'Weather',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

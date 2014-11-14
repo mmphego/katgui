@@ -3,7 +3,7 @@
         <md-toolbar class="md-theme-dark md-tall" layout-align="center center">
             <h1>katGUI</h1>
         </md-toolbar>
-        <md-content md-theme="{{themePrimaryButtons}}">
+        <md-content md-theme="{{themePrimaryButtons}}" md-theme-watch="true">
             <form ng-submit="vm.login(vm.credentials)" layout="vertical" layout-align="center center" layout-padding>
                 <md-text-float class="long-input" flex type="text" ng-model="vm.credentials.username" label="Username"></md-text-float>
                 <md-text-float class="long-input" flex type="password" ng-model="vm.credentials.password" label="Password"></md-text-float>

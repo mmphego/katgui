@@ -1,7 +1,7 @@
 <div class="view-container-full" ng-controller="HealthCtrl as vm">
 
     <div ng-show="vm.showSelect" class="centered-content">
-        <select class="form-control health-map-style-select" ng-model="vm.mapType" ng-options="item.value as item.name for item in vm.items"></select>
+            <select class="form-control health-map-style-select" ng-model="vm.mapType" ng-options="item.value as item.name for item in vm.items"></select>
     </div>
     <d3-treemap class="treemap-container" data="vm.d3TreemapData" chart-size="vm.treeChartSize" map-type="vm.mapType"></d3-treemap>
 
