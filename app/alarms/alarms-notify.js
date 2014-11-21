@@ -9,7 +9,7 @@
             restrict: 'A',
             template: [
             '<div ng-class="vm.getActiveClass()">',
-            '   <div class="alarm-item" ng-repeat="message in vm.messages" ng-if="message.priority === \'new\'" ng-class="vm.computeSeverityClasses(message)">',
+            '   <div class="alarm-item" ng-repeat="message in vm.messages | orderBy:\'dateUnix\'" ng-if="message.priority === \'new\'" ng-class="vm.computeSeverityClasses(message)">',
             '       <div>',
             '           <ul>',
             '               <li class="li-inline"><button class="alarm-close" ng-click="vm.acknowledgeMessage(message)">Ack</button></li>',
