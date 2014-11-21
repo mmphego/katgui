@@ -57,7 +57,7 @@
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, USER_ROLES, AuthService, Session, MonitorService, ControlService) {
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, USER_ROLES, AuthService, Session, MonitorService, ControlService, KatGuiUtil) {
 
         var vm = this;
 
@@ -176,21 +176,35 @@
         vm.localTime = '';
 
         var updateTimeDisplay = function () {
+            var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
+            var localTime = moment($rootScope.serverTimeOnLoad, 'X');
+            vm.utcTime = utcTime.format('HH:mm:ss');
+            vm.localTime = localTime.format('HH:mm:ss');
+
+            var longitude = 18.49; //cape town longitude
+            var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
+            vm.localSiderealTime = KatGuiUtil.localSiderealTime(KatGuiUtil.julianDay (utcTime.date(), utcTime.month(), utcTime.year(), fractionalHours), longitude);
             $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
-            vm.utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss');
-            vm.localTime = moment($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss');
         };
 
-        ControlService.getCurrentServerTime()
-            .success(function (serverTime) {
-                $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                console.log('GET katcontrol server time as (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
-            })
-            .error(function (error) {
-                console.log(error);
-            });
+        function syncTimeWithServer() {
+            ControlService.getCurrentServerTime()
+                .success(function (serverTime) {
+                    $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
+                    console.log('GET katcontrol server time as (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
+                })
+                .error(function (error) {
+                    console.log(error);
+                });
+        }
+
+        syncTimeWithServer();
 
         $interval(updateTimeDisplay, 1000); //update clock every second
+
+        $interval(function() {
+            syncTimeWithServer();
+        }, 60000);
 
         $timeout(function () {
             MonitorService.connectListener();

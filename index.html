@@ -247,8 +247,11 @@
                 <!--</div>-->
 
                 <span flex></span>
-
-                <div>
+                <div ng-if="vm.localSiderealTime">
+                    <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> LST</span>
+                    <md-tooltip>Local Sidereal Time</md-tooltip>
+                </div>
+                <div ng-if="vm.utcTime">
                     <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> UTC</span><br/>
                     <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> Local</span>
                 </div>
