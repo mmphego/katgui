@@ -60,7 +60,7 @@
         };
 
         this.onSockJSMessage = function (e) {
-            console.log(e);
+            //console.log(e);
 
             var messages = JSON.parse(e.data);
 
@@ -78,7 +78,7 @@
                             messageObj = JSON.parse(message);
                         }
 
-                        console.log(messageObj);
+                        //console.log(messageObj);
 
                         if (messageObj.name.indexOf('kataware:') === 0 &&
                             messageObj.status !== 'nominal' &&

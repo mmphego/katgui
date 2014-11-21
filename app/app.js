@@ -176,16 +176,18 @@
         vm.localTime = '';
 
         var updateTimeDisplay = function () {
-            var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
-            var localTime = moment($rootScope.serverTimeOnLoad, 'X');
-            vm.utcTime = utcTime.format('HH:mm:ss');
-            vm.localTime = localTime.format('HH:mm:ss');
+            if ($rootScope.serverTimeOnLoad > 0) {
+                var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
+                var localTime = moment($rootScope.serverTimeOnLoad, 'X');
+                vm.utcTime = utcTime.format('HH:mm:ss');
+                vm.localTime = localTime.format('HH:mm:ss');
 
-            //TODO: get actual longitude to use
-            var longitude = 21.3692096; //site longitude
-            var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
-            vm.localSiderealTime = KatGuiUtil.localSiderealTime(KatGuiUtil.julianDay (utcTime.date(), utcTime.month(), utcTime.year(), fractionalHours), longitude);
-            $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
+                //TODO: get actual longitude to use
+                var longitude = 21.3692096; //site longitude
+                var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
+                vm.localSiderealTime = KatGuiUtil.localSiderealTime(KatGuiUtil.julianDay (utcTime.date(), utcTime.month(), utcTime.year(), fractionalHours), longitude);
+                $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
+            }
         };
 
         function syncTimeWithServer() {
@@ -195,17 +197,19 @@
                     console.log('Syncing current time with katcontrol server (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
-                    console.log(error);
+                    console.log("Error syncing time with katcontrol portal! " + error);
+                    $rootScope.serverTimeOnLoad = 0;
+                    vm.localSiderealTime = "Error syncing time!";
                 });
         }
 
         syncTimeWithServer();
 
-        $interval(updateTimeDisplay, 1000); //update clock every second
+        $interval(updateTimeDisplay, 1000); //update local clock every second
 
         $interval(function() {
             syncTimeWithServer();
-        }, 60000);
+        }, 600000); //sync time every 10 minutes
 
         $timeout(function () {
             MonitorService.connectListener();
