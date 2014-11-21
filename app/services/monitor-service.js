@@ -8,23 +8,9 @@
         var pendingSubscribeObjects = [];
         var urlBase = 'http://192.168.10.127:8030';
 
-        this.connection = null;
+        var connection = null;
 
-        this.onSockJSOpen = function () {
-            if (this.connection && this.connection.readyState) {
-                console.log('Monitor Connection Established.');
-                this.subscribeToAlarms();
-
-                pendingSubscribeObjects.forEach(function (obj) {
-                    obj.subscribeName = null;
-                    this.connection.send(JSON.stringify(obj));
-                });
-
-                pendingSubscribeObjects = [];
-            }
-        };
-
-        this.subscribeToAlarms = function () {
+        function subscribeToAlarms() {
             console.log('Monitor subscribed to kataware:alarm*...');
             var jsonRPC = {
                 'jsonrpc': '2.0',
@@ -32,8 +18,8 @@
                 'params': ['kataware:alarm*'],
                 'id': 'abe3d23201'
             };
-            this.connection.send(JSON.stringify(jsonRPC));
-        };
+            connection.send(JSON.stringify(jsonRPC));
+        }
 
         this.subscribeToReceptorUpdates = function () {
 
@@ -47,16 +33,30 @@
                 'id': 'abe3d23201'
             };
 
-            if (this.connection && this.connection.readyState) {
-                this.connection.send(JSON.stringify(jsonRPC));
+            if (connection && connection.readyState) {
+                connection.send(JSON.stringify(jsonRPC));
             } else {
                 pendingSubscribeObjects.push(jsonRPC);
             }
         };
 
+        this.onSockJSOpen = function () {
+            if (connection && connection.readyState) {
+                console.log('Monitor Connection Established.');
+                subscribeToAlarms();
+
+                pendingSubscribeObjects.forEach(function (obj) {
+                    obj.subscribeName = null;
+                    connection.send(JSON.stringify(obj));
+                });
+
+                pendingSubscribeObjects = [];
+            }
+        };
+
         this.onSockJSClose = function () {
             console.log('Disconnecting Monitor Connection');
-            this.connection = null;
+            connection = null;
         };
 
         this.onSockJSMessage = function (e) {
@@ -108,17 +108,17 @@
 
         this.connectListener = function () {
             console.log('Monitor Connecting...');
-            this.connection = new SockJS(urlBase + '/monitor');
-            this.connection.onopen = this.onSockJSOpen;
-            this.connection.onmessage = this.onSockJSMessage;
-            this.connection.onclose = this.onSockJSClose;
+            connection = new SockJS(urlBase + '/monitor');
+            connection.onopen = this.onSockJSOpen;
+            connection.onmessage = this.onSockJSMessage;
+            connection.onclose = this.onSockJSClose;
 
-            return this.connection !== null;
+            return connection !== null;
         };
 
         this.disconnectListener = function () {
-            if (this.connection) {
-                this.connection.close();
+            if (connection) {
+                connection.close();
             }
         };
 

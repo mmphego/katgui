@@ -54,10 +54,10 @@
                             </span>
                         </div>
                         <div class="md-tile-content alarms-list-item-content" layout="horizontally" layout-padding style="z-index: 1">
-                            <h3 flex style="max-width: 170px;"><b>{{vm.item.date}}</b></h3>
-                            <h4 flex style="max-width: 100px; text-overflow: ellipsis"><i>{{vm.item.priority}}</i></h4>
-                            <h4 flex style="max-width: 260px; text-overflow: ellipsis">{{vm.item.name}}</h4>
-                            <h4 flex>{{vm.item.message}}</h4>
+                            <h3 flex style="max-width: 170px;"><b>{{item.date}}</b></h3>
+                            <h4 flex style="max-width: 100px; text-overflow: ellipsis"><i>{{item.priority}}</i></h4>
+                            <h4 flex style="max-width: 260px; text-overflow: ellipsis">{{item.name}}</h4>
+                            <h4 flex>{{item.message}}</h4>
                         </div>
 
                         <div class="background-div background-gradient-div-warn" ng-switch-when="warn"></div>

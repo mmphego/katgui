@@ -181,7 +181,8 @@
             vm.utcTime = utcTime.format('HH:mm:ss');
             vm.localTime = localTime.format('HH:mm:ss');
 
-            var longitude = 18.49; //cape town longitude
+            //TODO: get actual longitude to use
+            var longitude = 21.3692096; //site longitude
             var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
             vm.localSiderealTime = KatGuiUtil.localSiderealTime(KatGuiUtil.julianDay (utcTime.date(), utcTime.month(), utcTime.year(), fractionalHours), longitude);
             $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
@@ -191,7 +192,7 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    console.log('GET katcontrol server time as (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
+                    console.log('Syncing current time with katcontrol server (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
                     console.log(error);

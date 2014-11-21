@@ -6,17 +6,17 @@
     function ControlService($http) {
 
         var urlBase = 'http://192.168.10.127:8020';
-        this.connection = null;
+        var connection = null;
 
         this.onSockJSOpen = function () {
-            if (this.connection && this.connection.readyState) {
+            if (connection && connection.readyState) {
                 console.log('Control Connection Established.');
             }
         };
 
         this.onSockJSClose = function () {
             console.log('Disconnecting Control Connection');
-            this.connection = null;
+            connection = null;
         };
 
         this.onSockJSMessage = function (e) {
@@ -25,17 +25,17 @@
 
         this.connectListener = function () {
             console.log('Control Connecting...');
-            this.connection = new SockJS(urlBase + '/control');
-            this.connection.onopen = this.onSockJSOpen;
-            this.connection.onmessage = this.onSockJSMessage;
-            this.connection.onclose = this.onSockJSClose;
+            connection = new SockJS(urlBase + '/control');
+            connection.onopen = this.onSockJSOpen;
+            connection.onmessage = this.onSockJSMessage;
+            connection.onclose = this.onSockJSClose;
 
-            return this.connection !== null;
+            return connection !== null;
         };
 
         this.disconnectListener = function () {
-            if (this.connection) {
-                this.connection.close();
+            if (connection) {
+                connection.close();
             }
         };
 
@@ -77,14 +77,14 @@
 
         this.sendControlCommand = function (module, funcName, funcParams) {
 
-            if (this.connection) {
+            if (connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': 'katcp_request',
                     'params': [module, funcName, funcParams]
                 };
 
-                this.connection.send(JSON.stringify(jsonRPC));
+                connection.send(JSON.stringify(jsonRPC));
                 return true;
             } else {
                 return false;
