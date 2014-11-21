@@ -43,7 +43,7 @@
 <!--})();-->
 <!--</script>-->
 
-<body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="horizontal">
+<body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="row">
 
 <!-- Livereload script for development only (stripped during dist build) -->
 <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
@@ -115,57 +115,57 @@
 
 <!--<section >-->
 <!--dont use md-whiteframe class because it leaves black artifacts-->
-<md-content layout="horizontal" layout-fill>
-    <md-sidenav class="md-sidenav-left" component-id="left-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+<md-content layout="row" layout-fill>
+    <md-sidenav class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">katGUI</h1>
         </md-toolbar>
         <md-content class="md-content-padding" style="margin-top: 16px;">
             <md-list>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('landing')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('landing')">
                         <span class="fa fa-home"></span>
                         <button>Home</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
                         <span class="fa fa-warning"></span>
                         <button>Alarms</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
                         <span class="fa fa-th"></span>
                         <button>Health & State</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('operatorControl')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('operatorControl')">
                         <span class="fa fa-cogs"></span>
                         <button>Operator Control</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
                         <span class="fa fa-list"></span>
                         <button>Scheduler</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('sensorGraph')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensorGraph')">
                         <span class="fa fa-area-chart"></span>
                         <button>Sensor Graphs</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('video')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('video')">
                         <span class="fa fa-video-camera"></span>
                         <button>Video</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavStateGo('about')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('about')">
                         <span class="fa fa-info"></span>
                         <button>About katGUI</button>
                     </md-item-content>
@@ -174,26 +174,30 @@
         </md-content>
     </md-sidenav>
 
-    <md-sidenav class="md-sidenav-right" component-id="right-sidenav" layout="vertical" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">User Navigation</h1>
         </md-toolbar>
         <md-content class="md-content-padding" style="margin-top: 16px;">
             <md-list>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavRightStateGo('admin')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavRightStateGo('admin')">
                         <span class="fa fa-users"></span>
                         <button>User Admin</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.sideNavRightStateGo('config')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavRightStateGo('config')">
                         <span class="fa fa-gear"></span>
                         <button>Configure katGUI</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="horizontal" layout-align="start center" ng-click="vm.logout()">
+                    <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.logout()">
                         <span class="fa"></span>
                         <button>Logout</button>
                     </md-item-content>
@@ -202,9 +206,9 @@
         </md-content>
     </md-sidenav>
 
-    <div layout="vertical" flex>
+    <div layout="column" flex>
         <md-toolbar ng-show="vm.showNavbar" class="slideInVertically md-whiteframe-z1" md-theme-watch="true">
-            <div class="md-toolbar-tools" layout="horizontal">
+            <div class="md-toolbar-tools" layout="row">
 
                 <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
                         style="margin-left: 0px; padding: 0px;"
@@ -215,7 +219,7 @@
                 <span style="margin-top: -5px; font-size: 26px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">{{vm.currentStateUpperCase()}}</span>
 
                 <!--<div class="btn-group"-->
-                     <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="horizontal">-->
+                     <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="row">-->
 
                     <!---->
 
@@ -231,7 +235,7 @@
                                 <!--ng-mouseenter="vm.operatorControlMenuHover = true"-->
                                 <!--ng-mouseleave="vm.operatorControlMenuHover = false"-->
                                 <!--role="menu">-->
-                        <!--<div style="color: rgba(0,0,0,0.73)" layout="vertical">-->
+                        <!--<div style="color: rgba(0,0,0,0.73)" layout="column">-->
                             <!--<md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>-->
                             <!--<md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>-->
                             <!--<md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>-->

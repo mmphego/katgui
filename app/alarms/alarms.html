@@ -1,8 +1,8 @@
-<div class="view-container" ng-controller="AlarmsCtrl as vm" layout="vertical">
+<div class="view-container" ng-controller="AlarmsCtrl as vm" layout="column">
 
-    <div class="md-whiteframe-z1" layout="vertical">
+    <div class="md-whiteframe-z1" layout="column">
         <md-toolbar class="panel-toolbar">
-            <div class="md-toolbar-tools" layout="horizontal">
+            <div class="md-toolbar-tools" layout="row">
                <span>
                     <md-checkbox ng-model="vm.selectAllAlarms" ng-click="vm.toggleSelectAllAlarms(!vm.selectAllAlarms)" aria-label="Select All Alarms">
                         <b>Current Alarms</b>
@@ -10,7 +10,7 @@
                     <md-tooltip>Select All Alarms</md-tooltip>
                 </span>
                 <span flex></span>
-                <section md-theme="{{themePrimaryButtons}}" layout="horizontal" layout-align="center center" class="alarms-buttons" md-theme-watch="true">
+                <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="alarms-buttons" md-theme-watch="true">
                     <md-button ng-click="vm.knowSelectedAlarms()" aria-label="Add as Known" class="md-primary md-raised">Add as Known</md-button>
                     <md-button ng-click="vm.acknowledgeSelectedAlarms()" aria-label="Acknowledge" class="md-primary md-raised">Acknowledge</md-button>
                     <md-button ng-click="vm.clearSelectedAlarms()" aria-label="Clear" class="md-primary md-raised">Clear</md-button>
@@ -77,9 +77,9 @@
         </section>
     </div>
 
-    <div class="md-whiteframe-z1" layout="vertical" style="margin-top: 16px;">
+    <div class="md-whiteframe-z1" layout="column" style="margin-top: 16px;">
         <md-toolbar class="panel-toolbar">
-            <div class="md-toolbar-tools" layout="horizontal">
+            <div class="md-toolbar-tools" layout="row">
 
                <span>
                     <md-checkbox ng-model="vm.selectAllKnownAlarms" ng-click="vm.toggleSelectAllKnownAlarms(!vm.selectAllKnownAlarms)" aria-label="Select All Known Alarms">
@@ -88,7 +88,7 @@
                     <md-tooltip>Select All Known Alarms</md-tooltip>
                 </span>
                 <span flex></span>
-                <section md-theme="{{themePrimaryButtons}}" layout="horizontal" layout-align="center center" class="alarms-buttons" md-theme-watch="true">
+                <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="alarms-buttons" md-theme-watch="true">
                     <md-button ng-click="vm.cancelKnowSelectedAlarms()" aria-label="Cancel Known" class="md-primary md-raised">Cancel Known</md-button>
                     <md-checkbox class="alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms" aria-label="Show Nominal">Show Nominal</md-checkbox>
                     <md-checkbox class="alarms-tools-checkbox" ng-model="vm.showKnownMaintenanceAlarms" aria-label="Show Maintenance">Show Maintenance</md-checkbox>

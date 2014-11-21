@@ -1,12 +1,12 @@
 <div flex style="padding: 24px;" ng-controller="ConfigCtrl as vm">
 
-    <div layout="vertical" class="md-whiteframe-z1">
+    <div layout="column" class="md-whiteframe-z1">
         <md-toolbar md-theme="{{themePrimary}}">
             <div class="md-toolbar-tools">
                 <span flex>Configuration Options</span>
             </div>
         </md-toolbar>
-        <md-content layout="vertical" layout-padding>
+        <md-content layout="column" layout-padding>
             <div class="config-div-item">
                 <h3 flex>Themes</h3>
                 <select style="width: 200px; margin-left: 8px;" class="form-control" ng-model="vm.selectedTheme" ng-options="theme.name for theme in vm.themes" ng-change="vm.selectedThemeChanged(vm.selectedTheme)"></select>

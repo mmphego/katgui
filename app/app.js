@@ -172,13 +172,23 @@
             vm.operatorActionMenuItemSelected();
         };
 
-        vm.utcTime = moment.utc(new Date()).format('hh:mm:ss');
-        vm.localTime = moment().format('hh:mm:ss');
+        vm.utcTime = '';
+        vm.localTime = '';
 
         var updateTimeDisplay = function () {
-            vm.utcTime = moment.utc(new Date()).format('hh:mm:ss');
-            vm.localTime = moment().format('hh:mm:ss');
+            $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
+            vm.utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss');
+            vm.localTime = moment($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss');
         };
+
+        ControlService.getCurrentServerTime()
+            .success(function (serverTime) {
+                $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
+                console.log('GET katcontrol server time as (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
+            })
+            .error(function (error) {
+                console.log(error);
+            });
 
         $interval(updateTimeDisplay, 1000); //update clock every second
 

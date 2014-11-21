@@ -6,7 +6,7 @@
                 <span>Operator Controls</span>
             </div>
         </md-toolbar>
-        <section md-theme="{{themePrimaryButtons}}" layout="horizontal" layout-align="center center" class="operator-controls">
+        <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="operator-controls">
             <md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All" class="md-raised md-primary">Inhibit All</md-button>
             <md-button ng-click="vm.stowAll()" aria-label="Stow All" class="md-raised md-primary">Stow All</md-button>
             <md-button ng-click="vm.stopAll()" aria-label="Stop All" class="md-raised md-primary">Stop All</md-button>
@@ -16,8 +16,8 @@
 
         <md-list class="receptor-state-list">
             <md-item ng-repeat="rec in vm.receptorsData track by $id(rec)">
-                <md-item-content class="receptor-state-div md-whiteframe-z1" layout="vertical">
-                    <p style="">{{rec.since}}<md-tooltip>Time since last status change</md-tooltip></p>
+                <md-item-content class="receptor-state-div md-whiteframe-z1" layout="column">
+                    <p style="min-height: 25px; max-width: 140px;">{{rec.fromNow}}<md-tooltip>{{rec.since}}</md-tooltip></p>
                     <p style="font-size: 26px;"><b>{{::rec.name}}</b></p>
                     <div style="min-height: 25px">
                         <p ng-show="rec.inhibited" class="inhibited">Inhibited</p>

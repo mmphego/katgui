@@ -7,7 +7,7 @@
 
         MonitorService.subscribeToReceptorUpdates();
 
-        var nowStr = moment(new Date()).format('HH:mm:ss DD-MM-YYYY');
+        var nowStr = moment().format('HH:mm:ss DD-MM-YYYY');
         this.receptorsData = [
             {
                 name: "m000",

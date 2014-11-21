@@ -3,7 +3,7 @@
     angular.module('katGui')
         .service('ControlService', ControlService);
 
-    function ControlService() {
+    function ControlService($http) {
 
         var urlBase = 'http://192.168.10.127:8020';
         this.connection = null;
@@ -15,7 +15,7 @@
         };
 
         this.onSockJSClose = function () {
-            console.log('Disconnecting Monitor Connection');
+            console.log('Disconnecting Control Connection');
             this.connection = null;
         };
 
@@ -89,6 +89,10 @@
             } else {
                 return false;
             }
+        };
+
+        this.getCurrentServerTime = function () {
+            return $http.get(urlBase + '/time');
         };
 
         return this;

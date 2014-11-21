@@ -1,12 +1,12 @@
 <div flex style="min-width: 1300px;" ng-controller="SchedulerCtrl as vm">
 
-    <div layout="vertical" flex>
+    <div layout="column" flex>
 
-        <div layout="horizontal" flex>
+        <div layout="row" flex>
 
-            <div id="schedule-blocks-view" flex layout="vertical" layout-padding style="padding-right: 0px; max-height: 816px;">
+            <div id="schedule-blocks-view" flex layout="column" layout-padding style="padding-right: 0px; max-height: 816px;">
 
-                <div layout="vertical" class="schedule-draft-data-list" id="schedulerDraftView">
+                <div layout="column" class="schedule-draft-data-list" id="schedulerDraftView">
                     <md-toolbar class="panel-toolbar panel-toolbar-small">
                         <div class="md-toolbar-tools">
                             <span>Schedule Drafts</span>
@@ -23,9 +23,9 @@
                         <md-item ng-repeat="item in vm.scheduleDraftData | filter:vm.q" ng-click="vm.setSelectedScheduleDraft(item)"
                                  ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}">
                             <md-item-content>
-                                <div class="md-tile-content schedule-draft-item" style="padding: 2px; min-width: 1050px; direction: ltr" layout="horizontal" layout-align="center center">
+                                <div class="md-tile-content schedule-draft-item" style="padding: 2px; min-width: 1050px; direction: ltr" layout="row" layout-align="center center">
 
-                                    <div layout="vertical" class="schedule-block-name-div">
+                                    <div layout="column" class="schedule-block-name-div">
                                         <div class="schedule-block-id-text">{{item.id}}:</div>
                                         <span>({{item.owner}} - {{item.state}})</span>
                                     </div>
@@ -71,7 +71,7 @@
                      resizer-target="#schedule-draft-data-list-id">
                 </div>
 
-                <div flex id="scheduleCurrentView" layout="vertical" class="md-whiteframe-z1 schedule-block-list">
+                <div flex id="scheduleCurrentView" layout="column" class="md-whiteframe-z1 schedule-block-list">
                     <md-toolbar class="panel-toolbar panel-toolbar-small">
                         <div class="md-toolbar-tools">
                             <span>Schedule Observations</span>
@@ -87,9 +87,9 @@
                              'schedule-row-executing': item.executing && item !== vm.selectedSchedule,
                              'schedule-row-executing-and-selected': item.executing && item === vm.selectedSchedule}">
                             <md-item-content>
-                                <div class="md-tile-content schedule-item" style="padding: 2px; min-width: 1050px; direction: ltr" layout="horizontal" layout-align="center center">
+                                <div class="md-tile-content schedule-item" style="padding: 2px; min-width: 1050px; direction: ltr" layout="row" layout-align="center center">
 
-                                    <div layout="vertical" class="schedule-block-name-div">
+                                    <div layout="column" class="schedule-block-name-div">
                                         <div class="schedule-block-id-text">{{item.id}}:</div>
                                         <span>({{item.owner}} - {{item.state}})</span>
                                     </div>
@@ -128,7 +128,7 @@
                 </div>
             </div>
 
-            <div style="margin-top: 8px; margin-bottom: 8px; margin-right: 8px;" layout="vertical" id="schedulerScriptView">
+            <div style="margin-top: 8px; margin-bottom: 8px; margin-right: 8px;" layout="column" id="schedulerScriptView">
                 <md-toolbar style="margin-left: 24px;  width: 511px;" class="panel-toolbar panel-toolbar-small">
                     <div class="md-toolbar-tools">
                         <span>Schedule Block Details</span>
@@ -147,7 +147,7 @@
 
         </div>
 
-        <div class="md-whiteframe-z1 schedule-block-completed-list" layout="vertical">
+        <div class="md-whiteframe-z1 schedule-block-completed-list" layout="column">
             <md-toolbar class="panel-toolbar panel-toolbar-small">
                 <div class="md-toolbar-tools">
                     <span>Completed Schedule Blocks</span>
@@ -155,7 +155,7 @@
             </md-toolbar>
             <md-list style="padding: 0;">
                 <md-item ng-repeat="item in vm.scheduleCompletedData track by item.id">
-                    <md-item-content layout="horizontal" layout-padding>
+                    <md-item-content layout="row" layout-padding>
                         <span>{{item.id}}:</span>
                         <span>({{item.owner}} - {{item.state}})</span>
                         <span>{{item.description}}</span>

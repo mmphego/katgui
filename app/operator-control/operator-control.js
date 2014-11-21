@@ -36,6 +36,7 @@
                 var ms = moment(new Date()).diff(moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY'));
                 var d = moment.duration(ms);
                 item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
+                item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
             });
         }
     }

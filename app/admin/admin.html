@@ -1,8 +1,8 @@
 <div class="view-container" ng-controller="AdminCtrl as vm">
 
-    <div class="md-whiteframe-z1" layout="vertical">
+    <div class="md-whiteframe-z1" layout="column">
         <md-toolbar class="panel-toolbar">
-            <div class="md-toolbar-tools" layout="horizontal">
+            <div class="md-toolbar-tools" layout="row">
                 <span flex>Users</span>
                 <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()">
                     <span class="fa fa-plus"></span>
@@ -12,7 +12,7 @@
         </md-toolbar>
         <md-list flex class="user-list">
             <md-item ng-repeat="user in vm.userData">
-                <md-item-content flex layout="horizontal" ng-click="vm.editUser(user)">
+                <md-item-content flex layout="row" ng-click="vm.editUser(user)">
                     <div flex class="user-cell">
                         <md-text-float ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"></md-text-float>
                         <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
