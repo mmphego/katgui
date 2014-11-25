@@ -208,7 +208,7 @@
 
     <div layout="column" flex>
         <md-toolbar ng-show="vm.showNavbar" class="slideInVertically md-whiteframe-z1" md-theme-watch="true">
-            <div class="md-toolbar-tools" layout="row">
+            <div class="md-toolbar-tools" layout="row" style="margin-top: -4px; padding: 0;">
 
                 <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
                         style="margin-left: 0px; padding: 0px;"
@@ -256,11 +256,11 @@
                     <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> Local</span>
                 </div>
 
-                <md-button aria-label="Home" class="button-toolbar-flat-icon"
+                <md-button aria-label="Home" class="button-toolbar-flat-icon" style="margin: 2px;"
                         ng-click="vm.stateGo('landing')"><span class="fa fa-home"></span>
                 </md-button>
 
-                <div class="alarms-warning-container">
+                <div class="alarms-warning-container" style="margin: 2px;">
                     <md-button aria-label="Alarms" class="button-toolbar-flat-icon"
                             ng-click="vm.stateGo('alarms')">
                         <span class="fa fa-warning"></span>
@@ -276,13 +276,13 @@
                     <!--<span class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>-->
                 </div>
 
-                <md-button aria-label="Right Navbar" class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()">
+                <md-button aria-label="Right Navbar" class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()" style="margin: 2px;">
                     <span class="fa fa-user"></span>
                 </md-button>
             </div>
 
         </md-toolbar>
-        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" style="overflow: auto;">
+        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding">
         </md-content>
     </div>
     <!--</section>-->

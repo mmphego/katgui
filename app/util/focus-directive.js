@@ -1,16 +1,19 @@
-//angular.module('katGui.util', [])
-//
-//    .directive('focus', function () {
-//        return {
-//            restrict: 'A',
-//            scope: {},
-//            link: function (scope, element) {
-//
-//                scope.setFocus = function () {
-//                    element[0].focus();
-//                };
-//
-//                scope.setFocus();
-//            }
-//        };
-//    });
+angular.module('katGui')
+
+    .directive('focus', function ($timeout) {
+        return {
+            restrict: 'A',
+            link: function (scope, element) {
+
+                $timeout(function () {
+                    if (element[0].nodeName === "MD-INPUT-GROUP") {
+                        element[0].lastChild.focus();
+                    } else {
+                        element[0].focus();
+                    }
+
+                }, 100);
+
+            }
+        };
+    });

@@ -1,33 +1,46 @@
-<div class="view-container" ng-controller="AdminCtrl as vm">
+<div class="view-container-small" ng-controller="AdminCtrl as vm">
 
-    <div class="md-whiteframe-z1" layout="column">
+    <card class="md-whiteframe-z1" layout="column">
         <md-toolbar class="panel-toolbar">
             <div class="md-toolbar-tools" layout="row">
                 <span flex>Users</span>
-                <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()">
+                <md-text-float flex md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="q" label="Search Users..." class="long-input"></md-text-float>
+                <md-checkbox ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
+                <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.orderBy" ng-options="s.label for s in vm.orderByFields">
+                    <option value="">-- Order By --</option>
+                </select>
+                <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themeSecondary}}">
                     <span class="fa fa-plus"></span>
                     <md-tooltip>Create A User</md-tooltip>
                 </md-button>
             </div>
         </md-toolbar>
         <md-list flex class="user-list">
-            <md-item ng-repeat="user in vm.userData">
-                <md-item-content flex layout="row" ng-click="vm.editUser(user)">
+            <md-item ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value as results">
+                <md-item-content flex layout="row" ng-if="user.active || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.active, 'activated-user': user.active }">
                     <div flex class="user-cell">
-                        <md-text-float ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"></md-text-float>
+                        <md-text-float  md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"></md-text-float>
                         <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
                     </div>
                     <div flex class="user-cell">
-                        <md-text-float label="Email" ng-if="user.editing" ng-model="user.email"></md-text-float>
+                        <md-text-float md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email"></md-text-float>
                         <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
                     </div>
                     <div flex class="user-cell">
-                        <md-text-float label="Role" ng-if="user.editing" ng-model="user.role"></md-text-float>
-                        <span class="cell-span" ng-if="!user.editing">{{user.role}}<md-tooltip>Role</md-tooltip></span>
+                        <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
+                        <span class="cell-span" ng-if="!user.editing && user.roles.length > 0">{{user.roles | json}}<md-tooltip>User's Roles</md-tooltip></span>
+                        <span class="cell-span" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
                     </div>
 
                     <span flex></span>
-                    <div flex ng-if="user.editing" class="user-editing-buttons">
+                    <div flex ng-if="user.editing" class="user-editing-buttons" layout="row">
+                        <md-button md-theme="red" aria-label="Deactivate User" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
+                                   ng-click="vm.deactivateUser(user)">
+                            <span class="fa fa-minus" style="margin-left: 0px; width: 14px; height: 14px"></span>
+                            <md-tooltip>
+                                Deactivate User
+                            </md-tooltip>
+                        </md-button>
                         <md-button md-theme="green" aria-label="Save User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
                                    ng-click="vm.saveUser(user, $event)">
                             <span class="fa fa-check"></span>
@@ -37,7 +50,7 @@
                         </md-button>
                         <md-button md-theme="amber" aria-label="Undo User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
                                    ng-click="vm.undoUserChanges(user)">
-                            <span class="fa fa-undo"></span>
+                            <span class="fa fa-undo" style="margin-left: 4px;"></span>
                             <md-tooltip>
                                 Undo User Changes
                             </md-tooltip>
@@ -50,10 +63,22 @@
                             <!--</md-tooltip>-->
                         <!--</md-button>-->
                     </div>
-                    <md-tooltip ng-if="!user.editing">Click to Edit</md-tooltip>
+                    <div ng-if="!user.editing" class="user-editing-buttons" layout="row">
+                        <md-button aria-label="Edit User" ng-click="vm.editUser(user, $event)" class="md-fab md-button-fab-small">
+                            <span class="fa fa-edit"></span>
+                            <md-tooltip md-theme>
+                                Edit User
+                            </md-tooltip>
+                        </md-button>
+                    </div>
                 </md-item-content>
             </md-item>
+            <md-item>
+                <md-content class="animate-repeat" ng-if="results.length == 0">
+                    <strong>No results found...</strong>
+                </md-content>
+            </md-item>
         </md-list>
-    </div>
+    </card>
 
 </div>

@@ -101,29 +101,6 @@
     }
 }
 
-.alarm-badge {
-    position: absolute;
-    right: 80px;
-    color: black;
-    .avoid-clicks;
-}
-
-.alarm-badge-warn {
-    top: 2px;
-    background-color: #ffeb3b;
-}
-
-.alarm-badge-error {
-    top: 20px;
-    background-color: #ffc107;
-}
-
-.alarm-badge-crit {
-    top: 38px;
-    background-color: #e51c23;
-    color: white;
-}
-
 .toolbar-time-span {
     color: white;
 
@@ -133,9 +110,10 @@
 }
 
 body {
-    font-family: RobotoDraft;
+//    font-family: RobotoDraft;
     min-width: @app-min-width;
     padding: 0 !important;
+    overflow: hidden;
 }
 
 .view-container {
@@ -151,6 +129,14 @@ body {
     width: 100%;
     height: 100%;
     margin: 5px;
+}
+
+.view-container-small {
+    width: 75%;
+    height: 100%;
+    margin-top: 15px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .side-nav-title {
@@ -174,6 +160,7 @@ body {
         font-size: 13px;
         font-weight: bold;
     }
+
 
     span {
         width: 27px;
@@ -200,7 +187,8 @@ body {
 
 .menu-item-divider {
     height: 1px;
-    border: 1px solid #d3d3d3;
+    border-top: 1px solid #d3d3d3;
+    border-bottom: 1px solid #f4f4f4;
 }
 
 md-sidenav {

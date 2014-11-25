@@ -1,5 +1,5 @@
 .user-list {
-    padding-top: 8px;
+    padding: 0;
     max-height: 800px;
     height: 800px;
     overflow: auto;
@@ -9,18 +9,32 @@
         padding-right: 8px;
         border-bottom: 1px solid #d3d3d3;
         height: 76px;
-
-        &:hover {
-            background: #F5F5F5;
-        }
     }
 
     .user-cell {
-//        min-width: 200px;
-//        width: 200px;
+        min-width: 400px;
+        max-width: 400px;
+        width: 400px;
     }
 
-    .user-editing-buttons {
-        max-width: 99px;
+}
+
+.user-editing-buttons {
+    max-width: 150px;
+}
+
+.deactivated-user {
+    background: #FFF3E0;
+
+    &:hover {
+        background: #FFE0B2;
+    }
+}
+
+.activated-user {
+    background: #E1F5FE;
+
+    &:hover {
+        background: #B3E5FC;
     }
 }
