@@ -163,6 +163,15 @@ function katGuiUtil() {
         return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
     };
 
+    this.removeFirstFromArrayWhereProperty = function (array, property, propertyValueToLookup) {
+        for(var i = array.length; i--;) {
+            if(array[i][property] === propertyValueToLookup) {
+                array.splice(i, 1);
+                break;
+            }
+        }
+    };
+
     return this;
 }
 

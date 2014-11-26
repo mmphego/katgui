@@ -3,12 +3,15 @@
     angular.module('katGui')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, alarms) {
+    function MonitorService($rootScope) {
 
         var pendingSubscribeObjects = [];
         var urlBase = 'http://192.168.10.127:8030';
 
         var connection = null;
+        //use this alias because we are using some api functions within functions
+        //because 'this' means something different within each child function
+        var api = this;
 
         function subscribeToAlarms() {
             console.log('Monitor subscribed to kataware:alarm*...');
@@ -21,7 +24,7 @@
             connection.send(JSON.stringify(jsonRPC));
         }
 
-        this.subscribeToReceptorUpdates = function () {
+        api.subscribeToReceptorUpdates = function () {
 
             var connectionParams = ['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited'];
 
@@ -40,7 +43,7 @@
             }
         };
 
-        this.onSockJSOpen = function () {
+        api.onSockJSOpen = function () {
             if (connection && connection.readyState) {
                 console.log('Monitor Connection Established.');
                 subscribeToAlarms();
@@ -54,74 +57,76 @@
             }
         };
 
-        this.onSockJSClose = function () {
+        api.onSockJSClose = function () {
             console.log('Disconnecting Monitor Connection');
             connection = null;
         };
 
-        this.onSockJSMessage = function (e) {
-            //console.log(e);
+        api.onSockJSMessage = function (e) {
 
             var messages = JSON.parse(e.data);
-
             if (!messages['jsonrpc']) {
 
                 messages = [].concat(messages);
-
                 if (messages) {
 
                     messages.forEach(function (message) {
 
                         var messageObj = message;
-
                         if (_.isString(message)) {
                             messageObj = JSON.parse(message);
                         }
-
-                        //console.log(messageObj);
 
                         if (messageObj.name.indexOf('kataware:') === 0 &&
                             messageObj.status !== 'nominal' &&
                             messageObj.status !== 'unknown') {
 
-                            var alarmValues = messageObj.value.split(',');
-                            var alarmPriority = 'unknown';
-                            if (alarmValues.length > 2) {
-                                alarmPriority = alarmValues[1];
-                            }
-                            messageObj.severity = messageObj.status;
-                            messageObj.priority = alarmPriority;
-                            messageObj.message = messageObj.value;
-
-                            messageObj.name = messageObj.name.replace('kataware:alarm.', '');
-
-                            messageObj.dateUnix = messageObj.time;
-                            messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-YYYY');
-                            alarms.addAlarmMessage(messageObj);
+                            api.alarmMessageReceived(messageObj);
                         } else {
-                            $rootScope.$emit('receptorMessage', messageObj);
+                            api.receptorMessageReceived(messageObj);
                         }
                     });
                 }
             }
         };
 
-        this.connectListener = function () {
+        api.connectListener = function () {
             console.log('Monitor Connecting...');
             connection = new SockJS(urlBase + '/monitor');
-            connection.onopen = this.onSockJSOpen;
-            connection.onmessage = this.onSockJSMessage;
-            connection.onclose = this.onSockJSClose;
+            connection.onopen = api.onSockJSOpen;
+            connection.onmessage = api.onSockJSMessage;
+            connection.onclose = api.onSockJSClose;
 
             return connection !== null;
         };
 
-        this.disconnectListener = function () {
+        api.disconnectListener = function () {
             if (connection) {
                 connection.close();
             }
         };
 
-        return this;
+        api.receptorMessageReceived = function (messageObj) {
+            $rootScope.$emit('receptorMessage', messageObj);
+        };
+
+        api.alarmMessageReceived = function(messageObj) {
+            var alarmValues = messageObj.value.split(',');
+            var alarmPriority = 'unknown';
+            if (alarmValues.length > 2) {
+                alarmPriority = alarmValues[1];
+            }
+            messageObj.severity = messageObj.status;
+            messageObj.priority = alarmPriority;
+            messageObj.message = messageObj.value;
+
+            messageObj.name = messageObj.name.replace('kataware:alarm.', '');
+
+            messageObj.dateUnix = messageObj.time;
+            messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
+            $rootScope.$emit('alarmMessage', messageObj);
+        };
+
+        return api;
     }
 })();
