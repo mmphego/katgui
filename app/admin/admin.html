@@ -4,15 +4,15 @@
         <md-toolbar class="panel-toolbar">
             <div class="md-toolbar-tools" layout="row">
                 <span flex>Users</span>
-                <md-text-float flex md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="q" label="Search Users..." class="long-input"></md-text-float>
                 <md-checkbox ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
-                <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.orderBy" ng-options="s.label for s in vm.orderByFields">
-                    <option value="">-- Order By --</option>
-                </select>
-                <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themeSecondary}}">
+                <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
                     <span class="fa fa-plus"></span>
                     <md-tooltip>Create A User</md-tooltip>
                 </md-button>
+                <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.orderBy" ng-options="s.label for s in vm.orderByFields">
+                    <option value="">-- Order By --</option>
+                </select>
+                <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="q" label="Search Users..." class=""></md-text-float>
             </div>
         </md-toolbar>
         <md-list flex class="user-list">
@@ -71,6 +71,9 @@
                             </md-tooltip>
                         </md-button>
                     </div>
+                    <md-tooltip ng-if="!user.active">
+                        <span>Deactivated User</span>
+                    </md-tooltip>
                 </md-item-content>
             </md-item>
             <md-item>

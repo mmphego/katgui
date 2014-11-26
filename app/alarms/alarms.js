@@ -7,6 +7,17 @@
 
         var vm = this;
 
+        vm.orderByFields = [
+            { label: 'Date', value: 'dateUnix' },
+            { label: 'Description', value: 'description' },
+            { label: 'Name', value: 'name' },
+            { label: 'Priority', value: 'priority' },
+            { label: 'Severity', value: 'severity' },
+        ];
+
+        vm.alarmsOrderBy = vm.orderByFields[0];
+        vm.alarmsKnownOrderBy = vm.orderByFields[0];
+
         if (!$rootScope.showLargeAlarms) {
             $rootScope.showLargeAlarms = false;
             vm.showLargeAlarms = false;

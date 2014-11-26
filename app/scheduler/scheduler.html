@@ -11,13 +11,13 @@
                         <div class="md-toolbar-tools">
                             <span>Schedule Drafts</span>
                             <span flex></span>
-                            <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.draftsOrderBy" ng-options="s.label for s in vm.draftsOrderByFields">
-                                <option value="">-- Order By --</option>
-                            </select>
-                            <md-button aria-label="Create A Draft" style="margin-right: 17px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themeSecondary}}" ng-click="vm.addDraftSchedule()">
+                            <md-button aria-label="Create A Draft" style="margin-right: 17px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}" ng-click="vm.addDraftSchedule()">
                                 <span class="fa fa-plus"></span>
                                 <md-tooltip>Create A Schedule Draft</md-tooltip>
                             </md-button>
+                            <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.draftsOrderBy" ng-options="s.label for s in vm.draftsOrderByFields">
+                                <option value="">-- Order By --</option>
+                            </select>
                             <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="vm.q" label="Search Drafts..."></md-text-float>
                         </div>
                     </md-toolbar>
