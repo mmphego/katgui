@@ -4,7 +4,7 @@
         <md-toolbar class="panel-toolbar">
             <div class="md-toolbar-tools" layout="row">
                 <span flex>Users</span>
-                <md-checkbox ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
+                <md-checkbox style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
                 <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
                     <span class="fa fa-plus"></span>
                     <md-tooltip>Create A User</md-tooltip>
@@ -26,7 +26,7 @@
                         <md-text-float md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email"></md-text-float>
                         <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
                     </div>
-                    <div flex class="user-cell">
+                    <div flex class="user-cell" layout-align="center" layout="row">
                         <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
                         <span class="cell-span" ng-if="!user.editing && user.roles.length > 0">{{user.roles | json}}<md-tooltip>User's Roles</md-tooltip></span>
                         <span class="cell-span" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
@@ -63,7 +63,7 @@
                             <!--</md-tooltip>-->
                         <!--</md-button>-->
                     </div>
-                    <div ng-if="!user.editing" class="user-editing-buttons" layout="row">
+                    <div flex ng-if="!user.editing" style="max-width: 40px; min-width: 40px;" layout="row">
                         <md-button aria-label="Edit User" ng-click="vm.editUser(user, $event)" class="md-fab md-button-fab-small">
                             <span class="fa fa-edit"></span>
                             <md-tooltip md-theme>
