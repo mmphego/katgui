@@ -15,8 +15,6 @@
             {label: 'Active State', value: 'active'}
         ];
 
-
-
         vm.userRoles = [
             {"id": 1, "name": "Monitor", "assignable": true},
             {"id": 2, "name": "Control", "assignable": true},

@@ -21,6 +21,14 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         vm.scheduleData = [];
         vm.scheduleCompletedData = [];
         vm.scheduleDraftData = [];
+        vm.draftsOrderByFields = [
+            {label: 'ID', value: 'id'},
+            {label: 'Description', value: 'description'},
+            {label: 'Date', value: 'desiredTime'},
+            {label: 'Owner', value: 'owner'},
+            {label: 'State', value: 'state'},
+            {label: 'Type', value: 'type'}
+        ];
 
         vm.showDatePicker = false;
         vm.currentSelectedDate = new Date();

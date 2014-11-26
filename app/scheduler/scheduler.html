@@ -11,6 +11,9 @@
                         <div class="md-toolbar-tools">
                             <span>Schedule Drafts</span>
                             <span flex></span>
+                            <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.draftsOrderBy" ng-options="s.label for s in vm.draftsOrderByFields">
+                                <option value="">-- Order By --</option>
+                            </select>
                             <md-button aria-label="Create A Draft" style="margin-right: 17px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themeSecondary}}" ng-click="vm.addDraftSchedule()">
                                 <span class="fa fa-plus"></span>
                                 <md-tooltip>Create A Schedule Draft</md-tooltip>
@@ -20,7 +23,7 @@
                     </md-toolbar>
                     <md-list id="schedule-draft-data-list-id" class="md-whiteframe-z1" style="padding: 0; direction: rtl">
 
-                        <md-item ng-repeat="item in vm.scheduleDraftData | filter:vm.q" ng-click="vm.setSelectedScheduleDraft(item)"
+                        <md-item ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:false" ng-click="vm.setSelectedScheduleDraft(item)"
                                  ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}">
                             <md-item-content>
                                 <div class="md-tile-content schedule-draft-item" style="padding: 2px; min-width: 1050px; direction: ltr" layout="row" layout-align="center center">
@@ -83,13 +86,16 @@
                         <div class="md-toolbar-tools">
                             <span>Schedule Observations</span>
                             <span flex></span>
+                            <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.schedulesOrderBy" ng-options="s.label for s in vm.draftsOrderByFields">
+                                <option value="">-- Order By --</option>
+                            </select>
                             <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="vm.q2" label="Search Schedules..."></md-text-float>
                         </div>
                     </md-toolbar>
 
                     <md-list flex style="padding: 0px; direction: rtl">
 
-                        <md-item ng-repeat="item in vm.scheduleData | filter:vm.q2" ng-click="vm.setSelectedSchedule(item); "
+                        <md-item ng-repeat="item in vm.scheduleData | filter:vm.q2 | orderBy:vm.schedulesOrderBy.value:false" ng-click="vm.setSelectedSchedule(item); "
                                  ng-class="{'selected-schedule-row': !item.executing && item === vm.selectedSchedule,
                              'schedule-row-executing': item.executing && item !== vm.selectedSchedule,
                              'schedule-row-executing-and-selected': item.executing && item === vm.selectedSchedule}">
