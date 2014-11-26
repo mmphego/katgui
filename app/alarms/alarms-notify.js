@@ -91,14 +91,20 @@
         $scope.$on('$destroy', unbindAlarmMessage);
 
         vm.acknowledgeMessage = function (message) {
-
-            ControlService.addKnownAlarm(message.name);
+            ControlService.acknowledgeAlarm(message.name);
+            //todo: only delete this when the server returns with the updated alarm!
+            //todo: show a loading icon then fade out
             vm.deleteMessage(message);
         };
 
         vm.knowMessage = function (message) {
             ControlService.addKnownAlarm(message.name);
+            //todo: only delete this when the server returns with the updated alarm!
+            //todo: show a loading icon then fade out
+            vm.deleteMessage(message);
+        };
 
+        vm.deleteMessage = function (message) {
             var index = vm.messages.indexOf(message);
             if (index > -1) {
                 vm.messages.splice(index, 1);

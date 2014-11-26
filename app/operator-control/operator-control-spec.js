@@ -148,12 +148,16 @@ describe('OperatorControlCtrl', function () {
         expect(ctrl.receptorsData.length).not.toBe(0);
     }));
 
-    //it('should update the time since state change', inject(function () {
-    //
-    //}));
+    it('should update the time since state change', inject(function () {
+        ctrl.updateReceptorLastChangeDate();
+
+        ctrl.receptorsData.forEach(function (receptor) {
+            expect(receptor.since.length).not.toBe('');
+            expect(receptor.fromNow).toBe('a few seconds ago');
+        });
+    }));
 
     describe('Receptor Controls', function () {
-
 
         it('should inhibit all receptors', inject(function () {
 
