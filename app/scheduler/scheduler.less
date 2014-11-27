@@ -33,6 +33,7 @@
     margin-left: 8px;
     padding: 0;
     margin-bottom: 5px;
+//    min-height: 300px;
 
     md-list {
         height: 375px;
@@ -181,17 +182,17 @@
 }
 
 .schedule-block-script-window {
-    padding: 8px;
-    height: 765px;
+    min-height: 100%;
+    padding: 0px;
     background-color: #ECEFF1;
 }
 
 .schedule-block-list {
-    margin-top: 4px;
+    margin-top: 4px !important;
     margin-left: 8px;
-    margin-right: 0px;
-    min-height: 100px;
-    height: 375px;
+    margin-right: 0px !important;
+    min-height: 200px;
+//    height: 375px;
     padding: 0 !important;
     md-list {
         height: 100%;
@@ -204,14 +205,17 @@
     max-height: 300px;
     height: 300px;
 
-    margin: 8px;
+    margin-top: 4px;
+    margin-left: 8px;
+    margin-right: 0px;
+
     md-list {
         height: 375px;
         overflow: auto;
     }
 }
 
-#schedule-horizontal-draft-resizer {
+.horizontal-resizer-bar {
     height: 6px;
     margin-left: 8px;
     margin-right: 0px;
@@ -222,7 +226,6 @@
     cursor: row-resize;
 }
 
-#schedule-horizontal-draft-resizer:hover, #schedule-vertical-draft-resizer:hover {
+.horizontal-resizer-bar:hover, .vertical-resizer:hover {
     background-color: #c6c6c6;
 }
-
