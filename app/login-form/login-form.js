@@ -16,6 +16,9 @@
         vm.login = function () {
             Session.create('sessionid1', 'userid1', USER_ROLES.expert);
             $state.go('landing');
+            //hash the password for now until we can get SSL going
+            var sha256Pass =  CryptoJS.SHA256(vm.credentials.password).toString();
+            //console.log(sha256Pass);
         };
 
         vm.forgotPassword = function (event, email) {
