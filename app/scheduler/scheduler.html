@@ -1,7 +1,7 @@
-<div flex layout="column" style="min-width: 1300px; margin-bottom: 8px;" ng-controller="SchedulerCtrl as vm">
+<div flex layout="column" style="min-width: 1300px; min-height: 850px; margin-bottom: 8px;" ng-controller="SchedulerCtrl as vm">
     <div layout="column" flex>
         <div layout="row" flex>
-            <div flex id="schedule-blocks-view" flex layout="column" layout-padding style="padding-right: 0px;  margin: 0;">
+            <div flex id="schedule-blocks-view" flex layout="column" layout-padding style="padding-right: 0px;  margin: 0; min-height: 400px;">
                 <div flex layout="column" style="max-height: 930px; margin: 0;">
                     <div flex layout="column" style="min-height: 150px" class="schedule-draft-data-list" id="schedulerDraftView">
                         <md-toolbar class="panel-toolbar panel-toolbar-medium md-whiteframe-z1">
@@ -142,7 +142,7 @@
 
                 </div>
 
-                <div class="md-whiteframe-z1 schedule-block-completed-list" layout="column" style="margin-top: 8px; min-height: 300px">
+                <div class="md-whiteframe-z1 schedule-block-completed-list" layout="column" style="margin-top: 8px; min-height: 150px">
                     <md-toolbar class="panel-toolbar panel-toolbar-medium md-whiteframe-z1">
                         <div layout="row" layout-align="start center" layout-padding>
                             <span>Completed Schedule Blocks</span>
@@ -183,12 +183,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="horizontal-resizer-bar"
+                <div class="horizontal-resizer-bar" style="margin-left: 24px; margin-top: 4px;"
                      resizer="horizontal"
                      resizer-target="#resource-allocation-div">
                 </div>
                 <div flex layout="column">
-                    <md-toolbar style="margin-left: 24px; margin-top: 8px; width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
+                    <md-toolbar style="margin-left: 24px; margin-top: 2px; width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
                         <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
                             <span>Schedule Block Details</span>
                         </div>
