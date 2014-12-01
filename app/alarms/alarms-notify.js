@@ -8,7 +8,7 @@
         return {
             restrict: 'A',
             template: [
-            '<div ng-class="vm.getActiveClass()">',
+            '<div ng-class="{ \'large-alarm\' : showLargeAlarms || hover,  \'small-alarm\' : !showLargeAlarms && !hover}" class="large-alarms-animate" ng-mouseenter="hover = true;" ng-mouseleave="hover = false;">',
             '   <div class="alarm-item" ng-repeat="message in vm.messages | orderBy:\'dateUnix\'" ng-if="message.priority === \'new\'" ng-class="vm.computeSeverityClasses(message)">',
             '       <div>',
             '           <ul>',
