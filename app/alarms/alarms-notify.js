@@ -3,13 +3,24 @@
     angular.module('katGui.alarms')
         .controller('AlarmsNotifyCtrl', AlarmsNotifyCtrl)
         .directive('alarmsNotifier', AlarmDirective);
+    //ng-class="vm.computeSeverityClasses(message)"
 
     function AlarmDirective() {
         return {
             restrict: 'A',
             template: [
-            '<div ng-class="{ \'large-alarm\' : showLargeAlarms || hover,  \'small-alarm\' : !showLargeAlarms && !hover}" class="large-alarms-animate" ng-mouseenter="hover = true;" ng-mouseleave="hover = false;">',
-            '   <div class="alarm-item" ng-repeat="message in vm.messages | orderBy:\'dateUnix\'" ng-if="message.priority === \'new\'" ng-class="vm.computeSeverityClasses(message)">',
+            '<div class="alarms-notify-list">',
+            '   <div class="alarm-item large-alarms-animate" ng-repeat="message in vm.messages | orderBy:\'dateUnix\'" ng-if="message.priority === \'new\'" ' +
+            '       ng-class="{\'large-alarm-item\': hover || showLargeAlarms, ' +
+            '                   \'small-alarm-item\': !hover && !showLargeAlarms, ' +
+            '                   \'alarm-critical\': message.severity === \'critical\', ' +
+            '                   \'alarm-error\': message.severity === \'error\', ' +
+            '                   \'alarm-warning\': message.severity === \'warn\', ' +
+            '                   \'alarm-maintenance\': message.severity === \'maintenance\', ' +
+            '                   \'alarm-info\': message.severity === \'info\', ' +
+            '                   \'alarm-nominal\': message.severity === \'nominal\', ' +
+            '                   \'alarm-unknown\': message.severity === \'unknown\'}" ' +
+            '       ng-mouseover="hover = true;" ng-mouseleave="hover = false;">',
             '       <div>',
             '           <ul>',
             '               <li class="li-inline"><button class="alarm-close" ng-click="vm.acknowledgeMessage(message)">Ack</button></li>',
@@ -109,22 +120,6 @@
             if (index > -1) {
                 vm.messages.splice(index, 1);
             }
-        };
-
-        vm.computeSeverityClasses = function (message) {
-            return {
-                'alarm-critical': message.severity === 'critical',
-                'alarm-error': message.severity === 'error',
-                'alarm-warning': message.severity === 'warn',
-                'alarm-maintenance': message.severity === 'maintenance',
-                'alarm-info': message.severity === 'info',
-                'alarm-nominal': message.severity === 'nominal',
-                'alarm-unknown': message.severity === 'unknown'
-            };
-        };
-
-        vm.getActiveClass = function () {
-            return $rootScope.showLargeAlarms ? 'large-alarm' : 'small-alarm';
         };
     }
 })();

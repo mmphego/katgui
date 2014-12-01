@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($interval, ReceptorStateService, ControlService) {
+    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService) {
 
         var vm = this;
 
@@ -29,15 +29,39 @@
         //    ControlService.shutdownComputing();
         //};
 
-        $interval(vm.updateReceptorLastChangeDate, 1000);
-
-        vm.updateReceptorLastChangeDate = function() {
-            ReceptorStateService.receptorsData.forEach(function (item) {
+        var stopInterval = $interval(function() {
+            vm.receptorsData.forEach(function (item) {
                 var ms = moment(new Date()).diff(moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY'));
                 var d = moment.duration(ms);
                 item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
                 item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
             });
+        }, 1000);
+
+        vm.receptorMessageReceived = function (event, message) {
+            var sensorNameList = message.name.split(':');
+            var sensor = sensorNameList[0];
+            var sensorName = sensorNameList[1];
+            vm.receptorsData.forEach(function (item) {
+
+                if (item.name === sensor) {
+                    if (sensorName === 'mode' && item.state !== message.value) {
+                        item.state = message.value;
+                    } else if (sensorName === 'inhibited' && item.inhibited !== message.value) {
+                        item.inhibited = message.value;
+                    }
+
+                    item.lastUpdate = moment(message.time, 'X').format('HH:mm:ss DD-MM-YYYY');
+                }
+
+            });
         };
+
+        var cancelListeningToReceptorMessages = $rootScope.$on('receptorMessage', vm.receptorMessageReceived);
+
+        $scope.$on('$destroy', function() {
+            $interval.cancel(stopInterval);
+            cancelListeningToReceptorMessages();
+        });
     }
 })();

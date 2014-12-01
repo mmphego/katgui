@@ -1,6 +1,17 @@
-<div class="view-container" ng-controller="AboutCtrl as vm">
-    <h1>About katGUI</h1>
-    <hr/>
-    <p ng-if="uiVersion">Current UI version: {{::vm.uiVersion}}</p>
-    <p ng-if="serverVersion">Current server version: {{::vm.serverVersion}}</p>
+<div flex style="padding: 24px;" ng-controller="AboutCtrl as vm">
+
+    <div layout="column" class="md-whiteframe-z1">
+        <md-toolbar md-theme="{{themePrimary}}" class="md-whiteframe-z1">
+            <div class="md-toolbar-tools">
+                <span flex>About katGUI</span>
+            </div>
+        </md-toolbar>
+        <md-content layout="column" layout-padding>
+            <!--<div>-->
+            <!--<span ng-if="uiVersion">Current UI version: {{::vm.uiVersion}}</span>-->
+            <!--<span ng-if="serverVersion">Current server version: {{::vm.serverVersion}}</span>-->
+            <!--</div>-->
+        </md-content>
+    </div>
+
 </div>

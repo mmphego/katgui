@@ -49,7 +49,7 @@
                 subscribeToAlarms();
 
                 pendingSubscribeObjects.forEach(function (obj) {
-                    obj.subscribeName = null;
+                    delete obj.subscribeName;
                     connection.send(JSON.stringify(obj));
                 });
 
@@ -77,13 +77,13 @@
                             messageObj = JSON.parse(message);
                         }
 
-                        if (messageObj.name.indexOf('kataware:') === 0 &&
-                            messageObj.status !== 'nominal' &&
-                            messageObj.status !== 'unknown') {
-
+                        if (messageObj.name.lastIndexOf('kataware:', 0) === 0) {
                             api.alarmMessageReceived(messageObj);
-                        } else {
+                        } else if (messageObj.name.indexOf('kataware:') !== 0) {
                             api.receptorMessageReceived(messageObj);
+                        } else {
+                            console.log('dangling monitor message...');
+                            console.log(messageObj);
                         }
                     });
                 }
@@ -107,24 +107,28 @@
         };
 
         api.receptorMessageReceived = function (messageObj) {
-            $rootScope.$emit('receptorMessage', messageObj);
+            $rootScope.$broadcast('receptorMessage', messageObj);
         };
 
         api.alarmMessageReceived = function(messageObj) {
-            var alarmValues = messageObj.value.split(',');
-            var alarmPriority = 'unknown';
-            if (alarmValues.length > 2) {
-                alarmPriority = alarmValues[1];
+
+            if (messageObj.status !== 'nominal') {
+                var alarmValues = messageObj.value.split(',');
+                var alarmPriority = 'unknown';
+                if (alarmValues.length > 2) {
+                    alarmPriority = alarmValues[1];
+                }
+                messageObj.severity = messageObj.status;
+                messageObj.priority = alarmPriority;
+                messageObj.message = messageObj.value;
+
+                messageObj.name = messageObj.name.replace('kataware:alarm.', '');
+
+                messageObj.dateUnix = messageObj.time;
+                messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
+                $rootScope.$emit('alarmMessage', messageObj);
             }
-            messageObj.severity = messageObj.status;
-            messageObj.priority = alarmPriority;
-            messageObj.message = messageObj.value;
 
-            messageObj.name = messageObj.name.replace('kataware:alarm.', '');
-
-            messageObj.dateUnix = messageObj.time;
-            messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
-            $rootScope.$emit('alarmMessage', messageObj);
         };
 
         return api;

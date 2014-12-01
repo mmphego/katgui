@@ -6,17 +6,38 @@
 @alarm-unknown-bg: #607d8b;
 @alarm-nominal-bg: #259b24;
 
-.large-alarm {
+
+.alarms-notify-list {
     position: fixed;
-    top: 57px;
+//    top: 57px;
     right: 2px;
     float: right;
-    width: 400px;
+    width: 500px;
     overflow: auto;
-    opacity: 0.95;
+    opacity: 0.9;
+    height: 100%;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     z-index: 4;
+    pointer-events: none;
+}
+
+.alarm-item-overlay {
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+}
+
+.large-alarm-item {
+    opacity: 1.0;
+    right: 0px;
+    float: right;
+    height: 108px;
+    width: 480px;
+    overflow: hidden;
 
     span {
         overflow: hidden;
@@ -43,24 +64,14 @@
         overflow: hidden;
         font-size: 16px;
     }
-
-    .alarm-item {
-        height: 108px;
-    }
 }
 
-.small-alarm {
-    position: fixed;
-    top: 57px;
-    right: 2px;
+.small-alarm-item {
+    opacity: 1.0;
+    right: 0px;
     float: right;
     width: 280px;
-    //  height: 60px;
-    overflow: auto;
-    opacity: 0.95;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    z-index: 4;
+    height: 68px;
 
     .datestamp {
         display: none;
@@ -87,9 +98,6 @@
         font-size: 24px;
     }
 
-    .alarm-item {
-        height: 68px;
-    }
 }
 
 .alarm-styles(@color, @textColor) {
@@ -134,29 +142,6 @@
     pointer-events: auto;
 }
 
-@-webkit-keyframes glowing-error {
-    0% {
-        background-color: #ff9800;
-    }
-    50% {
-        background-color: #e65100;
-    }
-    100% {
-        background-color: #ff9800;
-    }
-}
-
-@keyframes glowing-error {
-    0% {
-        background-color: #ff9800;
-    }
-    50% {
-        background-color: #e65100;
-    }
-    100% {
-        background-color: #ff9800;
-    }
-}
 
 .alarm-glowing-error {
     //  -webkit-animation: glowing-error 1s;
@@ -167,30 +152,6 @@
     color: black;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-}
-
-@-webkit-keyframes glowing-critical {
-    0% {
-        background-color: #e51c23;
-    }
-    50% {
-        background-color: #b0120a;
-    }
-    100% {
-        background-color: #e51c23;
-    }
-}
-
-@keyframes glowing-critical {
-    0% {
-        background-color: #e51c23;
-    }
-    50% {
-        background-color: #b0120a;
-    }
-    100% {
-        background-color: #e51c23;
-    }
 }
 
 .alarm-glowing-critical {
@@ -375,12 +336,6 @@ ul {
 }
 
 .large-alarms-animate {
-    /* standard transition code */
-    -webkit-transition: 0.2s linear all;
-    transition: 0.2s linear all;
-//    opacity:0;
+    -webkit-transition: 0.2s ease-in-out width, 0.2s ease-in-out height;
+    transition: 0.2s ease-in-out width, 0.2s ease-in-out height;
 }
-
-
-
-
