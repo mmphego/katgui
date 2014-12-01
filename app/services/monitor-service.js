@@ -112,8 +112,8 @@
 
         api.alarmMessageReceived = function(messageObj) {
 
-            if (messageObj.status !== 'nominal') {
-                var alarmValues = messageObj.value.split(',');
+            //if (messageObj.status !== 'nominal') {
+                var alarmValues = messageObj.value.toString().split(',');
                 var alarmPriority = 'unknown';
                 if (alarmValues.length > 2) {
                     alarmPriority = alarmValues[1];
@@ -127,7 +127,7 @@
                 messageObj.dateUnix = messageObj.time;
                 messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
                 $rootScope.$emit('alarmMessage', messageObj);
-            }
+            //}
 
         };
 
