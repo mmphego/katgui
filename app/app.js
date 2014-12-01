@@ -51,6 +51,12 @@
                 primary: 'teal',
                 secondary: 'amber',
                 primaryButtons: 'indigo'
+            },
+            {
+                name: 'Light-Blue-Dark',
+                primary: 'light-blue-dark',
+                secondary: 'blue-grey',
+                primaryButtons: 'indigo'
             }]
         )
         .config(configureKatGui)

@@ -16,15 +16,15 @@
                                 <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.draftsOrderBy" ng-options="s.label for s in vm.draftsOrderByFields">
                                     <option value="">-- Order By --</option>
                                 </select>
-                                <input type="search" style="font-size: 14px; margin-left: 8px; width: 120px; background: transparent; border: 0" ng-model="vm.q" placeholder="Search Drafts..."/>
+                                <input type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="vm.q" placeholder="Search Drafts..."/>
                             </div>
                         </md-toolbar>
-                        <md-list id="schedule-draft-data-list-id" class="md-whiteframe-z1" style="padding: 0; direction: rtl">
+                        <md-list flex id="schedule-draft-data-list-id" class="md-whiteframe-z1" style="padding: 0; direction: rtl">
 
                             <md-item ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:false" ng-click="vm.setSelectedScheduleDraft(item)"
-                                     ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}">
+                                     ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item">
                                 <md-item-content>
-                                    <div class="md-tile-content schedule-draft-item" style="padding: 2px; min-width: 800px; direction: ltr" layout="row" layout-align="center center">
+                                    <div class="md-tile-content" style="padding: 2px; min-width: 800px; direction: ltr" layout="row" layout-align="center center">
 
                                         <div layout="column" class="schedule-block-name-div">
                                             <div class="schedule-block-id-text">{{item.id}}:</div>
@@ -38,33 +38,33 @@
 
                                         <md-button aria-label="Select a Date and Time" style="width: 122px;" class="dropdown-toggle schedule-item-input" type="button"
                                                    data-toggle="dropdown"
-                                                   ng-click="vm.openTypePicker($index, $event);">
+                                                   ng-click="vm.openTypePicker(item, $event);">
                                             {{item.type}}
                                             <span flex></span>
                                             <span class="caret"></span>
                                         </md-button>
                                         <input type="text" aria-label="Select a Date and Time" style="margin-left: 5px; width: 180px; background: transparent; border: 0" class="schedule-item-input"
-                                               ng-click="vm.openDatePicker($index, $event);" ng-model="item.desiredTime" placeholder="Desired Time"/>
+                                               ng-click="vm.openDatePicker(item, $event);" ng-model="item.desiredTime" placeholder="Desired Time"/>
                                         <!--<span ng-if="item.desiredTime">{{item.desiredTime}}</span>-->
                                         <!--<span ng-if="!item.desiredTime">Select Time</span>-->
                                         <!--<span class="caret"></span>-->
                                         <!--</input>-->
                                         <md-button md-theme="amber" aria-label="Validate Draft" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
-                                                   ng-click="vm.validateDraft($index)">
+                                                   ng-click="vm.validateDraft(item)">
                                             <span class="fa fa-check md-fab-fa-icon-small"></span>
                                             <md-tooltip>
                                                 Validate Draft
                                             </md-tooltip>
                                         </md-button>
                                         <md-button aria-label="Move Draft To Schedule" style="margin-left: 10px;" class="md-fab md-button-fab-small"
-                                                   ng-click="vm.moveDraftRowToSchedule($index)">
+                                                   ng-click="vm.moveDraftRowToSchedule(item)">
                                             <span class="fa fa-chevron-down md-fab-fa-icon-small"></span>
                                             <md-tooltip>
                                                 Move Draft to Schedule
                                             </md-tooltip>
                                         </md-button>
                                         <md-button md-theme="red" aria-label="Delete Draft" style="margin-left: 10px;" class="md-fab md-primary md-button-fab-small"
-                                                   ng-click="vm.removeDraftRow($index)">
+                                                   ng-click="vm.removeDraftRow(item)">
                                             <span class="fa fa-minus md-fab-fa-icon-small"></span>
                                             <md-tooltip>
                                                 Delete Draft
@@ -89,7 +89,7 @@
                                 <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.schedulesOrderBy" ng-options="s.label for s in vm.draftsOrderByFields">
                                     <option value="">-- Order By --</option>
                                 </select>
-                                <input type="search" style="font-size: 14px; margin-left: 8px; width: 120px; background: transparent; border: 0" ng-model="vm.q2" placeholder="Search Schedules..."/>
+                                <input type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="vm.q2" placeholder="Search Schedules..."/>
                             </div>
                         </md-toolbar>
 
@@ -98,21 +98,21 @@
                             <md-item ng-repeat="item in vm.scheduleData | filter:vm.q2 | orderBy:vm.schedulesOrderBy.value:false" ng-click="vm.setSelectedSchedule(item); "
                                      ng-class="{'selected-schedule-row': !item.executing && item === vm.selectedSchedule,
     'schedule-row-executing': item.executing && item !== vm.selectedSchedule,
-    'schedule-row-executing-and-selected': item.executing && item === vm.selectedSchedule}">
+    'schedule-row-executing-and-selected': item.executing && item === vm.selectedSchedule}" class="schedule-item">
                                 <md-item-content>
-                                    <div class="md-tile-content schedule-item" style="padding: 2px; min-width: 800px; direction: ltr" layout="row" layout-align="center center">
+                                    <div class="md-tile-content" style="padding: 2px; min-width: 800px; direction: ltr" layout="row" layout-align="center center">
 
                                         <div layout="column" class="schedule-block-name-div">
                                             <div class="schedule-block-id-text">{{item.id}}:</div>
                                             <span>({{item.owner}} - {{item.state}})</span>
                                         </div>
 
-                                        <span flex style="overflow: hidden; text-overflow: ellipsis; min-width: 450px;" class="" label="Description">{{item.description}}</span>
+                                        <span flex style="overflow: hidden; text-overflow: ellipsis; min-width: 450px;" class="" label="Description" title="{{item.description}}">{{item.description}}</span>
                                         <span style="margin-right: 16px;">{{item.type}}</span>
                                         <span ng-if="item.desiredTime">{{item.desiredTime}}</span>
 
                                         <md-button aria-label="Move Schedule To Draft" style="margin-left: 10px;" class="md-fab md-button-fab-small"
-                                                   ng-click="vm.moveScheduleRowToDraft($index, $event)">
+                                                   ng-click="vm.moveScheduleRowToDraft(item, $event)">
                                             <span class="fa fa-chevron-up md-fab-fa-icon-small"></span>
                                             <md-tooltip>
                                                 Move Schedule To Draft
@@ -120,7 +120,7 @@
                                         </md-button>
 
                                         <md-button md-theme="green" aria-label="Execute Schedule" style="margin-left: 10px;" class="md-fab md-primary md-button-fab-small"
-                                                   ng-click="vm.executeSchedule($index, $event)">
+                                                   ng-click="vm.executeSchedule(item, $event)">
                                             <span class="fa fa-play md-fab-fa-icon-small"></span>
                                             <md-tooltip>
                                                 Execute Schedule
@@ -128,7 +128,7 @@
                                         </md-button>
 
                                         <md-button aria-label="Move Schedule To Finished" style="margin-left: 10px;" class="md-fab md-button-fab-small"
-                                                   ng-click="vm.moveScheduleRowToFinished($index, $event)">
+                                                   ng-click="vm.moveScheduleRowToFinished(item, $event)">
                                             <span class="fa fa-chevron-down md-fab-fa-icon-small"></span>
                                             <md-tooltip>
                                                 Move Schedule To Finished
@@ -149,13 +149,13 @@
                         </div>
                     </md-toolbar>
                     <md-list style="padding: 0;">
-                        <md-item ng-repeat="item in vm.scheduleCompletedData track by item.id">
+                        <md-item ng-repeat="item in vm.scheduleCompletedData track by item.id" class="schedule-item">
                             <md-item-content layout="row" layout-padding>
                                 <span>{{item.id}}:</span>
-                                <span>({{item.owner}} - {{item.state}})</span>
-                                <span>{{item.description}}</span>
-                                <span>{{item.type}}</span>
-                                <span>{{item.desiredTime}}</span>
+                                <span>({{item.owner}} - {{item.state}}) </span>
+                                <span>{{item.description}} </span>
+                                <span>{{item.type}} </span>
+                                <span>{{item.desiredTime}} </span>
                             </md-item-content>
                         </md-item>
                     </md-list>
@@ -164,14 +164,14 @@
 
             <div style="margin-top: 0px; margin-bottom: 0px; margin-right: 8px; padding: 8px;" layout="column" id="schedulerScriptView"
                  ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null}">
-                <div flex layout="column" id="resource-allocation-div">
+                <div layout="column" id="resource-allocation-div">
                     <md-toolbar style="margin-left: 24px;  width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
                         <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
                             <span>Resource Specification</span>
                         </div>
                     </md-toolbar>
                     <div flex style="padding: 0px 0px 0px 24px;" layout="column">
-                        <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
+                        <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" layout="column"
                              ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null && vm.selectedSchedule === null}">
                             <!--<textarea ng-if="vm.selectedScheduleDraft" class="schedule-script-text-area" rows="30" ng-model="vm.selectedScheduleDraft.script"-->
                             <!--ng-show="vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null" ng-maxlength="8000"></textarea>-->
@@ -183,12 +183,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="horizontal-resizer-bar" style="margin-left: 24px; margin-top: 4px;"
-                     resizer="horizontal"
-                     resizer-target="#resource-allocation-div">
-                </div>
+                <!--<div class="horizontal-resizer-bar" style="margin-left: 24px; margin-top: 4px;"-->
+                     <!--resizer="horizontal"-->
+                     <!--resizer-target="#resource-allocation-div">-->
+                <!--</div>-->
                 <div flex layout="column">
-                    <md-toolbar style="margin-left: 24px; margin-top: 2px; width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
+                    <md-toolbar style="margin-left: 24px; margin-top: 16px; width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
                         <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
                             <span>Schedule Block Details</span>
                         </div>

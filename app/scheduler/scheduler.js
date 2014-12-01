@@ -53,7 +53,9 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             }
         };
 
-        vm.openTypePicker = function (rowIndex, $event) {
+        vm.openTypePicker = function (item, $event) {
+
+            var rowIndex = vm.scheduleDraftData.indexOf(item);
 
             if (vm.currentRowTypePickerIndex !== rowIndex) {
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
@@ -75,7 +77,9 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             $event.stopPropagation();
         };
 
-        vm.openDatePicker = function (rowIndex, $event) {
+        vm.openDatePicker = function (item, $event) {
+
+            var rowIndex = vm.scheduleDraftData.indexOf(item);
 
             //TODO keyboard shortcut like escape to close datepicker
             if (vm.currentRowDatePickerIndex !== rowIndex) {
@@ -102,7 +106,10 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             $event.stopPropagation();
         };
 
-        vm.executeSchedule = function (rowIndex, $event) {
+        vm.executeSchedule = function (item, $event) {
+
+            var rowIndex = vm.scheduleData.indexOf(item);
+
             vm.setSelectedSchedule(vm.scheduleData[rowIndex], true);
             for (var i = 0; i < vm.scheduleData.length; i++) {
                 if (vm.selectedSchedule !== vm.scheduleData[i]) {
@@ -113,7 +120,10 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             $event.stopPropagation();
         };
 
-        vm.moveScheduleRowToFinished = function (rowIndex, $event) {
+        vm.moveScheduleRowToFinished = function (item, $event) {
+
+            var rowIndex = vm.scheduleData.indexOf(item);
+
             if (vm.selectedSchedule === vm.scheduleData[rowIndex]) {
                 vm.selectedSchedule = null;
             }
@@ -123,7 +133,9 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             vm.scheduleData.splice(rowIndex, 1);
         };
 
-        vm.moveScheduleRowToDraft = function(rowIndex, $event) {
+        vm.moveScheduleRowToDraft = function(item, $event) {
+            var rowIndex = vm.scheduleData.indexOf(item);
+
             if (vm.selectedSchedule === vm.scheduleData[rowIndex]) {
                 vm.selectedSchedule = null;
             }
@@ -159,7 +171,9 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             vm.scheduleDraftData[vm.scheduleDraftData.indexOf(vm.selectedScheduleDraft)].type = type;
         };
 
-        vm.removeDraftRow = function (rowIndex) {
+        vm.removeDraftRow = function (item) {
+            var rowIndex = vm.scheduleDraftData.indexOf(item);
+
             if (vm.selectedScheduleDraft === vm.scheduleDraftData[rowIndex]) {
                 if (vm.scheduleDraftData.length > rowIndex + 1) {
                     vm.selectedScheduleDraft = vm.scheduleDraftData[rowIndex + 1];
@@ -170,7 +184,8 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
             vm.scheduleDraftData.splice(rowIndex, 1);
         };
 
-        vm.moveDraftRowToSchedule = function (rowIndex) {
+        vm.moveDraftRowToSchedule = function (item) {
+            var rowIndex = vm.scheduleDraftData.indexOf(item);
 
             if (vm.selectedScheduleDraft === vm.scheduleDraftData[rowIndex]) {
                 vm.selectedScheduleDraft = null;

@@ -71,13 +71,21 @@
 }
 
 .schedule-draft-item {
-    border-bottom: 1px solid #d3d3d3;
     height: 48px;
+
+    md-item-content {
+        border-bottom: 1px solid #d3d3d3;
+        background: white;
+    }
 }
 
 .schedule-item {
-    border-bottom: 1px solid #d3d3d3;
     height: 48px;
+
+    md-item-content {
+        border-bottom: 1px solid #d3d3d3;
+        background: white;
+    }
 }
 
 .schedule-type-dropdown {
@@ -97,7 +105,7 @@
 
 .selected-schedule-row {
     md-item-content {
-        background: #B3E5FC;
+        background: #B3E5FC !important;
     }
 }
 
@@ -183,6 +191,12 @@
 
 .schedule-block-script-window {
     min-height: 100%;
+    padding: 0px;
+    background-color: #ECEFF1;
+}
+
+.schedule-block-resource-window {
+    height: 400px;
     padding: 0px;
     background-color: #ECEFF1;
 }

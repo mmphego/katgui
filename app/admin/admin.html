@@ -1,7 +1,7 @@
 <div class="view-container-small" ng-controller="AdminCtrl as vm">
 
     <card class="md-whiteframe-z1" layout="column">
-        <md-toolbar class="panel-toolbar">
+        <md-toolbar class="panel-toolbar md-whiteframe-z1">
             <div class="md-toolbar-tools" layout="row">
                 <span flex>Users</span>
                 <md-checkbox style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
@@ -17,7 +17,7 @@
         </md-toolbar>
         <md-list flex class="user-list">
             <md-item ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value as results">
-                <md-item-content flex layout="row" ng-if="user.active || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.active, 'activated-user': user.active }">
+                <md-item-content flex layout="row" style="background: white;" ng-if="user.active || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.active, 'activated-user': user.active }">
                     <div flex class="user-cell">
                         <md-text-float  md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"></md-text-float>
                         <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>

@@ -1,10 +1,10 @@
-<div layout="column">
+<div layout="column" md-theme="{{vm.themePrimary}}">
 
-    <md-toolbar class="widget-toolbar" md-theme="{{vm.themePrimary}}">
+    <md-toolbar class="widget-toolbar md-whiteframe-z1">
 
     </md-toolbar>
 
-    <section flex layout-align="center center" class="navigation-buttons" md-theme="{{vm.themePrimaryButtons}}">
+    <div flex layout-align="center center" class="navigation-buttons" md-theme="{{vm.themePrimaryButtons}}">
 
         <md-button aria-label="Operator Control" class="md-raised md-primary" ng-click="vm.stateGo('operatorControl')">Operator Control</md-button>
         <md-button aria-label="Alarms" class="md-raised md-primary" ng-click="vm.stateGo('alarms')">Alarms</md-button>
@@ -18,5 +18,5 @@
         <md-button aria-label="Log Reports" class="md-raised md-primary" disabled>Log Reports</md-button>
         <md-button aria-label="Source Catalogues" class="md-raised md-primary" disabled>Source Catalogues</md-button>
 
-    </section>
+    </div>
 </div>

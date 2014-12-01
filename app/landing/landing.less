@@ -1,70 +1,72 @@
 .panel-landing-controls-large {
-  text-align: center;
-  > button {
-    width: 180px;
-    height: 80px;
-    white-space: normal;
-    background: @button-background-gradient;
-  }
+    text-align: center;
+    > button {
+        width: 180px;
+        height: 80px;
+        white-space: normal;
+        background: @button-background-gradient;
+    }
 }
 
 .panel-landing-controls-medium {
-  text-align: center;
-  > button {
-    width: 120px;
-    height: 60px;
-    white-space: normal;
-    background: @button-background-gradient;
-  }
+    text-align: center;
+    > button {
+        width: 120px;
+        height: 60px;
+        white-space: normal;
+        background: @button-background-gradient;
+    }
 }
 
 .panel-landing-controls-small {
-  text-align: center;
-  > button {
-    width: 100px;
-    height: 60px;
-    white-space: normal;
-    background: @button-background-gradient;
-  }
+    text-align: center;
+    > button {
+        width: 100px;
+        height: 60px;
+        white-space: normal;
+        background: @button-background-gradient;
+    }
 }
 
 .btn-delete-dashboard-pref {
-  float: right;
-  margin-left: 5px;
-  margin-right: -5px;
-  margin-top: -3px;
-  color: grey;
-  cursor: pointer;
+    float: right;
+    margin-left: 5px;
+    margin-right: -5px;
+    margin-top: -3px;
+    color: grey;
+    cursor: pointer;
 
-  &:hover {
-    color: darkgrey;
-  }
+    &:hover {
+        color: darkgrey;
+    }
 }
 
 .dashboard-container {
 
-  .panel {
-    box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
-  }
+    .panel {
+        box-shadow: 0px 2px 5px 0 rgba(0, 0, 0, 0.26);
+        border: 0;
+        background-color: transparent;
+    }
 
-  .panel-heading {
-    background-color: #303f9f;
-    color: white;
+    .panel-heading {
+        background-color: #303f9f;
+        color: white;
+
+        span {
+            i.fa {
+                color: white;
+            }
+        }
+    }
 
     span {
-      i.fa {
-        color: white;
-      }
-    }
-  }
+        i.fa {
+            color: grey;
 
-  span {
-      i.fa {
-        color: grey;
-
-        &:hover {
-          color: darkgrey;
+            &:hover {
+                color: darkgrey;
+            }
         }
-      }
-  }
+    }
 }
