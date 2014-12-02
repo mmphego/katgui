@@ -63,7 +63,7 @@
         };
 
         api.onSockJSMessage = function (e) {
-console.log(e);
+
             var messages = JSON.parse(e.data);
             if (!messages['jsonrpc']) {
 
@@ -110,25 +110,22 @@ console.log(e);
             $rootScope.$broadcast('receptorMessage', messageObj);
         };
 
-        api.alarmMessageReceived = function(messageObj) {
+        api.alarmMessageReceived = function (messageObj) {
 
-            //if (messageObj.status !== 'nominal') {
-                var alarmValues = messageObj.value.toString().split(',');
-                var alarmPriority = 'unknown';
-                if (alarmValues.length > 2) {
-                    alarmPriority = alarmValues[1];
-                }
-                messageObj.severity = messageObj.status;
-                messageObj.priority = alarmPriority;
-                messageObj.message = messageObj.value;
+            var alarmValues = messageObj.value.toString().split(',');
+            var alarmPriority = 'unknown';
+            if (alarmValues.length > 2) {
+                alarmPriority = alarmValues[1];
+            }
+            messageObj.severity = messageObj.status;
+            messageObj.priority = alarmPriority;
+            messageObj.message = messageObj.value;
 
-                messageObj.name = messageObj.name.replace('kataware:alarm.', '');
+            messageObj.name = messageObj.name.replace('kataware:alarm.', '');
 
-                messageObj.dateUnix = messageObj.time;
-                messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
-                $rootScope.$emit('alarmMessage', messageObj);
-            //}
-
+            messageObj.dateUnix = messageObj.time;
+            messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
+            $rootScope.$emit('alarmMessage', messageObj);
         };
 
         return api;

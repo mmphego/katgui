@@ -227,9 +227,9 @@
         $rootScope.alarmsData = [];
         $rootScope.knownAlarmsData = [];
 
-        var unbindAlarmMessage = $rootScope.$on('alarmMessage', receivedAlarmMessage);
+        var unbindAlarmMessage = $rootScope.$on('alarmMessage', vm.receivedAlarmMessage);
 
-        function receivedAlarmMessage(event, message) {
+        vm.receivedAlarmMessage = function (message) {
 
             if (message.severity === 'nominal') {
                 return;
@@ -275,7 +275,7 @@
                     KatGuiUtil.removeFirstFromArrayWhereProperty($rootScope.knownAlarmsData, 'name', message.name);
                 }
             }
-        }
+        };
 
         $scope.$on('$destroy', unbindAlarmMessage);
     }
