@@ -69,19 +69,24 @@
 
 
         vm.addAlarmMessage = function (message) {
+
+            if (message.severity === 'nominal') {
+                return;
+            }
+
             vm.messages.push(message);
 
-            if (message.severity === 'unknown' ||
-                message.severity === 'nominal' ||
-                message.severity === 'maintenance') {
-                message.ttl = 10000;
-            }
-
-            if (message.ttl && message.ttl !== -1) {
-                $timeout(function () {
-                    vm.deleteMessage(message);
-                }, message.ttl);
-            }
+            //if (message.severity === 'unknown' ||
+            //    message.severity === 'nominal' ||
+            //    message.severity === 'maintenance') {
+            //    message.ttl = 10000;
+            //}
+            //
+            //if (message.ttl && message.ttl !== -1) {
+            //    $timeout(function () {
+            //        vm.deleteMessage(message);
+            //    }, message.ttl);
+            //}
         };
 
         var unbindAlarmMessage = $rootScope.$on('alarmMessage', function (event, message) {

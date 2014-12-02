@@ -9,11 +9,14 @@
         vm.lastId = 0;
 
         vm.orderByFields = [
+            {label: '-- Order By --', value: 'userId'},
             {label: 'Name', value: 'name'},
             {label: 'Email', value: 'email'},
             {label: 'Roles', value: 'roles'},
             {label: 'Active State', value: 'active'}
         ];
+
+        vm.orderBy = vm.orderByFields[0];
 
         vm.userRoles = [
             {"id": 1, "name": "Monitor", "assignable": true},
@@ -23,12 +26,14 @@
 
         vm.userData = [
             {
+                userId: 0,
                 name: 'testuser',
                 email: 'test@ska.ac.za',
                 active: true,
                 roles: []
             },
             {
+                userId: 1,
                 name: 'monitor',
                 email: 'cam@ska.ac.za',
                 active: false,
@@ -38,7 +43,8 @@
         vm.createUser = function () {
             event.stopPropagation();
             vm.userData.push({
-                name: 'newuser' + vm.lastId++,
+                userId: vm.lastId++,
+                name: 'newuser' + vm.lastId,
                 email: 'new@ska.ac.za',
                 role: 'monitor',
                 active: true

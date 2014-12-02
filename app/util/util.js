@@ -1,6 +1,7 @@
 angular.module('katGui.util', [])
     .directive('resizer', resizer)
     .directive('dropdownMultiselect', dropdownMultiselect)
+    .directive('addListItemAnimation', addListItemAnimation)
     .factory('KatGuiUtil', katGuiUtil);
 
 
@@ -85,6 +86,55 @@ function resizer($document) {
     };
 }
 
+//add this to the span containing either text or icon inside a md-button
+function addListItemAnimation($animate) {
+    return {
+        restrict: 'EA',
+        scope: {
+            list: '@',
+            height: '@'
+        },
+        link: function (scope, element) {
+            var parent = element.parent();
+            var parentRect = parent[0].getBoundingClientRect();
+
+            element.detach();
+            angular.element('body').append(element);
+            element.addClass('add-list-item');
+            parent.on('click', function () {
+
+                var listRect = angular.element(scope.list)[0].getBoundingClientRect();
+
+                $animate.addClass(element, 'on', {
+                    from: {
+                        width: parentRect.width,
+                        height: parentRect.height,
+                        left: parentRect.left + 'px',
+                        top: parentRect.top + 'px',
+                        opacity: '0',
+                        display: 'block',
+                        //border: '1px solid lightgrey',
+                        background: 'white',
+                        'box-shadow': '0px 2px 5px 0 rgba(0, 0, 0, 0.26)'
+                    },
+                    to: {
+                        left: listRect.left + 'px',
+                        top: listRect.top + 'px',
+                        width: listRect.width + 'px',
+                        height: scope.height + 'px',
+                        opacity: '0.8'
+                    }
+                }).then(function () {
+                    //element.css('opacity', 0);
+                    element.removeClass('on');
+                    element.css('display', 'none');
+                });
+
+            });
+        }
+    };
+}
+
 function katGuiUtil() {
 
     function declination(day, month, year, UT) {
@@ -164,8 +214,8 @@ function katGuiUtil() {
     };
 
     this.removeFirstFromArrayWhereProperty = function (array, property, propertyValueToLookup) {
-        for(var i = array.length; i--;) {
-            if(array[i][property] === propertyValueToLookup) {
+        for (var i = array.length; i--;) {
+            if (array[i][property] === propertyValueToLookup) {
                 array.splice(i, 1);
                 break;
             }

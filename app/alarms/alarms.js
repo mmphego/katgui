@@ -75,6 +75,11 @@
         $scope.$on('$destroy', unbindAlarmMessage);
 
         function receivedAlarmMessage(event, message) {
+
+            if (message.severity === 'nominal') {
+                return;
+            }
+
             var found = false;
 
             if (message.priority === 'known') {

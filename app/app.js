@@ -227,6 +227,10 @@
 
         var unbindAlarmMessage = $rootScope.$on('alarmMessage', function (event, message) {
 
+            if (message.severity === 'nominal') {
+                return;
+            }
+
             var found = false;
 
             if (message.priority === 'known') {

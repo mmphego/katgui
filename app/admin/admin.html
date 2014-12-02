@@ -6,16 +6,16 @@
                 <span flex>Users</span>
                 <md-checkbox style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
                 <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
-                    <span class="fa fa-plus"></span>
+                    <div style="left: 0; top: 0; width: 38px; height: 38px; position: absolute;"><add-list-item-animation height="75" list="#userListId"></add-list-item-animation></div>
+                    <span flex class="fa fa-plus"></span>
                     <md-tooltip>Create A User</md-tooltip>
                 </md-button>
                 <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.orderBy" ng-options="s.label for s in vm.orderByFields">
-                    <option value="">-- Order By --</option>
                 </select>
                 <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="q" label="Search Users..." class=""></md-text-float>
             </div>
         </md-toolbar>
-        <md-list flex class="user-list">
+        <md-list id="userListId" flex class="user-list">
             <md-item ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value as results">
                 <md-item-content flex layout="row" style="background: white;" ng-if="user.active || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.active, 'activated-user': user.active }">
                     <div flex class="user-cell">
