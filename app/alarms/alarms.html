@@ -1,6 +1,6 @@
 <div flex class="view-container" ng-controller="AlarmsCtrl as vm" layout="column">
 
-    <div class="md-whiteframe-z1" layout="column" style="min-height: 620px;">
+    <div class="md-whiteframe-z1" layout="column" style="min-height: 550px; margin-bottom: 16px;">
         <md-toolbar class="panel-toolbar md-whiteframe-z1">
             <div class="md-toolbar-tools" layout="row">
                <span>
@@ -22,9 +22,9 @@
                 </section>
             </div>
         </md-toolbar>
-        <div class="alarms-list alarms-list-large" ng-click="vm.selectAllAlarms = false">
+        <div flex class="alarms-list alarms-list-large" ng-click="vm.selectAllAlarms = false">
             <md-list>
-                <md-item ng-repeat="item in vm.alarmsData | orderBy:vm.alarmsOrderBy.value | filter:vm.q as results">
+                <md-item ng-repeat="item in $root.alarmsData | orderBy:vm.alarmsOrderBy.value | filter:vm.q as results">
                     <md-item-content ng-click="item.selected = !item.selected"
                                      ng-if="vm.showClearedAlarms || item.priority !== 'cleared'"
                                      ng-switch="item.severity">
@@ -110,9 +110,9 @@
             </div>
         </md-toolbar>
 
-        <div class="alarms-list alarms-list-small" ng-click="vm.selectAllKnownAlarms = false">
-            <md-list>
-                <md-item ng-repeat="item in vm.knownAlarmsData  | orderBy:vm.alarmsKnownOrderBy.value | filter:vm.q2 as resultsKnown">
+        <div flex class="alarms-list alarms-list-small" ng-click="vm.selectAllKnownAlarms = false">
+            <md-list flex >
+                <md-item ng-repeat="item in $root.knownAlarmsData  | orderBy:vm.alarmsKnownOrderBy.value | filter:vm.q2 as resultsKnown">
                     <md-item-content ng-if="(vm.showKnownNominalAlarms || item.severity !== 'nominal') && (vm.showKnownMaintenanceAlarms || item.severity !== 'maintenance')"
                                      ng-click="item.selected = !item.selected"
                                      ng-switch="item.severity">

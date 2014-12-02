@@ -218,13 +218,15 @@ ul {
 }
 
 .alarms-list-large {
-    min-height: 550px;
-    max-height: 550px;
+    min-height: 480px;
+//    max-height: 480px;
+    height: 100%;
 }
 
 .alarms-list-small {
     min-height: 250px;
-    max-height: 250px;
+//    max-height: 250px;
+    height: 100%;
 }
 
 .alarms-list {
@@ -336,6 +338,6 @@ ul {
 }
 
 .large-alarms-animate {
-    -webkit-transition: 0.2s ease-in-out width, 0.2s ease-in-out height;
-    transition: 0.2s ease-in-out width, 0.2s ease-in-out height;
+    -webkit-transition: 0.2s linear width, 0.2s linear height;
+    transition: 0.2s linear width, 0.2s linear height;
 }

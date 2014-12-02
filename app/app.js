@@ -222,10 +222,14 @@
             ControlService.connectListener();
         }, 200);
 
+        //these alarm collections are modified in alarms/alarms.js
+        //just so you know
         $rootScope.alarmsData = [];
         $rootScope.knownAlarmsData = [];
 
-        var unbindAlarmMessage = $rootScope.$on('alarmMessage', function (event, message) {
+        var unbindAlarmMessage = $rootScope.$on('alarmMessage', receivedAlarmMessage);
+
+        function receivedAlarmMessage(event, message) {
 
             if (message.severity === 'nominal') {
                 return;
@@ -249,7 +253,9 @@
 
                 if (!found) {
                     $rootScope.knownAlarmsData.push(message);
+                    KatGuiUtil.removeFirstFromArrayWhereProperty($rootScope.alarmsData, 'name', message.name);
                 }
+
             } else {
 
                 for (var j = 0; j < $rootScope.alarmsData.length; j++) {
@@ -266,16 +272,17 @@
 
                 if (!found) {
                     $rootScope.alarmsData.push(message);
+                    KatGuiUtil.removeFirstFromArrayWhereProperty($rootScope.knownAlarmsData, 'name', message.name);
                 }
             }
-
-        });
+        }
 
         $scope.$on('$destroy', unbindAlarmMessage);
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, USER_ROLES) {
 
+        //todo: disable in production
         //disable this in production for performance boost
         //batarang uses this for scope inspection
         //https://docs.angularjs.org/guide/production

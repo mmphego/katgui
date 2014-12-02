@@ -18,7 +18,7 @@
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'psubscribe',
-                'params': ['kataware:alarm*'],
+                'params': [['kataware:alarm[.]*']],
                 'id': 'abe3d23201'
             };
             connection.send(JSON.stringify(jsonRPC));
@@ -63,7 +63,7 @@
         };
 
         api.onSockJSMessage = function (e) {
-
+console.log(e);
             var messages = JSON.parse(e.data);
             if (!messages['jsonrpc']) {
 
