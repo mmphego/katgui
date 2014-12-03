@@ -3,12 +3,12 @@
         <md-toolbar class="md-theme-dark md-tall md-whiteframe-z1" layout-align="center center">
             <h1>katGUI</h1>
         </md-toolbar>
-        <md-content md-theme="{{themePrimaryButtons}}" md-theme-watch="true">
+        <md-content md-theme="{{themePrimary}}" md-theme-watch="true">
             <form layout="column" layout-align="center center" layout-padding>
-                <md-text-float md-theme="{{themeSecondary}}" class="long-input" focus flex type="text" ng-model="vm.credentials.username" label="Username"></md-text-float>
-                <md-text-float md-theme="{{themeSecondary}}" class="long-input" flex type="password" ng-model="vm.credentials.password" label="Password"></md-text-float>
-                <md-button aria-label="Login" ng-click="vm.login(vm.credentials)" class="md-raised md-primary">Login</md-button>
-                <md-button style="margin: 8px;" aria-label="forgot password" ng-click="vm.forgotPassword($event, vm.credentials.username);">Forgot your password?</md-button>
+                <md-text-float class="long-input" focus flex type="text" ng-model="vm.credentials.username" label="Username"></md-text-float>
+                <md-text-float class="long-input" flex type="password" ng-model="vm.credentials.password" label="Password"></md-text-float>
+                <md-button md-theme="{{themePrimaryButtons}}" aria-label="Login" ng-click="vm.login(vm.credentials)" class="md-raised md-primary">Login</md-button>
+                <md-button md-theme="{{themePrimaryButtons}}" class='md-primary' style="margin: 8px;" aria-label="forgot password" ng-click="vm.forgotPassword($event, vm.credentials.username);">Forgot your password?</md-button>
             </form>
         </md-content>
     </div>

@@ -16,7 +16,7 @@
 
         <md-list class="receptor-state-list">
             <md-item ng-repeat="rec in vm.receptorsData">
-                <md-item-content class="receptor-state-div md-whiteframe-z1" layout="column">
+                <md-item-content ng-class="{'receptor-state-div-error': rec.since === 'error'}" class="receptor-state-div md-whiteframe-z1" layout="column">
                     <p style="min-height: 25px; max-width: 140px;">{{rec.fromNow}}<md-tooltip>Since: {{rec.since}}</md-tooltip></p>
                     <p style="font-size: 26px;"><b>{{::rec.name}}</b></p>
                     <div style="min-height: 25px">

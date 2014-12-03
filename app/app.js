@@ -55,8 +55,8 @@
             {
                 name: 'Light-Blue-Dark',
                 primary: 'light-blue-dark',
-                secondary: 'blue-grey',
-                primaryButtons: 'indigo'
+                secondary: 'indigo',
+                primaryButtons: 'blue-grey'
             }]
         )
         .config(configureKatGui)
@@ -342,6 +342,14 @@
             url: '/operatorControl',
             templateUrl: 'app/operator-control/operator-control.html',
             title: 'Operator Control',
+            data: {
+                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
+        $stateProvider.state('schedulerHome', {
+            url: '/schedulerHome',
+            templateUrl: 'app/scheduler/scheduler-home.html',
+            title: 'Scheduler Management',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }

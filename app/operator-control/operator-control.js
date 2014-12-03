@@ -29,12 +29,17 @@
         //    ControlService.shutdownComputing();
         //};
 
-        var stopInterval = $interval(function() {
+        var stopInterval = $interval(function () {
             vm.receptorsData.forEach(function (item) {
-                var ms = moment(new Date()).diff(moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY'));
-                var d = moment.duration(ms);
-                item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
-                item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
+                if (item.lastUpdate) {
+                    var ms = moment(new Date()).diff(moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY'));
+                    var d = moment.duration(ms);
+                    item.since = Math.floor(d.asHours()) + moment(ms).format(":mm:ss");
+                    item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
+                } else {
+                    item.since = "error";
+                    item.fromNow = "Connection Error!";
+                }
             });
         }, 1000);
 
@@ -59,7 +64,7 @@
 
         var cancelListeningToReceptorMessages = $rootScope.$on('receptorMessage', vm.receptorMessageReceived);
 
-        $scope.$on('$destroy', function() {
+        $scope.$on('$destroy', function () {
             $interval.cancel(stopInterval);
             cancelListeningToReceptorMessages();
         });

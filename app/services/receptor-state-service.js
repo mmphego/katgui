@@ -11,27 +11,19 @@
         this.receptorsData = [
             {
                 name: "m000",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
+                inhibited: false
             },
             {
                 name: "m001",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
+                inhibited: false
             },
             {
                 name: "m062",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
+                inhibited: false
             },
             {
                 name: "m063",
-                inhibited: false,
-                since: '0:00:00',
-                lastUpdate: nowStr
+                inhibited: false
             }
             //},
             //{

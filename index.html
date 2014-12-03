@@ -110,6 +110,7 @@
 <script src="app/widgets/navigation/navigation-widget.js"></script>
 <script src="app/widgets/dashboard-structures.js"></script>
 <script src="app/scheduler/scheduler.js"></script>
+<script src="app/scheduler/scheduler-home.js"></script>
 <script src="app/widgets/gantt/gantt-widget.js"></script>
 <!-- Add New Component JS Above -->
 
@@ -141,15 +142,31 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('operatorControl')">
-                        <span class="fa fa-cogs"></span>
-                        <button>Operator Control</button>
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operatorControl')">
+                        <div class="menu-item" layout="row" layout-align="start center">
+                            <span class="fa fa-cogs"></span>
+                            <button>Operator Control</button>
+                        </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
-                        <span class="fa fa-list"></span>
-                        <button>Scheduler</button>
+                    <md-item-content layout="column" style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;">
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('schedulerHome')">
+                            <span class="fa fa-list"></span>
+                            <button>Scheduler Management</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="">
+                            <span class="fa fa-asterisk"></span>
+                            <button>Sub-Arrays</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="">
+                            <span class="fa fa-sitemap"></span>
+                            <button>Sub-Array Resources</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
+                            <span class="fa fa-edit"></span>
+                            <button>Scheduler</button>
+                        </div>
                     </md-item-content>
                 </md-item>
                 <md-item>

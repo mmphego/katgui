@@ -17,8 +17,8 @@
             console.log('Monitor subscribed to kataware:alarm*...');
             var jsonRPC = {
                 'jsonrpc': '2.0',
-                'method': 'psubscribe',
-                'params': [['kataware:alarm[.]*']],
+                'method': 'subscribe',
+                'params': 'kataware:alarm[.]*',
                 'id': 'abe3d23201'
             };
             connection.send(JSON.stringify(jsonRPC));

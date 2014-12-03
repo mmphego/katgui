@@ -69,6 +69,9 @@
 
     &:hover {
         color: @navbar-text-hover-color;
+        i {
+            font-size: 24px;
+        }
     }
 
     &:focus {
@@ -78,10 +81,6 @@
 
 .toolbar-collapse-button-grey {
     color: transparent;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    left: 23px;
 
     &:hover {
         color: #E0E0E0;
@@ -96,6 +95,12 @@
 
     span {
         font-size: 29px;
+    }
+
+    &:hover {
+        span {
+            font-size: 36px;
+        }
     }
 
     &:focus {
@@ -152,6 +157,7 @@ body {
     cursor: pointer;
     color: #757575;
     height: 48px;
+    width: 100%;
     padding-left: 24px;
 
     button {
@@ -173,6 +179,10 @@ body {
     &:hover {
         background-color: #F5F5F5;
 
+        span {
+            font-size: 32px;
+        }
+
         button {
             background-color: #F5F5F5;
         }
@@ -185,6 +195,10 @@ body {
             background-color: #E0E0E0;
         }
     }
+}
+
+.menu-item-indented {
+    padding-left: 42px;
 }
 
 .menu-item-divider {
