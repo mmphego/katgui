@@ -1,51 +1,51 @@
-<div layout="column" class="" style="box-shadow: none;" ng-controller="GanttWidgetCtrl as vm">
+<!--<div layout="column" class="" style="box-shadow: none;" ng-controller="GanttWidgetCtrl as vm">-->
 
-    <md-toolbar class="widget-toolbar md-whiteframe-z1">
-        <!--<h3>Current Schedule Blocks</h3>-->
+    <!--<md-toolbar class="widget-toolbar md-whiteframe-z1">-->
+        <!--&lt;!&ndash;<h3>Current Schedule Blocks</h3>&ndash;&gt;-->
 
-        <div style="margin-left: 300px; margin-top: 8px;">
-            <span class="">Scale</span>
-            <select class="form-control" style="display: inline; width: 100px;" ng-model="vm.scale"
-                    ng-options="s for s in ['hour', 'day', 'week', 'month']"></select>
-            <span class="">Sort</span>
-            <select class="form-control" style="display: inline; width: 100px;" ng-model="vm.mode"
-                    ng-options="m for m in ['name', 'date', 'custom']"></select>
-        </div>
-    </md-toolbar>
+        <!--<div style="margin-left: 300px; margin-top: 8px;">-->
+            <!--<span class="">Scale</span>-->
+            <!--<select class="form-control" style="display: inline; width: 100px;" ng-model="vm.scale"-->
+                    <!--ng-options="s for s in ['hour', 'day', 'week', 'month']"></select>-->
+            <!--<span class="">Sort</span>-->
+            <!--<select class="form-control" style="display: inline; width: 100px;" ng-model="vm.mode"-->
+                    <!--ng-options="m for m in ['name', 'date', 'custom']"></select>-->
+        <!--</div>-->
+    <!--</md-toolbar>-->
 
-    <div class="panel-body" style="background-color: white;">
-        <gantt first-day-of-week="1"
-               load-data="loadData = fn"
-               remove-data="removeData = fn"
-               clear-data="clearData = fn"
-               sort-mode="vm.mode"
-               view-scale="vm.scale"
-               column-width="vm.scale === 'month' && 20 || (vm.scale === 'week' && 10 || 4)"
-               column-sub-scale="vm.scale === 'week' && 7 || 6"
-               work-hours="[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]"
-               show-non-work-hours="vm.showNonWorkHours"
-               weekend-days="[0,6]"
-               show-weekends="vm.showWeekends"
-               max-height="vm.maxHeight"
-               on-gantt-ready="vm.ganttInitialized()"
-               on-label-clicked="labelEvent(event)"
-               on-label-dbl-clicked="labelEvent(event)"
-               on-label-context-clicked="labelEvent(event)"
-               on-label-header-clicked="labelHeaderEvent(event)"
-               on-label-header-dbl-clicked="labelHeaderEvent(event)"
-               on-label-header-context-clicked="labelHeaderEvent(event)"
-               on-row-added="rowEvent(event)"
-               on-row-clicked="rowEvent(event)"
-               on-row-dbl-clicked="rowEvent(event)"
-               on-row-context-clicked="rowEvent(event)"
-               on-row-updated="rowEvent(event)"
-               on-scroll="scrollEvent(event)"
-               on-task-clicked="taskEvent(event)"
-               on-task-dbl-clicked="taskEvent(event)"
-               on-task-context-clicked="taskEvent(event)"
-               on-task-updated="taskEvent(event)"
-               template-url="bower_components/angular-gantt/template/gantt.tmpl.html">
-        </gantt>
-    </div>
+    <!--<div class="panel-body" style="background-color: white;">-->
+        <!--<gantt first-day-of-week="1"-->
+               <!--load-data="loadData = fn"-->
+               <!--remove-data="removeData = fn"-->
+               <!--clear-data="clearData = fn"-->
+               <!--sort-mode="vm.mode"-->
+               <!--view-scale="vm.scale"-->
+               <!--column-width="vm.scale === 'month' && 20 || (vm.scale === 'week' && 10 || 4)"-->
+               <!--column-sub-scale="vm.scale === 'week' && 7 || 6"-->
+               <!--work-hours="[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]"-->
+               <!--show-non-work-hours="vm.showNonWorkHours"-->
+               <!--weekend-days="[0,6]"-->
+               <!--show-weekends="vm.showWeekends"-->
+               <!--max-height="vm.maxHeight"-->
+               <!--on-gantt-ready="vm.ganttInitialized()"-->
+               <!--on-label-clicked="labelEvent(event)"-->
+               <!--on-label-dbl-clicked="labelEvent(event)"-->
+               <!--on-label-context-clicked="labelEvent(event)"-->
+               <!--on-label-header-clicked="labelHeaderEvent(event)"-->
+               <!--on-label-header-dbl-clicked="labelHeaderEvent(event)"-->
+               <!--on-label-header-context-clicked="labelHeaderEvent(event)"-->
+               <!--on-row-added="rowEvent(event)"-->
+               <!--on-row-clicked="rowEvent(event)"-->
+               <!--on-row-dbl-clicked="rowEvent(event)"-->
+               <!--on-row-context-clicked="rowEvent(event)"-->
+               <!--on-row-updated="rowEvent(event)"-->
+               <!--on-scroll="scrollEvent(event)"-->
+               <!--on-task-clicked="taskEvent(event)"-->
+               <!--on-task-dbl-clicked="taskEvent(event)"-->
+               <!--on-task-context-clicked="taskEvent(event)"-->
+               <!--on-task-updated="taskEvent(event)"-->
+               <!--template-url="bower_components/angular-gantt/template/gantt.tmpl.html">-->
+        <!--</gantt>-->
+    <!--</div>-->
 
-</div>
+<!--</div>-->

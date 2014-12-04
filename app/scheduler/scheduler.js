@@ -1,17 +1,21 @@
 (function(){
 
-angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
+angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.services'])
     .constant('SCHEDULE_BLOCK_TYPES', [
         'MAINTENANCE',
         'OBSERVATION',
         'MANUAL'])
     .controller('SchedulerCtrl', SchedulerCtrl);
 
-    function SchedulerCtrl($scope, SCHEDULE_BLOCK_TYPES) {
+    function SchedulerCtrl($scope, $timeout, SCHEDULE_BLOCK_TYPES, ObservationScheduleService) {
+
+        ObservationScheduleService.connectListener();
+
+        $scope.$on('$destroy', ObservationScheduleService.disconnectListener);
 
         var vm = this;
         vm.types = SCHEDULE_BLOCK_TYPES;
-        var lastId = 0;
+        vm.draftListProcessingServerCall = false;
 
         vm.selectedItemScript = "";
         vm.selectedDraft = null;
@@ -20,7 +24,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         vm.scheduleSelections = [];
         vm.scheduleData = [];
         vm.scheduleCompletedData = [];
-        vm.scheduleDraftData = [];
+        vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id'},
             {label: 'Description', value: 'description'},
@@ -172,16 +176,21 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         };
 
         vm.removeDraftRow = function (item) {
-            var rowIndex = vm.scheduleDraftData.indexOf(item);
 
-            if (vm.selectedScheduleDraft === vm.scheduleDraftData[rowIndex]) {
-                if (vm.scheduleDraftData.length > rowIndex + 1) {
-                    vm.selectedScheduleDraft = vm.scheduleDraftData[rowIndex + 1];
-                } else if (vm.scheduleDraftData.length === rowIndex + 1 && rowIndex > 0) {
-                    vm.selectedScheduleDraft = vm.scheduleDraftData[rowIndex - 1];
-                }
-            }
-            vm.scheduleDraftData.splice(rowIndex, 1);
+            vm.draftListProcessingServerCall = true;
+            ObservationScheduleService.deleteScheduleDraft(item.id_code)
+                .then(draftListProcessingComplete, draftListProcessingError);;
+
+            //var rowIndex = vm.scheduleDraftData.indexOf(item);
+
+            //if (vm.selectedScheduleDraft === vm.scheduleDraftData[rowIndex]) {
+            //    if (vm.scheduleDraftData.length > rowIndex + 1) {
+            //        vm.selectedScheduleDraft = vm.scheduleDraftData[rowIndex + 1];
+            //    } else if (vm.scheduleDraftData.length === rowIndex + 1 && rowIndex > 0) {
+            //        vm.selectedScheduleDraft = vm.scheduleDraftData[rowIndex - 1];
+            //    }
+            //}
+            //vm.scheduleDraftData.splice(rowIndex, 1);
         };
 
         vm.moveDraftRowToSchedule = function (item) {
@@ -196,18 +205,15 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
         };
 
         vm.addDraftSchedule = function () {
+            vm.draftListProcessingServerCall = true;
+            ObservationScheduleService.createScheduleBlock()
+                .then(draftListProcessingComplete, draftListProcessingError);
+        };
 
-            var newDraft = {
-                id: 'scheduleblock' + lastId,
-                desiredTime: '',
-                state: 'DRAFT',
-                owner: 'userName',
-                type: 'MANUAL',
-                description: '',
-                script: 'some script content ' + lastId
-            };
-            lastId++;
-            vm.scheduleDraftData.push(newDraft);
+        vm.refreshScheduleBlocks = function () {
+            vm.draftListProcessingServerCall = true;
+            ObservationScheduleService.getScheduleBlocks()
+                .then(draftListProcessingComplete, draftListProcessingError);
         };
 
 
@@ -231,6 +237,24 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker'])
                 $scope.$digest();
             }
         }
+
+        function draftListProcessingComplete(result) {
+            $timeout(function () {
+                vm.draftListProcessingServerCall = false;
+            }, 300);
+            console.log('Promise returning for: ');
+            console.log(result);
+        }
+
+        function draftListProcessingError(result) {
+            $timeout(function () {
+                vm.draftListProcessingServerCall = false;
+            }, 300);
+            console.error('Promise returning an error for: ');
+            console.error(result);
+        }
+
+        $timeout(vm.refreshScheduleBlocks, 500);
 
     }
 })();

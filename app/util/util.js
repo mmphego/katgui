@@ -2,6 +2,7 @@ angular.module('katGui.util', [])
     .directive('resizer', resizer)
     .directive('dropdownMultiselect', dropdownMultiselect)
     .directive('addListItemAnimation', addListItemAnimation)
+    .directive('loadingOverlay', loadingOverlay)
     .factory('KatGuiUtil', katGuiUtil);
 
 
@@ -111,7 +112,7 @@ function addListItemAnimation($animate) {
                         height: parentRect.height,
                         left: parentRect.left + 'px',
                         top: parentRect.top + 'px',
-                        opacity: '0',
+                        //opacity: '0',
                         display: 'block',
                         //border: '1px solid lightgrey',
                         background: 'white',
@@ -121,8 +122,8 @@ function addListItemAnimation($animate) {
                         left: listRect.left + 'px',
                         top: listRect.top + 'px',
                         width: listRect.width + 'px',
-                        height: scope.height + 'px',
-                        opacity: '0.8'
+                        height: scope.height + 'px'
+                        //opacity: '0.8'
                     }
                 }).then(function () {
                     //element.css('opacity', 0);
@@ -131,6 +132,19 @@ function addListItemAnimation($animate) {
                 });
 
             });
+        }
+    };
+}
+
+//for the overlay to work, set parent style position: relative
+function loadingOverlay () {
+    return {
+        restrict: 'E',
+        template: '<div layout="row" layout-align="center center" class="overlay-loading-div" ng-show="vm.draftListProcessingServerCall">' +
+            '<md-progress-circular md-theme="{{themeSecondary}}" class="md-whiteframe-z4" md-mode="indeterminate"></md-progress-circular>' +
+            '</div>',
+        controller: function ($rootScope) {
+
         }
     };
 }

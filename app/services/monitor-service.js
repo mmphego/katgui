@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui')
+    angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
     function MonitorService($rootScope) {
@@ -21,7 +21,7 @@
                 'params': 'kataware:alarm[.]*',
                 'id': 'abe3d23201'
             };
-            connection.send(JSON.stringify(jsonRPC));
+            return connection.send(JSON.stringify(jsonRPC));
         }
 
         api.subscribeToReceptorUpdates = function () {
@@ -37,7 +37,7 @@
             };
 
             if (connection && connection.readyState) {
-                connection.send(JSON.stringify(jsonRPC));
+                return connection.send(JSON.stringify(jsonRPC));
             } else {
                 pendingSubscribeObjects.push(jsonRPC);
             }
@@ -50,7 +50,7 @@
 
                 pendingSubscribeObjects.forEach(function (obj) {
                     delete obj.subscribeName;
-                    connection.send(JSON.stringify(obj));
+                    return connection.send(JSON.stringify(obj));
                 });
 
                 pendingSubscribeObjects = [];

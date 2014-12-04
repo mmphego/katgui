@@ -9,11 +9,12 @@
         'katGui.d3',
         'katGui.health',
         'katGui.widgets.navigationWidget',
-        'katGui.widgets.ganttWidget',
+        //'katGui.widgets.ganttWidget',
         'katGui.dashboardStructure',
         'katGui.landing',
         'katGui.util',
         'katGui.scheduler',
+        'katGui.services',
         'katGui.video'])
         .constant('UI_VERSION', '0.0.1')
         .constant('AUTH_EVENTS', {

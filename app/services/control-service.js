@@ -1,11 +1,11 @@
 (function () {
 
-    angular.module('katGui')
+    angular.module('katGui.services', [])
         .service('ControlService', ControlService);
 
     function ControlService($http) {
 
-        var urlBase = 'http://192.168.10.127:8020';
+        var urlBase = 'http://localhost:8020';
         var connection = null;
 
         this.onSockJSOpen = function () {
@@ -84,8 +84,7 @@
                     'params': [module, funcName, funcParams]
                 };
 
-                connection.send(JSON.stringify(jsonRPC));
-                return true;
+                return connection.send(JSON.stringify(jsonRPC));
             } else {
                 return false;
             }

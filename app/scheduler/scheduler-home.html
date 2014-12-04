@@ -1,6 +1,6 @@
 <div class="view-container-small" ng-controller="SchedulerHomeCtrl as vm">
 
-    <div layout="row" layout-align="center" class="md-whiteframe-z4" md-theme="{{themePrimaryButtons}}">
+    <div layout="row" layout-align="center" class="md-whiteframe-z4" md-theme="{{themePrimaryButtons}}" style="min-width: 1200px;">
         <md-button class="scheduler-nav-home-item md-primary md-raised" ink-ripple flex ng-click="vm.stateGo('subarrays')">
             <div layout="column"><div style="height: 250px;" ng-include="'images/subarrays.svg'" onload="vm.svgLoaded('#subarrays-img-target-color')"></div><span id="subarrays-img-target-color">Manage Sub-Arrays</span></div>
         </md-button>

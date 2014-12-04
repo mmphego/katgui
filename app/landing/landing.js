@@ -17,16 +17,17 @@
                                 title: "Navigation Controls"
                             }
                         ]
-                    },
-                    {
-                        widgets: [
-                            {
-                                type: "GanttWidget",
-                                config: {},
-                                title: "Schedule Blocks"
-                            }
-                        ]
                     }
+                    //,
+                    //{
+                    //    widgets: [
+                    //        {
+                    //            type: "GanttWidget",
+                    //            config: {},
+                    //            title: "Schedule Blocks"
+                    //        }
+                    //    ]
+                    //}
                 ]
             }
         ]

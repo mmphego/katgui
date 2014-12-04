@@ -4,10 +4,16 @@
             <div flex id="schedule-blocks-view" flex layout="column" layout-padding style="padding-right: 0px;  margin: 0; min-height: 400px;">
                 <div flex layout="column" style="max-height: 930px; margin: 0;">
                     <div flex layout="column" style="min-height: 150px" class="schedule-draft-data-list" id="schedulerDraftView">
+                        <loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>
                         <md-toolbar class="panel-toolbar panel-toolbar-medium md-whiteframe-z1">
                             <div layout="row" layout-align="start center" layout-padding>
                                 <span>Schedule Drafts</span>
                                 <span flex></span>
+                                <md-button aria-label="Refresh List" style="margin-right: 17px; font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
+                                           ng-click="vm.refreshScheduleBlocks()">
+                                    <span class="fa fa-refresh"></span>
+                                    <md-tooltip>Refresh List</md-tooltip>
+                                </md-button>
                                 <md-button aria-label="Create A Draft" style="margin-right: 17px; font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
                                            ng-click="vm.addDraftSchedule()">
                                     <div style="left: 0; top: 0; width: 38px; height: 38px; position: absolute;"><add-list-item-animation height="49" list="#schedule-draft-data-list-id"></add-list-item-animation></div>
@@ -25,11 +31,11 @@
                             <md-item ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:false" ng-click="vm.setSelectedScheduleDraft(item)"
                                      ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item">
                                 <md-item-content>
-                                    <div class="md-tile-content" style="padding: 2px; min-width: 800px; direction: ltr" layout="row" layout-align="center center">
+                                    <div class="md-tile-content animate-show-grow-list-item" style="padding: 2px; min-width: 800px; direction: ltr" layout="row" layout-align="center center">
 
                                         <div layout="column" class="schedule-block-name-div">
-                                            <div class="schedule-block-id-text">{{item.id}}:</div>
-                                            <span>({{item.owner}} - {{item.state}})</span>
+                                            <div class="schedule-block-id-text">{{item.id_code}}:</div>
+                                            <span><i>{{item.owner}}</i></span>
                                         </div>
 
                                         <!--<md-text-float ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex layout-fill-->
@@ -40,16 +46,12 @@
                                         <md-button aria-label="Select a Date and Time" style="width: 122px;" class="dropdown-toggle schedule-item-input" type="button"
                                                    data-toggle="dropdown"
                                                    ng-click="vm.openTypePicker(item, $event);">
-                                            {{item.type}}
+                                            {{item._type}}
                                             <span flex></span>
                                             <span class="caret"></span>
                                         </md-button>
                                         <input type="text" aria-label="Select a Date and Time" style="margin-left: 5px; width: 180px; background: transparent; border: 0" class="schedule-item-input"
-                                               ng-click="vm.openDatePicker(item, $event);" ng-model="item.desiredTime" placeholder="Desired Time"/>
-                                        <!--<span ng-if="item.desiredTime">{{item.desiredTime}}</span>-->
-                                        <!--<span ng-if="!item.desiredTime">Select Time</span>-->
-                                        <!--<span class="caret"></span>-->
-                                        <!--</input>-->
+                                               ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder="Desired Time"/>
                                         <md-button md-theme="amber" aria-label="Validate Draft" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
                                                    ng-click="vm.validateDraft(item)">
                                             <span class="fa fa-check md-fab-fa-icon-small"></span>
@@ -83,6 +85,7 @@
                     <!--</div>-->
 
                     <div flex id="scheduleCurrentView" style="min-height: 150px" layout="column" class="md-whiteframe-z1 schedule-block-list">
+                        <!--<loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>-->
                         <md-toolbar class="panel-toolbar panel-toolbar-medium md-whiteframe-z1">
                             <div layout="row" layout-align="start center" layout-padding>
                                 <span>Schedule Observations</span>
@@ -104,13 +107,13 @@
                                     <div class="md-tile-content" style="padding: 2px; min-width: 800px; direction: ltr" layout="row" layout-align="center center">
 
                                         <div layout="column" class="schedule-block-name-div">
-                                            <div class="schedule-block-id-text">{{item.id}}:</div>
-                                            <span>({{item.owner}} - {{item.state}})</span>
+                                            <div class="schedule-block-id-text">{{item.id_code}}:</div>
+                                            <span>({{item.owner}} - {{item._state}})</span>
                                         </div>
 
                                         <span flex style="overflow: hidden; text-overflow: ellipsis; min-width: 450px;" class="" label="Description" title="{{item.description}}">{{item.description}}</span>
-                                        <span style="margin-right: 16px;">{{item.type}}</span>
-                                        <span ng-if="item.desiredTime">{{item.desiredTime}}</span>
+                                        <span style="margin-right: 16px;">{{item._type}}</span>
+                                        <span ng-if="item.desired_start_time">{{item.desired_start_time}}</span>
 
                                         <md-button aria-label="Move Schedule To Draft" style="margin-left: 10px;" class="md-fab md-button-fab-small"
                                                    ng-click="vm.moveScheduleRowToDraft(item, $event)">
@@ -155,7 +158,7 @@
                                 <span>{{item.id}}:</span>
                                 <span>({{item.owner}} - {{item.state}}) </span>
                                 <span>{{item.description}} </span>
-                                <span>{{item.type}} </span>
+                                <span>{{item._type}} </span>
                                 <span>{{item.desiredTime}} </span>
                             </md-item-content>
                         </md-item>
