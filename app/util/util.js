@@ -3,8 +3,8 @@ angular.module('katGui.util', [])
     .directive('dropdownMultiselect', dropdownMultiselect)
     .directive('addListItemAnimation', addListItemAnimation)
     .directive('loadingOverlay', loadingOverlay)
+    .directive("autoGrow", autoGrow)
     .factory('KatGuiUtil', katGuiUtil);
-
 
 function dropdownMultiselect() {
     return {
@@ -137,15 +137,78 @@ function addListItemAnimation($animate) {
 }
 
 //for the overlay to work, set parent style position: relative
-function loadingOverlay () {
+function loadingOverlay() {
     return {
         restrict: 'E',
         template: '<div layout="row" layout-align="center center" class="overlay-loading-div" ng-show="vm.draftListProcessingServerCall">' +
-            '<md-progress-circular md-theme="{{themeSecondary}}" class="md-whiteframe-z4" md-mode="indeterminate"></md-progress-circular>' +
-            '</div>',
+        '<md-progress-circular md-theme="{{themeSecondary}}" class="md-whiteframe-z4" md-mode="indeterminate" style="border-radius: 30px;"></md-progress-circular>' +
+        '</div>',
         controller: function ($rootScope) {
 
         }
+    };
+}
+
+function dropdownMultiselect() {
+    return {
+        restrict: 'E',
+        template: "<div class='btn-group' data-ng-class='{open: open}'>" +
+        "<md-button aria-label='Select Item' class='btn btn-small dropdown-toggle' data-ng-click='open=!open;openDropdown()'>" +
+        "<span ng-if='model.roles.length > 0'>{{model.roles | orderBy:\'\'}}</span>" +
+        "<span ng-if='model.roles.length === 0'>Select Roles</span><span style='margin-left: 5px;' class='fa fa-caret-down'></span>" +
+        "</md-button>" +
+        "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>" +
+        "<li data-ng-repeat='option in options'><md-button style='width: 100%;' data-ng-click='setSelectedItem()'>{{option.name}}<span data-ng-class='isChecked(option.name)'></span></md-button></li>" +
+        "</ul>" +
+        "</div>",
+        controller: function ($scope) {
+
+            $scope.model.roles = [];
+            $scope.selected_items = [];
+
+            $scope.setSelectedItem = function () {
+                var name = this.option.name;
+                if (_.contains($scope.model.roles, name)) {
+                    $scope.model.roles = _.without($scope.model.roles, name);
+                } else {
+                    $scope.model.roles.push(name);
+                }
+                //console.log($scope.model);
+                return false;
+            };
+            $scope.isChecked = function (name) {
+                if (_.contains($scope.model.roles, name)) {
+                    return 'fa fa-check pull-right';
+                }
+                return false;
+            };
+        }
+    };
+}
+
+function autoGrow() {
+    return function (scope, element, attr) {
+        //element.css("height", element.parent()[0].scrollHeight + "px");
+
+        var update = function(){
+            element.css("height", "auto");
+            var height = element.parent()[0].clientHeight;
+            if(height > 0){
+                element.css("height", height + "px");
+            }
+        };
+        scope.$watch(attr.ngModel, function(){
+            update();
+        });
+
+        scope.$watch(function () {
+            return element.parent()[0].clientHeight;
+        }, function () {
+            update();
+        });
+
+        attr.$set("ngTrim", "false");
+
     };
 }
 

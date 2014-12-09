@@ -15,6 +15,9 @@ describe('AlarmsCtrl', function () {
         appCtrl = $controller('ApplicationCtrl', {$scope: scope});
         monitorService.$rootScope = rootScope;
 
+        rootScope.alarmsData = [];
+        rootScope.knownAlarmsData = [];
+
         controlService.addKnownAlarm = function () {
             //send mock server response that alarm is now known
             var alarmObj = {severity: "error", priority:"known", name: "kataware:alarm.Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
@@ -39,7 +42,8 @@ describe('AlarmsCtrl', function () {
 
         state = $state;
 
-        var timeRequestHandler = $httpBackend.when('GET', 'http://192.168.10.127:8020/time')
+        //$httpBackend.expectGET('/time');
+        var timeRequestHandler = $httpBackend.when('GET', 'http://localhost:8020/time')
             .respond({'time': '123'});
 
         ctrl = $controller('AlarmsCtrl', {$rootScope: rootScope, $scope: scope, ControlService: controlService});

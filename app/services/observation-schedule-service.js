@@ -25,17 +25,23 @@
         function onSockJSMessage(e) {
             var jsonData = JSON.parse(e.data);
 
-            if (e.data['error']) {
+            if (jsonData.error) {
                 console.error('Server Error when processing command: ');
                 console.error(e.data);
             } else {
                 var result = jsonData.result;
 
-                if (result.schedule_blocks) {
+                console.log(result);
+
+                if (result.get_schedule_blocks) {
 
                     //push each item because some view are binding to the dataset
-                    result.schedule_blocks.forEach(function (item) {
-                        if (item._state === "DRAFT") {
+                    result.get_schedule_blocks.forEach(function (item) {
+                        if (item.state === "DRAFT") {
+                            //if (item.desired_start_time === "None") {
+                                //item.desired_start_time = "";
+                                //item.isDirty = true;
+                            //}
                             api.scheduleDraftData.push(item);
                         }
                     });
@@ -44,12 +50,24 @@
 
                 } else if (result.create_schedule_block) {
 
+                    result.create_schedule_block.desired_start_time = '';
+                    result.create_schedule_block.hasValidInput = false;
+                    result.create_schedule_block.isDirty = true;
                     api.scheduleDraftData.push(result.create_schedule_block);
                     deferredMap['create_schedule_block'].resolve(result.create_schedule_block);
 
                 } else if (result.observation_schedules) {
 
-                    console.log(result.observation_schedules);
+                    console.log('got observation_schedules response');
+
+                } else if (result.schedule_draft) {
+
+                    console.log('got schedule_draft response');
+
+                } else if (result.verify_schedule_block) {
+
+                    console.log('got verify_schedule_block response');
+                    deferredMap['verify_schedule_block'].resolve(result.verify_schedule_block);
 
                 } else if (result.delete_schedule_block) {
 
@@ -61,6 +79,15 @@
                         console.error('Could not delete draft schedule block with id_code: ' + result.delete_schedule_block.id_code + '. Try to reload the page.');
                         deferredMap['delete_schedule_block'].reject(result.create_schedule_block);
                     }
+
+                } else if (result.update_draft_schedule_block) {
+                    var draftToUpdate = _.findWhere(api.scheduleDraftData, {id_code: result.update_draft_schedule_block.id_code});
+                    draftToUpdate.description = result.update_draft_schedule_block.description;
+                    draftToUpdate.type = result.update_draft_schedule_block.type;
+                    draftToUpdate.instruction_set = result.update_draft_schedule_block.instruction_set;
+                    draftToUpdate.desired_start_time = result.update_draft_schedule_block.desired_start_time;
+                    draftToUpdate.isDirty = false;
+                    deferredMap['update_draft_schedule_block'].resolve(result.update_draft_schedule_block);
 
                 } else {
 
@@ -87,9 +114,20 @@
         };
 
         api.deleteScheduleDraft = function (idCode) {
-            sendObsSchedCommand('delete_schedule_block', idCode);
+            sendObsSchedCommand('delete_schedule_block', [idCode]);
             deferredMap['delete_schedule_block'] = $q.defer();
             return deferredMap['delete_schedule_block'].promise;
+        };
+
+        api.updateScheduleDraft = function (scheduleBlockDraft) {
+            sendObsSchedCommand('update_draft_schedule_block', [
+                scheduleBlockDraft.id_code,
+                scheduleBlockDraft.type,
+                scheduleBlockDraft.instruction_set,
+                scheduleBlockDraft.description,
+                scheduleBlockDraft.desired_start_time]);
+            deferredMap['update_draft_schedule_block'] = $q.defer();
+            return deferredMap['update_draft_schedule_block'].promise;
         };
 
         api.getObservationSchedule = function () {
@@ -104,11 +142,25 @@
             return deferredMap['get_schedule_blocks'].promise;
         };
 
-        api.createScheduleBlock = function (resolve, reject) {
+        api.createScheduleBlock = function () {
 
             sendObsSchedCommand('create_schedule_block');
             deferredMap['create_schedule_block'] = $q.defer();
             return deferredMap['create_schedule_block'].promise;
+        };
+
+        api.scheduleDraft = function (id_code) {
+
+            sendObsSchedCommand('schedule_draft', [id_code]);
+            deferredMap['schedule_draft'] = $q.defer();
+            return deferredMap['schedule_draft'].promise;
+        };
+
+        api.verifyScheduleBlock = function (subarray_number, id_code) {
+
+            sendObsSchedCommand('verify_schedule_block', [subarray_number, id_code]);
+            deferredMap['verify_schedule_block'] = $q.defer();
+            return deferredMap['verify_schedule_block'].promise;
         };
 
         function sendObsSchedCommand(method, funcParams) {
@@ -121,7 +173,7 @@
                 };
 
                 if (funcParams) {
-                    jsonRPC.params = [funcParams];
+                    jsonRPC.params = funcParams;
                 }
 
                 return connection.send(JSON.stringify(jsonRPC));
