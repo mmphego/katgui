@@ -273,6 +273,8 @@ md-sidenav {
     font-size: 14px;
     //  margin-top: 0px;
     margin-left: 1px;
+    min-height: 14px;
+    min-width: 14px;
 }
 
 .md-button-fab-small {
@@ -286,7 +288,7 @@ md-sidenav {
 }
 
 /* After the transition this will be the only class remaining */
-.slide-in-vertically {
+.slide-in-vertically-navbar {
     transition: all 0.25s ease-out;
     max-height: 56px;
     min-height: 56px;
@@ -296,7 +298,7 @@ md-sidenav {
 }
 
 /* Initial state when showing */
-.slide-in-vertically.ng-hide-remove {
+.slide-in-vertically-navbar.ng-hide-remove {
     max-height: 0px;
     min-height: 0px;
     margin-bottom: 0px;
@@ -304,7 +306,7 @@ md-sidenav {
 }
 
 /* Will transition towards this state */
-.slide-in-vertically.ng-hide-add.ng-hide-add-active {
+.slide-in-vertically-navbar.ng-hide-add.ng-hide-add-active {
     max-height: 0px;
     min-height: 0px;
     margin-bottom: 0px;
@@ -312,7 +314,7 @@ md-sidenav {
 }
 
 /* Will transition towards this state */
-.slide-in-vertically.ng-hide-remove.ng-hide-remove-active {
+.slide-in-vertically-navbar.ng-hide-remove.ng-hide-remove-active {
     max-height: 56px;
     min-height: 56px;
     margin-bottom: 16px;

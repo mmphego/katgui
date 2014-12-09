@@ -23,9 +23,11 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
 
         vm.draftSelections = [];
         vm.scheduleSelections = [];
-        vm.scheduleData = [];
-        vm.scheduleCompletedData = [];
+
+        vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
+        vm.scheduleData = ObservationScheduleService.scheduleData;
+
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id'},
             {label: 'Description', value: 'description'},
@@ -35,7 +37,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             {label: 'Type', value: 'type'}
         ];
 
-        vm.draftsOrderBy = vm.draftsOrderByFields[0];
+        //vm.draftsOrderBy = vm.draftsOrderByFields[0];
 
         vm.showDatePicker = false;
         vm.currentSelectedDate = moment();
