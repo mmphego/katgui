@@ -3,7 +3,8 @@ angular.module('katGui.util', [])
     .directive('dropdownMultiselect', dropdownMultiselect)
     .directive('addListItemAnimation', addListItemAnimation)
     .directive('loadingOverlay', loadingOverlay)
-    .directive("autoGrow", autoGrow)
+    .directive('autoGrow', autoGrow)
+    .directive('expandingButton', expandingButtonMenu)
     .factory('KatGuiUtil', katGuiUtil);
 
 function dropdownMultiselect() {
@@ -140,10 +141,10 @@ function addListItemAnimation($animate) {
 function loadingOverlay() {
     return {
         restrict: 'E',
-        template: '<div layout="row" layout-align="center center" class="overlay-loading-div" ng-show="vm.draftListProcessingServerCall">' +
+        template: '<div layout="row" layout-align="center center" class="overlay-loading-div">' +
         '<md-progress-circular md-theme="{{themeSecondary}}" class="md-whiteframe-z4" md-mode="indeterminate" style="border-radius: 30px;"></md-progress-circular>' +
         '</div>',
-        controller: function ($rootScope) {
+        controller: function () {
 
         }
     };
@@ -287,6 +288,20 @@ function katGuiUtil() {
 
     //UT as a fraction of hours
     this.julianDay = function (day, month, year, UT) {
+        //return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
+        var Y = year, M = month, D = day, A, B, C, E, F, JD;
+
+        A = Math.floor(Y/100);
+        B = Math.floor(A/4);
+        C = 2 - A + B;
+        E = 365.25 * (Y + 4716);
+        F = 30.6001 * (M + 1);
+        JD = C + D+ E+ F - 1524.5;
+
+        return JD;
+    };
+
+    this.julianDayWithTime = function (day, month, year, UT) {
         return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
     };
 
@@ -300,6 +315,11 @@ function katGuiUtil() {
     };
 
     return this;
+}
+
+function expandingButtonMenu() {
+
+
 }
 
 var objToString = Object.prototype.toString;

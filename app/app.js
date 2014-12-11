@@ -44,7 +44,7 @@
             {
                 name: 'Indigo',
                 primary: 'indigo',
-                secondary: 'teal',
+                secondary: 'blue',
                 primaryButtons: 'blue'
             },
             {
@@ -183,6 +183,7 @@
         vm.localTime = '';
 
         var updateTimeDisplay = function () {
+            //TODO: calculate local sidereal time outside this function and only on every sync
             if ($rootScope.serverTimeOnLoad > 0) {
                 var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
                 var localTime = moment($rootScope.serverTimeOnLoad, 'X');
@@ -192,7 +193,8 @@
                 //TODO: get actual longitude to use
                 var longitude = 21.3692096; //site longitude
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
-                vm.localSiderealTime = KatGuiUtil.localSiderealTime(KatGuiUtil.julianDay (utcTime.date(), utcTime.month(), utcTime.year(), fractionalHours), longitude);
+                var julianDayWithTime = KatGuiUtil.julianDayWithTime(utcTime.date(), utcTime.month() + 1, utcTime.year(), fractionalHours);
+                vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, longitude);
                 $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
             }
         };
@@ -201,6 +203,8 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
+                    var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
+                    vm.julianDay = KatGuiUtil.julianDay(utcTime.date(), utcTime.month() + 1, utcTime.year());
                     console.log('Syncing current time with katcontrol server (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {

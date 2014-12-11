@@ -19,7 +19,7 @@
 
     <link href="bower_components/angular-material/themes/green-theme.css" rel="stylesheet" type="text/css">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">
+    <!--<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">-->
     <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet"
           type="text/css">
     <!--<link href="bower_components/angular-gantt/assets/gantt.css" rel="stylesheet" type="text/css">-->
@@ -265,13 +265,17 @@
                 <!--</div>-->
 
                 <span flex></span>
+                <div ng-if="vm.julianDay">
+                    <span style="font-size: 32px;">{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> JD</span>
+                    <md-tooltip>Julian Day</md-tooltip>
+                </div>
                 <div ng-if="vm.localSiderealTime">
                     <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> LST</span>
                     <md-tooltip>Local Sidereal Time</md-tooltip>
                 </div>
                 <div ng-if="vm.utcTime">
                     <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> UTC</span><br/>
-                    <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> Local</span>
+                    <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> SAST</span>
                 </div>
 
                 <md-button aria-label="Home" class="button-toolbar-flat-icon" style="margin: 2px;"

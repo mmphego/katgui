@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q) {
+    function ObservationScheduleService($q, $timeout) {
 
         var urlBase = 'http://localhost:8020';
         var connection = null;
@@ -48,7 +48,7 @@
 
                     for (var i = 0; i < api.scheduleDraftData.length; i++) {
                         if (api.scheduleDraftData[i].id_code === result.get_schedule_block.id_code) {
-                            api.scheduleDraftData[i] =  result.get_schedule_block;
+                            api.scheduleDraftData[i] = result.get_schedule_block;
                             break;
                         }
                     }
@@ -66,13 +66,104 @@
 
                     console.log('got observation_schedules response');
 
+                } else if (result.execute_schedule) {
+
+                    var execute_schedule_result = result.execute_schedule.result.split(' ');
+
+                    if (execute_schedule_result[1] === "ok") {
+
+                        var indexEx = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_draft.id_code}));
+                        api.scheduleDraftData[indexEx].state = "ACTIVE";
+                        deferredMap['execute_schedule'].resolve(result.execute_schedule);
+                    } else {
+
+                        deferredMap['execute_schedule'].reject(result.execute_schedule);
+                    }
+
+                } else if (result.cancel_execute_schedule) {
+
+                    var cancel_execute_schedule_result = result.cancel_execute_schedule.result.split(' ');
+
+                    if (cancel_execute_schedule_result[1] === "ok") {
+
+                        var indexStopEx = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_draft.id_code}));
+                        api.scheduleDraftData[indexStopEx].state = "INTERRUPTED";
+                        deferredMap['cancel_execute_schedule'].resolve(result.cancel_execute_schedule);
+                    } else {
+
+                        deferredMap['cancel_execute_schedule'].reject(result.cancel_execute_schedule);
+                    }
+
+                } else if (result.clone_schedule) {
+
+                    api.scheduleDraftData.push(result.clone_schedule.result);
+
+                    deferredMap['clone_schedule'].resolve(result.clone_schedule);
+
                 } else if (result.schedule_draft) {
 
-                    console.log('got schedule_draft response');
+                    var schedule_result = result.schedule_draft.result.split(' ');
+
+                    if (schedule_result[1] === "ok") {
+
+                        var index = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.schedule_draft.id_code}));
+                        var draftThatWasScheduled = api.scheduleDraftData.splice(index, 1);
+                        draftThatWasScheduled[0].state = "SCHEDULED";
+                        api.scheduleData.push(draftThatWasScheduled[0]);
+                        deferredMap['schedule_draft'].resolve(result.schedule_draft);
+                    } else {
+
+                        deferredMap['schedule_draft'].reject(result.schedule_draft);
+                    }
+
+
+                } else if (result.schedule_to_draft) {
+
+                    var to_draft_result = result.schedule_to_draft.result.split(' ');
+
+                    if (to_draft_result[1] === "ok") {
+
+                        var index3 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_draft.id_code}));
+                        var scheduleToMoveToDraft = api.scheduleData.splice(index3, 1);
+                        scheduleToMoveToDraft[0].state = "DRAFT";
+                        api.scheduleDraftData.push(scheduleToMoveToDraft[0]);
+                        deferredMap['schedule_to_draft'].resolve(result.schedule_to_draft);
+                    } else {
+
+                        deferredMap['schedule_to_draft'].reject(result.schedule_to_draft);
+                    }
+
+
+                } else if (result.schedule_to_complete) {
+
+                    var to_complete_result = result.schedule_to_complete.result.split(' ');
+
+                    if (to_complete_result[1] === "ok") {
+
+                        var index4 = _.indexOf(api.scheduleData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_complete.id_code}));
+                        var scheduleToMoveToComplete = api.scheduleData.splice(index4, 1);
+                        scheduleToMoveToComplete[0].state = "COMPLETED";
+                        api.scheduleCompletedData.push(scheduleToMoveToComplete[0]);
+                        deferredMap['schedule_to_complete'].resolve(result.schedule_to_complete);
+                    } else {
+
+                        deferredMap['schedule_to_complete'].reject(result.schedule_to_complete);
+                    }
+
 
                 } else if (result.verify_schedule_block) {
 
-                    console.log('got verify_schedule_block response');
+                    var verify_result = result.verify_schedule_block.result.split(' ');
+
+                    if (verify_result[1] === "ok") {
+
+                        //var index5 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.verify_schedule_block.id_code}));
+
+                        deferredMap['verify_schedule_block'].resolve(result.verify_schedule_block);
+                    } else {
+
+                        deferredMap['verify_schedule_block'].reject(result.verify_schedule_block);
+                    }
 
                     api.getScheduleBlock(result.verify_schedule_block.id_code).then(function () {
                         deferredMap['verify_schedule_block'].resolve(result.verify_schedule_block);
@@ -81,8 +172,8 @@
                 } else if (result.delete_schedule_block) {
 
                     if (result.delete_schedule_block.delete_result) {
-                        var index = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.delete_schedule_block.id_code}));
-                        api.scheduleDraftData.splice(index, 1);
+                        var index2 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.delete_schedule_block.id_code}));
+                        api.scheduleDraftData.splice(index2, 1);
                         deferredMap['delete_schedule_block'].resolve(result.create_schedule_block);
                     } else {
                         console.error('Could not delete draft schedule block with id_code: ' + result.delete_schedule_block.id_code + '. Try to reload the page.');
@@ -107,6 +198,8 @@
         }
 
         function addItemToApplicableDataModel(item) {
+
+
             if (item.state === "DRAFT") {
 
                 if (item.desired_start_time === "None") {
@@ -127,7 +220,7 @@
 
                 api.scheduleCompletedData.push(item);
 
-            }  else if (item.state === "COMPLETED") {
+            } else if (item.state === "COMPLETED") {
 
                 api.scheduleCompletedData.push(item);
             }
@@ -194,11 +287,25 @@
             return deferredMap['create_schedule_block'].promise;
         };
 
-        api.scheduleDraft = function (id_code) {
+        api.scheduleDraft = function (subarray_number, id_code) {
 
-            sendObsSchedCommand('schedule_draft', [id_code]);
+            sendObsSchedCommand('schedule_draft', [subarray_number, id_code]);
             deferredMap['schedule_draft'] = $q.defer();
             return deferredMap['schedule_draft'].promise;
+        };
+
+        api.scheduleToDraft = function (subarray_number, id_code) {
+
+            sendObsSchedCommand('schedule_to_draft', [subarray_number, id_code]);
+            deferredMap['schedule_to_draft'] = $q.defer();
+            return deferredMap['schedule_to_draft'].promise;
+        };
+
+        api.scheduleToComplete = function (subarray_number, id_code) {
+
+            sendObsSchedCommand('schedule_to_complete', [subarray_number, id_code]);
+            deferredMap['schedule_to_complete'] = $q.defer();
+            return deferredMap['schedule_to_complete'].promise;
         };
 
         api.verifyScheduleBlock = function (subarray_number, id_code) {
@@ -206,6 +313,27 @@
             sendObsSchedCommand('verify_schedule_block', [subarray_number, id_code]);
             deferredMap['verify_schedule_block'] = $q.defer();
             return deferredMap['verify_schedule_block'].promise;
+        };
+
+        api.executeSchedule = function (subarray_number, id_code) {
+
+            sendObsSchedCommand('execute_schedule', [subarray_number, id_code]);
+            deferredMap['execute_schedule'] = $q.defer();
+            return deferredMap['execute_schedule'].promise;
+        };
+
+        api.cancelExecuteSchedule = function (subarray_number, id_code) {
+
+            sendObsSchedCommand('cancel_execute_schedule', [subarray_number, id_code]);
+            deferredMap['cancel_execute_schedule'] = $q.defer();
+            return deferredMap['cancel_execute_schedule'].promise;
+        };
+
+        api.cloneSchedule = function (id_code) {
+
+            sendObsSchedCommand('clone_schedule', [id_code]);
+            deferredMap['clone_schedule'] = $q.defer();
+            return deferredMap['clone_schedule'].promise;
         };
 
         function sendObsSchedCommand(method, funcParams) {
@@ -221,9 +349,15 @@
                     jsonRPC.params = funcParams;
                 }
 
-                return connection.send(JSON.stringify(jsonRPC));
-            } else {
-                return false;
+                if (connection.readyState === SockJS.OPEN) {
+                    connection.send(JSON.stringify(jsonRPC));
+                } else {
+                    //wait for the connection to be ready and retry the send
+                    $timeout(function () {
+                        sendObsSchedCommand(method, funcParams);
+                    }, 500);
+                }
+
             }
         }
 

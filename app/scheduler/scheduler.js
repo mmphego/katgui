@@ -7,7 +7,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
         'MANUAL'])
     .controller('SchedulerCtrl', SchedulerCtrl);
 
-    function SchedulerCtrl($scope, $timeout, SCHEDULE_BLOCK_TYPES, ObservationScheduleService) {
+    function SchedulerCtrl($scope, $timeout, SCHEDULE_BLOCK_TYPES, ObservationScheduleService, $mdDialog) {
 
         ObservationScheduleService.connectListener();
 
@@ -16,13 +16,11 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
         var vm = this;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.draftListProcessingServerCall = false;
+        vm.scheduleListProcessingServerCall = false;
 
         vm.selectedItemScript = "";
         vm.selectedSchedule = null;
         vm.selectedScheduleDraft = null;
-
-        vm.draftSelections = [];
-        vm.scheduleSelections = [];
 
         vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
@@ -113,43 +111,34 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             $event.stopPropagation();
         };
 
-        vm.executeSchedule = function (item, $event) {
+        vm.executeSchedule = function (item) {
 
-            //var rowIndex = vm.scheduleData.indexOf(item);
-            //
-            //vm.setSelectedSchedule(vm.scheduleData[rowIndex], true);
-            //for (var i = 0; i < vm.scheduleData.length; i++) {
-            //    if (vm.selectedSchedule !== vm.scheduleData[i]) {
-            //        vm.scheduleData[i].executing = false;
-            //    }
-            //}
-            //vm.selectedSchedule.executing = true;
-            //$event.stopPropagation();
+            vm.scheduleListProcessingServerCall = true;
+            ObservationScheduleService.executeSchedule(1, item.id_code)
+                .then(scheduleListProcessingComplete, scheduleListProcessingError);
         };
 
-        vm.moveScheduleRowToFinished = function (item, $event) {
+        vm.stopExecuteSchedule = function (item) {
 
-            //var rowIndex = vm.scheduleData.indexOf(item);
-            //
-            //if (vm.selectedSchedule === vm.scheduleData[rowIndex]) {
-            //    vm.selectedSchedule = null;
-            //}
-            //$event.stopPropagation();
-            //
-            //vm.scheduleCompletedData = _.union(vm.scheduleCompletedData, vm.scheduleData[rowIndex]);
-            //vm.scheduleData.splice(rowIndex, 1);
+            vm.scheduleListProcessingServerCall = true;
+            ObservationScheduleService.stopExecuteSchedule(1, item.id_code)
+                .then(scheduleListProcessingComplete, scheduleListProcessingError);
         };
 
-        vm.moveScheduleRowToDraft = function(item, $event) {
-            //var rowIndex = vm.scheduleData.indexOf(item);
-            //
-            //if (vm.selectedSchedule === vm.scheduleData[rowIndex]) {
-            //    vm.selectedSchedule = null;
-            //}
-            //$event.stopPropagation();
-            //
-            //vm.scheduleDraftData = _.union(vm.scheduleDraftData, vm.scheduleData[rowIndex]);
-            //vm.scheduleData.splice(rowIndex, 1);
+        vm.moveScheduleRowToFinished = function (item) {
+
+            vm.selectedSchedule = null;
+            vm.scheduleListProcessingServerCall = true;
+            ObservationScheduleService.scheduleToComplete(1, item.id_code)
+                .then(scheduleListProcessingComplete, scheduleListProcessingError);
+        };
+
+        vm.moveScheduleRowToDraft = function(item) {
+
+            vm.selectedSchedule = null;
+            vm.scheduleListProcessingServerCall = true;
+            ObservationScheduleService.scheduleToDraft(1, item.id_code)
+                .then(scheduleListProcessingComplete, scheduleListProcessingError);
         };
 
         angular.element('#schedule-draft-data-list-id').bind("scroll", function() {
@@ -205,28 +194,32 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             vm.selectedScheduleDraft = null;
         };
 
-        vm.moveDraftRowToSchedule = function (item) {
-            //var rowIndex = vm.scheduleDraftData.indexOf(item);
-            //
-            //if (vm.selectedScheduleDraft === vm.scheduleDraftData[rowIndex]) {
-            //    vm.selectedScheduleDraft = null;
-            //}
-            //
-            //vm.scheduleData = _.union(vm.scheduleData, vm.scheduleDraftData[rowIndex]);
-            //vm.scheduleDraftData.splice(rowIndex, 1);
-        };
 
         vm.addDraftSchedule = function () {
             vm.draftListProcessingServerCall = true;
             ObservationScheduleService.createScheduleBlock()
-                .then(draftListProcessingComplete, draftListProcessingError);
+                .then(draftListProcessingComplete, draftListProcessingError)
+                .then(scrollDraftToBottomAndSelect);
         };
+
+        function scrollDraftToBottomAndSelect() {
+
+            $timeout(function () {
+                var el = angular.element("#schedule-draft-data-list-id")[0];
+                el.scrollTop = el.scrollTop + 49;
+            }, 200);
+        }
 
         vm.refreshScheduleBlocks = function () {
             vm.selectedScheduleDraft = null;
+            vm.selectedSchedule = null;
             vm.draftListProcessingServerCall = true;
+            vm.scheduleListProcessingServerCall = true;
+            vm.completedListProcessingServerCall = true;
             ObservationScheduleService.getScheduleBlocks()
-                .then(draftListProcessingComplete, draftListProcessingError);
+                .then(draftListProcessingComplete, draftListProcessingError)
+                .then(scheduleListProcessingComplete, scheduleListProcessingError)
+                .then(completedListProcessingComplete, completedListProcessingError);
         };
 
         vm.validateInputDate = function (item) {
@@ -238,8 +231,24 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
         vm.scheduleDraft = function (item) {
             vm.selectedScheduleDraft = null;
             vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.scheduleDraft(item.id_code)
+            ObservationScheduleService.scheduleDraft(1, item.id_code)
                 .then(draftListProcessingComplete, draftListProcessingError);
+        };
+
+        vm.confirmDelete = function (item) {
+
+            if (item.confirmDelete) {
+                vm.removeDraftRow(item);
+            } else {
+                item.confirmDelete = true;
+            }
+        };
+
+        vm.cloneSchedule = function (item) {
+
+            vm.completedListProcessingServerCall = true;
+            ObservationScheduleService.cloneSchedule(item.id_code)
+                .then(completedListProcessingComplete, completedListProcessingError);
         };
 
 
@@ -273,10 +282,68 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
         function draftListProcessingError(result) {
             $timeout(function () {
                 vm.draftListProcessingServerCall = false;
+
+                var alert = $mdDialog.alert()
+                    .title('Server Request Failed!')
+                    .content(result)
+                    .ok('Close');
+                $mdDialog
+                    .show(alert)
+                    .finally(function() {
+                        alert = undefined;
+                    });
+            }, 300);
+        }
+
+        function scheduleListProcessingComplete(result) {
+            $timeout(function () {
+                vm.scheduleListProcessingServerCall = false;
+            }, 300);
+        }
+
+        function scheduleListProcessingError(result) {
+            $timeout(function () {
+                vm.scheduleListProcessingServerCall = false;
+
+                var alert = $mdDialog.alert()
+                    .title('Server Request Failed!')
+                    .content(result)
+                    .ok('Close');
+                $mdDialog
+                    .show(alert)
+                    .finally(function() {
+                        alert = undefined;
+                    });
+            }, 300);
+        }
+
+        function completedListProcessingComplete(result) {
+            $timeout(function () {
+                vm.completedListProcessingServerCall = false;
+            }, 300);
+        }
+
+        function completedListProcessingError(result) {
+            $timeout(function () {
+                vm.completedListProcessingServerCall = false;
+
+                var alert = $mdDialog.alert()
+                    .title('Server Request Failed!')
+                    .content(result)
+                    .ok('Close');
+                $mdDialog
+                    .show(alert)
+                    .finally(function() {
+                        alert = undefined;
+                    });
             }, 300);
         }
 
         $timeout(vm.refreshScheduleBlocks, 500);
+
+        $scope.$on('$destroy', function () {
+            ObservationScheduleService.disconnectListener();
+        });
 
     }
 })();

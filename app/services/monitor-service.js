@@ -6,7 +6,7 @@
     function MonitorService($rootScope) {
 
         var pendingSubscribeObjects = [];
-        var urlBase = 'http://192.168.10.127:8030';
+        var urlBase = 'http://10.8.67.130:8030';
 
         var connection = null;
         //use this alias because we are using some api functions within functions
