@@ -285,13 +285,15 @@
         $scope.$on('$destroy', unbindAlarmMessage);
     }
 
-    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, USER_ROLES) {
+    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider, USER_ROLES) {
 
         //todo: disable in production
         //disable this in production for performance boost
         //batarang uses this for scope inspection
         //https://docs.angularjs.org/guide/production
         //$compileProvider.debugInfoEnabled(false);
+
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
         $mdThemingProvider.alwaysWatchTheme(true);
 
@@ -403,9 +405,9 @@
         $urlRouterProvider.otherwise('/login');
     }
 
-    function runKatGui($rootScope) {
+    function runKatGui($rootScope, $state) {
 
-        $rootScope.$on('$stateChangeStart', function (event, next) {
+        //$rootScope.$on('$stateChangeStart', function (event, next) {
 //        var authorizedRoles = next.data.authorizedRoles;
 //        if (!AuthService.isAuthorized(authorizedRoles) && next.data.authorizedRoles[0] !== USER_ROLES.noAuth) {
 //            event.preventDefault();
@@ -417,6 +419,18 @@
 //                $rootScope.$emit(AUTH_EVENTS.notAuthenticated);
 //            }
 //        }
+//        });
+
+        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+            //if (!AuthService.authorize(toState.data.access)) {
+            //if (toState.name !== 'login') {
+            //    event.preventDefault();
+            //    $state.go('login');
+            //}
+
+
+
+            //}
         });
 
 //        $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {

@@ -12,6 +12,7 @@
         api.scheduleDraftData = [];
         api.scheduleData = [];
         api.scheduleCompletedData = [];
+        api.resourcePool = [];
 
         function onSockJSOpen() {
             if (connection && connection.readyState) {
@@ -53,6 +54,16 @@
                         }
                     }
                     deferredMap['get_schedule_block'].resolve(result.get_schedule_block);
+
+                } else if (result.list_resources) {
+
+                    var resourcePoolResult = result.list_resources.result.split(',');
+
+                    resourcePoolResult.forEach(function (item) {
+                        api.resourcePool.push(item);
+                    });
+
+                    deferredMap['list_resources'].resolve(result.list_resources);
 
                 } else if (result.create_schedule_block) {
 
@@ -334,6 +345,14 @@
             sendObsSchedCommand('clone_schedule', [id_code]);
             deferredMap['clone_schedule'] = $q.defer();
             return deferredMap['clone_schedule'].promise;
+        };
+
+        api.listResources = function (subarray_number) {
+
+            api.resourcePool.splice(0, api.resourcePool.length);
+            sendObsSchedCommand('list_resources', [subarray_number]);
+            deferredMap['list_resources'] = $q.defer();
+            return deferredMap['list_resources'].promise;
         };
 
         function sendObsSchedCommand(method, funcParams) {

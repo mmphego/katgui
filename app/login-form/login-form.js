@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('LoginFormCtrl', LoginFormCtrl);
 
-    function LoginFormCtrl($state, $mdDialog, Session, USER_ROLES) {
+    function LoginFormCtrl($state, $mdDialog, SessionService, USER_ROLES) {
 
         var vm = this;
         vm.loginResult = "";
@@ -14,11 +14,7 @@
         };
 
         vm.login = function () {
-            Session.create('sessionid1', 'userid1', USER_ROLES.expert);
-            $state.go('landing');
-            //hash the password for now until we can get SSL going
-            var sha256Pass =  CryptoJS.SHA256(vm.credentials.password).toString();
-            //console.log(sha256Pass);
+            SessionService.login(vm.credentials.username, vm.credentials.password);
         };
 
         vm.forgotPassword = function (event, email) {
@@ -41,18 +37,21 @@
                     console.log('User canceled email recovery dialog.');
                 });
         };
+
     }
 
-    function DialogController( $scope, $mdDialog) {
+    function DialogController($scope, $mdDialog) {
 
-        $scope.hide = function() {
+        $scope.hide = function () {
             $mdDialog.hide();
         };
-        $scope.cancel = function() {
+        $scope.cancel = function () {
             $mdDialog.cancel();
         };
-        $scope.answer = function(answer) {
+        $scope.answer = function (answer) {
             $mdDialog.hide(answer);
         };
+
+
     }
 })();

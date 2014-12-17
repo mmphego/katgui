@@ -25,6 +25,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
         vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
         vm.scheduleData = ObservationScheduleService.scheduleData;
+        vm.resourcePool = ObservationScheduleService.resourcePool;
 
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id'},
@@ -220,6 +221,8 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                 .then(draftListProcessingComplete, draftListProcessingError)
                 .then(scheduleListProcessingComplete, scheduleListProcessingError)
                 .then(completedListProcessingComplete, completedListProcessingError);
+
+            ObservationScheduleService.listResources(1);
         };
 
         vm.validateInputDate = function (item) {

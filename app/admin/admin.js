@@ -1,8 +1,8 @@
 (function () {
-    angular.module('katGui.admin', [])
+    angular.module('katGui.admin', ['katGui.services'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl() {
+    function AdminCtrl(UserService, $timeout) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
@@ -24,21 +24,7 @@
             {"id": 3, "name": "Operator", "assignable": true}
         ];
 
-        vm.userData = [
-            {
-                userId: 0,
-                name: 'testuser',
-                email: 'test@ska.ac.za',
-                active: true,
-                roles: []
-            },
-            {
-                userId: 1,
-                name: 'monitor',
-                email: 'cam@ska.ac.za',
-                active: false,
-                roles: []
-            }];
+        vm.userData = UserService.users;
 
         vm.createUser = function () {
             event.stopPropagation();
@@ -69,6 +55,29 @@
             event.stopPropagation();
             user.editing = false;
             user.originalUser = {};
+
+            var newUser = {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                password: '1234',
+                activated: true,
+                roles: user.roles
+            };
+
+            if (newUser.id) {
+                UserService.updateUser(newUser).then(function (result) {
+                    console.log('updated user called, result: ');
+                    console.log(result);
+                });
+            } else {
+                newUser.roles = ['read_only'];
+                UserService.createUser(newUser);
+            }
+        };
+
+        vm.listUsers = function () {
+            UserService.listUsers();
         };
 
         vm.undoUserChanges = function (user) {
@@ -79,7 +88,7 @@
             user.editing = false;
         };
 
-
+        $timeout(vm.listUsers, 100);
     }
 
 })();

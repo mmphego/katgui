@@ -17,7 +17,7 @@
         </md-toolbar>
         <md-list id="userListId" flex class="user-list">
             <md-item ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value as results">
-                <md-item-content flex layout="row" style="background: white;" ng-if="user.active || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.active, 'activated-user': user.active }">
+                <md-item-content flex layout="row" style="background: white;" ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
                     <div flex class="user-cell">
                         <md-text-float  md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"></md-text-float>
                         <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
@@ -27,7 +27,7 @@
                         <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
                     </div>
                     <div flex class="user-cell" layout-align="center" layout="row">
-                        <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
+                        <!--<dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>-->
                         <span class="cell-span" ng-if="!user.editing && user.roles.length > 0">{{user.roles | json}}<md-tooltip>User's Roles</md-tooltip></span>
                         <span class="cell-span" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
                     </div>
@@ -71,7 +71,7 @@
                             </md-tooltip>
                         </md-button>
                     </div>
-                    <md-tooltip ng-if="!user.active">
+                    <md-tooltip ng-if="!user.activated">
                         <span>Deactivated User</span>
                     </md-tooltip>
                 </md-item-content>

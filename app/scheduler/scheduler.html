@@ -26,6 +26,15 @@
                     </div>
                 </md-toolbar>
 
+                <div flex class="list-subheader-title" layout="row" layout-align="center center">
+                    <md-subheader style="max-width: 160px;min-width: 160px; margin: 4px;">ID</md-subheader>
+                    <md-subheader flex style="padding-left: 5px;width: 180px;">Description</md-subheader>
+                    <md-subheader style="width: 102px">Type</md-subheader>
+                    <md-subheader style="width: 140px">Desired Time</md-subheader>
+                    <md-subheader style="width: 120px">Actions</md-subheader>
+                </div>
+
+
                 <div flex id="schedule-draft-data-list-id" class="schedule-draft-data-list" style="padding: 0; direction: rtl">
                     <div ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:false"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
@@ -50,7 +59,7 @@
                             </md-button>
                             <input ng-change="item.isDirty = true;" type="text" aria-label="Select a Date and Time" title="UTC"
                                    class="schedule-item-input schedule-item-date-input" ng-class="{'invalid-date-error': item.hasInvalidInput}"
-                                   ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder="Desired Time"/>
+                                   ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder=""/>
                             <md-button data-ng-disabled="!vm.validateInputDate(item)" ng-show="item.isDirty" style="transition: 0s;" md-theme="amber" aria-label="Save Draft"
                                        style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
                                        ng-click="vm.saveDraft(item); $event.stopPropagation();">
@@ -134,6 +143,7 @@
                             </div>
 
                             <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
+
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
@@ -148,7 +158,8 @@
                                 </md-tooltip>
                             </md-button>
 
-                            <md-button ng-show="item.state !== 'ACTIVE'" md-theme="green" aria-label="Execute Schedule" style="margin-left: 10px; transition: 0s;" class="md-fab md-primary md-button-fab-small"
+                            <md-button ng-show="item.state !== 'ACTIVE'" md-theme="green" aria-label="Execute Schedule" style="margin-left: 10px; transition: 0s;"
+                                       class="md-fab md-primary md-button-fab-small"
                                        ng-click="vm.executeSchedule(item, $event)">
                                 <span class="fa fa-play" style="margin-left: 2px;"></span>
                                 <md-tooltip>
@@ -156,7 +167,8 @@
                                 </md-tooltip>
                             </md-button>
 
-                            <md-button ng-show="item.state === 'ACTIVE'" md-theme="red" aria-label="Stop Executing Schedule" style="margin-left: 10px; transition: 0s;" class="md-fab md-primary md-button-fab-small"
+                            <md-button ng-show="item.state === 'ACTIVE'" md-theme="red" aria-label="Stop Executing Schedule" style="margin-left: 10px; transition: 0s;"
+                                       class="md-fab md-primary md-button-fab-small"
                                        ng-click="vm.stopExecuteSchedule(item); $event.stopPropagation();">
                                 <span class="fa fa-stop" style="margin-left: 0px;"></span>
                                 <md-tooltip>
@@ -207,6 +219,7 @@
                             </div>
 
                             <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
+
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
@@ -234,8 +247,9 @@
         </div>
 
 
-        <div style="margin-top: 0px; margin-bottom: 0px; margin-right: 8px; padding: 8px; border-right: 1px solid transparent; border-bottom: 1px solid transparent; border-top: 1px solid transparent;" layout="column" id="schedulerScriptView"
-             ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null}">
+        <div style="margin-top: 0px; margin-bottom: 0px; margin-right: 8px; padding: 8px; border-right: 1px solid transparent; border-bottom: 1px solid transparent; border-top: 1px solid transparent;"
+             layout="column" id="schedulerScriptView">
+             <!--ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null}">-->
             <!--<loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>-->
             <div layout="column" id="resource-allocation-div">
                 <md-toolbar style="margin-left: 24px;  width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
@@ -243,15 +257,21 @@
                         <span>Resource Specification</span>
                     </div>
                 </md-toolbar>
-                <div flex style="padding: 0px 0px 0px 24px;" layout="column">
-                    <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" layout="column"
-                         ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null && vm.selectedSchedule === null}">
+                <div flex style="padding: 0px 0px 0px 24px;" layout="row">
+                    <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;">
+                        <md-subheader class="list-subheader-title">Assigned Resources</md-subheader>
+                    </div>
+                    <div layout-fill flex class="schedule-block-resource-window "  style="z-index: 1;" layout="column"
+                         ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null, 'md-whiteframe-z1': vm.selectedScheduleDraft === null && vm.selectedSchedule === null}">
                         <!--<textarea ng-if="vm.selectedScheduleDraft" class="schedule-script-text-area" rows="30" ng-model="vm.selectedScheduleDraft.script"-->
                         <!--ng-show="vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null" ng-maxlength="8000"></textarea>-->
                         <!--<textarea ng-if="vm.selectedSchedule" class="schedule-script-text-area" rows="30" ng-model="vm.selectedSchedule.script"-->
                         <!--ng-show="vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null" ng-maxlength="8000"></textarea>-->
-                        <div flex ng-if="vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null" style="background: white;">
-                            <span>{{vm.selectedScheduleDraft.resources}}</span>
+                        <md-subheader class="list-subheader-title">Resources in Sub-array</md-subheader>
+                        <div ng-repeat="item in vm.resourcePool" layout-align="center center"
+                             class="resource-pool-item animate-repeat" layout="row">
+                            <span>{{item}}</span>
+                            <span flex></span>
                         </div>
                     </div>
                 </div>

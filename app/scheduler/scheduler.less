@@ -98,8 +98,16 @@
 .schedule-draft-item {
     height: 48px;
     max-height: 48px;
-    padding: 2px;
+    padding: 4px;
     min-width: 800px;
+    direction: ltr;
+    border-bottom: 1px solid #d3d3d3;
+    overflow: hidden;
+}
+
+.resource-pool-item {
+    height: 32px;
+    padding: 2px;
     direction: ltr;
     border-bottom: 1px solid #d3d3d3;
     overflow: hidden;
@@ -117,6 +125,7 @@
     margin-top: 4px;
     background: transparent;
     border: 0;
+    border-bottom: 1px solid transparent;
 
     &:hover {
         border-bottom: 1px solid #d3d3d3;
@@ -130,9 +139,22 @@
     background: transparent;
     border: 0;
     margin-right: 3px;
+    border-bottom: 2px solid transparent;
 
     &:hover {
         border-bottom: 1px solid #d3d3d3;
+    }
+}
+
+.list-subheader-title {
+    border-bottom: 1px solid #9E9E9E;
+    height: 45px;
+    max-height: 45px;
+    width: 100%;
+
+    h2 {
+        padding: 8px;
+        cursor: pointer;
     }
 }
 
@@ -260,7 +282,7 @@
 .schedule-block-resource-window {
     height: 400px;
     padding: 0px;
-    background-color: #ECEFF1;
+    background-color: white;
 }
 
 .schedule-block-list {
