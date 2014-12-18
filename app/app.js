@@ -17,14 +17,6 @@
         'katGui.services',
         'katGui.video'])
         .constant('UI_VERSION', '0.0.1')
-        .constant('AUTH_EVENTS', {
-            loginSuccess: 'auth-login-success',
-            loginFailed: 'auth-login-failed',
-            logoutSuccess: 'auth-logout-success',
-            sessionTimeout: 'auth-session-timeout',
-            notAuthenticated: 'auth-not-authenticated',
-            notAuthorized: 'auth-not-authorized'
-        })
         .constant('USER_ROLES', {
             noAuth: 'noAuth',
             all: '*',
@@ -34,6 +26,7 @@
             control: 'control',
             expert: 'expert'
         })
+        .constant('TOAST_HIDE_DELAY', 5000)
         .constant('THEMES', [
             {
                 name: 'Blue-Grey',
@@ -59,14 +52,16 @@
                 secondary: 'indigo',
                 primaryButtons: 'blue-grey'
             }]
-        )
+    )
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, USER_ROLES, AuthService, Session, MonitorService, ControlService, KatGuiUtil) {
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService) {
 
         var vm = this;
+
+        SessionService.recoverLogin();
 
         var theme = _.find(THEMES, function (theme) {
             return $localStorage['selectedTheme'] === theme.name;
@@ -93,7 +88,6 @@
 
         vm.currentUser = null;
         vm.userRoles = USER_ROLES;
-        vm.isAuthorized = AuthService.isAuthorized;
         vm.userCanOperate = false;
         vm.userLoggedIn = false;
 
@@ -101,6 +95,15 @@
         $rootScope.newAlarmWarnCount = 0;
         $rootScope.newAlarmErrorCount = 0;
         $rootScope.newAlarmCritCount = 0;
+        $rootScope.toastPosition = 'bottom right';
+        $rootScope.showSimpleToast = function (message) {
+            $mdToast.show(
+                $mdToast.simple()
+                    .content(message)
+                    .position($rootScope.toastPosition)
+                    .hideDelay(TOAST_HIDE_DELAY)
+            );
+        };
 
         $rootScope.setCurrentUser = function (user) {
             vm.currentUser = user;
@@ -117,13 +120,11 @@
         };
 
         vm.logout = function () {
-            $rootScope.setCurrentUser(null);
-            Session.destroy();
-//            gapi.auth.signOut();
+
             MonitorService.disconnectListener();
             ControlService.disconnectListener();
             $mdSidenav('right-sidenav').close();
-            $state.go('login');
+            SessionService.logout();
         };
 
         vm.stateGo = function (newState) {
@@ -218,7 +219,7 @@
 
         $interval(updateTimeDisplay, 1000); //update local clock every second
 
-        $interval(function() {
+        $interval(function () {
             syncTimeWithServer();
         }, 600000); //sync time every 10 minutes
 
@@ -337,7 +338,7 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
-        $stateProvider.state('landing', {
+        $stateProvider.state('home', {
             url: '/home',
             templateUrl: 'app/landing/landing.html',
             title: 'Home',
@@ -407,36 +408,21 @@
 
     function runKatGui($rootScope, $state) {
 
-        //$rootScope.$on('$stateChangeStart', function (event, next) {
-//        var authorizedRoles = next.data.authorizedRoles;
-//        if (!AuthService.isAuthorized(authorizedRoles) && next.data.authorizedRoles[0] !== USER_ROLES.noAuth) {
-//            event.preventDefault();
-//            if (AuthService.isAuthenticated()) {
-//                // user is not allowed
-//                $rootScope.$emit(AUTH_EVENTS.notAuthorized);
-//            } else {
-//                // user is not logged in
-//                $rootScope.$emit(AUTH_EVENTS.notAuthenticated);
-//            }
-//        }
-//        });
+        $rootScope.$on('$stateChangeStart', function (event, toState) {
+            if (!$rootScope.loggedIn && toState.name !== 'login') {
 
-        $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-            //if (!AuthService.authorize(toState.data.access)) {
-            //if (toState.name !== 'login') {
-            //    event.preventDefault();
-            //    $state.go('login');
-            //}
+                event.preventDefault();
+                $state.go('login');
 
-
-
-            //}
+            } else if ($rootScope.loggedIn && toState.name === 'login') {
+                event.preventDefault();
+                $state.go('home');
+            }
         });
 
-//        $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams) {
-//            console.log('$stateChangeError - debugging required. Event: ');
-//            console.log(event);
-//        });
-
+        $rootScope.$on('$stateChangeError', function (event) {
+            console.log('$stateChangeError - debugging required. Event: ');
+            console.log(event);
+        });
     }
 })();

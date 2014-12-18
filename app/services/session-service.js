@@ -3,10 +3,11 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http) {
+    function SessionService($http, $state, $rootScope, $localStorage) {
 
         var urlBase = 'http://localhost:8010';
         var api = {};
+        $rootScope.jwt = $localStorage['currentUserToken'];
 
         var jwtHeader = {
             "alg": "HS256",
@@ -19,35 +20,50 @@
             var msg = window.btoa(JSON.stringify(jwtHeader)) + "." + window.btoa(JSON.stringify(jwtPayload));
             msg = msg.replace(/=/g , "");
             var pass = CryptoJS.HmacSHA256(msg, password + 'x');
-            var jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
-            $http.get(urlBase + '/user/login/' + jwt).then(function (result) {
-
-                console.log(result);
-
-                var a = result.data.split(".");
-                //var uHeader = a[0];
-                //var uPayload = a[1];
-                //var uSignatureInput = uHeader + "." + uPayload;
-
-                //dont need to do anything with the signature
-                //var hSig = CryptoJS.enc.Base64.parse(a[2]).toString(CryptoJS.enc.Hex);
-
-                //var header = JSON.parse(window.atob(a[0]));
-                var payload = JSON.parse(window.atob(a[1]));
-                if (payload.name !== null && payload.activated) {
-                    console.log('user logged in with payload:');
-                    console.log(payload);
-                } else if (payload.name !== null && payload.activated === false) {
-                    console.log('this user has been deactivated, contact support');
-                    console.log(payload);
-                } else {
-                    console.log(payload);
-                    console.log('invalid username or password!');
-                }
-
-                console.log("TODO: now use this information on the frontend!!!");
-            });
+            $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
+            $http.get(urlBase + '/user/login/' + $rootScope.jwt).then(loginResultReceived);
         };
+
+        api.logout = function () {
+            $http.get(urlBase + '/user/' + $rootScope.currentUser.email + '/logout').then(logoutResultReceived);
+        };
+
+        api.recoverLogin = function () {
+            if ($rootScope.jwt) {
+                $http.get(urlBase + '/user/login/' + $rootScope.jwt).then(loginResultReceived);
+            }
+        };
+
+        function logoutResultReceived(result) {
+            $rootScope.showSimpleToast('Logout successful.');
+            $rootScope.currentUser = null;
+            $rootScope.loggedIn = false;
+            $localStorage['currentUserToken'] = null;
+            $rootScope.jwt = null;
+            $state.go('login');
+        }
+
+        function loginResultReceived(result) {
+
+            console.log(result);
+
+            var a = result.data.split(".");
+            var payload = JSON.parse(window.atob(a[1]));
+            if (payload.name !== null) {
+                $rootScope.currentUser = payload;
+                $rootScope.loggedIn = true;
+                $state.go('home');
+                $localStorage['currentUserToken'] = $rootScope.jwt;
+                $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
+                //TODO implement timeout
+            } else {
+                api.currentUser = null;
+                api.loggedIn = false;
+                $localStorage['currentUserToken'] = null;
+                $state.go('login');
+                $rootScope.showSimpleToast('Invalid login credentials!');
+            }
+        }
 
         return api;
     }

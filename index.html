@@ -47,7 +47,6 @@
 
 <!-- Livereload script for development only (stripped during dist build) -->
 <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
-
 <script src="bower_components/jquery/jquery.js"></script>
 <script src="bower_components/jquery-ui/ui/jquery.ui.core.js"></script>
 <script src="bower_components/jquery-ui/ui/jquery.ui.widget.js"></script>
@@ -56,18 +55,15 @@
 
 <!-- JS from Bower Components -->
 <script src="bower_components/less.js/dist/less.min.js" data-concat="false"></script>
-
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
 <script src="bower_components/sockjs/sockjs.js"></script>
-
 <script src="/bower_components/angular/angular.js"></script>
 <script src="/bower_components/angular-aria/angular-aria.js"></script>
 <script src="/bower_components/angular-animate/angular-animate.js"></script>
 <script src="/bower_components/hammerjs/hammer.js"></script>
 <script src="/bower_components/angular-material/angular-material.js"></script>
-
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -87,7 +83,6 @@
 <script src="app/about/about.js"></script>
 <script src="app/config/config.js"></script>
 <script src="app/login-form/login-form.js"></script>
-<script src="app/auth/auth-service.js"></script>
 <script src="app/landing/landing.js"></script>
 <script src="app/weather/weather.js"></script>
 <script src="app/video/video.js"></script>
@@ -102,7 +97,6 @@
 <script src="app/services/user-service.js"></script>
 <script src="app/services/session-service.js"></script>
 <script src="app/health/health.js"></script>
-<script src="app/auth/session-service.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/d3/d3-chart-directive.js"></script>
 <script src="app/d3/d3-treemap.js"></script>
@@ -119,17 +113,16 @@
 <!--<script src="app/widgets/gantt/gantt-widget.js"></script>-->
 <!-- Add New Component JS Above -->
 
-<!--<section >-->
-<!--dont use md-whiteframe class because it leaves black artifacts-->
+<!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
 <md-content layout="row" layout-fill>
-    <md-sidenav class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav ng-if="loggedIn" class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">katGUI</h1>
         </md-toolbar>
         <md-content class="md-content-padding" style="margin-top: 16px;" md-theme="none">
             <md-list>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('landing')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('home')">
                         <span class="fa fa-home"></span>
                         <button>Home</button>
                     </md-item-content>
@@ -196,7 +189,7 @@
         </md-content>
     </md-sidenav>
 
-    <md-sidenav class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav ng-if="loggedIn" class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">User Navigation</h1>
         </md-toolbar>
@@ -229,7 +222,7 @@
     </md-sidenav>
 
     <div layout="column" flex>
-        <md-toolbar ng-show="vm.showNavbar" class="slide-in-vertically-navbar md-whiteframe-z1" md-theme-watch="true">
+        <md-toolbar ng-if="loggedIn" ng-show="vm.showNavbar" class="slide-in-vertically-navbar md-whiteframe-z1" md-theme-watch="true">
             <div class="md-toolbar-tools" layout="row" style="margin-top: -4px; padding: 0;">
 
                 <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
@@ -283,7 +276,7 @@
                 </div>
 
                 <md-button aria-label="Home" class="button-toolbar-flat-icon" style="margin: 2px;"
-                        ng-click="vm.stateGo('landing')"><span class="fa fa-home"></span>
+                        ng-click="vm.stateGo('home')"><span class="fa fa-home"></span>
                 </md-button>
 
                 <div class="alarms-warning-container" style="margin: 2px;">
@@ -297,9 +290,6 @@
                     class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>
                     <span ng-if="newAlarmCritCount > 0"
                     class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>
-                    <!--<span class="badge alarm-badge alarm-badge-warn">{{newAlarmWarnCount}}</span>-->
-                    <!--<span class="badge alarm-badge alarm-badge-error">{{newAlarmErrorCount}}</span>-->
-                    <!--<span class="badge alarm-badge alarm-badge-crit">{{newAlarmCritCount}}</span>-->
                 </div>
 
                 <md-button aria-label="Right Navbar" class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()" style="margin: 2px;">
@@ -311,15 +301,15 @@
         <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column">
         </md-content>
     </div>
-    <!--</section>-->
+
 </md-content>
-<button class="unselectable toolbar-collapse-button" ng-class="{'toolbar-collapse-button-grey': !vm.showNavbar}"
+<button ng-if="loggedIn" class="unselectable toolbar-collapse-button" ng-class="{'toolbar-collapse-button-grey': !vm.showNavbar}"
         ng-click="vm.showNavbar = !vm.showNavbar">
     <i class="fa"
        ng-class="{ 'fa-caret-up': vm.showNavbar,  'fa-caret-down': !vm.showNavbar}"></i>
 </button>
 
-<div alarms-notifier></div>
+<div ng-if="loggedIn" alarms-notifier></div>
 
 </body>
 </html>
