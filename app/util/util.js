@@ -12,37 +12,35 @@ function dropdownMultiselect() {
         restrict: 'E',
         scope: {
             model: '=',
-            options: '=',
+            options: '='
         },
         template: "<div class='btn-group' data-ng-class='{open: open}'>" +
-        "<md-button aria-label='Select Item' class='btn btn-small dropdown-toggle' data-ng-click='open=!open;openDropdown()'>" +
-        "<span ng-if='model.roles.length > 0'>{{model.roles | orderBy:\'\'}}</span>" +
+        "<md-button aria-label='Select Item' class='btn btn-small dropdown-toggle' ng-click='open=!open;openDropdown()'>" +
+        "<span ng-if='model.roles.length > 0' ng-repeat='role in model.roles | orderBy:role' style='margin-left: 8px;'>{{role}}</span>" +
         "<span ng-if='model.roles.length === 0'>Select Roles</span><span style='margin-left: 5px;' class='fa fa-caret-down'></span>" +
         "</md-button>" +
-        "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>" +
-        "<li data-ng-repeat='option in options'><md-button style='width: 100%;' data-ng-click='setSelectedItem()'>{{option.name}}<span data-ng-class='isChecked(option.name)'></span></md-button></li>" +
+        "<ul style='z-index: 100; min-width: 210px;' class='dropdown-menu' aria-labelledby='dropdownMenu'>" +
+        "<li class='dropdown-list-item' ng-repeat='option in options' layout='row' layout-align='center center'><span style='min-width: 24px; margin-left: 8px;' class='fa' ng-class='isChecked(option)'></span><span flex style='margin: 4px; font-size: 20px; padding: 4px;' data-ng-click='setSelectedItem(option)'>{{option.name}}</span></li>" +
         "</ul>" +
         "</div>",
         controller: function ($scope) {
 
-            $scope.model.roles = [];
             $scope.selected_items = [];
 
-            $scope.setSelectedItem = function () {
-                var name = this.option.name;
-                if (_.contains($scope.model.roles, name)) {
-                    $scope.model.roles = _.without($scope.model.roles, name);
+            $scope.setSelectedItem = function (option) {
+
+                if (_.contains($scope.model.roles, option.value)) {
+                    $scope.model.roles = _.without($scope.model.roles, option.value);
                 } else {
-                    $scope.model.roles.push(name);
+                    $scope.model.roles.push(option.value);
                 }
-                //console.log($scope.model);
-                return false;
+
             };
-            $scope.isChecked = function (name) {
-                if (_.contains($scope.model.roles, name)) {
-                    return 'fa fa-check pull-right';
+            $scope.isChecked = function (option) {
+                if (_.contains($scope.model.roles, option.value)) {
+                    return 'fa-check';
                 }
-                return false;
+                return '';
             };
         }
     };
@@ -150,55 +148,18 @@ function loadingOverlay() {
     };
 }
 
-function dropdownMultiselect() {
-    return {
-        restrict: 'E',
-        template: "<div class='btn-group' data-ng-class='{open: open}'>" +
-        "<md-button aria-label='Select Item' class='btn btn-small dropdown-toggle' data-ng-click='open=!open;openDropdown()'>" +
-        "<span ng-if='model.roles.length > 0'>{{model.roles | orderBy:\'\'}}</span>" +
-        "<span ng-if='model.roles.length === 0'>Select Roles</span><span style='margin-left: 5px;' class='fa fa-caret-down'></span>" +
-        "</md-button>" +
-        "<ul class='dropdown-menu' aria-labelledby='dropdownMenu'>" +
-        "<li data-ng-repeat='option in options'><md-button style='width: 100%;' data-ng-click='setSelectedItem()'>{{option.name}}<span data-ng-class='isChecked(option.name)'></span></md-button></li>" +
-        "</ul>" +
-        "</div>",
-        controller: function ($scope) {
-
-            $scope.model.roles = [];
-            $scope.selected_items = [];
-
-            $scope.setSelectedItem = function () {
-                var name = this.option.name;
-                if (_.contains($scope.model.roles, name)) {
-                    $scope.model.roles = _.without($scope.model.roles, name);
-                } else {
-                    $scope.model.roles.push(name);
-                }
-                //console.log($scope.model);
-                return false;
-            };
-            $scope.isChecked = function (name) {
-                if (_.contains($scope.model.roles, name)) {
-                    return 'fa fa-check pull-right';
-                }
-                return false;
-            };
-        }
-    };
-}
-
 function autoGrow() {
     return function (scope, element, attr) {
         //element.css("height", element.parent()[0].scrollHeight + "px");
 
-        var update = function(){
+        var update = function () {
             element.css("height", "auto");
             var height = element.parent()[0].clientHeight;
-            if(height > 0){
+            if (height > 0) {
                 element.css("height", height + "px");
             }
         };
-        scope.$watch(attr.ngModel, function(){
+        scope.$watch(attr.ngModel, function () {
             update();
         });
 
@@ -214,6 +175,16 @@ function autoGrow() {
 }
 
 function katGuiUtil() {
+
+    this.generateUUID = function () {
+        var d = new Date().getTime();
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
+    };
 
     function declination(day, month, year, UT) {
 
@@ -291,12 +262,12 @@ function katGuiUtil() {
         //return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
         var Y = year, M = month, D = day, A, B, C, E, F, JD;
 
-        A = Math.floor(Y/100);
-        B = Math.floor(A/4);
+        A = Math.floor(Y / 100);
+        B = Math.floor(A / 4);
         C = 2 - A + B;
         E = 365.25 * (Y + 4716);
         F = 30.6001 * (M + 1);
-        JD = C + D+ E+ F - 1524.5;
+        JD = C + D + E + F - 1524.5;
 
         return JD;
     };

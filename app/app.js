@@ -26,7 +26,7 @@
             control: 'control',
             expert: 'expert'
         })
-        .constant('TOAST_HIDE_DELAY', 5000)
+        .constant('TOAST_HIDE_DELAY', 3500)
         .constant('THEMES', [
             {
                 name: 'Blue-Grey',
@@ -105,10 +105,22 @@
             );
         };
 
-        $rootScope.setCurrentUser = function (user) {
-            vm.currentUser = user;
-            vm.userLoggedIn = user !== null;
-            vm.userCanOperate = !!user && (vm.currentUser.role !== USER_ROLES.all && vm.currentUser.role !== USER_ROLES.monitor);
+        var unbindAlarmMessage = null;
+
+        $rootScope.connectEvents = function () {
+
+            vm.showNavbar = true;
+            $rootScope.$on('alarmMessage', vm.receivedAlarmMessage);
+
+            syncTimeWithServer();
+            $interval(updateTimeDisplay, 1000); //update local clock every second
+
+            $interval(function () {
+                syncTimeWithServer();
+            }, 600000); //sync time every 10 minutes
+
+            MonitorService.connectListener();
+            ControlService.connectListener();
         };
 
         vm.toggleLeftSidenav = function () {
@@ -125,12 +137,17 @@
             ControlService.disconnectListener();
             $mdSidenav('right-sidenav').close();
             SessionService.logout();
+
+            if (unbindAlarmMessage) {
+                unbindAlarmMessage();
+            }
+
+            vm.showNavbar = false;
         };
 
         vm.stateGo = function (newState) {
             $state.go(newState);
         };
-
 
         vm.sideNavStateGo = function (newState) {
             vm.stateGo(newState);
@@ -215,25 +232,10 @@
                 });
         }
 
-        syncTimeWithServer();
-
-        $interval(updateTimeDisplay, 1000); //update local clock every second
-
-        $interval(function () {
-            syncTimeWithServer();
-        }, 600000); //sync time every 10 minutes
-
-        $timeout(function () {
-            MonitorService.connectListener();
-            ControlService.connectListener();
-        }, 200);
-
         //these alarm collections are modified in alarms/alarms.js
         //just so you know
         $rootScope.alarmsData = [];
         $rootScope.knownAlarmsData = [];
-
-        var unbindAlarmMessage = $rootScope.$on('alarmMessage', vm.receivedAlarmMessage);
 
         vm.receivedAlarmMessage = function (message) {
 
@@ -283,7 +285,7 @@
             }
         };
 
-        $scope.$on('$destroy', unbindAlarmMessage);
+        $scope.$on('$destroy', vm.logout);
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider, USER_ROLES) {
@@ -406,13 +408,16 @@
         $urlRouterProvider.otherwise('/login');
     }
 
-    function runKatGui($rootScope, $state) {
+    function runKatGui($rootScope, $state, $localStorage) {
 
         $rootScope.$on('$stateChangeStart', function (event, toState) {
+
             if (!$rootScope.loggedIn && toState.name !== 'login') {
 
-                event.preventDefault();
-                $state.go('login');
+                if (!$localStorage['currentUserToken']) {
+                    event.preventDefault();
+                    $state.go('login');
+                }
 
             } else if ($rootScope.loggedIn && toState.name === 'login') {
                 event.preventDefault();

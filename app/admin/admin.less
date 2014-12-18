@@ -1,22 +1,36 @@
 .user-list {
     padding: 0;
-    max-height: 800px;
-    height: 750px;
+//    max-height: 800px;
+    height: 100%;
+    margin-bottom: 16px;
     overflow: auto;
 
-    md-item-content {
+    .user-row {
         padding-left: 8px;
         padding-right: 8px;
         border-bottom: 1px solid #d3d3d3;
-        height: 76px;
+        height: 49px;
+
+        &:hover {
+            background: #f8f8f8;
+        }
     }
 
     .user-cell {
         min-width: 200px;
         max-width: 400px;
         width: 400px;
-        overflow: hidden;
+        overflow: visible;
         text-overflow: ellipsis;
+
+        input {
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+            margin-right: 24px;
+            background: transparent;
+            border-bottom: 1px solid #d3d3d3;
+        }
     }
 
 }
@@ -24,6 +38,7 @@
 .user-editing-buttons {
     max-width: 150px;
     min-width: 150px;
+    float: right;
 }
 
 .deactivated-user {
@@ -34,10 +49,18 @@
     }
 }
 
-.activated-user {
-//    background: #E1F5FE;
+.user-row-button {
+    float: right;
+    width: 49px;
+    height: 49px;
+    color: #9E9E9E;
+    border-radius: 25px;
+    background: transparent;
+    border: transparent;
+    font-size: 18px;
 
     &:hover {
-        background: #f8f8f8;
+        color: #212121;
     }
 }
+

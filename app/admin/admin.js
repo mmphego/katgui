@@ -1,46 +1,55 @@
 (function () {
-    angular.module('katGui.admin', ['katGui.services'])
+    angular.module('katGui.admin', ['katGui.services', 'katGui.util'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl(UserService, $timeout) {
+    function AdminCtrl(UserService, $timeout, KatGuiUtil) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
         vm.lastId = 0;
 
         vm.orderByFields = [
-            {label: '-- Order By --', value: 'userId'},
             {label: 'Name', value: 'name'},
             {label: 'Email', value: 'email'},
-            {label: 'Roles', value: 'roles'},
-            {label: 'Active State', value: 'active'}
+            {label: 'Roles', value: 'roles'}
         ];
 
-        vm.orderBy = vm.orderByFields[0];
+        vm.orderBy = null;
 
         vm.userRoles = [
-            {"id": 1, "name": "Monitor", "assignable": true},
-            {"id": 2, "name": "Control", "assignable": true},
-            {"id": 3, "name": "Operator", "assignable": true}
+            {"id": 2, "name": "Control Authority", value: "control_authority", "assignable": true},
+            {"id": 3, "name": "Lead Operator", value: "lead_operator", "assignable": true},
+            {"id": 3, "name": "Operator", value: "operator", "assignable": true},
+            {"id": 1, "name": "Read Only", value: "read_only", "assignable": true}
         ];
 
         vm.userData = UserService.users;
 
+        vm.setOrderBy = function (column) {
+            var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
+            if (newOrderBy === undefined) {
+                newOrderBy.reverse = false;
+            } else {
+                newOrderBy.reverse = !newOrderBy.reverse;
+            }
+            vm.orderBy = newOrderBy;
+        };
+
         vm.createUser = function () {
-            event.stopPropagation();
-            vm.userData.push({
-                userId: vm.lastId++,
-                name: 'newuser' + vm.lastId,
-                email: 'new@ska.ac.za',
-                role: 'monitor',
-                active: true
+
+            UserService.addTempCreatedUser({
+                id: 'temp_' + KatGuiUtil.generateUUID(),
+                name: 'new user',
+                email: 'new_user@ska.ac.za',
+                roles: ['read_only'],
+                activated: true,
+                temp: true
             });
 
             vm.editUser(vm.userData[vm.userData.length - 1]);
         };
 
-        vm.editUser = function (user, $event) {
-            event.stopPropagation();
+        vm.editUser = function (user) {
             if (!user.editing) {
                 user.originalUser = {
                     name: user.name,
@@ -51,8 +60,7 @@
             }
         };
 
-        vm.saveUser = function (user, event) {
-            event.stopPropagation();
+        vm.saveUser = function (user) {
             user.editing = false;
             user.originalUser = {};
 
@@ -65,30 +73,57 @@
                 roles: user.roles
             };
 
-            if (newUser.id) {
+            if (typeof user.id !== 'string') {
                 UserService.updateUser(newUser).then(function (result) {
+                    UserService.listUsers();
                     console.log('updated user called, result: ');
                     console.log(result);
                 });
             } else {
-                newUser.roles = ['read_only'];
-                UserService.createUser(newUser);
+                if (!newUser.roles) {
+                    newUser.roles = ['read_only'];
+                }
+                newUser.id = null;
+
+                UserService.createUser(newUser).then(function () {
+                    UserService.listUsers();
+                });
             }
         };
 
         vm.listUsers = function () {
-            UserService.listUsers();
+            vm.userListProcessingServerCall = true;
+            UserService.listUsers().then(function () {
+                $timeout(function () {
+                    vm.userListProcessingServerCall = false;
+                }, 200);
+            });
         };
 
         vm.undoUserChanges = function (user) {
-            event.stopPropagation();
-            user.name = user.originalUser.name;
-            user.email = user.originalUser.email;
-            user.roles = user.originalUser.roles;
-            user.editing = false;
+
+            if (typeof user.id === 'string' && user.id.indexOf('temp_') === 0) {
+                UserService.removeTempUser(user);
+            } else {
+                user.editing = false;
+                user.name = user.originalUser.name;
+                user.email = user.originalUser.email;
+                user.roles = user.originalUser.roles;
+            }
         };
 
-        $timeout(vm.listUsers, 100);
+        vm.deactivateUser = function (user) {
+
+            user.activated = false;
+
+            UserService.updateUser(user).then(function (result) {
+                UserService.listUsers();
+                console.log('dectivated and updated user called, result: ');
+                console.log(result);
+            });
+        };
+
+        $timeout(vm.listUsers, 0);
     }
 
 })();

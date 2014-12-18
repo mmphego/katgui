@@ -25,7 +25,9 @@
         };
 
         api.logout = function () {
-            $http.get(urlBase + '/user/' + $rootScope.currentUser.email + '/logout').then(logoutResultReceived);
+            if ($rootScope.loggedIn) {
+                $http.get(urlBase + '/user/' + $rootScope.currentUser.email + '/logout').then(logoutResultReceived);
+            }
         };
 
         api.recoverLogin = function () {
@@ -45,16 +47,18 @@
 
         function loginResultReceived(result) {
 
-            console.log(result);
-
             var a = result.data.split(".");
             var payload = JSON.parse(window.atob(a[1]));
             if (payload.name !== null) {
                 $rootScope.currentUser = payload;
                 $rootScope.loggedIn = true;
-                $state.go('home');
+                if (!$localStorage['currentUserToken']) {
+                    $state.go('home');
+                }
                 $localStorage['currentUserToken'] = $rootScope.jwt;
                 $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
+
+                $rootScope.connectEvents();
                 //TODO implement timeout
             } else {
                 api.currentUser = null;

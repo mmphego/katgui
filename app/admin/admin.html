@@ -1,87 +1,81 @@
-<div class="view-container-small" ng-controller="AdminCtrl as vm">
-
-    <div class="md-whiteframe-z1" layout="column" style="margin-bottom: 16px;">
+<div class="view-container-small" flex ng-controller="AdminCtrl as vm" layout="column">
+    <div class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative">
+        <loading-overlay ng-show="vm.userListProcessingServerCall"></loading-overlay>
         <md-toolbar class="panel-toolbar md-whiteframe-z1">
             <div class="md-toolbar-tools" layout="row">
                 <span flex>Users</span>
                 <md-checkbox style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
-                <md-button aria-label="Create A User" style="margin-right: 17px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
-                    <div style="left: 0; top: 0; width: 38px; height: 38px; position: absolute;"><add-list-item-animation height="75" list="#userListId"></add-list-item-animation></div>
-                    <span flex class="fa fa-plus"></span>
+                <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="q" label="Search Users..." class=""></md-text-float>
+                <md-button aria-label="Create A User" style="margin-right: 8px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
+                    <span class="fa fa-plus" style="margin-top: 2px;"></span>
                     <md-tooltip>Create A User</md-tooltip>
                 </md-button>
-                <select class="form-control" style="display: inline; width: 150px;" ng-model="vm.orderBy" ng-options="s.label for s in vm.orderByFields">
-                </select>
-                <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="q" label="Search Users..." class=""></md-text-float>
             </div>
         </md-toolbar>
-        <md-list id="userListId" flex class="user-list">
-            <md-item ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value as results">
-                <md-item-content flex layout="row" style="background: white;" ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
-                    <div flex class="user-cell">
-                        <md-text-float  md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"></md-text-float>
-                        <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
-                    </div>
-                    <div flex class="user-cell">
-                        <md-text-float md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email"></md-text-float>
-                        <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
-                    </div>
-                    <div flex class="user-cell" layout-align="center" layout="row">
-                        <!--<dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>-->
-                        <span class="cell-span" ng-if="!user.editing && user.roles.length > 0">{{user.roles | json}}<md-tooltip>User's Roles</md-tooltip></span>
-                        <span class="cell-span" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
-                    </div>
 
+        <div flex class="list-subheader-title" layout="row" layout-align="center center">
+            <md-subheader style="max-width: 250px;min-width: 250px; margin-left: 4px;" ng-click="vm.setOrderBy('name')">Name</md-subheader>
+            <md-subheader style="max-width: 325px;min-width: 325px;" ng-click="vm.setOrderBy('email')">Email</md-subheader>
+            <md-subheader flex ng-click="vm.setOrderBy('roles')">Roles</md-subheader>
+        </div>
+        <div id="userListId" flex class="user-list">
+            <div class="user-row" ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value:vm.orderBy.reverse as results track by user.id" flex layout="row" layout-align="start center" style="background: white;"
+                 ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
+                <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row">
+                    <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"/>
+                    <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
+                </div>
+                <div flex class="user-cell" style="max-width: 335px; min-width: 335px;" layout="row">
+                    <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email"/>
+                    <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
+                </div>
+                <div flex class="user-cell" layout-align="start center" layout="row">
+                    <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
+                    <span class="cell-span" ng-if="!user.editing && user.roles.length > 0" ng-repeat="role in user.roles | orderBy:role" style="margin-left: 8px;">{{role}};<md-tooltip>User's Roles</md-tooltip></span>
+                    <span class="cell-span" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
+                </div>
+
+                <span flex></span>
+
+                <div flex ng-show="user.editing" class="user-editing-buttons" layout="row">
                     <span flex></span>
-                    <div flex ng-if="user.editing" class="user-editing-buttons" layout="row">
-                        <md-button md-theme="red" aria-label="Deactivate User" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
-                                   ng-click="vm.deactivateUser(user)">
-                            <span class="fa fa-minus" style="margin-left: 0px; width: 14px; height: 14px"></span>
-                            <md-tooltip>
-                                Deactivate User
-                            </md-tooltip>
-                        </md-button>
-                        <md-button md-theme="green" aria-label="Save User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
-                                   ng-click="vm.saveUser(user, $event)">
-                            <span class="fa fa-check"></span>
-                            <md-tooltip>
-                                Save User Changes
-                            </md-tooltip>
-                        </md-button>
-                        <md-button md-theme="amber" aria-label="Undo User Changes" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
-                                   ng-click="vm.undoUserChanges(user)">
-                            <span class="fa fa-undo" style="margin-left: 4px;"></span>
-                            <md-tooltip>
-                                Undo User Changes
-                            </md-tooltip>
-                        </md-button>
-                        <!--<md-button md-theme="red" aria-label="Disable User" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"-->
-                                   <!--ng-click="vm.deleteUser(user)">-->
-                            <!--<span class="fa fa-times"></span>-->
-                            <!--<md-tooltip>-->
-                                <!--Disable User-->
-                            <!--</md-tooltip>-->
-                        <!--</md-button>-->
-                    </div>
-                    <div flex ng-if="!user.editing" style="max-width: 40px; min-width: 40px;" layout="row">
-                        <md-button aria-label="Edit User" ng-click="vm.editUser(user, $event)" class="md-fab md-button-fab-small">
-                            <span class="fa fa-edit"></span>
-                            <md-tooltip md-theme>
-                                Edit User
-                            </md-tooltip>
-                        </md-button>
-                    </div>
-                    <md-tooltip ng-if="!user.activated">
-                        <span>Deactivated User</span>
-                    </md-tooltip>
-                </md-item-content>
-            </md-item>
-            <md-item>
-                <md-content class="animate-repeat" ng-if="results.length == 0">
-                    <strong>No results found...</strong>
-                </md-content>
-            </md-item>
-        </md-list>
+                    <button ng-show="!user.temp" class="user-row-button" ng-click="vm.deactivateUser(user)">
+                        <span class="fa fa-ban"></span>
+                        <md-tooltip>
+                            Deactivate User
+                        </md-tooltip>
+                    </button>
+                    <button class="user-row-button" ng-click="vm.undoUserChanges(user)">
+                        <span class="fa fa-undo"></span>
+                        <md-tooltip>
+                            Undo User Changes
+                        </md-tooltip>
+                    </button>
+                    <button class="user-row-button" ng-click="vm.saveUser(user, $event)">
+                        <span class="fa fa-check"></span>
+                        <md-tooltip>
+                            Save User Changes
+                        </md-tooltip>
+                    </button>
+                </div>
+                <div ng-show="!user.editing" style="min-width: 150px;">
+                    <button ng-click="vm.editUser(user, $event)" class="user-row-button">
+                        <span class="fa fa-edit"></span>
+                        <md-tooltip md-theme>
+                            Edit User
+                        </md-tooltip>
+                    </button>
+                </div>
+                <md-tooltip ng-if="!user.activated">
+                    <span>Deactivated User</span>
+                </md-tooltip>
+            </div>
+            <!--<md-item>-->
+            <!--<md-content class="animate-repeat" ng-if="results.length == 0">-->
+            <!--<strong>No results found...</strong>-->
+            <!--</md-content>-->
+            <!--</md-item>-->
+        </div>
     </div>
 
 </div>
