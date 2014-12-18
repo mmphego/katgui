@@ -5,7 +5,7 @@
             <div class="md-toolbar-tools" layout="row">
                 <span flex>Users</span>
                 <md-checkbox style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
-                <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model="q" label="Search Users..." class=""></md-text-float>
+                <md-text-float md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model-options="{ debounce: 300 }" ng-model="q" label="Search Users..." class=""></md-text-float>
                 <md-button aria-label="Create A User" style="margin-right: 8px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
                     <span class="fa fa-plus" style="margin-top: 2px;"></span>
                     <md-tooltip>Create A User</md-tooltip>

@@ -9,12 +9,13 @@
         vm.lastId = 0;
 
         vm.orderByFields = [
+            {label: 'Id', value: 'id'},
             {label: 'Name', value: 'name'},
             {label: 'Email', value: 'email'},
             {label: 'Roles', value: 'roles'}
         ];
 
-        vm.orderBy = null;
+        vm.orderBy = vm.orderByFields[0];
 
         vm.userRoles = [
             {"id": 2, "name": "Control Authority", value: "control_authority", "assignable": true},
@@ -38,7 +39,7 @@
         vm.createUser = function () {
 
             UserService.addTempCreatedUser({
-                id: 'temp_' + KatGuiUtil.generateUUID(),
+                id: 'ztemp_' + KatGuiUtil.generateUUID(),
                 name: 'new user',
                 email: 'new_user@ska.ac.za',
                 roles: ['read_only'],
@@ -102,7 +103,7 @@
 
         vm.undoUserChanges = function (user) {
 
-            if (typeof user.id === 'string' && user.id.indexOf('temp_') === 0) {
+            if (typeof user.id === 'string' && user.id.indexOf('ztemp_') === 0) {
                 UserService.removeTempUser(user);
             } else {
                 user.editing = false;
