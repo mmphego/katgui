@@ -5,7 +5,7 @@
 
     function ControlService($http) {
 
-        var urlBase = 'http://localhost:8020';
+        var urlBase = 'http://10.8.67.130:8020';
         var connection = null;
 
         this.onSockJSOpen = function () {

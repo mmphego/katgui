@@ -220,7 +220,7 @@ md-sidenav {
     background: #283593;
     color: #fff;
     z-index: 1;
-    font-size: 1.5em;
+    font-size: 24px;
 }
 
 .panel-body {
@@ -372,14 +372,13 @@ md-toast {
 
 .list-subheader-title {
     border-bottom: 1px solid #9E9E9E;
-    height: 45px;
-    max-height: 45px;
+//    border-bottom: 1px solid #9E9E9E;
+    min-height: 30px;
+    max-height: 30px;
     width: 100%;
-
-    h2 {
-        padding: 8px;
-        cursor: pointer;
-    }
+    padding: 8px;
+    cursor: pointer;
+    vertical-align: middle;
 }
 
 .animate-show-grow {
@@ -419,4 +418,59 @@ md-toast {
     &:hover {
         background-color: #F5F5F5;
     }
+}
+
+*.unselectable {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+
+    span, div, h2 {
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -o-user-select: none;
+        user-select: none;
+    }
+}
+
+.subheader-text {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 14px;
+}
+
+.fade-in {
+    transition: all 0.3s;
+    opacity: 1;
+}
+
+/* Initial state when showing */
+.fade-in.ng-hide-remove {
+    opacity: 0;
+}
+
+/* Will transition towards this state */
+.fade-in.ng-hide-add.ng-hide-add-active {
+    opacity: 0;
+}
+
+/* Will transition towards this state */
+.fade-in.ng-hide-remove.ng-hide-remove-active {
+    opacity: 1;
+}
+
+.md-toolbar-tools-small {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    height: 44px;
+    min-height: 44px;
+    max-height: 44px;
+    font-size: inherit;
+    font-weight: normal;
+    padding: 0 10px;
+    margin: 0;
 }

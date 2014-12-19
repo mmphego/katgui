@@ -28,7 +28,7 @@
 
         vm.setOrderBy = function (column) {
             var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
-            if (newOrderBy === undefined) {
+            if (newOrderBy.reverse === undefined) {
                 newOrderBy.reverse = false;
             } else {
                 newOrderBy.reverse = !newOrderBy.reverse;

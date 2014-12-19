@@ -28,15 +28,43 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
         vm.resourcePool = ObservationScheduleService.resourcePool;
 
         vm.draftsOrderByFields = [
-            {label: 'ID', value: 'id'},
+            {label: 'ID', value: 'id_code'},
             {label: 'Description', value: 'description'},
-            {label: 'Date', value: 'desiredTime'},
-            {label: 'Owner', value: 'owner'},
+            {label: 'Date', value: 'desired_start_time'},
             {label: 'State', value: 'state'},
             {label: 'Type', value: 'type'}
         ];
 
-        //vm.draftsOrderBy = vm.draftsOrderByFields[0];
+        vm.completedOrderByFields = [
+            {label: 'ID', value: 'id_code'},
+            {label: 'Description', value: 'description'},
+            {label: 'Date', value: 'desired_start_time'},
+            {label: 'State', value: 'state'},
+            {label: 'Type', value: 'type'}
+        ];
+
+        vm.setDraftsOrderBy = function (column, reverse) {
+            var newOrderBy = _.findWhere(vm.draftsOrderByFields, {value: column});
+            if (newOrderBy.reverse === undefined) {
+                newOrderBy.reverse = reverse || false;
+            } else {
+                newOrderBy.reverse = !newOrderBy.reverse;
+            }
+            vm.draftsOrderBy = newOrderBy;
+        };
+
+        vm.setCompletedOrderBy = function (column, reverse) {
+            var newOrderBy = _.findWhere(vm.completedOrderByFields, {value: column});
+            if (newOrderBy.reverse === undefined) {
+                newOrderBy.reverse = reverse || false;
+            } else {
+                newOrderBy.reverse = !newOrderBy.reverse;
+            }
+            vm.completedOrderBy = newOrderBy;
+        };
+
+        vm.setDraftsOrderBy('id_code', true);
+        vm.setCompletedOrderBy('id_code', true);
 
         vm.showDatePicker = false;
         vm.currentSelectedDate = moment();
@@ -342,7 +370,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             }, 300);
         }
 
-        $timeout(vm.refreshScheduleBlocks, 500);
+        $timeout(vm.refreshScheduleBlocks, 100);
 
         $scope.$on('$destroy', function () {
             ObservationScheduleService.disconnectListener();

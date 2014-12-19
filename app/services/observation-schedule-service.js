@@ -5,7 +5,7 @@
 
     function ObservationScheduleService($q, $timeout) {
 
-        var urlBase = 'http://localhost:8020';
+        var urlBase = 'http://10.8.67.130:8020';
         var connection = null;
         var api = {};
         var deferredMap = {};
@@ -34,7 +34,7 @@
             } else {
                 var result = jsonData.result;
 
-                console.log(result);
+                //console.log(result);
 
                 if (result.get_schedule_blocks) {
 

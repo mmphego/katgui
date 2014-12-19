@@ -259,7 +259,6 @@ function katGuiUtil() {
 
     //UT as a fraction of hours
     this.julianDay = function (day, month, year, UT) {
-        //return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
         var Y = year, M = month, D = day, A, B, C, E, F, JD;
 
         A = Math.floor(Y / 100);
