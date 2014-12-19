@@ -65,49 +65,53 @@
                             <input ng-change="item.isDirty = true;" type="text" aria-label="Select a Date and Time" title="UTC"
                                    class="schedule-item-input schedule-item-date-input" ng-class="{'invalid-date-error': item.hasInvalidInput}"
                                    ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder=""/>
-                            <md-button data-ng-disabled="!vm.validateInputDate(item)" ng-show="item.isDirty" style="transition: 0s;" md-theme="amber" aria-label="Save Draft"
-                                       style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
+                            <md-button data-ng-disabled="!vm.validateInputDate(item)" ng-show="item.isDirty" style="transition: 0s;" aria-label="Save Draft"
+                                       class="sb-row-button"
                                        ng-click="vm.saveDraft(item); $event.stopPropagation();">
                                 <span class="fa fa-check md-fab-fa-icon-small"></span>
                                 <md-tooltip>
                                     Save Draft
                                 </md-tooltip>
                             </md-button>
-                            <md-button ng-show="!item.isDirty" style="transition: 0s;" aria-label="Validate Draft" style="margin-left: 10px;" class="md-fab md-button-fab-small md-primary"
-                                       ng-click="vm.validateDraft(item); $event.stopPropagation();">
-                                    <span class="fa "
-                                          ng-class="{'fa-circle-o': item.verification_state === 'NOT_VERIFIED',
+                            <md-button ng-show="!item.isDirty" class="sb-row-button" aria-label="Verify Draft"
+                                    ng-click="vm.scheduleDraft(item); $event.stopPropagation();">
+                                <span class="fa"
+                                      ng-class="{'fa-circle-o': item.verification_state === 'NOT_VERIFIED',
                                           'fa-check': item.verification_state === 'VERIFIED',
                                           'fa-adjust': item.verification_state === 'VERIFYING',
                                           'fa-warning': item.verification_state === 'FAILED',
                                           'fa-ban': item.verification_state === 'NOT_APPLICABLE',
-                                          'fa-question': item.verification_state === 'UNKNOWN'}"></span>
+                                          'fa-question': item.verification_state === 'UNKNOWN'}">
+                                </span>
                                 <md-tooltip>
                                     Verify (State: {{item.verification_state}})
                                 </md-tooltip>
                             </md-button>
 
-                            <md-button data-ng-disabled="item.isDirty" aria-label="Move Draft To Schedule" style="margin-left: 10px;" class="md-fab md-button-fab-small"
-                                       ng-click="vm.scheduleDraft(item); $event.stopPropagation();">
-                                <span class="fa fa-chevron-down"></span>
-                                <md-tooltip>
-                                    Schedule Draft
-                                </md-tooltip>
+                            <md-button style="transition: 0s;" aria-label="Show Edit Menu" class="sb-row-button" ng-click="vm.openSchedulerEditMenu(item, $event);">
+                                <span class="fa fa-ellipsis-v"></span>
                             </md-button>
 
-                            <md-button md-theme="red" aria-label="Delete Draft" style="margin-left: 10px; transition: 0s;" class="md-fab md-primary md-button-fab-small"
-                                       ng-click="vm.confirmDelete(item); $event.stopPropagation();" ng-mouseleave="item.confirmDelete = false">
-                                <span ng-show="!item.confirmDelete" class="fa fa-minus confirm-deletion"></span>
-                                <span ng-show="item.confirmDelete" class="fa fa-question confirm-deletion-question"></span>
-                                <md-tooltip ng-if="!item.confirmDelete">
-                                    Delete Draft
-                                </md-tooltip>
-                                <!--side effect of md-visible is to set item.confirmDelete to false when hover leaves, this is good, we want this-->
-                                <!--but set it on ng-mouseleave anyways-->
-                                <md-tooltip md-visible="item.confirmDelete" ng-if="item.confirmDelete">
-                                    Confirm Delete?
-                                </md-tooltip>
-                            </md-button>
+                            <!--<md-button data-ng-disabled="item.isDirty" aria-label="Move Draft To Schedule" style="margin-left: 10px;" class="md-fab md-button-fab-small"-->
+                                <!--<span class="fa fa-chevron-down"></span>-->
+                                <!--<md-tooltip>-->
+                                    <!--Schedule Draft-->
+                                <!--</md-tooltip>-->
+                            <!--</md-button>-->
+
+                            <!--<md-button md-theme="red" aria-label="Delete Draft" style="margin-left: 10px; transition: 0s;" class="md-fab md-primary md-button-fab-small"-->
+                                       <!--ng-click="vm.confirmDelete(item); $event.stopPropagation();" ng-mouseleave="item.confirmDelete = false">-->
+                                <!--<span ng-show="!item.confirmDelete" class="fa fa-minus confirm-deletion"></span>-->
+                                <!--<span ng-show="item.confirmDelete" class="fa fa-question confirm-deletion-question"></span>-->
+                                <!--<md-tooltip ng-if="!item.confirmDelete">-->
+                                    <!--Delete Draft-->
+                                <!--</md-tooltip>-->
+                                <!--&lt;!&ndash;side effect of md-visible is to set item.confirmDelete to false when hover leaves, this is good, we want this&ndash;&gt;-->
+                                <!--&lt;!&ndash;but set it on ng-mouseleave anyways&ndash;&gt;-->
+                                <!--<md-tooltip md-visible="item.confirmDelete" ng-if="item.confirmDelete">-->
+                                    <!--Confirm Delete?-->
+                                <!--</md-tooltip>-->
+                            <!--</md-button>-->
                         </div>
                     </div>
                 </div>
@@ -228,7 +232,7 @@
                             <span class="fa" ng-class="{'fa-caret-up': vm.completedOrderBy.value === 'type' && !vm.completedOrderBy.reverse, 'fa-caret-down': vm.completedOrderBy.value === 'type' && vm.completedOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
-                        <span style="max-width: 200px;min-width: 200px;" class="subheader-text" ng-click="vm.setCompletedOrderBy('desired_start_time')">
+                        <span style="max-width: 196px;min-width: 196px;" class="subheader-text" ng-click="vm.setCompletedOrderBy('desired_start_time')">
                             <span style="padding: 8px">Desired Time</span>
                             <span class="fa" ng-class="{'fa-caret-up': vm.completedOrderBy.value === 'desired_start_time' && !vm.completedOrderBy.reverse, 'fa-caret-down': vm.completedOrderBy.value === 'desired_start_time' && vm.completedOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
@@ -276,8 +280,8 @@
 
 
         <div style="margin-top: 0px; margin-bottom: 0px; margin-right: 8px; padding: 8px; border-right: 1px solid transparent; border-bottom: 1px solid transparent; border-top: 1px solid transparent;"
-             layout="column" id="schedulerScriptView">
-             <!--ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null}">-->
+             layout="column" id="schedulerScriptView"
+             ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null}">
             <!--<loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>-->
             <div layout="column" id="resource-allocation-div">
                 <md-toolbar style="margin-left: 24px;  width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
@@ -289,8 +293,7 @@
                     <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;">
                         <md-subheader class="list-subheader-title">Assigned Resources</md-subheader>
                     </div>
-                    <div layout-fill flex class="schedule-block-resource-window "  style="z-index: 1;" layout="column"
-                         ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null, 'md-whiteframe-z1': vm.selectedScheduleDraft === null && vm.selectedSchedule === null}">
+                    <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;" layout="column">
                         <!--<textarea ng-if="vm.selectedScheduleDraft" class="schedule-script-text-area" rows="30" ng-model="vm.selectedScheduleDraft.script"-->
                         <!--ng-show="vm.selectedScheduleDraft !== null || vm.selectedSchedule !== null" ng-maxlength="8000"></textarea>-->
                         <!--<textarea ng-if="vm.selectedSchedule" class="schedule-script-text-area" rows="30" ng-model="vm.selectedSchedule.script"-->
@@ -341,6 +344,17 @@
         <md-list layout="column">
             <md-item ng-repeat="type in vm.types">
                 <md-button ink-ripple role="menuitem" ng-click="vm.setScheduleDraftType(type)" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;">{{type}}</md-button>
+            </md-item>
+        </md-list>
+    </div>
+
+    <div id="schedulerEditMenu" ng-show="vm.showEditMenu" class="datepickerMenu md-whiteframe-z1">
+        <md-list layout="column">
+            <md-item>
+                <md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.scheduleSelectedDraft()">Schedule Draft</md-button>
+            </md-item>
+            <md-item>
+                <md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.removeSelectedDraftRow()">Delete Draft</md-button>
             </md-item>
         </md-list>
     </div>

@@ -4,7 +4,7 @@ angular.module('katGui.util', [])
     .directive('addListItemAnimation', addListItemAnimation)
     .directive('loadingOverlay', loadingOverlay)
     .directive('autoGrow', autoGrow)
-    .directive('expandingButton', expandingButtonMenu)
+    .directive('dropdownButtonMenu', dropdownButtonMenu)
     .factory('KatGuiUtil', katGuiUtil);
 
 function dropdownMultiselect() {
@@ -287,7 +287,7 @@ function katGuiUtil() {
     return this;
 }
 
-function expandingButtonMenu() {
+function dropdownButtonMenu() {
 
 
 }

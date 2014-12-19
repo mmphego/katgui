@@ -111,6 +111,31 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             $event.stopPropagation();
         };
 
+        //schedulerEditMenu
+        vm.openSchedulerEditMenu = function (item, $event) {
+
+            var rowIndex = vm.scheduleDraftData.indexOf(item);
+
+            if (vm.currentEditMenuIndex !== rowIndex) {
+                vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
+                closeDatePickerMenu();
+                var rect = $event.currentTarget.getBoundingClientRect();
+                var offset = { x: 0, y: 44 };
+                var overLayCSS = {
+                    left: rect.left + offset.x + 'px',
+                    top: rect.top + offset.y + 'px'
+                };
+                angular.element(document.getElementById('schedulerEditMenu')).css(overLayCSS);
+                vm.currentEditMenuIndex = vm.scheduleDraftData.indexOf(vm.scheduleDraftData[rowIndex]);
+                vm.showEditMenu = true;
+            } else {
+                //the same row's button was clicked, so close the popup
+                closeEditMenu();
+            }
+
+            $event.stopPropagation();
+        };
+
         vm.openDatePicker = function (item, $event) {
 
             var rowIndex = vm.scheduleDraftData.indexOf(item);
@@ -214,6 +239,13 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                 .then(draftListProcessingComplete, draftListProcessingError);
         };
 
+        vm.removeSelectedDraftRow = function () {
+            if (vm.selectedScheduleDraft) {
+                vm.removeDraftRow(vm.selectedScheduleDraft);
+                vm.showEditMenu = false;
+            }
+        };
+
         vm.removeDraftRow = function (item) {
 
             vm.draftListProcessingServerCall = true;
@@ -259,6 +291,13 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             return d.isValid();
         };
 
+        vm.scheduleSelectedDraft = function () {
+            if (vm.selectedScheduleDraft) {
+                vm.scheduleDraft(vm.selectedScheduleDraft);
+                vm.showEditMenu = false;
+            }
+        };
+
         vm.scheduleDraft = function (item) {
             vm.selectedScheduleDraft = null;
             vm.draftListProcessingServerCall = true;
@@ -287,6 +326,17 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             if (vm.showTypePicker) {
                 vm.showTypePicker = false;
                 vm.currentRowTypePickerIndex = -1;
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        }
+
+        function closeEditMenu() {
+            if (vm.showEditMenu) {
+                vm.showEditMenu = false;
+                vm.currentEditMenuIndex = -1;
             }
 
             if (!$scope.$$phase) {
