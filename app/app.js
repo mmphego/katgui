@@ -51,8 +51,7 @@
                 primary: 'light-blue-dark',
                 secondary: 'indigo',
                 primaryButtons: 'blue-grey'
-            }]
-    )
+            }])
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
@@ -298,7 +297,7 @@
 
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
-        $mdThemingProvider.alwaysWatchTheme(true);
+        configureThemes($mdThemingProvider);
 
         $stateProvider.state('login', {
             url: '/login',
@@ -429,5 +428,37 @@
             console.log('$stateChangeError - debugging required. Event: ');
             console.log(event);
         });
+    }
+
+    //this function includes the style sheets instead of having to link to each individually
+    function configureThemes($mdThemingProvider) {
+        //$mdThemingProvider.theme('default')
+        //    .primaryColor('indigo');
+        //
+        $mdThemingProvider.theme('indigo')
+            .primaryColor('indigo');
+
+        $mdThemingProvider.theme('blue')
+            .primaryColor('blue');
+
+        $mdThemingProvider.theme('blue-grey')
+            .primaryColor('blue-grey');
+
+        $mdThemingProvider.theme('deep-purple')
+            .primaryColor('deep-purple');
+
+        $mdThemingProvider.theme('teal')
+            .primaryColor('teal');
+
+        $mdThemingProvider.theme('yellow')
+            .primaryColor('yellow');
+
+        $mdThemingProvider.theme('amber')
+            .primaryColor('amber');
+
+        //$mdThemingProvider.theme('light-blue-dark')
+        //    .primaryColor('red');
+
+        $mdThemingProvider.alwaysWatchTheme(true);
     }
 })();

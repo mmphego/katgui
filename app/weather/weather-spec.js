@@ -1,18 +1,19 @@
-describe('WeatherCtrl', function() {
+describe('WeatherCtrl', function () {
 
     beforeEach(module('katGui'));
 
-	var scope,ctrl;
+    var scope, ctrl;
 
-    beforeEach(inject(function($rootScope, $controller) {
-      scope = $rootScope.$new();
-      ctrl = $controller('WeatherCtrl', {$scope: scope});
-    }));	
+    beforeEach(inject(function ($rootScope, $controller) {
+        scope = $rootScope.$new();
 
-	it('should ...', inject(function() {
+        ctrl = $controller('WeatherCtrl', {$scope: scope});
+    }));
 
-		expect(1).toEqual(1);
-		
-	}));
+    it('should ...', inject(function () {
+
+        expect(1).toEqual(1);
+
+    }));
 
 });

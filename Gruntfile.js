@@ -202,6 +202,7 @@ module.exports = function (grunt) {
                     '<%= dom_munger.data.appjs %>',
                     'bower_components/angular-mocks/angular-mocks.js',
                     createFolderGlobs('*.html'),
+                    'bower_components/angular-material/angular-material.css',
                     'app/**/*-spec.js'
                 ],
 

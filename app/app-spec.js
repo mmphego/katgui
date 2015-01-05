@@ -8,6 +8,8 @@ describe('ApplicationCtrl', function () {
     var scope, ctrl, location, state;
 
     beforeEach(inject(function ($rootScope, $controller, $location, $state, $templateCache) {
+
+
         scope = $rootScope.$new();
         location = $location;
         state = $state;
