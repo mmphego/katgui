@@ -124,6 +124,15 @@
             });
         };
 
+        vm.resetPassword = function (user) {
+
+            UserService.resetPassword(user).then(function (result) {
+                //UserService.listUsers();
+                console.log('reset password requested, result: ');
+                console.log(result);
+            });
+        };
+
         $timeout(vm.listUsers, 0);
     }
 

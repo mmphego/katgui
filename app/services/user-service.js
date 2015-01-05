@@ -39,6 +39,11 @@
             return $http.post(postStr);
         };
 
+        api.resetPassword = function (user) {
+            var postStr = urlBase + '/user/reset?email=' + encodeURI(user.email);
+            return $http.post(postStr);
+        };
+
         api.addTempCreatedUser = function (user) {
             api.users.push(user);
         };
