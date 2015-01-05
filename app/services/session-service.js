@@ -19,7 +19,7 @@
             var jwtPayload = { "email": email };
             var msg = window.btoa(JSON.stringify(jwtHeader)) + "." + window.btoa(JSON.stringify(jwtPayload));
             msg = msg.replace(/=/g , "");
-            var pass = CryptoJS.HmacSHA256(msg, password + 'x');
+            var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
             $http.get(urlBase + '/user/login/' + $rootScope.jwt).then(loginResultReceived);
         };
