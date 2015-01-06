@@ -157,7 +157,6 @@
                 })
                 .then(function (answer) {
                     passwordHash = CryptoJS.SHA256(answer).toString();
-                    console.log('new password\'s MD5 hash: ' + passwordHash);
 
                     UserService.resetPassword(user, passwordHash).then(function (result) {
                         console.log('reset password requested, result: ');
