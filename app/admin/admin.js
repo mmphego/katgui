@@ -69,7 +69,6 @@
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                password: CryptoJS.SHA256('password').toString(),
                 activated: true,
                 roles: user.roles
             };
