@@ -39,8 +39,8 @@
             return $http.post(postStr);
         };
 
-        api.resetPassword = function (user) {
-            var postStr = urlBase + '/user/reset?email=' + encodeURI(user.email);
+        api.resetPassword = function (user, passwordHash) {
+            var postStr = urlBase + '/user/reset/' + user.id + '?password=' + passwordHash;
             return $http.post(postStr);
         };
 

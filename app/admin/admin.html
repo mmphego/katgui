@@ -55,9 +55,6 @@
 
                 <div flex ng-show="user.editing" class="user-editing-buttons" layout="row">
                     <span flex></span>
-                    <button title="Reset Password" ng-show="!user.temp" class="user-row-button" ng-click="vm.resetPassword(user)">
-                        <span class="fa fa-key"></span>
-                    </button>
                     <button title="Deactivate User" ng-show="!user.temp" class="user-row-button" ng-click="vm.deactivateUser(user)">
                         <span class="fa fa-ban"></span>
                     </button>
@@ -68,7 +65,10 @@
                         <span class="fa fa-check"></span>
                     </button>
                 </div>
-                <div ng-show="!user.editing" style="min-width: 150px;">
+                <button title="Reset Password" ng-show="!user.temp && !user.editing" class="user-row-button" ng-click="vm.resetPassword($event, user)">
+                    <span class="fa fa-key"></span>
+                </button>
+                <div ng-show="!user.editing">
                     <button title="Edit User" ng-click="vm.editUser(user, $event)" class="user-row-button">
                         <span class="fa fa-edit"></span>
                     </button>
