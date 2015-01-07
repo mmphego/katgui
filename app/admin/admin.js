@@ -6,7 +6,6 @@
 
         var vm = this;
         vm.showDeactivatedUsers = false;
-        vm.lastId = 0;
 
         vm.orderByFields = [
             {label: 'Id', value: 'id'},
@@ -30,6 +29,9 @@
             var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
             if (newOrderBy.reverse === undefined) {
                 newOrderBy.reverse = false;
+            } else if (newOrderBy.reverse) {
+                newOrderBy.reverse = undefined;
+                newOrderBy = null;
             } else {
                 newOrderBy.reverse = !newOrderBy.reverse;
             }
