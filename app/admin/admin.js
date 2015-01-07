@@ -79,9 +79,7 @@
 
             if (typeof user.id !== 'string') {
                 UserService.updateUser(newUser).then(function (result) {
-                    UserService.listUsers();
-                    console.log('updated user called, result: ');
-                    console.log(result);
+                    UserService.listUsers(); //TODO: replace user list call with the newly edited user
                 });
             } else {
                 if (!newUser.roles) {
@@ -90,7 +88,7 @@
                 newUser.id = null;
 
                 UserService.createUser(newUser).then(function () {
-                    UserService.listUsers();
+                    UserService.listUsers(); //TODO: replace user list call with the newly created user
                 });
             }
         };
@@ -98,15 +96,13 @@
         vm.listUsers = function () {
             vm.userListProcessingServerCall = true;
             UserService.listUsers().then(function () {
-                $timeout(function () {
-                    vm.userListProcessingServerCall = false;
-                }, 200);
+                vm.userListProcessingServerCall = false;
             });
         };
 
         vm.undoUserChanges = function (user) {
 
-            if (typeof user.id === 'string' && user.id.indexOf('ztemp_') === 0) {
+            if (user.temp) {
                 UserService.removeTempUser(user);
             } else {
                 user.editing = false;
@@ -121,9 +117,7 @@
             user.activated = false;
 
             UserService.updateUser(user).then(function (result) {
-                UserService.listUsers();
-                console.log('dectivated and updated user called, result: ');
-                console.log(result);
+                UserService.listUsers(); //TODO: replace user list call with the newly edited user
             });
         };
 
@@ -138,12 +132,15 @@
                         $scope.themePrimary = $rootScope.themePrimaryButtons;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
 
+                        /* istanbul ignore next */
                         $scope.hide = function () {
                             $mdDialog.hide();
                         };
+                        /* istanbul ignore next */
                         $scope.cancel = function () {
                             $mdDialog.cancel();
                         };
+                        /* istanbul ignore next */
                         $scope.answer = function (answer) {
                             $mdDialog.hide(answer);
                         };
@@ -161,22 +158,20 @@
                 .then(function (answer) {
                     passwordHash = CryptoJS.SHA256(answer).toString();
 
+                    /* istanbul ignore next */
                     UserService.resetPassword(user, passwordHash).then(function (result) {
-                        console.log('reset password requested, result: ');
-                        console.log(result);
                         $rootScope.showSimpleToast('Password successfully reset.');
                     }, function (result) {
                         $rootScope.showSimpleToast('There was an error resetting the password: ');
-                        console.log(result);
                     });
 
                 }, function () {
-                    console.log('User canceled password reset dialog.');
                     $rootScope.showSimpleToast('Cancelled Password reset.');
                 });
 
         };
 
+        //list users on the next digest cycle, i.e. after controller init
         $timeout(vm.listUsers, 0);
     }
 
