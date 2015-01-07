@@ -5,15 +5,16 @@
 
     function UserService($http, $q) {
 
-        var urlBase = 'http://localhost:8010';
         var api = {};
+        api.urlBase = 'http://localhost:8010';
         api.users = [];
 
         api.listUsers = function () {
 
             var def = $q.defer();
 
-            $http.get(urlBase + '/user/list').then(function (result) {
+            $http.get(api.urlBase + '/user/list').then(function (result) {
+
                 if (result && result.data) {
                     api.users.splice(0, api.users.length);
                     result.data.forEach(function (user) {
@@ -30,17 +31,17 @@
         };
 
         api.createUser = function (user) {
-            var postStr = urlBase + '/user/add?name=' + encodeURI(user.name) + '&password=' + user.password + '&email=' + encodeURI(user.email) + '&roles=' + encodeURI(user.roles);
+            var postStr = api.urlBase + '/user/add?name=' + encodeURI(user.name) + '&password=' + user.password + '&email=' + encodeURI(user.email) + '&roles=' + encodeURI(user.roles);
             return $http.post(postStr);
         };
 
         api.updateUser = function (user) {
-            var postStr = urlBase + '/user/' + user.id + '?name=' + encodeURI(user.name) + '&password=' + user.password + '&email=' + encodeURI(user.email) + '&activated=' + user.activated + '&roles=' + encodeURI(user.roles);
+            var postStr = api.urlBase + '/user/' + user.id + '?name=' + encodeURI(user.name) + '&password=' + user.password + '&email=' + encodeURI(user.email) + '&activated=' + user.activated + '&roles=' + encodeURI(user.roles);
             return $http.post(postStr);
         };
 
         api.resetPassword = function (user, passwordHash) {
-            var postStr = urlBase + '/user/reset/' + user.id + '?password=' + passwordHash;
+            var postStr = api.urlBase + '/user/reset/' + user.id + '?password=' + passwordHash;
             return $http.post(postStr);
         };
 
