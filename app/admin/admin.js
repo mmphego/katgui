@@ -26,14 +26,16 @@
         vm.userData = UserService.users;
 
         vm.setOrderBy = function (column) {
+
             var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
-            if (newOrderBy.reverse === undefined) {
-                newOrderBy.reverse = false;
-            } else if (newOrderBy.reverse) {
-                newOrderBy.reverse = undefined;
-                newOrderBy = null;
-            } else {
-                newOrderBy.reverse = !newOrderBy.reverse;
+
+            if ((vm.orderBy || {}).value === column) {
+                if (newOrderBy.reverse === undefined) {
+                    newOrderBy.reverse = true;
+                } else if (newOrderBy.reverse) {
+                    newOrderBy.reverse = undefined;
+                    newOrderBy = null;
+                }
             }
             vm.orderBy = newOrderBy;
         };
