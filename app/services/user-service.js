@@ -3,10 +3,10 @@
     angular.module('katGui.services')
         .service('UserService', UserService);
 
-    function UserService($http, $q) {
+    function UserService($http, $q, SERVER_URL) {
 
         var api = {};
-        api.urlBase = 'http://localhost:8010';
+        api.urlBase = SERVER_URL + ':8010';
         api.users = [];
 
         api.listUsers = function () {
@@ -31,12 +31,12 @@
         };
 
         api.createUser = function (user) {
-            var postStr = api.urlBase + '/user/add?name=' + encodeURI(user.name) + '&password=' + user.password + '&email=' + encodeURI(user.email) + '&roles=' + encodeURI(user.roles);
+            var postStr = api.urlBase + '/user/add?name=' + encodeURI(user.name) + '&email=' + encodeURI(user.email) + '&roles=' + encodeURI(user.roles);
             return $http.post(postStr);
         };
 
         api.updateUser = function (user) {
-            var postStr = api.urlBase + '/user/' + user.id + '?name=' + encodeURI(user.name) + '&password=' + user.password + '&email=' + encodeURI(user.email) + '&activated=' + user.activated + '&roles=' + encodeURI(user.roles);
+            var postStr = api.urlBase + '/user/' + user.id + '?name=' + encodeURI(user.name) + '&email=' + encodeURI(user.email) + '&activated=' + user.activated + '&roles=' + encodeURI(user.roles);
             return $http.post(postStr);
         };
 

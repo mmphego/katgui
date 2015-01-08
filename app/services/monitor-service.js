@@ -3,10 +3,10 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope) {
+    function MonitorService($rootScope, SERVER_URL) {
 
         var pendingSubscribeObjects = [];
-        var urlBase = 'http://10.8.67.130:8030';
+        var urlBase = SERVER_URL + ':8030';
 
         var connection = null;
         //use this alias because we are using some api functions within functions

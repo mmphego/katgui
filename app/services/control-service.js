@@ -3,9 +3,9 @@
     angular.module('katGui.services', [])
         .service('ControlService', ControlService);
 
-    function ControlService($http) {
+    function ControlService($http, SERVER_URL) {
 
-        var urlBase = 'http://10.8.67.130:8020';
+        var urlBase = SERVER_URL + ':8020';
         var connection = null;
 
         this.onSockJSOpen = function () {

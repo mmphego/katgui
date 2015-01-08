@@ -3,9 +3,9 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http, $state, $rootScope, $localStorage) {
+    function SessionService($http, $state, $rootScope, $localStorage, SERVER_URL) {
 
-        var urlBase = 'http://localhost:8010';
+        var urlBase = SERVER_URL + ':8010';
         var api = {};
         $rootScope.jwt = $localStorage['currentUserToken'];
 
@@ -21,7 +21,7 @@
             msg = msg.replace(/=/g , "");
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
-            $http.get(urlBase + '/user/login/' + $rootScope.jwt).then(loginResultReceived);
+            $http.get(urlBase + '/user/login');// + $rootScope.jwt).then(loginResultReceived);
         };
 
         api.logout = function () {
