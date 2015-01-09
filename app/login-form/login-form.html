@@ -5,8 +5,8 @@
         </md-toolbar>
         <md-content md-theme-watch="true">
             <form name="form" layout="column" layout-align="center center" layout-padding md-theme="blue">
-                <md-text-float name="username" required class="long-input" focus flex type="text" ng-model="vm.credentials.username" label="Username"></md-text-float>
-                <md-text-float name="password" required class="long-input" flex type="password" ng-model="vm.credentials.password" label="Password"></md-text-float>
+                <md-input-container required class="long-input" focus flex ><label>Username</label><input ng-model="vm.credentials.username"></md-input-container>
+                <md-input-container required class="long-input" focus flex ><label>Password</label><input type="password" ng-model="vm.credentials.password"></md-input-container>
                 <md-button aria-label="Login" style="margin: 8px;" ng-click="vm.login(vm.credentials)" class="md-raised md-primary">Login</md-button>
                 <!--<md-button class='md-primary' type="submit" style="margin: 8px;" aria-label="forgot password" ng-click="vm.forgotPassword($event, vm.credentials.username);">Forgot your password?</md-button>-->
             </form>

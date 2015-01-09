@@ -5,8 +5,10 @@
             <div class="unselectable md-toolbar-tools" layout="row">
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
                 <md-checkbox class="fade-in" ng-show="showUserTools" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
-                <md-text-float class="fade-in" ng-show="showUserTools" md-theme="none" style="font-size: 12px; margin-top: -12px;" type="search" ng-model-options="{ debounce: 300 }" ng-model="q"
-                               label="Search Users..." class=""></md-text-float>
+                <md-input-container ng-show="showUserTools" md-theme="none" style="font-size: 12px; margin-top: -12px;" class="fade-in" focus flex >
+                    <label>Search Users...</label>
+                    <input ng-model-options="{ debounce: 300 }" ng-model="q">
+                </md-input-container>
                 <md-button aria-label="Create A User" style="margin-right: 8px;" ng-click="vm.createUser()" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}">
                     <span class="fa fa-plus" style="margin-top: 2px;"></span>
                     <md-tooltip>Create A User</md-tooltip>

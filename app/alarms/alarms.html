@@ -18,7 +18,10 @@
                     <select class="form-control" style="display: inline; width: 150px; margin-right: 16px;" ng-model="vm.alarmsOrderBy" ng-options="s.label for s in vm.orderByFields">
                         <option value="">-- Order By --</option>
                     </select>
-                    <md-text-float md-theme="none" style="font-size: 14px; margin-top: -5px;" type="search" ng-model="vm.q" label="Search Alarms..."></md-text-float>
+                    <md-input-container md-theme="none" style="font-size: 12px; margin-top: -5px;">
+                        <label>Search Alarms...</label>
+                        <input ng-model-options="{ debounce: 300 }" ng-model="vm.q">
+                    </md-input-container>
                 </section>
             </div>
         </md-toolbar>
@@ -104,7 +107,10 @@
                     <select class="form-control" style="display: inline; width: 150px; margin-right: 16px;" ng-model="vm.alarmsKnownOrderBy" ng-options="s.label for s in vm.orderByFields">
                         <option value="">-- Order By --</option>
                     </select>
-                    <md-text-float md-theme="none" style="font-size: 14px; margin-top: -5px;" type="search" ng-model="vm.q2" label="Search Known Alarms..."></md-text-float>
+                    <md-input-container md-theme="none" style="font-size: 12px; margin-top: -5px;" class="fade-in">
+                        <label>Search Known Alarms...</label>
+                        <input ng-model-options="{ debounce: 300 }" ng-model="vm.q2">
+                    </md-input-container>
                     <span flex></span>
                 </section>
             </div>
