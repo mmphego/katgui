@@ -26,7 +26,6 @@
             control: 'control',
             expert: 'expert'
         })
-        .constant('SERVER_URL', 'http://monctl.devf.camlab.kat.ac.za')
         .constant('TOAST_HIDE_DELAY', 3500)
         .constant('THEMES', [
             {

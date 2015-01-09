@@ -2,16 +2,17 @@ describe('AdminCtrl', function () {
 
     var userListResponse = [{"email":"fjoubert@ska.ac.za","activated":true,"id":1,"roles":["control_authority","lead_operator"],"name":"Francois Joubert"},{"email":"md5@ska.ac.za","activated":true,"id":6,"roles":["read_only"],"name":"md5"},{"email":"theunsa@ska.ac.za","activated":true,"id":3,"roles":["read_only"],"name":"Theuns Alberts"},{"email":"gtrymore@ska.ac.za","activated":true,"id":4,"roles":["read_only","operator"],"name":"Trymore Gatsi"},{"email":"martins@ska.ac.za","activated":true,"id":5,"roles":["read_only"],"name":"Martin Slabbert"},{"email":"new_user@ska.ac.za","activated":true,"id":7,"roles":["read_only"],"name":"new user"}];
 
+    beforeEach(module('katGui.util'));
     beforeEach(module('katGui.admin'));
     beforeEach(module('ngMaterial'));
 
     var scope, ctrl, UserService;
 
-    beforeEach(inject(function ($rootScope, $controller, $timeout, _UserService_) {
+    beforeEach(inject(function ($rootScope, $controller, $timeout, _UserService_, _SERVER_URL_) {
         scope = $rootScope.$new();
         UserService = _UserService_;
 
-        ctrl = $controller('AdminCtrl', {$scope: scope, UserService: UserService});
+        ctrl = $controller('AdminCtrl', {$scope: scope, UserService: UserService, SERVER_URL: _SERVER_URL_});
     }));
 
     it('should init the controller with some values and bind service values', inject(function () {
@@ -73,7 +74,7 @@ describe('AdminCtrl', function () {
 
     it('should create the user if the user was a temp user', inject(function($httpBackend) {
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/add?name=new%20user&password=undefined&email=new_user@ska.ac.za&roles=read_only').respond(200, "");
+        $httpBackend.expect('POST', UserService.urlBase + '/user/add?name=new%20user&email=new_user@ska.ac.za&roles=read_only').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         ctrl.createUser();
@@ -83,7 +84,7 @@ describe('AdminCtrl', function () {
 
         $httpBackend.flush();
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/add?name=new%20user&password=undefined&email=new_user@ska.ac.za&roles=read_only').respond(200, "");
+        $httpBackend.expect('POST', UserService.urlBase + '/user/add?name=new%20user&email=new_user@ska.ac.za&roles=read_only').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         ctrl.createUser();
@@ -91,7 +92,7 @@ describe('AdminCtrl', function () {
 
         $httpBackend.flush();
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&password=undefined&email=fjoubert@ska.ac.za&activated=true&roles=control_authority,lead_operator').respond(200, "");
+        $httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=true&roles=control_authority,lead_operator').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         ctrl.saveUser(UserService.users[0]);
@@ -136,7 +137,7 @@ describe('AdminCtrl', function () {
 
     it('should deactivate a user', inject(function($httpBackend) {
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&password=undefined&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator').respond(200, "");
+        $httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         UserService.users = userListResponse;
