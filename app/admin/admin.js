@@ -147,7 +147,10 @@
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label='Password Reset'><md-content style='padding: 0px; margin: 0px; width: 396px; ' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span style='font-weight: bold;'>Password Reset</span></md-toolbar>" +
-                    "<md-text-float focus id='resetPasswordInput' type='password' style='margin: 16px;' class='long-input' label='New Password' ng-model='password' value='{{password}}'></md-text-float>" +
+                    "<md-input-container focus id='resetPasswordInput' type='password' class='long-input' style='margin: 16px;'>" +
+                        "<label>New Password</label>" +
+                        "<input ng-model='password'>" +
+                    "</md-input-container>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
                     "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Cancel Reset' ng-click='cancel()'>Cancel</md-button>" +
                     "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' aria-label='Reset Password' ng-click='answer(password)'><span>Reset</span></md-button>" +
