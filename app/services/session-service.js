@@ -14,6 +14,14 @@
             "type": "JWT"
         };
 
+        var loginRequest = {
+            method: 'get',
+            url: urlBase + '/user/login',
+            headers: {
+                'Authorization': 'CustomJWT ' + $rootScope.jwt
+            }
+        };
+
         api.login = function (email, password) {
 
             var jwtPayload = { "email": email };
@@ -21,7 +29,9 @@
             msg = msg.replace(/=/g , "");
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
-            $http.get(urlBase + '/user/login');// + $rootScope.jwt).then(loginResultReceived);
+            $http(loginRequest)
+                .success(loginSuccess)
+                .error(loginError);
         };
 
         api.logout = function () {
@@ -32,7 +42,9 @@
 
         api.recoverLogin = function () {
             if ($rootScope.jwt) {
-                $http.get(urlBase + '/user/login/' + $rootScope.jwt).then(loginResultReceived);
+                $http(loginRequest)
+                    .success(loginSuccess)
+                    .error(loginError);
             }
         };
 
@@ -45,14 +57,15 @@
             $state.go('login');
         }
 
-        function loginResultReceived(result) {
+        function loginSuccess(result) {
 
-            var a = result.data.split(".");
+            var a = result.session_id.split(".");
+            $rootScope.session_id = result.session_id;
             var payload = JSON.parse(window.atob(a[1]));
             if (payload.name !== null) {
                 $rootScope.currentUser = payload;
                 $rootScope.loggedIn = true;
-                if (!$localStorage['currentUserToken']) {
+                if ($localStorage['currentUserToken'] !== undefined) {
                     $state.go('home');
                 }
                 $localStorage['currentUserToken'] = $rootScope.jwt;
@@ -63,10 +76,17 @@
             } else {
                 api.currentUser = null;
                 api.loggedIn = false;
-                $localStorage['currentUserToken'] = null;
+                $localStorage['currentUserToken'] = undefined;
                 $state.go('login');
                 $rootScope.showSimpleToast('Invalid login credentials!');
             }
+        }
+
+        function loginError(result) {
+            console.error('Error logging return, server returned with:');
+            console.error(result);
+
+            $rootScope.showSimpleToast('Error logging in!');
         }
 
         return api;
