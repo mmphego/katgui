@@ -21,7 +21,7 @@ function dropdownMultiselect() {
         "<span ng-if='model.roles.length === 0'>Select Roles</span><span style='margin-left: 5px;' class='fa fa-caret-down'></span>" +
         "</md-button>" +
         "<ul style='z-index: 100; min-width: 210px;' class='dropdown-menu' aria-labelledby='dropdownMenu'>" +
-        "<li class='dropdown-list-item' ng-repeat='option in options' layout='row' layout-align='center center'><span style='min-width: 24px; margin-left: 8px;' class='fa' ng-class='isChecked(option)'></span><span flex style='margin: 4px; font-size: 20px; padding: 4px;' data-ng-click='setSelectedItem(option)'>{{option.name}}</span></li>" +
+        "<li class='dropdown-list-item' ng-repeat='option in options' layout='row' layout-align='center center'><span style='min-width: 24px; margin-left: 8px;' class='fa' ng-class='isChecked(option)'></span><span flex style='margin: 4px; font-size: 14px; padding: 4px;' data-ng-click='setSelectedItem(option)'>{{option.name}}</span></li>" +
         "</ul>" +
         "</div>",
         controller: function ($scope) {

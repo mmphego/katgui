@@ -1,11 +1,41 @@
 <div class="view-container" flex ng-controller="AdminCtrl as vm" layout="column">
-    <div class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative">
+
+    <div class="md-whiteframe-z1" layout="column" layout-align="start center" style="margin-bottom: 16px; position: relative;">
+        <md-toolbar class="panel-toolbar md-whiteframe-z1" layout="row" layout-align="center">
+            <span class="md-toolbar-tools" flex>{{::currentUser.name}}'s Account Details</span>
+        </md-toolbar>
+        <!--<div flex layout="row" style="width: 100%;">-->
+            <!--<span style="min-width: 265px;" flex>{{::currentUser.name}}</span>-->
+            <!--<span flex>{{::currentUser.email}}</span>-->
+            <!--<span flex>{{::currentUser.roles}}</span>-->
+        <!--</div>-->
+        <div style="width: 100%; height: auto;">
+            <div class="md-whiteframe-z3" flex layout="row" layout-align="start center" style="background: white; margin: 32px; height: 80px; overflow: auto;">
+                <div flex style="min-width: 265px; text-align: center; display: inline-block;" layout="row">
+                    <span class="cell-span">{{::currentUser.name}}<md-tooltip>My Name</md-tooltip></span>
+                </div>
+                <div flex style="min-width: 335px; text-align: center; display: inline-block;" layout="row">
+                    <span class="cell-span">{{::currentUser.email}}<md-tooltip>My Email Address</md-tooltip></span>
+                </div>
+                <div flex layout-align="start center" style="text-align: center; display: inline-block;" layout="row">
+                    <span class="cell-span" ng-if="currentUser.roles.length > 0" ng-repeat="role in currentUser.roles | orderBy:role">{{role}};<md-tooltip>My Roles</md-tooltip></span>
+                    <span class="cell-span" ng-if="currentUser.roles.length === 0">No Roles Assigned<md-tooltip>My Roles</md-tooltip></span>
+                </div>
+            </div>
+        </div>
+        <md-button ng-click="vm.resetPassword($event, currentUser);" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" style="height: 45px;margin: 8px;">Reset My
+            Password
+        </md-button>
+    </div>
+
+    <div ng-if="vm.isUserAdmin" class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative">
         <loading-overlay ng-show="vm.userListProcessingServerCall"></loading-overlay>
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showUserTools = true;" ng-mouseleave="showUserTools = false;">
             <div class="unselectable md-toolbar-tools" layout="row">
-                <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
-                <md-checkbox class="fade-in" ng-show="showUserTools" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users</md-checkbox>
-                <md-input-container ng-show="showUserTools" md-theme="none" style="font-size: 12px; margin-top: -12px;" class="fade-in" focus flex >
+                <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
+                <md-checkbox class="fade-in" aria-label="Show Deactivated Users" ng-show="showUserTools" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users
+                </md-checkbox>
+                <md-input-container ng-show="showUserTools" md-theme="none" style="font-size: 12px; margin-top: -12px;" class="fade-in" focus flex>
                     <label>Search Users...</label>
                     <input ng-model-options="{ debounce: 300 }" ng-model="q">
                 </md-input-container>
@@ -36,18 +66,19 @@
 
 
         <div id="userListId" flex class="user-list">
-            <div class="user-row animate-repeat" ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value:vm.orderBy.reverse as results track by user.id" flex layout="row" layout-align="start center"
+            <div class="user-row animate-repeat" ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value:vm.orderBy.reverse as results track by user.id" flex layout="row"
+                 layout-align="start center"
                  style="background: white;"
                  ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
                 <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row">
                     <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"/>
                     <span class="cell-span" ng-if="!user.editing">{{user.name}}<md-tooltip>Name</md-tooltip></span>
                 </div>
-                <div flex class="user-cell" style="max-width: 335px; min-width: 335px;" layout="row">
+                <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row">
                     <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email"/>
                     <span class="cell-span" ng-if="!user.editing">{{user.email}}<md-tooltip>Email</md-tooltip></span>
                 </div>
-                <div flex class="user-cell" layout-align="start center" layout="row">
+                <div flex class="user-cell" style="min-width: 365px;" layout-align="start center" layout="row">
                     <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
                     <span class="cell-span" ng-if="!user.editing && user.roles.length > 0" ng-repeat="role in user.roles | orderBy:role">{{role}};<md-tooltip>User's Roles</md-tooltip></span>
                     <span class="cell-span" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
@@ -86,5 +117,4 @@
             <!--</md-item>-->
         </div>
     </div>
-
 </div>

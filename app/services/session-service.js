@@ -14,14 +14,6 @@
             "type": "JWT"
         };
 
-        var loginRequest = {
-            method: 'get',
-            url: urlBase + '/user/login',
-            headers: {
-                'Authorization': 'CustomJWT ' + $rootScope.jwt
-            }
-        };
-
         api.login = function (email, password) {
 
             var jwtPayload = { "email": email };
@@ -29,32 +21,45 @@
             msg = msg.replace(/=/g , "");
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
-            $http(loginRequest)
+            $http(createRequest('get', urlBase + '/user/login'))
                 .success(loginSuccess)
                 .error(loginError);
         };
 
         api.logout = function () {
             if ($rootScope.loggedIn) {
-                $http.get(urlBase + '/user/' + $rootScope.currentUser.email + '/logout').then(logoutResultReceived);
+                $http(createRequest('get', urlBase + '/user/logout'))
+                    .success(logoutResultSuccess)
+                    .error(logoutResultError);
             }
         };
 
         api.recoverLogin = function () {
             if ($rootScope.jwt) {
-                $http(loginRequest)
+                $http(createRequest('get', urlBase + '/user/login'))
                     .success(loginSuccess)
                     .error(loginError);
             }
         };
 
-        function logoutResultReceived(result) {
+        function logoutResultSuccess() {
             $rootScope.showSimpleToast('Logout successful.');
             $rootScope.currentUser = null;
             $rootScope.loggedIn = false;
             $localStorage['currentUserToken'] = null;
             $rootScope.jwt = null;
             $state.go('login');
+        }
+
+        function logoutResultError(result) {
+            $rootScope.showSimpleToast('Error Logging out, resetting local user session.');
+            $rootScope.currentUser = null;
+            $rootScope.loggedIn = false;
+            $localStorage['currentUserToken'] = null;
+            $rootScope.jwt = null;
+            $state.go('login');
+            console.error('Error logging out, server returned with: ');
+            console.error(result);
         }
 
         function loginSuccess(result) {
@@ -65,12 +70,13 @@
             if (payload.name !== null) {
                 $rootScope.currentUser = payload;
                 $rootScope.loggedIn = true;
-                if ($localStorage['currentUserToken'] !== undefined) {
+                //only redirect when logging in from login screen
+                if ($state.current.name === 'login') {
                     $state.go('home');
                 }
                 $localStorage['currentUserToken'] = $rootScope.jwt;
                 $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
-
+                $rootScope.$emit('loginSuccess', true);
                 $rootScope.connectEvents();
                 //TODO implement timeout
             } else {
@@ -83,10 +89,26 @@
         }
 
         function loginError(result) {
-            console.error('Error logging return, server returned with:');
-            console.error(result);
 
-            $rootScope.showSimpleToast('Error logging in!');
+            if (result && result.session_id === null) {
+                $rootScope.showSimpleToast('Invalid username or password.');
+                $state.go('login');
+            } else {
+                console.error('Error logging return, server returned with:');
+                console.error(result);
+                $rootScope.showSimpleToast('Error logging in.');
+                $state.go('login');
+            }
+        }
+
+        function createRequest(method, url) {
+            return {
+                method: method,
+                url: url,
+                headers: {
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
+                }
+            };
         }
 
         return api;

@@ -13,17 +13,6 @@
         //because 'this' means something different within each child function
         var api = this;
 
-        function subscribeToAlarms() {
-            console.log('Monitor subscribed to kataware:alarm*...');
-            var jsonRPC = {
-                'jsonrpc': '2.0',
-                'method': 'subscribe',
-                'params': 'kataware:alarm[.]*',
-                'id': 'abe3d23201'
-            };
-            return connection.send(JSON.stringify(jsonRPC));
-        }
-
         api.subscribeToReceptorUpdates = function () {
 
             var connectionParams = ['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited'];
@@ -45,15 +34,18 @@
 
         api.onSockJSOpen = function () {
             if (connection && connection.readyState) {
-                console.log('Monitor Connection Established.');
-                subscribeToAlarms();
+                console.log('Monitor Connection Established. Authenticating...');
 
-                pendingSubscribeObjects.forEach(function (obj) {
-                    delete obj.subscribeName;
-                    return connection.send(JSON.stringify(obj));
-                });
+                authenticateSocketConnection();
 
-                pendingSubscribeObjects = [];
+                //subscribeToAlarms();
+                //
+                //pendingSubscribeObjects.forEach(function (obj) {
+                //    delete obj.subscribeName;
+                //    return connection.send(JSON.stringify(obj));
+                //});
+                //
+                //pendingSubscribeObjects = [];
             }
         };
 
@@ -127,6 +119,31 @@
             messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
             $rootScope.$emit('alarmMessage', messageObj);
         };
+
+        function subscribeToAlarms() {
+            console.log('Monitor subscribed to kataware:alarm*...');
+            var jsonRPC = {
+                'jsonrpc': '2.0',
+                'method': 'subscribe',
+                'params': 'kataware:alarm[.]*',
+                'id': 'abe3d23201'
+            };
+            return connection.send(JSON.stringify(jsonRPC));
+        }
+
+        function authenticateSocketConnection() {
+
+            if (connection) {
+                var jsonRPC = {
+                    'jsonrpc': '2.0',
+                    'method': 'authenticate',
+                    'params': [$rootScope.currentUser.email, $rootScope.session_id],
+                    'id': 'abe3d23201'
+                };
+
+                return connection.send(JSON.stringify(jsonRPC));
+            }
+        }
 
         return api;
     }
