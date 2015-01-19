@@ -74,7 +74,8 @@ describe('AdminCtrl', function () {
 
     it('should create the user if the user was a temp user', inject(function($httpBackend) {
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/add?name=new%20user&email=new_user@ska.ac.za&roles=read_only').respond(200, "");
+        //?name=new%20user&email=new_user@ska.ac.za&roles=read_only
+        $httpBackend.expect('POST', UserService.urlBase + '/user/add').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         ctrl.createUser();
@@ -84,7 +85,8 @@ describe('AdminCtrl', function () {
 
         $httpBackend.flush();
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/add?name=new%20user&email=new_user@ska.ac.za&roles=read_only').respond(200, "");
+        //?name=new%20user&email=new_user@ska.ac.za&roles=read_only
+        $httpBackend.expect('POST', UserService.urlBase + '/user/add').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         ctrl.createUser();
@@ -92,7 +94,8 @@ describe('AdminCtrl', function () {
 
         $httpBackend.flush();
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=true&roles=control_authority,lead_operator').respond(200, "");
+        //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=true&roles=control_authority,lead_operator
+        $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         ctrl.saveUser(UserService.users[0]);
@@ -137,7 +140,8 @@ describe('AdminCtrl', function () {
 
     it('should deactivate a user', inject(function($httpBackend) {
 
-        $httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator').respond(200, "");
+        //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator
+        $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
         $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
 
         UserService.users = userListResponse;

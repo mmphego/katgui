@@ -177,6 +177,12 @@
 
         };
 
+        vm.closeDropdownMenus = function () {
+
+            var els = document.getElementsByClassName('dropdown-menu');
+            //angular.element()
+        };
+
         //list users on the next digest cycle, i.e. after controller init
         $timeout(afterInitFunction, 0);
         $rootScope.$on('loginSuccess', afterInitFunction);

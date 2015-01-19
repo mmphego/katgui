@@ -3,9 +3,9 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q, $timeout, SERVER_URL) {
+    function ObservationScheduleService($q, $timeout) {
 
-        var urlBase = SERVER_URL + ':8020';
+        var urlBase = SERVER_URL + '8020';
         var connection = null;
         var api = {};
         var deferredMap = {};

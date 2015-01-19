@@ -38,7 +38,7 @@
                 {
                     name: user.name,
                     email: user.email,
-                    roles: user.roles
+                    roles: user.roles.join(',')
                 }));
         };
 
@@ -77,8 +77,8 @@
             };
 
             if (data && method === 'post') {
-                req.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-                req.params = data;
+                req.headers['Content-Type'] = 'application/json';
+                req.data = data;
             }
 
             return req;

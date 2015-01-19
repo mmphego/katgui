@@ -284,6 +284,12 @@
             }
         };
 
+        //so that all controllers and directives has access to which keyboard presses is happening
+        document.onkeydown = function(event) {
+            event = event || window.event;
+            $rootScope.$emit('keydown', event.keyCode);
+        };
+
         $scope.$on('$destroy', vm.logout);
     }
 

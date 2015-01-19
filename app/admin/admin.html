@@ -1,6 +1,6 @@
 <div class="view-container" flex ng-controller="AdminCtrl as vm" layout="column">
 
-    <div class="md-whiteframe-z1" layout="column" layout-align="start center" style="margin-bottom: 16px; position: relative;">
+    <div class="md-whiteframe-z1" layout="column" layout-align="start center" style="margin-bottom: 16px; position: relative; min-height: 269px;">
         <md-toolbar class="panel-toolbar md-whiteframe-z1" layout="row" layout-align="center">
             <span class="md-toolbar-tools" flex>{{::currentUser.name}}'s Account Details</span>
         </md-toolbar>
@@ -18,7 +18,7 @@
                     <span class="cell-span">{{::currentUser.email}}<md-tooltip>My Email Address</md-tooltip></span>
                 </div>
                 <div flex layout-align="start center" style="text-align: center; display: inline-block;" layout="row">
-                    <span class="cell-span" ng-if="currentUser.roles.length > 0" ng-repeat="role in currentUser.roles | orderBy:role">{{role}};<md-tooltip>My Roles</md-tooltip></span>
+                    <span class="cell-span" ng-if="currentUser.roles.length > 0" ng-repeat="role in currentUser.roles | orderBy:role">{{role}},<md-tooltip>My Roles</md-tooltip></span>
                     <span class="cell-span" ng-if="currentUser.roles.length === 0">No Roles Assigned<md-tooltip>My Roles</md-tooltip></span>
                 </div>
             </div>
@@ -28,7 +28,7 @@
         </md-button>
     </div>
 
-    <div ng-if="vm.isUserAdmin" class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative">
+    <div ng-if="vm.isUserAdmin" class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative; min-height: 452px;">
         <loading-overlay ng-show="vm.userListProcessingServerCall"></loading-overlay>
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showUserTools = true;" ng-mouseleave="showUserTools = false;">
             <div class="unselectable md-toolbar-tools" layout="row">
@@ -51,7 +51,7 @@
                     <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'name' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'name' && vm.orderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
-                <span style="max-width: 334px;min-width: 334px;" class="subheader-text" ng-click="vm.setOrderBy('email')">
+                <span style="max-width: 265px;min-width: 265px;" class="subheader-text" ng-click="vm.setOrderBy('email')">
                     <span style="padding: 8px">Email</span>
                     <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'email' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'email' && vm.orderBy.reverse}"
                           style="margin-right: 4px;"></span>
@@ -80,8 +80,8 @@
                 </div>
                 <div flex class="user-cell" style="min-width: 365px;" layout-align="start center" layout="row">
                     <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
-                    <span class="cell-span" ng-if="!user.editing && user.roles.length > 0" ng-repeat="role in user.roles | orderBy:role">{{role}};<md-tooltip>User's Roles</md-tooltip></span>
-                    <span class="cell-span" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
+                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length > 0" ng-repeat="role in user.roles | orderBy:role">{{role}},<md-tooltip>User's Roles</md-tooltip></span>
+                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned<md-tooltip>User's Roles</md-tooltip></span>
                 </div>
 
                 <span flex></span>
