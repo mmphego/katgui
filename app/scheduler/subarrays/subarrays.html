@@ -1,0 +1,52 @@
+<div flex layout="column" style="min-width: 1515px; min-height: 850px; margin: 16px;" ng-controller="SubArraysCtrl as vm">
+
+    <div ng-repeat="subarray in vm.subarrays track by subarray.id" class="md-whiteframe-z2 subarray-container" layout="row" layout-align="start">
+
+        <div class="subarray-item md-whiteframe-z1" layout="column" layout-align="start center" title="{{::subarray.description}}">
+            <h2>Sub-Array {{::subarray.id}}</h2>
+            <div ng-include="'images/subarray.svg'"></div>
+            <span style="font-weight: bold">{{::subarray.name}}</span>
+            <div flex layout="column" layout-align="start center" style="width: 100%; padding: 8px; overflow: hidden; ">
+                <span style="overflow: hidden; text-overflow: ellipsis;">{{::subarray.description}}</span>
+            </div>
+        </div>
+
+        <div class="md-whiteframe-z1" style="margin-left: 2px;" layout="column" flex>
+            <md-toolbar class="panel-toolbar md-whiteframe-z1">
+                <div layout="row" class="unselectable md-toolbar-tools-small">
+                    <span flex>{{::subarray.name}}'s Schedule Blocks</span>
+                    <md-button aria-label="Add A Schedule" style="font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
+                               ng-click="console.log('add a schedule not implemented yet')">
+                        <span class="fa fa-plus"></span>
+                        <md-tooltip>Add A Schedule</md-tooltip>
+                    </md-button>
+                </div>
+
+                <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="center center">
+                        <span style="max-width: 160px;min-width: 160px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
+                            <span style="padding: 8px">ID</span>
+                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
+                                  style="margin-right: 4px;"></span>
+                        </span>
+                        <span flex style="width: 180px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('description')">
+                            <span style="padding: 8px">Description</span>
+                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'description' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'description' && vm.draftsOrderBy.reverse}"
+                                  style="margin-right: 4px;"></span>
+                        </span>
+                        <span style="max-width: 122px;min-width: 122px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('type')">
+                            <span style="padding: 8px">Type</span>
+                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
+                                  style="margin-right: 4px;"></span>
+                        </span>
+                        <span style="max-width: 280px;min-width: 280px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
+                            <span style="padding: 8px">Desired Time</span>
+                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
+                                  style="margin-right: 4px;"></span>
+                        </span>
+                </div>
+            </md-toolbar>
+            <div ng-repeat="sb in subarray.sb track by sb.id_code"></div>
+        </div>
+
+    </div>
+</div>

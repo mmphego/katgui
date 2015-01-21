@@ -361,6 +361,14 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
+        $stateProvider.state('sb-drafts', {
+            url: '/sb-drafts',
+            templateUrl: 'app/scheduler/sb-drafts/sb-drafts.html',
+            title: 'Schedule Block Drafts',
+            data: {
+                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
         $stateProvider.state('schedulerHome', {
             url: '/schedulerHome',
             templateUrl: 'app/scheduler/scheduler-home.html',
@@ -383,6 +391,14 @@
             title: 'Sensor Graphs',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
+        $stateProvider.state('subarrays', {
+            url: '/subarrays',
+            templateUrl: 'app/scheduler/subarrays/subarrays.html',
+            title: 'Manage Subarrays',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
             }
         });
         $stateProvider.state('about', {

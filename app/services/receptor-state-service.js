@@ -10,19 +10,23 @@
         var nowStr = moment().format('HH:mm:ss DD-MM-YYYY');
         this.receptorsData = [
             {
-                name: "m000",
+                name: "m011",
                 inhibited: false
             },
             {
-                name: "m001",
+                name: "m022",
                 inhibited: false
             },
             {
-                name: "m062",
+                name: "m033",
                 inhibited: false
             },
             {
-                name: "m063",
+                name: "m044",
+                inhibited: false
+            },
+            {
+                name: "m055",
                 inhibited: false
             }
             //},

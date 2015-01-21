@@ -1,17 +1,15 @@
-(function(){
+(function () {
 
-angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.services', 'ngAnimate'])
-    .constant('SCHEDULE_BLOCK_TYPES', [
-        'MAINTENANCE',
-        'OBSERVATION',
-        'MANUAL'])
-    .controller('SchedulerCtrl', SchedulerCtrl);
+    angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.services', 'ngAnimate'])
+        .constant('SCHEDULE_BLOCK_TYPES', [
+            'MAINTENANCE',
+            'OBSERVATION',
+            'MANUAL'])
+        .controller('SchedulerCtrl', SchedulerCtrl);
 
     function SchedulerCtrl($scope, $timeout, SCHEDULE_BLOCK_TYPES, ObservationScheduleService, $mdDialog) {
 
         ObservationScheduleService.connectListener();
-
-        $scope.$on('$destroy', ObservationScheduleService.disconnectListener);
 
         var vm = this;
         vm.types = SCHEDULE_BLOCK_TYPES;
@@ -95,7 +93,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
                 closeDatePickerMenu();
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = { x: 0, y: 30 };
+                var offset = {x: 0, y: 30};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
@@ -120,7 +118,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
                 closeDatePickerMenu();
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = { x: 0, y: 44 };
+                var offset = {x: 0, y: 44};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
@@ -149,7 +147,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                     vm.currentSelectedDate = existingVal;
                 }
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = { x: 0, y: 30 };
+                var offset = {x: 0, y: 30};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
@@ -187,7 +185,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                 .then(scheduleListProcessingComplete, scheduleListProcessingError);
         };
 
-        vm.moveScheduleRowToDraft = function(item) {
+        vm.moveScheduleRowToDraft = function (item) {
 
             vm.selectedSchedule = null;
             vm.scheduleListProcessingServerCall = true;
@@ -195,12 +193,12 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                 .then(scheduleListProcessingComplete, scheduleListProcessingError);
         };
 
-        angular.element('#schedule-draft-data-list-id').bind("scroll", function() {
+        angular.element('#schedule-draft-data-list-id').bind("scroll", function () {
             closeTypeMenu();
             closeDatePickerMenu();
         });
 
-        angular.element('body').bind("click", function(e) {
+        angular.element('body').bind("click", function (e) {
             if (!e.target.parentNode.classList.contains('schedule-item-input')) {// &&
                 //!e.target.parentNode.parentNode.classList.contains('schedule-item-input')) {
 
@@ -322,7 +320,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
         };
 
 
-        function closeTypeMenu () {
+        function closeTypeMenu() {
             if (vm.showTypePicker) {
                 vm.showTypePicker = false;
                 vm.currentRowTypePickerIndex = -1;
@@ -344,7 +342,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
             }
         }
 
-        function closeDatePickerMenu () {
+        function closeDatePickerMenu() {
             if (vm.showDatePicker) {
                 vm.showDatePicker = false;
                 vm.currentRowDatePickerIndex = -1;
@@ -370,7 +368,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                     .ok('Close');
                 $mdDialog
                     .show(alert)
-                    .finally(function() {
+                    .finally(function () {
                         alert = undefined;
                     });
             }, 300);
@@ -392,7 +390,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                     .ok('Close');
                 $mdDialog
                     .show(alert)
-                    .finally(function() {
+                    .finally(function () {
                         alert = undefined;
                     });
             }, 300);
@@ -414,7 +412,7 @@ angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.servi
                     .ok('Close');
                 $mdDialog
                     .show(alert)
-                    .finally(function() {
+                    .finally(function () {
                         alert = undefined;
                     });
             }, 300);

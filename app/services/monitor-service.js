@@ -15,7 +15,7 @@
 
         api.subscribeToReceptorUpdates = function () {
 
-            var connectionParams = ['m000:mode', 'm000:inhibited', 'm001:mode', 'm001:inhibited', 'm062:mode', 'm062:inhibited', 'm063:mode', 'm063:inhibited'];
+            var connectionParams = ['m011:mode', 'm011:inhibited', 'm022:mode', 'm022:inhibited', 'm033:mode', 'm033:inhibited', 'm044:mode', 'm044:inhibited', 'm055:mode', 'm055:inhibited'];
 
             var jsonRPC = {
                 'jsonrpc': '2.0',
@@ -36,16 +36,17 @@
             if (connection && connection.readyState) {
                 console.log('Monitor Connection Established. Authenticating...');
 
-                authenticateSocketConnection();
+                //TODO: add autentication to the monitor service
+                //authenticateSocketConnection();
 
-                //subscribeToAlarms();
-                //
-                //pendingSubscribeObjects.forEach(function (obj) {
-                //    delete obj.subscribeName;
-                //    return connection.send(JSON.stringify(obj));
-                //});
-                //
-                //pendingSubscribeObjects = [];
+                subscribeToAlarms();
+
+                pendingSubscribeObjects.forEach(function (obj) {
+                    delete obj.subscribeName;
+                    return connection.send(JSON.stringify(obj));
+                });
+
+                pendingSubscribeObjects = [];
             }
         };
 
@@ -57,7 +58,10 @@
         api.onSockJSMessage = function (e) {
 
             var messages = JSON.parse(e.data);
-            if (!messages['jsonrpc']) {
+            if (messages.error) {
+                console.error('There was an error sending a jsonrpc request:');
+                console.error(messages);
+            } else if (!messages['jsonrpc']) {
 
                 messages = [].concat(messages);
                 if (messages) {
@@ -137,7 +141,7 @@
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': 'authenticate',
-                    'params': [$rootScope.currentUser.email, $rootScope.session_id],
+                    'params': [$rootScope.session_id],
                     'id': 'abe3d23201'
                 };
 
