@@ -1,17 +1,16 @@
 <div flex layout="row" style="min-width: 1515px; min-height: 500px; margin: 32px;" ng-controller="SbDraftsCtrl as vm"
      ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, '': vm.selectedScheduleDraft === null}">
 
-    <div class="md-whiteframe-z2 schedule-draft-data-list" layout="column" flex>
-        <loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>
+    <div class="md-whiteframe-z2" layout="column" flex>
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
             <div layout="row" class="unselectable md-toolbar-tools-small">
                 <span flex></span>
                 <input class="fade-in search-input-box" ng-show="showDraftTools" type="search"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
-                <md-button aria-label="Add A Schedule" style="font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
-                           ng-click="console.log('add a schedule not implemented yet')">
+                <md-button aria-label="Create A Schedule" style="font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
+                           ng-click="vm.addDraftSchedule()">
                     <span class="fa fa-plus"></span>
-                    <md-tooltip>Add A Schedule</md-tooltip>
+                    <md-tooltip>Create A Draft Schedule</md-tooltip>
                 </md-button>
             </div>
 
@@ -48,43 +47,46 @@
                         </span>
             </div>
         </md-toolbar>
-        <div ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse as filteredDraftItems"
-             ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
-             ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
-            <div style="" layout="row" layout-align="center center">
-                <div layout="row" class="schedule-block-name-div">
-                    <span class="schedule-block-id-text">{{item.id_code}}</span>
-                    <i>{{item.owner}}</i>
-                </div>
+        <div class="schedule-draft-data-list" flex>
+            <loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>
+            <div ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse as filteredDraftItems"
+                 ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
+                 ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
+                <div style="" layout="row" layout-align="center center">
+                    <div layout="row" class="schedule-block-name-div">
+                        <span class="schedule-block-id-text">{{item.id_code}}</span>
+                        <i>{{item.owner}}</i>
+                    </div>
 
-                <span style="min-width: 90px; text-align: center;">{{item.sub_nr}}</span>
+                    <span style="min-width: 90px; text-align: center;">{{item.sub_nr}}</span>
 
-                <input ng-change="item.isDirty = true;" type="text" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
-                       aria-label="Description" class="schedule-item-description-input"
-                       ng-model="item.description" placeholder="Description"/>
+                    <input ng-change="item.isDirty = true;" type="text" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
+                           aria-label="Description" class="schedule-item-description-input"
+                           ng-model="item.description" placeholder="Description"/>
 
-                <md-button aria-label="Schedule Draft Type" style="text-align: left; width: 122px;" class="dropdown-toggle schedule-item-input" type="button"
-                           data-toggle="dropdown" layout="row"
-                           ng-click="vm.openTypePicker(item, $event);">
-                    <span flex>{{item.type}}</span>
-                    <span class="fa fa-caret-down" style="position: absolute; right: 5px; top: 8px;"></span>
-                </md-button>
-                <input ng-change="item.isDirty = true; vm.validateInputDate(item);" type="text" aria-label="Select a Date and Time" title="UTC"
-                       class="schedule-item-input schedule-item-date-input" ng-class="{'invalid-date-error': item.hasInvalidInput}"
-                       ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder=""/>
-                <span style="min-width: 50px; transition: 0s;" ng-show="!item.isDirty"></span>
-                <md-button title="Save the draft, if the button is disabled enter a valid desired start date."
-                           data-ng-disabled="!vm.validateInputDate(item)" ng-show="item.isDirty" style="transition: 0s;" aria-label="Save Draft" class="sb-row-button"
-                           ng-click="vm.saveDraft(item); $event.stopPropagation();">
-                    <span class="fa fa-check md-fab-fa-icon-small"></span>
-                    <!--<md-tooltip>-->
+                    <md-button aria-label="Schedule Draft Type" style="text-align: left; width: 122px;" class="dropdown-toggle schedule-item-input" type="button"
+                               data-toggle="dropdown" layout="row"
+                               ng-click="vm.openTypePicker(item, $event);">
+                        <span flex>{{item.type}}</span>
+                        <span class="fa fa-caret-down" style="position: absolute; right: 5px; top: 8px;"></span>
+                    </md-button>
+                    <input ng-change="item.isDirty = true; vm.validateInputDate(item);" type="text" aria-label="Select a Date and Time" title="UTC"
+                           class="schedule-item-input schedule-item-date-input" ng-class="{'invalid-date-error': item.hasInvalidInput}"
+                           ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder=""/>
+                    <span style="min-width: 50px; transition: 0s;" ng-show="!item.isDirty"></span>
+                    <md-button title="Save the draft, if the button is disabled enter a valid desired start date."
+                               data-ng-disabled="!vm.validateInputDate(item)" ng-show="item.isDirty" style="transition: 0s;" aria-label="Save Draft" class="sb-row-button"
+                               ng-click="vm.saveDraft(item); $event.stopPropagation();">
+                        <span class="fa fa-check md-fab-fa-icon-small"></span>
+                        <!--<md-tooltip>-->
                         <!--Save Draft-->
-                    <!--</md-tooltip>-->
-                </md-button>
+                        <!--</md-tooltip>-->
+                    </md-button>
 
-                <md-button style="transition: 0s;" aria-label="Show Edit Menu" class="sb-row-button" ng-click="vm.openSchedulerEditMenu(item, $event);">
-                    <span class="fa fa-ellipsis-v"></span>
-                </md-button>
+                    <md-button style="transition: 0s;" aria-label="Show Edit Menu" class="sb-row-button" ng-click="vm.openSchedulerEditMenu(item, $event);">
+                        <span class="fa fa-ellipsis-v"></span>
+                    </md-button>
+                </div>
             </div>
         </div>
     </div>
@@ -101,7 +103,7 @@
                  ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 
                 <div flex ng-if="vm.selectedScheduleDraft !== null" style="background: white;">
-                            <textarea style="text-overflow: auto" placeholder="Enter Instruction Set..." auto-grow ng-model="vm.selectedScheduleDraft.instruction_set"
+                            <textarea style="text-overflow: auto;" placeholder="Enter Instruction Set..." auto-grow ng-model="vm.selectedScheduleDraft.instruction_set"
                                       ng-change="vm.selectedScheduleDraft.isDirty = true"></textarea>
                 </div>
             </div>
@@ -123,7 +125,7 @@
     <div id="schedulerEditMenu" ng-show="vm.showEditMenu" class="datepickerMenu md-whiteframe-z1">
         <md-list layout="column">
             <!--<md-item>-->
-                <!--<md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.scheduleSelectedDraft()">Schedule Draft</md-button>-->
+            <!--<md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.scheduleSelectedDraft()">Schedule Draft</md-button>-->
             <!--</md-item>-->
             <md-item>
                 <md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.removeSelectedDraftRow()">Delete Draft</md-button>

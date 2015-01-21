@@ -4,8 +4,10 @@
 
         <div class="subarray-item md-whiteframe-z1" layout="column" layout-align="start center" title="{{::subarray.description}}">
             <h2>Sub-Array {{::subarray.id}}</h2>
+
             <div ng-include="'images/subarray.svg'"></div>
             <span style="font-weight: bold">{{::subarray.name}}</span>
+
             <div flex layout="column" layout-align="start center" style="width: 100%; padding: 8px; overflow: hidden; ">
                 <span style="overflow: hidden; text-overflow: ellipsis;">{{::subarray.description}}</span>
             </div>
@@ -17,7 +19,7 @@
                     <span flex>{{::subarray.name}}'s Schedule Blocks</span>
                     <md-button aria-label="Add A Schedule" style="font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
                                ng-click="console.log('add a schedule not implemented yet')">
-                        <span class="fa fa-plus"></span>
+                        <span class="fa fa-plus-circle"></span>
                         <md-tooltip>Add A Schedule</md-tooltip>
                     </md-button>
                 </div>
@@ -25,28 +27,51 @@
                 <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="center center">
                         <span style="max-width: 160px;min-width: 160px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
                             <span style="padding: 8px">ID</span>
-                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
+                            <span class="fa"
+                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
                         <span flex style="width: 180px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('description')">
                             <span style="padding: 8px">Description</span>
-                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'description' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'description' && vm.draftsOrderBy.reverse}"
+                            <span class="fa"
+                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'description' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'description' && vm.draftsOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
                         <span style="max-width: 122px;min-width: 122px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('type')">
                             <span style="padding: 8px">Type</span>
-                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
+                            <span class="fa"
+                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
-                        <span style="max-width: 280px;min-width: 280px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
+                        <span style="max-width: 135px;min-width: 135px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
                             <span style="padding: 8px">Desired Time</span>
-                            <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
+                            <span class="fa"
+                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
                 </div>
             </md-toolbar>
-            <div ng-repeat="sb in subarray.sb track by sb.id_code"></div>
-        </div>
+            <div flex class="schedule-draft-data-list">
+                <!--sb in subarray.sb track by sb.id_code-->
+                <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr: subarray.id}"
+                     ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
+                     ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
+                    <div style="" layout="row" layout-align="center center">
+                        <div layout="row" class="schedule-block-name-div">
+                            <span class="schedule-block-id-text">{{item.id_code}}</span>
+                            <i>{{item.owner}}</i>
+                        </div>
 
+                        <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
+
+                        <div style="min-width: 105px; margin-top: 4px; text-align: start;">
+                            <span style="text-transform: uppercase;">{{item.type}}</span>
+                        </div>
+
+                        <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
