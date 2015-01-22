@@ -412,11 +412,23 @@
             }
         };
 
+        var subArrayResources = {
+            name: 'scheduler.resources',
+            parent: schedulerHome,
+            url: '/resources',
+            templateUrl: 'app/scheduler/subarray-resources/subarray-resources.html',
+            title: 'Scheduler.Resources',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
         $stateProvider
             .state(schedulerHome)
             .state(sbDrafts)
             .state(schedulerExecute)
-            .state(subArrays);
+            .state(subArrays)
+            .state(subArrayResources);
 
         $stateProvider.state('sensorGraph', {
             url: '/sensorGraph',

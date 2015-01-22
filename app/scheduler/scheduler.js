@@ -278,7 +278,7 @@
                 .then(scheduleListProcessingComplete, scheduleListProcessingError)
                 .then(completedListProcessingComplete, completedListProcessingError);
 
-            ObservationScheduleService.listResources(1);
+            ObservationScheduleService.listPoolResourcesForSubarray();
         };
 
         vm.validateInputDate = function (item) {

@@ -14,6 +14,10 @@
         api.scheduleCompletedData = [];
         api.resourcePool = [];
 
+        api.resourcePoolData1 = [];
+        api.resourcePoolData2 = [];
+        api.resourcePoolDataFree = [];
+
         function onSockJSOpen() {
             if (connection && connection.readyState) {
                 console.log('Observation Schedule Connection Established.');
@@ -55,15 +59,24 @@
                     }
                     deferredMap['get_schedule_block'].resolve(result.get_schedule_block);
 
-                } else if (result.list_resources) {
+                } else if (result.list_pool_resources_for_subarray) {
 
-                    var resourcePoolResult = result.list_resources.result.split(',');
+                    console.log(result);
+
+                    var resourcePoolResult = result.list_pool_resources_for_subarray.result.split(',');
+
+                    //match the data variable name, i.e. resourcePoolDataFree
+                    var sub_nr = result.list_pool_resources_for_subarray.sub_nr;
+                    if (sub_nr === 'free') {
+                        sub_nr = 'Free';
+                    }
 
                     resourcePoolResult.forEach(function (item) {
-                        api.resourcePool.push(item);
+                        api['resourcePoolData' + sub_nr].push(item);
                     });
 
-                    deferredMap['list_resources'].resolve(result.list_resources);
+                    deferredMap['list_pool_resources_for_subarray_' + result.list_pool_resources_for_subarray.sub_nr]
+                        .resolve(result.list_pool_resources_for_subarray);
 
                 } else if (result.create_schedule_block) {
 
@@ -348,12 +361,16 @@
             return deferredMap['clone_schedule'].promise;
         };
 
-        api.listResources = function (subarray_number) {
+        api.listPoolResourcesForSubarray = function (subarray_number) {
 
-            api.resourcePool.splice(0, api.resourcePool.length);
-            sendObsSchedCommand('list_resources', [subarray_number]);
-            deferredMap['list_resources'] = $q.defer();
-            return deferredMap['list_resources'].promise;
+            var camelCaseSubNr = subarray_number;
+            if (camelCaseSubNr === 'free') {
+                camelCaseSubNr = 'Free';
+            }
+            api['resourcePoolData' + camelCaseSubNr].splice(0, api['resourcePoolData' + camelCaseSubNr].length);
+            sendObsSchedCommand('list_pool_resources_for_subarray', [subarray_number]);
+            deferredMap['list_pool_resources_for_subarray_' + subarray_number] = $q.defer();
+            return deferredMap['list_pool_resources_for_subarray_' + subarray_number].promise;
         };
 
         function sendObsSchedCommand(method, funcParams) {
