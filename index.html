@@ -136,23 +136,23 @@
                 </md-item>
                 <md-item>
                     <md-item-content layout="column" style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;">
-                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('schedulerHome')">
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
                             <span class="fa fa-list"></span>
                             <button>Scheduler Management</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sb-drafts')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
                             <span class="fa fa-pencil"></span>
                             <button>Schedule Block Drafts</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('subarrays')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
                             <span class="fa fa-asterisk"></span>
                             <button>Sub-Arrays</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="scheduler">
                             <span class="fa fa-sitemap"></span>
                             <button>Sub-Array Resources</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.execute')">
                             <span class="fa fa-edit"></span>
                             <button>Scheduler</button>
                         </div>
@@ -223,7 +223,7 @@
                     <span class="fa fa-navicon"></span>
                 </md-button>
 
-                <span style="font-size: 30px;">{{vm.currentStateUpperCase()}}</span>
+                <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentStateUpperCase()}}</span>
 
                 <!--<div class="btn-group"-->
                      <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="row">-->

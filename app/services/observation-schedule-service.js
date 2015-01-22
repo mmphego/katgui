@@ -265,7 +265,8 @@
                 scheduleBlockDraft.type,
                 scheduleBlockDraft.instruction_set,
                 scheduleBlockDraft.description,
-                scheduleBlockDraft.desired_start_time]);
+                scheduleBlockDraft.desired_start_time,
+                scheduleBlockDraft.sub_nr]);
             deferredMap['update_draft_schedule_block'] = $q.defer();
             return deferredMap['update_draft_schedule_block'].promise;
         };

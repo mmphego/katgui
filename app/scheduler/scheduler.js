@@ -9,8 +9,6 @@
 
     function SchedulerCtrl($scope, $timeout, SCHEDULE_BLOCK_TYPES, ObservationScheduleService, $mdDialog) {
 
-        ObservationScheduleService.connectListener();
-
         var vm = this;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.draftListProcessingServerCall = false;
@@ -419,10 +417,6 @@
         }
 
         $timeout(vm.refreshScheduleBlocks, 100);
-
-        $scope.$on('$destroy', function () {
-            ObservationScheduleService.disconnectListener();
-        });
 
     }
 })();

@@ -5,7 +5,7 @@
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
             <div layout="row" class="unselectable md-toolbar-tools-small">
                 <span flex></span>
-                <input class="fade-in search-input-box" ng-show="showDraftTools" type="search"
+                <input class="fade-in search-input-box" ng-show="showDraftTools || vm.q" type="search"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
                 <md-button aria-label="Create A Schedule" style="font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
                            ng-click="vm.addDraftSchedule()">
@@ -15,50 +15,54 @@
             </div>
 
             <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="center center">
-                        <span style="max-width: 160px;min-width: 160px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
-                            <span style="padding: 8px">ID</span>
-                            <span class="fa"
-                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
-                                  style="margin-right: 4px;"></span>
-                        </span>
-                        <span style="max-width: 90px;min-width: 90px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('sub_nr')">
-                            <span style="padding: 8px">SubArray</span>
-                            <span class="fa"
-                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'sub_nr' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'sub_nr' && vm.draftsOrderBy.reverse}"
-                                  style="margin-right: 4px;"></span>
-                        </span>
-                        <span flex style="width: 180px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('description')">
-                            <span style="padding: 8px">Description</span>
-                            <span class="fa"
-                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'description' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'description' && vm.draftsOrderBy.reverse}"
-                                  style="margin-right: 4px;"></span>
-                        </span>
-                        <span style="max-width: 122px;min-width: 122px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('type')">
-                            <span style="padding: 8px">Type</span>
-                            <span class="fa"
-                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
-                                  style="margin-right: 4px;"></span>
-                        </span>
-                        <span style="max-width: 240px;min-width: 240px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
-                            <span style="padding: 8px">Desired Time</span>
-                            <span class="fa"
-                                  ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
-                                  style="margin-right: 4px;"></span>
-                        </span>
+                <span style="max-width: 160px;min-width: 160px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
+                    <span style="padding: 8px">ID</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="max-width: 90px;min-width: 90px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('sub_nr')">
+                    <span style="padding: 8px">SubArray</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'sub_nr' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'sub_nr' && vm.draftsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span flex style="width: 180px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('description')">
+                    <span style="padding: 8px">Description</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'description' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'description' && vm.draftsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="max-width: 122px;min-width: 122px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('type')">
+                    <span style="padding: 8px">Type</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="max-width: 240px;min-width: 240px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
+                    <span style="padding: 8px">Desired Time</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
             </div>
         </md-toolbar>
         <div class="schedule-draft-data-list" flex>
             <loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>
             <div ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse as filteredDraftItems"
                  ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
-                 ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
+                 ng-class="{'selected-draft-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
                 <div style="" layout="row" layout-align="center center">
                     <div layout="row" class="schedule-block-name-div">
                         <span class="schedule-block-id-text">{{item.id_code}}</span>
                         <i>{{item.owner}}</i>
                     </div>
 
-                    <span style="min-width: 90px; text-align: center;">{{item.sub_nr}}</span>
+                    <input ng-change="item.isDirty = true;" type="number" min="0" max="100" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
+                           aria-label="Subarray Number" class="schedule-item-description-input"
+                           ng-model="item.sub_nr" placeholder="SubNr" style="border:0; max-width: 80px; text-align: center; margin-right:10px"/>
+                    <span class="error" ng-show="input.$error.number">Not valid number!</span>
+                    <!--<span style="min-width: 90px; text-align: center;">{{item.sub_nr}}</span>-->
 
                     <input ng-change="item.isDirty = true;" type="text" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
                            aria-label="Description" class="schedule-item-description-input"
@@ -91,14 +95,14 @@
         </div>
     </div>
 
-    <div layout="column" class="md-whiteframe-z2" style="max-width: 400px;min-width: 400px; margin-left: 24px;"
+    <div layout="column" class="md-whiteframe-z2" style="max-width: 400px;min-width: 400px; padding-left: 24px;"
          ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null}">
         <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
             <div flex style="margin: 8px;" layout="row" layout-align="start center">
                 <span style="cursor: pointer;">Schedule Block Details</span>
             </div>
         </md-toolbar>
-        <div flex style="padding: 8px;" layout="column">
+        <div flex style="padding-right: 8px; padding-top: 8px; padding-bottom: 8px;" layout="column">
             <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
                  ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 

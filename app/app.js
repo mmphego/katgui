@@ -45,13 +45,14 @@
                 primary: 'teal',
                 secondary: 'amber',
                 primaryButtons: 'indigo'
-            },
-            {
-                name: 'Light-Blue-Dark',
-                primary: 'light-blue-dark',
-                secondary: 'indigo',
-                primaryButtons: 'blue-grey'
             }])
+        //,
+        //{
+        //    name: 'Light-Blue-Dark',
+        //    primary: 'light-blue-dark',
+        //    secondary: 'indigo',
+        //    primaryButtons: 'blue-grey'
+        //}
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
@@ -164,6 +165,12 @@
 
         vm.currentStateUpperCase = function () {
             return $state.current.title;
+        };
+
+        vm.navigateToParentState = function() {
+            if ($state.current.parent) {
+                $state.go($state.current.parent.name);
+            }
         };
 
         vm.operatorActionMenuItemSelected = function () {
@@ -361,44 +368,62 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
-        $stateProvider.state('sb-drafts', {
-            url: '/sb-drafts',
-            templateUrl: 'app/scheduler/sb-drafts/sb-drafts.html',
-            title: 'Schedule Block Drafts',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
-        });
-        $stateProvider.state('schedulerHome', {
-            url: '/schedulerHome',
-            templateUrl: 'app/scheduler/scheduler-home.html',
-            title: 'Scheduler Management',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
-        });
-        $stateProvider.state('scheduler', {
+
+        var schedulerHome = {
+            name: 'scheduler',
             url: '/scheduler',
-            templateUrl: 'app/scheduler/scheduler.html',
+            templateUrl: 'app/scheduler/scheduler-home.html',
             title: 'Scheduler',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
-        });
+        };
+
+        var sbDrafts = {
+            name: 'scheduler.drafts',
+            parent: schedulerHome,
+            url: '/drafts',
+            templateUrl: 'app/scheduler/sb-drafts/sb-drafts.html',
+            title: 'Scheduler.Drafts',
+            data: {
+                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        };
+
+        var schedulerExecute = {
+            name: 'scheduler.execute',
+            parent: schedulerHome,
+            url: '/execute',
+            templateUrl: 'app/scheduler/scheduler.html',
+            title: 'Scheduler.Execute',
+            data: {
+                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        };
+
+        var subArrays = {
+            name: 'scheduler.subarrays',
+            parent: schedulerHome,
+            url: '/subarrays',
+            templateUrl: 'app/scheduler/subarrays/subarrays.html',
+            title: 'Scheduler.Subarrays',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
+        $stateProvider
+            .state(schedulerHome)
+            .state(sbDrafts)
+            .state(schedulerExecute)
+            .state(subArrays);
+
         $stateProvider.state('sensorGraph', {
             url: '/sensorGraph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
             title: 'Sensor Graphs',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
-        });
-        $stateProvider.state('subarrays', {
-            url: '/subarrays',
-            templateUrl: 'app/scheduler/subarrays/subarrays.html',
-            title: 'Manage Subarrays',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
             }
         });
         $stateProvider.state('about', {

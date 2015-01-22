@@ -7,7 +7,6 @@
 
         var vm = this;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
-        ObservationScheduleService.connectListener();
 
         vm.subarrays = [{
             id: '1',
@@ -20,10 +19,6 @@
             description: 'This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks',
             scheduleBlocks: []
         }];
-
-        $scope.$on('$destroy', function () {
-            ObservationScheduleService.disconnectListener();
-        });
 
         vm.refreshScheduleBlocks = function () {
             ObservationScheduleService.getScheduleBlocks()

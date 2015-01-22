@@ -31,8 +31,6 @@
 
         vm.setDraftsOrderBy('id_code', true);
 
-        ObservationScheduleService.connectListener();
-
         var unbindShortcuts = $document.bind("keydown", function (e) {
 
             if (e.keyCode === 40 && e.target.nodeName !== "TEXTAREA") {
@@ -281,7 +279,6 @@
 
         $timeout(vm.refreshScheduleBlocks, 100);
         $scope.$on('$destroy', function () {
-            ObservationScheduleService.disconnectListener();
             unbindScroll.unbind('scroll');
             unbindClick.unbind('click');
             unbindShortcuts.unbind('keydown');
