@@ -9,26 +9,41 @@
         vm.resourcePoolData1 = ObservationScheduleService.resourcePoolData1;
         vm.resourcePoolData2 = ObservationScheduleService.resourcePoolData2;
         vm.resourcePoolDataFree = ObservationScheduleService.resourcePoolDataFree;
+        vm.allocations = ObservationScheduleService.allocations;
+        vm.subarraysFree = ObservationScheduleService.subarraysFree;
+        vm.subarraysInUse = ObservationScheduleService.subarraysInUse;
+        vm.subarraysMaintenance = ObservationScheduleService.subarraysMaintenance;
 
         vm.refreshResources = function () {
+
+            //chain the calls otherwise the server gives us grief
+            //TODO: figure out why the server is being silly
             ObservationScheduleService.listPoolResourcesForSubarray(1)
-                .then(listProcessingComplete, listProcessingError);
-
-            //send call on next digest cycle
-            //server doesnt like it in quick succession for some reason
-            //TODO: figure out why
-            $timeout(function() {
-                ObservationScheduleService.listPoolResourcesForSubarray(2)
-                    .then(listProcessingComplete, listProcessingError);
-            }, 100);
-
-            //send call on next digest cycle
-            //server doesnt like it in quick succession for some reason
-            //TODO: figure out why
-            $timeout(function() {
-                ObservationScheduleService.listPoolResourcesForSubarray('free')
-                    .then(listProcessingComplete, listProcessingError);
-            }, 200);
+                .then(listProcessingComplete, listProcessingError)
+                .then(function () {
+                    ObservationScheduleService.listPoolResourcesForSubarray(2)
+                        .then(listProcessingComplete, listProcessingError)
+                        .then(function () {
+                            ObservationScheduleService.listPoolResourcesForSubarray('free')
+                                .then(listProcessingComplete, listProcessingError)
+                                .then(function () {
+                                    ObservationScheduleService.listAllocations()
+                                        .then(listProcessingComplete, listProcessingError)
+                                        .then(function () {
+                                            ObservationScheduleService.listSubArraysByState('free')
+                                                .then(listProcessingComplete, listProcessingError)
+                                                .then(function () {
+                                                    ObservationScheduleService.listSubArraysByState('in_use')
+                                                        .then(listProcessingComplete, listProcessingError)
+                                                        .then(function () {
+                                                            ObservationScheduleService.listSubArraysByState('maintenance')
+                                                                .then(listProcessingComplete, listProcessingError);
+                                                        });
+                                                });
+                                        });
+                                });
+                        });
+                });
         };
 
         function listProcessingComplete(result) {

@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, $timeout) {
 
         ObservationScheduleService.connectListener();
         var vm = this;
@@ -26,12 +26,16 @@
         });
 
         vm.svgLoaded = function (targetElementToGetColorFromId) {
-            angular.element('.svg-receptor').css('fill', angular.element(targetElementToGetColorFromId).css('color'));
-            angular.element('.svg-receptor').css('stroke', angular.element(targetElementToGetColorFromId).css('color'));
+            $timeout(function() {
+                angular.element('.svg-receptor').css('fill', angular.element(targetElementToGetColorFromId).css('color'));
+                angular.element('.svg-receptor').css('stroke', angular.element(targetElementToGetColorFromId).css('color'));
+            }, 20);
         };
 
         vm.svgLoadedThatContainsOpacity = function (targetElementToGetColorFromId) {
-            angular.element('.svg-receptor-with-opacity').css('fill', angular.element(targetElementToGetColorFromId).css('color'));
+            $timeout(function() {
+                angular.element('.svg-receptor-with-opacity').css('fill', angular.element(targetElementToGetColorFromId).css('color'));
+            }, 20);
         };
 
         $scope.$on('$destroy', function () {

@@ -17,6 +17,10 @@
         api.resourcePoolData1 = [];
         api.resourcePoolData2 = [];
         api.resourcePoolDataFree = [];
+        api.subarraysFree = [];
+        api.subarraysMaintenance = [];
+        api.subarraysInUse = [];
+        api.allocations = [];
 
         function onSockJSOpen() {
             if (connection && connection.readyState) {
@@ -60,8 +64,6 @@
                     deferredMap['get_schedule_block'].resolve(result.get_schedule_block);
 
                 } else if (result.list_pool_resources_for_subarray) {
-
-                    console.log(result);
 
                     var resourcePoolResult = result.list_pool_resources_for_subarray.result.split(',');
 
@@ -213,6 +215,35 @@
                     draftToUpdate.isDirty = false;
                     deferredMap['update_draft_schedule_block'].resolve(result.update_draft_schedule_block);
 
+                } else if (result.list_all_allocations) {
+
+                    var allocationsResult = JSON.parse(result.list_all_allocations.result);
+                    allocationsResult.forEach(function (item) {
+                        api.allocations.push(item);
+                    });
+                    deferredMap['list_all_allocations'].resolve(result.list_all_allocations);
+                } else if (result.list_subarrays_by_state) {
+
+                    var listSubbarraysResult = result.list_subarrays_by_state.result.split(',');
+
+                    if (result.list_subarrays_by_state.state === 'free') {
+
+                        listSubbarraysResult.forEach(function (item) {
+                            api.subarraysFree.push(item);
+                        });
+                    } else if (result.list_subarrays_by_state.state === 'in_use') {
+
+                        listSubbarraysResult.forEach(function (item) {
+                            api.subarraysInUse.push(item);
+                        });
+                    } else if (result.list_subarrays_by_state.state === 'maintenance') {
+
+                        listSubbarraysResult.forEach(function (item) {
+                            api.subarraysMaintenance.push(item);
+                        });
+                    }
+
+                    deferredMap['list_subarrays_by_state_' + result.list_subarrays_by_state.state].resolve(result.listSubbarraysResult);
                 } else {
 
                     console.warn('Observation Schedule returned an unfamiliar message: ');
@@ -371,6 +402,32 @@
             sendObsSchedCommand('list_pool_resources_for_subarray', [subarray_number]);
             deferredMap['list_pool_resources_for_subarray_' + subarray_number] = $q.defer();
             return deferredMap['list_pool_resources_for_subarray_' + subarray_number].promise;
+        };
+
+        api.listAllocations = function () {
+
+            api.allocations.splice(0, api.allocations.length);
+            sendObsSchedCommand('list_all_allocations', []);
+            deferredMap['list_all_allocations'] = $q.defer();
+            return deferredMap['list_all_allocations'].promise;
+        };
+
+        api.listSubArraysByState = function (state) {
+
+            if (state === 'free') {
+
+                api.subarraysFree.splice(0, api.subarraysFree.length);
+            } else if (state === 'in_use') {
+
+                api.subarraysInUse.splice(0, api.subarraysInUse.length);
+            } else if (state === 'maintenance') {
+
+                api.subarraysMaintenance.splice(0, api.subarraysInUse.length);
+            }
+
+            sendObsSchedCommand('list_subarrays_by_state', [state]);
+            deferredMap['list_subarrays_by_state_' + state] = $q.defer();
+            return deferredMap['list_subarrays_by_state_' + state].promise;
         };
 
         function sendObsSchedCommand(method, funcParams) {
