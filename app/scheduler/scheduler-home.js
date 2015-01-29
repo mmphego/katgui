@@ -25,18 +25,10 @@
             }
         });
 
-        vm.svgLoaded = function (targetElementToGetColorFromId) {
-            $timeout(function() {
-                angular.element('.svg-receptor').css('fill', angular.element(targetElementToGetColorFromId).css('color'));
-                angular.element('.svg-receptor').css('stroke', angular.element(targetElementToGetColorFromId).css('color'));
-            }, 20);
-        };
-
-        vm.svgLoadedThatContainsOpacity = function (targetElementToGetColorFromId) {
-            $timeout(function() {
-                angular.element('.svg-receptor-with-opacity').css('fill', angular.element(targetElementToGetColorFromId).css('color'));
-            }, 20);
-        };
+        //for testing the api
+        //$timeout(function () {
+        //    ObservationScheduleService.listPoolResources();
+        //}, 1000);
 
         $scope.$on('$destroy', function () {
             unbindStateChangeStart();

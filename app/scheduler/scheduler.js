@@ -1,6 +1,10 @@
 (function () {
 
-    angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker', 'katGui.services', 'ngAnimate'])
+    angular.module('katGui.scheduler', [
+        'ui.bootstrap.datetimepicker',
+        'katGui.services',
+        'katGui.util',
+        'ngAnimate'])
         .constant('SCHEDULE_BLOCK_TYPES', [
             'MAINTENANCE',
             'OBSERVATION',
@@ -278,7 +282,7 @@
                 .then(scheduleListProcessingComplete, scheduleListProcessingError)
                 .then(completedListProcessingComplete, completedListProcessingError);
 
-            ObservationScheduleService.listPoolResourcesForSubarray();
+            ObservationScheduleService.listPoolResourcesForSubarray(1);
         };
 
         vm.validateInputDate = function (item) {

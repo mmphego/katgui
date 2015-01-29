@@ -1,20 +1,36 @@
-<div flex layout="column" style="min-width: 1515px; min-height: 850px; margin: 16px;" ng-controller="SubArrayResourcesCtrl as vm">
+<div flex layout="row" style="min-width: 1515px; min-height: 850px; margin: 16px;" ng-controller="SubArrayResourcesCtrl as vm">
 
-    <div layout="column">
-        <span>resourcePoolData1</span>
-        <span>{{vm.resourcePoolData1 | json}}</span>
-        <span>resourcePoolData2</span>
-        <span>{{vm.resourcePoolData2 | json}}</span>
-        <span>resourcePoolDataFree</span>
-        <span>{{vm.resourcePoolDataFree | json}}</span>
-        <span>allocations</span>
-        <span>{{vm.allocations | json}}</span>
-        <span>subarraysFree</span>
-        <span>{{vm.subarraysFree | json}}</span>
-        <span>subarraysInUse</span>
-        <span>{{vm.subarraysInUse | json}}</span>
-        <span>subarraysMaintenance</span>
-        <span>{{vm.subarraysMaintenance | json}}</span>
+    <div flex layout="column" layout-padding>
+        <div ng-repeat="subarray in vm.subarrays track by subarray.id" class="md-whiteframe-z2 subarray-container" layout="row" layout-align="start"
+             md-theme="{{subarray.state === 'free'? 'teal' : subarray.state === 'inUse'? 'amber' : 'deep-purple'}}">
+
+            <md-toolbar class="subarray-item md-whiteframe-z1" layout="column" layout-align="start center" title="{{::subarray.description}}">
+                <h2>Sub-Array {{::subarray.id}}</h2>
+
+                <div ng-include="'images/subarray.svg'"></div>
+                <span>{{::subarray.state}}</span>
+            </md-toolbar>
+
+            <div class="md-whiteframe-z1" style="margin-left: 2px;" layout="column" flex>
+                <md-toolbar class="md-whiteframe-z1">
+                    <div layout="row" class="unselectable md-toolbar-tools-small">
+                        <span flex>Resources Assigned to Sub-array</span>
+                    </div>
+
+                </md-toolbar>
+                <div flex ng-repeat="resource in vm.subarray.poolResources">
+                    <span flex>{{resource}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div flex layout="column" style="max-width:500px;">
+
+        <span>vm.poolResourcesFree</span>
+        <span>{{vm.poolResourcesFree | json}}</span>
+        <!--<span>allocations</span>-->
+        <!--<span>{{vm.allocations | json}}</span>-->
     </div>
 
 </div>

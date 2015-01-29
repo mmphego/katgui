@@ -3,7 +3,7 @@
     angular.module('katGui.services', [])
         .service('ControlService', ControlService);
 
-    function ControlService($http, SERVER_URL) {
+    function ControlService($http, SERVER_URL, KatGuiUtil) {
 
         var urlBase = SERVER_URL + ':8020';
         var connection = null;
@@ -79,6 +79,7 @@
 
             if (connection) {
                 var jsonRPC = {
+                    'id': KatGuiUtil.generateUUID(),
                     'jsonrpc': '2.0',
                     'method': 'katcp_request',
                     'params': [module, funcName, funcParams]

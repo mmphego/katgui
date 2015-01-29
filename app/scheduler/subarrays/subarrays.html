@@ -1,23 +1,23 @@
 <div flex layout="column" style="min-width: 1515px; min-height: 850px; margin: 16px;" ng-controller="SubArraysCtrl as vm">
 
     <div ng-repeat="subarray in vm.subarrays track by subarray.id" class="md-whiteframe-z2 subarray-container" layout="row" layout-align="start"
-         md-theme="{{subarray.state === 'free'? 'teal' : subarray.state === 'inUse'? 'amber' : 'deep-purple'}}">
+         md-theme="{{subarray.state === 'free'? 'teal' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}">
 
-        <div class="subarray-item md-whiteframe-z1" layout="column" layout-align="start center" title="{{::subarray.description}}">
+        <md-toolbar class="subarray-item md-whiteframe-z1" layout="column" layout-align="start center" title="{{::subarray.description}}">
             <h2>Sub-Array {{::subarray.id}}</h2>
 
             <div ng-include="'images/subarray.svg'"></div>
             <span style="font-weight: bold" ng-if="subarray.description">{{::subarray.description}}</span>
-
+            <span>{{::subarray.state}}</span>
             <!--<div flex layout="column" layout-align="start center" style="width: 100%; padding: 8px; overflow: hidden; ">-->
                 <!--<span style="overflow: hidden; text-overflow: ellipsis;">{{::subarray.description}}</span>-->
             <!--</div>-->
-        </div>
+        </md-toolbar>
 
         <div class="md-whiteframe-z1" style="margin-left: 2px;" layout="column" flex>
-            <md-toolbar class="md-whiteframe-z1 md-primary">
+            <md-toolbar class="md-whiteframe-z1">
                 <div layout="row" class="unselectable md-toolbar-tools-small">
-                    <span flex>{{::subarray.state}}</span>
+                    <span flex>Draft Schedule Blocks</span>
                     <!--<md-button aria-label="Add A Schedule" style="font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"-->
                                <!--ng-click="console.log('add a schedule not implemented yet')">-->
                         <!--<span class="fa fa-plus-circle"></span>-->
@@ -57,13 +57,13 @@
                 <div ng-repeat="item in subarray.scheduleBlocks track by item.id_code"
                      ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                      ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
-                    <div style="" layout="row" layout-align="center center">
-                        <div layout="row" class="schedule-block-name-div">
+                    <div flex layout="row" layout-align="center center">
+                        <div layout="row" class="schedule-block-name-div" style="cursor: text">
                             <span class="schedule-block-id-text">{{item.id_code}}</span>
                             <i>{{item.owner}}</i>
                         </div>
 
-                        <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
+                        <span flex style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
 
                         <div style="min-width: 105px; margin-top: 4px; text-align: start;">
                             <span style="text-transform: uppercase;">{{item.type}}</span>

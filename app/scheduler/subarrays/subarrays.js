@@ -3,39 +3,19 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl($scope, ObservationScheduleService, $timeout, $mdDialog) {
+    function SubArraysCtrl(ObservationScheduleService, $timeout, $mdDialog) {
 
         var vm = this;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
-
-        vm.subarrays = [];
-        //[{
-        //    id: '1',
-        //    name: 'All of them',
-        //    description: 'some description of the subarray 1',
-        //    scheduleBlocks: []
-        //}, {
-        //    id: '2',
-        //    name: 'Maintenance',
-        //    description: 'This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks, This array is used for maintenance tasks',
-        //    scheduleBlocks: []
-        //}];
+        vm.subarrays = ObservationScheduleService.subarrays;
 
         vm.refreshScheduleBlocks = function () {
             ObservationScheduleService.getScheduleBlocks()
                 .then(draftListProcessingComplete, draftListProcessingError);
 
-            ObservationScheduleService.listSubArraysByState('free')
+            ObservationScheduleService.listSubarrays()
                 .then(subarraysProcessingComplete, subarraysProcessingError)
-                .then(function () {
-                    ObservationScheduleService.listSubArraysByState('in_use')
-                        .then(subarraysProcessingComplete, subarraysProcessingError)
-                        .then(function () {
-                            ObservationScheduleService.listSubArraysByState('maintenance')
-                                .then(subarraysProcessingComplete, subarraysProcessingError)
-                                .then(combineSubarraysInSingleList);
-                        });
-                });
+                .then(combineSubarraysInSingleList);
         };
 
         function draftListProcessingComplete(result) {
@@ -83,42 +63,15 @@
         }
 
         function combineSubarraysInSingleList() {
-            //ObservationScheduleService.subarraysInUse.push('5');
-            //ObservationScheduleService.subarraysMaintenance.push('6');
-            vm.subarrays.splice(0, vm.subarrays.length);
-            ObservationScheduleService.subarraysFree.forEach(function (item){
-                if (item) {
-                    vm.subarrays.push({
-                        id: parseInt(item),
-                        scheduleBlocks: [],
-                        state: 'free'
-                    });
-                }
-            });
-            ObservationScheduleService.subarraysInUse.forEach(function (item){
-                if (item) {
-                    vm.subarrays.push({
-                        id: parseInt(item),
-                        description: 'for test purposes',
-                        scheduleBlocks: [],
-                        state: 'inUse'
-                    });
-                }
-            });
-            ObservationScheduleService.subarraysMaintenance.forEach(function (item){
-                if (item) {
-                    vm.subarrays.push({
-                        id: parseInt(item),
-                        description: 'for test purposes',
-                        scheduleBlocks: [],
-                        state: 'maintenance'
-                    });
-                }
-            });
+            ObservationScheduleService.subarrays.push({id:'5', state:'maintanence'});
+            ObservationScheduleService.subarrays.push({id:'6', state:'in_use'});
 
             vm.scheduleDraftData.forEach(function (item) {
-               vm.subarrays.forEach(function (subarray) {
-                  if (item.sub_nr === subarray.id) {
+               ObservationScheduleService.subarrays.forEach(function (subarray) {
+                  if ((item.sub_nr || {}).toString() === subarray.id) {
+                      if (!subarray.scheduleBlocks) {
+                          subarray.scheduleBlocks = [];
+                      }
                       subarray.scheduleBlocks.push(item);
                   }
                });

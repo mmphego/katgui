@@ -1,48 +1,28 @@
-(function(){
+(function () {
 
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl(ObservationScheduleService, $timeout, $mdDialog) {
+    function SubArrayResourcesCtrl($scope, ObservationScheduleService, $timeout, $mdDialog) {
 
         var vm = this;
-        vm.resourcePoolData1 = ObservationScheduleService.resourcePoolData1;
-        vm.resourcePoolData2 = ObservationScheduleService.resourcePoolData2;
-        vm.resourcePoolDataFree = ObservationScheduleService.resourcePoolDataFree;
-        vm.allocations = ObservationScheduleService.allocations;
-        vm.subarraysFree = ObservationScheduleService.subarraysFree;
-        vm.subarraysInUse = ObservationScheduleService.subarraysInUse;
-        vm.subarraysMaintenance = ObservationScheduleService.subarraysMaintenance;
+
+        vm.subarrays = ObservationScheduleService.subarrays;
+        vm.poolResourcesFree = ObservationScheduleService.poolResourcesFree;
 
         vm.refreshResources = function () {
 
             //chain the calls otherwise the server gives us grief
             //TODO: figure out why the server is being silly
-            ObservationScheduleService.listPoolResourcesForSubarray(1)
-                .then(listProcessingComplete, listProcessingError)
+
+            //ObservationScheduleService.listAllocations()
+            //    .then(listProcessingComplete, listProcessingError);
+
+            ObservationScheduleService.listSubarrays()
                 .then(function () {
-                    ObservationScheduleService.listPoolResourcesForSubarray(2)
+                    ObservationScheduleService.listPoolResources()
                         .then(listProcessingComplete, listProcessingError)
-                        .then(function () {
-                            ObservationScheduleService.listPoolResourcesForSubarray('free')
-                                .then(listProcessingComplete, listProcessingError)
-                                .then(function () {
-                                    ObservationScheduleService.listAllocations()
-                                        .then(listProcessingComplete, listProcessingError)
-                                        .then(function () {
-                                            ObservationScheduleService.listSubArraysByState('free')
-                                                .then(listProcessingComplete, listProcessingError)
-                                                .then(function () {
-                                                    ObservationScheduleService.listSubArraysByState('in_use')
-                                                        .then(listProcessingComplete, listProcessingError)
-                                                        .then(function () {
-                                                            ObservationScheduleService.listSubArraysByState('maintenance')
-                                                                .then(listProcessingComplete, listProcessingError);
-                                                        });
-                                                });
-                                        });
-                                });
-                        });
+                        .then(combineResults);
                 });
         };
 
@@ -67,6 +47,26 @@
                     });
             }, 100);
         }
+
+        function combineResults() {
+            ObservationScheduleService.subarrays.forEach(function (subarray) {
+                ObservationScheduleService.poolResources.forEach(function (poolResources) {
+                    if (poolResources.sub_nr === subarray.id) {
+                        if (!subarray.poolResources) {
+                            subarray.poolResources = [];
+                        }
+                        subarray.poolResources.push(poolResources.pool_resources);
+                    }
+                });
+            });
+        }
+
+        vm.getSubarrayPoolResourceString = function (subarrayId) {
+            if (!vm['resourcePoolData' + subarrayId]) {
+                return [];
+            }
+            return vm['resourcePoolData' + subarrayId];
+        };
 
         $timeout(vm.refreshResources, 100);
     }

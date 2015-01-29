@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, SERVER_URL) {
+    function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil) {
 
         var pendingSubscribeObjects = [];
         var urlBase = SERVER_URL + ':8030';
@@ -12,6 +12,7 @@
         //use this alias because we are using some api functions within functions
         //because 'this' means something different within each child function
         var api = this;
+        api.connectionAuthorised = false;
 
         api.subscribeToReceptorUpdates = function () {
 
@@ -25,7 +26,7 @@
                 'id': 'abe3d23201'
             };
 
-            if (connection && connection.readyState) {
+            if (connection && connection.readyState && api.connectionAuthorised) {
                 return connection.send(JSON.stringify(jsonRPC));
             } else {
                 pendingSubscribeObjects.push(jsonRPC);
@@ -36,17 +37,9 @@
             if (connection && connection.readyState) {
                 console.log('Monitor Connection Established. Authenticating...');
 
-                //TODO: add autentication to the monitor service
-                //authenticateSocketConnection();
-
-                subscribeToAlarms();
-
-                pendingSubscribeObjects.forEach(function (obj) {
-                    delete obj.subscribeName;
-                    return connection.send(JSON.stringify(obj));
-                });
-
                 pendingSubscribeObjects = [];
+                authenticateSocketConnection();
+                //subscribeToAlarms();
             }
         };
 
@@ -82,6 +75,26 @@
                             console.log(messageObj);
                         }
                     });
+                }
+            } else if (messages.result) {
+                //auth response
+                if (messages.result.email && messages.result.session_id) {
+                    $rootScope.currentUser = messages.result.session_id;
+                    $localStorage['currentUserToken'] = $rootScope.jwt;
+                    api.connectionAuthorised = true;
+
+                    //do pending requests
+                    pendingSubscribeObjects.forEach(function (obj) {
+                        connection.send(JSON.stringify(obj));
+                        delete obj.subscribeName;
+                    });
+
+                } else {
+                    //bad auth response
+                    //TODO handle bad case
+                    api.connectionAuthorised = false;
+                    console.error('Bad auth response:');
+                    console.error(messages);
                 }
             }
         };
@@ -132,7 +145,12 @@
                 'params': 'kataware:alarm[.]*',
                 'id': 'abe3d23201'
             };
-            return connection.send(JSON.stringify(jsonRPC));
+
+            if (connection && connection.readyState && api.connectionAuthorised) {
+                return connection.send(JSON.stringify(jsonRPC));
+            } else {
+                pendingSubscribeObjects.push(jsonRPC);
+            }
         }
 
         function authenticateSocketConnection() {
@@ -140,9 +158,9 @@
             if (connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
-                    'method': 'authenticate',
+                    'method': 'authorise',
                     'params': [$rootScope.session_id],
-                    'id': 'abe3d23201'
+                    'id': KatGuiUtil.generateUUID()
                 };
 
                 return connection.send(JSON.stringify(jsonRPC));

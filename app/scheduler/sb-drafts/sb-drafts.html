@@ -61,7 +61,7 @@
                     <input ng-change="item.isDirty = true;" type="number" min="0" max="100" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
                            aria-label="Subarray Number" class="schedule-item-description-input"
                            ng-model="item.sub_nr" placeholder="SubNr" style="border:0; max-width: 80px; text-align: center; margin-right:10px"/>
-                    <span class="error" ng-show="input.$error.number">Not valid number!</span>
+                    <!--<span class="error" ng-show="input.$error.number">Not valid number!</span>-->
                     <!--<span style="min-width: 90px; text-align: center;">{{item.sub_nr}}</span>-->
 
                     <input ng-change="item.isDirty = true;" type="text" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
