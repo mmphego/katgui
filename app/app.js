@@ -492,28 +492,28 @@
     //this function includes the style sheets instead of having to link to each individually
     function configureThemes($mdThemingProvider) {
         //$mdThemingProvider.theme('default')
-        //    .primaryColor('indigo');
+        //    .primaryPalette('indigo');
         //
         $mdThemingProvider.theme('indigo')
-            .primaryColor('indigo');
+            .primaryPalette('indigo');
 
         $mdThemingProvider.theme('blue')
-            .primaryColor('blue');
+            .primaryPalette('blue');
 
         $mdThemingProvider.theme('blue-grey')
-            .primaryColor('blue-grey');
+            .primaryPalette('blue-grey');
 
         $mdThemingProvider.theme('deep-purple')
-            .primaryColor('deep-purple');
+            .primaryPalette('deep-purple');
 
         $mdThemingProvider.theme('teal')
-            .primaryColor('teal');
+            .primaryPalette('teal');
 
         $mdThemingProvider.theme('yellow')
-            .primaryColor('yellow');
+            .primaryPalette('yellow');
 
         $mdThemingProvider.theme('amber')
-            .primaryColor('amber');
+            .primaryPalette('amber');
 
         //$mdThemingProvider.theme('light-blue-dark')
         //    .primaryColor('red');
