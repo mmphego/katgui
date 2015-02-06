@@ -37,6 +37,7 @@
                     'params': [$rootScope.session_id],
                     'id': 'authorise' + KatGuiUtil.generateUUID()
                 };
+                connection.authorized = false;
                 return connection.send(JSON.stringify(jsonRPC));
             }
         }
@@ -194,15 +195,14 @@
                     var listPoolResources = JSON.parse(result.list_pool_resources);
                     listPoolResources.forEach(function (item) {
                         if (item.sub_nr === 'free') {
-                            var pool_resources_result = item.pool_resources.split(',');
-                            if (pool_resources_result.length > 0) {
-                                pool_resources_result.forEach(function (itemResourceItem) {
-                                    api.poolResourcesFree.push(itemResourceItem);
+                                item.pool_resources.forEach(function (resourceItem) {
+                                    api.poolResourcesFree.push(resourceItem);
                                 });
-                            }
-
                         } else {
-                            api.poolResources.push(item);
+                            for (var i = 0; i < item.pool_resources.length; i++) {
+                                item.pool_resources[i].sub_nr = item.sub_nr;
+                                api.poolResources.push(item.pool_resources[i]);
+                            }
                         }
                     });
 
@@ -218,10 +218,18 @@
                     listSubbarrays.forEach(function (item) {
                         api.subarrays.push(item);
                     });
+                } else if (result.assign_resources_to_subarray) {
+
+                    console.log(result.assign_resources_to_subarray);
+                } else if (result.unassign_resources_from_subarray) {
+
+                    console.log(result.unassign_resources_from_subarray);
                 } else if (!result.email && result.session_id) {
 
                     console.warn('Observation Schedule returned an unfamiliar message: ');
                     console.warn(e);
+                } else if (result.session_id) {
+                    connection.authorized = true;
                 }
 
                 if (deferredMap[jsonData.id]) {
@@ -366,6 +374,14 @@
             return createCommandPromise(sendObsSchedCommand('list_subarrays', []));
         };
 
+        api.assignResourcesToSubarray = function(subarray, resources) {
+            return createCommandPromise(sendObsSchedCommand('assign_resources_to_subarray', [subarray, resources]));
+        };
+
+        api.unassignResourcesFromSubarray = function(subarray, resources) {
+            return createCommandPromise(sendObsSchedCommand('unassign_resources_from_subarray', [subarray, resources]));
+        };
+
         function createCommandPromise(promiseId) {
             deferredMap[promiseId] = $q.defer();
             return deferredMap[promiseId].promise;
@@ -386,7 +402,7 @@
                 if (funcParams) {
                     jsonRPC.params = funcParams;
                 }
-                if (connection.readyState === SockJS.OPEN) {
+                if (connection.readyState === SockJS.OPEN && connection.authorized) {
                     connection.send(JSON.stringify(jsonRPC));
                 } else {
                     //wait for the connection to be ready and retry the send

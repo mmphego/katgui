@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil) {
+    function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout) {
 
         var pendingSubscribeObjects = [];
         var urlBase = SERVER_URL + ':8030';
@@ -23,7 +23,7 @@
                 'method': 'subscribe',
                 'params': [connectionParams],
                 'subscribeName': 'subscribeToReceptorUpdates',
-                'id': 'abe3d23201'
+                'id': 'monitor' + KatGuiUtil.generateUUID()
             };
 
             if (connection && connection.readyState && api.connectionAuthorised) {
@@ -39,7 +39,7 @@
 
                 pendingSubscribeObjects = [];
                 authenticateSocketConnection();
-                //subscribeToAlarms();
+                subscribeToAlarms();
             }
         };
 
@@ -76,7 +76,7 @@
                         }
                     });
                 }
-            } else if (messages.result) {
+            } else if (messages.result && messages.result.session_id) {
                 //auth response
                 if (messages.result.email && messages.result.session_id) {
                     $rootScope.currentUser = messages.result.session_id;
@@ -125,8 +125,9 @@
             var alarmPriority = 'unknown';
             if (alarmValues.length > 2) {
                 alarmPriority = alarmValues[1];
+                messageObj.severity = alarmValues[0];
             }
-            messageObj.severity = messageObj.status;
+
             messageObj.priority = alarmPriority;
             messageObj.message = messageObj.value;
 
@@ -138,18 +139,23 @@
         };
 
         function subscribeToAlarms() {
-            console.log('Monitor subscribed to kataware:alarm*...');
+
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': 'kataware:alarm[.]*',
-                'id': 'abe3d23201'
+                //'params': ['alarm'],
+                'params': ['kataware:alarm[.]*'],
+                'id': KatGuiUtil.generateUUID()
             };
 
             if (connection && connection.readyState && api.connectionAuthorised) {
-                return connection.send(JSON.stringify(jsonRPC));
+                console.log('Subscribing to kataware:alarm[.]*...');
+                connection.send(JSON.stringify(jsonRPC));
             } else {
-                pendingSubscribeObjects.push(jsonRPC);
+                $timeout(function () {
+                    subscribeToAlarms();
+                }, 500);
+                //pendingSubscribeObjects.push(jsonRPC);
             }
         }
 
@@ -163,7 +169,7 @@
                     'id': KatGuiUtil.generateUUID()
                 };
 
-                return connection.send(JSON.stringify(jsonRPC));
+                connection.send(JSON.stringify(jsonRPC));
             }
         }
 

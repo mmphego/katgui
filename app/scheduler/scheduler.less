@@ -95,6 +95,27 @@
     }
 }
 
+
+@item-bg: #FFF;
+@item-border-bottom: #d3d3d3;
+
+.selected-resource-item {
+    background: #B3E5FC !important;
+    border-bottom: 1px solid darken(@item-border-bottom, 10%) !important;
+}
+
+.resource-item {
+    max-height: 40px;
+    padding: 4px;
+    min-width: 200px;
+    border-bottom: 1px solid darken(@item-border-bottom, 10%);
+    overflow: hidden;
+    background-color: @item-bg;
+    &:hover {
+        background-color: darken(@item-bg, 5%);
+    }
+}
+
 .schedule-draft-item {
     height: 48px;
     max-height: 48px;
@@ -103,6 +124,9 @@
     direction: ltr;
     border-bottom: 1px solid #d3d3d3;
     overflow: hidden;
+    &:hover {
+        background-color: darken(@item-bg, 5%);
+    }
 }
 
 .resource-pool-item {
@@ -348,6 +372,32 @@
     max-height: 49px;
 }
 
+.animate-repeat-40 {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter,
+.animate-repeat-40.ng-leave {
+    -webkit-transition: all linear 2s;
+    transition: all linear 0.2s;
+}
+
+.animate-repeat-40.ng-leave.ng-leave-active,
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.animate-repeat-40.ng-leave,
+.animate-repeat-40.ng-move.ng-move-active,
+.animate-repeat-40.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 40px;
+}
+
 .whiteframe-z1-left {
     box-shadow: -6px 6px 5px 0px rgba(0, 0, 0, 0.26);
 }
@@ -456,6 +506,7 @@
 }
 
 .subarray-container {
+    min-width: 1000px;
     margin-bottom: 16px;
     min-height: 300px;
 }

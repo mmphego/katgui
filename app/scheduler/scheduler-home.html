@@ -1,31 +1,32 @@
-<div ng-controller="SchedulerHomeCtrl as vm" flex layout="column">
-    <div ng-show="!vm.childStateShowing" layout="column" layout-align="center" md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z4"
+<md-content ng-controller="SchedulerHomeCtrl as vm" flex layout="column" layout-fill>
+    <md-content ng-show="!vm.childStateShowing" layout="column" layout-align="center" md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z4"
          style="margin-left:auto; margin-right: auto;max-width: 1150px; min-width: 1150px;min-height: 800px;">
-        <div layout="row">
+        <div layout="row" layout-align="center center">
             <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.drafts')">
                 <div layout="column">
                     <div style="height: 250px;" ng-include="'images/sbdrafts.svg'" onload="vm.svgLoadedThatContainsOpacity('#subarrays-img-target-color')"></div>
                     <span>Schedule Block Drafts</span></div>
             </md-button>
-            <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.subarrays')">
-                <div layout="column">
-                    <div style="height: 250px;" ng-include="'images/subarrays.svg'"></div>
-                    <span>Manage Sub-Arrays</span></div>
-            </md-button>
             <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.resources')">
                 <div layout="column">
                     <div style="height: 250px;" ng-include="'images/subarrays-resources.svg'"></div>
-                    <span id="subarrays-img-target-color">Manage Sub-Array Resources</span></div>
+                    <span id="subarrays-img-target-color">Manage Sub-Arrays & Resources</span></div>
+            </md-button>
+            <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.subarrays')">
+                <div layout="column">
+                    <div style="height: 250px;" ng-include="'images/subarrays.svg'"></div>
+                    <span>Manage Sub-Array Schedule Blocks</span></div>
             </md-button>
         </div>
         <div layout="row" layout-align="center center">
+
             <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.execute')">
                 <div layout="column">
                     <div ng-include="'images/scheduleblocks.svg'" onload="vm.svgLoaded('#subarrays-img-target-color')"></div>
                     <span>Manage Schedule Blocks</span></div>
             </md-button>
         </div>
-    </div>
+    </md-content>
 
-    <div ng-show="vm.childStateShowing" ui-view flex layout="column"></div>
-</div>
+    <md-content ng-show="vm.childStateShowing" ui-view flex layout="column"></md-content>
+</md-content>

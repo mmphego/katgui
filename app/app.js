@@ -110,7 +110,7 @@
         $rootScope.connectEvents = function () {
 
             vm.showNavbar = true;
-            $rootScope.$on('alarmMessage', vm.receivedAlarmMessage);
+            $rootScope.$on('alarmMessage', receivedAlarmMessage);
 
             syncTimeWithServer();
             $interval(updateTimeDisplay, 1000); //update local clock every second
@@ -240,10 +240,19 @@
 
         //these alarm collections are modified in alarms/alarms.js
         //just so you know
+        //TODO move them all into a service
         $rootScope.alarmsData = [];
         $rootScope.knownAlarmsData = [];
 
-        vm.receivedAlarmMessage = function (message) {
+        //for easier testing
+        this.receivedAlarmMessage = receivedAlarmMessage;
+
+        function receivedAlarmMessage(event, message) {
+
+            //TODO remove this test code
+            //if (!$rootScope.showAlarms) {
+            //    return;
+            //}
 
             if (message.severity === 'nominal') {
                 return;
@@ -289,7 +298,7 @@
                     KatGuiUtil.removeFirstFromArrayWhereProperty($rootScope.knownAlarmsData, 'name', message.name);
                 }
             }
-        };
+        }
 
         //so that all controllers and directives has access to which keyboard presses is happening
         document.onkeydown = function(event) {
@@ -492,28 +501,31 @@
     //this function includes the style sheets instead of having to link to each individually
     function configureThemes($mdThemingProvider) {
         //$mdThemingProvider.theme('default')
-        //    .primaryPalette('indigo');
+        //    .primaryColor('indigo');
         //
         $mdThemingProvider.theme('indigo')
-            .primaryPalette('indigo');
+            .primaryColor('indigo');
 
         $mdThemingProvider.theme('blue')
-            .primaryPalette('blue');
+            .primaryColor('blue');
+
+        $mdThemingProvider.theme('green')
+            .primaryColor('green');
 
         $mdThemingProvider.theme('blue-grey')
-            .primaryPalette('blue-grey');
+            .primaryColor('blue-grey');
 
         $mdThemingProvider.theme('deep-purple')
-            .primaryPalette('deep-purple');
+            .primaryColor('deep-purple');
 
         $mdThemingProvider.theme('teal')
-            .primaryPalette('teal');
+            .primaryColor('teal');
 
         $mdThemingProvider.theme('yellow')
-            .primaryPalette('yellow');
+            .primaryColor('yellow');
 
         $mdThemingProvider.theme('amber')
-            .primaryPalette('amber');
+            .primaryColor('amber');
 
         //$mdThemingProvider.theme('light-blue-dark')
         //    .primaryColor('red');

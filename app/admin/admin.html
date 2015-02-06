@@ -35,7 +35,7 @@
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
                 <md-checkbox class="fade-in" aria-label="Show Deactivated Users" ng-show="showUserTools" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users
                 </md-checkbox>
-                <md-input-container ng-show="showUserTools" md-theme="none" style="font-size: 12px; margin-top: -12px;" class="fade-in" focus flex>
+                <md-input-container ng-show="showUserTools" md-theme="default" style="font-size: 12px; margin-top: -12px;" class="fade-in" focus flex>
                     <label>Search Users...</label>
                     <input ng-model-options="{ debounce: 300 }" ng-model="q">
                 </md-input-container>
