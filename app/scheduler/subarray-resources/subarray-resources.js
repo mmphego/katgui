@@ -24,7 +24,7 @@
                     $timeout(function () {
                         ObservationScheduleService.listPoolResources()
                             .then(listProcessingComplete, listProcessingError);
-                    }, 400);
+                    }, 200);
                 });
         };
 
