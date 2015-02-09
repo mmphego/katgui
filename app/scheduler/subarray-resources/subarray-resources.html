@@ -5,7 +5,7 @@
              style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false"
              md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}">
 
-            <div layout="column" layout-align="center center" class="subarray-item">
+            <div layout="column" layout-align="start" class="subarray-item">
                 <md-toolbar class="md-whiteframe-z1 md-hue-2" layout="column" layout-align="start center" title="{{subarray.description}}">
                     <!--<div layout="column" style="position: absolute; margin-left: -12px; margin-top: 8px;">-->
                     <!--<md-button class="md-fab md-primary" md-theme="red"-->
@@ -15,28 +15,33 @@
                     <!--</md-button>-->
                     <!--</div>-->
 
-                    <md-button class="md-fab md-primary" md-theme="amber" style="position: absolute; margin-left: -12px; margin-top: 88px; opacity: 0.2"
-                               ng-class="{'opaque-fade-in':subarray.mousehover}"
-                               ng-click="vm.setSubarrayInUse(subarray)" aria-label="Set Subarray In Use"
-                               title="Set Sub-Array In Use">
-                        <span class="fa fa-gear"></span>
-                    </md-button>
-
-                    <md-button class="md-fab md-primary" md-theme="deep-purple" style="position: absolute; margin-left: -12px; margin-top: 168px; opacity: 0.1"
-                               ng-class="{'opaque-fade-in':subarray.mousehover}"
-                               ng-click="vm.setSubarrayInMaintenance(subarray)" aria-label="Set Subarray In Maintenance"
-                               title="Set Sub-Array in Maintenance">
-                        <span class="fa fa-wrench"></span>
-                    </md-button>
-
                     <div flex style="width: 100%; text-align: center" ng-class="{'subarray_in_maintenance_bg': subarray.in_maintenance}">
                         <h2>Sub-Array {{subarray.id}}</h2>
                     </div>
                 </md-toolbar>
 
-                <div flex style="margin-top: 8px" ng-include="'images/subarray.svg'"></div>
-                <span ng-if="!subarray.in_maintenance">{{subarray.state}}</span>
-                <span ng-if="subarray.in_maintenance">{{subarray.state}} - in maintenance</span>
+                <div layout="row" layout-align="start">
+                    <div layout="column">
+                        <md-button class="md-raised md-primary" md-theme="amber" ng-class="{'opaque-fade-in':subarray.mousehover}"
+                                   style="opacity: 0.1; width: 31px;" flex
+                                   ng-click="vm.setSubarrayInUse(subarray)" aria-label="Set Subarray In Use"
+                                   title="Set Sub-Array In Use">
+                            <span class="fa fa-gear"></span>
+                        </md-button>
+
+                        <md-button class="md-raised md-primary" md-theme="deep-purple" ng-class="{'opaque-fade-in':subarray.mousehover}"
+                                   style="opacity: 0.1; width: 31px;" flex
+                                   ng-click="vm.setSubarrayInMaintenance(subarray)" aria-label="Set Subarray In Maintenance"
+                                   title="Set Sub-Array in Maintenance">
+                            <span class="fa fa-wrench"></span>
+                        </md-button>
+                    </div>
+                    <div layout="column" layout-align="center center" style="margin-left: 12px">
+                        <div flex style="margin-top: 8px" ng-include="'images/subarray.svg'"></div>
+                        <span ng-if="!subarray.in_maintenance">{{subarray.state}}</span>
+                        <span ng-if="subarray.in_maintenance">{{subarray.state}} - in maintenance</span>
+                    </div>
+                </div>
             </div>
 
             <div class="" style="margin-left: 0px;" layout="column" layout-align="start" flex>
@@ -44,7 +49,7 @@
                 <md-toolbar class="md-whiteframe-z1 md-hue-2">
                     <div layout="row" class="unselectable md-toolbar-tools">
                         <span flex>Resources Assigned to Sub-array</span>
-                        <md-button class="md-fab md-primary" md-theme="green" style="opacity: 0.1"
+                        <md-button class="md-fab md-primary" md-theme="blue" style="opacity: 0.1"
                                    ng-show="subarray.state !== 'in_use'"
                                    ng-class="{'opaque-fade-in':subarray.mousehover}"
                                    ng-click="vm.freeSubarray(subarray)" aria-label="Free Subarray">
@@ -74,7 +79,7 @@
                 </div>
             </div>
 
-            <md-button md-theme="{{themePrimaryButtons}}" style="min-height: 100%; width: 31px; margin-left: 4px;"
+            <md-button md-theme="blue-grey" style="min-height: 100%; width: 31px; margin-left: 4px;"
                        aria-label="Assign Resources" class="md-raised md-primary"
                        ng-click="vm.assignSelectedResources(subarray);" title="Assign Resources to Sub-Array">
                 <span class="fa fa-chevron-left md-fab-fa-icon-small"></span>
@@ -86,7 +91,7 @@
         <!--</md-button>-->
     </div>
 
-    <div flex layout="column" style="max-width:300px; min-height: 600px; margin-left:8px; margin-right: 16px; margin-bottom: 16px;">
+    <div flex layout="column" style="max-width:350px; min-height: 600px; margin-left:8px; margin-right: 16px; margin-bottom: 16px;">
 
         <div flex layout="column" class="md-whiteframe-z1" style="margin-bottom: 8px;">
             <md-toolbar class="md-whiteframe-z1" layout="column" layout-align="start center" title="">
