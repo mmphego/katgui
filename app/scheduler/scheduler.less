@@ -380,8 +380,8 @@
 .animate-repeat-40.ng-move,
 .animate-repeat-40.ng-enter,
 .animate-repeat-40.ng-leave {
-    -webkit-transition: all linear 2s;
-    transition: all linear 0.2s;
+    -webkit-transition: all linear 0.1s;
+    transition: all linear 0.1s;
 }
 
 .animate-repeat-40.ng-leave.ng-leave-active,
@@ -518,4 +518,29 @@
 
 .svg-receptor-with-opacity {
     fill: currentColor !important;
+}
+
+.subarray_in_maintenance_bg {
+    background-color: rgb(94,53,177);
+    color: white;
+}
+
+.opaque-fade-in {
+    opacity: 1.0 !important;
+    transition: all linear 0.2s !important;
+}
+
+/* Initial state when showing */
+.opaque-fade-in.opaque-fade-in-remove {
+    opacity: 0.2 !important;
+}
+
+/* Will transition towards this state */
+.opaque-fade-in.opaque-fade-in-add.opaque-fade-in-active {
+    opacity: 1 !important;
+}
+
+/* Will transition towards this state */
+.opaque-fade-in.opaque-fade-in-remove.opaque-fade-in-remove-active {
+    opacity: 0.2 !important;
 }

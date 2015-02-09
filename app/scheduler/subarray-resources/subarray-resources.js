@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($scope, ObservationScheduleService, $timeout, $mdDialog) {
+    function SubArrayResourcesCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, $rootScope, $document) {
 
         var vm = this;
 
@@ -23,8 +23,7 @@
                 .then(function () {
                     $timeout(function () {
                         ObservationScheduleService.listPoolResources()
-                            .then(listProcessingComplete, listProcessingError)
-                            .then(combineResults);
+                            .then(listProcessingComplete, listProcessingError);
                     }, 400);
                 });
         };
@@ -39,7 +38,7 @@
             });
             var itemsString = itemsAssigned.join(',');
             ObservationScheduleService.assignResourcesToSubarray(subarray.id, itemsString)
-                .then(vm.refreshResources);
+                .then(displayPromiseResult);
         };
 
         vm.removeSubarray = function (subarray) {
@@ -54,7 +53,32 @@
         vm.freeAssignedResource = function (subarray, resource) {
 
             ObservationScheduleService.unassignResourcesFromSubarray(subarray.id, resource.name)
+                .then(displayPromiseResult);
+        };
+
+        vm.freeSubarray = function (subarray) {
+            ObservationScheduleService.freeSubarray(subarray.id)
                 .then(vm.refreshResources);
+        };
+
+        vm.setSubarrayInUse = function (subarray) {
+            ObservationScheduleService.setSubarrayInUse(subarray.id,  subarray.state === "in_use"? 0 : 1)
+                .then(displayPromiseResult);
+        };
+
+        vm.setSubarrayInMaintenance = function (subarray) {
+            ObservationScheduleService.setSubarrayMaintenance(subarray.id, subarray.in_maintenance? 0 : 1)
+                .then(displayPromiseResult);
+        };
+
+        vm.markResourceFaulty = function (resource) {
+            ObservationScheduleService.markResourceFaulty(resource.name, resource.state === 'faulty'? 0 : 1)
+                .then(displayPromiseResult);
+        };
+
+        vm.markResourceInMaintenance = function (resource) {
+            ObservationScheduleService.markResourceInMaintenance(resource.name, resource.in_maintenance? 0 : 1)
+                .then(displayPromiseResult);
         };
 
         function listProcessingComplete(result) {
@@ -79,20 +103,43 @@
             }, 100);
         }
 
-        function combineResults() {
-            //ObservationScheduleService.subarrays.forEach(function (subarray) {
-            //    if (!subarray.poolResources) {
-            //        subarray.poolResources = [];
-            //    }
-                //ObservationScheduleService.poolResources.forEach(function (poolResources) {
-                //    if (poolResources.sub_nr === subarray.id) {
-                //        if (poolResources.pool_resources !== "") {
-                //            subarray.poolResources.push(poolResources.pool_resources);
-                //        }
-                //    }
-                //});
-            //});
+        function showSimpleErrorDialog(title, message) {
+            var alert = $mdDialog.alert()
+                .title(title)
+                .content(message)
+                .ok('Close');
+            $mdDialog
+                .show(alert)
+                .finally(function () {
+                    alert = undefined;
+                });
         }
+
+        function displayPromiseResult(result) {
+            if (result.result === 'ok') {
+                $rootScope.showSimpleToast(result.message);
+            } else {
+                showSimpleErrorDialog(result.result, result.message);
+            }
+        }
+
+        var unbindShortcuts = $document.bind("keydown", function (e) {
+
+            if (e.keyCode === 27) {
+                //clear selection when pressing escape
+                ObservationScheduleService.poolResourcesFree.forEach(function (item) {
+                   item.selected = false;
+                });
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        });
+
+        $scope.$on('$destroy', function () {
+            unbindShortcuts.unbind('keydown');
+        });
 
         $timeout(vm.refreshResources, 500);
     }

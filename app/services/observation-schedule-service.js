@@ -55,6 +55,7 @@
                 console.error(e.data);
             } else {
                 var result = jsonData.result;
+                console.log(result);
 
                 if (result.get_schedule_blocks) {
                     result.get_schedule_blocks.forEach(function (item) {
@@ -190,14 +191,14 @@
                     allocationsResult.forEach(function (item) {
                         api.allocations.push(item);
                     });
-                }  else if (result.list_pool_resources) {
+                } else if (result.list_pool_resources) {
 
                     var listPoolResources = JSON.parse(result.list_pool_resources);
                     listPoolResources.forEach(function (item) {
                         if (item.sub_nr === 'free') {
-                                item.pool_resources.forEach(function (resourceItem) {
-                                    api.poolResourcesFree.push(resourceItem);
-                                });
+                            item.pool_resources.forEach(function (resourceItem) {
+                                api.poolResourcesFree.push(resourceItem);
+                            });
                         } else {
                             for (var i = 0; i < item.pool_resources.length; i++) {
                                 item.pool_resources[i].sub_nr = item.sub_nr;
@@ -220,10 +221,77 @@
                     });
                 } else if (result.assign_resources_to_subarray) {
 
-                    console.log(result.assign_resources_to_subarray);
+                    jsonData.clientResult = parseKATCPMessageResult(result.assign_resources_to_subarray.result);
+
+                    if (jsonData.clientResult.result === 'ok') {
+                        var resources_assigned_list = result.assign_resources_to_subarray.resources_list.split(',');
+                        resources_assigned_list.forEach(function (item) {
+                            var updatedResource = _.findWhere(api.poolResourcesFree, {name: item});
+                            var updatedResourceIndex = _.indexOf(api.poolResourcesFree, updatedResource);
+                            api.poolResourcesFree.splice(updatedResourceIndex, 1);
+                            updatedResource.sub_nr = result.assign_resources_to_subarray.sub_nr;
+                            updatedResource.selected = false;
+                            api.poolResources.push(updatedResource);
+                        });
+                    }
+
                 } else if (result.unassign_resources_from_subarray) {
 
-                    console.log(result.unassign_resources_from_subarray);
+                    jsonData.clientResult = parseKATCPMessageResult(result.unassign_resources_from_subarray.result);
+                    if (jsonData.clientResult.result === 'ok') {
+
+                        var resources_unassigned_list = result.unassign_resources_from_subarray.resources_list.split(',');
+
+                        resources_unassigned_list.forEach(function (item) {
+                            var updatedResource = _.findWhere(api.poolResources, {name: item});
+                            var updatedResourceIndex = _.indexOf(api.poolResources, updatedResource);
+                            api.poolResources.splice(updatedResourceIndex, 1);
+                            updatedResource.sub_nr = "free";
+                            api.poolResourcesFree.push(updatedResource);
+                        });
+                    }
+
+                } else if (result.set_subarray_in_use) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_subarray_in_use.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.set_subarray_in_use.sub_nr}))]
+                            .state = result.set_subarray_in_use.in_use ? 'in_use' : 'free';
+                    }
+
+                } else if (result.set_subarray_in_maintenance) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_subarray_in_maintenance.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.set_subarray_in_maintenance.sub_nr}))]
+                            .in_maintenance = result.set_subarray_in_maintenance.in_maintenance;
+                    }
+
+                } else if (result.set_resources_faulty) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_resources_faulty.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var updatedResource = _.findWhere(api.poolResources, {name: result.set_resources_faulty.resources_list});
+                        if (!updatedResource) {
+                            updatedResource = _.findWhere(api.poolResourcesFree, {name: result.set_resources_faulty.resources_list});
+                        }
+                        updatedResource.state = result.set_resources_faulty.faulty? 'faulty' : 'ok';
+                    }
+
+                } else if (result.set_resources_in_maintenance) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_resources_in_maintenance.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var updatedResourceM = _.findWhere(api.poolResources, {name: result.set_resources_in_maintenance.resources_list});
+                        if (!updatedResourceM) {
+                            updatedResourceM = _.findWhere(api.poolResourcesFree, {name: result.set_resources_in_maintenance.resources_list});
+                        }
+                        updatedResourceM.in_maintenance = result.set_resources_in_maintenance.in_maintenance;
+                    }
+
+                } else if (result.free_subarray) {
+
+                    console.log(result.free_subarray);
                 } else if (!result.email && result.session_id) {
 
                     console.warn('Observation Schedule returned an unfamiliar message: ');
@@ -233,9 +301,17 @@
                 }
 
                 if (deferredMap[jsonData.id]) {
-                    deferredMap[jsonData.id].resolve(jsonData.id);
+                    deferredMap[jsonData.id].resolve(jsonData.clientResult);
                 }
             }
+        }
+
+        function parseKATCPMessageResult(message) {
+            var messageList = message.split(' ');
+            return {
+                result: messageList[1],
+                message: messageList[2].replace(new RegExp('\\\\_', 'g'), ' ').split('\\n').join('|')
+            };
         }
 
         function addItemToApplicableDataModel(item) {
@@ -358,28 +434,48 @@
             return createCommandPromise(sendObsSchedCommand('list_all_allocations', []));
         };
 
-        api.listPoolResources = function() {
+        api.listPoolResources = function () {
             api.poolResourcesFree.splice(0, api.poolResourcesFree.length);
             api.poolResources.splice(0, api.poolResources.length);
             return createCommandPromise(sendObsSchedCommand('list_pool_resources', []));
         };
 
-        api.listResources = function() {
+        api.listResources = function () {
             api.resources.splice(0, api.resources.length);
             return createCommandPromise(sendObsSchedCommand('list_resources', []));
         };
 
-        api.listSubarrays = function() {
+        api.listSubarrays = function () {
             api.subarrays.splice(0, api.subarrays.length);
             return createCommandPromise(sendObsSchedCommand('list_subarrays', []));
         };
 
-        api.assignResourcesToSubarray = function(subarray, resources) {
+        api.assignResourcesToSubarray = function (subarray, resources) {
             return createCommandPromise(sendObsSchedCommand('assign_resources_to_subarray', [subarray, resources]));
         };
 
-        api.unassignResourcesFromSubarray = function(subarray, resources) {
+        api.unassignResourcesFromSubarray = function (subarray, resources) {
             return createCommandPromise(sendObsSchedCommand('unassign_resources_from_subarray', [subarray, resources]));
+        };
+
+        api.setSubarrayInUse = function (subarray, set_to) {
+            return createCommandPromise(sendObsSchedCommand('set_subarray_in_use', [subarray, set_to])); //1 for true
+        };
+
+        api.setSubarrayMaintenance = function (subarray, set_to) {
+            return createCommandPromise(sendObsSchedCommand('set_subarray_in_maintenance', [subarray, set_to])); //1 for true
+        };
+
+        api.freeSubarray = function (subarray) {
+            return createCommandPromise(sendObsSchedCommand('free_subarray', [subarray]));
+        };
+
+        api.markResourceFaulty = function (resource, faulty) {
+            return createCommandPromise(sendObsSchedCommand('set_resources_faulty', [resource, faulty]));
+        };
+
+        api.markResourceInMaintenance = function (resource, in_maintenance) {
+            return createCommandPromise(sendObsSchedCommand('set_resources_in_maintenance', [resource, in_maintenance]));
         };
 
         function createCommandPromise(promiseId) {

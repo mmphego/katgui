@@ -1,38 +1,71 @@
 <div flex layout="row" style="min-width: 1015px; min-height: 920px;" ng-controller="SubArrayResourcesCtrl as vm">
 
     <div flex layout="column" style="overflow: auto; padding: 16px;">
-        <div ng-repeat="subarray in vm.subarrays track by subarray.id" class="md-whiteframe-z2 subarray-container" layout="row" layout-align="start"
-             style="min-width: 650px;"
-             md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'inUse'? 'amber' : 'deep-purple'}}">
+        <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container" layout="row" layout-align="start"
+             style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false"
+             md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}">
 
-            <md-toolbar class="subarray-item md-whiteframe-z1 md-hue-2" layout="column" layout-align="start center" title="{{subarray.description}}">
-                <md-button class="md-fab md-primary" md-theme="{{themePrimaryButtons}}" style="position: absolute; margin-left: -12px; margin-top: 8px;"
-                           ng-click="vm.removeSubarray(subarray)" aria-label="Remove Subarray">
-                    <span class="fa fa-minus"></span>
-                    <md-tooltip>Remove Sub-Array</md-tooltip>
-                </md-button>
+            <div layout="column" layout-align="center center" class="subarray-item">
+                <md-toolbar class="md-whiteframe-z1 md-hue-2" layout="column" layout-align="start center" title="{{subarray.description}}">
+                    <!--<div layout="column" style="position: absolute; margin-left: -12px; margin-top: 8px;">-->
+                    <!--<md-button class="md-fab md-primary" md-theme="red"-->
+                    <!--ng-click="vm.removeSubarray(subarray)" aria-label="Remove Subarray">-->
+                    <!--<span class="fa fa-minus"></span>-->
+                    <!--<md-tooltip>Remove Sub-Array</md-tooltip>-->
+                    <!--</md-button>-->
+                    <!--</div>-->
 
-                <h2>Sub-Array {{subarray.id}}</h2>
+                    <md-button class="md-fab md-primary" md-theme="amber" style="position: absolute; margin-left: -12px; margin-top: 88px; opacity: 0.2"
+                               ng-class="{'opaque-fade-in':subarray.mousehover}"
+                               ng-click="vm.setSubarrayInUse(subarray)" aria-label="Set Subarray In Use"
+                               title="Set Sub-Array In Use">
+                        <span class="fa fa-gear"></span>
+                    </md-button>
 
-                <div ng-include="'images/subarray.svg'"></div>
-                <span>{{subarray.state}}</span>
-            </md-toolbar>
+                    <md-button class="md-fab md-primary" md-theme="deep-purple" style="position: absolute; margin-left: -12px; margin-top: 168px; opacity: 0.1"
+                               ng-class="{'opaque-fade-in':subarray.mousehover}"
+                               ng-click="vm.setSubarrayInMaintenance(subarray)" aria-label="Set Subarray In Maintenance"
+                               title="Set Sub-Array in Maintenance">
+                        <span class="fa fa-wrench"></span>
+                    </md-button>
+
+                    <div flex style="width: 100%; text-align: center" ng-class="{'subarray_in_maintenance_bg': subarray.in_maintenance}">
+                        <h2>Sub-Array {{subarray.id}}</h2>
+                    </div>
+                </md-toolbar>
+
+                <div flex style="margin-top: 8px" ng-include="'images/subarray.svg'"></div>
+                <span ng-if="!subarray.in_maintenance">{{subarray.state}}</span>
+                <span ng-if="subarray.in_maintenance">{{subarray.state}} - in maintenance</span>
+            </div>
 
             <div class="md-whiteframe-z1" style="margin-left: 2px;" layout="column" layout-align="start" flex>
 
                 <md-toolbar class="md-whiteframe-z1 md-hue-2">
                     <div layout="row" class="unselectable md-toolbar-tools">
                         <span flex>Resources Assigned to Sub-array</span>
+                        <md-button class="md-fab md-primary" md-theme="green" style="opacity: 0.1"
+                                   ng-show="subarray.state !== 'in_use'"
+                                   ng-class="{'opaque-fade-in':subarray.mousehover}"
+                                   ng-click="vm.freeSubarray(subarray)" aria-label="Free Subarray">
+                            <span class="fa fa-asterisk"></span>
+                            <md-tooltip>Free Sub-Array</md-tooltip>
+                        </md-button>
                     </div>
 
                 </md-toolbar>
                 <div flex style="overflow: auto;">
                     <!--<div flex ng-if="poolResources.length === 0">-->
-                        <!--<span>No Resources Assigned</span>-->
+                    <!--<span>No Resources Assigned</span>-->
                     <!--</div>-->
                     <div flex class="resource-item animate-repeat-40" layout="row" layout-align="start center"
-                         ng-repeat="resource in vm.poolResources | filter:{sub_nr:subarray.id}">
-                        <span flex style="font-size:14px">{{resource.name}}</span>
+                         ng-repeat="resource in vm.poolResources | filter:{sub_nr:subarray.id} | orderBy:'name'">
+                        <span class="fa" style="font-size: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
+                        <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty'}">{{resource.name}}</span>
+                        <md-button ng-click="vm.markResourceFaulty(resource)" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
+                                   title="Mark Resource As Faulty">
+                            <span class="fa fa-exclamation-circle md-fab-fa-icon-small"></span>
+                        </md-button>
                         <md-button ng-click="vm.freeAssignedResource(subarray, resource)" style="height:38px; width:38px;" aria-label="Free Resource"
                                    title="Free Assigned Resource">
                             <span class="fa fa-minus md-fab-fa-icon-small"></span>
@@ -41,61 +74,42 @@
                 </div>
             </div>
 
-            <md-button md-theme="{{themePrimaryButtons}}" style="min-height: 100%; width: 49px; margin-left: 4px;"
+            <md-button md-theme="{{themePrimaryButtons}}" style="min-height: 100%; width: 31px; margin-left: 4px;"
                        aria-label="Assign Resources" class="md-raised md-primary"
                        ng-click="vm.assignSelectedResources(subarray);" title="Assign Resources to Sub-Array">
                 <span class="fa fa-chevron-left md-fab-fa-icon-small"></span>
             </md-button>
         </div>
-        <md-button class="md-fab md-primary" md-theme="{{themePrimaryButtons}}" style="margin: auto; min-height: 56px;"
-                   ng-click="vm.createSubarray()" title="Create Sub-Array" aria-label="Create Subarray">
-            <span class="fa fa-plus"></span>
-        </md-button>
+        <!--<md-button class="md-fab md-primary" md-theme="{{themePrimaryButtons}}" style="margin: auto; min-height: 56px;"-->
+        <!--ng-click="vm.createSubarray()" title="Create Sub-Array" aria-label="Create Subarray">-->
+        <!--<span class="fa fa-plus"></span>-->
+        <!--</md-button>-->
     </div>
 
     <div flex layout="column" style="max-width:500px; min-height: 600px; margin-left:8px; margin-right: 16px; margin-bottom: 16px;">
 
         <div flex layout="column" class="md-whiteframe-z1" style="margin-bottom: 8px;">
             <md-toolbar class="md-whiteframe-z1" layout="column" layout-align="start center" title="">
-                <span flex class="md-toolbar-tools">Free Resources</span>
+                <span flex class="md-toolbar-tools">Resources</span>
             </md-toolbar>
 
             <div flex style="overflow: auto">
-                <div class="resource-item animate-repeat-40" layout="column" layout-align="center start"
-                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | filter:{state: 'ok'} | orderBy:'name')"
+                <div class="resource-item animate-repeat-40" layout="row" layout-align="start center"
+                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | orderBy:'name')"
                      ng-class="{'selected-resource-item': resource.selected}"
                      ng-click="resource.selected = !resource.selected;">
-                    <span style="font-size:18px">{{resource.name}}</span>
-                </div>
-            </div>
-        </div>
-
-        <div flex layout="column" class="md-whiteframe-z1" style="margin-bottom: 8px;">
-            <md-toolbar class="md-whiteframe-z1" layout="column" layout-align="start center">
-                <span flex class="md-toolbar-tools">Maintenance Resources</span>
-            </md-toolbar>
-
-            <div style="overflow: auto;">
-                <div class="resource-item animate-repeat-40" layout="column" layout-align="center start"
-                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | filter:{state: 'maintenance'} | orderBy:'name')"
-                     <!--ng-class="{'selected-resource-item': resource.selected}"-->
-                     <!--ng-click="resource.selected = !resource.selected;">-->
-                    <span style="font-size:18px">{{resource.name}}</span>
-                </div>
-            </div>
-        </div>
-
-        <div flex layout="column" class="md-whiteframe-z1">
-            <md-toolbar class="md-whiteframe-z1" layout="column" layout-align="start center">
-                <span flex class="md-toolbar-tools">Faulty Resources</span>
-            </md-toolbar>
-
-            <div style="overflow: auto;">
-                <div class="resource-item animate-repeat-40" layout="column" layout-align="center start"
-                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | filter:{state: 'faulty'} | orderBy:'name')"
-                     <!--ng-class="{'selected-resource-item': resource.selected}"-->
-                     <!--ng-click="resource.selected = !resource.selected;">-->
-                    <span style="font-size:18px">{{resource.name}}</span>
+                    <span class="fa" style="font-size: 18px; min-width: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
+                    <span class="fa fa-wrench" ng-if="resource.in_maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"
+                          ng-class="{'error-text':resource.state === 'faulty'}"></span>
+                    <span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.state === 'faulty'}">{{resource.name}}</span>
+                    <md-button ng-click="vm.markResourceFaulty(resource)" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
+                               title="Mark Resource As Faulty">
+                        <span class="fa fa-exclamation-circle md-fab-fa-icon-small"></span>
+                    </md-button>
+                    <md-button ng-click="vm.markResourceInMaintenance(resource)" style="height:38px; width:38px;" aria-label="Mark Resource in Maintenance"
+                               title="Mark Resource in Maintenance">
+                        <span class="fa fa-wrench md-fab-fa-icon-small"></span>
+                    </md-button>
                 </div>
             </div>
         </div>
