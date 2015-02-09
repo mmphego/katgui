@@ -2,29 +2,23 @@
 
     <div flex layout="column" style="overflow: auto; padding: 16px;">
         <div ng-repeat="subarray in vm.subarrays track by subarray.id" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
-             md-theme="{{subarray.state === 'free'? 'teal' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}">
+             md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}">
 
-            <md-toolbar class="subarray-item md-whiteframe-z1" layout="column" layout-align="start center" title="{{::subarray.description}}">
+            <div layout="column" layout-align="start" style="width: 220px; min-height: 295px; max-height: 295px">
+                <md-toolbar flex class="md-hue-2" layout="column" style="min-height: 74px;" title="{{::subarray.description}}">
+                    <h2 style="text-align: center">Sub-Array {{::subarray.id}}</h2>
+                </md-toolbar>
+                <div layout="column" layout-align="center center" style="margin: 4px; height: 220px;">
+                    <div ng-include="'images/subarray.svg'"></div>
+                    <span style="font-weight: bold" ng-if="subarray.description">{{::subarray.description}}</span>
+                    <span>{{::subarray.state}}</span>
+                </div>
+            </div>
 
-                <h2>Sub-Array {{::subarray.id}}</h2>
-
-                <div ng-include="'images/subarray.svg'"></div>
-                <span style="font-weight: bold" ng-if="subarray.description">{{::subarray.description}}</span>
-                <span>{{::subarray.state}}</span>
-                <!--<div flex layout="column" layout-align="start center" style="width: 100%; padding: 8px; overflow: hidden; ">-->
-                <!--<span style="overflow: hidden; text-overflow: ellipsis;">{{::subarray.description}}</span>-->
-                <!--</div>-->
-            </md-toolbar>
-
-            <div class="md-whiteframe-z1" style="margin-left: 2px;" layout="column" flex>
-                <md-toolbar class="md-whiteframe-z1">
+            <div class="" layout="column" flex>
+                <md-toolbar class="md-whiteframe-z1 md-hue-2">
                     <div layout="row" class="unselectable md-toolbar-tools-small">
                         <span flex>Draft Schedule Blocks</span>
-                        <!--<md-button aria-label="Add A Schedule" style="font-size: 16px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"-->
-                        <!--ng-click="console.log('add a schedule not implemented yet')">-->
-                        <!--<span class="fa fa-plus-circle"></span>-->
-                        <!--<md-tooltip>Add A Schedule</md-tooltip>-->
-                        <!--</md-button>-->
                     </div>
 
                     <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="start center">
@@ -55,7 +49,7 @@
                         <span style="min-width: 48px;"></span>
                     </div>
                 </md-toolbar>
-                <div flex class="schedule-draft-data-list">
+                <div flex class="schedule-draft-data-list" style="border-left: 1px solid #d3d3d3; border-right: 1px solid #d3d3d3">
                     <!--| filter:{sub_nr: subarray.id}-->
                     <div ng-repeat="item in subarray.scheduleBlocks track by item.id_code" style="min-width: 650px !important;"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
@@ -82,7 +76,7 @@
                 </div>
             </div>
 
-            <md-button md-theme="{{themePrimaryButtons}}" style="min-height: 100%; width: 49px; margin-left: 4px;"
+            <md-button md-theme="blue-grey" style="min-height: 100%; width: 31px; margin-left: 4px;"
                        aria-label="Assign SB" class="md-primary md-raised"
                        ng-click="vm.assignSelectedScheduleBlocks(subarray);" title="Assign Schedule Blocks to Sub-Array">
                 <span class="fa fa-chevron-left md-fab-fa-icon-small"></span>
@@ -90,7 +84,7 @@
         </div>
     </div>
 
-    <div layout="row" style="min-height: 500px; max-width: 500px; min-width: 500px; margin-left: 8px; padding: 16px;" class="md-whitespace-z1">
+    <div layout="row" style="min-height: 500px; max-width: 500px; min-width: 500px; padding: 16px;" class="md-whitespace-z1">
         <div class="md-whiteframe-z2" layout="column" flex>
             <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
                 <div layout="row" class="unselectable md-toolbar-tools">

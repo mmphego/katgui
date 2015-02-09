@@ -23,14 +23,14 @@
                 <div layout="row" layout-align="start">
                     <div layout="column">
                         <md-button class="md-raised md-primary" md-theme="amber" ng-class="{'opaque-fade-in':subarray.mousehover}"
-                                   style="opacity: 0.1; width: 31px;" flex
+                                   style="opacity: 0.1; width: 31px; margin-top: 4px" flex
                                    ng-click="vm.setSubarrayInUse(subarray)" aria-label="Set Subarray In Use"
                                    title="Set Sub-Array In Use">
                             <span class="fa fa-gear"></span>
                         </md-button>
 
                         <md-button class="md-raised md-primary" md-theme="deep-purple" ng-class="{'opaque-fade-in':subarray.mousehover}"
-                                   style="opacity: 0.1; width: 31px;" flex
+                                   style="opacity: 0.1; width: 31px; margin-top: 4px; margin-bottom: 4px" flex
                                    ng-click="vm.setSubarrayInMaintenance(subarray)" aria-label="Set Subarray In Maintenance"
                                    title="Set Sub-Array in Maintenance">
                             <span class="fa fa-wrench"></span>
@@ -49,7 +49,7 @@
                 <md-toolbar class="md-whiteframe-z1 md-hue-2">
                     <div layout="row" class="unselectable md-toolbar-tools">
                         <span flex>Resources Assigned to Sub-array</span>
-                        <md-button class="md-fab md-primary" md-theme="blue" style="opacity: 0.1"
+                        <md-button class="md-fab md-primary" md-theme="blue" style="opacity: 0.01"
                                    ng-show="subarray.state !== 'in_use'"
                                    ng-class="{'opaque-fade-in':subarray.mousehover}"
                                    ng-click="vm.freeSubarray(subarray)" aria-label="Free Subarray">
@@ -91,9 +91,9 @@
         <!--</md-button>-->
     </div>
 
-    <div flex layout="column" style="max-width:350px; min-height: 600px; margin-left:8px; margin-right: 16px; margin-bottom: 16px;">
+    <div flex layout="column" style="max-width:350px; min-height: 600px; margin-right: 16px; margin-bottom: 16px;">
 
-        <div flex layout="column" class="md-whiteframe-z1" style="margin-bottom: 8px;">
+        <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
             <md-toolbar class="md-whiteframe-z1" layout="column" layout-align="start center" title="">
                 <span flex class="md-toolbar-tools">Resources</span>
             </md-toolbar>

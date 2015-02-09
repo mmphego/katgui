@@ -25,11 +25,6 @@
             }
         });
 
-        //for testing the api
-        //$timeout(function () {
-        //    ObservationScheduleService.listPoolResources();
-        //}, 1000);
-
         $scope.$on('$destroy', function () {
             unbindStateChangeStart();
             ObservationScheduleService.disconnectListener();
