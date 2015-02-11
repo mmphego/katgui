@@ -31,7 +31,7 @@
     "angular-dashboard-framework": "0.3.2",
     "angular-bootstrap-datetimepicker": "latest",
     "ngstorage": "~0.3",
-    "angular-gantt": "~1.0.0",
+    "angular-gantt": "~1.1",
     "angular-aria": "~1.3",
     "hammerjs": "~2.0.4",
     "cryptojslib": "3.1.2",

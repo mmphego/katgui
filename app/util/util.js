@@ -223,7 +223,7 @@ function katGuiUtil() {
     function declination(day, month, year, UT) {
 
         var K = Math.PI / 180.0;
-        var jd = this.julianDay(day, month, year, UT);
+        var jd = this.julianDayWithTime(day, month, year, UT);
         var T = (jd - 2451545.0) / 36525.0;
         var L0 = 280.46645 + (36000.76983 + 0.0003032 * T) * T;
         var M = 357.52910 + (35999.05030 - (0.0001559 * T + 0.00000048 * T) * T) * T;

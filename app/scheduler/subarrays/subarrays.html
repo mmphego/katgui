@@ -1,17 +1,20 @@
 <div layout="row" layout-align="start" style="min-width: 1515px; min-height: 850px;" ng-controller="SubArraysCtrl as vm">
 
     <div flex layout="column" style="overflow: auto; padding: 16px;">
-        <div ng-repeat="subarray in vm.subarrays track by subarray.id" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
+        <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
              md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}">
 
             <div layout="column" layout-align="start" style="width: 220px; min-height: 295px; max-height: 295px">
                 <md-toolbar flex class="md-hue-2" layout="column" style="min-height: 74px;" title="{{::subarray.description}}">
-                    <h2 style="text-align: center">Sub-Array {{::subarray.id}}</h2>
+                    <div flex style="width: 100%; text-align: center" ng-class="{'subarray_in_maintenance_bg': subarray.in_maintenance}">
+                        <h2>Sub-Array {{subarray.id}}</h2>
+                    </div>
                 </md-toolbar>
                 <div layout="column" layout-align="center center" style="margin: 4px; height: 220px;">
                     <div ng-include="'images/subarray.svg'"></div>
                     <span style="font-weight: bold" ng-if="subarray.description">{{::subarray.description}}</span>
-                    <span>{{::subarray.state}}</span>
+                    <span ng-if="!subarray.in_maintenance">{{subarray.state}}</span>
+                    <span ng-if="subarray.in_maintenance">{{subarray.state}} - in maintenance</span>
                 </div>
             </div>
 

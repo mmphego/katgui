@@ -11,7 +11,7 @@
 
         var jwtHeader = {
             "alg": "HS256",
-            "type": "JWT"
+            "typ": "JWT"
         };
 
         api.login = function (email, password) {

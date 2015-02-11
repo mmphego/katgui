@@ -86,6 +86,15 @@
                 .then(draftListProcessingComplete, draftListProcessingError);
         };
 
+        vm.saveAllDirtyDrafts = function () {
+            //vm.draftListProcessingServerCall = true;
+            vm.scheduleDraftData.forEach(function (item) {
+                if (item.isDirty) {
+                    ObservationScheduleService.updateScheduleDraft(item);
+                }
+            });
+        };
+
         vm.removeSelectedDraftRow = function () {
             if (vm.selectedScheduleDraft) {
                 vm.removeDraftRow(vm.selectedScheduleDraft);

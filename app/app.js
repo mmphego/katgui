@@ -218,6 +218,7 @@
                 var longitude = 21.3692096; //site longitude
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(utcTime.date(), utcTime.month() + 1, utcTime.year(), fractionalHours);
+                vm.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
                 vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, longitude);
                 $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
             }
@@ -227,8 +228,8 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
-                    vm.julianDay = KatGuiUtil.julianDay(utcTime.date(), utcTime.month() + 1, utcTime.year());
+                    //var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
+                    //vm.julianDay = KatGuiUtil.julianDay(utcTime.date(), utcTime.month() + 1, utcTime.year());
                     console.log('Syncing current time with katcontrol server (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
