@@ -66,6 +66,7 @@
                     <div flex class="resource-item animate-repeat-40" layout="row" layout-align="start center"
                          ng-repeat="resource in vm.poolResources | filter:{sub_nr:subarray.id} | orderBy:'name'">
                         <span class="fa" style="font-size: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
+                        <span class="fa" style="font-size: 18px;" ng-class="{'fa-wrench':resource.in_maintenance}" title="Resource Marked Faulty"></span>
                         <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty'}">{{resource.name}}</span>
                         <md-button ng-click="vm.markResourceFaulty(resource)" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
                                    title="Mark Resource As Faulty">
