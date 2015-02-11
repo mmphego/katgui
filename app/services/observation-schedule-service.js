@@ -389,8 +389,7 @@
                 scheduleBlockDraft.type,
                 scheduleBlockDraft.instruction_set,
                 scheduleBlockDraft.description,
-                scheduleBlockDraft.desired_start_time,
-                scheduleBlockDraft.sub_nr]));
+                scheduleBlockDraft.desired_start_time]));
         };
 
         api.getScheduleBlocks = function () {

@@ -26,12 +26,6 @@
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
-                <span style="max-width: 90px;min-width: 90px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('sub_nr')">
-                    <span style="padding: 8px">SubArray</span>
-                    <span class="fa"
-                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'sub_nr' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'sub_nr' && vm.draftsOrderBy.reverse}"
-                          style="margin-right: 4px;"></span>
-                </span>
                 <span flex style="width: 180px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('description')">
                     <span style="padding: 8px">Description</span>
                     <span class="fa"
@@ -62,12 +56,6 @@
                         <span class="schedule-block-id-text">{{item.id_code}}</span>
                         <i>{{item.owner}}</i>
                     </div>
-
-                    <input ng-change="item.isDirty = true;" type="number" min="0" max="100" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
-                           aria-label="Subarray Number" class="schedule-item-description-input"
-                           ng-model="item.sub_nr" placeholder="SubNr" style="border:0; max-width: 80px; text-align: center; margin-right:10px"/>
-                    <!--<span class="error" ng-show="input.$error.number">Not valid number!</span>-->
-                    <!--<span style="min-width: 90px; text-align: center;">{{item.sub_nr}}</span>-->
 
                     <input ng-change="item.isDirty = true;" type="text" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
                            aria-label="Description" class="schedule-item-description-input"
@@ -111,8 +99,8 @@
                  ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 
                 <div flex ng-if="vm.selectedScheduleDraft !== null" style="background: white;">
-                            <textarea style="text-overflow: auto;" placeholder="Enter Instruction Set..." auto-grow ng-model="vm.selectedScheduleDraft.instruction_set"
-                                      ng-change="vm.selectedScheduleDraft.isDirty = true"></textarea>
+                            <textarea style="text-overflow: auto;"
+                                auto-grow>{{vm.selectedScheduleDraft | json}}</textarea>
                 </div>
             </div>
         </div>
@@ -135,6 +123,11 @@
             <!--<md-item>-->
             <!--<md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.scheduleSelectedDraft()">Schedule Draft</md-button>-->
             <!--</md-item>-->
+            <md-item ng-if="vm.selectedScheduleDraft.type == 'OBSERVATION'">
+                <md-button role="menuitem" style="width: 170px; font-size:
+                14px; height: 38px; padding: 2px;"
+                ng-click="vm.verifySelectedDraftRow()">Verify Draft</md-button>
+            </md-item>
             <md-item>
                 <md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.removeSelectedDraftRow()">Delete Draft</md-button>
             </md-item>

@@ -12,7 +12,6 @@
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code'},
-            {label: 'Sub Nr', value: 'sub_nr'},
             {label: 'Description', value: 'description'},
             {label: 'Date', value: 'desired_start_time'},
             {label: 'State', value: 'state'},
@@ -95,6 +94,22 @@
             });
         };
 
+        vm.verifySelectedDraftRow = function () {
+            if (vm.selectedScheduleDraft) {
+                vm.verifyDraftRow(vm.selectedScheduleDraft);
+                vm.showEditMenu = false;
+            }
+        };
+
+        vm.verifyDraftRow = function (item) {
+
+            vm.draftListProcessingServerCall = true;
+            ObservationScheduleService.verifyScheduleBlock(item.sub_nr, item.id_code)
+                .then(draftListProcessingComplete, draftListProcessingError);
+
+            vm.selectedScheduleDraft = null;
+        };
+
         vm.removeSelectedDraftRow = function () {
             if (vm.selectedScheduleDraft) {
                 vm.removeDraftRow(vm.selectedScheduleDraft);
@@ -110,7 +125,6 @@
 
             vm.selectedScheduleDraft = null;
         };
-
 
         vm.addDraftSchedule = function () {
             vm.draftListProcessingServerCall = true;
