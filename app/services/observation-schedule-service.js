@@ -58,7 +58,8 @@
                 console.log(result);
 
                 if (result.get_schedule_blocks) {
-                    result.get_schedule_blocks.forEach(function (item) {
+                    var getResult = JSON.parse(result.get_schedule_blocks);
+                    getResult.forEach(function (item) {
                         addItemToApplicableDataModel(item);
                     });
                 } else if (result.get_schedule_block) {
@@ -95,6 +96,22 @@
                     result.create_schedule_block.hasValidInput = false;
                     result.create_schedule_block.isDirty = true;
                     api.scheduleDraftData.push(result.create_schedule_block);
+                } else if (result.assign_schedule_to_subarray) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.assign_schedule_to_subarray.result);
+                    //if (jsonData.clientResult.result === 'ok') {
+                    //    var indexAssign = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.assign_schedule_to_subarray.id_code}));
+                    //    api.scheduleDraftData[indexAssign].sub_nr = result.assign_schedule_to_subarray.sub_nr;
+                    //}
+
+                } else if (result.unassign_schedule_to_subarray) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.unassign_schedule_to_subarray.result);
+                    //if (jsonData.clientResult.result === 'ok') {
+                    //    var indexUnassign = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.unassign_schedule_to_subarray.id_code}));
+                    //    api.scheduleDraftData[indexUnassign].sub_nr = null;
+                    //}
+
                 } else if (result.execute_schedule) {
 
                     var execute_schedule_result = result.execute_schedule.result.split(' ');
@@ -275,7 +292,7 @@
                         if (!updatedResource) {
                             updatedResource = _.findWhere(api.poolResourcesFree, {name: result.set_resources_faulty.resources_list});
                         }
-                        updatedResource.state = result.set_resources_faulty.faulty? 'faulty' : 'ok';
+                        updatedResource.state = result.set_resources_faulty.faulty ? 'faulty' : 'ok';
                     }
 
                 } else if (result.set_resources_in_maintenance) {
@@ -308,9 +325,14 @@
 
         function parseKATCPMessageResult(message) {
             var messageList = message.split(' ');
+            var msg = "";
+
+            if (messageList.count > 1) {
+                msg = messageList[2].replace(new RegExp('\\\\_', 'g'), ' ').split('\\n').join('|');
+            }
             return {
                 result: messageList[1],
-                message: messageList[2].replace(new RegExp('\\\\_', 'g'), ' ').split('\\n').join('|')
+                message: msg
             };
         }
 
@@ -385,6 +407,14 @@
 
         api.createScheduleBlock = function () {
             return createCommandPromise(sendObsSchedCommand('create_schedule_block'));
+        };
+
+        api.assignScheduleBlock = function (subarray_number, id_code) {
+            return createCommandPromise(sendObsSchedCommand('assign_schedule_to_subarray', [subarray_number, id_code]));
+        };
+
+        api.unassignScheduleBlock = function (subarray_number, id_code) {
+            return createCommandPromise(sendObsSchedCommand('unassign_schedule_to_subarray', [subarray_number, id_code]));
         };
 
         api.scheduleDraft = function (subarray_number, id_code) {

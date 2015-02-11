@@ -141,7 +141,7 @@
 
         vm.onTimeSet = function (newDate, oldDate) {
 
-            vm.scheduleDraftData[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY/MM/DD HH:mm:ss');
+            vm.scheduleDraftData[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY-MM-DD HH:mm:ss');
             vm.scheduleDraftData[vm.currentRowDatePickerIndex].isDirty = true;
             vm.showDatePicker = false;
             vm.currentSelectedDate = moment();
@@ -227,7 +227,7 @@
         };
 
         vm.validateInputDate = function (item) {
-            var d = moment(item.desired_start_time, 'YYYY/MM/DD HH:mm:ss');
+            var d = moment(item.desired_start_time, 'YYYY-MM-DD HH:mm:ss');
             item.hasValidInput = d.isValid();
             return d.isValid();
         };

@@ -98,15 +98,17 @@
             </md-toolbar>
             <div class="schedule-draft-data-list" flex>
                 <!--ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"-->
-                <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null}" title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
+                <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} track by item.id_code" title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
                      style="min-width: 710px !important; cursor: pointer !important;"
                      ng-class="{'selected-resource-item': item.selected}"
                      ng-click="item.selected = !item.selected;"
                      class="schedule-draft-item animate-repeat" layout="column" layout-align="center start">
-                    <div style="" layout="row" layout-align="center center">
+                    <div layout="row" layout-align="center center">
+                        <span class="fa fa-question-circle" style="pointer: cursor; font-size: 19px" title="Show Schedule Block Details"
+                               ng-click="vm.showScheduleBlockDetails(item); $event.stopPropagation();"></span>
                         <div layout="row" class="schedule-block-name-div">
                             <span class="schedule-block-id-text">{{item.id_code}}</span>
-                            <i>{{item.owner}}</i>
+                            <i style="margin-left: 18px !important;">{{item.owner}}</i>
                         </div>
 
                         <div flex style="min-width: 300px; max-width: 300px; overflow: hidden">
