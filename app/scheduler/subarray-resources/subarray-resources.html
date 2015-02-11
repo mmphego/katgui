@@ -107,11 +107,11 @@
                     <span class="fa fa-wrench" ng-if="resource.in_maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"
                           ng-class="{'error-text':resource.state === 'faulty'}"></span>
                     <span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.state === 'faulty'}">{{resource.name}}</span>
-                    <md-button ng-click="vm.markResourceFaulty(resource); $event.stopPropagation()" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
+                    <md-button ng-click="vm.markResourceFaulty(resource);" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
                                title="Mark Resource As Faulty">
                         <span class="fa fa-exclamation-circle md-fab-fa-icon-small"></span>
                     </md-button>
-                    <md-button ng-click="vm.markResourceInMaintenance(resource); $event.stopPropagation()" style="height:38px; width:38px;" aria-label="Mark Resource in Maintenance"
+                    <md-button ng-click="vm.markResourceInMaintenance(resource);" style="height:38px; width:38px;" aria-label="Mark Resource in Maintenance"
                                title="Mark Resource in Maintenance">
                         <span class="fa fa-wrench md-fab-fa-icon-small"></span>
                     </md-button>
