@@ -3,37 +3,29 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl(ObservationScheduleService, $timeout, $mdDialog, $rootScope, $filter) {
+    function SubArraysCtrl(ObservationScheduleService, $timeout, $mdDialog, $rootScope, $scope) {
 
-        var lastId = 7;
         var vm = this;
+        vm.currentActionsMenuIndex = -1;
+        vm.showVerifyMenuItem = false;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
         vm.subarrays = ObservationScheduleService.subarrays;
 
         vm.refreshScheduleBlocks = function () {
-            ObservationScheduleService.getScheduleBlocks()
-                .then(draftListProcessingComplete, draftListProcessingError);
 
             ObservationScheduleService.listSubarrays()
-                .then(subarraysProcessingComplete, subarraysProcessingError)
-                .then(combineSubarraysInSingleList);
+                .then(function () {
+                    ObservationScheduleService.getScheduleBlocks();
+                });
         };
 
         vm.assignSelectedScheduleBlocks = function (subarray) {
 
-            vm.scheduleDraftData.forEach(function (item) {
+            ObservationScheduleService.scheduleDraftData.forEach(function (item) {
                 if (item.selected) {
                     item.selected = false;
                     ObservationScheduleService.assignScheduleBlock(subarray.id, item.id_code)
-                        .then(function (result) {
-                            if (result.result === 'ok') {
-                                item.selected = false;
-                                item.sub_nr = subarray.id;
-                                subarray.scheduleBlocks.push(item);
-                                result.message = "Assigned Schedule Block to subarray " + subarray.id;
-                            }
-                            displayPromiseResult(result);
-                        });
+                        .then($rootScope.displayPromiseResult);
                 }
             });
         };
@@ -41,15 +33,7 @@
         vm.freeScheduleBlock = function (subarray, sb) {
 
             ObservationScheduleService.unassignScheduleBlock(subarray.id, sb.id_code)
-                .then(function (result) {
-                    if (result.result === 'ok') {
-                        sb.sub_nr = null;
-                        subarray.scheduleBlocks.splice(subarray.scheduleBlocks.indexOf(sb), 1);
-                        //ObservationScheduleService.scheduleDraftData.push(sb);
-                        result.message = "Unassigned Schedule Block from subarray " + subarray.id;
-                    }
-                    displayPromiseResult(result);
-                });
+                .then($rootScope.displayPromiseResult);
         };
 
         vm.showScheduleBlockDetails = function (sb) {
@@ -57,25 +41,56 @@
             alert(JSON.stringify(sb, null, 4));
         };
 
-        function displayPromiseResult(result) {
-            if (result.result === 'ok') {
-                $rootScope.showSimpleToast(result.message);
-            } else {
-                showSimpleDialog(result.result, result.message);
+        vm.scheduleCurrentMenuItemDraft = function () {
+            if (vm.currentActionsMenuIndex > -1) {
+                var sb = ObservationScheduleService.scheduleDraftData[vm.currentActionsMenuIndex];
+                ObservationScheduleService.scheduleDraft(sb.sub_nr, sb.id_code)
+                    .then($rootScope.displayPromiseResult);
             }
-        }
+        };
 
-        function showSimpleDialog(title, message) {
-            var alert = $mdDialog.alert()
-                .title(title)
-                .content(message)
-                .ok('Close');
-            $mdDialog
-                .show(alert)
-                .finally(function () {
-                    alert = undefined;
-                });
-        }
+        vm.verifyCurrentMenuItemDraft = function () {
+            if (vm.currentActionsMenuIndex > -1) {
+                var sb = ObservationScheduleService.scheduleDraftData[vm.currentActionsMenuIndex];
+                ObservationScheduleService.verifyScheduleBlock(sb.sub_nr, sb.id_code)
+                    .then($rootScope.displayPromiseResult);
+            }
+        };
+
+        //schedulerActionsMenu
+        vm.openSchedulerActionsMenu = function (item, $event) {
+
+            var rowIndex = ObservationScheduleService.scheduleDraftData.indexOf(item);
+
+            if (vm.currentActionsMenuIndex !== rowIndex) {
+                var rect = $event.currentTarget.getBoundingClientRect();
+                var offset = {x: 0, y: 44};
+                var overLayCSS = {
+                    left: rect.left + offset.x + 'px',
+                    top: rect.top + offset.y + 'px'
+                };
+                angular.element(document.getElementById('schedulerActionsMenu')).css(overLayCSS);
+                vm.currentActionsMenuIndex = ObservationScheduleService.scheduleDraftData.indexOf(ObservationScheduleService.scheduleDraftData[rowIndex]);
+                vm.showVerifyMenuItem = item.type === "OBSERVATION";
+                    vm.showActionsMenu = true;
+            } else {
+                //the same row's button was clicked, so close the popup
+                vm.closeActionsMenu();
+            }
+
+            $event.stopPropagation();
+        };
+
+        vm.closeActionsMenu = function() {
+            if (vm.showActionsMenu) {
+                vm.showActionsMenu = false;
+                vm.currentActionsMenuIndex = -1;
+
+                if (!$scope.$$phase) {
+                    $scope.$digest();
+                }
+            }
+        };
 
         function draftListProcessingComplete(result) {
             $timeout(function () {
@@ -119,22 +134,6 @@
                         alert = undefined;
                     });
             }, 100);
-        }
-
-        function combineSubarraysInSingleList() {
-            //ObservationScheduleService.subarrays.push({id:'5', state:'maintanence', scheduleBlocks: []});
-            //ObservationScheduleService.subarrays.push({id:'6', state:'in_use', scheduleBlocks: []});
-
-            vm.scheduleDraftData.forEach(function (item) {
-                ObservationScheduleService.subarrays.forEach(function (subarray) {
-                    if (!subarray.scheduleBlocks) {
-                        subarray.scheduleBlocks = [];
-                    }
-                    if ((item.sub_nr || {}).toString() === subarray.id) {
-                        subarray.scheduleBlocks.push(item);
-                    }
-                });
-            });
         }
 
         $timeout(vm.refreshScheduleBlocks, 400);

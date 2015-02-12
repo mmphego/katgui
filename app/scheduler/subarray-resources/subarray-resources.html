@@ -39,7 +39,7 @@
                     <div layout="column" layout-align="center center" style="margin-left: 12px">
                         <div flex style="margin-top: 8px" ng-include="'images/subarray.svg'"></div>
                         <span ng-if="!subarray.in_maintenance">{{subarray.state}}</span>
-                        <span ng-if="subarray.in_maintenance">{{subarray.state}} - in maintenance</span>
+                        <span ng-if="subarray.in_maintenance" class="maintenance-text">{{subarray.state}} - in maintenance</span>
                     </div>
                 </div>
             </div>
@@ -65,9 +65,9 @@
                     <!--</div>-->
                     <div flex class="resource-item animate-repeat-40" layout="row" layout-align="start center"
                          ng-repeat="resource in vm.poolResources | filter:{sub_nr:subarray.id} | orderBy:'name'">
-                        <span class="fa" style="font-size: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
-                        <span class="fa" style="font-size: 18px;" ng-class="{'fa-wrench':resource.in_maintenance}" title="Resource Marked Faulty"></span>
-                        <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty'}">{{resource.name}}</span>
+                        <span class="fa" style="font-size: 18px; margin-right: 4px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
+                        <span class="fa" style="font-size: 18px;" ng-class="{'fa-wrench maintenance-text':resource.in_maintenance}" title="Resource Marked In Maintenance"></span>
+                        <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>
                         <md-button ng-click="vm.markResourceFaulty(resource)" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
                                    title="Mark Resource As Faulty">
                             <span class="fa fa-exclamation-circle md-fab-fa-icon-small"></span>
@@ -105,9 +105,8 @@
                      ng-class="{'selected-resource-item': resource.selected}"
                      ng-click="resource.selected = !resource.selected;">
                     <span class="fa" style="font-size: 18px; min-width: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
-                    <span class="fa fa-wrench" ng-if="resource.in_maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"
-                          ng-class="{'error-text':resource.state === 'faulty'}"></span>
-                    <span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.state === 'faulty'}">{{resource.name}}</span>
+                    <span class="fa fa-wrench maintenance-text" ng-if="resource.in_maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
+                    <span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>
                     <md-button ng-click="vm.markResourceFaulty(resource);" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
                                title="Mark Resource As Faulty">
                         <span class="fa fa-exclamation-circle md-fab-fa-icon-small"></span>

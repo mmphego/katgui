@@ -1,4 +1,4 @@
-<div layout="row" layout-align="start" style="min-width: 1515px; min-height: 850px;" ng-controller="SubArraysCtrl as vm">
+<div layout="row" layout-align="start" style="min-width: 1515px; min-height: 850px;" ng-controller="SubArraysCtrl as vm" ng-click="vm.closeActionsMenu()">
 
     <div flex layout="column" style="overflow: auto; padding: 16px;">
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
@@ -43,18 +43,19 @@
                                   ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
-                        <span style="max-width: 135px;min-width: 135px;" class="subheader-text-no-color" ng-click="vm.setDraftsOrderBy('desired_start_time')">
+                        <span style="max-width: 145px;min-width: 145px;" class="subheader-text-no-color" ng-click="vm.setDraftsOrderBy('desired_start_time')">
                             <span style="padding: 8px">Desired Time</span>
                             <span class="fa"
                                   ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
-                        <span style="min-width: 48px;"></span>
+                        <span style="min-width: 53px;"></span>
                     </div>
                 </md-toolbar>
                 <div flex class="schedule-draft-data-list" style="border-left: 1px solid #d3d3d3; border-right: 1px solid #d3d3d3">
                     <!--| filter:{sub_nr: subarray.id}-->
-                    <div ng-repeat="item in subarray.scheduleBlocks track by item.id_code" style="min-width: 650px !important;"
+                    <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id_code"
+                         style="min-width: 650px !important;"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                          ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
                         <div flex layout="row" layout-align="start center">
@@ -69,10 +70,14 @@
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
 
-                            <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
+                            <span style="margin-left: 5px; margin-top: 4px; width: 95px; margin-right: 3px;">{{item.desired_start_time}}</span>
                             <md-button ng-click="vm.freeScheduleBlock(subarray, item)" style="height:48px; width:48px;" aria-label="Free SB"
                                        title="Free Schedule Blocks">
                                 <span class="fa fa-minus md-fab-fa-icon-small"></span>
+                            </md-button>
+                            <md-button style="height:48px; width:48px;" aria-label="Show Actions Menu"
+                                       ng-click="vm.openSchedulerActionsMenu(item, $event); $event.stopPropagation()">
+                                <span class="fa fa-ellipsis-v"></span>
                             </md-button>
                         </div>
                     </div>
@@ -104,7 +109,7 @@
                      ng-click="item.selected = !item.selected;"
                      class="schedule-draft-item animate-repeat" layout="column" layout-align="center start">
                     <div layout="row" layout-align="center center">
-                        <span class="fa fa-question-circle" style="pointer: cursor; font-size: 19px" title="Show Schedule Block Details"
+                        <span class="fa fa-question-circle" style="pointer: cursor; font-size: 19px; width: 17px" title="Show Schedule Block Details"
                                ng-click="vm.showScheduleBlockDetails(item); $event.stopPropagation();"></span>
                         <div layout="row" class="schedule-block-name-div">
                             <span class="schedule-block-id-text">{{item.id_code}}</span>
@@ -116,12 +121,25 @@
                         </div>
 
                         <span style="min-width: 103px;">{{item.type}}</span>
-                        <span style="min-width: 132px;">{{item.desired_start_time}}</span>
+                        <span style="min-width: 95px; max-width: 95px; margin-left: 4px">{{item.desired_start_time}}</span>
                     </div>
                 </div>
             </div>
         </div>
 
+    </div>
+
+    <div id="schedulerActionsMenu" ng-show="vm.showActionsMenu" class="datepickerMenu md-whiteframe-z1">
+        <md-list layout="column">
+            <md-item ng-show="vm.showVerifyMenuItem">
+                <md-button role="menuitem" style="width: 170px; font-size:14px; height: 38px; padding: 2px;"
+                           ng-click="vm.verifyCurrentMenuItemDraft()">Verify Draft</md-button>
+            </md-item>
+            <md-item>
+                <md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;"
+                           ng-click="vm.scheduleCurrentMenuItemDraft()">Schedule Draft</md-button>
+            </md-item>
+        </md-list>
     </div>
 
 </div>

@@ -1,5 +1,5 @@
 <div flex layout="row" style="min-width: 1515px; min-height: 500px; margin: 32px;" ng-controller="SbDraftsCtrl as vm"
-     ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, '': vm.selectedScheduleDraft === null}">
+     >
 
     <div class="md-whiteframe-z2" layout="column" flex>
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
@@ -19,7 +19,7 @@
                 </md-button>
             </div>
 
-            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="center center">
+            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1;" layout="row" layout-align="center center">
                 <span style="max-width: 160px;min-width: 160px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
                     <span style="padding: 8px">ID</span>
                     <span class="fa"
@@ -87,7 +87,7 @@
         </div>
     </div>
 
-    <div layout="column" class="md-whiteframe-z2" style="max-width: 400px;min-width: 400px; padding-left: 24px;"
+    <div layout="column" style="max-width: 400px;min-width: 400px; padding-left: 24px;"
          ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null}">
         <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
             <div flex style="margin: 8px;" layout="row" layout-align="start center">

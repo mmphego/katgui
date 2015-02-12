@@ -57,7 +57,8 @@
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService) {
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES,
+                             USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService, $mdDialog) {
 
         var vm = this;
 
@@ -169,7 +170,11 @@
 
         vm.navigateToParentState = function() {
             if ($state.current.parent) {
-                $state.go($state.current.parent.name);
+                if ($state.current.name === 'scheduler.observations.detail') {
+                    $state.go('scheduler.observations');
+                } else {
+                    $state.go($state.current.parent.name);
+                }
             }
         };
 
@@ -205,6 +210,26 @@
 
         vm.utcTime = '';
         vm.localTime = '';
+
+        $rootScope.displayPromiseResult = function(result) {
+            if (result.result === 'ok') {
+                $rootScope.showSimpleToast(result.message);
+            } else {
+                showSimpleDialog(result.result, result.message);
+            }
+        };
+
+        function showSimpleDialog(title, message) {
+            var alert = $mdDialog.alert()
+                .title(title)
+                .content(message)
+                .ok('Close');
+            $mdDialog
+                .show(alert)
+                .finally(function () {
+                    alert = undefined;
+                });
+        }
 
         var updateTimeDisplay = function () {
             //TODO: calculate local sidereal time outside this function and only on every sync
@@ -433,12 +458,36 @@
             }
         };
 
+        var observationsOverview = {
+            name: 'scheduler.observations',
+            parent: schedulerHome,
+            url: '/observations',
+            templateUrl: 'app/scheduler/observations/observations-overview.html',
+            title: 'Scheduler.Observations Overview',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
+        var observationsDetail = {
+            name: 'scheduler.observations.detail',
+            parent: schedulerHome,
+            url: '/observations/:subarray_id',
+            templateUrl: 'app/scheduler/observations/observations-detail.html',
+            title: 'Scheduler.Observations Details',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
         $stateProvider
             .state(schedulerHome)
             .state(sbDrafts)
             .state(schedulerExecute)
             .state(subArrays)
-            .state(subArrayResources);
+            .state(subArrayResources)
+            .state(observationsOverview)
+            .state(observationsDetail);
 
         $stateProvider.state('sensorGraph', {
             url: '/sensorGraph',

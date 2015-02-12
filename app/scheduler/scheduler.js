@@ -14,18 +14,18 @@
     function SchedulerCtrl($scope, $timeout, SCHEDULE_BLOCK_TYPES, ObservationScheduleService, $mdDialog) {
 
         var vm = this;
-        vm.types = SCHEDULE_BLOCK_TYPES;
-        vm.draftListProcessingServerCall = false;
-        vm.scheduleListProcessingServerCall = false;
-
-        vm.selectedItemScript = "";
-        vm.selectedSchedule = null;
-        vm.selectedScheduleDraft = null;
-
-        vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
-        vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
-        vm.scheduleData = ObservationScheduleService.scheduleData;
-        vm.resourcePool = ObservationScheduleService.resourcePool;
+        //vm.types = SCHEDULE_BLOCK_TYPES;
+        //vm.draftListProcessingServerCall = false;
+        //vm.scheduleListProcessingServerCall = false;
+        //
+        //vm.selectedItemScript = "";
+        //vm.selectedSchedule = null;
+        //vm.selectedScheduleDraft = null;
+        //
+        //vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
+        //vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
+        //vm.scheduleData = ObservationScheduleService.scheduleData;
+        //vm.resourcePool = ObservationScheduleService.resourcePool;
 
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code'},
@@ -165,35 +165,35 @@
             $event.stopPropagation();
         };
 
-        vm.executeSchedule = function (item) {
-
-            vm.scheduleListProcessingServerCall = true;
-            ObservationScheduleService.executeSchedule(1, item.id_code)
-                .then(scheduleListProcessingComplete, scheduleListProcessingError);
-        };
-
-        vm.stopExecuteSchedule = function (item) {
-
-            vm.scheduleListProcessingServerCall = true;
-            ObservationScheduleService.stopExecuteSchedule(1, item.id_code)
-                .then(scheduleListProcessingComplete, scheduleListProcessingError);
-        };
-
-        vm.moveScheduleRowToFinished = function (item) {
-
-            vm.selectedSchedule = null;
-            vm.scheduleListProcessingServerCall = true;
-            ObservationScheduleService.scheduleToComplete(1, item.id_code)
-                .then(scheduleListProcessingComplete, scheduleListProcessingError);
-        };
-
-        vm.moveScheduleRowToDraft = function (item) {
-
-            vm.selectedSchedule = null;
-            vm.scheduleListProcessingServerCall = true;
-            ObservationScheduleService.scheduleToDraft(1, item.id_code)
-                .then(scheduleListProcessingComplete, scheduleListProcessingError);
-        };
+        //vm.executeSchedule = function (item) {
+        //
+        //    vm.scheduleListProcessingServerCall = true;
+        //    ObservationScheduleService.executeSchedule(1, item.id_code)
+        //        .then(scheduleListProcessingComplete, scheduleListProcessingError);
+        //};
+        //
+        //vm.stopExecuteSchedule = function (item) {
+        //
+        //    vm.scheduleListProcessingServerCall = true;
+        //    ObservationScheduleService.stopExecuteSchedule(1, item.id_code)
+        //        .then(scheduleListProcessingComplete, scheduleListProcessingError);
+        //};
+        //
+        //vm.moveScheduleRowToFinished = function (item) {
+        //
+        //    vm.selectedSchedule = null;
+        //    vm.scheduleListProcessingServerCall = true;
+        //    ObservationScheduleService.scheduleToComplete(1, item.id_code)
+        //        .then(scheduleListProcessingComplete, scheduleListProcessingError);
+        //};
+        //
+        //vm.moveScheduleRowToDraft = function (item) {
+        //
+        //    vm.selectedSchedule = null;
+        //    vm.scheduleListProcessingServerCall = true;
+        //    ObservationScheduleService.scheduleToDraft(1, item.id_code)
+        //        .then(scheduleListProcessingComplete, scheduleListProcessingError);
+        //};
 
         angular.element('#schedule-draft-data-list-id').bind("scroll", function () {
             closeTypeMenu();
@@ -217,59 +217,6 @@
             vm.currentSelectedDate = moment();
             vm.currentRowDatePickerIndex = -1;
         };
-
-        vm.setScheduleDraftType = function (type) {
-            if (vm.currentRowTypePickerIndex > -1) {
-                vm.scheduleDraftData[vm.currentRowTypePickerIndex].type = type;
-                vm.scheduleDraftData[vm.currentRowTypePickerIndex].isDirty = true;
-            }
-        };
-
-        vm.saveDraft = function (item) {
-            vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.updateScheduleDraft(item)
-                .then(draftListProcessingComplete, draftListProcessingError);
-        };
-
-        vm.validateDraft = function (item) {
-
-            //TODO replace 1 param with subarray number
-            vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.verifyScheduleBlock(1, item.id_code)
-                .then(draftListProcessingComplete, draftListProcessingError);
-        };
-
-        vm.removeSelectedDraftRow = function () {
-            if (vm.selectedScheduleDraft) {
-                vm.removeDraftRow(vm.selectedScheduleDraft);
-                vm.showEditMenu = false;
-            }
-        };
-
-        vm.removeDraftRow = function (item) {
-
-            vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.deleteScheduleDraft(item.id_code)
-                .then(draftListProcessingComplete, draftListProcessingError);
-
-            vm.selectedScheduleDraft = null;
-        };
-
-
-        vm.addDraftSchedule = function () {
-            vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.createScheduleBlock()
-                .then(draftListProcessingComplete, draftListProcessingError)
-                .then(scrollDraftToBottomAndSelect);
-        };
-
-        function scrollDraftToBottomAndSelect() {
-
-            $timeout(function () {
-                var el = angular.element("#schedule-draft-data-list-id")[0];
-                el.scrollTop = el.scrollTop + 49;
-            }, 200);
-        }
 
         vm.refreshScheduleBlocks = function () {
             vm.selectedScheduleDraft = null;

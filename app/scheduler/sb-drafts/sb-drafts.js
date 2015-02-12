@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, SCHEDULE_BLOCK_TYPES, $document) {
+    function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, SCHEDULE_BLOCK_TYPES, $document, $rootScope) {
 
         var vm = this;
         vm.draftListProcessingServerCall = false;
@@ -103,9 +103,9 @@
 
         vm.verifyDraftRow = function (item) {
 
-            vm.draftListProcessingServerCall = true;
+            //vm.draftListProcessingServerCall = true;
             ObservationScheduleService.verifyScheduleBlock(item.sub_nr, item.id_code)
-                .then(draftListProcessingComplete, draftListProcessingError);
+                .then(displayPromiseResult);
 
             vm.selectedScheduleDraft = null;
         };
@@ -245,6 +245,26 @@
             item.hasValidInput = d.isValid();
             return d.isValid();
         };
+
+        function showSimpleErrorDialog(title, message) {
+            var alert = $mdDialog.alert()
+                .title(title)
+                .content(message)
+                .ok('Close');
+            $mdDialog
+                .show(alert)
+                .finally(function () {
+                    alert = undefined;
+                });
+        }
+
+        function displayPromiseResult(result) {
+            if (result.result === 'ok') {
+                $rootScope.showSimpleToast(result.message);
+            } else {
+                showSimpleErrorDialog(result.result, result.message);
+            }
+        }
 
         function closeTypeMenu() {
             if (vm.showTypePicker) {

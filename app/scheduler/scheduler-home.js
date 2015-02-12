@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, $timeout) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, $mdDialog) {
 
         ObservationScheduleService.connectListener();
         var vm = this;
@@ -18,7 +18,9 @@
             if (toState.name === 'scheduler.drafts' ||
                 toState.name === 'scheduler.resources' ||
                 toState.name === 'scheduler.execute' ||
-                toState.name === 'scheduler.subarrays') {
+                toState.name === 'scheduler.subarrays' ||
+                toState.name === 'scheduler.observations' ||
+                toState.name === 'scheduler.observations.detail') {
                 vm.childStateShowing = true;
             } else {
                 vm.childStateShowing = false;

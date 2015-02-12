@@ -98,6 +98,8 @@
 <script src="app/scheduler/sb-drafts/sb-drafts.js"></script>
 <script src="app/scheduler/subarrays/subarrays.js"></script>
 <script src="app/scheduler/subarray-resources/subarray-resources.js"></script>
+<script src="app/scheduler/observations/observations-detail.js"></script>
+<script src="app/scheduler/observations/observations-overview.js"></script>
 <!--<script src="app/widgets/gantt/gantt-widget.js"></script>-->
 <!-- Add New Component JS Above -->
 
@@ -153,8 +155,12 @@
                             <span class="fa fa-sitemap"></span>
                             <button>Sub-Array Resources</button>
                         </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.observations')">
+                            <span class="fa fa-binoculars"></span>
+                            <button>Observations Overview</button>
+                        </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.execute')">
-                            <span class="fa fa-edit"></span>
+                            <span class="fa fa-tasks"></span>
                             <button>Scheduler</button>
                         </div>
                     </md-item-content>
