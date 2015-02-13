@@ -6,7 +6,7 @@
     function UserService($http, $q, SERVER_URL, $rootScope) {
 
         var api = {};
-        api.urlBase = SERVER_URL + ':8010';
+        api.urlBase = SERVER_URL + ':8810';
         api.users = [];
 
         api.listUsers = function () {

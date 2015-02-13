@@ -6,7 +6,7 @@
     function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout) {
 
         var pendingSubscribeObjects = [];
-        var urlBase = SERVER_URL + ':8030';
+        var urlBase = SERVER_URL + ':8830';
 
         var connection = null;
         //use this alias because we are using some api functions within functions
@@ -54,12 +54,14 @@
             if (messages.error) {
                 console.error('There was an error sending a jsonrpc request:');
                 console.error(messages);
+            } else if (messages.id === 'redis-pubsub-init') {
+                console.log('received redis-pubsub-init message:');
+                console.log(messages);
             } else if (!messages['jsonrpc']) {
 
-                messages = [].concat(messages);
-                if (messages) {
+                if (messages.results) {
 
-                    messages.forEach(function (message) {
+                    messages.results.forEach(function (message) {
 
                         var messageObj = message;
                         if (_.isString(message)) {

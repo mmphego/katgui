@@ -46,6 +46,10 @@
                 secondary: 'amber',
                 primaryButtons: 'indigo'
             }])
+        .constant('SCHEDULE_BLOCK_TYPES', [
+            'MAINTENANCE',
+            'OBSERVATION',
+            'MANUAL'])
         //,
         //{
         //    name: 'Light-Blue-Dark',
@@ -418,19 +422,8 @@
             name: 'scheduler.drafts',
             parent: schedulerHome,
             url: '/drafts',
-            templateUrl: 'app/scheduler/sb-drafts/sb-drafts.html',
+            templateUrl: 'app/scheduler/schedule-block-drafts/schedule-block-drafts.html',
             title: 'Scheduler.Drafts',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
-        };
-
-        var schedulerExecute = {
-            name: 'scheduler.execute',
-            parent: schedulerHome,
-            url: '/execute',
-            templateUrl: 'app/scheduler/scheduler.html',
-            title: 'Scheduler.Execute',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
@@ -440,8 +433,8 @@
             name: 'scheduler.subarrays',
             parent: schedulerHome,
             url: '/subarrays',
-            templateUrl: 'app/scheduler/subarrays/subarrays.html',
-            title: 'Scheduler.Subarrays',
+            templateUrl: 'app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.html',
+            title: 'Scheduler.Sub-Array Drafts',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -483,7 +476,6 @@
         $stateProvider
             .state(schedulerHome)
             .state(sbDrafts)
-            .state(schedulerExecute)
             .state(subArrays)
             .state(subArrayResources)
             .state(observationsOverview)

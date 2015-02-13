@@ -187,9 +187,8 @@
 
 .selected-schedule-row {
     background: #B3E5FC !important;
-    //    border-left: 2px solid transparent;
-    //    border-top: 2px solid transparent;
-    //    border-bottom: 2px solid transparent;
+    box-shadow: 1px 2px 10px 0 #393939;
+    border-bottom: 1px solid transparent;
 }
 
 .schedule-row-executing {
@@ -197,7 +196,9 @@
 }
 
 .schedule-row-executing-and-selected {
-    background: linear-gradient(to right, rgba(102, 187, 106, 1) 0%, rgba(102, 187, 106, 1) 25%, rgba(179, 229, 252, 0.52) 50%, rgba(179, 229, 252, 0.5) 51%, rgba(179, 229, 252, 1) 75%, rgba(179, 229, 252, 1) 100%)
+    background: linear-gradient(to right, rgba(102, 187, 106, 1) 0%, rgba(102, 187, 106, 1) 25%, rgba(179, 229, 252, 0.52) 50%, rgba(179, 229, 252, 0.5) 51%, rgba(179, 229, 252, 1) 75%, rgba(179, 229, 252, 1) 100%);
+    box-shadow: 1px 2px 10px 0 #393939;
+    border-bottom: 1px solid transparent;
 }
 
 .grid-dropdown {
@@ -313,9 +314,12 @@
     position: relative;
     padding: 0;
     margin-left: 8px;
-    //    margin-bottom: 8px;
-    max-height: 275px;
     overflow: hidden;
+}
+
+.schedule-block-complete-list-min-height {
+    max-height: 450px;
+    min-height: 450px;
 }
 
 .horizontal-resizer-bar {
@@ -543,4 +547,9 @@
 /* Will transition towards this state */
 .opaque-fade-in.opaque-fade-in-remove.opaque-fade-in-remove-active {
     opacity: 0.2 !important;
+}
+
+.scheduler-inline-button {
+    width: 35px;
+    height: 49px;
 }

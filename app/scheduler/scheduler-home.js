@@ -1,9 +1,12 @@
 (function () {
 
-    angular.module('katGui.scheduler')
+    angular.module('katGui.scheduler', ['ui.bootstrap.datetimepicker',
+        'katGui.services',
+        'katGui.util',
+        'ngAnimate'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, $mdDialog) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService) {
 
         ObservationScheduleService.connectListener();
         var vm = this;

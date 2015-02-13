@@ -6,7 +6,7 @@
     function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, SCHEDULE_BLOCK_TYPES, $document, $rootScope) {
 
         var vm = this;
-        vm.draftListProcessingServerCall = false;
+        //vm.draftListProcessingServerCall = false;
         vm.selectedScheduleDraft = null;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
@@ -32,7 +32,7 @@
 
         var unbindShortcuts = $document.bind("keydown", function (e) {
 
-            if (e.keyCode === 40 && e.target.nodeName !== "TEXTAREA") {
+            if (e.keyCode === 40) {
                 //down arrow
                 var index = $scope.filteredDraftItems.indexOf(vm.selectedScheduleDraft);
                 if (index > -1 && index + 1 < $scope.filteredDraftItems.length) {
@@ -42,7 +42,7 @@
                     vm.setSelectedScheduleDraft($scope.filteredDraftItems[0]);
                 }
 
-            } else if (e.keyCode === 38 && e.target.nodeName !== "TEXTAREA") {
+            } else if (e.keyCode === 38) {
                 //up arrow
                 var indexUp = $scope.filteredDraftItems.indexOf(vm.selectedScheduleDraft);
                 if (indexUp > -1 && indexUp - 1 > -1) {
@@ -80,7 +80,7 @@
         });
 
         vm.saveDraft = function (item) {
-            vm.draftListProcessingServerCall = true;
+            //vm.draftListProcessingServerCall = true;
             ObservationScheduleService.updateScheduleDraft(item)
                 .then(draftListProcessingComplete, draftListProcessingError);
         };
@@ -119,7 +119,7 @@
 
         vm.removeDraftRow = function (item) {
 
-            vm.draftListProcessingServerCall = true;
+            //vm.draftListProcessingServerCall = true;
             ObservationScheduleService.deleteScheduleDraft(item.id_code)
                 .then(draftListProcessingComplete, draftListProcessingError);
 
@@ -127,13 +127,13 @@
         };
 
         vm.addDraftSchedule = function () {
-            vm.draftListProcessingServerCall = true;
+            //vm.draftListProcessingServerCall = true;
             ObservationScheduleService.createScheduleBlock()
                 .then(draftListProcessingComplete, draftListProcessingError);
         };
 
         vm.refreshScheduleBlocks = function () {
-            vm.draftListProcessingServerCall = true;
+            //vm.draftListProcessingServerCall = true;
             ObservationScheduleService.getScheduleBlocks()
                 .then(draftListProcessingComplete, draftListProcessingError);
         };
@@ -300,13 +300,13 @@
 
         function draftListProcessingComplete(result) {
             $timeout(function () {
-                vm.draftListProcessingServerCall = false;
+                //vm.draftListProcessingServerCall = false;
             }, 100);
         }
 
         function draftListProcessingError(result) {
             $timeout(function () {
-                vm.draftListProcessingServerCall = false;
+                //vm.draftListProcessingServerCall = false;
 
                 var alert = $mdDialog.alert()
                     .title('Server Request Failed!')

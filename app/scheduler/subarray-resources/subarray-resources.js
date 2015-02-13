@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, $rootScope, $document) {
+    function SubArrayResourcesCtrl($state, $scope, ObservationScheduleService, $timeout, $mdDialog, $rootScope, $document) {
 
         var vm = this;
 
@@ -79,6 +79,10 @@
         vm.markResourceInMaintenance = function (resource) {
             ObservationScheduleService.markResourceInMaintenance(resource.name, resource.in_maintenance? 0 : 1)
                 .then(displayPromiseResult);
+        };
+
+        vm.navigateToSchedulerDetails = function (subarray_id) {
+            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
         };
 
         function listProcessingComplete(result) {

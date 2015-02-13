@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl(ObservationScheduleService, $timeout, $mdDialog, $rootScope, $scope) {
+    function SubArraysCtrl(ObservationScheduleService, $timeout, $mdDialog, $rootScope, $scope, $state) {
 
         var vm = this;
         vm.currentActionsMenuIndex = -1;
@@ -90,6 +90,10 @@
                     $scope.$digest();
                 }
             }
+        };
+
+        vm.navigateToSchedulerDetails = function (subarray_id) {
+            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
         };
 
         function draftListProcessingComplete(result) {

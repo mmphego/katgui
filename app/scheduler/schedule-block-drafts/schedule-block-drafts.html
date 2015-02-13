@@ -1,5 +1,4 @@
-<div flex layout="row" style="min-width: 1515px; min-height: 500px; margin: 32px;" ng-controller="SbDraftsCtrl as vm"
-     >
+<div flex layout="row" style="min-width: 1515px; min-height: 500px; margin: 32px;" ng-controller="SbDraftsCtrl as vm">
 
     <div class="md-whiteframe-z2" layout="column" flex>
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
@@ -12,11 +11,11 @@
                     <span class="fa fa-check"></span>
                     <md-tooltip>Save All Changes</md-tooltip>
                 </md-button>
-                <md-button aria-label="Create A Schedule" style="font-size: 16px; margin-left: 4px" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
-                           ng-click="vm.addDraftSchedule()">
-                    <span class="fa fa-plus"></span>
-                    <md-tooltip>Create A Draft Schedule</md-tooltip>
-                </md-button>
+                <!--<md-button aria-label="Create A Schedule" style="font-size: 16px; margin-left: 4px" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"-->
+                           <!--ng-click="vm.addDraftSchedule()">-->
+                    <!--<span class="fa fa-plus"></span>-->
+                    <!--<md-tooltip>Create A Draft Schedule</md-tooltip>-->
+                <!--</md-button>-->
             </div>
 
             <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1;" layout="row" layout-align="center center">
@@ -47,11 +46,10 @@
             </div>
         </md-toolbar>
         <div class="schedule-draft-data-list" flex>
-            <loading-overlay ng-show="vm.draftListProcessingServerCall"></loading-overlay>
             <div ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse as filteredDraftItems"
                  ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                  ng-class="{'selected-draft-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
-                <div style="" layout="row" layout-align="center center">
+                <div layout="row" layout-align="center center">
                     <div layout="row" class="schedule-block-name-div">
                         <span class="schedule-block-id-text">{{item.id_code}}</span>
                         <i>{{item.owner}}</i>
@@ -73,12 +71,8 @@
                     <span style="min-width: 50px; transition: 0s;" ng-show="!item.isDirty"></span>
                     <md-button title="Save the draft" ng-show="item.isDirty" style="transition: 0s;" aria-label="Save Draft" class="sb-row-button"
                                ng-click="vm.saveDraft(item); $event.stopPropagation();">
-                        <span class="fa fa-check md-fab-fa-icon-small"></span>
-                        <!--<md-tooltip>-->
-                        <!--Save Draft-->
-                        <!--</md-tooltip>-->
+                        <span class="fa fa-check"></span>
                     </md-button>
-
                     <md-button style="transition: 0s;" aria-label="Show Edit Menu" class="sb-row-button" ng-click="vm.openSchedulerEditMenu(item, $event);">
                         <span class="fa fa-ellipsis-v"></span>
                     </md-button>
@@ -99,8 +93,7 @@
                  ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 
                 <div flex ng-if="vm.selectedScheduleDraft !== null" style="background: white;">
-                            <textarea style="text-overflow: auto;"
-                                auto-grow>{{vm.selectedScheduleDraft | json}}</textarea>
+                        <textarea readonly auto-grow>{{vm.selectedScheduleDraft | json:4}}</textarea>
                 </div>
             </div>
         </div>
@@ -120,9 +113,6 @@
 
     <div id="schedulerEditMenu" ng-show="vm.showEditMenu" class="datepickerMenu md-whiteframe-z1">
         <md-list layout="column">
-            <!--<md-item>-->
-            <!--<md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;" ng-click="vm.scheduleSelectedDraft()">Schedule Draft</md-button>-->
-            <!--</md-item>-->
             <md-item ng-if="vm.selectedScheduleDraft.type == 'OBSERVATION'">
                 <md-button role="menuitem" style="width: 170px; font-size:
                 14px; height: 38px; padding: 2px;"
