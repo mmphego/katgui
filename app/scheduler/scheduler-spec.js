@@ -1,4 +1,4 @@
-describe('SchedulerCtrl', function () {
+    describe('SchedulerCtrl', function () {
 
 //    beforeEach(module('ui.bootstrap.datetimepicker'));
     beforeEach(module('katGui.scheduler'));

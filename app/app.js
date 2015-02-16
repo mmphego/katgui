@@ -45,18 +45,24 @@
                 primary: 'teal',
                 secondary: 'amber',
                 primaryButtons: 'indigo'
-            },
-            {
-                name: 'Light-Blue-Dark',
-                primary: 'light-blue-dark',
-                secondary: 'indigo',
-                primaryButtons: 'blue-grey'
             }])
+        .constant('SCHEDULE_BLOCK_TYPES', [
+            'MAINTENANCE',
+            'OBSERVATION',
+            'MANUAL'])
+        //,
+        //{
+        //    name: 'Light-Blue-Dark',
+        //    primary: 'light-blue-dark',
+        //    secondary: 'indigo',
+        //    primaryButtons: 'blue-grey'
+        //}
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService) {
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES,
+                             USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService, $mdDialog) {
 
         var vm = this;
 
@@ -102,6 +108,8 @@
                     .position($rootScope.toastPosition)
                     .hideDelay(TOAST_HIDE_DELAY)
             );
+
+            console.log('Showing toast-message: ' + message);
         };
 
         var unbindAlarmMessage = null;
@@ -109,7 +117,7 @@
         $rootScope.connectEvents = function () {
 
             vm.showNavbar = true;
-            $rootScope.$on('alarmMessage', vm.receivedAlarmMessage);
+            $rootScope.$on('alarmMessage', receivedAlarmMessage);
 
             syncTimeWithServer();
             $interval(updateTimeDisplay, 1000); //update local clock every second
@@ -166,6 +174,18 @@
             return $state.current.title;
         };
 
+        vm.navigateToParentState = function() {
+            if ($state.current.parent) {
+                if ($state.current.name === 'scheduler.observations.detail') {
+                    $state.go('scheduler.observations');
+                } else {
+                    $state.go($state.current.parent.name);
+                }
+            } else {
+                $state.go('home');
+            }
+        };
+
         vm.operatorActionMenuItemSelected = function () {
             $state.go('operatorControl');
             vm.operatorControlMenuHover = false;
@@ -199,6 +219,28 @@
         vm.utcTime = '';
         vm.localTime = '';
 
+        $rootScope.displayPromiseResult = function(result) {
+            if (result.result === 'ok') {
+                $rootScope.showSimpleToast(result.message);
+            } else {
+                showSimpleDialog(result.result, result.message);
+            }
+        };
+
+        function showSimpleDialog(title, message) {
+            var alert = $mdDialog.alert()
+                .title(title)
+                .content(message)
+                .ok('Close');
+            $mdDialog
+                .show(alert)
+                .finally(function () {
+                    alert = undefined;
+                });
+
+            console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
+        }
+
         var updateTimeDisplay = function () {
             //TODO: calculate local sidereal time outside this function and only on every sync
             if ($rootScope.serverTimeOnLoad > 0) {
@@ -211,6 +253,7 @@
                 var longitude = 21.3692096; //site longitude
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(utcTime.date(), utcTime.month() + 1, utcTime.year(), fractionalHours);
+                vm.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
                 vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, longitude);
                 $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
             }
@@ -220,8 +263,8 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
-                    vm.julianDay = KatGuiUtil.julianDay(utcTime.date(), utcTime.month() + 1, utcTime.year());
+                    //var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
+                    //vm.julianDay = KatGuiUtil.julianDay(utcTime.date(), utcTime.month() + 1, utcTime.year());
                     console.log('Syncing current time with katcontrol server (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
@@ -233,10 +276,19 @@
 
         //these alarm collections are modified in alarms/alarms.js
         //just so you know
+        //TODO move them all into a service
         $rootScope.alarmsData = [];
         $rootScope.knownAlarmsData = [];
 
-        vm.receivedAlarmMessage = function (message) {
+        //for easier testing
+        this.receivedAlarmMessage = receivedAlarmMessage;
+
+        function receivedAlarmMessage(event, message) {
+
+            //TODO remove this test code
+            //if (!$rootScope.showAlarms) {
+            //    return;
+            //}
 
             if (message.severity === 'nominal') {
                 return;
@@ -282,6 +334,12 @@
                     KatGuiUtil.removeFirstFromArrayWhereProperty($rootScope.knownAlarmsData, 'name', message.name);
                 }
             }
+        }
+
+        //so that all controllers and directives has access to which keyboard presses is happening
+        document.onkeydown = function(event) {
+            event = event || window.event;
+            $rootScope.$emit('keydown', event.keyCode);
         };
 
         $scope.$on('$destroy', vm.logout);
@@ -355,22 +413,80 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
-        $stateProvider.state('schedulerHome', {
-            url: '/schedulerHome',
-            templateUrl: 'app/scheduler/scheduler-home.html',
-            title: 'Scheduler Management',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
-        });
-        $stateProvider.state('scheduler', {
+
+        var schedulerHome = {
+            name: 'scheduler',
             url: '/scheduler',
-            templateUrl: 'app/scheduler/scheduler.html',
+            templateUrl: 'app/scheduler/scheduler-home.html',
             title: 'Scheduler',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
-        });
+        };
+
+        var sbDrafts = {
+            name: 'scheduler.drafts',
+            parent: schedulerHome,
+            url: '/drafts',
+            templateUrl: 'app/scheduler/schedule-block-drafts/schedule-block-drafts.html',
+            title: 'Scheduler.Drafts',
+            data: {
+                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        };
+
+        var subArrays = {
+            name: 'scheduler.subarrays',
+            parent: schedulerHome,
+            url: '/subarrays',
+            templateUrl: 'app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.html',
+            title: 'Scheduler.Sub-Array Drafts',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
+        var subArrayResources = {
+            name: 'scheduler.resources',
+            parent: schedulerHome,
+            url: '/resources',
+            templateUrl: 'app/scheduler/subarray-resources/subarray-resources.html',
+            title: 'Scheduler.Resources',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
+        var observationsOverview = {
+            name: 'scheduler.observations',
+            parent: schedulerHome,
+            url: '/observations',
+            templateUrl: 'app/scheduler/observations/observations-overview.html',
+            title: 'Scheduler.Observations Overview',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
+        var observationsDetail = {
+            name: 'scheduler.observations.detail',
+            parent: schedulerHome,
+            url: '/observations/:subarray_id',
+            templateUrl: 'app/scheduler/observations/observations-detail.html',
+            title: 'Scheduler.Observations Details',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        };
+
+        $stateProvider
+            .state(schedulerHome)
+            .state(sbDrafts)
+            .state(subArrays)
+            .state(subArrayResources)
+            .state(observationsOverview)
+            .state(observationsDetail);
+
         $stateProvider.state('sensorGraph', {
             url: '/sensorGraph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
@@ -433,31 +549,37 @@
     //this function includes the style sheets instead of having to link to each individually
     function configureThemes($mdThemingProvider) {
         //$mdThemingProvider.theme('default')
-        //    .primaryColor('indigo');
+        //    .primaryPalette('indigo');
         //
         $mdThemingProvider.theme('indigo')
-            .primaryColor('indigo');
+            .primaryPalette('indigo');
 
         $mdThemingProvider.theme('blue')
-            .primaryColor('blue');
+            .primaryPalette('blue');
+
+        $mdThemingProvider.theme('red')
+            .primaryPalette('red');
+
+        $mdThemingProvider.theme('green')
+            .primaryPalette('green');
 
         $mdThemingProvider.theme('blue-grey')
-            .primaryColor('blue-grey');
+            .primaryPalette('blue-grey');
 
         $mdThemingProvider.theme('deep-purple')
-            .primaryColor('deep-purple');
+            .primaryPalette('deep-purple');
 
         $mdThemingProvider.theme('teal')
-            .primaryColor('teal');
+            .primaryPalette('teal');
 
         $mdThemingProvider.theme('yellow')
-            .primaryColor('yellow');
+            .primaryPalette('yellow');
 
         $mdThemingProvider.theme('amber')
-            .primaryColor('amber');
+            .primaryPalette('amber');
 
         //$mdThemingProvider.theme('light-blue-dark')
-        //    .primaryColor('red');
+        //    .primaryPalette('red');
 
         $mdThemingProvider.alwaysWatchTheme(true);
     }

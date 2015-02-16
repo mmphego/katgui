@@ -18,20 +18,23 @@
                     <select class="form-control" style="display: inline; width: 150px; margin-right: 16px;" ng-model="vm.alarmsOrderBy" ng-options="s.label for s in vm.orderByFields">
                         <option value="">-- Order By --</option>
                     </select>
-                    <md-text-float md-theme="none" style="font-size: 14px; margin-top: -5px;" type="search" ng-model="vm.q" label="Search Alarms..."></md-text-float>
+                    <md-input-container md-theme="default" style="font-size: 12px; margin-top: -5px;">
+                        <label>Search Alarms...</label>
+                        <input ng-model-options="{ debounce: 300 }" ng-model="vm.q">
+                    </md-input-container>
                 </section>
             </div>
         </md-toolbar>
         <div flex class="alarms-list alarms-list-large" ng-click="vm.selectAllAlarms = false">
-            <md-list>
-                <md-item ng-repeat="item in $root.alarmsData | orderBy:vm.alarmsOrderBy.value | filter:vm.q as results">
-                    <md-item-content ng-click="item.selected = !item.selected"
-                                     ng-if="vm.showClearedAlarms || item.priority !== 'cleared'"
-                                     ng-switch="item.severity">
+            <div ng-repeat="item in $root.alarmsData | orderBy:vm.alarmsOrderBy.value | filter:vm.q as results">
+                <div ng-click="item.selected = !item.selected"
+                     ng-if="vm.showClearedAlarms || item.priority !== 'cleared'"
+                     ng-switch="item.severity" layout="row" layout-align="start center"
+                     style="border-bottom: 1px solid lightgrey;padding-left: 8px;padding-right: 8px;height: 36px; position: relative;">
 
-                        <div class="background-div" style="background: white;"></div>
+                    <div class="background-div" style="background: white;"></div>
 
-                        <div class="background-div" ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
+                    <div class="background-div" ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
                     'alarm-list-item-badge-error': item.severity === 'error',
                     'alarm-list-item-badge-critical': item.severity === 'critical',
                     'alarm-list-item-badge-maintenance': item.severity === 'maintenance',
@@ -39,14 +42,14 @@
                     'alarm-list-item-badge-unknown': item.severity === 'unknown',
                     'selected-alarm-list-item': item.selected}"></div>
 
-                        <div class="background-div background-gradient-div-warn" ng-switch-when="warn"></div>
-                        <div class="background-div background-gradient-div-error" ng-switch-when="error"></div>
-                        <div class="background-div background-gradient-div-critical" ng-switch-when="critical"></div>
-                        <div class="background-div background-gradient-div-nominal" ng-switch-when="nominal"></div>
-                        <div class="background-div background-gradient-div-unknown" ng-switch-when="unknown"></div>
-                        <div class="background-div background-gradient-div-maintenance" ng-switch-when="maintenance"></div>
+                    <div class="background-div background-gradient-div-warn" ng-switch-when="warn"></div>
+                    <div class="background-div background-gradient-div-error" ng-switch-when="error"></div>
+                    <div class="background-div background-gradient-div-critical" ng-switch-when="critical"></div>
+                    <div class="background-div background-gradient-div-nominal" ng-switch-when="nominal"></div>
+                    <div class="background-div background-gradient-div-unknown" ng-switch-when="unknown"></div>
+                    <div class="background-div background-gradient-div-maintenance" ng-switch-when="maintenance"></div>
 
-                        <div class="alarms-list-item-icon">
+                    <div class="alarms-list-item-icon">
                             <span class="fa fa-warning" ng-switch-when="warn">
                                 <md-tooltip>Warning</md-tooltip>
                             </span>
@@ -65,23 +68,22 @@
                             <span class="fa fa-bolt" ng-switch-when="error">
                                 <md-tooltip>Error</md-tooltip>
                             </span>
-                        </div>
-                        <div flex class="md-tile-content alarms-list-item-content" layout="row" layout-padding style="z-index: 1" layout-align="start">
-                            <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                            <span flex style="max-width: 100px; text-overflow: ellipsis; font-size: 14px;"><i>{{item.priority}}</i></span>
-                            <span flex style="max-width: 260px; text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
-                            <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.message}}">{{item.message}}</span>
-                        </div>
+                    </div>
+                    <div flex class="alarms-list-item-content" layout="row" layout-padding style="z-index: 1" layout-align="start">
+                        <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
+                        <span flex style="max-width: 100px; text-overflow: ellipsis; font-size: 14px;"><i>{{item.priority}}</i></span>
+                        <span flex style="max-width: 260px; text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
+                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.message}}">{{item.message}}</span>
+                    </div>
 
-                    </md-item-content>
-                </md-item>
-                <md-item ng-if="results.length === 0 && vm.alarmsData.length !== 0">
-                    <b>No results found...</b>
-                </md-item>
-            </md-list>
-
-            <div ng-if="vm.alarmsData.length === 0">No Current Alarms</div>
+                </div>
+            </div>
+            <div ng-if="results.length === 0 && vm.alarmsData.length !== 0">
+                <b>No results found...</b>
+            </div>
         </div>
+
+        <div ng-if="vm.alarmsData.length === 0">No Current Alarms</div>
     </div>
 
     <div flex class="md-whiteframe-z1" layout="column" style="margin-top: 16px; margin-bottom: 16px; min-height: 360px;">
@@ -98,28 +100,35 @@
                 <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="alarms-buttons" md-theme-watch="true">
                     <md-button ng-click="vm.cancelKnowSelectedAlarms()" aria-label="Cancel Known" class="md-primary md-raised">Cancel Known</md-button>
                     <div layout="column">
-                        <md-checkbox style="font-size: 14px; margin-top: 2px; margin-bottom: 2px;" class="alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms" aria-label="Show Nominal">Show Nominal</md-checkbox>
-                        <md-checkbox style="font-size: 14px; margin-top: 2px; margin-bottom: 2px;" class="alarms-tools-checkbox" ng-model="vm.showKnownMaintenanceAlarms" aria-label="Show Maintenance">Show Maintenance</md-checkbox>
+                        <md-checkbox style="font-size: 14px; margin-top: 2px; margin-bottom: 2px;" class="alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms" aria-label="Show Nominal">Show
+                            Nominal
+                        </md-checkbox>
+                        <md-checkbox style="font-size: 14px; margin-top: 2px; margin-bottom: 2px;" class="alarms-tools-checkbox" ng-model="vm.showKnownMaintenanceAlarms" aria-label="Show Maintenance">
+                            Show Maintenance
+                        </md-checkbox>
                     </div>
                     <select class="form-control" style="display: inline; width: 150px; margin-right: 16px;" ng-model="vm.alarmsKnownOrderBy" ng-options="s.label for s in vm.orderByFields">
                         <option value="">-- Order By --</option>
                     </select>
-                    <md-text-float md-theme="none" style="font-size: 14px; margin-top: -5px;" type="search" ng-model="vm.q2" label="Search Known Alarms..."></md-text-float>
+                    <md-input-container md-theme="default" style="font-size: 12px; margin-top: -5px;" class="fade-in">
+                        <label>Search Known Alarms...</label>
+                        <input ng-model-options="{ debounce: 300 }" ng-model="vm.q2">
+                    </md-input-container>
                     <span flex></span>
                 </section>
             </div>
         </md-toolbar>
 
         <div flex class="alarms-list alarms-list-small" ng-click="vm.selectAllKnownAlarms = false">
-            <md-list flex >
-                <md-item ng-repeat="item in $root.knownAlarmsData  | orderBy:vm.alarmsKnownOrderBy.value | filter:vm.q2 as resultsKnown">
-                    <md-item-content ng-if="(vm.showKnownNominalAlarms || item.severity !== 'nominal') && (vm.showKnownMaintenanceAlarms || item.severity !== 'maintenance')"
-                                     ng-click="item.selected = !item.selected"
-                                     ng-switch="item.severity">
+            <div ng-repeat="item in $root.knownAlarmsData  | orderBy:vm.alarmsKnownOrderBy.value | filter:vm.q2 as resultsKnown">
+                <div ng-if="(vm.showKnownNominalAlarms || item.severity !== 'nominal') && (vm.showKnownMaintenanceAlarms || item.severity !== 'maintenance')"
+                     ng-click="item.selected = !item.selected"
+                     ng-switch="item.severity"
+                     style="border-bottom: 1px solid lightgrey;padding-left: 8px;padding-right: 8px;height: 36px; position: relative;">
 
-                        <div class="background-div" style="background: white;"></div>
+                    <div class="background-div" style="background: white;"></div>
 
-                        <div class="background-div" ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
+                    <div class="background-div" ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
                     'alarm-list-item-badge-error': item.severity === 'error',
                     'alarm-list-item-badge-critical': item.severity === 'critical',
                     'alarm-list-item-badge-maintenance': item.severity === 'maintenance',
@@ -127,14 +136,14 @@
                     'alarm-list-item-badge-unknown': item.severity === 'unknown',
                     'selected-alarm-list-item': item.selected}"></div>
 
-                        <div class="background-div background-gradient-div-warn" ng-switch-when="warn"></div>
-                        <div class="background-div background-gradient-div-error" ng-switch-when="error"></div>
-                        <div class="background-div background-gradient-div-critical" ng-switch-when="critical"></div>
-                        <div class="background-div background-gradient-div-nominal" ng-switch-when="nominal"></div>
-                        <div class="background-div background-gradient-div-unknown" ng-switch-when="unknown"></div>
-                        <div class="background-div background-gradient-div-maintenance" ng-switch-when="maintenance"></div>
+                    <div class="background-div background-gradient-div-warn" ng-switch-when="warn"></div>
+                    <div class="background-div background-gradient-div-error" ng-switch-when="error"></div>
+                    <div class="background-div background-gradient-div-critical" ng-switch-when="critical"></div>
+                    <div class="background-div background-gradient-div-nominal" ng-switch-when="nominal"></div>
+                    <div class="background-div background-gradient-div-unknown" ng-switch-when="unknown"></div>
+                    <div class="background-div background-gradient-div-maintenance" ng-switch-when="maintenance"></div>
 
-                        <div class="alarms-list-item-icon">
+                    <div class="alarms-list-item-icon">
                             <span class="fa fa-warning" ng-switch-when="warn">
                                 <md-tooltip>Warning</md-tooltip>
                             </span>
@@ -153,20 +162,19 @@
                             <span class="fa fa-bolt" ng-switch-when="error">
                                 <md-tooltip>Error</md-tooltip>
                             </span>
-                        </div>
-                        <div class="md-tile-content alarms-list-item-content" layout="horizontally" layout-padding style="z-index: 1">
-                            <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                            <span flex style="max-width: 100px; text-overflow: ellipsis; font-size: 14px;"><i>{{item.priority}}</i></span>
-                            <span flex style="max-width: 260px; text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
-                            <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.message}}">{{item.message}}</span>
-                        </div>
+                    </div>
+                    <div class="alarms-list-item-content" layout="horizontally" layout-padding style="z-index: 1">
+                        <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
+                        <span flex style="max-width: 100px; text-overflow: ellipsis; font-size: 14px;"><i>{{item.priority}}</i></span>
+                        <span flex style="max-width: 260px; text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
+                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.message}}">{{item.message}}</span>
+                    </div>
 
-                    </md-item-content>
-                </md-item>
-                <md-item ng-if="resultsKnown.length === 0 && vm.knownAlarmsData.length !== 0">
-                    <b>No results found...</b>
-                </md-item>
-            </md-list>
+                </div>
+            </div>
+            <div ng-if="resultsKnown.length === 0 && vm.knownAlarmsData.length !== 0">
+                <b>No results found...</b>
+            </div>
 
             <div ng-if="vm.knownAlarmsData.length === 0">No Current Known Alarms</div>
         </div>

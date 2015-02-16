@@ -3,20 +3,41 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q, $timeout) {
+    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil) {
 
-        var urlBase = 'http://10.8.67.130:8020';
+        var urlBase = SERVER_URL + ':8820';
         var connection = null;
         var api = {};
         var deferredMap = {};
         api.scheduleDraftData = [];
         api.scheduleData = [];
         api.scheduleCompletedData = [];
-        api.resourcePool = [];
+
+        api.subarrays = [];
+        api.resources = [];
+        api.poolResources = [];
+        api.poolResourcesFree = [];
+        api.allocations = [];
+        api.schedulerModes = {};
 
         function onSockJSOpen() {
             if (connection && connection.readyState) {
                 console.log('Observation Schedule Connection Established.');
+                authenticateSocketConnection();
+            }
+        }
+
+        function authenticateSocketConnection() {
+
+            if (connection) {
+                var jsonRPC = {
+                    'jsonrpc': '2.0',
+                    'method': 'authorise',
+                    'params': [$rootScope.session_id],
+                    'id': 'authorise' + KatGuiUtil.generateUUID()
+                };
+                connection.authorized = false;
+                return connection.send(JSON.stringify(jsonRPC));
             }
         }
 
@@ -33,18 +54,22 @@
                 console.error(e.data);
             } else {
                 var result = jsonData.result;
-
-                //console.log(result);
+                console.log(result);
 
                 if (result.get_schedule_blocks) {
-
-                    //push each item because some view are binding to the dataset
-                    result.get_schedule_blocks.forEach(function (item) {
-                        addItemToApplicableDataModel(item);
+                    var getResult = JSON.parse(result.get_schedule_blocks);
+                    getResult.forEach(function (item) {
+                        if (item.state === "DRAFT") {
+                            api.scheduleDraftData.push(item);
+                        } else if (item.state === "SCHEDULED" || item.state === "ACTIVE") {
+                            api.scheduleData.push(item);
+                        }
                     });
-
-                    deferredMap['get_schedule_blocks'].resolve(result.create_schedule_block);
-
+                } else if (result.get_schedule_blocks_finished) {
+                    var getResultFinished = JSON.parse(result.get_schedule_blocks_finished);
+                    getResultFinished.forEach(function (item) {
+                        api.scheduleCompletedData.push(item);
+                    });
                 } else if (result.get_schedule_block) {
 
                     for (var i = 0; i < api.scheduleDraftData.length; i++) {
@@ -53,142 +78,119 @@
                             break;
                         }
                     }
-                    deferredMap['get_schedule_block'].resolve(result.get_schedule_block);
+                } else if (result.list_allocations_for_subarray) {
 
-                } else if (result.list_resources) {
-
-                    var resourcePoolResult = result.list_resources.result.split(',');
-
-                    resourcePoolResult.forEach(function (item) {
-                        api.resourcePool.push(item);
+                    var getResultAlloc = JSON.parse(result.list_allocations_for_subarray.result);
+                    getResultAlloc.forEach(function (item) {
+                        api.allocations.push({sub_nr: result.list_allocations_for_subarray.sub_nr, name: item[0], sb_id_code: item[1]});
                     });
 
-                    deferredMap['list_resources'].resolve(result.list_resources);
+                } else if (result.list_pool_resources_for_subarray) {
 
+                    var resourcePoolResult = result.list_pool_resources_for_subarray.result.split(',');
+                    resourcePoolResult = resourcePoolResult.filter(function (n) {
+                        return n !== "";
+                    });
+
+                    var sub_nr = result.list_pool_resources_for_subarray.sub_nr;
+                    if (sub_nr === 'free') {
+                        sub_nr = 'Free';
+                    }
+
+                    if (!api['resourcePoolData' + sub_nr]) {
+                        api['resourcePoolData' + sub_nr] = [];
+                    }
+
+                    resourcePoolResult.forEach(function (item) {
+                        api['resourcePoolData' + sub_nr].push(item);
+                    });
                 } else if (result.create_schedule_block) {
 
                     result.create_schedule_block.desired_start_time = '';
                     result.create_schedule_block.hasValidInput = false;
                     result.create_schedule_block.isDirty = true;
                     api.scheduleDraftData.push(result.create_schedule_block);
-                    deferredMap['create_schedule_block'].resolve(result.create_schedule_block);
+                } else if (result.assign_schedule_to_subarray) {
 
-                } else if (result.observation_schedules) {
+                    jsonData.clientResult = parseKATCPMessageResult(result.assign_schedule_to_subarray.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var indexAssign = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.assign_schedule_to_subarray.id_code}));
+                        api.scheduleDraftData[indexAssign].sub_nr = result.assign_schedule_to_subarray.sub_nr;
+                    }
 
-                    console.log('got observation_schedules response');
+                } else if (result.unassign_schedule_to_subarray) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.unassign_schedule_to_subarray.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var indexUnassign = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.unassign_schedule_to_subarray.id_code}));
+                        api.scheduleDraftData[indexUnassign].sub_nr = null;
+                    }
 
                 } else if (result.execute_schedule) {
 
-                    var execute_schedule_result = result.execute_schedule.result.split(' ');
-
-                    if (execute_schedule_result[1] === "ok") {
-
-                        var indexEx = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_draft.id_code}));
-                        api.scheduleDraftData[indexEx].state = "ACTIVE";
-                        deferredMap['execute_schedule'].resolve(result.execute_schedule);
-                    } else {
-
-                        deferredMap['execute_schedule'].reject(result.execute_schedule);
+                    jsonData.clientResult = parseKATCPMessageResult(result.execute_schedule.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var indexEx = _.indexOf(api.scheduleData, _.findWhere(api.scheduleData, {id_code: result.execute_schedule.id_code}));
+                        api.scheduleData[indexEx].state = "ACTIVE";
+                        //refresh allocated resources
+                        api.listAllocationsForSubarray(api.scheduleData[indexEx].sub_nr);
                     }
-
                 } else if (result.cancel_execute_schedule) {
 
-                    var cancel_execute_schedule_result = result.cancel_execute_schedule.result.split(' ');
-
-                    if (cancel_execute_schedule_result[1] === "ok") {
-
-                        var indexStopEx = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_draft.id_code}));
-                        api.scheduleDraftData[indexStopEx].state = "INTERRUPTED";
-                        deferredMap['cancel_execute_schedule'].resolve(result.cancel_execute_schedule);
-                    } else {
-
-                        deferredMap['cancel_execute_schedule'].reject(result.cancel_execute_schedule);
+                    jsonData.clientResult = parseKATCPMessageResult(result.cancel_execute_schedule.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var indexStopEx = _.indexOf(api.scheduleData, _.findWhere(api.scheduleData, {id_code: result.cancel_execute_schedule.id_code}));
+                        var scheduleThatWasCanceled = api.scheduleData.splice(indexStopEx, 1);
+                        scheduleThatWasCanceled[0].state = "INTERRUPTED";
+                        api.scheduleCompletedData.push(scheduleThatWasCanceled[0]);
                     }
-
                 } else if (result.clone_schedule) {
 
-                    api.scheduleDraftData.push(result.clone_schedule.result);
-
-                    deferredMap['clone_schedule'].resolve(result.clone_schedule);
-
+                    if (result.clone_schedule.result) {
+                        jsonData.clientResult = {result: 'ok', message: 'Cloned Schedule Block ' + result.clone_schedule.result.id_code};
+                        api.scheduleDraftData.push(result.clone_schedule.result);
+                    } else {
+                        jsonData.clientResult = {result: 'fail', message: 'Could not clone Schedule Block ' + result.clone_schedule.result.id_code};
+                    }
                 } else if (result.schedule_draft) {
 
-                    var schedule_result = result.schedule_draft.result.split(' ');
-
-                    if (schedule_result[1] === "ok") {
-
+                    jsonData.clientResult = parseKATCPMessageResult(result.schedule_draft.result);
+                    if (jsonData.clientResult.result === "ok") {
                         var index = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.schedule_draft.id_code}));
                         var draftThatWasScheduled = api.scheduleDraftData.splice(index, 1);
                         draftThatWasScheduled[0].state = "SCHEDULED";
-                        api.scheduleData.push(draftThatWasScheduled[0]);
-                        deferredMap['schedule_draft'].resolve(result.schedule_draft);
-                    } else {
-
-                        deferredMap['schedule_draft'].reject(result.schedule_draft);
+                        $timeout(function () {
+                            api.scheduleData.push(draftThatWasScheduled[0]);
+                        });
                     }
-
-
                 } else if (result.schedule_to_draft) {
 
-                    var to_draft_result = result.schedule_to_draft.result.split(' ');
-
-                    if (to_draft_result[1] === "ok") {
-
-                        var index3 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_draft.id_code}));
+                    jsonData.clientResult = parseKATCPMessageResult(result.schedule_to_draft.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var index3 = _.indexOf(api.scheduleData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_draft.id_code}));
                         var scheduleToMoveToDraft = api.scheduleData.splice(index3, 1);
                         scheduleToMoveToDraft[0].state = "DRAFT";
                         api.scheduleDraftData.push(scheduleToMoveToDraft[0]);
-                        deferredMap['schedule_to_draft'].resolve(result.schedule_to_draft);
-                    } else {
-
-                        deferredMap['schedule_to_draft'].reject(result.schedule_to_draft);
                     }
-
-
                 } else if (result.schedule_to_complete) {
 
-                    var to_complete_result = result.schedule_to_complete.result.split(' ');
-
-                    if (to_complete_result[1] === "ok") {
-
+                    jsonData.clientResult = parseKATCPMessageResult(result.schedule_to_complete.result);
+                    if (jsonData.clientResult.result === 'ok') {
                         var index4 = _.indexOf(api.scheduleData, _.findWhere(api.scheduleData, {id_code: result.schedule_to_complete.id_code}));
                         var scheduleToMoveToComplete = api.scheduleData.splice(index4, 1);
                         scheduleToMoveToComplete[0].state = "COMPLETED";
                         api.scheduleCompletedData.push(scheduleToMoveToComplete[0]);
-                        deferredMap['schedule_to_complete'].resolve(result.schedule_to_complete);
-                    } else {
-
-                        deferredMap['schedule_to_complete'].reject(result.schedule_to_complete);
                     }
-
-
                 } else if (result.verify_schedule_block) {
 
-                    var verify_result = result.verify_schedule_block.result.split(' ');
-
-                    if (verify_result[1] === "ok") {
-
-                        //var index5 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.verify_schedule_block.id_code}));
-
-                        deferredMap['verify_schedule_block'].resolve(result.verify_schedule_block);
-                    } else {
-
-                        deferredMap['verify_schedule_block'].reject(result.verify_schedule_block);
-                    }
-
-                    api.getScheduleBlock(result.verify_schedule_block.id_code).then(function () {
-                        deferredMap['verify_schedule_block'].resolve(result.verify_schedule_block);
-                    });
+                    jsonData.clientResult = parseKATCPMessageResult(result.verify_schedule_block.result);
 
                 } else if (result.delete_schedule_block) {
 
-                    if (result.delete_schedule_block.delete_result) {
+                    jsonData.clientResult = parseKATCPMessageResult(result.schedule_to_complete.result);
+                    if (jsonData.clientResult.result === 'ok') {
                         var index2 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.delete_schedule_block.id_code}));
                         api.scheduleDraftData.splice(index2, 1);
-                        deferredMap['delete_schedule_block'].resolve(result.create_schedule_block);
-                    } else {
-                        console.error('Could not delete draft schedule block with id_code: ' + result.delete_schedule_block.id_code + '. Try to reload the page.');
-                        deferredMap['delete_schedule_block'].reject(result.create_schedule_block);
                     }
 
                 } else if (result.update_draft_schedule_block) {
@@ -198,43 +200,150 @@
                     draftToUpdate.instruction_set = result.update_draft_schedule_block.instruction_set;
                     draftToUpdate.desired_start_time = result.update_draft_schedule_block.desired_start_time;
                     draftToUpdate.isDirty = false;
-                    deferredMap['update_draft_schedule_block'].resolve(result.update_draft_schedule_block);
+                } else if (result.list_all_allocations) {
 
-                } else {
+                    var allocationsResult = JSON.parse(result.list_all_allocations.result);
+                    allocationsResult.forEach(function (item) {
+                        api.allocations.push(item);
+                    });
+                } else if (result.list_pool_resources) {
 
+                    var listPoolResources = JSON.parse(result.list_pool_resources);
+                    listPoolResources.forEach(function (item) {
+                        if (item.sub_nr === 'free') {
+                            item.pool_resources.forEach(function (resourceItem) {
+                                api.poolResourcesFree.push(resourceItem);
+                            });
+                        } else {
+                            for (var i = 0; i < item.pool_resources.length; i++) {
+                                item.pool_resources[i].sub_nr = item.sub_nr;
+                                api.poolResources.push(item.pool_resources[i]);
+                            }
+                        }
+                    });
+
+                } else if (result.list_subarrays) {
+
+                    var listSubbarrays = JSON.parse(result.list_subarrays);
+                    listSubbarrays.forEach(function (item) {
+                        api.subarrays.push(item);
+                    });
+                } else if (result.assign_resources_to_subarray) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.assign_resources_to_subarray.result);
+
+                    if (jsonData.clientResult.result === 'ok') {
+                        var resources_assigned_list = result.assign_resources_to_subarray.resources_list.split(',');
+                        resources_assigned_list.forEach(function (item) {
+                            var updatedResource = _.findWhere(api.poolResourcesFree, {name: item});
+                            var updatedResourceIndex = _.indexOf(api.poolResourcesFree, updatedResource);
+                            api.poolResourcesFree.splice(updatedResourceIndex, 1);
+                            updatedResource.sub_nr = result.assign_resources_to_subarray.sub_nr;
+                            updatedResource.selected = false;
+                            api.poolResources.push(updatedResource);
+                        });
+                    }
+
+                } else if (result.unassign_resources_from_subarray) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.unassign_resources_from_subarray.result);
+                    if (jsonData.clientResult.result === 'ok') {
+
+                        var resources_unassigned_list = result.unassign_resources_from_subarray.resources_list.split(',');
+
+                        resources_unassigned_list.forEach(function (item) {
+                            var updatedResource = _.findWhere(api.poolResources, {name: item});
+                            var updatedResourceIndex = _.indexOf(api.poolResources, updatedResource);
+                            api.poolResources.splice(updatedResourceIndex, 1);
+                            updatedResource.sub_nr = "free";
+                            api.poolResourcesFree.push(updatedResource);
+                        });
+                    }
+                } else if (result.set_subarray_in_use) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_subarray_in_use.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.set_subarray_in_use.sub_nr}))]
+                            .state = result.set_subarray_in_use.in_use ? 'in_use' : 'free';
+                    }
+                } else if (result.set_subarray_in_maintenance) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_subarray_in_maintenance.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.set_subarray_in_maintenance.sub_nr}))]
+                            .in_maintenance = result.set_subarray_in_maintenance.in_maintenance;
+                    }
+                } else if (result.set_resources_faulty) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_resources_faulty.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var updatedResource = _.findWhere(api.poolResources, {name: result.set_resources_faulty.resources_list});
+                        if (!updatedResource) {
+                            updatedResource = _.findWhere(api.poolResourcesFree, {name: result.set_resources_faulty.resources_list});
+                        }
+                        updatedResource.state = result.set_resources_faulty.faulty ? 'faulty' : 'ok';
+                        //updatedResource = _.findWhere(api.allocations, {name: result.set_resources_faulty.resources_list});
+                        //if (updatedResource) {
+                        //    updatedResource.state = result.set_resources_faulty.faulty ? 'faulty' : 'ok';
+                        //}
+                    }
+                } else if (result.set_resources_in_maintenance) {
+
+                    jsonData.clientResult = parseKATCPMessageResult(result.set_resources_in_maintenance.result);
+                    if (jsonData.clientResult.result === 'ok') {
+                        var updatedResourceM = _.findWhere(api.poolResources, {name: result.set_resources_in_maintenance.resources_list});
+                        if (!updatedResourceM) {
+                            updatedResourceM = _.findWhere(api.poolResourcesFree, {name: result.set_resources_in_maintenance.resources_list});
+                        }
+                        updatedResourceM.in_maintenance = result.set_resources_in_maintenance.in_maintenance;
+                    }
+
+                } else if (result.get_scheduler_mode_by_subarray) {
+
+                    var msgList = result.get_scheduler_mode_by_subarray.result.split(' ');
+                    jsonData.clientResult = {result: msgList[1], message: msgList[3]};
+                    api.schedulerModes[result.get_scheduler_mode_by_subarray.sub_nr] = {boolValue: msgList[2], stringValue: msgList[3]};
+
+                } else if (result.set_scheduler_mode_by_subarray) {
+
+                    var msgList2 = result.set_scheduler_mode_by_subarray.result.split(' ');
+                    if (msgList2[1] === 'ok') {
+                        jsonData.clientResult = {result: msgList2[1], message: result.set_scheduler_mode_by_subarray.result};
+                        api.schedulerModes[result.set_scheduler_mode_by_subarray.sub_nr] = {boolValue: msgList2[2], stringValue: msgList2[3]};
+                    } else {
+                        jsonData.clientResult = {result: msgList2[1], message: result.set_scheduler_mode_by_subarray.result};
+                    }
+
+
+                } else if (result.free_subarray) {
+                    //todo fix this case
+                    console.log(result.free_subarray);
+                } else if (!result.email && result.session_id) {
+                    //todo fix this case, display error better
                     console.warn('Observation Schedule returned an unfamiliar message: ');
                     console.warn(e);
+                } else if (result.session_id) {
+                    connection.authorized = true;
+                }
+
+                if (deferredMap[jsonData.id]) {
+                    deferredMap[jsonData.id].resolve(jsonData.clientResult);
                 }
             }
         }
 
-        function addItemToApplicableDataModel(item) {
-
-
-            if (item.state === "DRAFT") {
-
-                if (item.desired_start_time === "None") {
-                    item.desired_start_time = "";
-                    //item.isDirty = true;
-                }
-                api.scheduleDraftData.push(item);
-
-            } else if (item.state === "SCHEDULED") {
-
-                api.scheduleData.push(item);
-
-            } else if (item.state === "ACTIVE") {
-
-                api.scheduleData.push(item);
-
-            } else if (item.state === "INTERRUPTED") {
-
-                api.scheduleCompletedData.push(item);
-
-            } else if (item.state === "COMPLETED") {
-
-                api.scheduleCompletedData.push(item);
+        function parseKATCPMessageResult(message) {
+            var messageList = message.split(' ');
+            var msg = "";
+            if (messageList.length > 2) {
+                msg = messageList[2].replace(new RegExp('\\\\_', 'g'), ' ').split('\\n').join('|');
+            } else {
+                msg = message;
             }
+            return {
+                result: messageList[1],
+                message: msg
+            };
         }
 
         api.connectListener = function () {
@@ -243,7 +352,6 @@
             connection.onopen = onSockJSOpen;
             connection.onmessage = onSockJSMessage;
             connection.onclose = onSockJSClose;
-
             return connection !== null;
         };
 
@@ -254,129 +362,173 @@
         };
 
         api.deleteScheduleDraft = function (idCode) {
-            sendObsSchedCommand('delete_schedule_block', [idCode]);
-            deferredMap['delete_schedule_block'] = $q.defer();
-            return deferredMap['delete_schedule_block'].promise;
+            return createCommandPromise(sendObsSchedCommand('delete_schedule_block', [idCode]));
         };
 
         api.updateScheduleDraft = function (scheduleBlockDraft) {
-            sendObsSchedCommand('update_draft_schedule_block', [
+            return createCommandPromise(sendObsSchedCommand('update_draft_schedule_block', [
                 scheduleBlockDraft.id_code,
                 scheduleBlockDraft.type,
                 scheduleBlockDraft.instruction_set,
                 scheduleBlockDraft.description,
-                scheduleBlockDraft.desired_start_time]);
-            deferredMap['update_draft_schedule_block'] = $q.defer();
-            return deferredMap['update_draft_schedule_block'].promise;
-        };
-
-        api.getObservationSchedule = function () {
-            return sendObsSchedCommand('get_observation_schedule');
+                scheduleBlockDraft.desired_start_time]));
         };
 
         api.getScheduleBlocks = function () {
-
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
             api.scheduleData.splice(0, api.scheduleData.length);
+            return createCommandPromise(sendObsSchedCommand('get_schedule_blocks'));
+        };
+
+        api.getScheduleBlocksFinished = function () {
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
-            sendObsSchedCommand('get_schedule_blocks');
-            deferredMap['get_schedule_blocks'] = $q.defer();
-            return deferredMap['get_schedule_blocks'].promise;
+            return createCommandPromise(sendObsSchedCommand('get_schedule_blocks_finished'));
         };
 
         api.getScheduleBlock = function (id_code) {
-
-            sendObsSchedCommand('get_schedule_block', [id_code]);
-            deferredMap['get_schedule_block'] = $q.defer();
-            return deferredMap['get_schedule_block'].promise;
+            return createCommandPromise(sendObsSchedCommand('get_schedule_block', [id_code]));
         };
 
         api.createScheduleBlock = function () {
+            return createCommandPromise(sendObsSchedCommand('create_schedule_block'));
+        };
 
-            sendObsSchedCommand('create_schedule_block');
-            deferredMap['create_schedule_block'] = $q.defer();
-            return deferredMap['create_schedule_block'].promise;
+        api.assignScheduleBlock = function (subarray_number, id_code) {
+            return createCommandPromise(sendObsSchedCommand('assign_schedule_to_subarray', [subarray_number, id_code]));
+        };
+
+        api.unassignScheduleBlock = function (subarray_number, id_code) {
+            return createCommandPromise(sendObsSchedCommand('unassign_schedule_to_subarray', [subarray_number, id_code]));
         };
 
         api.scheduleDraft = function (subarray_number, id_code) {
-
-            sendObsSchedCommand('schedule_draft', [subarray_number, id_code]);
-            deferredMap['schedule_draft'] = $q.defer();
-            return deferredMap['schedule_draft'].promise;
+            return createCommandPromise(sendObsSchedCommand('schedule_draft', [subarray_number, id_code]));
         };
 
         api.scheduleToDraft = function (subarray_number, id_code) {
-
-            sendObsSchedCommand('schedule_to_draft', [subarray_number, id_code]);
-            deferredMap['schedule_to_draft'] = $q.defer();
-            return deferredMap['schedule_to_draft'].promise;
+            return createCommandPromise(sendObsSchedCommand('schedule_to_draft', [subarray_number, id_code]));
         };
 
         api.scheduleToComplete = function (subarray_number, id_code) {
-
-            sendObsSchedCommand('schedule_to_complete', [subarray_number, id_code]);
-            deferredMap['schedule_to_complete'] = $q.defer();
-            return deferredMap['schedule_to_complete'].promise;
+            return createCommandPromise(sendObsSchedCommand('schedule_to_complete', [subarray_number, id_code]));
         };
 
         api.verifyScheduleBlock = function (subarray_number, id_code) {
-
-            sendObsSchedCommand('verify_schedule_block', [subarray_number, id_code]);
-            deferredMap['verify_schedule_block'] = $q.defer();
-            return deferredMap['verify_schedule_block'].promise;
+            return createCommandPromise(sendObsSchedCommand('verify_schedule_block', [subarray_number, id_code]));
         };
 
         api.executeSchedule = function (subarray_number, id_code) {
-
-            sendObsSchedCommand('execute_schedule', [subarray_number, id_code]);
-            deferredMap['execute_schedule'] = $q.defer();
-            return deferredMap['execute_schedule'].promise;
+            return createCommandPromise(sendObsSchedCommand('execute_schedule', [subarray_number, id_code]));
         };
 
         api.cancelExecuteSchedule = function (subarray_number, id_code) {
-
-            sendObsSchedCommand('cancel_execute_schedule', [subarray_number, id_code]);
-            deferredMap['cancel_execute_schedule'] = $q.defer();
-            return deferredMap['cancel_execute_schedule'].promise;
+            return createCommandPromise(sendObsSchedCommand('cancel_execute_schedule', [subarray_number, id_code]));
         };
 
         api.cloneSchedule = function (id_code) {
-
-            sendObsSchedCommand('clone_schedule', [id_code]);
-            deferredMap['clone_schedule'] = $q.defer();
-            return deferredMap['clone_schedule'].promise;
+            return createCommandPromise(sendObsSchedCommand('clone_schedule', [id_code]));
         };
 
-        api.listResources = function (subarray_number) {
+        api.listPoolResourcesForSubarray = function (subarray_number) {
 
-            api.resourcePool.splice(0, api.resourcePool.length);
-            sendObsSchedCommand('list_resources', [subarray_number]);
-            deferredMap['list_resources'] = $q.defer();
-            return deferredMap['list_resources'].promise;
+            var camelCaseSubNr = subarray_number;
+            if (camelCaseSubNr === 'free') {
+                camelCaseSubNr = 'Free';
+            }
+
+            if (api['resourcePoolData' + subarray_number]) {
+                api['resourcePoolData' + camelCaseSubNr].splice(0, api['resourcePoolData' + camelCaseSubNr].length);
+            }
+
+            return createCommandPromise(sendObsSchedCommand('list_pool_resources_for_subarray', [subarray_number]));
         };
 
-        function sendObsSchedCommand(method, funcParams) {
+        api.listAllocations = function () {
+            api.allocations.splice(0, api.allocations.length);
+            return createCommandPromise(sendObsSchedCommand('list_all_allocations', []));
+        };
+
+        api.listPoolResources = function () {
+            api.poolResourcesFree.splice(0, api.poolResourcesFree.length);
+            api.poolResources.splice(0, api.poolResources.length);
+            return createCommandPromise(sendObsSchedCommand('list_pool_resources', []));
+        };
+
+        api.listSubarrays = function () {
+            api.subarrays.splice(0, api.subarrays.length);
+            return createCommandPromise(sendObsSchedCommand('list_subarrays', []));
+        };
+
+        api.assignResourcesToSubarray = function (subarray, resources) {
+            return createCommandPromise(sendObsSchedCommand('assign_resources_to_subarray', [subarray, resources]));
+        };
+
+        api.unassignResourcesFromSubarray = function (subarray, resources) {
+            return createCommandPromise(sendObsSchedCommand('unassign_resources_from_subarray', [subarray, resources]));
+        };
+
+        api.setSubarrayInUse = function (subarray, set_to) {
+            return createCommandPromise(sendObsSchedCommand('set_subarray_in_use', [subarray, set_to])); //1 for true
+        };
+
+        api.setSubarrayMaintenance = function (subarray, set_to) {
+            return createCommandPromise(sendObsSchedCommand('set_subarray_in_maintenance', [subarray, set_to])); //1 for true
+        };
+
+        api.freeSubarray = function (subarray) {
+            return createCommandPromise(sendObsSchedCommand('free_subarray', [subarray]));
+        };
+
+        api.markResourceFaulty = function (resource, faulty) {
+            return createCommandPromise(sendObsSchedCommand('set_resources_faulty', [resource, faulty]));
+        };
+
+        api.markResourceInMaintenance = function (resource, in_maintenance) {
+            return createCommandPromise(sendObsSchedCommand('set_resources_in_maintenance', [resource, in_maintenance]));
+        };
+
+        api.listAllocationsForSubarray = function (sub_nr) {
+            api.allocations.splice(0, api.allocations.length);
+            return createCommandPromise(sendObsSchedCommand('list_allocations_for_subarray', [sub_nr]));
+        };
+
+        api.getSchedulerModeForSubarray= function (sub_nr) {
+            return createCommandPromise(sendObsSchedCommand('get_scheduler_mode_by_subarray', [sub_nr]));
+        };
+
+        api.setSchedulerModeForSubarray= function (sub_nr, mode) {
+            return createCommandPromise(sendObsSchedCommand('set_scheduler_mode_by_subarray', [sub_nr, mode]));
+        };
+
+        function createCommandPromise(promiseId) {
+            deferredMap[promiseId] = $q.defer();
+            return deferredMap[promiseId].promise;
+        }
+
+        function sendObsSchedCommand(method, funcParams, desired_jsonRPCId) {
 
             if (connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': method,
-                    'id': 'abe3d23100'
+                    'id': KatGuiUtil.generateUUID()
                 };
 
+                if (desired_jsonRPCId) {
+                    jsonRPC.id = desired_jsonRPCId;
+                }
                 if (funcParams) {
                     jsonRPC.params = funcParams;
                 }
-
-                if (connection.readyState === SockJS.OPEN) {
+                if (connection.readyState === SockJS.OPEN && connection.authorized) {
                     connection.send(JSON.stringify(jsonRPC));
                 } else {
                     //wait for the connection to be ready and retry the send
                     $timeout(function () {
-                        sendObsSchedCommand(method, funcParams);
+                        sendObsSchedCommand(method, funcParams, jsonRPC.id);
                     }, 500);
                 }
-
+                return jsonRPC.id;
             }
         }
 

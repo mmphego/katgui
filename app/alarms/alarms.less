@@ -229,21 +229,24 @@ ul {
     height: 100%;
 }
 
+.background-div {
+    top: 0px;
+    left: 0px;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 0;
+}
+
 .alarms-list {
     overflow: auto;
+
 
     .alarms-list-item-content {
         padding: 6px;
     }
 
-    .background-div {
-        top: 0px;
-        left: 0px;
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        z-index: 0;
-    }
+
 
     .alarm-list-item-badge-warn {
         background: linear-gradient(150deg, rgba(255, 235, 59, 1) 0%, rgba(255, 235, 59, 0) 5%, rgba(255, 235, 59, 0) 100%);
@@ -302,12 +305,7 @@ ul {
         }
     }
 
-    md-item-content {
-        border-bottom: 1px solid lightgrey;
-        padding-left: 8px;
-        padding-right: 8px;
-        height: 36px;
-    }
+
 }
 
 .alarms-tools-checkbox {

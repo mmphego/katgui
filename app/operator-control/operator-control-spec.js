@@ -13,25 +13,31 @@ describe('OperatorControlCtrl', function () {
         controlService.inhibitAll = function () {
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm000:inhibited',
+                name: 'm011:inhibited',
                 value: true,
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm001:inhibited',
+                name: 'm022:inhibited',
                 value: true,
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm062:inhibited',
+                name: 'm033:inhibited',
                 value: true,
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm063:inhibited',
+                name: 'm044:inhibited',
+                value: true,
+                time: 0
+            });
+
+            ctrl.receptorMessageReceived({}, {
+                name: 'm055:inhibited',
                 value: true,
                 time: 0
             });
@@ -40,25 +46,31 @@ describe('OperatorControlCtrl', function () {
         controlService.stowAll = function () {
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm000:mode',
+                name: 'm011:mode',
                 value: 'STOW',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm001:mode',
+                name: 'm022:mode',
                 value: 'STOW',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm062:mode',
+                name: 'm033:mode',
                 value: 'STOW',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm063:mode',
+                name: 'm044:mode',
+                value: 'STOW',
+                time: 0
+            });
+
+            ctrl.receptorMessageReceived({}, {
+                name: 'm055:mode',
                 value: 'STOW',
                 time: 0
             });
@@ -66,49 +78,61 @@ describe('OperatorControlCtrl', function () {
 
         controlService.stopAll = function () {
             ctrl.receptorMessageReceived({}, {
-                name: 'm000:mode',
+                name: 'm011:mode',
                 value: 'STOW',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm001:mode',
+                name: 'm022:mode',
                 value: 'STOW',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm062:mode',
+                name: 'm033:mode',
                 value: 'STOW',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm063:mode',
+                name: 'm044:mode',
                 value: 'STOW',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm000:inhibited',
+                name: 'm055:mode',
+                value: 'STOW',
+                time: 0
+            });
+
+            ctrl.receptorMessageReceived({}, {
+                name: 'm011:inhibited',
                 value: true,
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm001:inhibited',
+                name: 'm022:inhibited',
                 value: true,
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm062:inhibited',
+                name: 'm033:inhibited',
                 value: true,
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm063:inhibited',
+                name: 'm044:inhibited',
+                value: true,
+                time: 0
+            });
+
+            ctrl.receptorMessageReceived({}, {
+                name: 'm055:inhibited',
                 value: true,
                 time: 0
             });
@@ -117,25 +141,31 @@ describe('OperatorControlCtrl', function () {
         controlService.resumeOperations = function () {
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm000:mode',
+                name: 'm011:mode',
                 value: 'STOP',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm001:mode',
+                name: 'm022:mode',
                 value: 'STOP',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm062:mode',
+                name: 'm033:mode',
                 value: 'STOP',
                 time: 0
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm063:mode',
+                name: 'm044:mode',
+                value: 'STOP',
+                time: 0
+            });
+
+            ctrl.receptorMessageReceived({}, {
+                name: 'm055:mode',
                 value: 'STOP',
                 time: 0
             });

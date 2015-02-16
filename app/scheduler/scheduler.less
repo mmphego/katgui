@@ -49,7 +49,7 @@
     position: relative;
     padding: 0;
     overflow: auto !important;
-    background: white;
+//    background: white;
 
     input {
         width: 100%;
@@ -95,6 +95,27 @@
     }
 }
 
+
+@item-bg: #FFF;
+@item-border-bottom: #d3d3d3;
+
+.selected-resource-item {
+    background: #B3E5FC !important;
+    border-bottom: 1px solid darken(@item-border-bottom, 10%) !important;
+}
+
+.resource-item {
+    max-height: 40px;
+    padding: 4px;
+    min-width: 200px;
+    border-bottom: 1px solid darken(@item-border-bottom, 10%);
+    overflow: hidden;
+    background-color: @item-bg;
+    &:hover {
+        background-color: darken(@item-bg, 5%);
+    }
+}
+
 .schedule-draft-item {
     height: 48px;
     max-height: 48px;
@@ -103,6 +124,9 @@
     direction: ltr;
     border-bottom: 1px solid #d3d3d3;
     overflow: hidden;
+    &:hover {
+        background-color: darken(@item-bg, 5%);
+    }
 }
 
 .resource-pool-item {
@@ -163,9 +187,8 @@
 
 .selected-schedule-row {
     background: #B3E5FC !important;
-    //    border-left: 2px solid transparent;
-    //    border-top: 2px solid transparent;
-    //    border-bottom: 2px solid transparent;
+    box-shadow: 1px 2px 10px 0 #393939;
+    border-bottom: 1px solid transparent;
 }
 
 .schedule-row-executing {
@@ -173,7 +196,9 @@
 }
 
 .schedule-row-executing-and-selected {
-    background: linear-gradient(to right, rgba(102, 187, 106, 1) 0%, rgba(102, 187, 106, 1) 25%, rgba(179, 229, 252, 0.52) 50%, rgba(179, 229, 252, 0.5) 51%, rgba(179, 229, 252, 1) 75%, rgba(179, 229, 252, 1) 100%)
+    background: linear-gradient(to right, rgba(102, 187, 106, 1) 0%, rgba(102, 187, 106, 1) 25%, rgba(179, 229, 252, 0.52) 50%, rgba(179, 229, 252, 0.5) 51%, rgba(179, 229, 252, 1) 75%, rgba(179, 229, 252, 1) 100%);
+    box-shadow: 1px 2px 10px 0 #393939;
+    border-bottom: 1px solid transparent;
 }
 
 .grid-dropdown {
@@ -242,10 +267,10 @@
 .highlight-script-window-with-box-shadow {
     background-color: #B3E5FC !important;
     box-shadow: 0px 2px 40px 0 #000;
-    z-index: 0;
-    border-right: 1px solid #d3d3d3 !important;
-    border-bottom: 1px solid #d3d3d3 !important;
-    border-top: 1px solid #d3d3d3 !important;
+//    z-index: 0;
+//    border-right: 1px solid #d3d3d3 !important;
+//    border-bottom: 1px solid #d3d3d3 !important;
+//    border-top: 1px solid #d3d3d3 !important;
 }
 
 .schedule-block-script-window {
@@ -289,9 +314,12 @@
     position: relative;
     padding: 0;
     margin-left: 8px;
-    //    margin-bottom: 8px;
-    max-height: 275px;
     overflow: hidden;
+}
+
+.schedule-block-complete-list-min-height {
+    max-height: 450px;
+    min-height: 450px;
 }
 
 .horizontal-resizer-bar {
@@ -314,15 +342,12 @@
     cursor: pointer;
     height: 320px;
     min-width: 320px;
+    max-width: 320px;
     width: 320px;
 
     &:hover {
         background-color: #F5F5F5;
     }
-}
-
-.svg-receptor {
-    opacity: 1.0;
 }
 
 .animate-repeat {
@@ -349,6 +374,32 @@
 .animate-repeat.ng-enter.ng-enter-active {
     opacity: 1;
     max-height: 49px;
+}
+
+.animate-repeat-40 {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter,
+.animate-repeat-40.ng-leave {
+    -webkit-transition: all linear 0.1s;
+    transition: all linear 0.1s;
+}
+
+.animate-repeat-40.ng-leave.ng-leave-active,
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.animate-repeat-40.ng-leave,
+.animate-repeat-40.ng-move.ng-move-active,
+.animate-repeat-40.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 40px;
 }
 
 .whiteframe-z1-left {
@@ -445,4 +496,60 @@
     &:hover {
         color: #212121;
     }
+}
+
+.selected-draft-schedule-row {
+    background: #B3E5FC !important;
+    box-shadow: 1px 2px 10px 0 #393939;
+    border-bottom: 1px solid transparent;
+}
+
+.subarray-item {
+    width: 220px;
+    height: 290px;
+}
+
+.subarray-container {
+    min-width: 1000px;
+    margin-bottom: 16px;
+    min-height: 290px;
+}
+
+.svg-subarray, .svg-receptor, {
+    fill: currentColor !important;
+    stroke: currentColor !important;
+}
+
+.svg-receptor-with-opacity {
+    fill: currentColor !important;
+}
+
+.subarray_in_maintenance_bg {
+    background-color: rgb(94,53,177);
+    color: white;
+}
+
+.opaque-fade-in {
+    opacity: 1.0 !important;
+    transition: all linear 0.2s !important;
+}
+
+/* Initial state when showing */
+.opaque-fade-in.opaque-fade-in-remove {
+    opacity: 0.2 !important;
+}
+
+/* Will transition towards this state */
+.opaque-fade-in.opaque-fade-in-add.opaque-fade-in-active {
+    opacity: 1 !important;
+}
+
+/* Will transition towards this state */
+.opaque-fade-in.opaque-fade-in-remove.opaque-fade-in-remove-active {
+    opacity: 0.2 !important;
+}
+
+.scheduler-inline-button {
+    width: 35px;
+    height: 49px;
 }
