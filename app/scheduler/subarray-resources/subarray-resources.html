@@ -37,12 +37,13 @@
                         </md-button>
                     </div>
                     <div layout="column" layout-align="center center" style="margin-left: 12px; margin-right: 12px;">
-                        <md-button md-theme="{{themePrimaryButtons}}" layout="column" layout-align="center center" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
+                        <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" style="margin-top: 4px"
+                                   layout="column" layout-align="center center" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
                             <div style="transform:scale(0.7);" ng-include="'images/subarray.svg'"></div>
                             <span>Manage Observations</span>
                         </md-button>
-                        <span ng-if="!subarray.in_maintenance">{{subarray.state}}</span>
-                        <span ng-if="subarray.in_maintenance" class="maintenance-text">{{subarray.state}} - in maintenance</span>
+                        <span ng-if="!subarray.in_maintenance" title="State: {{subarray.state}}">{{subarray.state}}</span>
+                        <span ng-if="subarray.in_maintenance" class="maintenance-text" title="State: {{subarray.state}} - in maintenance">{{subarray.state}} - in maintenance</span>
                     </div>
                 </div>
             </div>

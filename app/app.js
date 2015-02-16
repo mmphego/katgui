@@ -108,6 +108,8 @@
                     .position($rootScope.toastPosition)
                     .hideDelay(TOAST_HIDE_DELAY)
             );
+
+            console.log('Showing toast-message: ' + message);
         };
 
         var unbindAlarmMessage = null;
@@ -179,6 +181,8 @@
                 } else {
                     $state.go($state.current.parent.name);
                 }
+            } else {
+                $state.go('home');
             }
         };
 
@@ -233,6 +237,8 @@
                 .finally(function () {
                     alert = undefined;
                 });
+
+            console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
         }
 
         var updateTimeDisplay = function () {

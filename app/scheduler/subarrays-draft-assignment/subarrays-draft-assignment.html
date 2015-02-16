@@ -11,13 +11,13 @@
                     </div>
                 </md-toolbar>
                 <div layout="column" layout-align="center center" style="margin: 4px; height: 220px;">
-                    <md-button md-theme="{{themePrimaryButtons}}" class="" layout="column" layout-align="center center" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
+                    <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" layout="column" layout-align="center center" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
                         <div style="transform:scale(0.7);" ng-include="'images/subarray.svg'"></div>
                         <span>Manage Observations</span>
                     </md-button>
                     <span style="font-weight: bold" ng-if="subarray.description">{{::subarray.description}}</span>
-                    <span ng-if="!subarray.in_maintenance">{{subarray.state}}</span>
-                    <span ng-if="subarray.in_maintenance">{{subarray.state}} - in maintenance</span>
+                    <span ng-if="!subarray.in_maintenance" title="State: {{subarray.state}}">{{subarray.state}}</span>
+                    <span ng-if="subarray.in_maintenance" class="maintenance-text" title="State: {{subarray.state}} - in maintenance">{{subarray.state}} - in maintenance</span>
                 </div>
             </div>
 
