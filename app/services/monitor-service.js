@@ -29,7 +29,9 @@
             if (connection && connection.readyState && api.connectionAuthorised) {
                 return connection.send(JSON.stringify(jsonRPC));
             } else {
-                pendingSubscribeObjects.push(jsonRPC);
+                $timeout(function () {
+                    api.subscribeToReceptorUpdates();
+                }, 500);
             }
         };
 
@@ -37,7 +39,6 @@
             if (connection && connection.readyState) {
                 console.log('Monitor Connection Established. Authenticating...');
 
-                pendingSubscribeObjects = [];
                 authenticateSocketConnection();
                 subscribeToAlarms();
             }
@@ -54,24 +55,28 @@
             if (messages.error) {
                 console.error('There was an error sending a jsonrpc request:');
                 console.error(messages);
-            } else if (messages.id === 'redis-pubsub-init') {
+            } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                 console.log('received redis-pubsub-init message:');
                 console.log(messages);
-            } else if (!messages['jsonrpc']) {
 
-                if (messages.results) {
+                if (messages.result) {
+                    if (messages.id === 'redis-pubsub') {
+                        var arrayResult = [];
+                        arrayResult.push({msg_data:messages.result.msg_data, msg_channel:messages.result.msg_channel});
+                        messages.result = arrayResult;
+                    }
 
-                    messages.results.forEach(function (message) {
+                    messages.result.forEach(function (message) {
 
                         var messageObj = message;
                         if (_.isString(message)) {
                             messageObj = JSON.parse(message);
                         }
 
-                        if (messageObj.name.lastIndexOf('kataware:', 0) === 0) {
-                            api.alarmMessageReceived(messageObj);
-                        } else if (messageObj.name.indexOf('kataware:') !== 0) {
-                            api.receptorMessageReceived(messageObj);
+                        if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
+                            api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
+                        } else if (messageObj.msg_channel.indexOf('kataware:') !== 0) {
+                            api.receptorMessageReceived(messageObj.msg_data);
                         } else {
                             console.log('dangling monitor message...');
                             console.log(messageObj);
@@ -81,15 +86,8 @@
             } else if (messages.result && messages.result.session_id) {
                 //auth response
                 if (messages.result.email && messages.result.session_id) {
-                    $rootScope.currentUser = messages.result.session_id;
                     $localStorage['currentUserToken'] = $rootScope.jwt;
                     api.connectionAuthorised = true;
-
-                    //do pending requests
-                    pendingSubscribeObjects.forEach(function (obj) {
-                        connection.send(JSON.stringify(obj));
-                        delete obj.subscribeName;
-                    });
 
                 } else {
                     //bad auth response
@@ -121,7 +119,7 @@
             $rootScope.$broadcast('receptorMessage', messageObj);
         };
 
-        api.alarmMessageReceived = function (messageObj) {
+        api.alarmMessageReceived = function (messageName, messageObj) {
 
             var alarmValues = messageObj.value.toString().split(',');
             var alarmPriority = 'unknown';
@@ -132,11 +130,9 @@
 
             messageObj.priority = alarmPriority;
             messageObj.message = messageObj.value;
-
-            messageObj.name = messageObj.name.replace('kataware:alarm.', '');
-
-            messageObj.dateUnix = messageObj.time;
-            messageObj.date = moment.utc(messageObj.time, 'X').format('HH:mm:ss DD-MM-\'YY');
+            messageObj.name = messageName.replace('kataware:alarm.', '');
+            messageObj.dateUnix = messageObj.timestamp;
+            messageObj.date = moment.utc(messageObj.timestamp, 'X').format('HH:mm:ss DD-MM-\'YY');
             $rootScope.$emit('alarmMessage', messageObj);
         };
 
@@ -157,7 +153,6 @@
                 $timeout(function () {
                     subscribeToAlarms();
                 }, 500);
-                //pendingSubscribeObjects.push(jsonRPC);
             }
         }
 

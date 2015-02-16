@@ -184,7 +184,7 @@
         };
 
         //list users on the next digest cycle, i.e. after controller init
-        $timeout(afterInitFunction, 0);
+        $timeout(afterInitFunction, 200);
         $rootScope.$on('loginSuccess', afterInitFunction);
 
         vm.inited = false;

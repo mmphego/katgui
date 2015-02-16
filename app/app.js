@@ -101,6 +101,7 @@
         $rootScope.newAlarmErrorCount = 0;
         $rootScope.newAlarmCritCount = 0;
         $rootScope.toastPosition = 'bottom right';
+        $rootScope.showAlarms = true;
         $rootScope.showSimpleToast = function (message) {
             $mdToast.show(
                 $mdToast.simple()
@@ -223,11 +224,11 @@
             if (result.result === 'ok') {
                 $rootScope.showSimpleToast(result.message);
             } else {
-                showSimpleDialog(result.result, result.message);
+                $rootScope.showSimpleDialog(result.result, result.message);
             }
         };
 
-        function showSimpleDialog(title, message) {
+        $rootScope.showSimpleDialog = function(title, message) {
             var alert = $mdDialog.alert()
                 .title(title)
                 .content(message)
@@ -239,7 +240,7 @@
                 });
 
             console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
-        }
+        };
 
         var updateTimeDisplay = function () {
             //TODO: calculate local sidereal time outside this function and only on every sync
@@ -278,7 +279,6 @@
         //just so you know
         //TODO move them all into a service
         $rootScope.alarmsData = [];
-        $rootScope.knownAlarmsData = [];
 
         //for easier testing
         this.receivedAlarmMessage = receivedAlarmMessage;
@@ -294,45 +294,18 @@
                 return;
             }
 
-            var found = false;
+            var foundAlarm = _.findWhere($rootScope.alarmsData, {name: message.name});
 
-            if (message.priority === 'known') {
+            if (foundAlarm) {
+                foundAlarm.priority = message.priority;
+                foundAlarm.severity = message.severity;
+                foundAlarm.dateUnix = message.dateUnix;
+                foundAlarm.date = message.date;
+                foundAlarm.selected = false;
+            }
 
-                for (var i = 0; i < $rootScope.knownAlarmsData.length; i++) {
-                    if ($rootScope.knownAlarmsData[i].name === message.name) {
-                        $rootScope.knownAlarmsData[i].priority = message.priority;
-                        $rootScope.knownAlarmsData[i].severity = message.status;
-                        $rootScope.knownAlarmsData[i].dateUnix = message.dateUnix;
-                        $rootScope.knownAlarmsData[i].date = message.date;
-                        $rootScope.knownAlarmsData[i].description = message.value;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    $rootScope.knownAlarmsData.push(message);
-                    KatGuiUtil.removeFirstFromArrayWhereProperty($rootScope.alarmsData, 'name', message.name);
-                }
-
-            } else {
-
-                for (var j = 0; j < $rootScope.alarmsData.length; j++) {
-                    if ($rootScope.alarmsData[j].name === message.name) {
-                        $rootScope.alarmsData[j].priority = message.priority;
-                        $rootScope.alarmsData[j].severity = message.status;
-                        $rootScope.alarmsData[j].dateUnix = message.dateUnix;
-                        $rootScope.alarmsData[j].date = message.date;
-                        $rootScope.alarmsData[j].description = message.value;
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    $rootScope.alarmsData.push(message);
-                    KatGuiUtil.removeFirstFromArrayWhereProperty($rootScope.knownAlarmsData, 'name', message.name);
-                }
+            if (!foundAlarm) {
+                $rootScope.alarmsData.push(message);
             }
         }
 

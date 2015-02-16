@@ -6,6 +6,13 @@
     function ConfigCtrl($rootScope, $scope, $localStorage, THEMES) {
         var vm = this;
 
+        var showAlarms = $localStorage['showAlarmsNotify'] || $rootScope.showAlarms;
+        if ($rootScope.showAlarms === undefined) {
+            showAlarms = true;
+        }
+
+        vm.showAlarms = showAlarms;
+        $rootScope.showAlarms = showAlarms;
         vm.showLargeAlarms = $rootScope.showLargeAlarms;
         vm.themes = THEMES;
         vm.selectedTheme = _.find(THEMES, function (theme) {
@@ -24,7 +31,6 @@
             $rootScope.themePrimary = newTheme.primary;
             $rootScope.themeSecondary = newTheme.secondary;
             $rootScope.themePrimaryButtons = newTheme.primaryButtons;
-
             $localStorage['selectedTheme'] = newTheme.name;
         };
 
@@ -32,6 +38,13 @@
             if (typeof newVal !== 'undefined') {
                 $rootScope.showLargeAlarms = newVal;
                 $localStorage['showLargeAlarms'] = newVal;
+            }
+        });
+
+        $scope.$watch('vm.showAlarms', function (newVal) {
+            if (typeof newVal !== 'undefined') {
+                $rootScope.showAlarms = newVal;
+                $localStorage['showAlarmsNotify'] = newVal;
             }
         });
     }

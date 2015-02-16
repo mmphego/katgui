@@ -23,7 +23,10 @@
 
         api.onSockJSMessage = function (e) {
             var result = JSON.parse(e.data);
-            if (result && result.session_id) {
+            if (result.error) {
+                $rootScope.showSimpleDialog('Error sending request', result.error.message);
+            }
+            else if (result && result.result.session_id) {
                 connection.authorized = true;
             }
         };
@@ -79,19 +82,19 @@
         };
 
         api.acknowledgeAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'kataware_alarm_ack', alarmName);
+            return api.sendControlCommand('kataware', 'alarm_ack', alarmName);
         };
 
         api.addKnownAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'kataware_alarm_know', alarmName);
+            return api.sendControlCommand('kataware', 'alarm_know', alarmName);
         };
 
         api.cancelKnowAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'alarm-cancel-know', alarmName);
+            return api.sendControlCommand('kataware', 'alarm_cancel_know', alarmName);
         };
 
         api.clearAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'alarm-clear', alarmName);
+            return api.sendControlCommand('kataware', 'alarm_clear', alarmName);
         };
 
         api.sendControlCommand = function (module, funcName, funcParams) {
@@ -101,7 +104,7 @@
                     'id': KatGuiUtil.generateUUID(),
                     'jsonrpc': '2.0',
                     'method': 'katcp_request',
-                    'params': [funcName, funcParams]
+                    'params': [module, funcName, funcParams]
                 };
 
                 connection.send(JSON.stringify(jsonRPC));

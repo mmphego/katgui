@@ -498,3 +498,55 @@ md-toast {
 .maintenance-text {
     color: #5e35b1;
 }
+
+.animate-repeat {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+    -webkit-transition: all linear 2s;
+    transition: all linear 0.2s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 49px;
+}
+
+.animate-repeat-40 {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter,
+.animate-repeat-40.ng-leave {
+    -webkit-transition: all linear 0.1s;
+    transition: all linear 0.1s;
+}
+
+.animate-repeat-40.ng-leave.ng-leave-active,
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.animate-repeat-40.ng-leave,
+.animate-repeat-40.ng-move.ng-move-active,
+.animate-repeat-40.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 40px;
+}
