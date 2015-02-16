@@ -21,11 +21,17 @@
 
         vm.assignSelectedScheduleBlocks = function (subarray) {
 
+            //todo fix this to send a list of schedule blocks to subarray
+            var timeout = 0;
+
             ObservationScheduleService.scheduleDraftData.forEach(function (item) {
                 if (item.selected) {
                     item.selected = false;
-                    ObservationScheduleService.assignScheduleBlock(subarray.id, item.id_code)
-                        .then($rootScope.displayPromiseResult);
+                    $timeout(function () {
+                        ObservationScheduleService.assignScheduleBlock(subarray.id, item.id_code)
+                            .then($rootScope.displayPromiseResult);
+                    }, timeout);
+                    timeout += 50;
                 }
             });
         };
