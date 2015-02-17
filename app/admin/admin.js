@@ -6,6 +6,7 @@
 
         var vm = this;
         vm.showDeactivatedUsers = false;
+        vm.isUserAdmin = false;
 
         vm.orderByFields = [
             {label: 'Id', value: 'id'},
@@ -17,6 +18,7 @@
         vm.orderBy = vm.orderByFields[0];
 
         vm.userRoles = [
+            {"id": 1, "name": "User Administrator", value: "user_admin", "assignable": true},
             {"id": 2, "name": "Control Authority", value: "control_authority", "assignable": true},
             {"id": 3, "name": "Lead Operator", value: "lead_operator", "assignable": true},
             {"id": 3, "name": "Operator", value: "operator", "assignable": true},
@@ -147,7 +149,10 @@
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label='Password Reset'><md-content style='padding: 0px; margin: 0px; width: 396px; ' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span style='font-weight: bold;'>Password Reset</span></md-toolbar>" +
-                    "<md-text-float focus id='resetPasswordInput' type='password' style='margin: 16px;' class='long-input' label='New Password' ng-model='password' value='{{password}}'></md-text-float>" +
+                    "<md-input-container id='resetPasswordInput' type='password' class='long-input' style='margin: 16px;'>" +
+                        "<label>New Password</label>" +
+                        "<input type='password' focus ng-model='password'>" +
+                    "</md-input-container>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
                     "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Cancel Reset' ng-click='cancel()'>Cancel</md-button>" +
                     "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' aria-label='Reset Password' ng-click='answer(password)'><span>Reset</span></md-button>" +
@@ -162,7 +167,8 @@
                     UserService.resetPassword(user, passwordHash).then(function (result) {
                         $rootScope.showSimpleToast('Password successfully reset.');
                     }, function (result) {
-                        $rootScope.showSimpleToast('There was an error resetting the password: ');
+                        $rootScope.showSimpleToast('There was an error resetting the password.');
+                        console.log(result);
                     });
 
                 }, function () {
@@ -171,8 +177,26 @@
 
         };
 
-        //list users on the next digest cycle, i.e. after controller init
-        $timeout(vm.listUsers, 0);
-    }
+        vm.closeDropdownMenus = function () {
 
+            var els = document.getElementsByClassName('dropdown-menu');
+            //angular.element()
+        };
+
+        //list users on the next digest cycle, i.e. after controller init
+        $timeout(afterInitFunction, 200);
+        $rootScope.$on('loginSuccess', afterInitFunction);
+
+        vm.inited = false;
+        function afterInitFunction() {
+            if ($rootScope.currentUser && !vm.inited) {
+                vm.inited = true;
+                vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1;
+                if (vm.isUserAdmin) {
+                    vm.listUsers();
+                }
+                console.log('inited admin page');
+            }
+        }
+    }
 })();

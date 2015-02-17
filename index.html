@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link href="bower_components/angular-material/angular-material.css" rel="stylesheet" type="text/css">
-    <link href="bower_components/angular-material/themes/light-blue-dark-theme.css" rel="stylesheet" type="text/css">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
-    <!--<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css">-->
     <link href="bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css" rel="stylesheet"
           type="text/css">
     <!--<link href="bower_components/angular-gantt/assets/gantt.css" rel="stylesheet" type="text/css">-->
     <link href="bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css" rel="stylesheet"
           type="text/css">
 
-    <!-- build:css fonts/fontawesome.css -->
     <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
     <!-- endbuild -->
 </head>
@@ -47,11 +44,11 @@
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
 <script src="bower_components/sockjs/sockjs.js"></script>
-<script src="/bower_components/angular/angular.js"></script>
-<script src="/bower_components/angular-aria/angular-aria.js"></script>
-<script src="/bower_components/angular-animate/angular-animate.js"></script>
-<script src="/bower_components/hammerjs/hammer.js"></script>
-<script src="/bower_components/angular-material/angular-material.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-aria/angular-aria.js"></script>
+<script src="bower_components/angular-animate/angular-animate.js"></script>
+<script src="bower_components/hammerjs/hammer.js"></script>
+<script src="bower_components/angular-material/angular-material.js"></script>
 <script src="bower_components/angular-mocks/angular-mocks.js"></script>
 <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
@@ -96,8 +93,12 @@
 <script src="app/alarms/alarms-notify.js"></script>
 <script src="app/widgets/navigation/navigation-widget.js"></script>
 <script src="app/widgets/dashboard-structures.js"></script>
-<script src="app/scheduler/scheduler.js"></script>
 <script src="app/scheduler/scheduler-home.js"></script>
+<script src="app/scheduler/schedule-block-drafts/schedule-block-drafts.js"></script>
+<script src="app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.js"></script>
+<script src="app/scheduler/subarray-resources/subarray-resources.js"></script>
+<script src="app/scheduler/observations/observations-detail.js"></script>
+<script src="app/scheduler/observations/observations-overview.js"></script>
 <!--<script src="app/widgets/gantt/gantt-widget.js"></script>-->
 <!-- Add New Component JS Above -->
 
@@ -107,7 +108,7 @@
         <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">katGUI</h1>
         </md-toolbar>
-        <md-content class="md-content-padding" style="margin-top: 16px;" md-theme="none">
+        <md-content class="md-content-padding" style="margin-top: 16px;" md-theme="default">
             <md-list>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('home')">
@@ -137,20 +138,28 @@
                 </md-item>
                 <md-item>
                     <md-item-content layout="column" style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;">
-                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('schedulerHome')">
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
                             <span class="fa fa-list"></span>
                             <button>Scheduler Management</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
+                            <span class="fa fa-pencil"></span>
+                            <button>Schedule Block Drafts</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
                             <span class="fa fa-asterisk"></span>
                             <button>Sub-Arrays</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.resources')">
                             <span class="fa fa-sitemap"></span>
                             <button>Sub-Array Resources</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
-                            <span class="fa fa-edit"></span>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.observations')">
+                            <span class="fa fa-binoculars"></span>
+                            <button>Observations Overview</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.execute')">
+                            <span class="fa fa-tasks"></span>
                             <button>Scheduler</button>
                         </div>
                     </md-item-content>
@@ -181,7 +190,7 @@
         <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">User Navigation</h1>
         </md-toolbar>
-        <md-content class="md-content-padding" style="margin-top: 16px;" md-theme="none">
+        <md-content class="md-content-padding" style="margin-top: 16px;" md-theme="default">
             <md-list>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavRightStateGo('admin')">
@@ -210,8 +219,9 @@
     </md-sidenav>
 
     <div layout="column" flex>
-        <md-toolbar ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true">
-            <div class="md-toolbar-tools" layout="row" style="margin-top: -4px; padding: 0;">
+        <md-toolbar ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true"
+            ng-mouseenter="showJulianDate = true" ng-mouseleave="showJulianDate = false">
+            <div class="md-toolbar-tools" layout="row" style="padding: 0;  max-height: 56px;">
 
                 <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
                         style="margin-left: 0px; padding: 0px;"
@@ -219,7 +229,7 @@
                     <span class="fa fa-navicon"></span>
                 </md-button>
 
-                <span style="margin-top: -5px; font-size: 30px;">{{vm.currentStateUpperCase()}}</span>
+                <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentStateUpperCase()}}</span>
 
                 <!--<div class="btn-group"-->
                      <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="row">-->
@@ -250,17 +260,17 @@
                 <!--</div>-->
 
                 <span flex></span>
-                <div ng-if="vm.julianDay">
-                    <span style="font-size: 32px;">{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> JD</span>
+                <div ng-if="vm.julianDay" ng-show="showJulianDate">
+                    <span style="font-size: 32px;">{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
                     <md-tooltip>Julian Day</md-tooltip>
                 </div>
                 <div ng-if="vm.localSiderealTime">
-                    <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> LST</span>
+                    <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
                     <md-tooltip>Local Sidereal Time</md-tooltip>
                 </div>
                 <div ng-if="vm.utcTime">
-                    <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> UTC</span><br/>
-                    <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 9pt;"> SAST</span>
+                    <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
+                    <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
                 </div>
 
                 <md-button aria-label="Home" class="button-toolbar-flat-icon" style="margin: 2px;"

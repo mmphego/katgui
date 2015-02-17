@@ -25,7 +25,6 @@ describe('AlarmsCtrl', function () {
 
         ctrl = $controller('AlarmsCtrl', {$rootScope: rootScope, $scope: scope, ControlService: controlService});
         ctrl.alarmsData = [];
-        ctrl.knownAlarmsData = [];
     }));
 
 

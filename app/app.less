@@ -441,6 +441,10 @@ md-toast {
     font-size: 14px;
 }
 
+.subheader-text-no-color {
+    font-size: 14px;
+}
+
 .fade-in {
     transition: all 0.3s;
     opacity: 1;
@@ -473,4 +477,76 @@ md-toast {
     font-weight: normal;
     padding: 0 10px;
     margin: 0;
+}
+
+.search-input-box {
+    font-size: 14px;
+    margin-right: 8px;
+    width: 140px;
+    max-width: 140px;
+    background: transparent;
+    border-bottom: 1px solid #d3d3d3;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+}
+
+.error-text {
+    color: #F44336 !important;
+}
+
+.maintenance-text {
+    color: #5e35b1;
+}
+
+.animate-repeat {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter,
+.animate-repeat.ng-leave {
+    -webkit-transition: all linear 2s;
+    transition: all linear 0.2s;
+}
+
+.animate-repeat.ng-leave.ng-leave-active,
+.animate-repeat.ng-move,
+.animate-repeat.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.animate-repeat.ng-leave,
+.animate-repeat.ng-move.ng-move-active,
+.animate-repeat.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 49px;
+}
+
+.animate-repeat-40 {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter,
+.animate-repeat-40.ng-leave {
+    -webkit-transition: all linear 0.1s;
+    transition: all linear 0.1s;
+}
+
+.animate-repeat-40.ng-leave.ng-leave-active,
+.animate-repeat-40.ng-move,
+.animate-repeat-40.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.animate-repeat-40.ng-leave,
+.animate-repeat-40.ng-move.ng-move-active,
+.animate-repeat-40.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 40px;
 }

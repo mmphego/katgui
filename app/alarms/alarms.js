@@ -3,69 +3,152 @@
     angular.module('katGui.alarms', ['katGui.util'])
         .controller('AlarmsCtrl', AlarmsCtrl);
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, KatGuiUtil) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, $document, $timeout) {
 
         var vm = this;
 
-        vm.orderByFields = [
-            {label: 'Date', value: 'dateUnix'},
-            {label: 'Description', value: 'description'},
-            {label: 'Name', value: 'name'},
-            {label: 'Priority', value: 'priority'},
+        vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
+            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Priority', value: 'priority'},
+            {label: 'Name', value: 'name'},
+            {label: 'Message', value: 'value'}
         ];
 
-        vm.alarmsOrderBy = vm.orderByFields[0];
-        vm.alarmsKnownOrderBy = vm.orderByFields[0];
+        vm.knownAlarmsOrderByFields = [
+            {label: 'Severity', value: 'severity'},
+            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Priority', value: 'priority'},
+            {label: 'Name', value: 'name'},
+            {label: 'Message', value: 'value'}
+        ];
+
+        vm.setAlarmsOrderBy = function (column, reverse) {
+            var newOrderBy = _.findWhere(vm.alarmsOrderByFields, {value: column});
+            if (newOrderBy.reverse === undefined) {
+                newOrderBy.reverse = reverse || false;
+            } else {
+                newOrderBy.reverse = !newOrderBy.reverse;
+            }
+            vm.alarmsOrderBy = newOrderBy;
+        };
+
+        vm.setAlarmsOrderBy('timestamp', true);
+
+        vm.setKnownAlarmsOrderBy = function (column, reverse) {
+            var newOrderBy = _.findWhere(vm.knownAlarmsOrderByFields, {value: column});
+            if (newOrderBy.reverse === undefined) {
+                newOrderBy.reverse = reverse || false;
+            } else {
+                newOrderBy.reverse = !newOrderBy.reverse;
+            }
+            vm.knownAlarmsOrderBy = newOrderBy;
+        };
+
+        vm.setKnownAlarmsOrderBy('timestamp', true);
 
         vm.toggleSelectAllKnownAlarms = function (selected) {
 
-            $rootScope.knownAlarmsData.forEach(function (item) {
-                item.selected = selected;
+            $rootScope.alarmsData.forEach(function (item) {
+                if (item.priority === 'known') {
+                    item.selected = selected;
+                }
             });
         };
 
         vm.toggleSelectAllAlarms = function (selected) {
 
             $rootScope.alarmsData.forEach(function (item) {
-                item.selected = selected;
+                if (item.priority !== 'known') {
+                    item.selected = selected;
+                }
             });
         };
 
         vm.clearSelectedAlarms = function () {
 
-            for (var j = 0; j < $rootScope.alarmsData.length; j++) {
-                if ($rootScope.alarmsData[j].selected) {
-                    ControlService.clearAlarm($rootScope.alarmsData[j].name);
+            var timeout = 0;
+            $rootScope.alarmsData.forEach(function (item) {
+                if (item.selected) {
+                    $timeout(function() {
+                        ControlService.clearAlarm(item.name);
+                    }, timeout);
+                    timeout += 100;
                 }
-            }
+            });
+        };
+
+        vm.clearAlarm = function (alarm) {
+            ControlService.clearAlarm(alarm.name);
         };
 
         vm.acknowledgeSelectedAlarms = function () {
 
-            for (var j = 0; j < $rootScope.alarmsData.length; j++) {
-                if ($rootScope.alarmsData[j].selected) {
-                    ControlService.acknowledgeAlarm($rootScope.alarmsData[j].name);
+            var timeout = 0;
+            $rootScope.alarmsData.forEach(function (item) {
+                if (item.selected) {
+                    $timeout(function() {
+                        ControlService.acknowledgeAlarm(item.name);
+                    }, timeout);
+                    timeout += 100;
                 }
-            }
+            });
+        };
+
+        vm.acknowledgeAlarm = function (alarm) {
+            ControlService.acknowledgeAlarm(alarm.name);
         };
 
         vm.knowSelectedAlarms = function () {
 
-            for (var j = 0; j < $rootScope.alarmsData.length; j++) {
-                if ($rootScope.alarmsData[j].selected) {
-                    ControlService.addKnownAlarm($rootScope.alarmsData[j].name);
+            var timeout = 0;
+            $rootScope.alarmsData.forEach(function (item) {
+                if (item.selected) {
+                    $timeout(function() {
+                        ControlService.addKnownAlarm(item.name);
+                    }, timeout);
+                    timeout += 100;
                 }
-            }
+            });
+        };
+
+        vm.knowAlarm = function (alarm) {
+            ControlService.addKnownAlarm(alarm.name);
         };
 
         vm.cancelKnowSelectedAlarms = function () {
 
-            for (var j = 0; j < $rootScope.knownAlarmsData.length; j++) {
-                if ($rootScope.knownAlarmsData[j].selected) {
-                    ControlService.cancelKnowAlarm($rootScope.knownAlarmsData[j].name);
+            var timeout = 0;
+            $rootScope.alarmsData.forEach(function (item) {
+                if (item.selected) {
+                    $timeout(function() {
+                        ControlService.cancelKnowAlarm(item.name);
+                    }, timeout);
+                    timeout += 100;
                 }
-            }
+            });
         };
+
+        vm.cancelKnowAlarm = function (alarm) {
+            ControlService.cancelKnowAlarm(alarm.name);
+        };
+
+        var unbindShortcuts = $document.bind("keydown", function (e) {
+
+            if (e.keyCode === 27) {
+                //escape
+                $rootScope.alarmsData.forEach(function (item) {
+                    item.selected = false;
+                });
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        });
+
+        $scope.$on('$destroy', function () {
+            unbindShortcuts.unbind('keydown');
+        });
     }
 })();

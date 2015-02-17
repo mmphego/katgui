@@ -5,6 +5,7 @@ angular.module('katGui.util', [])
     .directive('loadingOverlay', loadingOverlay)
     .directive('autoGrow', autoGrow)
     .directive('dropdownButtonMenu', dropdownButtonMenu)
+    .constant('SERVER_URL', 'http://monctl.devf.camlab.kat.ac.za')
     .factory('KatGuiUtil', katGuiUtil);
 
 function dropdownMultiselect() {
@@ -14,18 +15,51 @@ function dropdownMultiselect() {
             model: '=',
             options: '='
         },
-        template: "<div class='btn-group' data-ng-class='{open: open}'>" +
-        "<md-button aria-label='Select Item' class='btn btn-small dropdown-toggle' ng-click='open=!open;openDropdown()'>" +
-        "<span ng-if='model.roles.length > 0' ng-repeat='role in model.roles | orderBy:role' style='margin-left: 8px;'>{{role}}</span>" +
+        template: "<div class='btn-group' data-ng-class='{open: open}' style='overflow: visible;'>" +
+        "<md-button class='btn btn-small dropdown-toggle' style='text-transform: none' ng-click='toggleMenu();focusMenu();'>" +
+        "<span ng-if='model.roles.length > 0' ng-repeat='role in model.roles | orderBy:role' style='margin-left: 2px;'>{{role}},</span>" +
         "<span ng-if='model.roles.length === 0'>Select Roles</span><span style='margin-left: 5px;' class='fa fa-caret-down'></span>" +
         "</md-button>" +
-        "<ul style='z-index: 100; min-width: 210px;' class='dropdown-menu' aria-labelledby='dropdownMenu'>" +
-        "<li class='dropdown-list-item' ng-repeat='option in options' layout='row' layout-align='center center'><span style='min-width: 24px; margin-left: 8px;' class='fa' ng-class='isChecked(option)'></span><span flex style='margin: 4px; font-size: 20px; padding: 4px;' data-ng-click='setSelectedItem(option)'>{{option.name}}</span></li>" +
-        "</ul>" +
+        "<div style='z-index: 1000; min-width: 210px;' class='dropdown-menu' aria-labelledby='dropdownMenu' ng-blur='closeMenu()'>" +
+        "<md-button aria-label='Select User Role Item' layout='row' ng-repeat='option in options' layout-align='start center' style='text-transform: none; text-align: start;width: 100%' data-ng-click='setSelectedItem(option)'>" +
+        "<span style='min-width: 24px; margin-left: 8px;' class='fa' ng-class='isChecked(option)'></span>" +
+        "<span flex style='margin: 4px; font-size: 14px; padding: 4px;'>{{::option.name}}</span>" +
+        "</md-button>" +
+        "</div>" +
         "</div>",
-        controller: function ($scope) {
+        link: function (scope, element, attrs) {
+            scope.focusMenu = function () {
+                var el = angular.element(element[0].getElementsByClassName("dropdown-menu"));
+                el[0].children[0].focus();
+            };
+        },
+        controller: function ($scope, $rootScope, $timeout) {
 
             $scope.selected_items = [];
+
+            $scope.closeMenu = function () {
+                if ($scope.open) {
+                    $timeout(function() {
+                        $scope.open = false;
+                    }, 0);
+                }
+            };
+
+            $scope.toggleMenu = function () {
+                $rootScope.$emit('keydown', 27); //close other open menus
+                $timeout(function() {
+                    $scope.open = !$scope.open;
+                }, 0);
+            };
+
+            //TODO: fix this ugly hack of hiding menus and make a better directive
+            var unbindKeyDownListener = $rootScope.$on('keydown', function (event, value) {
+               if (value === 27) {
+                   $scope.closeMenu();
+               }
+            });
+
+            $scope.$on('$destroy', unbindKeyDownListener);
 
             $scope.setSelectedItem = function (option) {
 
@@ -189,7 +223,7 @@ function katGuiUtil() {
     function declination(day, month, year, UT) {
 
         var K = Math.PI / 180.0;
-        var jd = this.julianDay(day, month, year, UT);
+        var jd = this.julianDayWithTime(day, month, year, UT);
         var T = (jd - 2451545.0) / 36525.0;
         var L0 = 280.46645 + (36000.76983 + 0.0003032 * T) * T;
         var M = 357.52910 + (35999.05030 - (0.0001559 * T + 0.00000048 * T) * T) * T;

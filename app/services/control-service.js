@@ -3,98 +3,123 @@
     angular.module('katGui.services', [])
         .service('ControlService', ControlService);
 
-    function ControlService($http) {
+    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout) {
 
-        var urlBase = 'http://10.8.67.130:8020';
-        var connection = null;
+        var urlBase = SERVER_URL + ':8820';
+        var connection = null,
+            api = {};
 
-        this.onSockJSOpen = function () {
+        api.onSockJSOpen = function () {
             if (connection && connection.readyState) {
                 console.log('Control Connection Established.');
+                authenticateSocketConnection();
             }
         };
 
-        this.onSockJSClose = function () {
+        api.onSockJSClose = function () {
             console.log('Disconnecting Control Connection');
             connection = null;
         };
 
-        this.onSockJSMessage = function (e) {
-            console.log(e);
+        api.onSockJSMessage = function (e) {
+            var result = JSON.parse(e.data);
+            if (result.error) {
+                $rootScope.showSimpleDialog('Error sending request', result.error.message);
+            }
+            else if (result && result.result.session_id) {
+                connection.authorized = true;
+            }
         };
 
-        this.connectListener = function () {
+        api.connectListener = function () {
             console.log('Control Connecting...');
             connection = new SockJS(urlBase + '/control');
-            connection.onopen = this.onSockJSOpen;
-            connection.onmessage = this.onSockJSMessage;
-            connection.onclose = this.onSockJSClose;
+            connection.onopen = api.onSockJSOpen;
+            connection.onmessage = api.onSockJSMessage;
+            connection.onclose = api.onSockJSClose;
 
             return connection !== null;
         };
 
-        this.disconnectListener = function () {
+        api.disconnectListener = function () {
             if (connection) {
                 connection.close();
             }
         };
 
-        this.stowAll = function () {
-            return this.sendControlCommand('sys', 'operator-stow-antennas', '');
-        };
-
-        this.inhibitAll = function () {
-            return this.sendControlCommand('sys', 'operator-inhibit-antennas', '');
-        };
-
-        this.stopAll = function () {
-            return this.sendControlCommand('sys', 'operator-stop-observations', '');
-        };
-
-        this.resumeOperations = function () {
-            return this.sendControlCommand('sys', 'operator-resume-operations', '');
-        };
-
-        this.shutdownComputing = function () {
-            return this.sendControlCommand('sys', 'operator-shutdown-computing', '');
-        };
-
-        this.acknowledgeAlarm = function (alarmName) {
-            return this.sendControlCommand('kataware', 'alarm-ack', alarmName);
-        };
-
-        this.addKnownAlarm = function (alarmName) {
-            return this.sendControlCommand('kataware', 'alarm-know', alarmName);
-        };
-
-        this.cancelKnowAlarm = function (alarmName) {
-            return this.sendControlCommand('kataware', 'alarm-cancel-know', alarmName);
-        };
-
-        this.clearAlarm = function (alarmName) {
-            return this.sendControlCommand('kataware', 'alarm-clear', alarmName);
-        };
-
-        this.sendControlCommand = function (module, funcName, funcParams) {
+        function authenticateSocketConnection() {
 
             if (connection) {
                 var jsonRPC = {
+                    'jsonrpc': '2.0',
+                    'method': 'authorise',
+                    'params': [$rootScope.session_id],
+                    'id': 'authorise' + KatGuiUtil.generateUUID()
+                };
+                connection.authorized = false;
+                return connection.send(JSON.stringify(jsonRPC));
+            }
+        }
+
+        api.stowAll = function () {
+            return api.sendControlCommand('sys', 'operator-stow-antennas', '');
+        };
+
+        api.inhibitAll = function () {
+            return api.sendControlCommand('sys', 'operator-inhibit-antennas', '');
+        };
+
+        api.stopAll = function () {
+            return api.sendControlCommand('sys', 'operator-stop-observations', '');
+        };
+
+        api.resumeOperations = function () {
+            return api.sendControlCommand('sys', 'operator-resume-operations', '');
+        };
+
+        api.shutdownComputing = function () {
+            return api.sendControlCommand('sys', 'operator-shutdown-computing', '');
+        };
+
+        api.acknowledgeAlarm = function (alarmName) {
+            return api.sendControlCommand('kataware', 'alarm_ack', alarmName);
+        };
+
+        api.addKnownAlarm = function (alarmName) {
+            return api.sendControlCommand('kataware', 'alarm_know', alarmName);
+        };
+
+        api.cancelKnowAlarm = function (alarmName) {
+            return api.sendControlCommand('kataware', 'alarm_cancel_know', alarmName);
+        };
+
+        api.clearAlarm = function (alarmName) {
+            return api.sendControlCommand('kataware', 'alarm_clear', alarmName);
+        };
+
+        api.sendControlCommand = function (module, funcName, funcParams) {
+
+            if (connection && connection.authorized) {
+                var jsonRPC = {
+                    'id': KatGuiUtil.generateUUID(),
                     'jsonrpc': '2.0',
                     'method': 'katcp_request',
                     'params': [module, funcName, funcParams]
                 };
 
-                return connection.send(JSON.stringify(jsonRPC));
+                connection.send(JSON.stringify(jsonRPC));
             } else {
-                return false;
+                $timeout(function () {
+                    api.sendControlCommand(module, funcName, funcParams);
+                }, 500);
             }
         };
 
-        this.getCurrentServerTime = function () {
+        api.getCurrentServerTime = function () {
             return $http.get(urlBase + '/time');
         };
 
-        return this;
+        return api;
     }
 
 })();
