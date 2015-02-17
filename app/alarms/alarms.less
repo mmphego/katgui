@@ -239,6 +239,7 @@ ul {
 }
 
 .alarms-list {
+
     overflow: auto;
 
     .alarms-list-item-content {
@@ -248,42 +249,42 @@ ul {
 
 
     .alarm-list-item-badge-warn {
-        background: linear-gradient(150deg, rgba(255, 235, 59, 1) 0%, rgba(255, 235, 59, 0) 5%, rgba(255, 235, 59, 0) 100%);
+        background: linear-gradient(150deg, rgba(255, 235, 59, 1) 0%, rgba(255, 235, 59, 0) 15%, rgba(255, 235, 59, 0) 100%);
     }
     .background-gradient-div-warn {
         background: linear-gradient(150deg, rgba(255, 235, 59, 0.01) 0%, rgba(255, 235, 59, 0.01) 60%, rgba(255, 235, 59, 1) 100%);
     }
 
     .alarm-list-item-badge-error {
-        background: linear-gradient(150deg, rgba(255, 152, 0, 1) 0%, rgba(255, 152, 0, 0) 5%, rgba(255, 152, 0, 0) 100%);
+        background: linear-gradient(150deg, rgba(255, 152, 0, 1) 0%, rgba(255, 152, 0, 0) 15%, rgba(255, 152, 0, 0) 100%);
     }
     .background-gradient-div-error {
         background: linear-gradient(150deg, rgba(255, 152, 0, 0.01) 0%, rgba(255, 152, 0, 0.01) 60%, rgba(255, 152, 0, 1) 100%);
     }
 
     .alarm-list-item-badge-critical {
-        background: linear-gradient(150deg, rgba(229, 28, 35, 1) 0%, rgba(229, 28, 35, 0) 5%, rgba(229, 28, 35, 0) 100%);
+        background: linear-gradient(150deg, rgba(229, 28, 35, 1) 0%, rgba(229, 28, 35, 0) 15%, rgba(229, 28, 35, 0) 100%);
     }
     .background-gradient-div-critical {
         background: linear-gradient(150deg, rgba(229, 28, 35, 0.01) 0%, rgba(229, 28, 35, 0.01) 60%, rgba(229, 28, 35, 1) 100%);
     }
 
     .alarm-list-item-badge-maintenance {
-        background: linear-gradient(150deg, rgba(156, 39, 176, 1) 0%, rgba(156, 39, 176, 0) 5%, rgba(156, 39, 176, 0) 100%);
+        background: linear-gradient(150deg, rgba(156, 39, 176, 1) 0%, rgba(156, 39, 176, 0) 15%, rgba(156, 39, 176, 0) 100%);
     }
     .background-gradient-div-maintenance {
         background: linear-gradient(150deg, rgba(156, 39, 176, 0.01) 0%, rgba(156, 39, 176, 0.01) 60%, rgba(156, 39, 176, 1) 100%);
     }
 
     .alarm-list-item-badge-nominal {
-        background: linear-gradient(150deg, rgba(37, 155, 36, 1) 0%, rgba(37, 155, 36, 0) 5%, rgba(37, 155, 36, 0) 100%);
+        background: linear-gradient(150deg, rgba(37, 155, 36, 1) 0%, rgba(37, 155, 36, 0) 15%, rgba(37, 155, 36, 0) 100%);
     }
     .background-gradient-div-nominal {
         background: linear-gradient(150deg, rgba(37, 155, 36, 0.01) 0%, rgba(37, 155, 36, 0.01) 60%, rgba(37, 155, 36, 1) 100%);
     }
 
     .alarm-list-item-badge-unknown {
-        background: linear-gradient(150deg, rgba(96, 125, 139, 1) 0%, rgba(96, 125, 139, 0) 5%, rgba(96, 125, 139, 0) 100%);
+        background: linear-gradient(150deg, rgba(96, 125, 139, 1) 0%, rgba(96, 125, 139, 0) 15%, rgba(96, 125, 139, 0) 100%);
     }
     .background-gradient-div-unknown {
         background: linear-gradient(150deg, rgba(96, 125, 139, 0.01) 0%, rgba(96, 125, 139, 0.01) 60%, rgba(96, 125, 139, 1) 100%);
@@ -335,4 +336,12 @@ ul {
 .large-alarms-animate {
     -webkit-transition: 0.1s linear width, 0.1s linear height;
     transition: 0.1s linear width, 0.1s linear height;
+}
+
+.alarm-row-item {
+    border-bottom: 1px solid #d3d3d3;
+    padding-left: 8px;
+    padding-right: 8px;
+    height: 36px;
+    position: relative;
 }

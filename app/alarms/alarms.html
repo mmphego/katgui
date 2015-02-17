@@ -1,7 +1,7 @@
-<div flex class="view-container" ng-controller="AlarmsCtrl as vm" layout="column">
+<div flex  ng-controller="AlarmsCtrl as vm" layout="column" style="padding: 16px;">
 
-    <div class="md-whiteframe-z1" layout="column" style="min-height: 550px; margin-bottom: 16px;">
-        <md-toolbar class="panel-toolbar md-whiteframe-z1">
+    <div flex class="md-whiteframe-z2" layout="column" style="min-height: 550px; min-width: 1300px; margin: 16px;">
+        <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showAlarmTools = true;" ng-mouseleave="showAlarmTools = false;">
             <div class="md-toolbar-tools" layout="row">
                <span>
                     <md-checkbox ng-model="vm.selectAllAlarms" ng-click="vm.toggleSelectAllAlarms(!vm.selectAllAlarms)" aria-label="Select All Alarms">
@@ -10,27 +10,54 @@
                     <md-tooltip>Select All Alarms</md-tooltip>
                 </span>
                 <span flex></span>
-                <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="alarms-buttons" md-theme-watch="true">
+                <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 850px;">
+                    <input class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search" style="min-width: 200px;"
+                           ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
                     <md-button ng-click="vm.knowSelectedAlarms()" aria-label="Add as Known" class="md-primary md-raised">Add as Known</md-button>
                     <md-button ng-click="vm.acknowledgeSelectedAlarms()" aria-label="Acknowledge" class="md-primary md-raised">Acknowledge</md-button>
                     <md-button ng-click="vm.clearSelectedAlarms()" aria-label="Clear" class="md-primary md-raised">Clear</md-button>
-                    <md-checkbox class="alarms-tools-checkbox" ng-model="vm.showClearedAlarms" aria-label="Show Cleared Alarms">Show Cleared Alarms</md-checkbox>
-                    <select class="form-control" style="display: inline; width: 150px; margin-right: 16px;" ng-model="vm.alarmsOrderBy" ng-options="s.label for s in vm.orderByFields">
-                        <option value="">-- Order By --</option>
-                    </select>
-                    <md-input-container md-theme="default" style="font-size: 12px; margin-top: -5px;">
-                        <label>Search Alarms...</label>
-                        <input ng-model-options="{ debounce: 300 }" ng-model="vm.q">
-                    </md-input-container>
-                </section>
+                    <md-checkbox class="alarms-tools-checkbox" ng-model="vm.showClearedAlarms" aria-label="Show Cleared Alarms">Show Cleared</md-checkbox>
+                </div>
+            </div>
+            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;" layout="row" layout-align="start center">
+                <span style="max-width: 30px;min-width: 30px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('severity')">
+                    <span style="padding: 8px"></span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'severity' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'severity' && vm.alarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="width: 170px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('timestamp')">
+                    <span style="padding: 8px">Date Changed</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'timestamp' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'timestamp' && vm.alarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="max-width: 130px;min-width: 130px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('priority')">
+                    <span style="padding: 8px">Priority</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'priority' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'priority' && vm.alarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="max-width: 260px;min-width: 260px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('name')">
+                    <span style="padding: 8px">Name</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'name' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'name' && vm.alarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+
+                <span flex class="subheader-text" ng-click="vm.setAlarmsOrderBy('message')">
+                    <span style="padding: 8px">Message</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'message' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'message' && vm.alarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
             </div>
         </md-toolbar>
         <div flex class="alarms-list alarms-list-large" ng-click="vm.selectAllAlarms = false">
-            <div ng-repeat="item in $root.alarmsData | filter:{priority:'!known'} | orderBy:vm.alarmsOrderBy.value | filter:vm.q as results" class="animate-repeat">
-                <div ng-click="item.selected = !item.selected"
+            <div ng-repeat="item in $root.alarmsData | filter:{priority:'!known'} | filter:vm.q | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse as results" class="animate-repeat">
+                <div ng-click="item.selected = !item.selected" class="alarm-row-item"
                      ng-if="vm.showClearedAlarms || item.priority !== 'cleared'"
-                     ng-switch="item.severity" layout="row" layout-align="start center"
-                     style="border-bottom: 1px solid lightgrey;padding-left: 8px;padding-right: 8px;height: 36px; position: relative;">
+                     ng-switch="item.severity" layout="row" layout-align="start center">
 
                     <div class="background-div" style="background: white;"></div>
 
@@ -50,46 +77,51 @@
                     <div class="background-div background-gradient-div-maintenance" ng-switch-when="maintenance"></div>
 
                     <div class="alarms-list-item-icon">
-                            <span class="fa fa-warning" ng-switch-when="warn">
-                                <md-tooltip>Warning</md-tooltip>
-                            </span>
-                            <span class="fa fa-wrench" ng-switch-when="maintenance">
-                                <md-tooltip>Maintenance</md-tooltip>
-                            </span>
-                            <span class="fa fa-question-circle" ng-switch-when="unknown">
-                                <md-tooltip>Unknown</md-tooltip>
-                            </span>
-                            <span class="fa fa-thumbs-up" ng-switch-when="nominal">
-                                <md-tooltip>Nominal</md-tooltip>
-                            </span>
-                            <span class="fa fa-fire" ng-switch-when="critical">
-                                <md-tooltip>Critical</md-tooltip>
-                            </span>
-                            <span class="fa fa-bolt" ng-switch-when="error">
-                                <md-tooltip>Error</md-tooltip>
-                            </span>
+                        <span class="fa fa-warning" ng-switch-when="warn">
+                            <md-tooltip>Warning</md-tooltip>
+                        </span>
+                        <span class="fa fa-wrench" ng-switch-when="maintenance">
+                            <md-tooltip>Maintenance</md-tooltip>
+                        </span>
+                        <span class="fa fa-question-circle" ng-switch-when="unknown">
+                            <md-tooltip>Unknown</md-tooltip>
+                        </span>
+                        <span class="fa fa-thumbs-up" ng-switch-when="nominal">
+                            <md-tooltip>Nominal</md-tooltip>
+                        </span>
+                        <span class="fa fa-fire" ng-switch-when="critical">
+                            <md-tooltip>Critical</md-tooltip>
+                        </span>
+                        <span class="fa fa-bolt" ng-switch-when="error">
+                            <md-tooltip>Error</md-tooltip>
+                        </span>
                     </div>
                     <div flex class="alarms-list-item-content" layout="row" layout-padding style="z-index: 1" layout-align="start">
                         <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                        <span flex style="max-width: 100px; text-overflow: ellipsis; font-size: 14px;"><i>{{item.priority}}</i></span>
+                        <span flex style="max-width: 130px; text-overflow: ellipsis; font-size: 14px;">{{item.priority}}</span>
                         <span flex style="max-width: 260px; text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
-                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.message}}">{{item.message}}</span>
+                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.value}}">{{item.value}}</span>
                     </div>
-
+                    <md-button title="Know Alarm" style="width: 24px; height: 38px;" aria-label="Know Alarm"
+                               ng-click="vm.knowAlarm(item); $event.stopPropagation();">
+                        <span class="fa fa-check"></span>
+                    </md-button>
+                    <md-button title="Acknowledge Alarm" style="width: 24px; height: 38px;" aria-label="Ack Alarm"
+                               ng-click="vm.acknowledgeAlarm(item); $event.stopPropagation();">
+                        <span class="fa fa-check-circle-o"></span>
+                    </md-button>
+                    <md-button title="Clear Alarm" style="width: 24px; height: 38px;" aria-label="Clear Alarm"
+                               ng-click="vm.clearAlarm(item); $event.stopPropagation();">
+                        <span class="fa fa-ban"></span>
+                    </md-button>
                 </div>
             </div>
-            <!--<div ng-if="results.length === 0 && vm.alarmsData.length !== 0">-->
-                <!--<b>No results found...</b>-->
-            <!--</div>-->
         </div>
-
-        <div ng-if="vm.alarmsData.length === 0">No Current Alarms</div>
     </div>
 
-    <div flex class="md-whiteframe-z1" layout="column" style="margin-top: 16px; margin-bottom: 16px; min-height: 360px;">
-        <md-toolbar class="panel-toolbar md-whiteframe-z1">
+    <div flex class="md-whiteframe-z2" layout="column" style="min-width: 1300px; margin: 16px; min-height: 360px;">
+        <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showKnownAlarmTools = true;" ng-mouseleave="showKnownAlarmTools = false;">
             <div class="md-toolbar-tools" layout="row">
-
                <span>
                     <md-checkbox ng-model="vm.selectAllKnownAlarms" ng-click="vm.toggleSelectAllKnownAlarms(!vm.selectAllKnownAlarms)" aria-label="Select All Known Alarms">
                         <b>Known Alarms</b>
@@ -97,7 +129,9 @@
                     <md-tooltip>Select All Known Alarms</md-tooltip>
                 </span>
                 <span flex></span>
-                <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="alarms-buttons" md-theme-watch="true">
+                <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 600px;">
+                    <input flex class="fade-in search-input-box" ng-show="showKnownAlarmTools || vm.q2" type="search" style="min-width: 200px;"
+                           ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Search Known Alarms..."/>
                     <md-button ng-click="vm.cancelKnowSelectedAlarms()" aria-label="Cancel Known" class="md-primary md-raised">Cancel Known</md-button>
                     <div layout="column">
                         <md-checkbox style="font-size: 14px; margin-top: 2px; margin-bottom: 2px;" class="alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms" aria-label="Show Nominal">Show
@@ -107,24 +141,49 @@
                             Show Maintenance
                         </md-checkbox>
                     </div>
-                    <select class="form-control" style="display: inline; width: 150px; margin-right: 16px;" ng-model="vm.alarmsKnownOrderBy" ng-options="s.label for s in vm.orderByFields">
-                        <option value="">-- Order By --</option>
-                    </select>
-                    <md-input-container md-theme="default" style="font-size: 12px; margin-top: -5px;" class="fade-in">
-                        <label>Search Known Alarms...</label>
-                        <input ng-model-options="{ debounce: 300 }" ng-model="vm.q2">
-                    </md-input-container>
-                    <span flex></span>
-                </section>
+                </div>
+            </div>
+
+            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;" layout="row" layout-align="start center">
+                <span style="max-width: 30px;min-width: 30px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('severity')">
+                    <span style="padding: 8px"></span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.knownAlarmsOrderBy.value === 'severity' && !vm.knownAlarmsOrderBy.reverse, 'fa-caret-down': vm.knownAlarmsOrderBy.value === 'severity' && vm.knownAlarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="width: 170px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('timestamp')">
+                    <span style="padding: 8px">Date Changed</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.knownAlarmsOrderBy.value === 'timestamp' && !vm.knownAlarmsOrderBy.reverse, 'fa-caret-down': vm.knownAlarmsOrderBy.value === 'timestamp' && vm.knownAlarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="max-width: 130px;min-width: 130px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('priority')">
+                    <span style="padding: 8px">Priority</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.knownAlarmsOrderBy.value === 'priority' && !vm.knownAlarmsOrderBy.reverse, 'fa-caret-down': vm.knownAlarmsOrderBy.value === 'priority' && vm.knownAlarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="max-width: 260px;min-width: 260px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('name')">
+                    <span style="padding: 8px">Name</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.knownAlarmsOrderBy.value === 'name' && !vm.knownAlarmsOrderBy.reverse, 'fa-caret-down': vm.knownAlarmsOrderBy.value === 'name' && vm.knownAlarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+
+                <span flex class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('message')">
+                    <span style="padding: 8px">Message</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.knownAlarmsOrderBy.value === 'message' && !vm.knownAlarmsOrderBy.reverse, 'fa-caret-down': vm.knownAlarmsOrderBy.value === 'message' && vm.knownAlarmsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
             </div>
         </md-toolbar>
 
         <div flex class="alarms-list alarms-list-small" ng-click="vm.selectAllKnownAlarms = false">
-            <div ng-repeat="item in $root.alarmsData | filter:{priority:'known'} | orderBy:vm.alarmsKnownOrderBy.value | filter:vm.q2 as resultsKnown" class="animate-repeat">
+            <div ng-repeat="item in $root.alarmsData | filter:{priority:'known'} | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse | filter:vm.q2 as resultsKnown" class="animate-repeat">
                 <div ng-if="(vm.showKnownNominalAlarms || item.severity !== 'nominal') && (vm.showKnownMaintenanceAlarms || item.severity !== 'maintenance')"
-                     ng-click="item.selected = !item.selected" flex
-                     ng-switch="item.severity" layout="row" layout-align="start center"
-                     style="border-bottom: 1px solid lightgrey;padding-left: 8px;padding-right: 8px;height: 36px; position: relative;">
+                     ng-click="item.selected = !item.selected" flex class="alarm-row-item"
+                     ng-switch="item.severity" layout="row" layout-align="start center">
 
                     <div class="background-div" style="background: white;"></div>
 
@@ -165,18 +224,16 @@
                     </div>
                     <div class="alarms-list-item-content" layout="row" layout-padding style="z-index: 1" flex>
                         <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                        <span flex style="max-width: 100px; text-overflow: ellipsis; font-size: 14px;"><i>{{item.priority}}</i></span>
+                        <span flex style="max-width: 130px; text-overflow: ellipsis; font-size: 14px;">{{item.priority}}</span>
                         <span flex style="max-width: 260px; text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
-                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.message}}">{{item.message}}</span>
+                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.value}}">{{item.value}}</span>
                     </div>
-
+                    <md-button title="Cancel Known" style="width: 24px; height: 38px;" aria-label="Clear Alarm" class=""
+                               ng-click="vm.cancelKnowAlarm(item); $event.stopPropagation();">
+                        <span class="fa fa-remove"></span>
+                    </md-button>
                 </div>
             </div>
-            <!--<div ng-if="resultsKnown.length === 0 && vm.knownAlarmsData.length !== 0">-->
-                <!--<b>No results found...</b>-->
-            <!--</div>-->
-
-            <div ng-if="vm.knownAlarmsData.length === 0">No Current Known Alarms</div>
         </div>
     </div>
 </div>
