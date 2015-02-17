@@ -3,20 +3,49 @@
     angular.module('katGui.alarms', ['katGui.util'])
         .controller('AlarmsCtrl', AlarmsCtrl);
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, KatGuiUtil, $timeout) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, $document, $timeout) {
 
         var vm = this;
 
-        vm.orderByFields = [
-            {label: 'Date', value: 'dateUnix'},
-            {label: 'Description', value: 'description'},
-            {label: 'Name', value: 'name'},
-            {label: 'Priority', value: 'priority'},
+        vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
+            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Priority', value: 'priority'},
+            {label: 'Name', value: 'name'},
+            {label: 'Message', value: 'value'}
         ];
 
-        vm.alarmsOrderBy = vm.orderByFields[0];
-        vm.alarmsKnownOrderBy = vm.orderByFields[0];
+        vm.knownAlarmsOrderByFields = [
+            {label: 'Severity', value: 'severity'},
+            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Priority', value: 'priority'},
+            {label: 'Name', value: 'name'},
+            {label: 'Message', value: 'value'}
+        ];
+
+        vm.setAlarmsOrderBy = function (column, reverse) {
+            var newOrderBy = _.findWhere(vm.alarmsOrderByFields, {value: column});
+            if (newOrderBy.reverse === undefined) {
+                newOrderBy.reverse = reverse || false;
+            } else {
+                newOrderBy.reverse = !newOrderBy.reverse;
+            }
+            vm.alarmsOrderBy = newOrderBy;
+        };
+
+        vm.setAlarmsOrderBy('timestamp', true);
+
+        vm.setKnownAlarmsOrderBy = function (column, reverse) {
+            var newOrderBy = _.findWhere(vm.knownAlarmsOrderByFields, {value: column});
+            if (newOrderBy.reverse === undefined) {
+                newOrderBy.reverse = reverse || false;
+            } else {
+                newOrderBy.reverse = !newOrderBy.reverse;
+            }
+            vm.knownAlarmsOrderBy = newOrderBy;
+        };
+
+        vm.setKnownAlarmsOrderBy('timestamp', true);
 
         vm.toggleSelectAllKnownAlarms = function (selected) {
 
@@ -49,6 +78,10 @@
             });
         };
 
+        vm.clearAlarm = function (alarm) {
+            ControlService.clearAlarm(alarm.name);
+        };
+
         vm.acknowledgeSelectedAlarms = function () {
 
             var timeout = 0;
@@ -60,6 +93,10 @@
                     timeout += 100;
                 }
             });
+        };
+
+        vm.acknowledgeAlarm = function (alarm) {
+            ControlService.acknowledgeAlarm(alarm.name);
         };
 
         vm.knowSelectedAlarms = function () {
@@ -75,6 +112,10 @@
             });
         };
 
+        vm.knowAlarm = function (alarm) {
+            ControlService.addKnownAlarm(alarm.name);
+        };
+
         vm.cancelKnowSelectedAlarms = function () {
 
             var timeout = 0;
@@ -87,5 +128,27 @@
                 }
             });
         };
+
+        vm.cancelKnowAlarm = function (alarm) {
+            ControlService.cancelKnowAlarm(alarm.name);
+        };
+
+        var unbindShortcuts = $document.bind("keydown", function (e) {
+
+            if (e.keyCode === 27) {
+                //escape
+                $rootScope.alarmsData.forEach(function (item) {
+                    item.selected = false;
+                });
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        });
+
+        $scope.$on('$destroy', function () {
+            unbindShortcuts.unbind('keydown');
+        });
     }
 })();
