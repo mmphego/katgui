@@ -1,0 +1,15 @@
+<div class="view-container-full" ng-controller="ReceptorStatusCtrl as vm">
+
+    <!--<div flex layout="column">-->
+        <!--<span>receptorList</span>-->
+        <!--<span>{{vm.receptorList | json}}</span>-->
+        <!--<span>receptorStatusTree</span>-->
+        <!--<span>{{vm.receptorStatusTree | json}}</span>-->
+    <!--</div>-->
+    <div class="centered-content" style="height: 35px;">
+        <select class="form-control health-map-style-select" ng-model="vm.mapType" ng-options="item.value as item.name for item in vm.items"></select>
+    </div>
+
+    <receptor-status-list></receptor-status-list>
+
+</div>
