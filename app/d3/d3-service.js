@@ -11,9 +11,9 @@ angular.module('katGui.d3')
 
         function onScriptLoad() {
             // Load client in the browser
-            $rootScope.$apply(function () {
+            //$rootScope.$apply(function () {
                 d.resolve($window.d3);
-            });
+            //});
         }
 
         var scriptTag = $document[0].createElement('script');

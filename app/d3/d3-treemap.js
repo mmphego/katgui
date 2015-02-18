@@ -1,10 +1,21 @@
 angular.module('katGui.d3')
 
-    .directive('d3Treemap', function ($window, d3Service) {
-        return{
+    .directive('receptorStatusList', function () {
+        return {
+            restrict: 'E',
+            template: '<d3-treemap ng-repeat="receptor in vm.receptorList" ng-if="vm.receptorList.length > 0" class="treemap-container" datan="receptor" chart-size="vm.treeChartSize" map-type="vm.mapType" style="width: 700px; height: 700px;"></d3-treemap>',
+            link: function (scope, element) {
+
+            }
+        };
+    })
+
+    .directive('d3Treemap', function ($window, d3Service, StatusService, $timeout, $rootScope) {
+        return {
             restrict: 'EA',
             scope: {
                 data: '=',
+                datan: '=',
                 chartSize: '=',
                 mapType: '='
             },
@@ -13,27 +24,31 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
-                    var cacheData = JSON.parse(JSON.stringify(scope.data));
+                    var cacheData = null;
+                    if (scope.data) {
+                        cacheData = scope.data;
+                    } else {
+                        cacheData = StatusService.statusData[scope.datan];
+                    }
 
-                    var width, height, inited = false, r = 720, node, root, padding = 5, duration = 500;
+                    var width = scope.chartSize.width, height = scope.chartSize.height, inited = false, r = 720, node, root, padding = 5, duration = 500;
                     var arc;
 
                     var margin = {top: 20, right: 0, bottom: 0, left: 0},
                         transitioning;
 
-                    scope.$watch('chartSize', function () {
-                        if (scope.chartSize.width !== width || scope.chartSize.height !== height + margin.top) {
-                            d3.select("#treemapHealthChart").remove();
-                            chart(cacheData);
-                        }
-                    }, true);
+                    //scope.$watch('chartSize', function () {
+                    //    if (scope.chartSize.width !== width || scope.chartSize.height !== height + margin.top) {
+                    //        d3.select("#treemapHealthChart").remove();
+                    //        chart(cacheData);
+                    //    }
+                    //}, true);
 
                     scope.$watch('mapType', function (newVal, oldVal) {
                         if (oldVal !== newVal) {
                             inited = false;
-                            d3.select("#treemapHealthChart").remove();
-                            cacheData = JSON.parse(JSON.stringify(scope.data));
-                            chart(cacheData);
+                            d3.selectAll(".treemapHealthChart" + scope.datan).remove();
+                            displayIfDataExists();
                         }
                     });
 
@@ -42,18 +57,26 @@ angular.module('katGui.d3')
                         .style("visibility", "hidden")
                         .style("background-color", "#ffffff");
 
-                    chart(cacheData);
+                    displayIfDataExists();
+
+                    function displayIfDataExists() {
+                        if (cacheData.children.length === 0) {
+                            $timeout(function () {
+                                displayIfDataExists();
+                            }, 100);
+                        } else {
+                            chart(cacheData);
+                        }
+                    }
 
                     function chart(data) {
-
+                        //data = {name:'', children: [data]};
                         var radius = height / 2;
                         node = root = data;
 
                         if (!inited && scope.mapType === 'tree') {
                             inited = true;
-                            //we should only accumulate the data once, not on every redraw
-                            //TODO: unless we get new data - we'll know how once the backend gives us data
-                            accumulate(data);
+                            data._children = data.children;
                         }
 
                         width = scope.chartSize.width;
@@ -87,28 +110,36 @@ angular.module('katGui.d3')
                                 .children(function (d, depth) {
                                     return depth ? null : d._children;
                                 })
-                                .sort(function (a, b) {
-                                    //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
-                                    return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
-                                })
-                                .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
-                                .round(false);
+                                //.sort(function (a, b) {
+                                //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
+                                //return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
+                                //})
+                                .round(false)
+                                .value(function (d) {
+                                    return d.blockValue;
+                                });
                         } else if (scope.mapType === 'pack') {
                             mapLayout = d3.layout.pack()
                                 .size([r, r])
                                 .value(function (d) {
-                                    return d.value;
+                                    return d.blockValue;
                                 });
                         } else if (scope.mapType === 'partition') {
                             mapLayout = d3.layout.partition()
-                                .value(function(d) { return d.value; });
+                                .value(function (d) {
+                                    return d.blockValue;
+                                });
                         } else if (scope.mapType === 'icicle') {
                             mapLayout = d3.layout.partition()
-                                .value(function(d) { return d.value; });
+                                .value(function (d) {
+                                    return d.blockValue;
+                                });
                         } else if (scope.mapType === 'sunburst') {
-                            mapLayout =  d3.layout.partition()
-                                .value(function(d) { return d.value; });
-                        }else {
+                            mapLayout = d3.layout.partition()
+                                .value(function (d) {
+                                    return d.blockValue;
+                                });
+                        } else {
                             console.log('wrong maptype!');
                             return;
                         }
@@ -117,20 +148,18 @@ angular.module('katGui.d3')
 
                         if (scope.mapType === 'pack') {
                             svg = d3.select(element[0]).append("svg")
-                                .attr("id", "treemapHealthChart")
                                 .attr("width", width)
                                 .attr("height", height)
-                                .attr("class", "health-chart")
+                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
                                 .append("g");
                             svg.attr("transform", "translate(" + (width - r) / 2 + "," + (height - r) / 2 + ")");
                         } else if (scope.mapType === 'tree') {
                             svg = d3.select(element[0]).append("svg")
-                                .attr("id", "treemapHealthChart")
                                 .attr("width", width)
                                 .attr("height", height)
-                                .attr("class", "health-chart")
+                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
                                 .append("g");
@@ -150,17 +179,15 @@ angular.module('katGui.d3')
                                 .attr("dy", ".75em");
                         } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
                             svg = d3.select(element[0]).append("svg")
-                                .attr("id", "treemapHealthChart")
                                 .attr("width", width)
                                 .attr("height", height)
-                                .attr("class", "health-chart")
+                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
                                 .style("margin-left", -margin.left + "px")
                                 .style("margin.right", -margin.right + "px")
                                 .append("g");
                         } else if (scope.mapType === 'sunburst') {
                             svg = d3.select(element[0]).append("svg")
-                                .attr("id", "treemapHealthChart")
-                                .attr("class", "health-chart")
+                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
                                 .attr("width", width + padding * 2)
                                 .attr("height", height + padding * 2)
                                 .append("g")
@@ -169,9 +196,9 @@ angular.module('katGui.d3')
 
                         if (scope.mapType === 'pack') {
                             displayPack(data);
-                        } else  if (scope.mapType === 'partition') {
+                        } else if (scope.mapType === 'partition') {
                             displayPartition();
-                        } else  if (scope.mapType === 'icicle') {
+                        } else if (scope.mapType === 'icicle') {
                             displayIcicle();
                         } else if (scope.mapType === 'sunburst') {
                             displaySunburst(data);
@@ -180,6 +207,10 @@ angular.module('katGui.d3')
                             layout(data);
                             display(data);
                         }
+
+                        $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
+                            updateStatus(sensor);
+                        });
 
                         function initialize(data) {
                             data.x = data.y = 0;
@@ -193,9 +224,9 @@ angular.module('katGui.d3')
                         // We also take a snapshot of the original children (_children) to avoid
                         // the children being overwritten when when layout is computed.
                         function accumulate(d) {
-                            return (d._children = d.children) ? d.value = d.children.reduce(function (p, v) {
+                            return (d._children = d.children) ? d.blockValue = d.children.reduce(function (p, v) {
                                 return p + accumulate(v);
-                            }, 0) : d.value;
+                            }, 0) : d.blockValue;
                         }
 
                         // Compute the treemap layout recursively such that each group of siblings
@@ -216,6 +247,25 @@ angular.module('katGui.d3')
                                     c.parent = d;
                                     layout(c);
                                 });
+                            }
+                        }
+
+                        function statusClassFromNumber(num) {
+                            switch (num) {
+                                case 0:
+                                    return 'unknown';
+                                case 1:
+                                    return 'nominal';
+                                case 2:
+                                    return 'warn';
+                                case 3:
+                                    return 'error';
+                                case 4:
+                                    return 'failure';
+                                case 5:
+                                    return 'unreachable';
+                                case 6:
+                                    return 'inactive';
                             }
                         }
 
@@ -254,38 +304,18 @@ angular.module('katGui.d3')
                                 .attr("class", "child")
                                 .call(rect);
 
-
-                            //overlay each direct child with its text in the center
-//                            g.selectAll(".children")
-//                                .data(function (d) {
-//                                    return d._children || [d];
-//                                })
-//                                .enter().append("text")
-//                                .attr("x", function (d, i) {
-//                                    return d.x + this.parentNode.children[i].width.baseVal.value / 2;
-//                                })
-//                                .attr("y", function (d, i) {
-//                                    return d.y + this.parentNode.children[i].height.baseVal.value / 2;
-//                                })
-//                                .attr("text-anchor", "middle")
-//                                .text(function (d) {
-//                                    return d.name;
-//                                });
-
                             g.append("rect")
                                 .attr("class", "parent")
                                 .call(rect);
 
-
                             g.append("text")
                                 .attr("dy", ".75em")
                                 .text(function (d) {
-                                    return d.name;
+                                    return d.name.replace(scope.datan + '_', '');
 //                                    return d.depth === 1 && d._children ? d.name : "";
                                 })
                                 .classed("text-parent-node", true)
                                 .call(text);
-
 
                             function transition(d) {
                                 tooltip.style("visibility", "hidden");
@@ -360,7 +390,7 @@ angular.module('katGui.d3')
 
                                 r
                                     .on("mouseover", function (d) {
-                                        tooltip.html(d.name + " value: " + d.value);
+                                        tooltip.html(d.name + ", status: " + d.objValue.status);
                                         tooltip.style("visibility", "visible");
                                     })
                                     .on("mousemove", function () {
@@ -375,7 +405,7 @@ angular.module('katGui.d3')
                         }
 
                         function name(d) {
-                            return d.parent ? name(d.parent) + "." + d.name : d.name;
+                            return d.parent ? name(d.parent) + "." + d.name : d.name.replace(scope.datan + '_', '');
                         }
 
                         function displayPack(dataT) {
@@ -419,7 +449,7 @@ angular.module('katGui.d3')
                                     return d.r > 60 ? 1 : 0;
                                 })
                                 .text(function (d) {
-                                    return d.name;
+                                    return d.name.replace(scope.datan + '_', '');
                                 });
 
                             d3.select(window).on("click", function () {
@@ -465,11 +495,27 @@ angular.module('katGui.d3')
                             d3.event.stopPropagation();
                         }
 
+                        function updateStatus(sensor) {
+                            svg.selectAll("#sensor-name-"+sensor.name.replace(':', '_')).attr("class", function (d) {
+                                if (d.objValue) {
+                                    for (var sensorAttr in sensor.objValue) {
+                                        d.objValue[sensorAttr] = sensor.objValue[sensorAttr];
+                                    }
+                                    return statusClassFromNumber(d.objValue.status) + '-child';
+                                }
+                            });
+                        }
+
                         function displayPartition() {
                             var g = svg.selectAll("g")
                                 .data(mapLayout.nodes(root))
                                 .enter().append("svg:g")
-                                .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; })
+                                .attr("transform", function (d) {
+                                    return "translate(" + x(d.y) + "," + y(d.x) + ")";
+                                })
+                                .attr("id", function (d) {
+                                    return "sensor-name-" + d.name.replace(':', '_');
+                                })
                                 .on("click", click);
 
                             var kx = width / root.dx,
@@ -477,20 +523,38 @@ angular.module('katGui.d3')
 
                             g.append("svg:rect")
                                 .attr("width", root.dy * kx)
-                                .attr("height", function(d) { return d.dx * ky; })
-                                .attr("class", function(d) { return d.children ? "part-parent" : "child"; });
+                                .attr("height", function (d) {
+                                    return d.dx * ky;
+                                })
+                                .attr("class", function (d) {
+                                    return d.children ? "part-parent" : "child";
+                                });
 
                             g.append("svg:text")
                                 .attr("transform", transform)
                                 .attr("dy", ".35em")
-                                .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; })
-                                .text(function(d) { return d.name; });
+                                .style("opacity", function (d) {
+                                    return d.dx * ky > 12 ? 1 : 0;
+                                })
+                                .text(function (d) {
+                                    return d.name.replace(scope.datan + '_', '');
+                                });
+
+                            g.attr("class", function (d) {
+                                    if (d.objValue) {
+                                        return statusClassFromNumber(d.objValue.status) + '-child';
+                                    }
+                                });
 
                             d3.select(window)
-                                .on("click", function() { click(root); });
+                                .on("click", function () {
+                                    click(root);
+                                });
 
                             function click(d) {
-                                if (!d.children) { return; }
+                                if (!d.children) {
+                                    return;
+                                }
 
                                 kx = (d.y ? width - 40 : width) / (1 - d.y);
                                 ky = height / d.dx;
@@ -499,15 +563,21 @@ angular.module('katGui.d3')
 
                                 var t = g.transition()
                                     .duration(duration)
-                                    .attr("transform", function(d) { return "translate(" + x(d.y) + "," + y(d.x) + ")"; });
+                                    .attr("transform", function (d) {
+                                        return "translate(" + x(d.y) + "," + y(d.x) + ")";
+                                    });
 
                                 t.select("rect")
                                     .attr("width", d.dy * kx)
-                                    .attr("height", function(d) { return d.dx * ky; });
+                                    .attr("height", function (d) {
+                                        return d.dx * ky;
+                                    });
 
                                 t.select("text")
                                     .attr("transform", transform)
-                                    .style("opacity", function(d) { return d.dx * ky > 12 ? 1 : 0; });
+                                    .style("opacity", function (d) {
+                                        return d.dx * ky > 12 ? 1 : 0;
+                                    });
 
                                 d3.event.stopPropagation();
                             }
@@ -522,11 +592,21 @@ angular.module('katGui.d3')
                             var g = svg.selectAll("g")
                                 .data(mapLayout.nodes(root))
                                 .enter().append("rect")
-                                .attr("x", function(d) { return x(d.x); })
-                                .attr("y", function(d) { return y(d.y); })
-                                .attr("width", function(d) { return x(d.dx); })
-                                .attr("height", function(d) { return y(d.dy); })
-                                .attr("class", function(d) { return d.children ? "part-parent" : "child"; })
+                                .attr("x", function (d) {
+                                    return x(d.x);
+                                })
+                                .attr("y", function (d) {
+                                    return y(d.y);
+                                })
+                                .attr("width", function (d) {
+                                    return x(d.dx);
+                                })
+                                .attr("height", function (d) {
+                                    return y(d.dy);
+                                })
+                                .attr("class", function (d) {
+                                    return d.children ? "part-parent" : "child";
+                                })
                                 .on("click", icicleClicked);
 
                             var kx = width / root.dx;
@@ -534,19 +614,25 @@ angular.module('katGui.d3')
                             var t = svg.selectAll("g")
                                 .data(mapLayout.nodes(root)).enter()
                                 .append("svg:text")
-                                .attr("x", function(d) { return x(d.x); })
-                                .attr("y", function(d) { return y(d.y); })
+                                .attr("x", function (d) {
+                                    return x(d.x);
+                                })
+                                .attr("y", function (d) {
+                                    return y(d.y);
+                                })
                                 .attr("dy", ".2em")
-                                .style("opacity", function(d) {
+                                .style("opacity", function (d) {
                                     return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
                                 })
-                                .text(function(d) { return d.name; })
+                                .text(function (d) {
+                                    return d.name.replace(scope.datan + '_', '');
+                                })
                                 .attr("text-anchor", "middle")
                                 .attr("transform", function (d) {
                                     var halfWidth = (x(d.x + d.dx) - x(d.x)) / 2,
                                         halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
-                                    var strTranslate = "translate(" + halfWidth + "," + halfHeight  + ")";
+                                    var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
                                     if (halfWidth < 60) {
                                         strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
                                     }
@@ -559,16 +645,28 @@ angular.module('katGui.d3')
 
                                 g.transition()
                                     .duration(duration)
-                                    .attr("x", function(d) { return x(d.x); })
-                                    .attr("y", function(d) { return y(d.y); })
-                                    .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-                                    .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+                                    .attr("x", function (d) {
+                                        return x(d.x);
+                                    })
+                                    .attr("y", function (d) {
+                                        return y(d.y);
+                                    })
+                                    .attr("width", function (d) {
+                                        return x(d.x + d.dx) - x(d.x);
+                                    })
+                                    .attr("height", function (d) {
+                                        return y(d.y + d.dy) - y(d.y);
+                                    });
 
                                 t.transition()
                                     .duration(duration)
-                                    .attr("x", function(d) { return x(d.x); })
-                                    .attr("y", function(d) { return y(d.y); })
-                                    .style("opacity", function(d) {
+                                    .attr("x", function (d) {
+                                        return x(d.x);
+                                    })
+                                    .attr("y", function (d) {
+                                        return y(d.y);
+                                    })
+                                    .style("opacity", function (d) {
                                         return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
                                     })
                                     .attr("text-anchor", "middle")
@@ -576,7 +674,7 @@ angular.module('katGui.d3')
                                         var halfWidth = (x(d.x + d.dx) - x(d.x)) / 2,
                                             halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
-                                        var strTranslate = "translate(" + halfWidth + "," + halfHeight  + ")";
+                                        var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
                                         if (halfWidth < 60) {
                                             strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
                                         }
@@ -588,10 +686,18 @@ angular.module('katGui.d3')
 
                         function displaySunburst(data) {
                             var arc = d3.svg.arc()
-                                .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x))); })
-                                .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx))); })
-                                .innerRadius(function(d) { return Math.max(0, y(d.y)); })
-                                .outerRadius(function(d) { return Math.max(0, y(d.y + d.dy)); });
+                                .startAngle(function (d) {
+                                    return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                                })
+                                .endAngle(function (d) {
+                                    return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+                                })
+                                .innerRadius(function (d) {
+                                    return Math.max(0, y(d.y));
+                                })
+                                .outerRadius(function (d) {
+                                    return Math.max(0, y(d.y + d.dy));
+                                });
 
                             var g = svg.selectAll("g")
                                 .data(mapLayout.nodes(data))
@@ -599,17 +705,25 @@ angular.module('katGui.d3')
 
                             var path = g.append("path")
                                 .attr("d", arc)
-                                .style("fill", function(d) { return (d.children ? "#259b24" : "transparent"); })
+                                .style("fill", function (d) {
+                                    return (d.children ? "#259b24" : "transparent");
+                                })
                                 .on("click", click);
 
                             var text = g.append("text")
-                                .attr("transform", function(d) { return "rotate(" + computeTextRotation(d) + ")"; })
-                                .attr("x", function(d) { return y(d.y); })
+                                .attr("transform", function (d) {
+                                    return "rotate(" + computeTextRotation(d) + ")";
+                                })
+                                .attr("x", function (d) {
+                                    return y(d.y);
+                                })
                                 .attr("dx", "6") // margin
                                 .attr("dy", ".35em") // vertical-align
 //                                .style("stroke", function(d) { return (d.children ? "white" : "black"); })
 //                                .style("stroke-color", function(d) { return (d.children ? "white" : "black"); })
-                                .text(function(d) { return d.name; });
+                                .text(function (d) {
+                                    return d.name.replace(scope.datan + '_', '');
+                                });
 
                             function click(d) {
                                 // fade out all text elements
@@ -618,7 +732,7 @@ angular.module('katGui.d3')
                                 path.transition()
                                     .duration(750)
                                     .attrTween("d", arcTween(d))
-                                    .each("end", function(e, i) {
+                                    .each("end", function (e, i) {
                                         // check if the animated element's data e lies within the visible angle span given in d
                                         if (e.x >= d.x && e.x < (d.x + d.dx)) {
                                             // get a selection of the associated text element
@@ -626,8 +740,12 @@ angular.module('katGui.d3')
                                             // fade in the text element and recalculate positions
                                             arcText.transition().duration(750)
                                                 .attr("opacity", 1)
-                                                .attr("transform", function() { return "rotate(" + computeTextRotation(e) + ")"; })
-                                                .attr("x", function(d) { return y(d.y); });
+                                                .attr("transform", function () {
+                                                    return "rotate(" + computeTextRotation(e) + ")";
+                                                })
+                                                .attr("x", function (d) {
+                                                    return y(d.y);
+                                                });
                                         }
                                     });
                             }
@@ -636,9 +754,15 @@ angular.module('katGui.d3')
                                 var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
                                     yd = d3.interpolate(y.domain(), [d.y, 1]),
                                     yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-                                return function(d, i) {
-                                    return i ? function(t) { return arc(d); }
-                                        : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
+                                return function (d, i) {
+                                    return i ? function (t) {
+                                        return arc(d);
+                                    }
+                                        : function (t) {
+                                        x.domain(xd(t));
+                                        y.domain(yd(t)).range(yr(t));
+                                        return arc(d);
+                                    };
                                 };
                             }
 

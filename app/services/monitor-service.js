@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout) {
+    function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService) {
 
         var pendingSubscribeObjects = [];
         var urlBase = SERVER_URL + ':8830';
@@ -15,14 +15,19 @@
         api.connectionAuthorised = false;
 
         api.subscribeToReceptorUpdates = function () {
-
             var connectionParams = ['m011:mode', 'm011:inhibited', 'm022:mode', 'm022:inhibited', 'm033:mode', 'm033:inhibited', 'm044:mode', 'm044:inhibited', 'm055:mode', 'm055:inhibited'];
+            api.subscribe(connectionParams);
+        };
 
+        api.subscribeToAlarms = function () {
+            api.subscribe('kataware:alarm[.]*');
+        };
+
+        api.subscribe = function (pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [connectionParams],
-                'subscribeName': 'subscribeToReceptorUpdates',
+                'params': [pattern],
                 'id': 'monitor' + KatGuiUtil.generateUUID()
             };
 
@@ -30,7 +35,7 @@
                 return connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribeToReceptorUpdates();
+                    api.subscribe(pattern);
                 }, 500);
             }
         };
@@ -40,7 +45,7 @@
                 console.log('Monitor Connection Established. Authenticating...');
 
                 authenticateSocketConnection();
-                subscribeToAlarms();
+                api.subscribeToAlarms();
             }
         };
 
@@ -62,7 +67,7 @@
                 if (messages.result) {
                     if (messages.id === 'redis-pubsub') {
                         var arrayResult = [];
-                        arrayResult.push({msg_data:messages.result.msg_data, msg_channel:messages.result.msg_channel});
+                        arrayResult.push({msg_data: messages.result.msg_data, msg_channel: messages.result.msg_channel});
                         messages.result = arrayResult;
                     }
 
@@ -73,10 +78,13 @@
                             messageObj = JSON.parse(message);
                         }
 
+                        //else if (messageObj.msg_channel.indexOf('kataware:') !== 0) {
+                        //    api.receptorMessageReceived(messageObj.msg_data);
+                        //}
                         if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
                             api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
-                        } else if (messageObj.msg_channel.indexOf('kataware:') !== 0) {
-                            api.receptorMessageReceived(messageObj.msg_data);
+                        }  else if (messageObj.msg_channel.indexOf('mon_') === 0) {
+                            StatusService.messageReceived(messageObj.msg_channel, messageObj.msg_data);
                         } else {
                             console.log('dangling monitor message...');
                             console.log(messageObj);
@@ -134,26 +142,6 @@
             messageObj.date = moment.utc(messageObj.timestamp, 'X').format('HH:mm:ss DD-MM-\'YY');
             $rootScope.$emit('alarmMessage', messageObj);
         };
-
-        function subscribeToAlarms() {
-
-            var jsonRPC = {
-                'jsonrpc': '2.0',
-                'method': 'subscribe',
-                //'params': ['alarm'],
-                'params': ['kataware:alarm[.]*'],
-                'id': KatGuiUtil.generateUUID()
-            };
-
-            if (connection && connection.readyState && api.connectionAuthorised) {
-                console.log('Subscribing to kataware:alarm[.]*...');
-                connection.send(JSON.stringify(jsonRPC));
-            } else {
-                $timeout(function () {
-                    subscribeToAlarms();
-                }, 500);
-            }
-        }
 
         function authenticateSocketConnection() {
 

@@ -75,13 +75,16 @@
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/editable-directive.js"></script>
 <script src="app/services/control-service.js"></script>
+<script src="app/services/config-service.js"></script>
 <script src="app/services/data-service.js"></script>
 <script src="app/services/monitor-service.js"></script>
 <script src="app/services/observation-schedule-service.js"></script>
 <script src="app/services/receptor-state-service.js"></script>
 <script src="app/services/user-service.js"></script>
 <script src="app/services/session-service.js"></script>
+<script src="app/services/status-service.js"></script>
 <script src="app/health/health.js"></script>
+<script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/d3/d3-chart-directive.js"></script>
 <script src="app/d3/d3-treemap.js"></script>
@@ -117,15 +120,21 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
                         <span class="fa fa-warning"></span>
                         <button>Alarms</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
-                        <span class="fa fa-th"></span>
-                        <button>Health & State</button>
+                    <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
+                            <span class="fa fa-heart"></span>
+                            <button>Health & State</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
+                            <span class="fa fa-th"></span>
+                            <button>Receptor Status</button>
+                        </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
