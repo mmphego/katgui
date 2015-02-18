@@ -1,377 +1,650 @@
 angular.module('katGui.d3')
 
-    .directive('receptorStatusList', function () {
-        return {
-            restrict: 'E',
-            template: '<d3-treemap ng-repeat="receptor in vm.receptorList" ng-if="vm.receptorList.length > 0" class="treemap-container" datan="receptor" chart-size="vm.treeChartSize" map-type="vm.mapType" style="width: 700px; height: 700px;"></d3-treemap>',
-            link: function (scope, element) {
+.directive('receptorStatusList', function () {
+    return {
+        restrict: 'E',
+        template: '<d3-treemap ng-repeat="receptor in vm.receptorList" ng-if="vm.receptorList.length > 0" class="treemap-container" datan="receptor" chart-size="vm.treeChartSize" map-type="vm.mapType" style="width: 700px; height: 700px;"></d3-treemap>',
+        link: function (scope, element) {
 
-            }
-        };
-    })
+        }
+    };
+})
 
-    .directive('d3Treemap', function ($window, d3Service, StatusService, $timeout, $rootScope) {
-        return {
-            restrict: 'EA',
-            scope: {
-                data: '=',
-                datan: '=',
-                chartSize: '=',
-                mapType: '='
-            },
-            replace: false,
-            link: function (scope, element) {
+.directive('d3Treemap', function ($window, d3Service, StatusService, $timeout, $rootScope) {
+    return {
+        restrict: 'EA',
+        scope: {
+            data: '=',
+            datan: '=',
+            chartSize: '=',
+            mapType: '='
+        },
+        replace: false,
+        link: function (scope, element) {
 
-                d3Service.d3().then(function (d3) {
+            d3Service.d3().then(function (d3) {
 
-                    var cacheData = null;
-                    if (scope.data) {
-                        cacheData = scope.data;
+                var cacheData = null;
+                if (scope.data) {
+                    cacheData = scope.data;
+                } else {
+                    cacheData = StatusService.statusData[scope.datan];
+                }
+
+                var width = scope.chartSize.width, height = scope.chartSize.height, inited = false, r = 720, node, root, padding = 5, duration = 500;
+                var arc;
+
+                var margin = {top: 20, right: 0, bottom: 0, left: 0},
+                    transitioning;
+
+                //scope.$watch('chartSize', function () {
+                //    if (scope.chartSize.width !== width || scope.chartSize.height !== height + margin.top) {
+                //        d3.select("#treemapHealthChart").remove();
+                //        chart(cacheData);
+                //    }
+                //}, true);
+
+                scope.$watch('mapType', function (newVal, oldVal) {
+                    if (oldVal !== newVal) {
+                        inited = false;
+                        d3.selectAll(".treemapHealthChart" + scope.datan).remove();
+                        displayIfDataExists();
+                    }
+                });
+
+                var tooltip = d3.select(element[0]).append("div")
+                    .attr("class", "treemap-tooltip")
+                    .style("visibility", "hidden")
+                    .style("background-color", "#ffffff");
+
+                displayIfDataExists();
+
+                function displayIfDataExists() {
+                    if (cacheData.children.length === 0) {
+                        $timeout(function () {
+                            displayIfDataExists();
+                        }, 100);
                     } else {
-                        cacheData = StatusService.statusData[scope.datan];
+                        chart(cacheData);
+                    }
+                }
+
+                function chart(data) {
+                    //data = {name:'', children: [data]};
+                    var radius = height / 2;
+                    node = root = data;
+
+                    if (!inited && scope.mapType === 'tree') {
+                        inited = true;
+                        data._children = data.children;
                     }
 
-                    var width = scope.chartSize.width, height = scope.chartSize.height, inited = false, r = 720, node, root, padding = 5, duration = 500;
-                    var arc;
+                    width = scope.chartSize.width;
+                    height = scope.chartSize.height;
 
-                    var margin = {top: 20, right: 0, bottom: 0, left: 0},
-                        transitioning;
+                    r = height - 10;
 
-                    //scope.$watch('chartSize', function () {
-                    //    if (scope.chartSize.width !== width || scope.chartSize.height !== height + margin.top) {
-                    //        d3.select("#treemapHealthChart").remove();
-                    //        chart(cacheData);
-                    //    }
-                    //}, true);
+                    var x = d3.scale.linear()
+                        .domain([0, width])
+                        .range([0, width]);
 
-                    scope.$watch('mapType', function (newVal, oldVal) {
-                        if (oldVal !== newVal) {
-                            inited = false;
-                            d3.selectAll(".treemapHealthChart" + scope.datan).remove();
-                            displayIfDataExists();
-                        }
+                    var y = d3.scale.linear()
+                        .domain([0, height])
+                        .range([0, height]);
+
+                    if (scope.mapType === 'pack') {
+                        x = d3.scale.linear().range([0, r]);
+                        y = d3.scale.linear().range([0, r]);
+                    } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
+                        x = d3.scale.linear().range([0, width]);
+                        y = d3.scale.linear().range([0, height]);
+                    } else if (scope.mapType === 'sunburst') {
+                        x = d3.scale.linear().range([0, 2 * Math.PI]);
+                        y = d3.scale.linear().range([0, radius]);
+                    }
+
+                    var mapLayout;
+
+                    if (scope.mapType === 'tree') {
+                        mapLayout = d3.layout.treemap()
+                            .children(function (d, depth) {
+                                return depth ? null : d._children;
+                            })
+                            //.sort(function (a, b) {
+                            //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
+                            //return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
+                            //})
+                            .round(false)
+                            .value(function (d) {
+                                return d.blockValue;
+                            });
+                    } else if (scope.mapType === 'pack') {
+                        mapLayout = d3.layout.pack()
+                            .size([r, r])
+                            .value(function (d) {
+                                return d.blockValue;
+                            });
+                    } else if (scope.mapType === 'partition') {
+                        mapLayout = d3.layout.partition()
+                            .value(function (d) {
+                                return d.blockValue;
+                            });
+                    } else if (scope.mapType === 'icicle') {
+                        mapLayout = d3.layout.partition()
+                            .value(function (d) {
+                                return d.blockValue;
+                            });
+                    } else if (scope.mapType === 'sunburst') {
+                        mapLayout = d3.layout.partition()
+                            .value(function (d) {
+                                return d.blockValue;
+                            });
+                    } else {
+                        console.log('wrong maptype!');
+                        return;
+                    }
+
+                    var svg;
+
+                    if (scope.mapType === 'pack') {
+                        svg = d3.select(element[0]).append("svg")
+                            .attr("width", width)
+                            .attr("height", height)
+                            .attr("class", "health-chart treemapHealthChart" + scope.datan)
+                            .style("margin-left", -margin.left + "px")
+                            .style("margin.right", -margin.right + "px")
+                            .append("g");
+                        svg.attr("transform", "translate(" + (width - r) / 2 + "," + (height - r) / 2 + ")");
+                    } else if (scope.mapType === 'tree') {
+                        svg = d3.select(element[0]).append("svg")
+                            .attr("width", width)
+                            .attr("height", height)
+                            .attr("class", "health-chart treemapHealthChart" + scope.datan)
+                            .style("margin-left", -margin.left + "px")
+                            .style("margin.right", -margin.right + "px")
+                            .append("g");
+                        svg.style("shape-rendering", "crispEdges");
+                        svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                        var grandparent = svg.append("g")
+                            .attr("class", "grandparent");
+
+                        grandparent.append("rect")
+                            .attr("y", -margin.top)
+                            .attr("width", width)
+                            .attr("height", margin.top);
+
+                        grandparent.append("text")
+                            .attr("x", 6)
+                            .attr("y", 6 - margin.top)
+                            .attr("dy", ".75em");
+                    } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
+                        svg = d3.select(element[0]).append("svg")
+                            .attr("width", width)
+                            .attr("height", height)
+                            .attr("class", "health-chart treemapHealthChart" + scope.datan)
+                            .style("margin-left", -margin.left + "px")
+                            .style("margin.right", -margin.right + "px")
+                            .append("g");
+                    } else if (scope.mapType === 'sunburst') {
+                        svg = d3.select(element[0]).append("svg")
+                            .attr("class", "health-chart treemapHealthChart" + scope.datan)
+                            .attr("width", width + padding * 2)
+                            .attr("height", height + padding * 2)
+                            .append("g")
+                            .attr("transform", "translate(" + [radius + padding, radius + padding] + ")");
+                    }
+
+                    if (scope.mapType === 'pack') {
+                        displayPack(data);
+                    } else if (scope.mapType === 'partition') {
+                        displayPartition();
+                    } else if (scope.mapType === 'icicle') {
+                        displayIcicle();
+                    } else if (scope.mapType === 'sunburst') {
+                        displaySunburst(data);
+                    } else {
+                        initialize(data);
+                        layout(data);
+                        display(data);
+                    }
+
+                    $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
+                        updateStatus(sensor);
                     });
 
-                    var tooltip = d3.select(element[0]).append("div")
-                        .attr("class", "treemap-tooltip")
-                        .style("visibility", "hidden")
-                        .style("background-color", "#ffffff");
+                    function initialize(data) {
+                        data.x = data.y = 0;
+                        data.dx = width;
+                        data.dy = height;
+                        data.depth = 0;
+                    }
 
-                    displayIfDataExists();
+                    // Aggregate the values for internal nodes. This is normally done by the
+                    // treemap layout, but not here because of our custom implementation.
+                    // We also take a snapshot of the original children (_children) to avoid
+                    // the children being overwritten when when layout is computed.
+                    function accumulate(d) {
+                        return (d._children = d.children) ? d.blockValue = d.children.reduce(function (p, v) {
+                            return p + accumulate(v);
+                        }, 0) : d.blockValue;
+                    }
 
-                    function displayIfDataExists() {
-                        if (cacheData.children.length === 0) {
-                            $timeout(function () {
-                                displayIfDataExists();
-                            }, 100);
-                        } else {
-                            chart(cacheData);
+                    // Compute the treemap layout recursively such that each group of siblings
+                    // uses the same size (1×1) rather than the dimensions of the parent cell.
+                    // This optimizes the layout for the current zoom state. Note that a wrapper
+                    // object is created for the parent node for each group of siblings so that
+                    // the parent’s dimensions are not discarded as we recurse. Since each group
+                    // of sibling was laid out in 1×1, we must rescale to fit using absolute
+                    // coordinates. This lets us use a viewport to zoom.
+                    function layout(d) {
+                        if (d._children) {
+                            mapLayout.nodes({_children: d._children});
+                            d._children.forEach(function (c) {
+                                c.x = d.x + c.x * d.dx;
+                                c.y = d.y + c.y * d.dy;
+                                c.dx *= d.dx;
+                                c.dy *= d.dy;
+                                c.parent = d;
+                                layout(c);
+                            });
                         }
                     }
 
-                    function chart(data) {
-                        //data = {name:'', children: [data]};
-                        var radius = height / 2;
-                        node = root = data;
-
-                        if (!inited && scope.mapType === 'tree') {
-                            inited = true;
-                            data._children = data.children;
+                    function statusClassFromNumber(num) {
+                        switch (num) {
+                            case 0:
+                                return 'unknown';
+                            case 1:
+                                return 'nominal';
+                            case 2:
+                                return 'warn';
+                            case 3:
+                                return 'error';
+                            case 4:
+                                return 'failure';
+                            case 5:
+                                return 'unreachable';
+                            case 6:
+                                return 'inactive';
                         }
+                    }
 
-                        width = scope.chartSize.width;
-                        height = scope.chartSize.height;
+                    function display(d) {
+                        grandparent
+                            .datum(d.parent)
+                            .on("click", transition)
+                            .select("text")
+                            .style("fill", "#fff")
+                            .text(name(d));
 
-                        r = height - 10;
+                        var g1 = svg.insert("g", ".grandparent")
+                            .datum(d)
+                            .attr("class", "depth");
 
-                        var x = d3.scale.linear()
-                            .domain([0, width])
-                            .range([0, width]);
+                        var g = g1.selectAll("g")
+                            .data(d._children)
+                            .enter().append("svg").append("g");
 
-                        var y = d3.scale.linear()
-                            .domain([0, height])
-                            .range([0, height]);
+                        g.filter(function (d) {
+                            return d._children;
+                        })
+                            .classed("children", true)
+                            .on("click", transition);
 
-                        if (scope.mapType === 'pack') {
-                            x = d3.scale.linear().range([0, r]);
-                            y = d3.scale.linear().range([0, r]);
-                        } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
-                            x = d3.scale.linear().range([0, width]);
-                            y = d3.scale.linear().range([0, height]);
-                        } else if (scope.mapType === 'sunburst') {
-                            x = d3.scale.linear().range([0, 2 * Math.PI]);
-                            y = d3.scale.linear().range([0, radius]);
-                        }
+                        g.filter(function (d) {
+                            return !d._children;
+                        })
+                            .classed("no-children", true);
 
-                        var mapLayout;
+                        g.selectAll(".child")
+                            .data(function (d) {
+                                return d._children || [d];
+                            })
+                            .enter().append("rect")
+                            .attr("class", "child")
+                            .call(rect);
 
-                        if (scope.mapType === 'tree') {
-                            mapLayout = d3.layout.treemap()
-                                .children(function (d, depth) {
-                                    return depth ? null : d._children;
-                                })
-                                //.sort(function (a, b) {
+                        g.append("rect")
+                            .attr("class", "parent")
+                            .call(rect);
+
+                        g.append("text")
+                            .attr("dy", ".75em")
+                            .text(function (d) {
+                                return d.name.replace(scope.datan + '_', '');
+//                                    return d.depth === 1 && d._children ? d.name : "";
+                            })
+                            .classed("text-parent-node", true)
+                            .call(text);
+
+                        function transition(d) {
+                            tooltip.style("visibility", "hidden");
+
+                            if (transitioning || !d) {
+                                return;
+                            }
+                            transitioning = true;
+
+                            var g2 = display(d),
+                                t1 = g1.transition().duration(duration),
+                                t2 = g2.transition().duration(duration);
+
+                            // Update the domain only after entering new elements.
+                            x.domain([d.x, d.x + d.dx]);
+                            y.domain([d.y, d.y + d.dy]);
+
+                            // Enable anti-aliasing during the transition.
+                            svg.style("shape-rendering", null);
+
+                            // Draw child nodes on top of parent nodes.
+                            svg.selectAll(".depth").sort(function (a, b) {
                                 //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
-                                //return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
-                                //})
-                                .round(false)
-                                .value(function (d) {
-                                    return d.blockValue;
+                                return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
+                            });
+
+                            // Fade-in entering text.
+                            g2.selectAll("text").style("fill-opacity", 0);
+
+                            // Transition to the new view.
+                            t1.selectAll("text").call(text).style("fill-opacity", 0);
+                            t2.selectAll("text").call(text).style("fill-opacity", 1);
+                            t1.selectAll("rect").call(rect);
+                            t2.selectAll("rect").call(rect);
+
+                            // Remove the old node when the transition is finished.
+                            t1.remove().each("end", function () {
+                                svg.style("shape-rendering", "crispEdges");
+                                transitioning = false;
+                            });
+                        }
+
+                        return g;
+                    }
+
+                    function text(t) {
+                        t.attr("x", function (d) {
+                            return x(d.x) + 6;
+                        })
+                            .attr("y", function (d) {
+                                return y(d.y) + 6;
+                            });
+                    }
+
+                    function rect(r) {
+                        r
+                            .attr("x", function (d) {
+                                return x(d.x);
+                            })
+                            .attr("y", function (d) {
+                                return y(d.y);
+                            })
+                            .attr("width", function (d) {
+                                return x(d.x + d.dx) - x(d.x);
+                            })
+                            .attr("height", function (d) {
+                                return y(d.y + d.dy) - y(d.y);
+                            });
+
+                        //r.on is not defined while transitioning, so check it!
+                        if (r.on) {
+
+                            r
+                                .on("mouseover", function (d) {
+                                    tooltip.html(d.name + ", status: " + d.objValue.status);
+                                    tooltip.style("visibility", "visible");
+                                })
+                                .on("mousemove", function () {
+                                    tooltip
+                                        .style("top", (d3.event.layerY + 10) + "px")
+                                        .style("left", (d3.event.layerX + 10) + "px");
+                                })
+                                .on("mouseout", function () {
+                                    tooltip.style("visibility", "hidden");
                                 });
-                        } else if (scope.mapType === 'pack') {
-                            mapLayout = d3.layout.pack()
-                                .size([r, r])
-                                .value(function (d) {
-                                    return d.blockValue;
-                                });
-                        } else if (scope.mapType === 'partition') {
-                            mapLayout = d3.layout.partition()
-                                .value(function (d) {
-                                    return d.blockValue;
-                                });
-                        } else if (scope.mapType === 'icicle') {
-                            mapLayout = d3.layout.partition()
-                                .value(function (d) {
-                                    return d.blockValue;
-                                });
-                        } else if (scope.mapType === 'sunburst') {
-                            mapLayout = d3.layout.partition()
-                                .value(function (d) {
-                                    return d.blockValue;
-                                });
-                        } else {
-                            console.log('wrong maptype!');
+                        }
+                    }
+
+                    function name(d) {
+                        return d.parent ? name(d.parent) + "." + d.name : d.name.replace(scope.datan + '_', '');
+                    }
+
+                    function displayPack(dataT) {
+
+                        var nodes = mapLayout.nodes(dataT);
+
+                        svg.selectAll("circle")
+                            .data(nodes)
+                            .enter().append("svg:circle")
+                            .attr("class", function (d) {
+                                return d.children ? "parent" : "child";
+                            })
+                            .attr("cx", function (d) {
+                                return d.x;
+                            })
+                            .attr("cy", function (d) {
+                                return d.y;
+                            })
+                            .attr("r", function (d) {
+                                return d.r;
+                            })
+                            .on("click", function (d) {
+                                return zoomPack(node === d ? root : d);
+                            });
+
+                        svg.selectAll("text")
+                            .data(nodes)
+                            .enter().append("svg:text")
+                            .attr("class", function (d) {
+                                return d.children ? "parent" : "child";
+                            })
+                            .attr("x", function (d) {
+                                return d.x;
+                            })
+                            .attr("y", function (d) {
+                                return d.y;
+                            })
+                            .attr("dy", ".35em")
+                            .attr("text-anchor", "middle")
+                            .style("opacity", function (d) {
+                                return d.r > 60 ? 1 : 0;
+                            })
+                            .text(function (d) {
+                                return d.name.replace(scope.datan + '_', '');
+                            });
+
+                        d3.select(window).on("click", function () {
+                            zoomPack(root);
+                        });
+                    }
+
+                    function zoomPack(d, i) {
+                        if (scope.mapType !== 'pack') {
                             return;
                         }
 
-                        var svg;
+                        var k = r / d.r / 2;
+                        x.domain([d.x - d.r, d.x + d.r]);
+                        y.domain([d.y - d.r, d.y + d.r]);
 
-                        if (scope.mapType === 'pack') {
-                            svg = d3.select(element[0]).append("svg")
-                                .attr("width", width)
-                                .attr("height", height)
-                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
-                                .style("margin-left", -margin.left + "px")
-                                .style("margin.right", -margin.right + "px")
-                                .append("g");
-                            svg.attr("transform", "translate(" + (width - r) / 2 + "," + (height - r) / 2 + ")");
-                        } else if (scope.mapType === 'tree') {
-                            svg = d3.select(element[0]).append("svg")
-                                .attr("width", width)
-                                .attr("height", height)
-                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
-                                .style("margin-left", -margin.left + "px")
-                                .style("margin.right", -margin.right + "px")
-                                .append("g");
-                            svg.style("shape-rendering", "crispEdges");
-                            svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                            var grandparent = svg.append("g")
-                                .attr("class", "grandparent");
+                        var t = svg.transition()
+                            .duration(duration);
 
-                            grandparent.append("rect")
-                                .attr("y", -margin.top)
-                                .attr("width", width)
-                                .attr("height", margin.top);
+                        t.selectAll("circle")
+                            .attr("cx", function (d) {
+                                return x(d.x);
+                            })
+                            .attr("cy", function (d) {
+                                return y(d.y);
+                            })
+                            .attr("r", function (d) {
+                                return k * d.r;
+                            });
 
-                            grandparent.append("text")
-                                .attr("x", 6)
-                                .attr("y", 6 - margin.top)
-                                .attr("dy", ".75em");
-                        } else if (scope.mapType === 'partition' || scope.mapType === 'icicle') {
-                            svg = d3.select(element[0]).append("svg")
-                                .attr("width", width)
-                                .attr("height", height)
-                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
-                                .style("margin-left", -margin.left + "px")
-                                .style("margin.right", -margin.right + "px")
-                                .append("g");
-                        } else if (scope.mapType === 'sunburst') {
-                            svg = d3.select(element[0]).append("svg")
-                                .attr("class", "health-chart treemapHealthChart" + scope.datan)
-                                .attr("width", width + padding * 2)
-                                .attr("height", height + padding * 2)
-                                .append("g")
-                                .attr("transform", "translate(" + [radius + padding, radius + padding] + ")");
-                        }
+                        t.selectAll("text")
+                            .attr("x", function (d) {
+                                return x(d.x);
+                            })
+                            .attr("y", function (d) {
+                                return y(d.y);
+                            })
+                            .style("opacity", function (d) {
+                                return k * d.r > 50 ? 1 : 0;
+                            });
 
-                        if (scope.mapType === 'pack') {
-                            displayPack(data);
-                        } else if (scope.mapType === 'partition') {
-                            displayPartition();
-                        } else if (scope.mapType === 'icicle') {
-                            displayIcicle();
-                        } else if (scope.mapType === 'sunburst') {
-                            displaySunburst(data);
-                        } else {
-                            initialize(data);
-                            layout(data);
-                            display(data);
-                        }
+                        node = d;
+                        d3.event.stopPropagation();
+                    }
 
-                        $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
-                            updateStatus(sensor);
+                    function updateStatus(sensor) {
+                        svg.selectAll("#sensor-name-" + sensor.name.replace(':', '_')).attr("class", function (d) {
+                            if (d.objValue) {
+                                for (var sensorAttr in sensor.objValue) {
+                                    d.objValue[sensorAttr] = sensor.objValue[sensorAttr];
+                                }
+                                return statusClassFromNumber(d.objValue.status) + '-child';
+                            }
+                        });
+                    }
+
+                    function displayPartition() {
+                        var g = svg.selectAll("g")
+                            .data(mapLayout.nodes(root))
+                            .enter().append("svg:g")
+                            .attr("transform", function (d) {
+                                return "translate(" + x(d.y) + "," + y(d.x) + ")";
+                            })
+                            .attr("id", function (d) {
+                                return "sensor-name-" + d.name.replace(':', '_');
+                            })
+                            .on("click", click);
+
+                        var kx = width / root.dx,
+                            ky = height / 1;
+
+                        g.append("svg:rect")
+                            .attr("width", root.dy * kx)
+                            .attr("height", function (d) {
+                                return d.dx * ky;
+                            })
+                            .attr("class", function (d) {
+                                return d.children ? "part-parent" : "child";
+                            });
+
+                        g.append("svg:text")
+                            .attr("transform", transform)
+                            .attr("dy", ".35em")
+                            .style("opacity", function (d) {
+                                return d.dx * ky > 12 ? 1 : 0;
+                            })
+                            .text(function (d) {
+                                return d.name.replace(scope.datan + '_', '');
+                            });
+
+                        g.attr("class", function (d) {
+                            if (d.objValue) {
+                                return statusClassFromNumber(d.objValue.status) + '-child';
+                            }
                         });
 
-                        function initialize(data) {
-                            data.x = data.y = 0;
-                            data.dx = width;
-                            data.dy = height;
-                            data.depth = 0;
-                        }
+                        d3.select(window)
+                            .on("click", function () {
+                                click(root);
+                            });
 
-                        // Aggregate the values for internal nodes. This is normally done by the
-                        // treemap layout, but not here because of our custom implementation.
-                        // We also take a snapshot of the original children (_children) to avoid
-                        // the children being overwritten when when layout is computed.
-                        function accumulate(d) {
-                            return (d._children = d.children) ? d.blockValue = d.children.reduce(function (p, v) {
-                                return p + accumulate(v);
-                            }, 0) : d.blockValue;
-                        }
+                        function click(d) {
+                            if (!d.children) {
+                                return;
+                            }
 
-                        // Compute the treemap layout recursively such that each group of siblings
-                        // uses the same size (1×1) rather than the dimensions of the parent cell.
-                        // This optimizes the layout for the current zoom state. Note that a wrapper
-                        // object is created for the parent node for each group of siblings so that
-                        // the parent’s dimensions are not discarded as we recurse. Since each group
-                        // of sibling was laid out in 1×1, we must rescale to fit using absolute
-                        // coordinates. This lets us use a viewport to zoom.
-                        function layout(d) {
-                            if (d._children) {
-                                mapLayout.nodes({_children: d._children});
-                                d._children.forEach(function (c) {
-                                    c.x = d.x + c.x * d.dx;
-                                    c.y = d.y + c.y * d.dy;
-                                    c.dx *= d.dx;
-                                    c.dy *= d.dy;
-                                    c.parent = d;
-                                    layout(c);
+                            kx = (d.y ? width - 40 : width) / (1 - d.y);
+                            ky = height / d.dx;
+                            x.domain([d.y, 1]).range([d.y ? 40 : 0, width]);
+                            y.domain([d.x, d.x + d.dx]);
+
+                            var t = g.transition()
+                                .duration(duration)
+                                .attr("transform", function (d) {
+                                    return "translate(" + x(d.y) + "," + y(d.x) + ")";
                                 });
-                            }
+
+                            t.select("rect")
+                                .attr("width", d.dy * kx)
+                                .attr("height", function (d) {
+                                    return d.dx * ky;
+                                });
+
+                            t.select("text")
+                                .attr("transform", transform)
+                                .style("opacity", function (d) {
+                                    return d.dx * ky > 12 ? 1 : 0;
+                                });
+
+                            d3.event.stopPropagation();
                         }
 
-                        function statusClassFromNumber(num) {
-                            switch (num) {
-                                case 0:
-                                    return 'unknown';
-                                case 1:
-                                    return 'nominal';
-                                case 2:
-                                    return 'warn';
-                                case 3:
-                                    return 'error';
-                                case 4:
-                                    return 'failure';
-                                case 5:
-                                    return 'unreachable';
-                                case 6:
-                                    return 'inactive';
-                            }
+                        function transform(d) {
+                            return "translate(8," + d.dx * ky / 2 + ")";
                         }
+                    }
 
-                        function display(d) {
-                            grandparent
-                                .datum(d.parent)
-                                .on("click", transition)
-                                .select("text")
-                                .style("fill", "#fff")
-                                .text(name(d));
+                    function displayIcicle() {
 
-                            var g1 = svg.insert("g", ".grandparent")
-                                .datum(d)
-                                .attr("class", "depth");
-
-                            var g = g1.selectAll("g")
-                                .data(d._children)
-                                .enter().append("svg").append("g");
-
-                            g.filter(function (d) {
-                                return d._children;
+                        var g = svg.selectAll("g")
+                            .data(mapLayout.nodes(root))
+                            .enter().append("rect")
+                            .attr("x", function (d) {
+                                return x(d.x);
                             })
-                                .classed("children", true)
-                                .on("click", transition);
-
-                            g.filter(function (d) {
-                                return !d._children;
+                            .attr("y", function (d) {
+                                return y(d.y);
                             })
-                                .classed("no-children", true);
+                            .attr("width", function (d) {
+                                return x(d.dx);
+                            })
+                            .attr("height", function (d) {
+                                return y(d.dy);
+                            })
+                            .attr("class", function (d) {
+                                return d.children ? "part-parent" : "child";
+                            })
+                            .on("click", icicleClicked);
 
-                            g.selectAll(".child")
-                                .data(function (d) {
-                                    return d._children || [d];
-                                })
-                                .enter().append("rect")
-                                .attr("class", "child")
-                                .call(rect);
+                        var kx = width / root.dx;
 
-                            g.append("rect")
-                                .attr("class", "parent")
-                                .call(rect);
+                        var t = svg.selectAll("g")
+                            .data(mapLayout.nodes(root)).enter()
+                            .append("svg:text")
+                            .attr("x", function (d) {
+                                return x(d.x);
+                            })
+                            .attr("y", function (d) {
+                                return y(d.y);
+                            })
+                            .attr("dy", ".2em")
+                            .style("opacity", function (d) {
+                                return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
+                            })
+                            .text(function (d) {
+                                return d.name.replace(scope.datan + '_', '');
+                            })
+                            .attr("text-anchor", "middle")
+                            .attr("transform", function (d) {
+                                var halfWidth = (x(d.x + d.dx) - x(d.x)) / 2,
+                                    halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
-                            g.append("text")
-                                .attr("dy", ".75em")
-                                .text(function (d) {
-                                    return d.name.replace(scope.datan + '_', '');
-//                                    return d.depth === 1 && d._children ? d.name : "";
-                                })
-                                .classed("text-parent-node", true)
-                                .call(text);
-
-                            function transition(d) {
-                                tooltip.style("visibility", "hidden");
-
-                                if (transitioning || !d) {
-                                    return;
+                                var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
+                                if (halfWidth < 60) {
+                                    strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
                                 }
-                                transitioning = true;
+                                return strTranslate;
+                            });
 
-                                var g2 = display(d),
-                                    t1 = g1.transition().duration(duration),
-                                    t2 = g2.transition().duration(duration);
+                        function icicleClicked(d) {
+                            x.domain([d.x, d.x + d.dx]);
+                            y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);
 
-                                // Update the domain only after entering new elements.
-                                x.domain([d.x, d.x + d.dx]);
-                                y.domain([d.y, d.y + d.dy]);
-
-                                // Enable anti-aliasing during the transition.
-                                svg.style("shape-rendering", null);
-
-                                // Draw child nodes on top of parent nodes.
-                                svg.selectAll(".depth").sort(function (a, b) {
-                                    //this sorts the data by name ascending, so ANT1 < ANT2 < ANT3 etc
-                                    return a.name < b.name ? 1 : a.name > b.name ? -1 : 0;
-                                });
-
-                                // Fade-in entering text.
-                                g2.selectAll("text").style("fill-opacity", 0);
-
-                                // Transition to the new view.
-                                t1.selectAll("text").call(text).style("fill-opacity", 0);
-                                t2.selectAll("text").call(text).style("fill-opacity", 1);
-                                t1.selectAll("rect").call(rect);
-                                t2.selectAll("rect").call(rect);
-
-                                // Remove the old node when the transition is finished.
-                                t1.remove().each("end", function () {
-                                    svg.style("shape-rendering", "crispEdges");
-                                    transitioning = false;
-                                });
-                            }
-
-                            return g;
-                        }
-
-                        function text(t) {
-                            t.attr("x", function (d) {
-                                return x(d.x) + 6;
-                            })
-                                .attr("y", function (d) {
-                                    return y(d.y) + 6;
-                                });
-                        }
-
-                        function rect(r) {
-                            r
+                            g.transition()
+                                .duration(duration)
                                 .attr("x", function (d) {
                                     return x(d.x);
                                 })
@@ -385,247 +658,16 @@ angular.module('katGui.d3')
                                     return y(d.y + d.dy) - y(d.y);
                                 });
 
-                            //r.on is not defined while transitioning, so check it!
-                            if (r.on) {
-
-                                r
-                                    .on("mouseover", function (d) {
-                                        tooltip.html(d.name + ", status: " + d.objValue.status);
-                                        tooltip.style("visibility", "visible");
-                                    })
-                                    .on("mousemove", function () {
-                                        tooltip
-                                            .style("top", (d3.event.layerY + 10) + "px")
-                                            .style("left", (d3.event.layerX + 10) + "px");
-                                    })
-                                    .on("mouseout", function () {
-                                        tooltip.style("visibility", "hidden");
-                                    });
-                            }
-                        }
-
-                        function name(d) {
-                            return d.parent ? name(d.parent) + "." + d.name : d.name.replace(scope.datan + '_', '');
-                        }
-
-                        function displayPack(dataT) {
-
-                            var nodes = mapLayout.nodes(dataT);
-
-                            svg.selectAll("circle")
-                                .data(nodes)
-                                .enter().append("svg:circle")
-                                .attr("class", function (d) {
-                                    return d.children ? "parent" : "child";
-                                })
-                                .attr("cx", function (d) {
-                                    return d.x;
-                                })
-                                .attr("cy", function (d) {
-                                    return d.y;
-                                })
-                                .attr("r", function (d) {
-                                    return d.r;
-                                })
-                                .on("click", function (d) {
-                                    return zoomPack(node === d ? root : d);
-                                });
-
-                            svg.selectAll("text")
-                                .data(nodes)
-                                .enter().append("svg:text")
-                                .attr("class", function (d) {
-                                    return d.children ? "parent" : "child";
-                                })
-                                .attr("x", function (d) {
-                                    return d.x;
-                                })
-                                .attr("y", function (d) {
-                                    return d.y;
-                                })
-                                .attr("dy", ".35em")
-                                .attr("text-anchor", "middle")
-                                .style("opacity", function (d) {
-                                    return d.r > 60 ? 1 : 0;
-                                })
-                                .text(function (d) {
-                                    return d.name.replace(scope.datan + '_', '');
-                                });
-
-                            d3.select(window).on("click", function () {
-                                zoomPack(root);
-                            });
-                        }
-
-                        function zoomPack(d, i) {
-                            if (scope.mapType !== 'pack') {
-                                return;
-                            }
-
-                            var k = r / d.r / 2;
-                            x.domain([d.x - d.r, d.x + d.r]);
-                            y.domain([d.y - d.r, d.y + d.r]);
-
-                            var t = svg.transition()
-                                .duration(duration);
-
-                            t.selectAll("circle")
-                                .attr("cx", function (d) {
-                                    return x(d.x);
-                                })
-                                .attr("cy", function (d) {
-                                    return y(d.y);
-                                })
-                                .attr("r", function (d) {
-                                    return k * d.r;
-                                });
-
-                            t.selectAll("text")
+                            t.transition()
+                                .duration(duration)
                                 .attr("x", function (d) {
                                     return x(d.x);
                                 })
                                 .attr("y", function (d) {
                                     return y(d.y);
                                 })
-                                .style("opacity", function (d) {
-                                    return k * d.r > 50 ? 1 : 0;
-                                });
-
-                            node = d;
-                            d3.event.stopPropagation();
-                        }
-
-                        function updateStatus(sensor) {
-                            svg.selectAll("#sensor-name-"+sensor.name.replace(':', '_')).attr("class", function (d) {
-                                if (d.objValue) {
-                                    for (var sensorAttr in sensor.objValue) {
-                                        d.objValue[sensorAttr] = sensor.objValue[sensorAttr];
-                                    }
-                                    return statusClassFromNumber(d.objValue.status) + '-child';
-                                }
-                            });
-                        }
-
-                        function displayPartition() {
-                            var g = svg.selectAll("g")
-                                .data(mapLayout.nodes(root))
-                                .enter().append("svg:g")
-                                .attr("transform", function (d) {
-                                    return "translate(" + x(d.y) + "," + y(d.x) + ")";
-                                })
-                                .attr("id", function (d) {
-                                    return "sensor-name-" + d.name.replace(':', '_');
-                                })
-                                .on("click", click);
-
-                            var kx = width / root.dx,
-                                ky = height / 1;
-
-                            g.append("svg:rect")
-                                .attr("width", root.dy * kx)
-                                .attr("height", function (d) {
-                                    return d.dx * ky;
-                                })
-                                .attr("class", function (d) {
-                                    return d.children ? "part-parent" : "child";
-                                });
-
-                            g.append("svg:text")
-                                .attr("transform", transform)
-                                .attr("dy", ".35em")
-                                .style("opacity", function (d) {
-                                    return d.dx * ky > 12 ? 1 : 0;
-                                })
-                                .text(function (d) {
-                                    return d.name.replace(scope.datan + '_', '');
-                                });
-
-                            g.attr("class", function (d) {
-                                    if (d.objValue) {
-                                        return statusClassFromNumber(d.objValue.status) + '-child';
-                                    }
-                                });
-
-                            d3.select(window)
-                                .on("click", function () {
-                                    click(root);
-                                });
-
-                            function click(d) {
-                                if (!d.children) {
-                                    return;
-                                }
-
-                                kx = (d.y ? width - 40 : width) / (1 - d.y);
-                                ky = height / d.dx;
-                                x.domain([d.y, 1]).range([d.y ? 40 : 0, width]);
-                                y.domain([d.x, d.x + d.dx]);
-
-                                var t = g.transition()
-                                    .duration(duration)
-                                    .attr("transform", function (d) {
-                                        return "translate(" + x(d.y) + "," + y(d.x) + ")";
-                                    });
-
-                                t.select("rect")
-                                    .attr("width", d.dy * kx)
-                                    .attr("height", function (d) {
-                                        return d.dx * ky;
-                                    });
-
-                                t.select("text")
-                                    .attr("transform", transform)
-                                    .style("opacity", function (d) {
-                                        return d.dx * ky > 12 ? 1 : 0;
-                                    });
-
-                                d3.event.stopPropagation();
-                            }
-
-                            function transform(d) {
-                                return "translate(8," + d.dx * ky / 2 + ")";
-                            }
-                        }
-
-                        function displayIcicle() {
-
-                            var g = svg.selectAll("g")
-                                .data(mapLayout.nodes(root))
-                                .enter().append("rect")
-                                .attr("x", function (d) {
-                                    return x(d.x);
-                                })
-                                .attr("y", function (d) {
-                                    return y(d.y);
-                                })
-                                .attr("width", function (d) {
-                                    return x(d.dx);
-                                })
-                                .attr("height", function (d) {
-                                    return y(d.dy);
-                                })
-                                .attr("class", function (d) {
-                                    return d.children ? "part-parent" : "child";
-                                })
-                                .on("click", icicleClicked);
-
-                            var kx = width / root.dx;
-
-                            var t = svg.selectAll("g")
-                                .data(mapLayout.nodes(root)).enter()
-                                .append("svg:text")
-                                .attr("x", function (d) {
-                                    return x(d.x);
-                                })
-                                .attr("y", function (d) {
-                                    return y(d.y);
-                                })
-                                .attr("dy", ".2em")
                                 .style("opacity", function (d) {
                                     return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
-                                })
-                                .text(function (d) {
-                                    return d.name.replace(scope.datan + '_', '');
                                 })
                                 .attr("text-anchor", "middle")
                                 .attr("transform", function (d) {
@@ -638,141 +680,99 @@ angular.module('katGui.d3')
                                     }
                                     return strTranslate;
                                 });
-
-                            function icicleClicked(d) {
-                                x.domain([d.x, d.x + d.dx]);
-                                y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);
-
-                                g.transition()
-                                    .duration(duration)
-                                    .attr("x", function (d) {
-                                        return x(d.x);
-                                    })
-                                    .attr("y", function (d) {
-                                        return y(d.y);
-                                    })
-                                    .attr("width", function (d) {
-                                        return x(d.x + d.dx) - x(d.x);
-                                    })
-                                    .attr("height", function (d) {
-                                        return y(d.y + d.dy) - y(d.y);
-                                    });
-
-                                t.transition()
-                                    .duration(duration)
-                                    .attr("x", function (d) {
-                                        return x(d.x);
-                                    })
-                                    .attr("y", function (d) {
-                                        return y(d.y);
-                                    })
-                                    .style("opacity", function (d) {
-                                        return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
-                                    })
-                                    .attr("text-anchor", "middle")
-                                    .attr("transform", function (d) {
-                                        var halfWidth = (x(d.x + d.dx) - x(d.x)) / 2,
-                                            halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
-
-                                        var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
-                                        if (halfWidth < 60) {
-                                            strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
-                                        }
-                                        return strTranslate;
-                                    });
-                                d3.event.stopPropagation();
-                            }
-                        }
-
-                        function displaySunburst(data) {
-                            var arc = d3.svg.arc()
-                                .startAngle(function (d) {
-                                    return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
-                                })
-                                .endAngle(function (d) {
-                                    return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
-                                })
-                                .innerRadius(function (d) {
-                                    return Math.max(0, y(d.y));
-                                })
-                                .outerRadius(function (d) {
-                                    return Math.max(0, y(d.y + d.dy));
-                                });
-
-                            var g = svg.selectAll("g")
-                                .data(mapLayout.nodes(data))
-                                .enter().append("g");
-
-                            var path = g.append("path")
-                                .attr("d", arc)
-                                .style("fill", function (d) {
-                                    return (d.children ? "#259b24" : "transparent");
-                                })
-                                .on("click", click);
-
-                            var text = g.append("text")
-                                .attr("transform", function (d) {
-                                    return "rotate(" + computeTextRotation(d) + ")";
-                                })
-                                .attr("x", function (d) {
-                                    return y(d.y);
-                                })
-                                .attr("dx", "6") // margin
-                                .attr("dy", ".35em") // vertical-align
-//                                .style("stroke", function(d) { return (d.children ? "white" : "black"); })
-//                                .style("stroke-color", function(d) { return (d.children ? "white" : "black"); })
-                                .text(function (d) {
-                                    return d.name.replace(scope.datan + '_', '');
-                                });
-
-                            function click(d) {
-                                // fade out all text elements
-                                text.transition().attr("opacity", 0);
-
-                                path.transition()
-                                    .duration(750)
-                                    .attrTween("d", arcTween(d))
-                                    .each("end", function (e, i) {
-                                        // check if the animated element's data e lies within the visible angle span given in d
-                                        if (e.x >= d.x && e.x < (d.x + d.dx)) {
-                                            // get a selection of the associated text element
-                                            var arcText = d3.select(this.parentNode).select("text");
-                                            // fade in the text element and recalculate positions
-                                            arcText.transition().duration(750)
-                                                .attr("opacity", 1)
-                                                .attr("transform", function () {
-                                                    return "rotate(" + computeTextRotation(e) + ")";
-                                                })
-                                                .attr("x", function (d) {
-                                                    return y(d.y);
-                                                });
-                                        }
-                                    });
-                            }
-
-                            function arcTween(d) {
-                                var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
-                                    yd = d3.interpolate(y.domain(), [d.y, 1]),
-                                    yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
-                                return function (d, i) {
-                                    return i ? function (t) {
-                                        return arc(d);
-                                    }
-                                        : function (t) {
-                                        x.domain(xd(t));
-                                        y.domain(yd(t)).range(yr(t));
-                                        return arc(d);
-                                    };
-                                };
-                            }
-
-                            function computeTextRotation(d) {
-                                return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
-                            }
+                            d3.event.stopPropagation();
                         }
                     }
 
-                });
-            }
-        };
-    });
+                    function displaySunburst(data) {
+                        var arc = d3.svg.arc()
+                            .startAngle(function (d) {
+                                return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
+                            })
+                            .endAngle(function (d) {
+                                return Math.max(0, Math.min(2 * Math.PI, x(d.x + d.dx)));
+                            })
+                            .innerRadius(function (d) {
+                                return Math.max(0, y(d.y));
+                            })
+                            .outerRadius(function (d) {
+                                return Math.max(0, y(d.y + d.dy));
+                            });
+
+                        var g = svg.selectAll("g")
+                            .data(mapLayout.nodes(data))
+                            .enter().append("g");
+
+                        var path = g.append("path")
+                            .attr("d", arc)
+                            .style("fill", function (d) {
+                                return (d.children ? "#259b24" : "transparent");
+                            })
+                            .on("click", click);
+
+                        var text = g.append("text")
+                            .attr("transform", function (d) {
+                                return "rotate(" + computeTextRotation(d) + ")";
+                            })
+                            .attr("x", function (d) {
+                                return y(d.y);
+                            })
+                            .attr("dx", "6") // margin
+                            .attr("dy", ".35em") // vertical-align
+//                                .style("stroke", function(d) { return (d.children ? "white" : "black"); })
+//                                .style("stroke-color", function(d) { return (d.children ? "white" : "black"); })
+                            .text(function (d) {
+                                return d.name.replace(scope.datan + '_', '');
+                            });
+
+                        function click(d) {
+                            // fade out all text elements
+                            text.transition().attr("opacity", 0);
+
+                            path.transition()
+                                .duration(750)
+                                .attrTween("d", arcTween(d))
+                                .each("end", function (e, i) {
+                                    // check if the animated element's data e lies within the visible angle span given in d
+                                    if (e.x >= d.x && e.x < (d.x + d.dx)) {
+                                        // get a selection of the associated text element
+                                        var arcText = d3.select(this.parentNode).select("text");
+                                        // fade in the text element and recalculate positions
+                                        arcText.transition().duration(750)
+                                            .attr("opacity", 1)
+                                            .attr("transform", function () {
+                                                return "rotate(" + computeTextRotation(e) + ")";
+                                            })
+                                            .attr("x", function (d) {
+                                                return y(d.y);
+                                            });
+                                    }
+                                });
+                        }
+
+                        function arcTween(d) {
+                            var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
+                                yd = d3.interpolate(y.domain(), [d.y, 1]),
+                                yr = d3.interpolate(y.range(), [d.y ? 20 : 0, radius]);
+                            return function (d, i) {
+                                return i ? function (t) {
+                                    return arc(d);
+                                }
+                                    : function (t) {
+                                    x.domain(xd(t));
+                                    y.domain(yd(t)).range(yr(t));
+                                    return arc(d);
+                                };
+                            };
+                        }
+
+                        function computeTextRotation(d) {
+                            return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
+                        }
+                    }
+                }
+
+            });
+        }
+    };
+});
