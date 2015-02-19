@@ -26,7 +26,7 @@
             api.receptorList.splice(0, api.receptorList.length);
 
             var promise = $q.defer();
-            $http(createRequest('get', urlBase + '/config/receptor-list'))
+            $http(createRequest('get', urlBase + '/installed-config/receptors'))
                 .success(function (result) {
                     result.forEach(function (item) {
                         api.receptorList.push(item);

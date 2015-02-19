@@ -373,7 +373,7 @@
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',
-            title: 'Receptors\' Status',
+            title: 'Receptor Status',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

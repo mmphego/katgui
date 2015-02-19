@@ -83,8 +83,10 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     //}
                     if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
                         api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
-                    }  else if (messageObj.msg_channel.indexOf('mon_') === 0) {
+                    } else if (messageObj.msg_channel.indexOf('mon_') === 0) {
                         StatusService.messageReceived(messageObj.msg_channel, messageObj.msg_data);
+                    } else if (messageObj.msg_channel.indexOf('sensors.ok') !== -1) {
+                        StatusService.messageReceivedSensorsOk(messageObj.msg_channel, messageObj.msg_data);
                     } else {
                         console.log('dangling monitor message...');
                         console.log(messageObj);

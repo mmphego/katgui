@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($rootScope, ConfigService, MonitorService, StatusService) {
+    function ReceptorStatusCtrl($scope, $rootScope, ConfigService, MonitorService, StatusService, $localStorage) {
 
         var vm = this;
         vm.receptorStatusTree = ConfigService.receptorStatusTree;
@@ -19,23 +19,35 @@
         ];
 
         vm.treeChartSize = {
-            width: 800,
-            height: 500
+            width: 580,
+            height: 580
         };
 
-        vm.mapType = 'partition';
+        if ($localStorage['receptorStatusDisplayMapType']) {
+            vm.mapType = $localStorage['receptorStatusDisplayMapType'];
+        } else {
+            vm.mapType = 'partition';
+        }
 
-        //ConfigService.getStatusTreeForReceptor()
-        //    .then(function (statusTreeResult) {
-        //
-        //    });
+        $scope.$watch('vm.mapType', function () {
+            $localStorage['receptorStatusDisplayMapType'] = vm.mapType;
+        });
 
-        ConfigService.getReceptorList()
-            .then(function(receptors) {
-                StatusService.setReceptors(receptors);
-                receptors.forEach(function(item) {
-                    MonitorService.subscribe('mon_*:agg_' + item + '*');
-                });
+        ConfigService.getStatusTreeForReceptor()
+            .success(function (statusTreeResult) {
+                ConfigService.getReceptorList()
+                    .then(function(receptors) {
+                        StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);
+
+                        receptors.forEach(function(item) {
+                            MonitorService.subscribe(item + ":" + StatusService.statusData[item].sensor);
+                        });
+
+                        receptors.forEach(function(item) {
+                            MonitorService.subscribe('mon_*:agg_' + item + '*');
+                        });
+                        //MonitorService.subscribe("m011:ap.device-status");
+                    });
             });
     }
 })();
