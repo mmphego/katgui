@@ -500,13 +500,17 @@ angular.module('katGui.d3')
                                     }
                                 })
                                 .attr("x", function (d) {
-                                    return d.x;
+                                    if (d.objValue) {
+                                        return d.x;
+                                    } else {
+                                        return width / 2 - 10;
+                                    }
                                 })
                                 .attr("y", function (d) {
                                     if (d.objValue) {
                                         return d.y;
                                     } else {
-                                        return d.y - height / 2 + 20;
+                                        return 18;
                                     }
                                 })
                                 .attr("dy", ".35em")
@@ -547,10 +551,18 @@ angular.module('katGui.d3')
 
                             t.selectAll("text")
                                 .attr("x", function (d) {
-                                    return x(d.x);
+                                    if (d.objValue) {
+                                        return x(d.x);
+                                    } else {
+                                        return width / 2 - 10;
+                                    }
                                 })
                                 .attr("y", function (d) {
-                                    return y(d.y);
+                                    if (d.objValue) {
+                                        return y(d.y);
+                                    } else {
+                                        return 17;
+                                    }
                                 })
                                 .style("opacity", function (d) {
                                     return k * d.r > 50 ? 1 : 0;
