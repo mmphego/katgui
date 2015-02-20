@@ -20,7 +20,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     };
 
     api.subscribeToAlarms = function () {
-        api.subscribe('kataware:alarm*');
+        api.subscribe('kataware:alarm_*');
     };
 
     api.subscribe = function (pattern) {
