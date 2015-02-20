@@ -78,15 +78,17 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                         messageObj = JSON.parse(message);
                     }
 
-                    //else if (messageObj.msg_channel.indexOf('kataware:') !== 0) {
-                    //    api.receptorMessageReceived(messageObj.msg_data);
-                    //}
+                    var channelNameSplit = messageObj.msg_channel.split(":");
+
                     if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
                         api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
                     } else if (messageObj.msg_channel.indexOf('mon_') === 0) {
                         StatusService.messageReceived(messageObj.msg_channel, messageObj.msg_data);
                     } else if (messageObj.msg_channel.indexOf('sensors.ok') !== -1) {
                         StatusService.messageReceivedSensorsOk(messageObj.msg_channel, messageObj.msg_data);
+                    } else if (channelNameSplit.length > 1 &&
+                        (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
+                        api.receptorMessageReceived(messageObj.msg_channel, messageObj.msg_data);
                     } else {
                         console.log('dangling monitor message...');
                         console.log(messageObj);
@@ -125,8 +127,8 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
         }
     };
 
-    api.receptorMessageReceived = function (messageObj) {
-        $rootScope.$broadcast('receptorMessage', messageObj);
+    api.receptorMessageReceived = function (messageName, messageObj) {
+        $rootScope.$broadcast('operatorControlStatusMessage', {name: messageName, value: messageObj});
     };
 
     api.alarmMessageReceived = function (messageName, messageObj) {
