@@ -14,7 +14,6 @@
             var def = $q.defer();
 
             $http(createRequest('get', api.urlBase + '/user/list')).then(
-
                 function (result) {
 
                     if (result && result.data) {
@@ -33,24 +32,41 @@
         };
 
         api.createUser = function (user) {
-            return $http(createRequest('post',
+            $http(createRequest('post',
                 api.urlBase + '/user/add',
                 {
                     name: user.name,
                     email: user.email,
                     roles: user.roles.join(',')
-                }));
+                }))
+                .success(function (result) {
+                    //api.users.push(result);
+                    $rootScope.showSimpleToast("Created user");
+                })
+                .error(function (result) {
+                    $rootScope.showSimpleDialog("Error sending request", "Error creating user");
+                });
         };
 
         api.updateUser = function (user) {
-            return $http(createRequest('post',
-                api.urlBase + '/user/modify/' + user.id,
+            $http(createRequest('post', api.urlBase + '/user/modify/' + user.id,
                 {
                     name: user.name,
                     email: user.email,
                     activated: user.activated,
                     roles: user.roles.join(',')
-                }));
+                }))
+                .success(function (result) {
+                    var oldUser = _.findWhere(api.users, {id: result.id});
+                    oldUser.name = result.name;
+                    oldUser.email = result.email;
+                    oldUser.activated = result.activated;
+                    oldUser.roles = result.roles;
+                    $rootScope.showSimpleToast("Updated user " + result.name);
+                })
+                .error(function (result) {
+                    $rootScope.showSimpleDialog("Error sending request", "Error updating user " + result.name);
+                });
         };
 
         api.resetPassword = function (user, passwordHash) {

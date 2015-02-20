@@ -331,7 +331,7 @@ angular.module('katGui.d3')
                                 .text(trimmedName)
                                 .attr("class", function (d) {
                                     if (d.objValue) {
-                                        return statusClassFromNumber(d.objValue.status) + '-child-text partition-text';
+                                        return statusClassFromNumber(d.objValue.status) + '-child-text child';
                                     } else if (d.sensorValue) {
                                         return statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                     }
@@ -433,6 +433,25 @@ angular.module('katGui.d3')
                             }
                         }
 
+                        function updateStatus(sensor) {
+                            var selectionString = "#sensor-name-" + sensor.name.replace(':', '_').replace('.', '_');
+
+                            svg.selectAll(selectionString).attr("class", function (d) {
+                                if (d.objValue) {
+                                    for (var sensorAttr in sensor.objValue) {
+                                        d.objValue[sensorAttr] = sensor.objValue[sensorAttr];
+                                    }
+                                    return statusClassFromNumber(d.objValue.status) + '-child child';
+                                } else if (d.sensorValue) {
+                                    for (var sensorValAttr in sensor.sensorValue) {
+                                        d.sensorValue[sensorValAttr] = sensor.sensorValue[sensorValAttr];
+                                    }
+                                    return statusClassFromNumber(d.sensorValue.status) + '-child parent';
+                                }
+
+                            });
+                        }
+
                         function name(d) {
                             return d.parent ? name(d.parent) + "." + d.name : d.name;
                         }
@@ -475,7 +494,7 @@ angular.module('katGui.d3')
                                 .enter().append("svg:text")
                                 .attr("class", function (d) {
                                     if (d.objValue) {
-                                        return statusClassFromNumber(d.objValue.status) + '-child-text partition-text';
+                                        return statusClassFromNumber(d.objValue.status) + '-child-text child';
                                     } else if (d.sensorValue) {
                                         return statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                     }
@@ -541,25 +560,6 @@ angular.module('katGui.d3')
                             d3.event.stopPropagation();
                         }
 
-                        function updateStatus(sensor) {
-                            var selectionString = "#sensor-name-" + sensor.name.replace(':', '_').replace('.', '_');
-
-                            svg.selectAll(selectionString).attr("class", function (d) {
-                                if (d.objValue) {
-                                    for (var sensorAttr in sensor.objValue) {
-                                        d.objValue[sensorAttr] = sensor.objValue[sensorAttr];
-                                    }
-                                    return statusClassFromNumber(d.objValue.status) + '-child';
-                                } else if (d.sensorValue) {
-                                    for (var sensorValAttr in sensor.sensorValue) {
-                                        d.sensorValue[sensorValAttr] = sensor.sensorValue[sensorValAttr];
-                                    }
-                                    return statusClassFromNumber(d.sensorValue.status) + '-child';
-                                }
-
-                            });
-                        }
-
                         function displayPartition() {
                             var g = svg.selectAll("g")
                                 .data(mapLayout.nodes(root))
@@ -593,7 +593,7 @@ angular.module('katGui.d3')
                                 })
                                 .attr("class", function (d) {
                                     if (d.objValue) {
-                                        return statusClassFromNumber(d.objValue.status) + '-child-text partition-text';
+                                        return statusClassFromNumber(d.objValue.status) + '-child-text child';
                                     } else if (d.sensorValue) {
                                         return statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                     }
@@ -696,7 +696,7 @@ angular.module('katGui.d3')
                                 .text(trimmedName)
                                 .attr("class", function (d) {
                                     if (d.objValue) {
-                                        return statusClassFromNumber(d.objValue.status) + '-child-text partition-text';
+                                        return statusClassFromNumber(d.objValue.status) + '-child-text child';
                                     } else if (d.sensorValue) {
                                         return statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                     }
@@ -817,7 +817,7 @@ angular.module('katGui.d3')
                                 .attr("dy", ".35em") // vertical-align
                                 .attr("class", function (d) {
                                     if (d.objValue) {
-                                        return statusClassFromNumber(d.objValue.status) + '-child-text partition-text';
+                                        return statusClassFromNumber(d.objValue.status) + '-child-text child';
                                     }  else if (d.sensorValue) {
                                         return statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                     }

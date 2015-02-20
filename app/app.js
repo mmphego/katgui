@@ -9,7 +9,7 @@
         'katGui.d3',
         'katGui.health',
         'katGui.widgets.navigationWidget',
-        //'katGui.widgets.ganttWidget',
+        'katGui.widgets.ganttWidget',
         'katGui.dashboardStructure',
         'katGui.landing',
         'katGui.util',
