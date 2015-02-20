@@ -20,7 +20,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     };
 
     api.subscribeToAlarms = function () {
-        api.subscribe('kataware:alarm[.]*');
+        api.subscribe('kataware:alarm*');
     };
 
     api.subscribe = function (pattern) {
@@ -141,7 +141,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
         }
 
         messageObj.priority = alarmPriority;
-        messageObj.name = messageName.replace('kataware:alarm.', '');
+        messageObj.name = messageName.replace('kataware:alarm_', '');
         messageObj.dateUnix = messageObj.timestamp;
         messageObj.date = moment.utc(messageObj.timestamp, 'X').format('HH:mm:ss DD-MM-\'YY');
         $rootScope.$emit('alarmMessage', messageObj);
