@@ -9,7 +9,7 @@
         'katGui.d3',
         'katGui.health',
         'katGui.widgets.navigationWidget',
-        //'katGui.widgets.ganttWidget',
+        'katGui.widgets.ganttWidget',
         'katGui.dashboardStructure',
         'katGui.landing',
         'katGui.util',
@@ -366,6 +366,14 @@
             url: '/health',
             templateUrl: 'app/health/health.html',
             title: 'Health & State',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
+        $stateProvider.state('receptorStatus', {
+            url: '/receptor-status',
+            templateUrl: 'app/health/receptor-status/receptor-status.html',
+            title: 'Receptor Status',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

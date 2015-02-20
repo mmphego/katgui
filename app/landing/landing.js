@@ -17,17 +17,15 @@
                                 title: "Navigation Controls"
                             }
                         ]
+                    }, {
+                        widgets: [
+                            {
+                                type: "GanttWidget",
+                                config: {},
+                                title: "Observation Schedule (EXAMPLE DATA)"
+                            }
+                        ]
                     }
-                    //,
-                    //{
-                    //    widgets: [
-                    //        {
-                    //            type: "GanttWidget",
-                    //            config: {},
-                    //            title: "Schedule Blocks"
-                    //        }
-                    //    ]
-                    //}
                 ]
             }
         ]

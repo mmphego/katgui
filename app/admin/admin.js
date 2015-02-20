@@ -75,14 +75,12 @@
                 id: user.id,
                 name: user.name,
                 email: user.email,
-                activated: true,
+                activated: user.activated,
                 roles: user.roles
             };
 
             if (typeof user.id !== 'string') {
-                UserService.updateUser(newUser).then(function (result) {
-                    UserService.listUsers(); //TODO: replace user list call with the newly edited user
-                });
+                UserService.updateUser(newUser);
             } else {
                 if (!newUser.roles) {
                     newUser.roles = ['read_only'];
@@ -117,10 +115,7 @@
         vm.deactivateUser = function (user) {
 
             user.activated = false;
-
-            UserService.updateUser(user).then(function (result) {
-                UserService.listUsers(); //TODO: replace user list call with the newly edited user
-            });
+            vm.saveUser(user);
         };
 
         vm.resetPassword = function (event, user) {
