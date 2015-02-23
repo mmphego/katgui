@@ -98,8 +98,8 @@
                     </div>
                     <div flex class="alarms-list-item-content" layout="row" layout-padding style="z-index: 1" layout-align="start">
                         <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                        <span flex style="max-width: 130px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;">{{item.priority}}</span>
-                        <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
+                        <span flex style="max-width: 130px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.priority}}">{{item.priority}}</span>
+                        <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.name}}">{{item.name}}</span>
                         <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.value}}">{{item.value}}</span>
                     </div>
                     <md-button title="Know Alarm" style="width: 24px; height: 38px;" aria-label="Know Alarm"
@@ -224,8 +224,8 @@
                     </div>
                     <div class="alarms-list-item-content" layout="row" layout-padding style="z-index: 1" flex>
                         <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                        <span flex style="max-width: 130px; overflow: hidden; text-overflow: ellipsis; font-size: 14px;">{{item.priority}}</span>
-                        <span flex style="max-width: 260px; overflow: hidden; text-overflow: ellipsis; font-size: 14px;">{{item.name}}</span>
+                        <span flex style="max-width: 130px; overflow: hidden; text-overflow: ellipsis; font-size: 14px;" title="{{item.priority}}">{{item.priority}}</span>
+                        <span flex style="max-width: 260px; overflow: hidden; text-overflow: ellipsis; font-size: 14px;" title="{{item.name}}">{{item.name}}</span>
                         <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis;" title="{{item.value}}">{{item.value}}</span>
                     </div>
                     <md-button title="Cancel Known" style="width: 24px; height: 38px;" aria-label="Clear Alarm" class=""

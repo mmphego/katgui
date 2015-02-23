@@ -10,6 +10,9 @@
             <div class="config-div-item">
                 <md-subheader>Themes</md-subheader>
                 <select style="width: 200px; margin-left: 8px;" class="form-control" ng-model="vm.selectedTheme" ng-options="theme.name for theme in vm.themes" ng-change="vm.selectedThemeChanged(vm.selectedTheme)"></select>
+                <md-checkbox ng-class="{ 'white-text': themePrimary === 'light-blue-dark'}" class="alarms-tools-checkbox" ng-model="vm.showJulianDate" aria-label="Show Julian Date">Show Julian Date</md-checkbox>
+                <md-checkbox ng-class="{ 'white-text': themePrimary === 'light-blue-dark'}" class="alarms-tools-checkbox" ng-model="vm.showLST" aria-label="Show Local Sidereal Time">Show Local Sidereal Time</md-checkbox>
+                <md-checkbox ng-class="{ 'white-text': themePrimary === 'light-blue-dark'}" class="alarms-tools-checkbox" ng-model="vm.showLocalAndSAST" aria-label="Show Local and South African Standard Time">Show Local and South African Standard Time</md-checkbox>
             </div>
             <div class="config-div-item" style="border: 0">
                 <md-subheader>Alarms</md-subheader>

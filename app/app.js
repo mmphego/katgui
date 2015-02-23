@@ -79,6 +79,16 @@
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
+        $rootScope.showJulianDate = $localStorage['showJulianDate'];
+        $rootScope.showLST = $localStorage['showLST'];
+        $rootScope.showLocalAndSAST = $localStorage['showLocalAndSAST'];
+        if (!$localStorage['showLST']) {
+            $rootScope.showLST = true;
+        }
+
+        if (!$localStorage['showLocalAndSAST']) {
+            $rootScope.showLocalAndSAST = true;
+        }
 
         vm.showNavbar = true;
         $rootScope.showNavbar = true;
