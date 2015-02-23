@@ -14,26 +14,16 @@ angular.module('katGui.d3')
                     var data = StatusService.statusData[scope.dataMapName];
                     var r = 640, node, root, transitionDuration = 250;
                     var margin = {top: 8, right: 8, left: 8, bottom: 8};
-
                     var tooltip = d3Util.createTooltip(element[0]);
-                    var retries = 0, maxRetries = 200;
-                    displayIfDataExists();
 
-                    function displayIfDataExists() {
-                        if (data.children.length === 0 && retries < maxRetries) {
-                            $timeout(function () {
-                                displayIfDataExists();
-                            }, 500);
-                            retries++;
-                        } else if (retries >= maxRetries) {
-                            $rootScope.showSimpleDialog('Error displaying data', 'Could not display the Receptor Status data, contact the katGUI support team.');
-                            console.error('Error binding to StatusService data for receptor ' + scope.dataMapName);
-                        } else {
-                            drawPartitionMap(data);
-                        }
-                    }
+                    d3Util.waitUntilDataExists(data)
+                        .then(function () {
+                            drawIcicleMap();
+                        }, function () {
+                            d3Util.displayInitErrorMessage(scope.dataMapName);
+                        });
 
-                    function drawPartitionMap() {
+                    function drawIcicleMap() {
                         var width = scope.chartSize.width;
                         var height = scope.chartSize.height;
                         node = root = data;
@@ -83,7 +73,7 @@ angular.module('katGui.d3')
                                     return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
                                 }
                             })
-                            .call(function(d) {
+                            .call(function (d) {
                                 d3Util.applyTooltip(d, tooltip, scope.dataMapName);
                             })
                             .on("click", icicleClicked);

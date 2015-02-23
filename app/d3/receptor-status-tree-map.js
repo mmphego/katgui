@@ -15,26 +15,16 @@ angular.module('katGui.d3')
                     var width = scope.chartSize.width, height = scope.chartSize.height, inited = false, node, root, duration = 250;
                     var margin = {top: 8, right: 8, left: 8, bottom: 8},
                         transitioning;
-
                     var tooltip = d3Util.createTooltip(element[0]);
-                    var retries = 0, maxRetries = 200;
-                    displayIfDataExists();
 
-                    function displayIfDataExists() {
-                        if (data.children.length === 0 && retries < maxRetries) {
-                            $timeout(function () {
-                                displayIfDataExists();
-                            }, 500);
-                            retries++;
-                        } else if (retries >= maxRetries) {
-                            $rootScope.showSimpleDialog('Error displaying data', 'Could not display the Receptor Status data, contact the katGUI support team.');
-                            console.error('Error binding to StatusService data for receptor ' + scope.dataMapName);
-                        } else {
-                            drawTreemap(data);
-                        }
-                    }
+                    d3Util.waitUntilDataExists(data)
+                        .then(function () {
+                            drawTreemap();
+                        }, function () {
+                            d3Util.displayInitErrorMessage(scope.dataMapName);
+                        });
 
-                    function drawTreemap(data) {
+                    function drawTreemap() {
                         node = root = data;
                         if (!inited) {
                             inited = true;

@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .factory('d3Util', function () {
+    .factory('d3Util', function ($q, $timeout, $rootScope) {
 
         var api = {};
 
@@ -85,6 +85,36 @@ angular.module('katGui.d3')
                 .attr('class', 'treemap-tooltip')
                 .style('visibility', 'hidden')
                 .style('background-color', '#ffffff');
+        };
+
+        api.waitUntilDataExists = function (data) {
+            var deferred = $q.defer();
+            var retries = 0, maxRetries = 50;
+
+            //start checking later so that the promise is always returned before it can be resolved
+            $timeout(function () {
+                checkIfDataExists();
+            }, 1);
+
+            function checkIfDataExists() {
+                if (data.children.length === 0 && retries < maxRetries) {
+                    $timeout(function () {
+                        checkIfDataExists();
+                    }, 500);
+                    retries++;
+                } else if (retries >= maxRetries) {
+                    deferred.reject();
+                } else {
+                    deferred.resolve();
+                }
+            }
+
+            return deferred.promise;
+        };
+
+        api.displayInitErrorMessage = function (dataMapName) {
+            $rootScope.showSimpleDialog('Error displaying data', 'Could not display the Receptor Status data, contact the katGUI support team.');
+            console.error('Error binding to StatusService data for receptor ' + dataMapName);
         };
 
         return api;
