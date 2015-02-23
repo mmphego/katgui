@@ -293,11 +293,11 @@
                                ng-click="vm.stateGo('alarms')">
                         <span class="fa fa-warning"></span>
                     </md-button>
-                    <span title="Warning Alarms" ng-show="newAlarms.length"
+                    <span title="Warning Alarms" ng-show="newAlarms"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
-                    <span title="Error Alarms" ng-show="errorAlarms.length"
+                    <span title="Error Alarms" ng-show="errorAlarms"
                         class="badge alarm-badge alarm-badge-error">{{errorAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'error'}).length}}</span>
-                    <span title="Critical Alarms" ng-show="critAlarms.length"
+                    <span title="Critical Alarms" ng-show="critAlarms"
                         class="badge alarm-badge alarm-badge-crit">{{critAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span></span>
                 </div>
 
