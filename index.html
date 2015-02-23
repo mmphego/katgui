@@ -229,8 +229,7 @@
     </md-sidenav>
 
     <div layout="column" flex>
-        <md-toolbar ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true"
-                    ng-mouseenter="showJulianDate = true" ng-mouseleave="showJulianDate = false">
+        <md-toolbar ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true">
             <div class="md-toolbar-tools" layout="row" style="padding: 0;  max-height: 56px;">
 
                 <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
@@ -275,11 +274,11 @@
                     <span style="font-size: 32px;">{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
                     <md-tooltip>Julian Day</md-tooltip>
                 </div>
-                <div ng-if="vm.localSiderealTime">
+                <div ng-if="vm.localSiderealTime" ng-show="showLST">
                     <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
                     <md-tooltip>Local Sidereal Time</md-tooltip>
                 </div>
-                <div ng-if="vm.utcTime">
+                <div ng-if="vm.utcTime && showLocalAndSAST">
                     <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
                     <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
                 </div>
