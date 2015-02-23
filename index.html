@@ -293,12 +293,12 @@
                                ng-click="vm.stateGo('alarms')">
                         <span class="fa fa-warning"></span>
                     </md-button>
-                    <span title="Warning Alarms"
-                          class="badge alarm-badge alarm-badge-warn">{{(alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
-                    <span title="Error Alarms"
-                        class="badge alarm-badge alarm-badge-error">{{(alarmsData | filter:{priority:'new'} | filter:{severity:'error'}).length}}</span>
-                    <span title="Critical Alarms"
-                        class="badge alarm-badge alarm-badge-crit">{{(alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span></span>
+                    <span title="Warning Alarms" ng-show="newAlarms.length"
+                          class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
+                    <span title="Error Alarms" ng-show="errorAlarms.length"
+                        class="badge alarm-badge alarm-badge-error">{{errorAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'error'}).length}}</span>
+                    <span title="Critical Alarms" ng-show="critAlarms.length"
+                        class="badge alarm-badge alarm-badge-crit">{{critAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span></span>
                 </div>
 
                 <md-button aria-label="Right Navbar" class="button-toolbar-flat-icon" ng-click="vm.toggleRightSidenav()" style="margin: 2px;">
