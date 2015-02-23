@@ -31,9 +31,13 @@ angular.module('katGui.d3')
                         node = root = data;
 
                         r = height - 10;
+                        //create our x,y axis linear scales
                         var x = d3.scale.linear().range([0, 2 * Math.PI]);
                         var y = d3.scale.linear().range([0, radius]);
 
+                        //create our maplayout for the data and sort it alphabetically
+                        //the bockvalue is the relative size of each child element, it is
+                        //set to a static 100 when we get our monitor data in the StatusService
                         var mapLayout = d3.layout.partition()
                             .value(function (d) {
                                 return d.blockValue;
@@ -42,6 +46,7 @@ angular.module('katGui.d3')
                                 return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
                             });
 
+                        //create the main svg element
                         var svg = d3.select(element[0]).append("svg")
                             .attr("class", "health-chart md-whiteframe-z2 treemapHealthChart" + scope.dataMapName)
                             .attr("width", width + padding * 2)
@@ -49,6 +54,7 @@ angular.module('katGui.d3')
                             .append("g")
                             .attr("transform", "translate(" + [radius + padding, radius + padding] + ")");
 
+                        //define the math for calculating the child node's arcs
                         var arc = d3.svg.arc()
                             .startAngle(function (d) {
                                 return Math.max(0, Math.min(2 * Math.PI, x(d.x)));
@@ -63,28 +69,24 @@ angular.module('katGui.d3')
                                 return Math.max(0, y(d.y + d.dy));
                             });
 
+                        //create each child node svg:g element
                         var g = svg.selectAll("g")
                             .data(mapLayout.nodes(data))
                             .enter().append("g");
 
+                        //add the arc math as a svg:path element
                         var path = g.append("path")
                             .attr("d", arc)
-                            //.style("fill", function (d) {
-                            //    return (d.children ? "#259b24" : "transparent");
-                            //})
                             .attr("id", d3Util.createSensorId)
                             .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child child';
-                                } else if (d.sensorValue) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
-                                }
+                                return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
                             })
                             .call(function (d) {
-                                d3Util.applyTooltip(d, tooltip, scope.dataMapName);
+                                d3Util.applyTooltipValues(d, tooltip);
                             })
                             .on("click", click);
 
+                        //add the text overlay for each element
                         var text = g.append("text")
                             .attr("transform", function (d) {
                                 if (d.depth > 0) {
@@ -99,16 +101,17 @@ angular.module('katGui.d3')
                             .attr("dx", "4") // margin
                             .attr("dy", ".35em") // vertical-align
                             .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child-text child';
-                                } else if (d.sensorValue) {
+                                if (d.depth > 0) {
+                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text child';
+                                } else if (d.depth === 0) {
                                     return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                 }
                             })
                             .text(function (d) {
-                                return d3Util.trimmedName(d, scope.dataMapName);
+                                return d3Util.trimmedReceptorName(d, scope.dataMapName);
                             });
 
+                        //zoom functionality when clicking on an item
                         function click(d) {
                             // fade out all text elements
                             text.transition().attr("opacity", 0);

@@ -31,19 +31,15 @@ angular.module('katGui.d3')
                             data._children = data.children;
                         }
 
-                        var x = d3.scale.linear()
-                            .domain([0, width])
-                            .range([0, width]);
+                        //create our x,y axis linear scales
+                        var x = d3.scale.linear().domain([0, width]).range([0, width]);
+                        var y = d3.scale.linear().domain([0, height]).range([0, height]);
 
-                        var y = d3.scale.linear()
-                            .domain([0, height])
-                            .range([0, height]);
 
-                        width = scope.chartSize.width;
-                        height = scope.chartSize.height;
-
-                        var mapLayout;
-                        mapLayout = d3.layout.treemap()
+                        //create our maplayout for the data and sort it alphabetically
+                        //the bockvalue is the relative size of each child element, it is
+                        //set to a static 100 when we get our monitor data in the StatusService
+                        var mapLayout = d3.layout.treemap()
                             .children(function (d, depth) {
                                 return depth ? null : d._children;
                             })
@@ -55,6 +51,7 @@ angular.module('katGui.d3')
                                 return d.blockValue;
                             });
 
+                        //create the main svg element
                         var svg = d3.select(element[0]).append("svg")
                             .attr("width", width)
                             .attr("height", height + margin.top + 18)
@@ -64,34 +61,40 @@ angular.module('katGui.d3')
                             .style("margin-top", margin.top + "px")
                             .append("g");
                         svg.style("shape-rendering", "crispEdges");
+                        //create the top root node
                         var grandparent = svg.append("g")
                             .attr("class", "grandparent");
-
+                        //give the root node a svg:rect element
                         grandparent.append("rect")
                             .attr("y", 0)
                             .attr("width", width)
                             .attr("height", 26);
-
+                        //give the root node some text overlay
                         grandparent.append("text")
                             .attr("x", 6)
                             .attr("y", margin.top)
                             .attr("dy", ".75em");
 
+                        //initialize the data for the draw function
                         data.x = data.y = 0;
                         data.dx = width;
                         data.dy = height;
                         data.depth = 0;
                         d3Util.layout(data, mapLayout);
 
+                        //initialize the root node with actual data
                         grandparent
                             .datum(data)
                             .attr("id", d3Util.createSensorId(data))
                             .attr("class", d3Util.statusClassFromNumber(data.sensorValue.status) + '-child')
                             .on("click", transition)
                             .select("text")
-                            .text(d3Util.rootName(data))
+                            .text(function (d) {
+                                return d.parent ? d.parent.name + "." + d.name : d.name;
+                            })
                             .attr("class", d3Util.statusClassFromNumber(data.sensorValue.status) + '-child-text');
 
+                        //add a svg:g element to the root node that will contain all the child nodes
                         var g1 = svg.insert("g", ".grandparent")
                             .datum(data)
                             .attr("class", "depth")
@@ -99,58 +102,47 @@ angular.module('katGui.d3')
                                 return "translate(0,26)";
                             });
 
+                        //create svg:g elements for each child node
                         var g = g1.selectAll("g")
                             .data(data._children)
                             .enter().append("svg").append("g");
 
+                        //apply the children class to all child nodes
                         g.filter(function (d) {
                             return d._children;
-                        })
-                            .classed("children", true)
+                        }).classed("children", true)
                             .on("click", transition);
 
-
-                        g.selectAll(".child")
-                            .data(function (d) {
-                                return d._children || [d];
-                            })
-                            .enter().append("rect")
-                            .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child';
-                                } else if (d.sensorValue) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child parent';
-                                }
-                            })
-                            .call(rect);
-
+                        //create the svg:rect element for each child svg:g node
                         g.append("rect")
                             .attr("class", "parent")
                             .attr("id", d3Util.createSensorId)
                             .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child';
-                                } else if (d.sensorValue) {
+                                if (d.depth > 0) {
+                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child';
+                                } else if (d.depth === 0) {
                                     return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child parent';
                                 }
                             })
                             .call(rect);
 
+                        //create the text overlay for each child node
                         g.append("text")
                             .attr("dy", ".75em")
                             .text(function (d) {
-                                return d3Util.trimmedName(d, scope.dataMapName);
+                                return d3Util.trimmedReceptorName(d, scope.dataMapName);
                             })
                             .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child-text child';
-                                } else if (d.sensorValue) {
+                                if (d.depth > 0) {
+                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text child';
+                                } else if (d.depth === 0) {
                                     return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                 }
                             })
                             .classed("text-parent-node", true)
                             .call(text);
 
+                        //implement zoom functionality
                         function transition(d) {
                             tooltip.style("visibility", "hidden");
 
@@ -195,31 +187,24 @@ angular.module('katGui.d3')
                         function text(t) {
                             t.attr("x", function (d) {
                                 return x(d.x) + 6;
-                            })
-                                .attr("y", function (d) {
-                                    return y(d.y) + 6;
-                                });
+                            }).attr("y", function (d) {
+                                return y(d.y) + 6;
+                            });
                         }
 
                         function rect(r) {
-                            r
-                                .attr("x", function (d) {
-                                    return x(d.x);
-                                })
-                                .attr("y", function (d) {
-                                    return y(d.y);
-                                })
-                                .attr("width", function (d) {
-                                    return x(d.x + d.dx) - x(d.x);
-                                })
-                                .attr("height", function (d) {
-                                    return y(d.y + d.dy) - y(d.y);
-                                });
+                            r.attr("x", function (d) {
+                                return x(d.x);
+                            }).attr("y", function (d) {
+                                return y(d.y);
+                            }).attr("width", function (d) {
+                                return x(d.x + d.dx) - x(d.x);
+                            }).attr("height", function (d) {
+                                return y(d.y + d.dy) - y(d.y);
+                            });
 
-                            d3Util.applyTooltip(r, tooltip, scope.dataMapName);
+                            d3Util.applyTooltipValues(r, tooltip);
                         }
-
-
                     }
                 });
             }

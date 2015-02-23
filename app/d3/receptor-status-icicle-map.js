@@ -29,9 +29,13 @@ angular.module('katGui.d3')
                         node = root = data;
 
                         r = height - 10;
+                        //create our x,y axis linear scales
                         var x = d3.scale.linear().range([0, width]);
                         var y = d3.scale.linear().range([0, height]);
 
+                        //create our maplayout for the data and sort it alphabetically
+                        //the bockvalue is the relative size of each child element, it is
+                        //set to a static 100 when we get our monitor data in the StatusService
                         var mapLayout = d3.layout.partition()
                             .value(function (d) {
                                 return d.blockValue;
@@ -40,6 +44,7 @@ angular.module('katGui.d3')
                                 return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
                             });
 
+                        //create the main svg element
                         var svg = d3.select(element[0]).append("svg")
                             .attr("width", width)
                             .attr("height", height)
@@ -50,6 +55,7 @@ angular.module('katGui.d3')
                             .style("margin-bottom", margin.bottom + "px")
                             .append("g");
 
+                        //create a svg:g element for each child node
                         var g = svg.selectAll("g")
                             .data(mapLayout.nodes(root))
                             .enter().append("rect")
@@ -66,20 +72,16 @@ angular.module('katGui.d3')
                                 return y(d.dy);
                             })
                             .attr("id", d3Util.createSensorId)
+                            //style each element according to its status
                             .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child child';
-                                } else if (d.sensorValue) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
-                                }
+                                return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
                             })
                             .call(function (d) {
-                                d3Util.applyTooltip(d, tooltip, scope.dataMapName);
+                                d3Util.applyTooltipValues(d, tooltip);
                             })
                             .on("click", icicleClicked);
 
-                        var kx = width / root.dx;
-
+                        //create text overlays for each svg element
                         var t = svg.selectAll("g")
                             .data(mapLayout.nodes(root)).enter()
                             .append("svg:text")
@@ -94,12 +96,12 @@ angular.module('katGui.d3')
                                 return x(d.x + d.dx) - x(d.x) > 14.5 ? 1 : 0;
                             })
                             .text(function (d) {
-                                return d3Util.trimmedName(d, scope.dataMapName);
+                                return d3Util.trimmedReceptorName(d, scope.dataMapName);
                             })
                             .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child-text child';
-                                } else if (d.sensorValue) {
+                                if (d.depth > 0) {
+                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text child';
+                                } else if (d.depth === 0) {
                                     return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                 }
                             })
@@ -116,6 +118,7 @@ angular.module('katGui.d3')
                                 return strTranslate;
                             });
 
+                        //implement zoom functionality
                         function icicleClicked(d) {
                             x.domain([d.x, d.x + d.dx]);
                             y.domain([d.y, 1]).range([d.y ? 20 : 0, height]);

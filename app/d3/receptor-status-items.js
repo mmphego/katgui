@@ -14,6 +14,9 @@ angular.module('katGui.d3')
 
                 scope.itemsToUpdate = {};
 
+                //everytime we get a sensor update from the StatusService, we need to go update the class of each element,
+                //but we might have received the updates before the svg elements exists, so we retry the update
+                //until we have found the html element and applied the class change
                 $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
                     scope.itemsToUpdate[sensor.name.replace(':', '_').replace('.', '_')] = sensor;
 
@@ -36,12 +39,12 @@ angular.module('katGui.d3')
                     }
 
                     function setClassesOfSensor(d) {
-                        if (d.objValue) {
-                            for (var sensorAttr in d.objValue) {
-                                d.objValue[sensorAttr] = d.objValue[sensorAttr];
+                        if (d.depth > 0) {
+                            for (var sensorAttr in d.sensorValue) {
+                                d.sensorValue[sensorAttr] = d.sensorValue[sensorAttr];
                             }
                             var objName = d.name.replace(':', '_').replace('.', '_');
-                            var statusClassResult = d3Util.statusClassFromNumber(scope.itemsToUpdate[objName].objValue.status) + '-child child';
+                            var statusClassResult = d3Util.statusClassFromNumber(scope.itemsToUpdate[objName].sensorValue.status) + '-child child';
                             delete scope.itemsToUpdate[objName];
                             return statusClassResult;
                         } else if (d.sensorValue) {

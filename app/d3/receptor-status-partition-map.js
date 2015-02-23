@@ -29,9 +29,13 @@ angular.module('katGui.d3')
                         node = root = data;
 
                         r = height - 10;
+                        //create our x,y axis linear scales
                         var x = d3.scale.linear().range([0, width]);
                         var y = d3.scale.linear().range([0, height]);
 
+                        //create our maplayout for the data and sort it alphabetically
+                        //the bockvalue is the relative size of each child element, it is
+                        //set to a static 100 when we get our monitor data in the StatusService
                         var mapLayout = d3.layout.partition()
                             .value(function (d) {
                                 return d.blockValue;
@@ -40,6 +44,7 @@ angular.module('katGui.d3')
                                 return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
                             });
 
+                        //create the main svg element
                         var svg = d3.select(element[0]).append("svg")
                             .attr("width", width)
                             .attr("height", height)
@@ -50,6 +55,7 @@ angular.module('katGui.d3')
                             .style("margin-bottom", margin.bottom + "px")
                             .append("g");
 
+                        //create a svg:g element for each child node
                         var g = svg.selectAll("g")
                             .data(mapLayout.nodes(root))
                             .enter().append("svg:g")
@@ -62,6 +68,7 @@ angular.module('katGui.d3')
                         var kx = (width) / root.dx,
                             ky = height / 1;
 
+                        //add a rectangle to each g child node
                         g.append("svg:rect")
                             .attr("width", function (d) {
                                 return root.dy * kx;
@@ -73,9 +80,13 @@ angular.module('katGui.d3')
                                 return d.children ? "part-parent" : "child";
                             })
                             .call(function (d) {
-                                d3Util.applyTooltip(d, tooltip, scope.dataMapName);
+                                d3Util.applyTooltipValues(d, tooltip);
+                            })
+                            .attr("class", function (d) {
+                                return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
                             });
 
+                        //add the text overlay for each node
                         g.append("svg:text")
                             .attr("transform", transform)
                             .attr("dy", ".35em")
@@ -83,24 +94,17 @@ angular.module('katGui.d3')
                                 return d.dx * ky > 12 ? 1 : 0;
                             })
                             .attr("class", function (d) {
-                                if (d.objValue) {
-                                    return d3Util.statusClassFromNumber(d.objValue.status) + '-child-text child';
+                                if (d.depth > 0) {
+                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text child';
                                 } else if (d.sensorValue) {
                                     return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
                                 }
                             })
                             .text(function (d) {
-                                return d3Util.trimmedName(d, scope.dataMapName);
+                                return d3Util.trimmedReceptorName(d, scope.dataMapName);
                             });
 
-                        g.attr("class", function (d) {
-                            if (d.objValue) {
-                                return d3Util.statusClassFromNumber(d.objValue.status) + '-child child';
-                            } else if (d.sensorValue) {
-                                return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
-                            }
-                        });
-
+                        //zoom functionality when clicking on a child node
                         function click(d) {
 
                             kx = (d.y ? width - 40 : width) / (1 - d.y);
@@ -120,7 +124,7 @@ angular.module('katGui.d3')
                                     return d.dx * ky;
                                 })
                                 .call(function (d) {
-                                    d3Util.applyTooltip(d, tooltip, scope.dataMapName);
+                                    d3Util.applyTooltipValues(d, tooltip);
                                 });
 
                             t.select("text")

@@ -25,6 +25,8 @@ angular.module('katGui.d3')
             }
         };
 
+        //the status class in the sensor objects that we get are numbers but we need
+        //these string values so that we can apply proper class names to the html sensor elements
         api.statusClassFromNumber = function (num) {
             switch (num) {
                 case 0:
@@ -44,10 +46,17 @@ angular.module('katGui.d3')
             }
         };
 
-        api.trimmedName = function (d, argName) {
-            return d.name.replace('mon_proxy:agg_' + argName + '_', '');
+        //trim unnecessary characters from sensor names and bind to the new attribute in the directive classes
+        api.trimmedReceptorName = function (d, argName) {
+            if (d.depth > 0) {
+                d.sensorValue.trimmedName = d.sensorValue.trimmedName.replace(argName + '_', '');
+                return d.sensorValue.trimmedName;
+            } else {
+                return d.name;
+            }
         };
 
+        //convenience function to create the id's for the html elements that needs to be styled
         api.createSensorId = function (d) {
             if (d.sensor) {
                 return "sensor_name_" + d.name.replace(':', '_') + "_" + d.sensor.replace('.', '_');
@@ -56,18 +65,15 @@ angular.module('katGui.d3')
             }
         };
 
-        api.rootName = function (d) {
-            return d.parent ? name(d.parent) + "." + d.name : d.name;
-        };
-
-        api.applyTooltip = function (d, tooltip, dataMapName) {
+        //convenience function to populate every item's tooltip
+        api.applyTooltipValues = function (d, tooltip) {
             //d.on is not defined while transitioning
             if (d.on) {
                 d.on("mouseover", function (d) {
-                    if (d.objValue) {
-                        tooltip.html(api.trimmedName(d, dataMapName) + " - " + api.statusClassFromNumber(d.objValue.status));
-                    } else if (d.sensorValue) {
-                        tooltip.html(api.trimmedName(d, dataMapName) + " - " + api.statusClassFromNumber(d.sensorValue.status));
+                    if (d.depth > 0) {
+                        tooltip.html(d.sensorValue.trimmedName + " - " + api.statusClassFromNumber(d.sensorValue.status));
+                    } else if (d.depth === 0) {
+                        tooltip.html(d.name + " - " + api.statusClassFromNumber(d.sensorValue.status));
                     }
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function () {
@@ -80,13 +86,17 @@ angular.module('katGui.d3')
             }
         };
 
-        api.createTooltip = function (e) {
-            return d3.select(e).append('div')
+        //convenience function to create the tooltip div on the given element
+        api.createTooltip = function (element) {
+            return d3.select(element).append('div')
                 .attr('class', 'treemap-tooltip')
                 .style('visibility', 'hidden')
                 .style('background-color', '#ffffff');
         };
 
+        //because we subscribe to monitor for our data and have to wait for our data to trickle in
+        //we cant just immediately bind to our data, this convenience function waits until we have
+        //data that we can bind to and returns a promise that the client can wait on
         api.waitUntilDataExists = function (data) {
             var deferred = $q.defer();
             var retries = 0, maxRetries = 50;
