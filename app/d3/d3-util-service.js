@@ -59,7 +59,7 @@ angular.module('katGui.d3')
         //convenience function to create the id's for the html elements that needs to be styled
         api.createSensorId = function (d) {
             if (d.sensor) {
-                return "sensor_name_" + d.name.replace(':', '_') + "_" + d.sensor.replace('.', '_');
+                return "sensor_name_" + d.name.replace(':', '_') + "_" + d.sensor;
             } else {
                 return "sensor_name_" + d.name.replace(':', '_');
             }

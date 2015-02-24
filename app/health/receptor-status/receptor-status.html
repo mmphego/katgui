@@ -17,12 +17,10 @@
                 <span ng-if="!showLegend">Show Legend</span>
                 <span ng-if="showLegend">Hide Legend</span>
             </md-button>
-            <!--<select style="margin-right: 8px;" class="form-control health-map-style-select">-->
-                <!--<option>400x500</option>-->
-                <!--<option>600x500</option>-->
-                <!--<option>800x500</option>-->
-            <!--</select>-->
-            <select title="Display Style" style="margin-right: 8px;" class="form-control health-map-style-select" ng-model="vm.mapType" ng-options="item.value as item.name for item in vm.items"></select>
+            <md-select ng-model="vm.mapType" aria-label="Display Type" style="margin-top: 0px; margin-left: 4px;width: 134px; margin-right:8px;"
+                       class="md-primary" md-theme="{{themePrimaryButtons}}">
+                <md-option ng-value="type" ng-repeat="type in vm.mapTypes">{{type}}</md-option>
+            </md-select>
 
         </div>
         <receptor-status-list flex></receptor-status-list>
