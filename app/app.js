@@ -295,28 +295,28 @@
 
         function receivedAlarmMessage(event, message) {
 
-            //TODO remove this test code
-            //if (!$rootScope.showAlarms) {
-            //    return;
-            //}
-
             if (message.severity === 'nominal') {
-                return;
+                var index = _.indexOf($rootScope.alarmsData, _.findWhere($rootScope.alarmsData, {name: message.name}));
+                if (index > -1) {
+                    $rootScope.alarmsData.splice(index, 1);
+                }
+
+            } else {
+                var foundAlarm = _.findWhere($rootScope.alarmsData, {name: message.name});
+
+                if (foundAlarm) {
+                    foundAlarm.priority = message.priority;
+                    foundAlarm.severity = message.severity;
+                    foundAlarm.dateUnix = message.dateUnix;
+                    foundAlarm.date = message.date;
+                    foundAlarm.selected = false;
+                }
+
+                if (!foundAlarm) {
+                    $rootScope.alarmsData.push(message);
+                }
             }
 
-            var foundAlarm = _.findWhere($rootScope.alarmsData, {name: message.name});
-
-            if (foundAlarm) {
-                foundAlarm.priority = message.priority;
-                foundAlarm.severity = message.severity;
-                foundAlarm.dateUnix = message.dateUnix;
-                foundAlarm.date = message.date;
-                foundAlarm.selected = false;
-            }
-
-            if (!foundAlarm) {
-                $rootScope.alarmsData.push(message);
-            }
         }
 
         //so that all controllers and directives has access to which keyboard presses is happening

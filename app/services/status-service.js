@@ -15,16 +15,17 @@
         };
 
         api.messageReceived = function (messageName, message) {
+            message.trimmedName = trimmedName(messageName);
             for (var attr in api.statusData) {
                if (messageName.indexOf(attr) > -1) {
                    var existingSensor = _.findWhere(api.statusData[attr].children, {name: messageName});
                    if (existingSensor) {
                        for (var sensorAttr in message) {
-                           existingSensor.objValue[sensorAttr] = message[sensorAttr];
+                           existingSensor.sensorValue[sensorAttr] = message[sensorAttr];
                        }
-                       $rootScope.$emit('sensorUpdateReceived', {name: messageName, objValue: message});
+                       $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
                    } else {
-                       api.statusData[attr].children.push({name: messageName, objValue: message, blockValue: 100});
+                       api.statusData[attr].children.push({name: messageName, sensorValue: message, blockValue: 100});
                    }
                }
             }
@@ -42,13 +43,17 @@
                             existingSensor.sensorValue[sensorAttr] = message[sensorAttr];
                         }
 
-                        $rootScope.$emit('sensorUpdateReceived', {name: messageName, objValue: message});
+                        $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
                     } else {
                         existingSensor.sensorValue = message;
                     }
                 }
             }
         };
+
+        function trimmedName(oldName) {
+            return oldName.replace('mon_proxy:agg_', '');
+        }
 
         return api;
     }
