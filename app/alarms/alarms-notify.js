@@ -19,7 +19,7 @@
             '                   \'alarm-info\': alarm.severity === \'info\', ' +
             '                   \'alarm-nominal\': alarm.severity === \'nominal\', ' +
             '                   \'alarm-unknown\': alarm.severity === \'unknown\'}" ' +
-            '       ng-mouseover="hover = true;" ng-mouseleave="hover = false;" title="{{alarm.message}}">',
+            '       ng-mouseover="hover = true;" ng-mouseleave="hover = false;" title="{{alarm.value}}">',
             '       <div>',
             '           <ul>',
             '               <li class="li-inline"><button class="alarm-close" ng-click="vm.acknowledgeMessage(alarm)">Ack</button></li>',
@@ -29,7 +29,7 @@
             '       <div class="datestamp"><span>{{alarm.date}}</span></div>',
             '       <div class="severitystamp"><span>{{alarm.severity}}</span></div>',
             '       <div><span class="alarm-message-name">{{alarm.name}}</span>',
-            '       <div class="alarm-message"><span>{{alarm.message}}</span></div>',
+            '       <div class="alarm-message"><span>{{alarm.value}}</span></div>',
             '       </div>',
             '   </div>',
             '</div>'
