@@ -43,6 +43,8 @@ angular.module('katGui.d3')
                     return 'unreachable';
                 case 6:
                     return 'inactive';
+                default:
+                    return 'inactive';
             }
         };
 
@@ -57,11 +59,11 @@ angular.module('katGui.d3')
         };
 
         //convenience function to create the id's for the html elements that needs to be styled
-        api.createSensorId = function (d) {
-            if (d.sensor) {
-                return "sensor_name_" + d.name.replace(':', '_') + "_" + d.sensor;
+        api.createSensorId = function (d, rootName) {
+            if (d.depth > 0) {
+                return rootName + "_" + d.sensor;
             } else {
-                return "sensor_name_" + d.name.replace(':', '_');
+                return d.name + "_" + d.sensor;
             }
         };
 
@@ -71,9 +73,9 @@ angular.module('katGui.d3')
             if (d.on) {
                 d.on("mouseover", function (d) {
                     if (d.depth > 0) {
-                        tooltip.html(d.sensorValue.trimmedName + " - " + api.statusClassFromNumber(d.sensorValue.status));
+                        tooltip.html(d.sensor);
                     } else if (d.depth === 0) {
-                        tooltip.html(d.name + " - " + api.statusClassFromNumber(d.sensorValue.status));
+                        tooltip.html(d.name);
                     }
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function () {

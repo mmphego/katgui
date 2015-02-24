@@ -1,3 +1,4 @@
+/*jshint loopfunc: true */
 angular.module('katGui.d3')
 
     .directive('receptorStatusList', function ($rootScope, d3Util, $timeout, $interval) {
@@ -20,15 +21,17 @@ angular.module('katGui.d3')
                 $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
                     scope.itemsToUpdate[sensor.name.replace(':', '_')] = sensor;
 
-                    var stopUpdating = $interval(applyPendingUpdates, 1000);
+                    var stopUpdating = $interval(applyPendingUpdates, 200);
 
                     function applyPendingUpdates() {
                         var attributes = Object.keys(scope.itemsToUpdate);
 
                         if (attributes.length > 0) {
                             for (var i = 0; i < attributes.length;i++) {
-                                var queryString = '#sensor_name_' + attributes[i];
-                                d3.selectAll(queryString).attr('class', setClassesOfSensor);
+                                var queryString = '#' + attributes[i];
+                                d3.selectAll(queryString).attr('class', function(d) {
+                                    return setClassesOfSensor(d, attributes[i]);
+                                });
                             }
                         } else {
                             if (angular.isDefined(stopUpdating)) {
@@ -38,13 +41,13 @@ angular.module('katGui.d3')
                         }
                     }
 
-                    function setClassesOfSensor(d) {
+                    function setClassesOfSensor(d, sensorToUpdateName) {
                         if (d.depth > 0) {
                             for (var sensorAttr in d.sensorValue) {
                                 d.sensorValue[sensorAttr] = d.sensorValue[sensorAttr];
                             }
                             var objName = d.name.replace(':', '_');
-                            var statusClassResult = d3Util.statusClassFromNumber(scope.itemsToUpdate[objName].sensorValue.status) + '-child child';
+                            var statusClassResult = d3Util.statusClassFromNumber(scope.itemsToUpdate[sensorToUpdateName].sensorValue.status) + '-child child';
                             delete scope.itemsToUpdate[objName];
                             return statusClassResult;
                         } else if (d.sensorValue) {

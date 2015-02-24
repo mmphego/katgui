@@ -89,6 +89,8 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     } else if (channelNameSplit.length > 1 &&
                         (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
                         api.receptorMessageReceived(messageObj.msg_channel, messageObj.msg_data);
+                    } else if (channelNameSplit.length > 1) {
+                        StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                     } else {
                         console.log('dangling monitor message...');
                         console.log(messageObj);
