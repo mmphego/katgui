@@ -10,18 +10,9 @@
         vm.receptorList = ConfigService.receptorList;
         vm.statusData = StatusService.statusData;
 
-        vm.items = [
-            {value: 'tree', name: 'Treemap'},
-            {value: 'pack', name: 'Pack'},
-            {value: 'partition', name: 'Partition'},
-            {value: 'icicle', name: 'Icicle'},
-            {value: 'sunburst', name: 'Sunburst'}
-        ];
+        vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst'];
 
-        vm.treeChartSize = {
-            width: 580,
-            height: 580
-        };
+        vm.treeChartSize = {width: 580, height: 580};
 
         if ($localStorage['receptorStatusDisplayMapType']) {
             vm.mapType = $localStorage['receptorStatusDisplayMapType'];
@@ -36,17 +27,16 @@
         ConfigService.getStatusTreeForReceptor()
             .success(function (statusTreeResult) {
                 ConfigService.getReceptorList()
-                    .then(function(receptors) {
+                    .then(function (receptors) {
                         StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);
 
-                        receptors.forEach(function(item) {
+                        receptors.forEach(function (item) {
                             MonitorService.subscribe(item + ":" + StatusService.statusData[item].sensor);
                         });
 
-                        receptors.forEach(function(item) {
+                        receptors.forEach(function (item) {
                             MonitorService.subscribe('mon_*:agg_' + item + '*');
                         });
-                        //MonitorService.subscribe("m011:ap.device-status");
                     });
             });
     }
