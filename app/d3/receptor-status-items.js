@@ -48,7 +48,7 @@ angular.module('katGui.d3')
                             }
                             var objName = d.name.replace(':', '_');
                             var statusClassResult = d3Util.statusClassFromNumber(scope.itemsToUpdate[sensorToUpdateName].sensorValue.status) + '-child child';
-                            delete scope.itemsToUpdate[objName];
+                            delete scope.itemsToUpdate[sensorToUpdateName];
                             return statusClassResult;
                         } else if (d.sensorValue) {
                             for (var sensorValAttr in sensor.sensorValue) {
