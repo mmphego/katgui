@@ -19,24 +19,29 @@
         vm.showLargeAlarms = $rootScope.showLargeAlarms;
         vm.themes = THEMES;
 
-        vm.selectedTheme = _.find(THEMES, function (theme) {
-            return $localStorage['selectedTheme'] === theme.name;
-        });
+        vm.selectedTheme =  $localStorage['selectedTheme'].name;
 
         if (!vm.selectedTheme) {
-            vm.selectedTheme = vm.themes[0];
+            vm.selectedTheme = vm.themes[0].name;
         } else {
-            vm.selectedTheme = _.find(THEMES, function (theme) {
+            vm.selectedThemeObj = _.find(THEMES, function (theme) {
                 return $localStorage['selectedTheme'] === theme.name;
             });
         }
 
-        vm.selectedThemeChanged = function (newTheme) {
-            $rootScope.themePrimary = newTheme.primary;
-            $rootScope.themeSecondary = newTheme.secondary;
-            $rootScope.themePrimaryButtons = newTheme.primaryButtons;
-            $localStorage['selectedTheme'] = newTheme.name;
-        };
+        var undbindThemeChange = $scope.$watch('vm.selectedTheme', function (newVal) {
+            if (typeof newVal !== 'undefined') {
+
+                var newTheme = _.find(THEMES, function (theme) {
+                    return theme.name === newVal;
+                });
+
+                $rootScope.themePrimary = newTheme.primary;
+                $rootScope.themeSecondary = newTheme.secondary;
+                $rootScope.themePrimaryButtons = newTheme.primaryButtons;
+                $localStorage['selectedTheme'] = newTheme;
+            }
+        });
 
         var undbindShowJulianDate = $scope.$watch('vm.showJulianDate', function (newVal) {
             if (typeof newVal !== 'undefined') {
@@ -79,6 +84,7 @@
             undbindShowJulianDate();
             undbindShowLST();
             undbindShowLocalAndSAST();
+            undbindThemeChange();
         });
     }
 

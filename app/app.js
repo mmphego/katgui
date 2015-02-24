@@ -82,11 +82,11 @@
         $rootScope.showJulianDate = $localStorage['showJulianDate'];
         $rootScope.showLST = $localStorage['showLST'];
         $rootScope.showLocalAndSAST = $localStorage['showLocalAndSAST'];
-        if (!$localStorage['showLST']) {
+        if (!angular.isDefined($localStorage['showLST'])) {
             $rootScope.showLST = true;
         }
 
-        if (!$localStorage['showLocalAndSAST']) {
+        if (!angular.isDefined($localStorage['showLocalAndSAST'])) {
             $rootScope.showLocalAndSAST = true;
         }
 

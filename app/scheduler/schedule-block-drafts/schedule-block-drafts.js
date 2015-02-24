@@ -54,7 +54,6 @@
             } else if (e.keyCode === 27) {
                 //escape
                 vm.selectedScheduleDraft = null;
-                closeTypeMenu();
                 closeDatePickerMenu();
                 closeEditMenu();
             }
@@ -65,7 +64,6 @@
         });
 
         var unbindScroll = angular.element('#schedule-draft-data-list-id').bind("scroll", function () {
-            closeTypeMenu();
             closeDatePickerMenu();
             closeEditMenu();
         });
@@ -74,7 +72,6 @@
             if (!e.target.parentNode.classList.contains('schedule-item-input')) {// &&
                 //!e.target.parentNode.parentNode.classList.contains('schedule-item-input')) {
                 closeEditMenu();
-                closeTypeMenu();
                 closeDatePickerMenu();
             }
         });
@@ -146,13 +143,6 @@
             }
         };
 
-        vm.setScheduleDraftType = function (type) {
-            if (vm.currentRowTypePickerIndex > -1) {
-                vm.scheduleDraftData[vm.currentRowTypePickerIndex].type = type;
-                vm.scheduleDraftData[vm.currentRowTypePickerIndex].isDirty = true;
-            }
-        };
-
         vm.onTimeSet = function (newDate, oldDate) {
 
             vm.scheduleDraftData[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY-MM-DD HH:mm:ss');
@@ -160,30 +150,6 @@
             vm.showDatePicker = false;
             vm.currentSelectedDate = moment();
             vm.currentRowDatePickerIndex = -1;
-        };
-
-        vm.openTypePicker = function (item, $event) {
-
-            var rowIndex = vm.scheduleDraftData.indexOf(item);
-
-            if (vm.currentRowTypePickerIndex !== rowIndex) {
-                vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
-                closeDatePickerMenu();
-                var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 30};
-                var overLayCSS = {
-                    left: rect.left + offset.x + 'px',
-                    top: rect.top + offset.y + 'px'
-                };
-                angular.element(document.getElementById('schedulerTypePickerMenu')).css(overLayCSS);
-                vm.currentRowTypePickerIndex = vm.scheduleDraftData.indexOf(vm.scheduleDraftData[rowIndex]);
-                vm.showTypePicker = true;
-            } else {
-                //the same row's button was clicked, so close the popup
-                closeTypeMenu();
-            }
-
-            $event.stopPropagation();
         };
 
         //schedulerEditMenu
@@ -218,7 +184,6 @@
             //TODO keyboard shortcut like escape to close datepicker
             if (vm.currentRowDatePickerIndex !== rowIndex) {
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
-                closeTypeMenu();
                 var existingVal = vm.scheduleDraftData[rowIndex].desiredTime;
                 if (existingVal && existingVal.length > 0) {
                     vm.currentSelectedDate = existingVal;
@@ -263,17 +228,6 @@
                 $rootScope.showSimpleToast(result.message);
             } else {
                 showSimpleErrorDialog(result.result, result.message);
-            }
-        }
-
-        function closeTypeMenu() {
-            if (vm.showTypePicker) {
-                vm.showTypePicker = false;
-                vm.currentRowTypePickerIndex = -1;
-            }
-
-            if (!$scope.$$phase) {
-                $scope.$digest();
             }
         }
 
