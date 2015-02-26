@@ -61,8 +61,8 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             console.error('There was an error sending a jsonrpc request:');
             console.error(messages);
         } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
-            console.log('received redis-pubsub-init message:');
-            console.log(messages);
+            //console.log('received redis-pubsub-init message:');
+            //console.log(messages);
 
             if (messages.result) {
                 if (messages.id === 'redis-pubsub') {
@@ -82,8 +82,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
 
                     if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
                         api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
-                    } else if (messageObj.msg_channel.indexOf('mon_') === 0) {
-                        StatusService.messageReceived(messageObj.msg_channel, messageObj.msg_data);
                     } else if (messageObj.msg_channel.indexOf('sensors_ok') !== -1) {
                         StatusService.messageReceivedSensorsOk(messageObj.msg_channel, messageObj.msg_data);
                     } else if (channelNameSplit.length > 1 &&

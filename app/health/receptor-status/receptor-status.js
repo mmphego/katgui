@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui.health')
+    angular.module('katGui')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
     function ReceptorStatusCtrl($scope, ConfigService, StatusService, MonitorService, $localStorage) {
@@ -8,11 +8,8 @@
         var vm = this;
         vm.receptorStatusTree = ConfigService.receptorStatusTree;
         vm.receptorList = ConfigService.receptorList;
-        vm.statusData = StatusService.statusData;
-
         vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst'];
-
-        vm.treeChartSize = {width: 580, height: 580};
+        vm.treeChartSize = {width: 880, height: 880};
 
         if ($localStorage['receptorStatusDisplayMapType']) {
             vm.mapType = $localStorage['receptorStatusDisplayMapType'];
@@ -48,12 +45,20 @@
 
                                 });
                             } else if (parent.children && parent.children.length > 0) {
-                                parent.children.forEach(function(child) {
+                                parent.children.forEach(function (child) {
                                     subscribeToChildSensors(child);
+                                });
+                            } else if (parent.subs && parent.subs.length > 0) {
+                                parent.subs.forEach(function(sub) {
+                                    if (!parent.children) {
+                                        parent.children = [];
+                                    }
+                                    parent.children.push({name: sub, sensor: sub, hidden: true});
+                                    MonitorService.subscribe(receptor + ":" + sub);
                                 });
                             }
 
-                            MonitorService.subscribe(receptor + ":" + parent.sensor.replace('.', '_').replace('-','_'));
+                            MonitorService.subscribe(receptor + ":" + parent.sensor);
                         }
                     });
             });

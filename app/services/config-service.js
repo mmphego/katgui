@@ -11,7 +11,7 @@
         api.receptorList = [];
 
         api.getStatusTreeForReceptor = function () {
-            return $http(createRequest('get', urlBase + '/statustree/receptor'));
+            return $http(createRequest('get', urlBase + '/statustrees/receptors'));
                 //.success(function (result) {
                 //    for (var attrname in result) {
                 //        api.receptorStatusTree[attrname] = result[attrname];
@@ -20,6 +20,10 @@
                 //.error(function (result) {
                 //    console.error(result);
                 //});
+        };
+
+        api.getStatusTreesForTop = function () {
+            return $http(createRequest('get', urlBase + '/statustrees/top_windstow'));
         };
 
         api.getReceptorList = function () {

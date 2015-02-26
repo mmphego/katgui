@@ -77,7 +77,6 @@ angular.module('katGui.d3')
                             //style each element according to its status
                             .attr("class", function (d) {
                                 return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child child';
-
                             })
                             .call(function (d) {
                                 d3Util.applyTooltipValues(d, tooltip);
@@ -89,7 +88,7 @@ angular.module('katGui.d3')
                             .data(mapLayout.nodes(root)).enter()
                             .append("svg:text")
                             .attr("x", function (d) {
-                                return x(d.x) - 23;
+                                return x(d.x);
                             })
                             .attr("y", function (d) {
                                 return y(d.y);
@@ -104,19 +103,18 @@ angular.module('katGui.d3')
                             .attr("class", function (d) {
                                 if (d.depth > 0) {
                                     return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text child';
-                                } else if (d.depth === 0) {
+                                } else {
                                     return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text parent';
                                 }
                             })
-                            .attr("text-anchor", "start")
+                            .attr("text-anchor", "middle")
                             .attr("transform", function (d) {
                                 var halfWidth = (x(d.x + d.dx) - x(d.x)) / 2,
                                     halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
                                 var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
-                                if (halfWidth < 60) {
+                                if (halfWidth < 120) {
                                     strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
-                                    strTranslate += "translate(-60,0)";
                                 }
                                 return strTranslate;
                             });
@@ -158,7 +156,7 @@ angular.module('katGui.d3')
                                         halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
                                     var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
-                                    if (halfWidth < 60) {
+                                    if (halfWidth < 120) {
                                         strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
                                     }
                                     return strTranslate;

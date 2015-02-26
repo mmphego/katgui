@@ -80,8 +80,8 @@ angular.module('katGui.d3')
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function () {
                     tooltip
-                        .style("top", (d3.event.layerY + 10) + "px")
-                        .style("left", (d3.event.layerX + 10) + "px");
+                        .style("top", (d3.event.layerY + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
+                        .style("left", (d3.event.layerX + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });

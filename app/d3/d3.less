@@ -6,10 +6,6 @@ text {
     font-weight: bold;
 }
 
-.text-parent-node {
-    font-size: 12px;
-}
-
 rect {
     fill: none;
     stroke: #fff;
@@ -22,16 +18,11 @@ rect.parent,
 }
 
 .grandparent rect {
-    fill: #388E3C;
+    fill: orange;
 }
 
 .grandparent:hover rect {
-    fill: #388E3C;
-}
-
-.no-children rect.parent {
-    //    fill: #388E3C;
-    //    fill-opacity: .75;
+    fill: #ee9700;
 }
 
 .children rect.parent,
@@ -39,14 +30,14 @@ rect.parent,
     cursor: pointer;
 }
 
-//.children rect.parent {
-//    fill: #388E3C;
-//    fill-opacity: .9;
-//}
+.children rect.parent {
+//    fill: #bbb;
+    fill-opacity: .5;
+}
 
-//.children:hover rect.child {
-//    fill: #388E3C;
-//}
+.children:hover rect.child {
+//    fill: #bbb;
+}
 
 .child {
     font-size: 12px;
@@ -94,11 +85,11 @@ circle.child {
     pointer-events: none;
 }
 
-rect.part {
+//rect.part {
     //      stroke: #eee;
     //      fill: #aaa;
-    fill-opacity: .8;
-}
+//    fill-opacity: .8;
+//}
 
 .part-parent {
     cursor: pointer;
@@ -112,4 +103,14 @@ path {
     stroke-width: 1.5;
     cursor: pointer;
     opacity: 0.9;
+}
+
+.overlaidText	{
+    font-size: 2.2em;
+    text-anchor: middle;
+    fill: white;
+    fill-opacity: 0.8;
+    stroke: black;
+    stroke-width: 1px;
+    stroke-opacity: 0.5;
 }

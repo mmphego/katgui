@@ -7,7 +7,7 @@
         'katGui.alarms',
         'katGui.config',
         'katGui.d3',
-        'katGui.health',
+        //'katGui.health',
         'katGui.widgets.navigationWidget',
         'katGui.widgets.ganttWidget',
         'katGui.dashboardStructure',
