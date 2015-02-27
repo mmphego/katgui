@@ -7,7 +7,6 @@
 
         var api = {receptorsData: []};
 
-        MonitorService.subscribeToReceptorUpdates();
         ConfigService.getReceptorList()
             .then(function (receptors) {
                 receptors.forEach(function (receptor) {
