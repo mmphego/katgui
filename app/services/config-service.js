@@ -11,19 +11,11 @@
         api.receptorList = [];
 
         api.getStatusTreeForReceptor = function () {
-            return $http(createRequest('get', urlBase + '/statustrees/receptors'));
-                //.success(function (result) {
-                //    for (var attrname in result) {
-                //        api.receptorStatusTree[attrname] = result[attrname];
-                //    }
-                //})
-                //.error(function (result) {
-                //    console.error(result);
-                //});
+            return $http(createRequest('get', urlBase + '/statustrees/receptors_view/receptors'));
         };
 
         api.getStatusTreesForTop = function () {
-            return $http(createRequest('get', urlBase + '/statustrees/top_windstow'));
+            return $http(createRequest('get', urlBase + '/statustrees/top_view'))
         };
 
         api.getReceptorList = function () {

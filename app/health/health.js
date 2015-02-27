@@ -1,3 +1,4 @@
+/*jshint loopfunc: true */
 (function () {
 
     angular.module('katGui')
@@ -6,7 +7,7 @@
     function HealthCtrl(MonitorService, ConfigService, StatusService, $scope, $rootScope, $timeout, $interval, d3Util) {
 
         var vm = this;
-        vm.topStatusTree = StatusService.topStatusTree;
+        vm.topStatusTrees = StatusService.topStatusTrees;
         $scope.itemsToUpdate = {};
 
         var unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
@@ -18,16 +19,15 @@
                 var attributes = Object.keys($scope.itemsToUpdate);
 
                 if (attributes.length > 0) {
-                    for (var i = 0; i < attributes.length;i++) {
+                    for (var i = 0; i < attributes.length; i++) {
                         var queryString = '#' + attributes[i];
-                        var resultList = d3.selectAll(queryString.replace("mon_proxy_", ""));
-                        resultList.attr('class', function(d) {
+                        var resultList = d3.selectAll(queryString);
+                        resultList.attr('class', function (d) {
                             return setClassesOfSensor(d, attributes[i]);
                         });
-                        //if (resultList[0].length === 0) {
-                        //    delete $scope.itemsToUpdate[attributes[i]];
-                            //    console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
-                        //}
+                        if (resultList[0].length === 0) {
+                            console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
+                        }
                     }
                 } else {
                     if (angular.isDefined(stopUpdating)) {
@@ -69,17 +69,11 @@
         ConfigService.getStatusTreesForTop()
             .success(function (statusTreeResult) {
 
-                //for (var attr in statusTreeResult) {
-                //    StatusService.topStatusTree[attr] = statusTreeResult[attr];
-                //}
+                StatusService.setTopStatusTrees(statusTreeResult);
 
-                StatusService.topStatusTree = statusTreeResult;
-                StatusService.topStatusTree.children = [];
-                StatusService.topStatusTree.subs.forEach(function (sub) {
-                    StatusService.topStatusTree.children.push({sensor: sub});
+                StatusService.topStatusTrees.forEach(function (tree) {
+                    subscribeToChildSensors(tree);
                 });
-
-                subscribeToChildSensors(statusTreeResult);
 
                 function subscribeToChildSensors(parent) {
                     if (parent.status_children && parent.status_children.length > 0) {
@@ -97,14 +91,18 @@
                                 parent.children = [];
                             }
                             parent.children.push({name: sub, sensor: sub});
-                            MonitorService.subscribe("mon_proxy:" + sub);
+                            MonitorService.subscribe(sub);
                         });
                     }
 
                     if (parent.sensor) {
-                        MonitorService.subscribe("mon_proxy:" + parent.sensor);
+                        MonitorService.subscribe(parent.sensor);
                     }
                 }
+
+            })
+            .error(function () {
+                $rootScope.showSimpleDialog("Error retrieving status tree structure from katconf-webserver, is the server running?");
             });
 
         $scope.$on('$destroy', function () {
@@ -112,4 +110,5 @@
         });
 
     }
-})();
+})
+();

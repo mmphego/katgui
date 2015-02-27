@@ -9,7 +9,7 @@
         var api = {};
         api.statusData = {};
         api.receptors = [];
-        api.topStatusTree = {};
+        api.topStatusTrees = [];
 
         api.setReceptorsAndStatusTree = function (statusTree, receptors) {
             api.receptors = [];
@@ -23,35 +23,21 @@
             });
         };
 
-        api.messageReceived = function (messageName, message) {
-            message.trimmedName = trimmedName(messageName);
-            for (var attr in api.statusData) {
-                if (messageName.indexOf(attr) > -1) {
-                    var existingSensor = _.findWhere(api.statusData[attr].children, {name: messageName});
-                    if (existingSensor) {
-                        for (var sensorAttr in message) {
-                            existingSensor.sensorValue[sensorAttr] = message[sensorAttr];
-                        }
-                        $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
-                    } else {
-                        api.statusData[attr].children.push({name: messageName, sensorValue: message});
-                    }
-                }
-            }
-        };
+        api.setTopStatusTrees = function(statusTrees) {
+            api.topStatusTrees.splice(0, api.topStatusTrees.length);
 
-        api.messageReceivedSensorsOk = function (messageName, message) {
-            for (var attr in api.statusData) {
-                if (messageName.indexOf(attr) > -1) {
-                    var existingSensor = api.statusData[messageName.split(':')[0]];
-                    if (existingSensor) {
-                        existingSensor.sensorValue = message;
+            for (var treeName in statusTrees) {
+                var tree = statusTrees[treeName];
+                api.topStatusTrees.push(tree);
 
-                        $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
+                tree.children = [];
+                tree.subs.forEach(function (sub) {
+                    if (sub.name) {
+                        tree.children.push({sensor: sub.sensor, name: sub.name});
                     } else {
-                        existingSensor.sensorValue = message;
+                        tree.children.push({sensor: sub});
                     }
-                }
+                });
             }
         };
 

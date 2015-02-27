@@ -16,12 +16,7 @@ angular.module('katGui.d3')
                     var margin = {top: 8, right: 8, left: 8, bottom: 8};
                     var tooltip = d3Util.createTooltip(element[0]);
 
-                    d3Util.waitUntilDataExists(data)
-                        .then(function () {
-                            drawIcicleMap();
-                        }, function () {
-                            d3Util.displayInitErrorMessage(scope.dataMapName);
-                        });
+                    drawIcicleMap();
 
                     function drawIcicleMap() {
                         var width = scope.chartSize.width;

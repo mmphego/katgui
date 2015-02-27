@@ -16,12 +16,7 @@ angular.module('katGui.d3')
                     var margin = {top: 8, right: 8, left: 8, bottom: 8};
                     var tooltip = d3Util.createTooltip(element[0]);
 
-                    d3Util.waitUntilDataExists(data)
-                        .then(function () {
-                            drawPartitionMap();
-                        }, function () {
-                            d3Util.displayInitErrorMessage(scope.dataMapName);
-                        });
+                    drawPartitionMap();
 
                     function drawPartitionMap() {
                         var width = scope.chartSize.width;

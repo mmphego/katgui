@@ -82,8 +82,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
 
                     if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
                         api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
-                    } else if (messageObj.msg_channel.indexOf('sensors_ok') !== -1) {
-                        StatusService.messageReceivedSensorsOk(messageObj.msg_channel, messageObj.msg_data);
                     } else if (channelNameSplit.length > 1 &&
                         (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
                         api.receptorMessageReceived(messageObj.msg_channel, messageObj.msg_data);
