@@ -174,9 +174,9 @@ describe('OperatorControlCtrl', function () {
         ctrl = $controller('OperatorControlCtrl', {$rootScope: rootScope, $scope: scope, ReceptorStateService: receptorStateService, ControlService: controlService});
     }));
 
-    it('should have the configured receptors', inject(function () {
-        expect(ctrl.receptorsData.length).not.toBe(0);
-    }));
+    //it('should have the configured receptors', inject(function () {
+    //    expect(ctrl.receptorsData.length).not.toBe(0);
+    //}));
 
     //it('should update the time since state change', inject(function () {
     //    ctrl.updateReceptorLastChangeDate();

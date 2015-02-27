@@ -11,34 +11,30 @@
         api.receptorList = [];
 
         api.getStatusTreeForReceptor = function () {
-            return $http(createRequest('get', urlBase + '/statustree/receptor'));
-                //.success(function (result) {
-                //    for (var attrname in result) {
-                //        api.receptorStatusTree[attrname] = result[attrname];
-                //    }
-                //})
-                //.error(function (result) {
-                //    console.error(result);
-                //});
+            return $http(createRequest('get', urlBase + '/statustrees/receptors_view/receptors'));
+        };
+
+        api.getStatusTreesForTop = function () {
+            return $http(createRequest('get', urlBase + '/statustrees/top_view'));
         };
 
         api.getReceptorList = function () {
             api.receptorList.splice(0, api.receptorList.length);
 
-            var promise = $q.defer();
+            var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/installed-config/receptors'))
                 .success(function (result) {
                     result.forEach(function (item) {
                         api.receptorList.push(item);
                     });
-                    promise.resolve(api.receptorList);
+                    deferred.resolve(api.receptorList);
                 })
                 .error(function (result) {
                     console.error(result);
-                    promise.reject();
+                    deferred.reject();
                 });
 
-            return promise.promise;
+            return deferred.promise;
         };
 
         function createRequest(method, url) {

@@ -1,3 +1,4 @@
+/*jshint loopfunc: true */
 (function () {
 
     angular.module('katGui.services')
@@ -7,49 +8,64 @@
 
         var api = {};
         api.statusData = {};
+        api.receptors = [];
+        api.topStatusTrees = [];
 
         api.setReceptorsAndStatusTree = function (statusTree, receptors) {
+            api.receptors = [];
             receptors.forEach(function (receptor) {
-                api.statusData[receptor] = { name: receptor, sensor: statusTree.sensor, status_children: statusTree.children, children: [] };
+                api.receptors.push(receptor);
+                api.statusData[receptor] = {
+                    name: receptor,
+                    sensor: statusTree.sensor.replace('.', '_').replace('-', '_'),
+                    children: statusTree.children
+                };
             });
         };
 
-        api.messageReceived = function (messageName, message) {
-            message.trimmedName = trimmedName(messageName);
-            for (var attr in api.statusData) {
-               if (messageName.indexOf(attr) > -1) {
-                   var existingSensor = _.findWhere(api.statusData[attr].children, {name: messageName});
-                   if (existingSensor) {
-                       for (var sensorAttr in message) {
-                           existingSensor.sensorValue[sensorAttr] = message[sensorAttr];
-                       }
-                       $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
-                   } else {
-                       api.statusData[attr].children.push({name: messageName, sensorValue: message, blockValue: 100});
-                   }
-               }
+        api.setTopStatusTrees = function(statusTrees) {
+            api.topStatusTrees.splice(0, api.topStatusTrees.length);
+
+            for (var treeName in statusTrees) {
+                var tree = statusTrees[treeName];
+                api.topStatusTrees.push(tree);
+
+                tree.children = [];
+                tree.subs.forEach(function (sub) {
+                    if (sub.name) {
+                        tree.children.push({sensor: sub.sensor, name: sub.name});
+                    } else {
+                        tree.children.push({sensor: sub});
+                    }
+                });
             }
         };
 
-        api.messageReceivedSensorsOk = function (messageName, message) {
-            for (var attr in api.statusData) {
-                if (messageName.indexOf(attr) > -1) {
-                    var existingSensor = api.statusData[messageName.split(':')[0]];
-                    if (existingSensor) {
-                        if (!existingSensor.sensorValue) {
-                            existingSensor.sensorValue = {};
-                        }
-                        for (var sensorAttr in message) {
-                            existingSensor.sensorValue[sensorAttr] = message[sensorAttr];
-                        }
+        api.messageReceivedSensors = function (messageName, message) {
 
-                        $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
-                    } else {
-                        existingSensor.sensorValue = message;
+            if (api.receptors.indexOf(messageName.split(":")[0]) > -1) {
+                for (var receptor in api.statusData) {
+                    if (messageName.indexOf(receptor) > -1) {
+                        applyValueToSensor(api.statusData[receptor], messageName, message, receptor);
+                        if (api.statusData[receptor + "treemapClone"]) {
+                            applyValueToSensor(api.statusData[receptor + "treemapClone"], messageName, message, receptor);
+                        }
                     }
                 }
             }
+            $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
         };
+
+        function applyValueToSensor(node, sensorName, value, rootName) {
+            if (sensorName === rootName + ':' + node.sensor) {
+                node.sensorValue = value;
+            }
+            else if (node.children && node.children.length > 0) {
+                for (var child in node.children) {
+                    applyValueToSensor(node.children[child], sensorName, value, rootName);
+                }
+            }
+        }
 
         function trimmedName(oldName) {
             return oldName.replace('mon_proxy:agg_', '');

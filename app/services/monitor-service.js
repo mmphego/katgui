@@ -3,11 +3,9 @@
 angular.module('katGui.services')
     .service('MonitorService', MonitorService);
 
-function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService) {
+function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService) {
 
-    var pendingSubscribeObjects = [];
     var urlBase = SERVER_URL + ':8830';
-
     var connection = null;
     //use this alias because we are using some api functions within functions
     //because 'this' means something different within each child function
@@ -15,8 +13,10 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     api.connectionAuthorised = false;
 
     api.subscribeToReceptorUpdates = function () {
-        var connectionParams = ['m011:mode', 'm011:inhibited', 'm022:mode', 'm022:inhibited', 'm033:mode', 'm033:inhibited', 'm044:mode', 'm044:inhibited', 'm055:mode', 'm055:inhibited'];
-        api.subscribe(connectionParams);
+        ConfigService.receptorList.forEach(function(receptor) {
+            var connectionParams = [receptor + ':mode', receptor + ':inhibited'];
+            api.subscribe(connectionParams);
+        });
     };
 
     api.subscribeToAlarms = function () {
@@ -61,8 +61,8 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             console.error('There was an error sending a jsonrpc request:');
             console.error(messages);
         } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
-            console.log('received redis-pubsub-init message:');
-            console.log(messages);
+            //console.log('received redis-pubsub-init message:');
+            //console.log(messages);
 
             if (messages.result) {
                 if (messages.id === 'redis-pubsub') {
@@ -82,13 +82,11 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
 
                     if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
                         api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
-                    } else if (messageObj.msg_channel.indexOf('mon_') === 0) {
-                        StatusService.messageReceived(messageObj.msg_channel, messageObj.msg_data);
-                    } else if (messageObj.msg_channel.indexOf('sensors_ok') !== -1) {
-                        StatusService.messageReceivedSensorsOk(messageObj.msg_channel, messageObj.msg_data);
                     } else if (channelNameSplit.length > 1 &&
                         (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
                         api.receptorMessageReceived(messageObj.msg_channel, messageObj.msg_data);
+                    } else if (channelNameSplit.length > 1) {
+                        StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                     } else {
                         console.log('dangling monitor message...');
                         console.log(messageObj);

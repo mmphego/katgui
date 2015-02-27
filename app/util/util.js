@@ -5,7 +5,7 @@ angular.module('katGui.util', [])
     .directive('loadingOverlay', loadingOverlay)
     .directive('autoGrow', autoGrow)
     .directive('dropdownButtonMenu', dropdownButtonMenu)
-    .constant('SERVER_URL', 'http://monctl.devf.camlab.kat.ac.za')
+    .constant('SERVER_URL', window.location.host === 'localhost:9001' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
     .factory('KatGuiUtil', katGuiUtil);
 
 function dropdownMultiselect() {

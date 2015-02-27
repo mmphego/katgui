@@ -43,6 +43,8 @@ angular.module('katGui.d3')
                     return 'unreachable';
                 case 6:
                     return 'inactive';
+                default:
+                    return 'inactive';
             }
         };
 
@@ -57,34 +59,49 @@ angular.module('katGui.d3')
         };
 
         //convenience function to create the id's for the html elements that needs to be styled
-        api.createSensorId = function (d) {
-            if (d.sensor) {
-                return "sensor_name_" + d.name.replace(':', '_') + "_" + d.sensor;
+        api.createSensorId = function (d, rootName) {
+            if (d.depth > 0) {
+                return rootName + "_" + d.sensor;
             } else {
-                return "sensor_name_" + d.name.replace(':', '_');
+                return d.name + "_" + d.sensor;
             }
         };
 
         //convenience function to populate every item's tooltip
-        api.applyTooltipValues = function (d, tooltip) {
+        api.applyTooltipValues = function (node, tooltip) {
             //d.on is not defined while transitioning
-            if (d.on) {
-                d.on("mouseover", function (d) {
-                    if (d.depth > 0) {
-                        tooltip.html(d.sensorValue.trimmedName + " - " + api.statusClassFromNumber(d.sensorValue.status));
-                    } else if (d.depth === 0) {
-                        tooltip.html(d.name + " - " + api.statusClassFromNumber(d.sensorValue.status));
-                    }
+            if (node.on) {
+                node.on("mouseover", function (d) {
+                    updateTooltipValues(d, tooltip);
                     tooltip.style("visibility", "visible");
-                }).on("mousemove", function () {
+                }).on("mousemove", function (d) {
+                    updateTooltipValues(d, tooltip);
                     tooltip
-                        .style("top", (d3.event.layerY + 10) + "px")
-                        .style("left", (d3.event.layerX + 10) + "px");
+                        .style("top", (d3.event.layerY + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
+                        .style("left", (d3.event.layerX + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });
             }
         };
+
+        function updateTooltipValues(d, tooltip) {
+            if (d.depth > 0) {
+                if (d.sensorValue) {
+                    tooltip.html(
+                        "sensor: " + d.sensor +
+                        "<br/>value: " + d.sensorValue.value +
+                        "<br/>status: " + api.statusClassFromNumber(d.sensorValue.status) +
+                        "<br/>timestamp: " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY')
+                    );
+                } else {
+                    tooltip.html(d.sensor);
+                }
+
+            } else if (d.depth === 0) {
+                tooltip.html(d.name);
+            }
+        }
 
         //convenience function to create the tooltip div on the given element
         api.createTooltip = function (element) {

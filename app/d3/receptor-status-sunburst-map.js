@@ -16,12 +16,7 @@ angular.module('katGui.d3')
                     var margin = {top: 8, right: 8, left: 8, bottom: 8};
                     var tooltip = d3Util.createTooltip(element[0]);
 
-                    d3Util.waitUntilDataExists(data)
-                        .then(function () {
-                            drawSunburstMap();
-                        }, function () {
-                            d3Util.displayInitErrorMessage(scope.dataMapName);
-                        });
+                    drawSunburstMap();
 
                     function drawSunburstMap() {
                         var width = scope.chartSize.width;
@@ -39,8 +34,8 @@ angular.module('katGui.d3')
                         //the bockvalue is the relative size of each child element, it is
                         //set to a static 100 when we get our monitor data in the StatusService
                         var mapLayout = d3.layout.partition()
-                            .value(function (d) {
-                                return d.blockValue;
+                            .value(function () {
+                                return 10;
                             })
                             .sort(function (a, b) {
                                 return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
@@ -77,9 +72,11 @@ angular.module('katGui.d3')
                         //add the arc math as a svg:path element
                         var path = g.append("path")
                             .attr("d", arc)
-                            .attr("id", d3Util.createSensorId)
+                            .attr("id", function (d) {
+                                return d3Util.createSensorId(d, scope.dataMapName);
+                            })
                             .attr("class", function (d) {
-                                return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
+                                return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child child';
                             })
                             .call(function (d) {
                                 d3Util.applyTooltipValues(d, tooltip);
@@ -102,13 +99,13 @@ angular.module('katGui.d3')
                             .attr("dy", ".35em") // vertical-align
                             .attr("class", function (d) {
                                 if (d.depth > 0) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text child';
-                                } else if (d.depth === 0) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child-text parent';
+                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text child';
+                                } else {
+                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text parent';
                                 }
                             })
                             .text(function (d) {
-                                return d3Util.trimmedReceptorName(d, scope.dataMapName);
+                                return d.name;
                             });
 
                         //zoom functionality when clicking on an item
