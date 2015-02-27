@@ -3,11 +3,9 @@
 angular.module('katGui.services')
     .service('MonitorService', MonitorService);
 
-function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService) {
+function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService) {
 
-    var pendingSubscribeObjects = [];
     var urlBase = SERVER_URL + ':8830';
-
     var connection = null;
     //use this alias because we are using some api functions within functions
     //because 'this' means something different within each child function
@@ -15,8 +13,10 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     api.connectionAuthorised = false;
 
     api.subscribeToReceptorUpdates = function () {
-        var connectionParams = ['m011:mode', 'm011:inhibited', 'm022:mode', 'm022:inhibited', 'm033:mode', 'm033:inhibited', 'm044:mode', 'm044:inhibited', 'm055:mode', 'm055:inhibited'];
-        api.subscribe(connectionParams);
+        ConfigService.receptorList.forEach(function(receptor) {
+            var connectionParams = [receptor + ':mode', receptor + ':inhibited'];
+            api.subscribe(connectionParams);
+        });
     };
 
     api.subscribeToAlarms = function () {
