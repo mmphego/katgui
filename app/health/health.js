@@ -1,7 +1,7 @@
 /*jshint loopfunc: true */
 (function () {
 
-    angular.module('katGui')
+    angular.module('katGui.health', ['katGui'])
         .controller('HealthCtrl', HealthCtrl);
 
     function HealthCtrl(MonitorService, ConfigService, StatusService, $scope, $rootScope, $timeout, $interval, d3Util) {

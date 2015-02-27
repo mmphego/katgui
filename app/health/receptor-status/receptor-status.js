@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui')
+    angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
     function ReceptorStatusCtrl($scope, ConfigService, StatusService, MonitorService, $localStorage) {

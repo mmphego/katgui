@@ -68,17 +68,14 @@ angular.module('katGui.d3')
         };
 
         //convenience function to populate every item's tooltip
-        api.applyTooltipValues = function (d, tooltip) {
+        api.applyTooltipValues = function (node, tooltip) {
             //d.on is not defined while transitioning
-            if (d.on) {
-                d.on("mouseover", function (d) {
-                    if (d.depth > 0) {
-                        tooltip.html(d.sensor);
-                    } else if (d.depth === 0) {
-                        tooltip.html(d.name);
-                    }
+            if (node.on) {
+                node.on("mouseover", function (d) {
+                    updateTooltipValues(d, tooltip);
                     tooltip.style("visibility", "visible");
-                }).on("mousemove", function () {
+                }).on("mousemove", function (d) {
+                    updateTooltipValues(d, tooltip);
                     tooltip
                         .style("top", (d3.event.layerY + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
                         .style("left", (d3.event.layerX + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
@@ -87,6 +84,24 @@ angular.module('katGui.d3')
                 });
             }
         };
+
+        function updateTooltipValues(d, tooltip) {
+            if (d.depth > 0) {
+                if (d.sensorValue) {
+                    tooltip.html(
+                        "sensor: " + d.sensor +
+                        "<br/>value: " + d.sensorValue.value +
+                        "<br/>status: " + api.statusClassFromNumber(d.sensorValue.status) +
+                        "<br/>timestamp: " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY')
+                    );
+                } else {
+                    tooltip.html(d.sensor);
+                }
+
+            } else if (d.depth === 0) {
+                tooltip.html(d.name);
+            }
+        }
 
         //convenience function to create the tooltip div on the given element
         api.createTooltip = function (element) {

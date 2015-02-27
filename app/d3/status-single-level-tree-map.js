@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('statusSingleLevelTreeMap', function (d3Service, StatusService, $timeout) {
+    .directive('statusSingleLevelTreeMap', function (d3Service, d3Util) {
         return {
             restrict: 'EA',
             scope: {
@@ -16,6 +16,8 @@ angular.module('katGui.d3')
                         x = d3.scale.linear().range([0, w]),
                         y = d3.scale.linear().range([0, h]),
                         root;
+
+                    var tooltip = d3Util.createTooltip(element[0]);
 
                     drawTreemap();
 
@@ -66,7 +68,10 @@ angular.module('katGui.d3')
                         //todo handle width/height when tree is spliced horizontally
                         cell.append("svg:rect")
                             .attr("width", function(d) { return "100%"; })
-                            .attr("height", function(d) { return d.dy - 1; });
+                            .attr("height", function(d) { return d.dy - 1; })
+                            .call(function (d) {
+                                d3Util.applyTooltipValues(d, tooltip);
+                            });
 
                         cell.append("svg:text")
                             .attr("x", function(d) { return "50%"; })

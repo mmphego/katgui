@@ -15,7 +15,7 @@
         };
 
         api.getStatusTreesForTop = function () {
-            return $http(createRequest('get', urlBase + '/statustrees/top_view'))
+            return $http(createRequest('get', urlBase + '/statustrees/top_view'));
         };
 
         api.getReceptorList = function () {
