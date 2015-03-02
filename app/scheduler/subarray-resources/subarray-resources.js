@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($state, $scope, ObservationScheduleService, $timeout, $mdDialog, $rootScope, $document) {
+    function SubArrayResourcesCtrl($state, $scope, ObservationScheduleService, $timeout, $mdDialog, $rootScope) {
 
         var vm = this;
 
@@ -13,17 +13,10 @@
 
         vm.refreshResources = function () {
 
-            //chain the calls otherwise the server gives us grief
-            //TODO: figure out why the server is being silly
-
-            //ObservationScheduleService.listAllocations()
-            //    .then(listProcessingComplete, listProcessingError);
-
             ObservationScheduleService.listSubarrays()
                 .then(function () {
                     $timeout(function () {
-                        ObservationScheduleService.listPoolResources()
-                            .then(listProcessingComplete, listProcessingError);
+                        ObservationScheduleService.listPoolResources();
                     }, 200);
                 });
         };
@@ -85,28 +78,6 @@
             $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
         };
 
-        function listProcessingComplete(result) {
-            $timeout(function () {
-                //vm.draftListProcessingServerCall = false;
-            }, 100);
-        }
-
-        function listProcessingError(result) {
-            $timeout(function () {
-                //vm.draftListProcessingServerCall = false;
-
-                var alert = $mdDialog.alert()
-                    .title('Server Request Failed!')
-                    .content(result)
-                    .ok('Close');
-                $mdDialog
-                    .show(alert)
-                    .finally(function () {
-                        alert = undefined;
-                    });
-            }, 100);
-        }
-
         function showSimpleErrorDialog(title, message) {
             var alert = $mdDialog.alert()
                 .title(title)
@@ -127,9 +98,9 @@
             }
         }
 
-        var unbindShortcuts = $document.bind("keydown", function (e) {
+        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
 
-            if (e.keyCode === 27) {
+            if (key === 27) {
                 //clear selection when pressing escape
                 ObservationScheduleService.poolResourcesFree.forEach(function (item) {
                    item.selected = false;
@@ -142,7 +113,7 @@
         });
 
         $scope.$on('$destroy', function () {
-            unbindShortcuts.unbind('keydown');
+            unbindShortcuts('keydown');
         });
 
         $timeout(vm.refreshResources, 500);

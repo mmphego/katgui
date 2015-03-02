@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, SCHEDULE_BLOCK_TYPES, $document, $rootScope) {
+    function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, SCHEDULE_BLOCK_TYPES, $rootScope) {
 
         var vm = this;
         //vm.draftListProcessingServerCall = false;
@@ -30,9 +30,9 @@
 
         vm.setDraftsOrderBy('id_code', true);
 
-        var unbindShortcuts = $document.bind("keydown", function (e) {
+        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
 
-            if (e.keyCode === 40) {
+            if (key === 40) {
                 //down arrow
                 var index = $scope.filteredDraftItems.indexOf(vm.selectedScheduleDraft);
                 if (index > -1 && index + 1 < $scope.filteredDraftItems.length) {
@@ -42,7 +42,7 @@
                     vm.setSelectedScheduleDraft($scope.filteredDraftItems[0]);
                 }
 
-            } else if (e.keyCode === 38) {
+            } else if (key === 38) {
                 //up arrow
                 var indexUp = $scope.filteredDraftItems.indexOf(vm.selectedScheduleDraft);
                 if (indexUp > -1 && indexUp - 1 > -1) {
@@ -51,7 +51,7 @@
                 } else if ($scope.filteredDraftItems.length > 0) {
                     vm.setSelectedScheduleDraft($scope.filteredDraftItems[$scope.filteredDraftItems.length - 1]);
                 }
-            } else if (e.keyCode === 27) {
+            } else if (key === 27) {
                 //escape
                 vm.selectedScheduleDraft = null;
                 closeDatePickerMenu();
@@ -278,7 +278,7 @@
         $scope.$on('$destroy', function () {
             unbindScroll.unbind('scroll');
             unbindClick.unbind('click');
-            unbindShortcuts.unbind('keydown');
+            unbindShortcuts('keydown');
         });
     }
 

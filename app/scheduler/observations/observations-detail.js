@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail(ObservationScheduleService, $timeout, $stateParams, $scope, $document, $rootScope) {
+    function SubArrayObservationsDetail(ObservationScheduleService, $timeout, $stateParams, $scope, $rootScope) {
 
         var vm = this;
         vm.subarray_id = parseInt($stateParams.subarray_id);
@@ -102,9 +102,9 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        var unbindShortcuts = $document.bind("keydown", function (e) {
+        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
 
-            if (e.keyCode === 40) {
+            if (key === 40) {
                 //down arrow
                 var index = vm.currentScheduleData.indexOf(vm.selectedSchedule);
                 if (index > -1 && index + 1 < vm.currentScheduleData.length) {
@@ -113,7 +113,7 @@
                     vm.setSelectedSchedule(vm.currentScheduleData[0]);
                 }
 
-            } else if (e.keyCode === 38) {
+            } else if (key === 38) {
                 //up arrow
                 var indexUp = vm.currentScheduleData.indexOf(vm.selectedSchedule);
                 if (indexUp > -1 && indexUp - 1 > -1) {
@@ -122,7 +122,7 @@
                 } else if (vm.currentScheduleData.length > 0) {
                     vm.setSelectedSchedule(vm.currentScheduleData[vm.currentScheduleData.length - 1]);
                 }
-            } else if (e.keyCode === 27) {
+            } else if (key === 27) {
                 //escape
                 vm.selectedSchedule = null;
             }
@@ -133,7 +133,7 @@
         });
 
         $scope.$on('$destroy', function () {
-            unbindShortcuts.unbind('keydown');
+            unbindShortcuts('keydown');
         });
 
         $timeout(vm.refreshScheduleBlocks, 100);

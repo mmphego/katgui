@@ -35,7 +35,7 @@ angular.module('katGui.d3')
                                 });
                                 if (resultList[0].length === 0) {
                                     delete scope.itemsToUpdate[attributes[i]];
-                                //    console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
+                                    //console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
                                 }
                             }
                         } else {
@@ -53,6 +53,9 @@ angular.module('katGui.d3')
                             }
                             var statusClassResult = "inactive-child";
                             if (scope.itemsToUpdate[sensorToUpdateName] && scope.itemsToUpdate[sensorToUpdateName].sensorValue !== null) {
+                                for (var attr in scope.itemsToUpdate[sensorToUpdateName]) {
+                                    d.sensorValue[attr] = scope.itemsToUpdate[sensorToUpdateName].sensorValue[attr];
+                                }
                                 statusClassResult = d3Util.statusClassFromNumber(scope.itemsToUpdate[sensorToUpdateName].sensorValue.status) + '-child child';
                                 delete scope.itemsToUpdate[sensorToUpdateName];
                             } else {

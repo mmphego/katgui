@@ -50,18 +50,11 @@
             'MAINTENANCE',
             'OBSERVATION',
             'MANUAL'])
-        //,
-        //{
-        //    name: 'Light-Blue-Dark',
-        //    primary: 'light-blue-dark',
-        //    secondary: 'indigo',
-        //    primaryButtons: 'blue-grey'
-        //}
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES,
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, AlarmsService, ConfigService,
                              USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService, $mdDialog) {
 
         var vm = this;
@@ -107,9 +100,6 @@
         vm.userLoggedIn = false;
 
         vm.actionMenuOpen = false;
-        $rootScope.newAlarmWarnCount = 0;
-        $rootScope.newAlarmErrorCount = 0;
-        $rootScope.newAlarmCritCount = 0;
         $rootScope.toastPosition = 'bottom right';
         $rootScope.showAlarms = true;
         $rootScope.showSimpleToast = function (message) {
@@ -122,21 +112,17 @@
 
             console.log('Showing toast-message: ' + message);
         };
-
-        var unbindAlarmMessage = null;
+        //this binding is only for the views
+        $rootScope.alarmsData = AlarmsService.alarmsData;
 
         $rootScope.connectEvents = function () {
 
             vm.showNavbar = true;
-            $rootScope.$on('alarmMessage', receivedAlarmMessage);
-
             syncTimeWithServer();
             $interval(updateTimeDisplay, 1000); //update local clock every second
-
             $interval(function () {
                 syncTimeWithServer();
             }, 600000); //sync time every 10 minutes
-
             MonitorService.connectListener();
             ControlService.connectListener();
         };
@@ -150,16 +136,10 @@
         };
 
         vm.logout = function () {
-
             MonitorService.disconnectListener();
             ControlService.disconnectListener();
             $mdSidenav('right-sidenav').close();
             SessionService.logout();
-
-            if (unbindAlarmMessage) {
-                unbindAlarmMessage();
-            }
-
             vm.showNavbar = false;
         };
 
@@ -181,7 +161,7 @@
             return $state.current.name === page;
         };
 
-        vm.currentStateUpperCase = function () {
+        vm.currentState = function () {
             return $state.current.title;
         };
 
@@ -253,19 +233,18 @@
         };
 
         var updateTimeDisplay = function () {
-            //TODO: calculate local sidereal time outside this function and only on every sync
             if ($rootScope.serverTimeOnLoad > 0) {
                 var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
                 var localTime = moment($rootScope.serverTimeOnLoad, 'X');
                 vm.utcTime = utcTime.format('HH:mm:ss');
                 vm.localTime = localTime.format('HH:mm:ss');
 
-                //TODO: get actual longitude to use
-                var longitude = 21.3692096; //site longitude
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(utcTime.date(), utcTime.month() + 1, utcTime.year(), fractionalHours);
                 vm.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
-                vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, longitude);
+                if ($rootScope.longitude) {
+                    vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
+                }
                 $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
             }
         };
@@ -274,52 +253,24 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    //var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
-                    //vm.julianDay = KatGuiUtil.julianDay(utcTime.date(), utcTime.month() + 1, utcTime.year());
                     console.log('Syncing current time with katcontrol server (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
-                    console.log("Error syncing time with katcontrol portal! " + error);
+                    console.error("Error syncing time with katcontrol portal! " + error);
                     $rootScope.serverTimeOnLoad = 0;
                     vm.localSiderealTime = "Error syncing time!";
                 });
+            ConfigService.getSiteLocation()
+                .success(function (result) {
+                    $rootScope.longitude = KatGuiUtil.getLongitudeFromDegrees(result.split(',')[1]);
+                })
+                .error(function (error) {
+                    console.error("Could not retrieve site location from config server, LST will not display correctly. ");
+                    console.error(error);
+                });
         }
 
-        //these alarm collections are modified in alarms/alarms.js
-        //just so you know
-        //TODO move them all into a service
-        $rootScope.alarmsData = [];
-
-        //for easier testing
-        this.receivedAlarmMessage = receivedAlarmMessage;
-
-        function receivedAlarmMessage(event, message) {
-
-            if (message.severity === 'nominal') {
-                var index = _.indexOf($rootScope.alarmsData, _.findWhere($rootScope.alarmsData, {name: message.name}));
-                if (index > -1) {
-                    $rootScope.alarmsData.splice(index, 1);
-                }
-
-            } else {
-                var foundAlarm = _.findWhere($rootScope.alarmsData, {name: message.name});
-
-                if (foundAlarm) {
-                    foundAlarm.priority = message.priority;
-                    foundAlarm.severity = message.severity;
-                    foundAlarm.dateUnix = message.dateUnix;
-                    foundAlarm.date = message.date;
-                    foundAlarm.selected = false;
-                }
-
-                if (!foundAlarm) {
-                    $rootScope.alarmsData.push(message);
-                }
-            }
-
-        }
-
-        //so that all controllers and directives has access to which keyboard presses is happening
+        //so that all controllers and directives has access to which keys are pressed
         document.onkeydown = function(event) {
             event = event || window.event;
             $rootScope.$emit('keydown', event.keyCode);
@@ -330,11 +281,12 @@
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider, USER_ROLES) {
 
-        //todo: disable in production
         //disable this in production for performance boost
         //batarang uses this for scope inspection
-        //https://docs.angularjs.org/guide/production
-        //$compileProvider.debugInfoEnabled(false);
+        //grunt
+        if ( window.location.host !== 'localhost:9001') {
+            $compileProvider.debugInfoEnabled(false);
+        }
 
         delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
@@ -532,8 +484,8 @@
         });
 
         $rootScope.$on('$stateChangeError', function (event) {
-            console.log('$stateChangeError - debugging required. Event: ');
-            console.log(event);
+            console.error('$stateChangeError - debugging required. Event: ');
+            console.error(event);
         });
     }
 
