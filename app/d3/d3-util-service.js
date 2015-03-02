@@ -86,21 +86,12 @@ angular.module('katGui.d3')
         };
 
         function updateTooltipValues(d, tooltip) {
-            if (d.depth > 0) {
-                if (d.sensorValue) {
-                    tooltip.html(
-                        "sensor: " + d.sensor +
-                        "<br/>value: " + d.sensorValue.value +
-                        "<br/>status: " + api.statusClassFromNumber(d.sensorValue.status) +
-                        "<br/>timestamp: " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY')
-                    );
-                } else {
-                    tooltip.html(d.sensor);
-                }
-
-            } else if (d.depth === 0) {
-                tooltip.html(d.name);
-            }
+            tooltip.html(
+                "sensor: " + (d.depth === 0? d.name + ":" + d.sensor : d.sensor) +
+                "<br/>value: " + d.sensorValue.value +
+                "<br/>status: " + api.statusClassFromNumber(d.sensorValue.status) +
+                "<br/>timestamp: " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY')
+            );
         }
 
         //convenience function to create the tooltip div on the given element

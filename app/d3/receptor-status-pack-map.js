@@ -39,7 +39,7 @@ angular.module('katGui.d3')
                         var mapLayout = d3.layout.pack()
                             .size([r, r])
                             .value(function () {
-                                return 10;
+                                return 1;
                             });
 
                         //create the main svg element
@@ -60,7 +60,7 @@ angular.module('katGui.d3')
                             .enter().append("svg:circle")
                             .attr("class", function (d) {
                                 if (d.depth > 0) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
+                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child child';
                                 } else {
                                     return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child parent';
                                 }
