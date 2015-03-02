@@ -101,6 +101,10 @@ module.exports = function (grunt) {
                     {
                         src: ['bower_components/d3/d3.min.js'],
                         dest: 'dist/bower_components/d3', flatten: true, expand: true
+                    },
+                    {
+                        src: ['images/**'],
+                        dest: 'dist/images', flatten: true, expand: true
                     }
                 ]
             }
