@@ -3,7 +3,7 @@
     angular.module('katGui.alarms', ['katGui.util'])
         .controller('AlarmsCtrl', AlarmsCtrl);
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, $document, $timeout) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
 
         var vm = this;
 
@@ -49,7 +49,7 @@
 
         vm.toggleSelectAllKnownAlarms = function (selected) {
 
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.priority === 'known') {
                     item.selected = selected;
                 }
@@ -58,7 +58,7 @@
 
         vm.toggleSelectAllAlarms = function (selected) {
 
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.priority !== 'known') {
                     item.selected = selected;
                 }
@@ -68,7 +68,7 @@
         vm.clearSelectedAlarms = function () {
 
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.clearAlarm(item.name);
@@ -85,7 +85,7 @@
         vm.acknowledgeSelectedAlarms = function () {
 
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.acknowledgeAlarm(item.name);
@@ -102,7 +102,7 @@
         vm.knowSelectedAlarms = function () {
 
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.addKnownAlarm(item.name);
@@ -119,7 +119,7 @@
         vm.cancelKnowSelectedAlarms = function () {
 
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.cancelKnowAlarm(item.name);
@@ -133,11 +133,11 @@
             ControlService.cancelKnowAlarm(alarm.name);
         };
 
-        var unbindShortcuts = $document.bind("keydown", function (e) {
+        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
 
-            if (e.keyCode === 27) {
+            if (key === 27) {
                 //escape
-                $rootScope.alarmsData.forEach(function (item) {
+                AlarmsService.alarmsData.forEach(function (item) {
                     item.selected = false;
                 });
             }
@@ -148,7 +148,7 @@
         });
 
         $scope.$on('$destroy', function () {
-            unbindShortcuts.unbind('keydown');
+            unbindShortcuts('keydown');
         });
     }
 })();

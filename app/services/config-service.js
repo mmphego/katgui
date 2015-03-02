@@ -37,6 +37,10 @@
             return deferred.promise;
         };
 
+        api.getSiteLocation = function () {
+          return $http(createRequest('get', urlBase + '/array/position'));
+        };
+
         function createRequest(method, url) {
             return {
                 method: method,

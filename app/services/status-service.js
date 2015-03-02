@@ -12,7 +12,7 @@
         api.topStatusTrees = [];
 
         api.setReceptorsAndStatusTree = function (statusTree, receptors) {
-            api.receptors = [];
+            api.receptors.splice(0, api.receptors.length);
             receptors.forEach(function (receptor) {
                 api.receptors.push(receptor);
                 api.statusData[receptor] = {
@@ -58,7 +58,12 @@
 
         function applyValueToSensor(node, sensorName, value, rootName) {
             if (sensorName === rootName + ':' + node.sensor) {
-                node.sensorValue = value;
+                if (!node.sensorValue) {
+                    node.sensorValue = {};
+                }
+                for (var attr in value) {
+                    node.sensorValue[attr] = value[attr];
+                }
             }
             else if (node.children && node.children.length > 0) {
                 for (var child in node.children) {

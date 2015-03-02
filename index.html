@@ -75,6 +75,7 @@
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/editable-directive.js"></script>
 <script src="app/services/control-service.js"></script>
+<script src="app/services/alarms-service.js"></script>
 <script src="app/services/config-service.js"></script>
 <script src="app/services/data-service.js"></script>
 <script src="app/services/monitor-service.js"></script>
@@ -245,36 +246,7 @@
                     <span class="fa fa-navicon"></span>
                 </md-button>
 
-                <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentStateUpperCase()}}</span>
-
-                <!--<div class="btn-group"-->
-                <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="row">-->
-
-                <!---->
-
-                <!--<md-button style="height: 40px;" md-theme="{{themePrimaryButtons}}" md-theme-watch="true" class=""-->
-                <!--aria-label="Operator Control"-->
-                <!--ng-mouseenter="vm.operatorControlHover = true"-->
-                <!--ng-mouseleave="vm.operatorControlHover = false"-->
-                <!--ng-click="vm.operatorControlHover = false; vm.operatorControlMenuHover = false; vm.stateGo('operatorControl')">-->
-                <!--Operator Control-->
-                <!--</md-button>-->
-
-                <!--<md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"-->
-                <!--ng-mouseenter="vm.operatorControlMenuHover = true"-->
-                <!--ng-mouseleave="vm.operatorControlMenuHover = false"-->
-                <!--role="menu">-->
-                <!--<div style="color: rgba(0,0,0,0.73)" layout="column">-->
-                <!--<md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>-->
-                <!--<md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>-->
-                <!--<md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>-->
-                <!--<md-button ng-click="vm.resumeOperations()" aria-label="Resume Operations">Resume Operations</md-button>-->
-                <!--<md-button disabled ng-click="vm.shutdownComputing()" aria-label="Shutdown Computing">Shutdown Computing</md-button>-->
-                <!--</div>-->
-                <!--</md-content>-->
-
-                <!--</div>-->
-
+                <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
                 <span flex></span>
 
                 <div ng-if="vm.julianDay" ng-show="showJulianDate">

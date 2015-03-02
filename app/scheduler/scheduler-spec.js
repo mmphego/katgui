@@ -3,12 +3,11 @@
 //    beforeEach(module('ui.bootstrap.datetimepicker'));
     beforeEach(module('katGui.scheduler'));
 
-    var scope, ctrl, document;
+    var scope, ctrl;
 
-    beforeEach(inject(function ($rootScope, $controller, $document) {
+    beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
         ctrl = $controller('SchedulerCtrl', {$scope: scope});
-        document = $document;
     }));
 
 //    it('should add a draft schedule row', inject(function () {

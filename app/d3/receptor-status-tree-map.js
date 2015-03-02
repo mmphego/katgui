@@ -50,7 +50,7 @@ angular.module('katGui.d3')
                     var data = StatusService.statusData[scope.dataMapName];
                     d3Util.waitUntilDataExists(data)
                         .then(function () {
-                            $timeout(function() {
+                            $timeout(function () {
                                 drawTreemap(data);
                             }, 1000);
                         }, function () {
@@ -177,7 +177,7 @@ angular.module('katGui.d3')
                                 return;
                             } else if (node.children && node.children.length > 0) {
                                 for (var child in node.children) {
-                                   getChildValue(node.children[child], nodeName, resultObj);
+                                    getChildValue(node.children[child], nodeName, resultObj);
                                 }
                             }
                         }
@@ -189,18 +189,13 @@ angular.module('katGui.d3')
                                     return d3Util.createSensorId(d, scope.dataMapName);
                                 })
                                 .attr("class", function (d) {
-                                    if (d.parent) {
-                                        return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
-                                    } else {
-                                        return d3Util.statusClassFromNumber(StatusService.statusData[scope.dataMapName].sensorValue ?
-                                                StatusService.statusData[scope.dataMapName].sensorValue.status : -1) + '-child';
-                                    }
+                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
                                 })
-                                .on("click", function(d) {
+                                .on("click", function (d) {
                                     transition(d.parent);
                                 })
                                 .select("text")
-                                .text(function(d) {
+                                .text(function (d) {
                                     if (d.parent) {
                                         return name(d);
                                     } else {
@@ -220,9 +215,7 @@ angular.module('katGui.d3')
                                 return d._children;
                             })
                                 .attr("class", function (d) {
-                                    var result = {};
-                                    getChildValue(StatusService.statusData[scope.dataMapName], d.sensor, result);
-                                    return d3Util.statusClassFromNumber(result.value ? result.value.status : -1) + '-child';
+                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
                                 })
                                 .on("click", transition);
 
@@ -243,9 +236,7 @@ angular.module('katGui.d3')
                                     return d3Util.createSensorId(d, scope.dataMapName);
                                 })
                                 .attr("class", function (d) {
-                                    var result = {};
-                                    getChildValue(StatusService.statusData[scope.dataMapName], d.sensor, result);
-                                    return d3Util.statusClassFromNumber(result.value ? result.value.status : -1) + '-child';
+                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
                                 })
                                 .call(rect)
                                 .append("title")

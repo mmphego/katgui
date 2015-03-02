@@ -3,13 +3,11 @@
 angular.module('katGui.services')
     .service('MonitorService', MonitorService);
 
-function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService) {
+function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService, AlarmsService) {
 
     var urlBase = SERVER_URL + ':8830';
     var connection = null;
-    //use this alias because we are using some api functions within functions
-    //because 'this' means something different within each child function
-    var api = this;
+    var api = {};
     api.connectionAuthorised = false;
 
     api.subscribeToReceptorUpdates = function () {
@@ -81,7 +79,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     var channelNameSplit = messageObj.msg_channel.split(":");
 
                     if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
-                        api.alarmMessageReceived(messageObj.msg_channel, messageObj.msg_data);
+                        AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                     } else if (channelNameSplit.length > 1 &&
                         (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
                         api.receptorMessageReceived(messageObj.msg_channel, messageObj.msg_data);
@@ -101,7 +99,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
 
             } else {
                 //bad auth response
-                //TODO handle bad case
                 api.connectionAuthorised = false;
                 console.error('Bad auth response:');
                 console.error(messages);
@@ -126,23 +123,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     };
 
     api.receptorMessageReceived = function (messageName, messageObj) {
-        $rootScope.$broadcast('operatorControlStatusMessage', {name: messageName, value: messageObj});
-    };
-
-    api.alarmMessageReceived = function (messageName, messageObj) {
-
-        var alarmValues = messageObj.value.toString().split(',');
-        var alarmPriority = 'unknown';
-        if (alarmValues.length > 2) {
-            alarmPriority = alarmValues[1];
-            messageObj.severity = alarmValues[0];
-        }
-
-        messageObj.priority = alarmPriority;
-        messageObj.name = messageName.replace('kataware:alarm_', '');
-        messageObj.dateUnix = messageObj.timestamp;
-        messageObj.date = moment.utc(messageObj.timestamp, 'X').format('HH:mm:ss DD-MM-\'YY');
-        $rootScope.$emit('alarmMessage', messageObj);
+        $rootScope.$emit('operatorControlStatusMessage', {name: messageName, value: messageObj});
     };
 
     function authenticateSocketConnection() {
