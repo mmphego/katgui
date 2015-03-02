@@ -29,7 +29,7 @@
             '       <div class="datestamp"><span>{{alarm.date}}</span></div>',
             '       <div class="severitystamp"><span>{{alarm.severity}}</span></div>',
             '       <div><span class="alarm-message-name">{{alarm.name}}</span>',
-            '       <div class="alarm-message"><span>{{alarm.message}}</span></div>',
+            '       <div class="alarm-message"><span>{{alarm.value}}</span></div>',
             '       </div>',
             '   </div>',
             '</div>'
@@ -40,30 +40,17 @@
         };
     }
 
-    function AlarmsNotifyCtrl($scope, $rootScope, $timeout, ControlService) {
+    function AlarmsNotifyCtrl(ControlService) {
 
         var vm = this;
 
         vm.acknowledgeMessage = function (message) {
             ControlService.acknowledgeAlarm(message.name);
-            //todo: only delete this when the server returns with the updated alarm!
-            //todo: show a loading icon then fade out
-            //vm.deleteMessage(message);
         };
 
         vm.knowMessage = function (message) {
             ControlService.addKnownAlarm(message.name);
-            //todo: only delete this when the server returns with the updated alarm!
-            //todo: show a loading icon then fade out
-            //vm.deleteMessage(message);
         };
-
-        //vm.deleteMessage = function (message) {
-        //    var index = vm.messages.indexOf(message);
-        //    if (index > -1) {
-        //        vm.messages.splice(index, 1);
-        //    }
-        //};
     }
 })();
 

@@ -283,7 +283,7 @@
 
         //disable this in production for performance boost
         //batarang uses this for scope inspection
-        //https://docs.angularjs.org/guide/production
+        //grunt
         if ( window.location.host !== 'localhost:9001') {
             $compileProvider.debugInfoEnabled(false);
         }
