@@ -86,11 +86,14 @@ angular.module('katGui.d3')
         };
 
         function updateTooltipValues(d, tooltip) {
+            //to display readable tooltips, no matter the zoom level
+            var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
             tooltip.html(
-                "sensor: " + (d.depth === 0? d.name + ":" + d.sensor : d.sensor) +
+                "<div style='font-size: +"+ fontSizeAfterZoom +"px'>sensor: " + (d.depth === 0? d.name + ":" + d.sensor : d.sensor) +
                 "<br/>value: " + d.sensorValue.value +
                 "<br/>status: " + api.statusClassFromNumber(d.sensorValue.status) +
-                "<br/>timestamp: " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY')
+                "<br/>timestamp: " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
+                "</div>"
             );
         }
 
