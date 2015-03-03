@@ -25,9 +25,11 @@
                         resultList.attr('class', function (d) {
                             return setClassesOfSensor(d, attributes[i]);
                         });
-                        if (resultList[0].length === 0) {
-                            console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
-                        }
+                        //if (resultList[0].length === 0) {
+                        ////this just means that the status view is still in the process of being built and drawn in the DOM,
+                        ////the updates will be added in the next interval
+                        //    console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
+                        //}
                     }
                 } else {
                     if (angular.isDefined(stopUpdating)) {
