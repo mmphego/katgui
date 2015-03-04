@@ -18,11 +18,11 @@
         vm.orderBy = vm.orderByFields[0];
 
         vm.userRoles = [
-            {"id": 1, "name": "User Administrator", value: "user_admin", "assignable": true},
-            {"id": 2, "name": "Control Authority", value: "control_authority", "assignable": true},
-            {"id": 3, "name": "Lead Operator", value: "lead_operator", "assignable": true},
-            {"id": 3, "name": "Operator", value: "operator", "assignable": true},
-            {"id": 1, "name": "Read Only", value: "read_only", "assignable": true}
+            {"id": 1, "name": "User Administrator", value: "user_admin"},
+            {"id": 2, "name": "Control Authority", value: "control_authority"},
+            {"id": 3, "name": "Lead Operator", value: "lead_operator"},
+            {"id": 3, "name": "Operator", value: "operator"},
+            {"id": 1, "name": "Read Only", value: "read_only"}
         ];
 
         vm.userData = UserService.users;
@@ -113,8 +113,12 @@
         };
 
         vm.deactivateUser = function (user) {
-
             user.activated = false;
+            vm.saveUser(user);
+        };
+
+        vm.activateUser = function (user) {
+            user.activated = true;
             vm.saveUser(user);
         };
 
