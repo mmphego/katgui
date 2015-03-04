@@ -44,6 +44,7 @@
                     for (var attr in result) {
                         oldUser[attr] = result[attr];
                     }
+                    oldUser.temp = false;
                     oldUser.editing = false;
                     $rootScope.showSimpleToast("Created user");
                 })
