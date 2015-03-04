@@ -15,63 +15,63 @@ describe('AdminCtrl', function () {
         ctrl = $controller('AdminCtrl', {$scope: scope, UserService: UserService, SERVER_URL: _SERVER_URL_});
     }));
 
-    //it('should init the controller with some values and bind service values', inject(function () {
-    //
-    //    expect(ctrl.userRoles.length).not.toEqual(0);
-    //    expect(ctrl.orderByFields.length).not.toEqual(0);
-    //    expect(ctrl.userData).not.toBeNull();
-    //}));
-    //
-    //it('should create a temp user and set that user in edit mode', inject(function () {
-    //
-    //    ctrl.createUser();
-    //    expect(UserService.users.length).toEqual(1);
-    //}));
-    //
-    //it('should set the order by values correctly', inject(function () {
-    //
-    //    //order by name
-    //    ctrl.setOrderBy(ctrl.orderByFields[1].value);
-    //    expect(ctrl.orderBy).toBe(ctrl.orderByFields[1]);
-    //    //order by name again, reverse sort
-    //    ctrl.setOrderBy(ctrl.orderByFields[1].value);
-    //    expect(ctrl.orderBy.reverse).toBeTruthy();
-    //    //order by name again, clear sorting
-    //    ctrl.setOrderBy(ctrl.orderByFields[1].value);
-    //    expect(ctrl.orderBy).toBeNull();
-    //
-    //    ctrl.setOrderBy(null);
-    //    expect(ctrl.orderBy).toBe(undefined);
-    //
-    //}));
-    //
-    //it('should clear the reverse sroting properly', function () {
-    //
-    //    //order by name
-    //    ctrl.setOrderBy(ctrl.orderByFields[1].value);
-    //    expect(ctrl.orderBy).toBe(ctrl.orderByFields[1]);
-    //    //order by name again, reverse sort
-    //    ctrl.setOrderBy(ctrl.orderByFields[1].value);
-    //    expect(ctrl.orderBy.reverse).toBeTruthy();
-    //
-    //    //test for existing false reverse set - it should do nothing
-    //    ctrl.orderByFields[1].reverse = false;
-    //    ctrl.setOrderBy(ctrl.orderByFields[1].value);
-    //    expect(ctrl.orderBy.reverse).toBeFalsy();
-    //});
-    //
-    //it('should set the edit flag on the user', function () {
-    //
-    //    UserService.users.push({id: 'fakeId', name: 'fake_name', email: 'fake@email.com', activated: true});
-    //
-    //    ctrl.editUser(UserService.users[0]);
-    //    expect(UserService.users[0].editing).toBeTruthy();
-    //    //this should do nothing
-    //    ctrl.editUser(UserService.users[0]);
-    //    expect(UserService.users[0].editing).toBeTruthy();
-    //});
-    //
-    //
+    it('should init the controller with some values and bind service values', inject(function () {
+
+        expect(ctrl.userRoles.length).not.toEqual(0);
+        expect(ctrl.orderByFields.length).not.toEqual(0);
+        expect(ctrl.userData).not.toBeNull();
+    }));
+
+    it('should create a temp user and set that user in edit mode', inject(function () {
+
+        ctrl.createUser();
+        expect(UserService.users.length).toEqual(1);
+    }));
+
+    it('should set the order by values correctly', inject(function () {
+
+        //order by name
+        ctrl.setOrderBy(ctrl.orderByFields[1].value);
+        expect(ctrl.orderBy).toBe(ctrl.orderByFields[1]);
+        //order by name again, reverse sort
+        ctrl.setOrderBy(ctrl.orderByFields[1].value);
+        expect(ctrl.orderBy.reverse).toBeTruthy();
+        //order by name again, clear sorting
+        ctrl.setOrderBy(ctrl.orderByFields[1].value);
+        expect(ctrl.orderBy).toBeNull();
+
+        ctrl.setOrderBy(null);
+        expect(ctrl.orderBy).toBe(undefined);
+
+    }));
+
+    it('should clear the reverse sorting properly', function () {
+
+        //order by name
+        ctrl.setOrderBy(ctrl.orderByFields[1].value);
+        expect(ctrl.orderBy).toBe(ctrl.orderByFields[1]);
+        //order by name again, reverse sort
+        ctrl.setOrderBy(ctrl.orderByFields[1].value);
+        expect(ctrl.orderBy.reverse).toBeTruthy();
+
+        //test for existing false reverse set - it should do nothing
+        ctrl.orderByFields[1].reverse = false;
+        ctrl.setOrderBy(ctrl.orderByFields[1].value);
+        expect(ctrl.orderBy.reverse).toBeFalsy();
+    });
+
+    it('should set the edit flag on the user', function () {
+
+        UserService.users.push({id: 'fakeId', name: 'fake_name', email: 'fake@email.com', activated: true});
+
+        ctrl.editUser(UserService.users[0]);
+        expect(UserService.users[0].editing).toBeTruthy();
+        //this should do nothing
+        ctrl.editUser(UserService.users[0]);
+        expect(UserService.users[0].editing).toBeTruthy();
+    });
+
+
     //it('should create the user if the user was a temp user', inject(function($httpBackend) {
     //
     //    //?name=new%20user&email=new_user@ska.ac.za&roles=read_only

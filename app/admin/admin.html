@@ -24,7 +24,6 @@
     </div>
 
     <div ng-if="vm.isUserAdmin" class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative; min-height: 452px;">
-        <loading-overlay ng-show="vm.userListProcessingServerCall"></loading-overlay>
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showUserTools = true;" ng-mouseleave="showUserTools = false;">
             <div class="unselectable md-toolbar-tools" layout="row">
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>

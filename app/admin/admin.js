@@ -194,7 +194,6 @@
                 if (vm.isUserAdmin) {
                     vm.listUsers();
                 }
-                console.log('inited admin page');
             }
         }
     }
