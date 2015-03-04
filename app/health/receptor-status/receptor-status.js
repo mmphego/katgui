@@ -33,8 +33,6 @@
 
 
                             for (var receptor in StatusService.statusData) {
-                                console.log(StatusService.statusData[receptor]);
-
                                 //subscribe to sensors_ok
                                 MonitorService.subscribe(receptor + ":" + StatusService.statusData[receptor].sensor);
 

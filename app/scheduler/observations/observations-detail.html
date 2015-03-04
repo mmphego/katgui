@@ -8,11 +8,11 @@
                     <div layout="row" layout-align="start center" layout-padding flex>
                         <span style="margin-left: 8px;">Observation Schedule for Sub-Array {{vm.subarray_id}}</span>
                         <span flex></span>
-                        <span></span>
-                        <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.toggleSchedulerMode()"
-                            style="font-size: 14px;">
-                            <span>Mode: {{vm.schedulerModes[vm.subarray_id].stringValue}}</span>
-                        </md-button>
+                        <span>Mode:</span>
+                        <md-select ng-model="vm.selectedMode" style="margin-top: 0px; margin-left: 4px; margin-right:8px;" ng-change="vm.schedulerModeChanged()"
+                                   class="md-primary" md-theme="{{themePrimaryButtons}}">
+                            <md-option ng-value="type" ng-repeat="type in vm.modeTypes">{{type}}</md-option>
+                        </md-select>
                     </div>
                 </md-toolbar>
 
