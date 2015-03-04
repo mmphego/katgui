@@ -11,7 +11,7 @@ describe('AdminCtrl', function () {
     beforeEach(inject(function ($rootScope, $controller, $timeout, _UserService_, _SERVER_URL_) {
         scope = $rootScope.$new();
         UserService = _UserService_;
-
+        $rootScope.showSimpleToast = function () {};
         ctrl = $controller('AdminCtrl', {$scope: scope, UserService: UserService, SERVER_URL: _SERVER_URL_});
     }));
 
@@ -72,96 +72,90 @@ describe('AdminCtrl', function () {
     });
 
 
-    //it('should create the user if the user was a temp user', inject(function($httpBackend) {
-    //
-    //    //?name=new%20user&email=new_user@ska.ac.za&roles=read_only
-    //    $httpBackend.expect('POST', UserService.urlBase + '/user/add').respond(200, "");
-    //    $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
-    //
-    //    ctrl.createUser();
-    //    expect(UserService.users.length).toEqual(1);
-    //    UserService.users[0].roles = null;
-    //    ctrl.saveUser(UserService.users[0]);
-    //
-    //    $httpBackend.flush();
-    //
-    //    //?name=new%20user&email=new_user@ska.ac.za&roles=read_only
-    //    $httpBackend.expect('POST', UserService.urlBase + '/user/add').respond(200, "");
-    //    $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
-    //
-    //    ctrl.createUser();
-    //    ctrl.saveUser(UserService.users[UserService.users.length - 1]);
-    //
-    //    $httpBackend.flush();
-    //
-    //    //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=true&roles=control_authority,lead_operator
-    //    $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
-    //    $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
-    //
-    //    ctrl.saveUser(UserService.users[0]);
-    //
-    //    $httpBackend.flush();
-    //}));
-    //
-    //it('should list the users', inject(function($httpBackend) {
-    //
-    //    $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
-    //
-    //    //this should only call the api method, the user list is handled in the service
-    //    ctrl.listUsers();
-    //
-    //    $httpBackend.flush();
-    //}));
-    //
-    //it('should undo user changes', function() {
-    //
-    //    //this should only call the api method, the user list is handled in the service
-    //    UserService.users = userListResponse;
-    //    ctrl.editUser(UserService.users[0]);
-    //    expect(UserService.users[0].editing).toBeTruthy();
-    //
-    //    UserService.users[0].name = 'new fake name';
-    //    UserService.users[0].email = 'newake@email.com';
-    //    UserService.users[0].roles = ['new fake role'];
-    //
-    //    ctrl.undoUserChanges(UserService.users[0]);
-    //    expect(UserService.users[0].name).toEqual('Francois Joubert');
-    //    expect(UserService.users[0].email).toEqual('fjoubert@ska.ac.za');
-    //    expect(UserService.users[0].roles).toEqual(["control_authority","lead_operator"]);
-    //
-    //});
-    //
-    //it('should undo user creation if user was temp', function () {
-    //    ctrl.createUser();
-    //    expect(UserService.users.length).toBe(1);
-    //    ctrl.undoUserChanges(UserService.users[0]);
-    //    expect(UserService.users.length).toBe(0);
-    //});
-    //
-    //it('should deactivate a user', inject(function($httpBackend) {
-    //
-    //    //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator
-    //    $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
-    //    $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
-    //
-    //    UserService.users = userListResponse;
-    //    ctrl.deactivateUser(UserService.users[0]);
-    //
-    //    $httpBackend.flush();
-    //}));
-    //
+    it('should create the user if the user was a temp user', inject(function($httpBackend) {
+
+        //?name=new%20user&email=new_user@ska.ac.za&roles=read_only
+        $httpBackend.expect('POST', UserService.urlBase + '/user/add').respond(200, {
+            name: 'test',
+            email: 'test@mail.test',
+            roles: ['read_only']
+        });
+
+        ctrl.createUser();
+        expect(UserService.users.length).toEqual(1);
+        UserService.users[0].roles = null;
+        ctrl.saveUser(UserService.users[0]);
+
+        $httpBackend.flush();
+
+        //?name=new%20user&email=new_user@ska.ac.za&roles=read_only
+        $httpBackend.expect('POST', UserService.urlBase + '/user/add').respond(200, "");
+
+        ctrl.createUser();
+        ctrl.saveUser(UserService.users[UserService.users.length - 1]);
+
+        $httpBackend.flush();
+    }));
+
+    it('should list the users', inject(function($httpBackend) {
+
+        $httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
+
+        //this should only call the api method, the user list is handled in the service
+        ctrl.listUsers();
+
+        $httpBackend.flush();
+    }));
+
+    it('should undo user changes', function() {
+
+        //this should only call the api method, the user list is handled in the service
+        UserService.users = userListResponse;
+        ctrl.editUser(UserService.users[0]);
+        expect(UserService.users[0].editing).toBeTruthy();
+
+        UserService.users[0].name = 'new fake name';
+        UserService.users[0].email = 'newake@email.com';
+        UserService.users[0].roles = ['new fake role'];
+
+        ctrl.undoUserChanges(UserService.users[0]);
+        expect(UserService.users[0].name).toEqual('Francois Joubert');
+        expect(UserService.users[0].email).toEqual('fjoubert@ska.ac.za');
+        expect(UserService.users[0].roles).toEqual(["control_authority","lead_operator"]);
+
+    });
+
+    it('should undo user creation if user was temp', function () {
+        ctrl.createUser();
+        expect(UserService.users.length).toBe(1);
+        ctrl.undoUserChanges(UserService.users[0]);
+        expect(UserService.users.length).toBe(0);
+    });
+
+    it('should deactivate a user', inject(function($httpBackend) {
+
+        //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator
+        $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
+        ctrl.deactivateUser({name: 'test', roles: [], id: 1});
+
+        $httpBackend.flush();
+    }));
+
+    it('should activate a user', inject(function($httpBackend) {
+
+        //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator
+        $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
+        ctrl.activateUser({name: 'test', roles: [], id: 1});
+
+        $httpBackend.flush();
+    }));
+
     //it('should reset the password', inject(function($httpBackend, $mdDialog) {
     //
-    //    UserService.users = userListResponse;
-    //    ctrl.resetPassword(null, UserService.users[0]);
+    //    $httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&password=undefined&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator').respond(200, "");
     //
-    //    //$httpBackend.expect('POST', UserService.urlBase + '/user/1?name=Francois%20Joubert&password=undefined&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator').respond(200, "");
-    //    //$httpBackend.expect('GET', UserService.urlBase + '/user/list').respond(200, userListResponse);
-    //
-    //    //UserService.users = userListResponse;
-    //    //ctrl.deactivateUser(UserService.users[0]);
-    //
-    //    //$httpBackend.flush();
+    //    ctrl.resetPassword(null, {name: 'test', roles: [], id: 1});
+    //    $httpBackend.flush();
     //}));
 
 });

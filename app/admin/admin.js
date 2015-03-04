@@ -162,7 +162,7 @@
                 .then(function (answer) {
                     passwordHash = CryptoJS.SHA256(answer).toString();
 
-                    /* istanbul ignore next */
+
                     UserService.resetPassword(user, passwordHash).then(function (result) {
                         $rootScope.showSimpleToast('Password successfully reset.');
                     }, function (result) {
@@ -173,7 +173,6 @@
                 }, function () {
                     $rootScope.showSimpleToast('Cancelled Password reset.');
                 });
-
         };
 
         var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
@@ -195,21 +194,21 @@
 
         $scope.$on('$destroy', function () {
             unbindShortcuts('keydown');
+            vm.undbindLoginSuccess('loginSuccess');
         });
 
-        //list users on the next digest cycle, i.e. after controller init
-        $timeout(afterInitFunction, 200);
-        $rootScope.$on('loginSuccess', afterInitFunction);
-
-        vm.inited = false;
-        function afterInitFunction() {
-            if ($rootScope.currentUser && !vm.inited) {
-                vm.inited = true;
+        vm.afterInit = function() {
+            console.log($rootScope.currentUser);
+            if ($rootScope.currentUser) {
                 vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1;
                 if (vm.isUserAdmin) {
                     vm.listUsers();
                 }
+            } else {
+                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
-        }
+        };
+
+        vm.afterInit();
     }
 })();
