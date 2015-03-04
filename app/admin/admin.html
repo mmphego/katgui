@@ -4,11 +4,6 @@
         <md-toolbar class="panel-toolbar md-whiteframe-z1" layout="row" layout-align="center">
             <span class="md-toolbar-tools" flex>{{::currentUser.name}}'s Account Details</span>
         </md-toolbar>
-        <!--<div flex layout="row" style="width: 100%;">-->
-            <!--<span style="min-width: 265px;" flex>{{::currentUser.name}}</span>-->
-            <!--<span flex>{{::currentUser.email}}</span>-->
-            <!--<span flex>{{::currentUser.roles}}</span>-->
-        <!--</div>-->
         <div style="width: 100%; height: auto;">
             <div class="md-whiteframe-z3" flex layout="row" layout-align="start center" style="background: white; margin: 32px; height: 80px; overflow: auto;">
                 <div flex style="min-width: 265px; text-align: center; display: inline-block;" layout="row">
@@ -33,7 +28,9 @@
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showUserTools = true;" ng-mouseleave="showUserTools = false;">
             <div class="unselectable md-toolbar-tools" layout="row">
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
-                <md-checkbox class="fade-in" aria-label="Show Deactivated Users" ng-show="showUserTools" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">Show Deactivated Users
+                <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary" aria-label="Show Deactivated Users" ng-show="showUserTools"
+                             style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">
+                    Show Deactivated Users
                 </md-checkbox>
 
                 <input class="fade-in search-input-box" style="min-width: 250px;" ng-show="showUserTools || q" type="search"
@@ -63,32 +60,26 @@
             </div>
         </md-toolbar>
 
-
         <div id="userListId" flex class="user-list">
-            <div class="user-row animate-repeat" ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value:vm.orderBy.reverse as results track by user.id" flex layout="row"
-                 layout-align="start center"
-                 style="background: white;"
+            <div class="user-row animate-repeat" ng-repeat="user in vm.userData | filter:q | orderBy:vm.orderBy.value:vm.orderBy.reverse as results track by user.id"
+                 flex layout="row" layout-align="start center" style="background: white;"
                  ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
-                <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row" title="Name">
-                    <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}" label="Name" ng-if="user.editing" ng-model="user.name"/>
-                    <span class="cell-span" ng-if="!user.editing">{{user.name}}</span>
-                </div>
-                <div flex class="user-cell" style="max-width: 265px; min-width: 265px;" layout="row">
-                    <input flex type="text" placeholder="Name" md-theme="{{themeSecondary}}" label="Email" ng-if="user.editing" ng-model="user.email" title="Email"/>
-                    <span class="cell-span" ng-if="!user.editing">{{user.email}}</span>
-                </div>
-                <div flex class="user-cell" style="min-width: 365px;" layout-align="start center" layout="row" title="User Roles">
-                    <dropdown-multiselect ng-if="user.editing" options="vm.userRoles" model="user"></dropdown-multiselect>
-                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length > 0" ng-repeat="role in user.roles | orderBy:role">{{role}},</span>
-                    <span class="cell-span" style="margin-left: 14px;" ng-if="!user.editing && user.roles.length === 0">No Roles Assigned</span>
-                </div>
+                <input flex type="text" placeholder="Name" class="user-admin-input" md-theme="{{themeSecondary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}"
+                       label="Name" ng-disabled="!user.editing" ng-model="user.name" style="max-width: 265px; min-width: 265px;"/>
+                <input flex type="text" class="user-admin-input" style="max-width: 265px; min-width: 265px;" placeholder="Name" md-theme="{{themeSecondary}}"
+                       label="Email" ng-disabled="!user.editing" ng-model="user.email" title="Email"/>
+                <md-select flex ng-disabled="!user.editing" ng-model="user.roles" multiple style="margin-top: 0px; margin-left: 4px; margin-right:8px;"
+                           class="md-primary md-select-custom-disabled-text" md-theme="{{themePrimaryButtons}}" placeholder="No Roles Assigned">
+                    <md-option ng-value="role.value" ng-repeat="role in vm.userRoles">{{role.name}}</md-option>
+                </md-select>
 
-                <span flex></span>
-
-                <div flex ng-show="user.editing" class="user-editing-buttons" layout="row">
+                <div ng-show="user.editing" class="user-editing-buttons" layout="row">
                     <span flex></span>
-                    <button title="Deactivate User" ng-show="!user.temp" class="user-row-button" ng-click="vm.deactivateUser(user)">
+                    <button title="Deactivate User" ng-show="!user.temp && user.activated" class="user-row-button" ng-click="vm.deactivateUser(user)">
                         <span class="fa fa-ban"></span>
+                    </button>
+                    <button title="Activate User" ng-show="!user.temp && !user.activated" class="user-row-button" ng-click="vm.activateUser(user)">
+                        <span class="fa fa-certificate"></span>
                     </button>
                     <button title="Undo User Changes" class="user-row-button" ng-click="vm.undoUserChanges(user)">
                         <span class="fa fa-undo"></span>
@@ -109,11 +100,6 @@
                     <span>Deactivated User</span>
                 </md-tooltip>
             </div>
-            <!--<md-item>-->
-            <!--<md-content class="animate-repeat" ng-if="results.length == 0">-->
-            <!--<strong>No results found...</strong>-->
-            <!--</md-content>-->
-            <!--</md-item>-->
         </div>
     </div>
 </div>
