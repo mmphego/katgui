@@ -198,7 +198,6 @@
         });
 
         vm.afterInit = function() {
-            console.log($rootScope.currentUser);
             if ($rootScope.currentUser) {
                 vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1;
                 if (vm.isUserAdmin) {
