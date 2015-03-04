@@ -9,8 +9,8 @@
         vm.subarray_id = parseInt($stateParams.subarray_id);
         vm.draftListProcessingServerCall = false;
         vm.scheduleListProcessingServerCall = false;
-
         vm.selectedSchedule = null;
+        vm.modeTypes = ['queue', 'manual'];
 
         vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
         vm.scheduleData = ObservationScheduleService.scheduleData;
@@ -33,7 +33,10 @@
                 .then(function () {
                     ObservationScheduleService.listAllocationsForSubarray(vm.subarray_id)
                         .then(function() {
-                            ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id);
+                            ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id)
+                                .then(function() {
+                                    vm.selectedMode = ObservationScheduleService.schedulerModes[vm.subarray_id].stringValue;
+                                });
                         });
                 });
         };
@@ -95,10 +98,8 @@
             alert(JSON.stringify(sb, null, 4));
         };
 
-        vm.toggleSchedulerMode = function () {
-            ObservationScheduleService.setSchedulerModeForSubarray(
-                vm.subarray_id,
-                vm.schedulerModes[vm.subarray_id].stringValue !== 'manual'? 'manual' : 'queue')
+        vm.schedulerModeChanged = function () {
+            ObservationScheduleService.setSchedulerModeForSubarray(vm.subarray_id, vm.selectedMode)
                 .then($rootScope.displayPromiseResult);
         };
 
