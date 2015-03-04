@@ -2,7 +2,7 @@
     angular.module('katGui.admin', ['katGui.services', 'katGui.util'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl(UserService, $timeout, KatGuiUtil, $mdDialog, $rootScope) {
+    function AdminCtrl($scope, UserService, $timeout, KatGuiUtil, $mdDialog, $rootScope) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
@@ -103,9 +103,12 @@
                 UserService.removeTempUser(user);
             } else {
                 user.editing = false;
-                user.name = user.originalUser.name;
-                user.email = user.originalUser.email;
-                user.roles = user.originalUser.roles;
+                if (user.originalUser) {
+                    user.name = user.originalUser.name;
+                    user.email = user.originalUser.email;
+                    user.roles = user.originalUser.roles;
+                }
+                user.originalUser = undefined;
             }
         };
 
@@ -172,6 +175,27 @@
                 });
 
         };
+
+        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
+
+           if (key === 27) {
+                //escape
+               for (var i = vm.sortedUserData.length - 1; i > -1; i--) {
+                   if (vm.sortedUserData[i].temp || vm.sortedUserData[i].originalUser) {
+                       vm.undoUserChanges(vm.sortedUserData[i]);
+                       break;
+                   }
+               }
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        });
+
+        $scope.$on('$destroy', function () {
+            unbindShortcuts('keydown');
+        });
 
         //list users on the next digest cycle, i.e. after controller init
         $timeout(afterInitFunction, 200);
