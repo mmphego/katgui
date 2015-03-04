@@ -18,11 +18,11 @@
         vm.orderBy = vm.orderByFields[0];
 
         vm.userRoles = [
-            {"id": 1, "name": "User Administrator", value: "user_admin"},
-            {"id": 2, "name": "Control Authority", value: "control_authority"},
-            {"id": 3, "name": "Lead Operator", value: "lead_operator"},
-            {"id": 3, "name": "Operator", value: "operator"},
-            {"id": 1, "name": "Read Only", value: "read_only"}
+            {"name": "User Administrator", value: "user_admin"},
+            {"name": "Control Authority", value: "control_authority"},
+            {"name": "Lead Operator", value: "lead_operator"},
+            {"name": "Operator", value: "operator"},
+            {"name": "Read Only", value: "read_only"}
         ];
 
         vm.userData = UserService.users;
