@@ -22,7 +22,7 @@
 
         function onSockJSOpen() {
             if (connection && connection.readyState) {
-                console.log('Observation Schedule Connection Established.');
+                console.log('Observation Schedule Connection Established. Authenticating...');
                 authenticateSocketConnection();
             }
         }
@@ -42,7 +42,7 @@
         }
 
         function onSockJSClose() {
-            console.log('Disconnecting Observation Schedule Connection');
+            console.log('Disconnected Observation Schedule Connection.');
             connection = null;
         }
 
@@ -54,7 +54,7 @@
                 console.error(e.data);
             } else {
                 var result = jsonData.result;
-                console.log(result);
+//                console.log(result);
 
                 if (result.get_schedule_blocks) {
                     var getResult = JSON.parse(result.get_schedule_blocks);
@@ -323,7 +323,11 @@
                     console.warn('Observation Schedule returned an unfamiliar message: ');
                     console.warn(e);
                 } else if (result.session_id) {
+                    console.log('Observation Schedule Connection Authenticated.');
                     connection.authorized = true;
+                } else {
+                    console.error('Observation Schedule Connection Authentication failed!.');
+                    connection.authorized = false;
                 }
 
                 if (deferredMap[jsonData.id]) {
