@@ -11,7 +11,7 @@
 
         api.onSockJSOpen = function () {
             if (connection && connection.readyState) {
-                console.log('Control Connection Established.');
+                console.log('Control Connection Established. Authenticating...');
                 authenticateSocketConnection();
             }
         };
@@ -30,6 +30,12 @@
             }
             else if (result && result.result.session_id) {
                 connection.authorized = true;
+                console.log('Control Connection Established. Authenticated.');
+            } else {
+                //bad auth response
+                api.connectionAuthorised = false;
+                console.log('Control Connection Established. Authentication failed.');
+                console.error(messages);
             }
         };
 

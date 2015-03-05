@@ -3,14 +3,16 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail(ObservationScheduleService, $timeout, $stateParams, $scope, $rootScope) {
+    function SubArrayObservationsDetail(ObservationScheduleService, $timeout, $stateParams, $scope, $rootScope, ConfigService) {
 
         var vm = this;
         vm.subarray_id = parseInt($stateParams.subarray_id);
         vm.draftListProcessingServerCall = false;
         vm.scheduleListProcessingServerCall = false;
         vm.selectedSchedule = null;
+        vm.showEditMenu = false;
         vm.modeTypes = ['queue', 'manual'];
+        ConfigService.loadKATObsPortalURL();
 
         vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
         vm.scheduleData = ObservationScheduleService.scheduleData;
@@ -101,6 +103,67 @@
         vm.schedulerModeChanged = function () {
             ObservationScheduleService.setSchedulerModeForSubarray(vm.subarray_id, vm.selectedMode)
                 .then($rootScope.displayPromiseResult);
+        };
+
+        vm.viewSBTaskLog = function (item) {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/tailtask/" + item.id_code + "/progress").focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
+        };
+
+        //schedulerEditMenu
+        vm.openSchedulerEditMenu = function (item, $event) {
+            var rowIndex = vm.currentScheduleData.indexOf(item);
+            if (vm.currentEditMenuIndex !== rowIndex) {
+                vm.setSelectedSchedule(vm.currentScheduleData[rowIndex], true);
+                var rect = $event.currentTarget.getBoundingClientRect();
+                var offset = {x: 0, y: 44};
+                var overLayCSS = {
+                    left: rect.left + offset.x + 'px',
+                    top: rect.top + offset.y + 'px'
+                };
+                angular.element(document.getElementById('schedulerEditMenu')).css(overLayCSS);
+                vm.currentEditMenuIndex = vm.currentScheduleData.indexOf(vm.currentScheduleData[rowIndex]);
+                vm.showEditMenu = true;
+            } else {
+                //the same row's button was clicked, so close the popup
+                vm.closeEditMenu();
+            }
+            $event.stopPropagation();
+        };
+
+        vm.closeEditMenu = function() {
+            if (vm.showEditMenu) {
+                vm.showEditMenu = false;
+                vm.currentEditMenuIndex = -1;
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        };
+
+        vm.moveSelectedSBToDraft = function() {
+            if (vm.selectedSchedule) {
+                vm.moveScheduleRowToDraft(vm.selectedSchedule);
+            }
+            vm.closeEditMenu();
+        };
+
+        vm.viewSelectedSBTaskLog = function() {
+            if (vm.selectedSchedule) {
+                vm.viewSBTaskLog(vm.selectedSchedule);
+            }
+            vm.closeEditMenu();
+        };
+
+        vm.moveSelectedSBToFinished = function() {
+            if (vm.selectedSchedule) {
+                vm.moveScheduleRowToFinished(vm.selectedSchedule);
+            }
+            vm.closeEditMenu();
         };
 
         var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {

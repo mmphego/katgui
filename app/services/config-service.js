@@ -3,12 +3,23 @@
     angular.module('katGui.services')
         .service('ConfigService', ConfigService);
 
-    function ConfigService($q, $http, SERVER_URL, $rootScope, $timeout) {
+    function ConfigService($q, $http, SERVER_URL, $rootScope) {
 
         var urlBase = SERVER_URL + ':8840';
         var api = {};
         api.receptorStatusTree = {};
         api.receptorList = [];
+        api.KATObsPortalURL = null;
+
+        api.loadKATObsPortalURL = function () {
+            $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
+                .success(function (result) {
+                    api.KATObsPortalURL = "http://" + JSON.parse(result);
+                })
+                .error(function(message) {
+                    console.error(message);
+                });
+        };
 
         api.getStatusTreeForReceptor = function () {
             return $http(createRequest('get', urlBase + '/statustrees/receptors_view/receptors'));

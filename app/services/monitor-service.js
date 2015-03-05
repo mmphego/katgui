@@ -41,7 +41,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     api.onSockJSOpen = function () {
         if (connection && connection.readyState) {
             console.log('Monitor Connection Established. Authenticating...');
-
             authenticateSocketConnection();
             api.subscribeToAlarms();
         }
@@ -96,11 +95,11 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             if (messages.result.email && messages.result.session_id) {
                 $localStorage['currentUserToken'] = $rootScope.jwt;
                 api.connectionAuthorised = true;
-
+                console.log('Monitor Connection Established. Authenticated.');
             } else {
                 //bad auth response
                 api.connectionAuthorised = false;
-                console.error('Bad auth response:');
+                console.log('Monitor Connection Established. Authentication failed.');
                 console.error(messages);
             }
         }
