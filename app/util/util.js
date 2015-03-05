@@ -1,109 +1,25 @@
 angular.module('katGui.util', [])
-    .directive('resizer', resizer)
-    .directive('addListItemAnimation', addListItemAnimation)
-    .directive('loadingOverlay', loadingOverlay)
     .directive('autoGrow', autoGrow)
     .constant('SERVER_URL', window.location.host === 'localhost:9001' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
-    .factory('KatGuiUtil', katGuiUtil);
+    .factory('KatGuiUtil', katGuiUtil)
+    .filter('regexSearch', regexSearchFilter);
 
-function resizer($document) {
-
-    return function (scope, element, attrs) {
-
-        element.on('mousedown', function (event) {
-            event.preventDefault();
-
-            //angular.element(attrs.resizerFlexParent).removeAttr('flex');
-            $document.on('mousemove', mousemove);
-            $document.on('mouseup', mouseup);
-        });
-
-        function mousemove(event) {
-
-            if (attrs.resizer === 'vertical') {
-                // Handle vertical resizer
-                var x = window.innerWidth - event.pageX;
-                angular.element(attrs.resizerTarget).css({
-                    width: x + 'px'
-                });
-
-            } else {
-                // Handle horizontal resizer
-
-                var y = event.pageY - angular.element(attrs.resizerTarget).offset().top;
-
-                angular.element(attrs.resizerTarget).css({
-                    height: y - 8 + 'px'
-                });
-            }
-        }
-
-        function mouseup() {
-            $document.unbind('mousemove', mousemove);
-            $document.unbind('mouseup', mouseup);
-            //angular.element(attrs.resizerFlexParent).attr('flex');
-        }
-    };
-}
-
-//add this to the span containing either text or icon inside a md-button
-function addListItemAnimation($animate) {
-    return {
-        restrict: 'EA',
-        scope: {
-            list: '@',
-            height: '@'
-        },
-        link: function (scope, element) {
-            var parent = element.parent();
-            var parentRect = parent[0].getBoundingClientRect();
-
-            element.detach();
-            angular.element('body').append(element);
-            element.addClass('add-list-item');
-            parent.on('click', function () {
-
-                var listRect = angular.element(scope.list)[0].getBoundingClientRect();
-
-                $animate.addClass(element, 'on', {
-                    from: {
-                        width: parentRect.width,
-                        height: parentRect.height,
-                        left: parentRect.left + 'px',
-                        top: parentRect.top + 'px',
-                        //opacity: '0',
-                        display: 'block',
-                        //border: '1px solid lightgrey',
-                        background: 'white',
-                        'box-shadow': '0px 2px 5px 0 rgba(0, 0, 0, 0.26)'
-                    },
-                    to: {
-                        left: listRect.left + 'px',
-                        top: listRect.top + 'px',
-                        width: listRect.width + 'px',
-                        height: scope.height + 'px'
-                        //opacity: '0.8'
+function regexSearchFilter() {
+    return function(input, fields, regex) {
+        if (regex) {
+            var pattern = new RegExp(regex, 'i');
+            var out = [];
+            for (var i = 0; i < input.length; i++){
+                for (var idx in fields) {
+                    if(pattern.test(input[i][fields[idx].value])) {
+                        out.push(input[i]);
+                        break;
                     }
-                }).then(function () {
-                    //element.css('opacity', 0);
-                    element.removeClass('on');
-                    element.css('display', 'none');
-                });
-
-            });
-        }
-    };
-}
-
-//for the overlay to work, set parent style position: relative
-function loadingOverlay() {
-    return {
-        restrict: 'E',
-        template: '<div layout="row" layout-align="center center" class="overlay-loading-div">' +
-        '<md-progress-circular md-theme="{{themeSecondary}}" class="md-whiteframe-z4" md-mode="indeterminate" style="border-radius: 30px;"></md-progress-circular>' +
-        '</div>',
-        controller: function () {
-
+                }
+            }
+            return out;
+        } else {
+            return input;
         }
     };
 }

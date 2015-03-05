@@ -46,7 +46,7 @@
             </div>
         </md-toolbar>
         <div class="schedule-draft-data-list" flex>
-            <div ng-repeat="item in vm.scheduleDraftData | filter:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse as filteredDraftItems"
+            <div ng-repeat="item in vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse as filteredDraftItems"
                  ng-click="vm.setSelectedScheduleDraft(item)"
                  ng-class="{'selected-draft-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
                 <div layout="row" layout-align="center center">

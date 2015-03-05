@@ -9,7 +9,7 @@
 
         vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
-            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Timestamp', value: 'date'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
             {label: 'Message', value: 'value'}
@@ -17,7 +17,7 @@
 
         vm.knownAlarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
-            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Timestamp', value: 'date'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
             {label: 'Message', value: 'value'}
@@ -33,7 +33,7 @@
             vm.alarmsOrderBy = newOrderBy;
         };
 
-        vm.setAlarmsOrderBy('timestamp', true);
+        vm.setAlarmsOrderBy('date', true);
 
         vm.setKnownAlarmsOrderBy = function (column, reverse) {
             var newOrderBy = _.findWhere(vm.knownAlarmsOrderByFields, {value: column});
@@ -45,7 +45,7 @@
             vm.knownAlarmsOrderBy = newOrderBy;
         };
 
-        vm.setKnownAlarmsOrderBy('timestamp', true);
+        vm.setKnownAlarmsOrderBy('date', true);
 
         vm.toggleSelectAllKnownAlarms = function (selected) {
 

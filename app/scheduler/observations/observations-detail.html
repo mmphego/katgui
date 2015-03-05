@@ -97,8 +97,8 @@
                     </div>
                 </md-toolbar>
 
-                <div class="schedule-draft-data-list slide-in-vertically-panel-content" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
-                    <div ng-repeat="item in vm.scheduleCompletedData | filter:vm.q3  | filter:{sub_nr:vm.subarray_id} | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
+                <div flex class="schedule-draft-data-list slide-in-vertically-panel-content" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
+                    <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedOrderByFields:vm.q3 | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
                          class="schedule-draft-item animate-repeat" layout="column">
 
                         <div style="" layout="row" layout-align="center center">
