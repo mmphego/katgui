@@ -35,7 +35,6 @@
                 //bad auth response
                 api.connectionAuthorised = false;
                 console.log('Control Connection Established. Authentication failed.');
-                console.error(messages);
             }
         };
 
