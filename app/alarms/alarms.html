@@ -11,7 +11,7 @@
                     <md-tooltip>Select All Alarms</md-tooltip>
                 </span>
                 <span flex></span>
-                <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 850px;">
+                <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 890px;">
                     <input class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search" style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
                     <md-button ng-click="vm.knowSelectedAlarms()" aria-label="Add as Known" class="md-primary md-raised">Add as Known</md-button>
@@ -55,7 +55,7 @@
             </div>
         </md-toolbar>
         <div flex class="alarms-list alarms-list-large" ng-click="vm.selectAllAlarms = false">
-            <div ng-repeat="item in $root.alarmsData | filter:{priority:'!known'} | filter:vm.q | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse as results" class="animate-repeat">
+            <div ng-repeat="item in $root.alarmsData | filter:{priority:'!known'} | regexSearch:vm.alarmsOrderByFields:vm.q | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse as results" class="animate-repeat">
                 <div ng-click="item.selected = !item.selected" class="alarm-row-item"
                      ng-if="vm.showClearedAlarms || item.priority !== 'cleared'"
                      ng-switch="item.severity" layout="row" layout-align="start center">
@@ -181,7 +181,7 @@
         </md-toolbar>
 
         <div flex class="alarms-list alarms-list-small" ng-click="vm.selectAllKnownAlarms = false">
-            <div ng-repeat="item in $root.alarmsData | filter:{priority:'known'} | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse | filter:vm.q2 as resultsKnown" class="animate-repeat">
+            <div ng-repeat="item in $root.alarmsData | filter:{priority:'known'} | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse as resultsKnown" class="animate-repeat">
                 <div ng-if="(vm.showKnownNominalAlarms || item.severity !== 'nominal') && (vm.showKnownMaintenanceAlarms || item.severity !== 'maintenance')"
                      ng-click="item.selected = !item.selected" flex class="alarm-row-item"
                      ng-switch="item.severity" layout="row" layout-align="start center">
