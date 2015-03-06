@@ -166,7 +166,7 @@
             return $state.current.title;
         };
 
-        vm.navigateToParentState = function() {
+        vm.navigateToParentState = function () {
             if ($state.current.parent) {
                 if ($state.current.name === 'scheduler.observations.detail') {
                     $state.go('scheduler.observations');
@@ -211,7 +211,7 @@
         vm.utcTime = '';
         vm.localTime = '';
 
-        $rootScope.displayPromiseResult = function(result) {
+        $rootScope.displayPromiseResult = function (result) {
             if (result.result === 'ok') {
                 $rootScope.showSimpleToast(result.message);
             } else {
@@ -219,7 +219,7 @@
             }
         };
 
-        $rootScope.showSimpleDialog = function(title, message) {
+        $rootScope.showSimpleDialog = function (title, message) {
             var alert = $mdDialog.alert()
                 .title(title)
                 .content(message)
@@ -231,6 +231,34 @@
                 });
 
             console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
+        };
+
+        $rootScope.showSBDetails = function (sb, event) {
+            $rootScope.mdDialogSb = sb;
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+
+                        $scope.themePrimary = $rootScope.themePrimaryButtons;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.sb = $rootScope.mdDialogSb;
+
+                        /* istanbul ignore next */
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                            $rootScope.mdDialogSb = undefined;
+                        };
+                    },
+                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label='Schedule Block Details'>" +
+                    "<md-content style='padding: 0px; margin: 0px; width: 500px;height:800px' layout='column' layout-padding >" +
+                    "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
+                    "<textarea style='resize: none; overflow: auto; border: 0;' auto-grow readonly>{{sb | json:4}}</textarea>" +
+                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
+                    "</div>" +
+                    "</md-content></md-dialog>",
+                    targetEvent: event
+                });
         };
 
         var updateTimeDisplay = function () {
@@ -272,7 +300,7 @@
         }
 
         //so that all controllers and directives has access to which keys are pressed
-        document.onkeydown = function(event) {
+        document.onkeydown = function (event) {
             event = event || window.event;
             $rootScope.$emit('keydown', event.keyCode);
         };
@@ -285,7 +313,7 @@
         //disable this in production for performance boost
         //batarang uses this for scope inspection
         //grunt
-        if ( window.location.host !== 'localhost:9001') {
+        if (window.location.host !== 'localhost:9001') {
             $compileProvider.debugInfoEnabled(false);
         }
 

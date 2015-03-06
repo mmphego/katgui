@@ -94,11 +94,6 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        vm.showScheduleBlockDetails = function (sb) {
-            //showSimpleDialog('Schedule Block Details', JSON.stringify(sb, null, 4));
-            alert(JSON.stringify(sb, null, 4));
-        };
-
         vm.schedulerModeChanged = function () {
             ObservationScheduleService.setSchedulerModeForSubarray(vm.subarray_id, vm.selectedMode)
                 .then($rootScope.displayPromiseResult);

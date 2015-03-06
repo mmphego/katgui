@@ -42,11 +42,6 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        vm.showScheduleBlockDetails = function (sb) {
-            //showSimpleDialog('Schedule Block Details', JSON.stringify(sb, null, 4));
-            alert(JSON.stringify(sb, null, 4));
-        };
-
         vm.scheduleCurrentMenuItemDraft = function () {
             if (vm.currentActionsMenuIndex > -1) {
                 var sb = ObservationScheduleService.scheduleDraftData[vm.currentActionsMenuIndex];

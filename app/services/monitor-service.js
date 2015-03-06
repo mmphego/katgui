@@ -3,7 +3,7 @@
 angular.module('katGui.services')
     .service('MonitorService', MonitorService);
 
-function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService, AlarmsService) {
+function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService, AlarmsService, ObservationScheduleService) {
 
     var urlBase = SERVER_URL + ':8830';
     var connection = null;
@@ -58,7 +58,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             console.error('There was an error sending a jsonrpc request:');
             console.error(messages);
         } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
-            //console.log('received redis-pubsub-init message:');
             //console.log(messages);
 
             if (messages.result) {
@@ -74,7 +73,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     if (_.isString(message)) {
                         messageObj = JSON.parse(message);
                     }
-
                     var channelNameSplit = messageObj.msg_channel.split(":");
 
                     if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
@@ -82,10 +80,12 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     } else if (channelNameSplit.length > 1 &&
                         (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
                         api.receptorMessageReceived(messageObj.msg_channel, messageObj.msg_data);
+                    }  else if (messageObj.msg_channel.lastIndexOf('sched:', 0) === 0) {
+                        ObservationScheduleService.receivedSchedMessage(messageObj.msg_channel, messageObj.msg_data);
                     } else if (channelNameSplit.length > 1) {
                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                     } else {
-                        console.log('dangling monitor message...');
+                        console.log('Dangling monitor message...');
                         console.log(messageObj);
                     }
                 });

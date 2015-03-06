@@ -22,10 +22,6 @@
             $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
         };
 
-        vm.displaySBDetails = function (sb) {
-            alert(JSON.stringify(sb, null, 4));
-        };
-
         $timeout(vm.refreshResources, 0);
     }
 

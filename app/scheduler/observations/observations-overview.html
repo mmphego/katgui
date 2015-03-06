@@ -69,7 +69,7 @@
                          class="schedule-draft-item animate-repeat" layout="column">
                         <div flex layout="row" layout-align="start center">
                             <div layout="row" class="schedule-block-name-div" style="cursor: text">
-                                <span class="schedule-block-id-text" style="cursor: pointer;" ng-click="vm.displaySBDetails(item)">{{item.id_code}}</span>
+                                <span class="schedule-block-id-text" style="cursor: pointer;" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
 
