@@ -6,8 +6,9 @@
         'ngAnimate'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, ConfigService) {
 
+        ConfigService.loadKATObsPortalURL();
         ObservationScheduleService.connectListener();
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
