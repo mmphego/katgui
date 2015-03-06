@@ -24,6 +24,9 @@
                          class="schedule-draft-item animate-repeat" layout="column">
 
                         <div style="" layout="row" layout-align="center center">
+                            <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
+                            </md-progress-circular>
+                            <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
                             <div layout="row" class="schedule-block-name-div">
                                 <span class="schedule-block-id-text">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
@@ -34,18 +37,20 @@
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
                             <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
-                            <md-button ng-show="item.state !== 'ACTIVE'" md-theme="green" aria-label="Execute Schedule" class="scheduler-inline-button md-primary"
+                            <md-button ng-show="item.state !== 'ACTIVE' && !item.pendingVerify" md-theme="green" aria-label="Execute Schedule" class="scheduler-inline-button md-primary"
                                        ng-click="vm.executeSchedule(item, $event)" title="Execute">
                                 <span class="fa fa-play"></span>
                             </md-button>
-                            <md-button ng-show="item.state === 'ACTIVE'" md-theme="red" aria-label="Stop Executing Schedule" class="scheduler-inline-button md-primary"
+                            <md-button ng-show="item.state === 'ACTIVE' && !item.pendingVerify" md-theme="red" aria-label="Stop Executing Schedule" class="scheduler-inline-button md-primary"
                                        ng-click="vm.stopExecuteSchedule(item)" title="Stop Execution">
                                 <span class="fa fa-stop"></span>
                             </md-button>
-                            <md-button style="transition: 0s;" aria-label="Show Edit Menu" ng-click="vm.openSchedulerEditMenu(item, $event);"
+                            <md-button ng-show="!item.pendingVerify" aria-label="Show Edit Menu" ng-click="vm.openSchedulerEditMenu(item, $event);"
                                        class="scheduler-inline-button">
                                 <span class="fa fa-ellipsis-v"></span>
                             </md-button>
+                            <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
+                            <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
                         </div>
                     </div>
                 </div>
@@ -99,18 +104,14 @@
 
                         <div style="" layout="row" layout-align="center center">
                             <div layout="row" class="schedule-block-name-div">
-                                <span class="schedule-block-id-text" ng-click="vm.showScheduleBlockDetails(item)">{{item.id_code}}</span>
+                                <span class="schedule-block-id-text" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
-
                             <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
-
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
-
                             <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
-
                             <md-button aria-label="Clone To Draft" style="margin-left: 8px;" md-theme="default" class="scheduler-inline-button"
                                        ng-click="vm.cloneSchedule(item);" title="Clone To Draft">
                                 <span class="fa fa-copy"></span>

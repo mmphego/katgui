@@ -18,6 +18,7 @@
         api.poolResources = [];
         api.poolResourcesFree = [];
         api.allocations = [];
+        api.pendingVerificationSBIds = {};
         api.schedulerModes = {};
 
         function onSockJSOpen() {
@@ -60,8 +61,18 @@
                     var getResult = JSON.parse(result.get_schedule_blocks);
                     getResult.forEach(function (item) {
                         if (item.state === "DRAFT") {
+                            for (var attr in api.pendingVerificationSBIds) {
+                                if (_.contains(api.pendingVerificationSBIds[attr].pendingList, item.id_code)) {
+                                    item.pendingVerify = true;
+                                }
+                            }
                             api.scheduleDraftData.push(item);
                         } else if (item.state === "SCHEDULED" || item.state === "ACTIVE") {
+                            for (var atr in api.pendingVerificationSBIds) {
+                                if (_.contains(api.pendingVerificationSBIds[atr].pendingList, item.id_code)) {
+                                    item.pendingVerify = true;
+                                }
+                            }
                             api.scheduleData.push(item);
                         }
                     });
@@ -511,6 +522,54 @@
                 $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
+
+        api.receivedSchedMessage = function (messageName, messageData) {
+            console.log(messageName + ": " + messageData.value);
+            if (messageName.indexOf('pending_requests_') > -1) {
+                //Comma separated list of unserviced requests that wait for verification to complete.
+                var normalMessageName = messageName.replace(':', '_');
+                if (!api.pendingVerificationSBIds[normalMessageName]) {
+                    api.pendingVerificationSBIds[normalMessageName] = {pendingList: []};
+                }
+                var currentPending = api.pendingVerificationSBIds[normalMessageName].pendingList;
+                var noLongerPending = [];
+                var newPending = [];
+                var newListValue = messageData.value.split(',');
+                if (messageData.value.length !== 0) {
+                    newPending = _.difference(newListValue, currentPending);
+                    noLongerPending = _.difference(currentPending, newListValue);
+                    api.pendingVerificationSBIds[normalMessageName].pendingList = newListValue;
+                } else {
+                    newPending = [];
+                    noLongerPending = _.difference(currentPending, newListValue);
+                    api.pendingVerificationSBIds[normalMessageName].pendingList = [];
+                }
+
+                noLongerPending.forEach(function (id_code) {
+                    //all the id_codes of the sbs that are no longer pending verification
+                    var sb = _.findWhere(api.scheduleDraftData, {id_code:id_code});
+                    if (!sb) {
+                        sb = _.findWhere(api.scheduleData, {id_code:id_code});
+                    }
+                    if (sb) {
+                        sb.pendingVerify = false;
+                    }
+                });
+
+                newPending.forEach(function (id_code) {
+                    //all the id_codes of the sbs that are pending verification
+                    var sb = _.findWhere(api.scheduleDraftData, {id_code:id_code});
+                    if (!sb) {
+                        sb = _.findWhere(api.scheduleData, {id_code:id_code});
+                    }
+                    if (sb) {
+                        sb.pendingVerify = true;
+                    }
+                });
+            }
+        };
+
+
 
         function createCommandPromise(promiseId) {
             deferredMap[promiseId] = $q.defer();
