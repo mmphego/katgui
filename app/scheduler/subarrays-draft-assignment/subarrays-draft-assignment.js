@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl(ObservationScheduleService, $timeout, $mdDialog, $rootScope, $scope, $state) {
+    function SubArraysCtrl(ObservationScheduleService, $timeout, $mdDialog, $rootScope, $scope, $state, ConfigService) {
 
         var vm = this;
         vm.currentActionsMenuIndex = -1;
@@ -63,6 +63,12 @@
             }
         };
 
+        vm.viewSBTasklog = function () {
+            var sb = ObservationScheduleService.scheduleDraftData[vm.currentActionsMenuIndex];
+            ObservationScheduleService.viewTaskLogForSBIdCode(sb.id_code);
+            vm.closeActionsMenu();
+        };
+
         //schedulerActionsMenu
         vm.openSchedulerActionsMenu = function (item, $event) {
 
@@ -78,7 +84,7 @@
                 angular.element(document.getElementById('schedulerActionsMenu')).css(overLayCSS);
                 vm.currentActionsMenuIndex = ObservationScheduleService.scheduleDraftData.indexOf(ObservationScheduleService.scheduleDraftData[rowIndex]);
                 vm.showVerifyMenuItem = item.type === "OBSERVATION";
-                    vm.showActionsMenu = true;
+                vm.showActionsMenu = true;
             } else {
                 //the same row's button was clicked, so close the popup
                 vm.closeActionsMenu();
@@ -87,7 +93,7 @@
             $event.stopPropagation();
         };
 
-        vm.closeActionsMenu = function() {
+        vm.closeActionsMenu = function () {
             if (vm.showActionsMenu) {
                 vm.showActionsMenu = false;
                 vm.currentActionsMenuIndex = -1;

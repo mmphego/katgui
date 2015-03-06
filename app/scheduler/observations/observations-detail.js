@@ -12,7 +12,6 @@
         vm.selectedSchedule = null;
         vm.showEditMenu = false;
         vm.modeTypes = ['queue', 'manual'];
-        ConfigService.loadKATObsPortalURL();
 
         vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
         vm.scheduleData = ObservationScheduleService.scheduleData;
@@ -107,7 +106,7 @@
 
         vm.viewSBTaskLog = function (item) {
             if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/tailtask/" + item.id_code + "/progress").focus();
+                ObservationScheduleService.viewTaskLogForSBIdCode(item.id_code);
             } else {
                 $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }

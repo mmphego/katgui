@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil) {
+    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService) {
 
         var urlBase = SERVER_URL + ':8820';
         var connection = null;
@@ -496,12 +496,20 @@
             return createCommandPromise(sendObsSchedCommand('list_allocations_for_subarray', [sub_nr]));
         };
 
-        api.getSchedulerModeForSubarray= function (sub_nr) {
+        api.getSchedulerModeForSubarray = function (sub_nr) {
             return createCommandPromise(sendObsSchedCommand('get_scheduler_mode_by_subarray', [sub_nr]));
         };
 
-        api.setSchedulerModeForSubarray= function (sub_nr, mode) {
+        api.setSchedulerModeForSubarray = function (sub_nr, mode) {
             return createCommandPromise(sendObsSchedCommand('set_scheduler_mode_by_subarray', [sub_nr, mode]));
+        };
+
+        api.viewTaskLogForSBIdCode = function (id_code) {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/tailtask/" + id_code + "/progress").focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
         };
 
         function createCommandPromise(promiseId) {

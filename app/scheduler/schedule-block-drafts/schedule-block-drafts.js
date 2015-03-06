@@ -1,4 +1,4 @@
-(function(){
+(function () {
 
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
@@ -141,6 +141,11 @@
             } else {
                 vm.selectedScheduleDraft = selectedDraft;
             }
+        };
+
+        vm.viewSBTasklog = function () {
+            ObservationScheduleService.viewTaskLogForSBIdCode(vm.selectedScheduleDraft.id_code);
+            closeEditMenu();
         };
 
         vm.onTimeSet = function (newDate, oldDate) {
