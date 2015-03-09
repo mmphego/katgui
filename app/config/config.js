@@ -6,30 +6,32 @@
     function ConfigCtrl($rootScope, $scope, $localStorage, THEMES) {
         var vm = this;
 
-        var showAlarms = $localStorage['showAlarmsNotify'] || $rootScope.showAlarms;
-        if ($rootScope.showAlarms === undefined) {
-            showAlarms = true;
-        }
+        vm.init = function () {
+            var showAlarms = $localStorage['showAlarmsNotify'] || $rootScope.showAlarms;
+            if ($rootScope.showAlarms === undefined) {
+                showAlarms = true;
+            }
 
-        vm.showJulianDate = $rootScope.showJulianDate;
-        vm.showLST = $rootScope.showLST;
-        vm.showAlarms = showAlarms;
-        vm.showLocalAndSAST = $rootScope.showLocalAndSAST;
-        $rootScope.showAlarms = showAlarms;
-        vm.showLargeAlarms = $rootScope.showLargeAlarms;
-        vm.themes = THEMES;
+            vm.showJulianDate = $rootScope.showJulianDate;
+            vm.showLST = $rootScope.showLST;
+            vm.showAlarms = showAlarms;
+            vm.showLocalAndSAST = $rootScope.showLocalAndSAST;
+            $rootScope.showAlarms = showAlarms;
+            vm.showLargeAlarms = $rootScope.showLargeAlarms;
+            vm.themes = THEMES;
 
-        vm.selectedTheme =  $localStorage['selectedTheme'].name;
+            vm.selectedTheme = 'Indigo';
 
-        if (!vm.selectedTheme) {
-            vm.selectedTheme = vm.themes[0].name;
-        } else {
-            vm.selectedThemeObj = _.find(THEMES, function (theme) {
-                return $localStorage['selectedTheme'] === theme.name;
-            });
-        }
+            if (!$localStorage['selectedTheme']) {
+                vm.selectedTheme = vm.themes[0].name;
+            } else {
+                vm.selectedThemeObj = _.find(THEMES, function (theme) {
+                    return $localStorage['selectedTheme'] === theme.name;
+                });
+            }
+        };
 
-        var undbindThemeChange = $scope.$watch('vm.selectedTheme', function (newVal) {
+        vm.undbindThemeChange = $scope.$watch('vm.selectedTheme', function (newVal) {
             if (typeof newVal !== 'undefined') {
 
                 var newTheme = _.find(THEMES, function (theme) {
@@ -43,35 +45,35 @@
             }
         });
 
-        var undbindShowJulianDate = $scope.$watch('vm.showJulianDate', function (newVal) {
+        vm.undbindShowJulianDate = $scope.$watch('vm.showJulianDate', function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showJulianDate = newVal;
                 $localStorage['showJulianDate'] = newVal;
             }
         });
 
-        var undbindShowLST = $scope.$watch('vm.showLST', function (newVal) {
+        vm.undbindShowLST = $scope.$watch('vm.showLST', function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showLST = newVal;
                 $localStorage['showLST'] = newVal;
             }
         });
 
-        var undbindShowLocalAndSAST = $scope.$watch('vm.showLocalAndSAST', function (newVal) {
+        vm.undbindShowLocalAndSAST = $scope.$watch('vm.showLocalAndSAST', function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showLocalAndSAST = newVal;
                 $localStorage['showLocalAndSAST'] = newVal;
             }
         });
 
-        var unbindShowLargeAlarms = $scope.$watch('vm.showLargeAlarms', function (newVal) {
+        vm.unbindShowLargeAlarms = $scope.$watch('vm.showLargeAlarms', function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showLargeAlarms = newVal;
                 $localStorage['showLargeAlarms'] = newVal;
             }
         });
 
-        var unbindShowAlarms = $scope.$watch('vm.showAlarms', function (newVal) {
+        vm.unbindShowAlarms = $scope.$watch('vm.showAlarms', function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showAlarms = newVal;
                 $localStorage['showAlarmsNotify'] = newVal;
@@ -79,13 +81,15 @@
         });
 
         $scope.$on('$destroy', function () {
-            unbindShowAlarms();
-            unbindShowLargeAlarms();
-            undbindShowJulianDate();
-            undbindShowLST();
-            undbindShowLocalAndSAST();
-            undbindThemeChange();
+            vm.unbindShowAlarms();
+            vm.unbindShowLargeAlarms();
+            vm.undbindShowJulianDate();
+            vm.undbindShowLST();
+            vm.undbindShowLocalAndSAST();
+            vm.undbindThemeChange();
         });
+
+        vm.init();
     }
 
 })();
