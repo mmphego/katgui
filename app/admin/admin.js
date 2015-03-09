@@ -7,16 +7,13 @@
         var vm = this;
         vm.showDeactivatedUsers = false;
         vm.isUserAdmin = false;
-
         vm.orderByFields = [
             {label: 'Id', value: 'id'},
             {label: 'Name', value: 'name'},
             {label: 'Email', value: 'email'},
             {label: 'Roles', value: 'roles'}
         ];
-
         vm.orderBy = vm.orderByFields[0];
-
         vm.userRoles = [
             {"name": "User Administrator", value: "user_admin"},
             {"name": "Control Authority", value: "control_authority"},
@@ -24,13 +21,10 @@
             {"name": "Operator", value: "operator"},
             {"name": "Read Only", value: "read_only"}
         ];
-
         vm.userData = UserService.users;
 
         vm.setOrderBy = function (column) {
-
             var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
-
             if ((vm.orderBy || {}).value === column) {
                 if (newOrderBy.reverse === undefined) {
                     newOrderBy.reverse = true;
@@ -43,7 +37,6 @@
         };
 
         vm.createUser = function () {
-
             UserService.addTempCreatedUser({
                 id: 'ztemp_' + KatGuiUtil.generateUUID(),
                 name: 'new user',
@@ -52,7 +45,6 @@
                 activated: true,
                 temp: true
             });
-
             vm.editUser(vm.userData[vm.userData.length - 1]);
         };
 
@@ -98,7 +90,6 @@
         };
 
         vm.undoUserChanges = function (user) {
-
             if (user.temp) {
                 UserService.removeTempUser(user);
             } else {
@@ -123,9 +114,7 @@
         };
 
         vm.resetPassword = function (event, user) {
-
             var passwordHash = null;
-
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
@@ -175,25 +164,22 @@
                 });
         };
 
-        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
-
-           if (key === 27) {
+        vm.keydown = function (e, key) {
+            if (key === 27) {
                 //escape
-               for (var i = vm.sortedUserData.length - 1; i > -1; i--) {
-                   if (vm.sortedUserData[i].temp || vm.sortedUserData[i].originalUser) {
-                       vm.undoUserChanges(vm.sortedUserData[i]);
-                       break;
-                   }
-               }
+                for (var i = vm.sortedUserData.length - 1; i > -1; i--) {
+                    if (vm.sortedUserData[i].temp || vm.sortedUserData[i].originalUser) {
+                        vm.undoUserChanges(vm.sortedUserData[i]);
+                        break;
+                    }
+                }
             }
+            $scope.$apply();
+        };
 
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
-        });
-
+        vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
         $scope.$on('$destroy', function () {
-            unbindShortcuts('keydown');
+            vm.unbindShortcuts('keydown');
             vm.undbindLoginSuccess('loginSuccess');
         });
 
