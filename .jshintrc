@@ -13,6 +13,7 @@
     "smarttabs": true,
     "globals": {
         "jQuery": true,
+        "spyOn": true,
         "angular": true,
         "console": true,
         "$": true,

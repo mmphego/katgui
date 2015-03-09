@@ -1,10 +1,8 @@
-describe('AboutCtrl', function ($mdThemingProvider) {
+describe('AboutCtrl', function () {
 
     beforeEach(module('katGui'));
 
     var scope, ctrl, location;
-
-
 
     beforeEach(inject(function ($rootScope, $controller, $location) {
         scope = $rootScope.$new();
