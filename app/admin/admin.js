@@ -115,22 +115,18 @@
 
         vm.resetPassword = function (event, user) {
             var passwordHash = null;
+            /* istanbul ignore next */
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-
                         $scope.themePrimary = $rootScope.themePrimaryButtons;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
-
-                        /* istanbul ignore next */
                         $scope.hide = function () {
                             $mdDialog.hide();
                         };
-                        /* istanbul ignore next */
                         $scope.cancel = function () {
                             $mdDialog.cancel();
                         };
-                        /* istanbul ignore next */
                         $scope.answer = function (answer) {
                             $mdDialog.hide(answer);
                         };
@@ -150,15 +146,12 @@
                 })
                 .then(function (answer) {
                     passwordHash = CryptoJS.SHA256(answer).toString();
-
-
                     UserService.resetPassword(user, passwordHash).then(function (result) {
                         $rootScope.showSimpleToast('Password successfully reset.');
                     }, function (result) {
                         $rootScope.showSimpleToast('There was an error resetting the password.');
                         console.error(result);
                     });
-
                 }, function () {
                     $rootScope.showSimpleToast('Cancelled Password reset.');
                 });
