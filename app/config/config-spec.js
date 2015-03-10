@@ -46,13 +46,50 @@ describe('ConfigCtrl', function () {
         expect(ctrl.selectedThemeObj.name).toBe('Blue-Grey');
     });
 
-    it('should save the theme to storage when the selected value changes', function () {
+    it('should update the values correctly when the value changes', function () {
+        ctrl.themeChange('Indigo');
+        expect(scope.$root.themePrimary).toBe('indigo');
+        expect(scope.$root.themeSecondary).toBe('blue');
+        expect(scope.$root.themePrimaryButtons).toBe('blue');
 
-        //ctrl.selectedTheme = 'Indigo';
-        //scope.$digest();
+        ctrl.showJulianDateChange(false);
+        expect(scope.$root.showJulianDate).toBe(false);
+        ctrl.showJulianDateChange(true);
+        expect(scope.$root.showJulianDate).toBe(true);
 
-        //ctrl.showJulianDate = true;
-        //scope.$digest();
+        ctrl.showLSTChange(false);
+        expect(scope.$root.showLST).toBe(false);
+        ctrl.showLSTChange(true);
+        expect(scope.$root.showLST).toBe(true);
+
+        ctrl.showLocalAndSASTChange(false);
+        expect(scope.$root.showLocalAndSAST).toBe(false);
+        ctrl.showLocalAndSASTChange(true);
+        expect(scope.$root.showLocalAndSAST).toBe(true);
+
+        ctrl.showLargeAlarmsChange(false);
+        expect(scope.$root.showLargeAlarms).toBe(false);
+        ctrl.showLargeAlarmsChange(true);
+        expect(scope.$root.showLargeAlarms).toBe(true);
+
+        ctrl.showAlarmsChange(false);
+        expect(scope.$root.showAlarms).toBe(false);
+        ctrl.showAlarmsChange(true);
+        expect(scope.$root.showAlarms).toBe(true);
+
+        //test broadcasting for else clause in the change functions
+        ctrl.selectedTheme = undefined;
+        ctrl.showJulianDate = undefined;
+        ctrl.showLST = undefined;
+        ctrl.showLocalAndSAST = undefined;
+        ctrl.showLargeAlarms = undefined;
+        ctrl.showAlarms = undefined;
+
+        expect(scope.$root.showJulianDate).toBe(true);
+        expect(scope.$root.showLST).toBe(true);
+        expect(scope.$root.showLocalAndSAST).toBe(true);
+        expect(scope.$root.showLargeAlarms).toBe(true);
+        expect(scope.$root.showAlarms).toBe(true);
     });
 });
 

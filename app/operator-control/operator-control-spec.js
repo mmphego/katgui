@@ -295,7 +295,6 @@ describe('OperatorControlCtrl', function () {
                 value: 'STOP'
             }
         });
-        console.log(ctrl.receptorsData[0]);
         expect(ctrl.receptorsData[0].lastUpdate.length).not.toBe(0);
         expect(ctrl.receptorsData[0].since).toBeUndefined();
         expect(ctrl.receptorsData[0].fromNow).toBeUndefined();
