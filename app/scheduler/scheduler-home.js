@@ -18,8 +18,7 @@
             $state.go(newState);
         };
 
-        var unbindStateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState) {
-
+        vm.unbindStateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState) {
             if (toState.name === 'scheduler.drafts' ||
                 toState.name === 'scheduler.resources' ||
                 toState.name === 'scheduler.execute' ||
@@ -33,7 +32,7 @@
         });
 
         $scope.$on('$destroy', function () {
-            unbindStateChangeStart();
+            vm.unbindStateChangeStart();
             ObservationScheduleService.disconnectListener();
         });
     }
