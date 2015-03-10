@@ -46,10 +46,6 @@
                 secondary: 'amber',
                 primaryButtons: 'indigo'
             }])
-        .constant('SCHEDULE_BLOCK_TYPES', [
-            'MAINTENANCE',
-            'OBSERVATION',
-            'MANUAL'])
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);

@@ -58,7 +58,6 @@ describe('AdminCtrl', function () {
         expect(ctrl.orderBy).toBeNull();
         ctrl.setOrderBy(null);
         expect(ctrl.orderBy).toBe(undefined);
-
     }));
 
     it('should clear the reverse sorting properly', function () {

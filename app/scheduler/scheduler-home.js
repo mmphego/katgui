@@ -4,6 +4,10 @@
         'katGui.services',
         'katGui.util',
         'ngAnimate'])
+        .constant('SCHEDULE_BLOCK_TYPES', [
+            'MAINTENANCE',
+            'OBSERVATION',
+            'MANUAL'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
     function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, ConfigService, MonitorService) {

@@ -3,15 +3,13 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayExecutorOverview', SubArrayExecutorOverview);
 
-    function SubArrayExecutorOverview($state, ObservationScheduleService, $timeout) {
+    function SubArrayExecutorOverview($state, ObservationScheduleService) {
 
         var vm = this;
-
         vm.subarrays = ObservationScheduleService.subarrays;
         vm.scheduleData = ObservationScheduleService.scheduleData;
 
-        vm.refreshResources = function () {
-
+        vm.refreshScheduleBlocks = function () {
             ObservationScheduleService.listSubarrays()
                 .then(function () {
                     ObservationScheduleService.getScheduleBlocks();
@@ -22,7 +20,7 @@
             $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
         };
 
-        $timeout(vm.refreshResources, 0);
+        vm.refreshScheduleBlocks();
     }
 
 })();

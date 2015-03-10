@@ -71,10 +71,13 @@
 
         vm.setCompletedOrderBy = function (column, reverse) {
             var newOrderBy = _.findWhere(vm.completedOrderByFields, {value: column});
-            if (newOrderBy.reverse === undefined) {
-                newOrderBy.reverse = reverse || false;
-            } else {
-                newOrderBy.reverse = !newOrderBy.reverse;
+            if ((vm.completedOrderBy || {}).value === column) {
+                if (newOrderBy.reverse === undefined) {
+                    newOrderBy.reverse = true;
+                } else if (newOrderBy.reverse) {
+                    newOrderBy.reverse = undefined;
+                    newOrderBy = null;
+                }
             }
             vm.completedOrderBy = newOrderBy;
         };
@@ -99,15 +102,8 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        vm.viewSBTaskLog = function (item) {
-            if (ConfigService.KATObsPortalURL) {
-                ObservationScheduleService.viewTaskLogForSBIdCode(item.id_code);
-            } else {
-                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
-            }
-        };
-
-        //schedulerEditMenu
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
         vm.openSchedulerEditMenu = function (item, $event) {
             var rowIndex = vm.currentScheduleData.indexOf(item);
             if (vm.currentEditMenuIndex !== rowIndex) {
@@ -128,17 +124,18 @@
             $event.stopPropagation();
         };
 
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
         vm.closeEditMenu = function() {
             if (vm.showEditMenu) {
                 vm.showEditMenu = false;
                 vm.currentEditMenuIndex = -1;
             }
-
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
+            $scope.$apply();
         };
 
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
         vm.moveSelectedSBToDraft = function() {
             if (vm.selectedSchedule) {
                 vm.moveScheduleRowToDraft(vm.selectedSchedule);
@@ -146,13 +143,17 @@
             vm.closeEditMenu();
         };
 
+        //going to be replaced with angular material 0.10
         vm.viewSelectedSBTaskLog = function() {
+            /* istanbul ignore else */
             if (vm.selectedSchedule) {
-                vm.viewSBTaskLog(vm.selectedSchedule);
+                ObservationScheduleService.viewTaskLogForSBIdCode(vm.selectedSchedule.id_code);
             }
             vm.closeEditMenu();
         };
 
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
         vm.moveSelectedSBToFinished = function() {
             if (vm.selectedSchedule) {
                 vm.moveScheduleRowToFinished(vm.selectedSchedule);
@@ -160,8 +161,7 @@
             vm.closeEditMenu();
         };
 
-        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
-
+        vm.unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
             if (key === 40) {
                 //down arrow
                 var index = vm.currentScheduleData.indexOf(vm.selectedSchedule);
@@ -184,17 +184,13 @@
                 //escape
                 vm.selectedSchedule = null;
             }
-
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
+            $scope.$apply();
         });
 
         $scope.$on('$destroy', function () {
-            unbindShortcuts('keydown');
+            vm.unbindShortcuts('keydown');
         });
 
-        $timeout(vm.refreshScheduleBlocks, 100);
+        vm.refreshScheduleBlocks();
     }
-
 })();

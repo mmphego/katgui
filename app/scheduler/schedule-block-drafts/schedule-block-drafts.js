@@ -3,10 +3,9 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, $mdDialog, SCHEDULE_BLOCK_TYPES, $rootScope) {
+    function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, SCHEDULE_BLOCK_TYPES, $rootScope) {
 
         var vm = this;
-        //vm.draftListProcessingServerCall = false;
         vm.selectedScheduleDraft = null;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
@@ -18,72 +17,69 @@
             {label: 'Type', value: 'type'}
         ];
 
-        vm.setDraftsOrderBy = function (column, reverse) {
+        vm.setDraftsOrderBy = function (column) {
             var newOrderBy = _.findWhere(vm.draftsOrderByFields, {value: column});
-            if (newOrderBy.reverse === undefined) {
-                newOrderBy.reverse = reverse || false;
-            } else {
-                newOrderBy.reverse = !newOrderBy.reverse;
+            if ((vm.draftsOrderBy || {}).value === column) {
+                if (newOrderBy.reverse === undefined) {
+                    newOrderBy.reverse = true;
+                } else if (newOrderBy.reverse) {
+                    newOrderBy.reverse = undefined;
+                    newOrderBy = null;
+                }
             }
             vm.draftsOrderBy = newOrderBy;
         };
 
         vm.setDraftsOrderBy('id_code', true);
 
-        var unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
-
+        vm.keydown = function (e, key) {
             if (key === 40) {
                 //down arrow
                 var index = $scope.filteredDraftItems.indexOf(vm.selectedScheduleDraft);
                 if (index > -1 && index + 1 < $scope.filteredDraftItems.length) {
-                    //filteredDraftItems
-                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[index + 1]);
+                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[index + 1], true);
                 } else if ($scope.filteredDraftItems.length > 0) {
-                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[0]);
+                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[0], true);
                 }
-
             } else if (key === 38) {
                 //up arrow
                 var indexUp = $scope.filteredDraftItems.indexOf(vm.selectedScheduleDraft);
                 if (indexUp > -1 && indexUp - 1 > -1) {
-                    //filteredDraftItems
-                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[indexUp - 1]);
+                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[indexUp - 1], true);
                 } else if ($scope.filteredDraftItems.length > 0) {
-                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[$scope.filteredDraftItems.length - 1]);
+                    vm.setSelectedScheduleDraft($scope.filteredDraftItems[$scope.filteredDraftItems.length - 1], true);
                 }
             } else if (key === 27) {
                 //escape
-                vm.selectedScheduleDraft = null;
-                closeDatePickerMenu();
-                closeEditMenu();
+                vm.setSelectedScheduleDraft(null);
+                vm.closeDatePickerMenu();
+                vm.closeEditMenu();
             }
+            $scope.$apply();
+        };
+        vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
 
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
+        /* istanbul ignore next */
+        //we can ignore these because the menu's are going to be replaced in angular material 0.10
+        vm.unbindScroll = angular.element('#schedule-draft-data-list-id').bind("scroll", function () {
+            vm.closeDatePickerMenu();
+            vm.closeEditMenu();
         });
 
-        var unbindScroll = angular.element('#schedule-draft-data-list-id').bind("scroll", function () {
-            closeDatePickerMenu();
-            closeEditMenu();
-        });
-
-        var unbindClick = angular.element('body').bind("click", function (e) {
-            if (!e.target.parentNode.classList.contains('schedule-item-input')) {// &&
-                //!e.target.parentNode.parentNode.classList.contains('schedule-item-input')) {
-                closeEditMenu();
-                closeDatePickerMenu();
+        /* istanbul ignore next */
+        //we can ignore these because the menu's are going to be replaced in angular material 0.10
+        vm.unbindClick = angular.element('body').bind("click", function (e) {
+            if (!e.target.parentNode.classList.contains('schedule-item-input')) {
+                vm.closeEditMenu();
+                vm.closeDatePickerMenu();
             }
         });
 
         vm.saveDraft = function (item) {
-            //vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.updateScheduleDraft(item)
-                .then(draftListProcessingComplete, draftListProcessingError);
+            ObservationScheduleService.updateScheduleDraft(item);
         };
 
         vm.saveAllDirtyDrafts = function () {
-            //vm.draftListProcessingServerCall = true;
             vm.scheduleDraftData.forEach(function (item) {
                 if (item.isDirty) {
                     ObservationScheduleService.updateScheduleDraft(item);
@@ -99,11 +95,8 @@
         };
 
         vm.verifyDraftRow = function (item) {
-
-            //vm.draftListProcessingServerCall = true;
             ObservationScheduleService.verifyScheduleBlock(item.sub_nr, item.id_code)
-                .then(displayPromiseResult);
-
+                .then($rootScope.displayPromiseResult);
             vm.selectedScheduleDraft = null;
         };
 
@@ -115,24 +108,12 @@
         };
 
         vm.removeDraftRow = function (item) {
-
-            //vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.deleteScheduleDraft(item.id_code)
-                .then(draftListProcessingComplete, draftListProcessingError);
-
+            ObservationScheduleService.deleteScheduleDraft(item.id_code);
             vm.selectedScheduleDraft = null;
         };
 
-        vm.addDraftSchedule = function () {
-            //vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.createScheduleBlock()
-                .then(draftListProcessingComplete, draftListProcessingError);
-        };
-
         vm.refreshScheduleBlocks = function () {
-            //vm.draftListProcessingServerCall = true;
-            ObservationScheduleService.getScheduleBlocks()
-                .then(draftListProcessingComplete, draftListProcessingError);
+            ObservationScheduleService.getScheduleBlocks();
         };
 
         vm.setSelectedScheduleDraft = function (selectedDraft, dontDeselectOnSame) {
@@ -145,26 +126,24 @@
 
         vm.viewSBTasklog = function () {
             ObservationScheduleService.viewTaskLogForSBIdCode(vm.selectedScheduleDraft.id_code);
-            closeEditMenu();
+            vm.closeEditMenu();
         };
 
-        vm.onTimeSet = function (newDate, oldDate) {
-
-            vm.scheduleDraftData[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY-MM-DD HH:mm:ss');
-            vm.scheduleDraftData[vm.currentRowDatePickerIndex].isDirty = true;
+        vm.onTimeSet = function (newDate) {
+            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY-MM-DD HH:mm:ss');
+            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].isDirty = true;
             vm.showDatePicker = false;
             vm.currentSelectedDate = moment();
             vm.currentRowDatePickerIndex = -1;
         };
 
-        //schedulerEditMenu
+        //ignore this because we are going to replace this menu in angular material 0.10
+        /* istanbul ignore next */
         vm.openSchedulerEditMenu = function (item, $event) {
-
             var rowIndex = vm.scheduleDraftData.indexOf(item);
-
             if (vm.currentEditMenuIndex !== rowIndex) {
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
-                closeDatePickerMenu();
+                vm.closeDatePickerMenu();
                 var rect = $event.currentTarget.getBoundingClientRect();
                 var offset = {x: 0, y: 44};
                 var overLayCSS = {
@@ -176,16 +155,15 @@
                 vm.showEditMenu = true;
             } else {
                 //the same row's button was clicked, so close the popup
-                closeEditMenu();
+                vm.closeEditMenu();
             }
-
             $event.stopPropagation();
         };
 
+        //ignore this because we are going to replace this datepicker in angular material 0.10
+        /* istanbul ignore next */
         vm.openDatePicker = function (item, $event) {
-
-            var rowIndex = vm.scheduleDraftData.indexOf(item);
-
+            var rowIndex = $scope.filteredDraftItems.indexOf(item);
             //TODO keyboard shortcut like escape to close datepicker
             if (vm.currentRowDatePickerIndex !== rowIndex) {
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
@@ -200,13 +178,12 @@
                     top: rect.top + offset.y + 'px'
                 };
                 angular.element(document.getElementById('schedulerDatePickerMenu')).css(overLayCSS);
-                vm.currentRowDatePickerIndex = vm.scheduleDraftData.indexOf(vm.scheduleDraftData[rowIndex]);
+                vm.currentRowDatePickerIndex = $scope.filteredDraftItems.indexOf(vm.scheduleDraftData[rowIndex]);
                 vm.showDatePicker = true;
             } else {
                 //the same row's button was clicked, so close the popup
-                closeDatePickerMenu();
+                vm.closeDatePickerMenu();
             }
-
             $event.stopPropagation();
         };
 
@@ -216,74 +193,31 @@
             return d.isValid();
         };
 
-        function showSimpleErrorDialog(title, message) {
-            var alert = $mdDialog.alert()
-                .title(title)
-                .content(message)
-                .ok('Close');
-            $mdDialog
-                .show(alert)
-                .finally(function () {
-                    alert = undefined;
-                });
-        }
-
-        function displayPromiseResult(result) {
-            if (result.result === 'ok') {
-                $rootScope.showSimpleToast(result.message);
-            } else {
-                showSimpleErrorDialog(result.result, result.message);
-            }
-        }
-
-        function closeEditMenu() {
+        //ignore this because we are going to replace this menu in angular material 0.10
+        /* istanbul ignore next */
+        vm.closeEditMenu = function () {
             if (vm.showEditMenu) {
                 vm.showEditMenu = false;
                 vm.currentEditMenuIndex = -1;
             }
+            $scope.$apply();
+        };
 
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
-        }
-
-        function closeDatePickerMenu() {
+        //ignore this because we are going to replace this datepicker in angular material 0.10
+        /* istanbul ignore next */
+        vm.closeDatePickerMenu = function () {
             if (vm.showDatePicker) {
                 vm.showDatePicker = false;
                 vm.currentRowDatePickerIndex = -1;
             }
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
-        }
-
-        function draftListProcessingComplete(result) {
-            $timeout(function () {
-                //vm.draftListProcessingServerCall = false;
-            }, 100);
-        }
-
-        function draftListProcessingError(result) {
-            $timeout(function () {
-                //vm.draftListProcessingServerCall = false;
-
-                var alert = $mdDialog.alert()
-                    .title('Server Request Failed!')
-                    .content(result)
-                    .ok('Close');
-                $mdDialog
-                    .show(alert)
-                    .finally(function () {
-                        alert = undefined;
-                    });
-            }, 100);
-        }
+            $scope.$apply();
+        };
 
         $timeout(vm.refreshScheduleBlocks, 100);
         $scope.$on('$destroy', function () {
-            unbindScroll.unbind('scroll');
-            unbindClick.unbind('click');
-            unbindShortcuts('keydown');
+            vm.unbindScroll.unbind('scroll');
+            vm.unbindClick.unbind('click');
+            vm.unbindShortcuts('keydown');
         });
     }
 

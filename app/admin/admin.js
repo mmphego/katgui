@@ -2,7 +2,7 @@
     angular.module('katGui.admin', ['katGui.services', 'katGui.util'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl($scope, UserService, $timeout, KatGuiUtil, $mdDialog, $rootScope) {
+    function AdminCtrl($scope, UserService, KatGuiUtil, $mdDialog, $rootScope) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
