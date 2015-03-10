@@ -17,15 +17,16 @@
                                 title: "Navigation Controls"
                             }
                         ]
-                    }, {
-                        widgets: [
-                            {
-                                type: "GanttWidget",
-                                config: {},
-                                title: "Observation Schedule (EXAMPLE DATA)"
-                            }
-                        ]
                     }
+                    //, {
+                    //    widgets: [
+                    //        {
+                    //            type: "GanttWidget",
+                    //            config: {},
+                    //            title: "Observation Schedule (EXAMPLE DATA)"
+                    //        }
+                    //    ]
+                    //}
                 ]
             }
         ]
@@ -36,6 +37,7 @@
         var vm = this;
         vm.name = 'katGuiLandingDashboard';
 
+        /* istanbul ignore else */
         if (!$localStorage[vm.name]) {
             $localStorage[vm.name] = defaultDashboardConfig;
         }

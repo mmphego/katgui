@@ -63,7 +63,6 @@
         }
 
         function loginSuccess(result) {
-
             var a = result.session_id.split(".");
             $rootScope.session_id = result.session_id;
             var payload = JSON.parse(window.atob(a[1]));
@@ -79,18 +78,14 @@
                 $rootScope.$emit('loginSuccess', true);
                 $rootScope.connectEvents();
                 //TODO implement timeout
-            } else {
-                api.currentUser = null;
-                api.loggedIn = false;
-                $localStorage['currentUserToken'] = undefined;
-                $state.go('login');
-                $rootScope.showSimpleToast('Invalid login credentials!');
             }
         }
 
         function loginError(result) {
-
             if (result && result.session_id === null) {
+                api.currentUser = null;
+                api.loggedIn = false;
+                $localStorage['currentUserToken'] = undefined;
                 $rootScope.showSimpleToast('Invalid username or password.');
                 $state.go('login');
             } else {

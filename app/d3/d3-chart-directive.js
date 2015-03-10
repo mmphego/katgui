@@ -72,7 +72,7 @@ angular.module('katGui.d3', [])
 
                     function drawLineChart() {
 
-                        if (scope.data.length > 0) {
+                        if (scope.data && scope.data.length > 0) {
 
 
                             setChartParameters();

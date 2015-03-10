@@ -46,15 +46,11 @@
                 secondary: 'amber',
                 primaryButtons: 'indigo'
             }])
-        .constant('SCHEDULE_BLOCK_TYPES', [
-            'MAINTENANCE',
-            'OBSERVATION',
-            'MANUAL'])
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $timeout, $localStorage, THEMES, AlarmsService, ConfigService,
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService, ConfigService,
                              USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService, $mdDialog) {
 
         var vm = this;
@@ -176,36 +172,6 @@
             } else {
                 $state.go('home');
             }
-        };
-
-        vm.operatorActionMenuItemSelected = function () {
-            $state.go('operatorControl');
-            vm.operatorControlMenuHover = false;
-        };
-
-        vm.inhibitAll = function () {
-            ControlService.inhibitAll();
-            vm.operatorActionMenuItemSelected();
-        };
-
-        vm.stowAll = function () {
-            ControlService.stowAll();
-            vm.operatorActionMenuItemSelected();
-        };
-
-        vm.stopAll = function () {
-            ControlService.stopAll();
-            vm.operatorActionMenuItemSelected();
-        };
-
-        vm.resumeOperations = function () {
-            ControlService.resumeOperations();
-            vm.operatorActionMenuItemSelected();
-        };
-
-        vm.shutdownComputing = function () {
-            ControlService.shutdownComputing();
-            vm.operatorActionMenuItemSelected();
         };
 
         vm.utcTime = '';

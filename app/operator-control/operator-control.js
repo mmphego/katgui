@@ -6,7 +6,6 @@
     function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService) {
 
         var vm = this;
-
         vm.receptorsData = ReceptorStateService.receptorsData;
 
         vm.stowAll = function () {
@@ -57,11 +56,11 @@
             });
         };
 
-        var cancelListeningToReceptorMessages = $rootScope.$on('operatorControlStatusMessage', vm.receptorMessageReceived);
+        vm.cancelListeningToReceptorMessages = $rootScope.$on('operatorControlStatusMessage', vm.receptorMessageReceived);
 
         $scope.$on('$destroy', function () {
             $interval.cancel(stopInterval);
-            cancelListeningToReceptorMessages();
+            vm.cancelListeningToReceptorMessages();
         });
     }
 })();

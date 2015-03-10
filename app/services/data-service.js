@@ -3,9 +3,9 @@
     angular.module('katGui')
         .service('DataService', DataService);
 
-    function DataService($http) {
+    function DataService($http, SERVER_URL) {
 
-        var urlBase = 'http://192.168.10.167:9999/katstore/';
+        var urlBase = SERVER_URL + ':8888/katstore/';
 
         this.findSensor = function (sensorName) {
             return $http.get(urlBase + 'findsensor?sensor=*' + sensorName + '*');
