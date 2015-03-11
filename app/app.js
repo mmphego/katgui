@@ -185,6 +185,7 @@
             }
         };
 
+        /* istanbul ignore next */
         $rootScope.showSimpleDialog = function (title, message) {
             var alert = $mdDialog.alert()
                 .title(title)
@@ -199,6 +200,7 @@
             console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
         };
 
+        /* istanbul ignore next */
         $rootScope.showSBDetails = function (sb, event) {
             $rootScope.mdDialogSb = sb;
             $mdDialog
@@ -208,8 +210,6 @@
                         $scope.themePrimary = $rootScope.themePrimaryButtons;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.sb = $rootScope.mdDialogSb;
-
-                        /* istanbul ignore next */
                         $scope.hide = function () {
                             $mdDialog.hide();
                             $rootScope.mdDialogSb = undefined;

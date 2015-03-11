@@ -9,9 +9,8 @@ describe('VideoCtrl', function() {
         ctrl = $controller('VideoCtrl', {$scope: scope});
     }));
 
-    it('should ...', inject(function() {
-
-        expect(1).toEqual(1);
+    it('should create the controller', inject(function() {
+        expect(ctrl).toBeDefined();
 
     }));
 

@@ -2,34 +2,29 @@ describe('Directive: focus', function () {
 
     beforeEach(module('katGui.util'));
 
-    var scope, compile;
+    var scope, timeout, element, compile;
 
-    beforeEach(inject(function ($rootScope, $compile) {
-        scope = $rootScope.$new();
+    beforeEach(inject(function ($rootScope, $compile, _$timeout_) {
         compile = $compile;
+        timeout = _$timeout_;
+        scope = $rootScope.$new();
     }));
 
-    beforeEach(function () {
-        this.addMatchers({
-            toBeFocus: function () {
-                this.message = function () {
-                    return 'Expected \'' + angular.mock.dump(this.actual) + '\' to have focus';
-                };
-
-                return this.actual[0].ownerDocument.activeElement === this.actual[0];
-            }
-        });
+    it('should give the control focus', function () {
+        element = angular.element('<input focus/>');
+        element.appendTo(document.body);
+        compile(element)(scope);
+        scope.$digest();
+        timeout.flush();
+        expect(document.activeElement).toBe(element[0]);
     });
-//
-//    it('should give the control focus', function () {
-//
-//        var strInputElement = '<input type="text" focus>';
-//        var element = compile(strInputElement)(scope);
-//
-//        //Note that for focus related tests, the compiled element has to be attached to the DOM, which can be done like this:
-//        element.appendTo(document.body);
-//        scope.$digest();
-//        element.isolateScope().setFocus();
-//        expect(element).toBeFocus();
-//    });
+
+    it('should give the md-input-group control focus', function () {
+        element = angular.element('<md-input-container focus><label>label</label><input></md-input-container>');
+        element.appendTo(document.body);
+        compile(element)(scope);
+        scope.$digest();
+        timeout.flush();
+        expect(document.activeElement).toBe(element[0].children[1]);
+    });
 });
