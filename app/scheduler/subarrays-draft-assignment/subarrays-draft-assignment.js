@@ -39,7 +39,7 @@
         };
 
         /* istanbul ignore next */
-        //can ignore for now, is tested in another test and will change with the menu in angular material 0.10
+        //can ignore for now, is tested in another test and will change with the menu in angular material 0.10grunt te
         vm.scheduleCurrentMenuItemDraft = function () {
             if (vm.currentActionsMenuIndex > -1) {
                 var sb = ObservationScheduleService.scheduleDraftData[vm.currentActionsMenuIndex];
