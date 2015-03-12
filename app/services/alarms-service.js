@@ -9,16 +9,11 @@
         api.alarmsData = [];
         $rootScope.$on('alarmMessage', api.receivedAlarmMessage);
 
-        api.receivedAlarmMessage = function(messageName, messageObj) {
+        api.receivedAlarmMessage = function (messageName, messageObj) {
 
             var alarmValues = messageObj.value.toString().split(',');
-            var alarmPriority = 'unknown';
-            if (alarmValues.length > 2) {
-                alarmPriority = alarmValues[1];
-                messageObj.severity = alarmValues[0];
-            }
-
-            messageObj.priority = alarmPriority;
+            messageObj.severity = alarmValues[0];
+            messageObj.priority = alarmValues[1];
             messageObj.name = messageName.replace('kataware:alarm_', '');
             messageObj.dateUnix = messageObj.timestamp;
             messageObj.date = moment.utc(messageObj.timestamp, 'X').format('HH:mm:ss DD-MM-\'YY');
@@ -28,10 +23,8 @@
                 if (index > -1) {
                     api.alarmsData.splice(index, 1);
                 }
-
             } else {
                 var foundAlarm = _.findWhere(api.alarmsData, {name: messageObj.name});
-
                 if (foundAlarm) {
                     foundAlarm.priority = messageObj.priority;
                     foundAlarm.severity = messageObj.severity;
@@ -40,12 +33,10 @@
                     foundAlarm.value = messageObj.value;
                     foundAlarm.selected = false;
                 }
-
                 if (!foundAlarm) {
                     api.alarmsData.push(messageObj);
                 }
             }
-
         };
         return api;
     }

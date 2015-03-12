@@ -88,7 +88,7 @@ function katGuiUtil() {
         else {
             str = str + ":" + secs;
         }
-        return " " + str;
+        return (" " + str).trim();
     }
 
     function generalSiderealTime(jd) {
