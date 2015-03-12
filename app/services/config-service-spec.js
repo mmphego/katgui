@@ -1,4 +1,4 @@
-describe('AlarmsService', function() {
+describe('ConfigService', function() {
 
     beforeEach(module('katGui.services'));
 
