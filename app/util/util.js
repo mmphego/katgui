@@ -1,6 +1,5 @@
 angular.module('katGui.util', [])
     .directive('autoGrow', autoGrow)
-    .constant('SERVER_URL', window.location.host === 'localhost:9001' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter);
 
