@@ -33,5 +33,4 @@ describe('DataService', function () {
         expect(resultPromise.success).toBeDefined();
         expect(resultPromise.error).toBeDefined();
     }));
-
 });
