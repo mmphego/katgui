@@ -4,11 +4,17 @@
         'katGui.services',
         'katGui.util',
         'ngAnimate'])
+        .constant('SCHEDULE_BLOCK_TYPES', [
+            'MAINTENANCE',
+            'OBSERVATION',
+            'MANUAL'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, ConfigService, MonitorService) {
 
+        ConfigService.loadKATObsPortalURL();
         ObservationScheduleService.connectListener();
+        MonitorService.subscribe('sched:pending_requests_*');
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
 
@@ -16,8 +22,7 @@
             $state.go(newState);
         };
 
-        var unbindStateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState) {
-
+        vm.unbindStateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState) {
             if (toState.name === 'scheduler.drafts' ||
                 toState.name === 'scheduler.resources' ||
                 toState.name === 'scheduler.execute' ||
@@ -31,7 +36,7 @@
         });
 
         $scope.$on('$destroy', function () {
-            unbindStateChangeStart();
+            vm.unbindStateChangeStart();
             ObservationScheduleService.disconnectListener();
         });
     }

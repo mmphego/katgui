@@ -4,7 +4,6 @@
 @import "login-form/login-form";
 @import "landing/landing";
 @import "operator-control/operator-control";
-@import "about/about";
 @import "weather/weather";
 @import "sensor-graph/sensor-graph";
 @import "admin/admin";
@@ -236,6 +235,7 @@ md-sidenav {
     border: 0;
     position: absolute;
     z-index: 3;
+    width: 95%;
     span {
         margin-left: 32px;
 
@@ -549,4 +549,17 @@ md-toast {
 .animate-repeat-40.ng-enter.ng-enter-active {
     opacity: 1;
     max-height: 40px;
+}
+
+.md-select-label {
+    span:not(.md-select-icon) {
+        flex: 1;
+    }
+}
+
+.smaller-progress-circular {
+    top: -2px;
+    right: 3px;
+    position: absolute;
+    transform: scale(0.7,0.7) !important;
 }

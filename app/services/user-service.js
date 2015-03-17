@@ -40,11 +40,17 @@
                     roles: user.roles.join(',')
                 }))
                 .success(function (result) {
-                    //api.users.push(result);
+                    var oldUser = _.findWhere(api.users, {email: user.email});
+                    for (var attr in result) {
+                        oldUser[attr] = result[attr];
+                    }
+                    oldUser.temp = false;
+                    oldUser.editing = false;
                     $rootScope.showSimpleToast("Created user");
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog("Error sending request", "Error creating user");
+                    _.findWhere(api.users, {id: user.id}).editing = true;
+                    $rootScope.showSimpleDialog("Error creating user", result);
                 });
         };
 
@@ -58,10 +64,9 @@
                 }))
                 .success(function (result) {
                     var oldUser = _.findWhere(api.users, {id: result.id});
-                    oldUser.name = result.name;
-                    oldUser.email = result.email;
-                    oldUser.activated = result.activated;
-                    oldUser.roles = result.roles;
+                    for (var attr in result) {
+                        oldUser[attr] = result[attr];
+                    }
                     $rootScope.showSimpleToast("Updated user " + result.name);
                 })
                 .error(function (result) {

@@ -62,7 +62,11 @@
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                          ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
                         <div flex layout="row" layout-align="start center">
-                            <div layout="row" class="schedule-block-name-div" style="cursor: text">
+                            <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
+                            </md-progress-circular>
+                            <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
+
+                            <div layout="row" class="schedule-block-name-div" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">
                                 <span class="schedule-block-id-text">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
@@ -72,13 +76,14 @@
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
-
                             <span style="margin-left: 5px; margin-top: 4px; width: 95px; margin-right: 3px;">{{item.desired_start_time}}</span>
-                            <md-button ng-click="vm.freeScheduleBlock(subarray, item)" style="height:48px; width:48px;" aria-label="Free SB"
+                            <span style="height:48px; width:48px; transition: 0s;" ng-if="item.pendingVerify"></span>
+                            <span style="height:48px; width:48px; transition: 0s;" ng-if="item.pendingVerify"></span>
+                            <md-button ng-if="!item.pendingVerify" ng-click="vm.freeScheduleBlock(subarray, item)" style="transition: 0s; height:48px; width:48px;" aria-label="Free SB"
                                        title="Free Schedule Blocks">
                                 <span class="fa fa-minus md-fab-fa-icon-small"></span>
                             </md-button>
-                            <md-button style="height:48px; width:48px;" aria-label="Show Actions Menu"
+                            <md-button ng-if="!item.pendingVerify" style="transition: 0s;height:48px; width:48px;" aria-label="Show Actions Menu"
                                        ng-click="vm.openSchedulerActionsMenu(item, $event); $event.stopPropagation()">
                                 <span class="fa fa-ellipsis-v"></span>
                             </md-button>
@@ -113,7 +118,7 @@
                      class="schedule-draft-item animate-repeat" layout="column" layout-align="center start">
                     <div layout="row" layout-align="center center">
                         <span class="fa fa-question-circle" style="pointer: cursor; font-size: 19px; width: 17px" title="Show Schedule Block Details"
-                               ng-click="vm.showScheduleBlockDetails(item); $event.stopPropagation();"></span>
+                               ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();"></span>
                         <div layout="row" class="schedule-block-name-div">
                             <span class="schedule-block-id-text">{{item.id_code}}</span>
                             <i style="margin-left: 18px !important;">{{item.owner}}</i>
@@ -137,6 +142,10 @@
             <md-item ng-show="vm.showVerifyMenuItem">
                 <md-button role="menuitem" style="width: 170px; font-size:14px; height: 38px; padding: 2px;"
                            ng-click="vm.verifyCurrentMenuItemDraft()">Verify Draft</md-button>
+            </md-item>
+            <md-item>
+                <md-button role="menuitem" style="width: 170px; font-size:14px; height: 38px; padding: 2px;"
+                           ng-click="vm.viewSBTasklog()">View Tasklog</md-button>
             </md-item>
             <md-item>
                 <md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;"

@@ -49,7 +49,7 @@
     position: relative;
     padding: 0;
     overflow: auto !important;
-//    background: white;
+    //    background: white;
 
     input {
         width: 100%;
@@ -95,7 +95,6 @@
     }
 }
 
-
 @item-bg: #FFF;
 @item-border-bottom: #d3d3d3;
 
@@ -117,6 +116,7 @@
 }
 
 .schedule-draft-item {
+    position: relative;
     height: 48px;
     max-height: 48px;
     padding: 4px;
@@ -177,7 +177,7 @@
 }
 
 .schedule-item-input {
-    height: 32px;
+    height: 27px;
     margin-top: 4px;
 }
 
@@ -267,10 +267,10 @@
 .highlight-script-window-with-box-shadow {
     background-color: #B3E5FC !important;
     box-shadow: 0px 2px 40px 0 #000;
-//    z-index: 0;
-//    border-right: 1px solid #d3d3d3 !important;
-//    border-bottom: 1px solid #d3d3d3 !important;
-//    border-top: 1px solid #d3d3d3 !important;
+    //    z-index: 0;
+    //    border-right: 1px solid #d3d3d3 !important;
+    //    border-bottom: 1px solid #d3d3d3 !important;
+    //    border-top: 1px solid #d3d3d3 !important;
 }
 
 .schedule-block-script-window {
@@ -322,23 +322,8 @@
     min-height: 450px;
 }
 
-.horizontal-resizer-bar {
-    height: 6px;
-    margin-left: 8px;
-    margin-right: 0px;
-    left: 0;
-    right: 0;
-    background-color: #dfdfdf;
-    //    background: linear-gradient(to bottom, rgba(243,243,243,1) 0%,rgba(243,243,243,1) 50%,rgba(204,204,204,1) 100%);
-    cursor: row-resize;
-}
-
-.horizontal-resizer-bar:hover, .vertical-resizer:hover {
-    background-color: #c6c6c6;
-}
-
 .scheduler-nav-home-item {
-    margin: 32px;
+    margin: 32px !important;
     cursor: pointer;
     height: 320px;
     min-width: 320px;
@@ -422,12 +407,12 @@
 .refresh-schedule-block-lists-button {
     bottom: 0;
     padding: 10px;
-//    pointer-events: none;
+    //    pointer-events: none;
     position: fixed;
     right: 0;
     white-space: nowrap;
     z-index: 21;
-//    will-change: top,left;
+    //    will-change: top,left;
 }
 
 .sb-row-button {
@@ -461,6 +446,7 @@
     min-width: 1000px;
     margin-bottom: 16px;
     min-height: 290px;
+    max-height: 290px;
 }
 
 .svg-subarray, .svg-receptor, {
@@ -473,7 +459,7 @@
 }
 
 .subarray_in_maintenance_bg {
-    background-color: rgb(94,53,177);
+    background-color: rgb(94, 53, 177);
     color: white;
 }
 
@@ -498,6 +484,16 @@
 }
 
 .scheduler-inline-button {
+    transition: 0s;
     width: 35px;
     height: 49px;
+}
+
+.scheduler-menu-item-button {
+    width: 170px;
+    font-size: 14px;
+    height: 38px;
+    span {
+        margin-left: 6px;
+    }
 }

@@ -3,51 +3,67 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($scope, $rootScope, ConfigService, MonitorService, StatusService, $localStorage) {
+    function ReceptorStatusCtrl($scope, ConfigService, StatusService, MonitorService, $localStorage) {
 
         var vm = this;
         vm.receptorStatusTree = ConfigService.receptorStatusTree;
         vm.receptorList = ConfigService.receptorList;
-        vm.statusData = StatusService.statusData;
-
-        vm.items = [
-            {value: 'tree', name: 'Treemap'},
-            {value: 'pack', name: 'Pack'},
-            {value: 'partition', name: 'Partition'},
-            {value: 'icicle', name: 'Icicle'},
-            {value: 'sunburst', name: 'Sunburst'}
-        ];
-
-        vm.treeChartSize = {
-            width: 580,
-            height: 580
-        };
+        vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst'];
+        vm.treeChartSize = {width: 880, height: 880};
 
         if ($localStorage['receptorStatusDisplayMapType']) {
             vm.mapType = $localStorage['receptorStatusDisplayMapType'];
-        } else {
-            vm.mapType = 'partition';
         }
 
-        $scope.$watch('vm.mapType', function () {
-            $localStorage['receptorStatusDisplayMapType'] = vm.mapType;
+        if (!vm.mapType) {
+            vm.mapType = 'Partition';
+        }
+
+        $scope.$watch('vm.mapType', function (newVal) {
+            $localStorage['receptorStatusDisplayMapType'] = newVal;
+            initStatusView();
         });
 
-        ConfigService.getStatusTreeForReceptor()
-            .success(function (statusTreeResult) {
-                ConfigService.getReceptorList()
-                    .then(function(receptors) {
-                        StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);
+        function initStatusView() {
+            ConfigService.getStatusTreeForReceptor()
+                .success(function (statusTreeResult) {
+                    ConfigService.getReceptorList()
+                        .then(function (receptors) {
+                            StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);
 
-                        receptors.forEach(function(item) {
-                            MonitorService.subscribe(item + ":" + StatusService.statusData[item].sensor);
-                        });
 
-                        receptors.forEach(function(item) {
-                            MonitorService.subscribe('mon_*:agg_' + item + '*');
+                            for (var receptor in StatusService.statusData) {
+                                //subscribe to sensors_ok
+                                MonitorService.subscribe(receptor + ":" + StatusService.statusData[receptor].sensor);
+
+                                //recursively subscrive to all child sensors
+                                subscribeToChildSensors(StatusService.statusData[receptor]);
+                            }
+
+                            function subscribeToChildSensors(parent) {
+                                if (parent.status_children && parent.status_children.length > 0) {
+                                    parent.status_children.forEach(function(child) {
+                                        subscribeToChildSensors(child);
+
+                                    });
+                                } else if (parent.children && parent.children.length > 0) {
+                                    parent.children.forEach(function (child) {
+                                        subscribeToChildSensors(child);
+                                    });
+                                } else if (parent.subs && parent.subs.length > 0) {
+                                    parent.subs.forEach(function(sub) {
+                                        if (!parent.children) {
+                                            parent.children = [];
+                                        }
+                                        parent.children.push({name: sub, sensor: sub, hidden: true});
+                                        MonitorService.subscribe(receptor + ":" + sub);
+                                    });
+                                }
+
+                                MonitorService.subscribe(receptor + ":" + parent.sensor);
+                            }
                         });
-                        //MonitorService.subscribe("m011:ap.device-status");
-                    });
-            });
+                });
+        }
     }
 })();

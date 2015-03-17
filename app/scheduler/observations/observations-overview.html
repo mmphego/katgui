@@ -65,11 +65,11 @@
                 </md-toolbar>
                 <div flex class="schedule-draft-data-list" style="border-left: 1px solid #d3d3d3; border-right: 1px solid #d3d3d3">
                     <div style="min-width: 650px !important;"
-                         ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id} | orderBy:'id_code'"
+                         ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id}"
                          class="schedule-draft-item animate-repeat" layout="column">
                         <div flex layout="row" layout-align="start center">
                             <div layout="row" class="schedule-block-name-div" style="cursor: text">
-                                <span class="schedule-block-id-text" style="cursor: pointer;" ng-click="vm.displaySBDetails(item)">{{item.id_code}}</span>
+                                <span class="schedule-block-id-text" style="cursor: pointer;" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
 

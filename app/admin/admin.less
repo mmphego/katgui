@@ -1,38 +1,42 @@
 .user-list {
     padding: 0;
-//    max-height: 800px;
+    min-width: 800px;
     height: 100%;
     margin-bottom: 16px;
     overflow: auto;
+
 
     .user-row {
         padding-left: 8px;
         padding-right: 8px;
         border-bottom: 1px solid #d3d3d3;
         height: 49px;
-
+        overflow: hidden;
+        text-overflow: ellipsis;
         &:hover {
             background: #f8f8f8;
         }
+
+
     }
 
-    .user-cell {
-        min-width: 200px;
-        max-width: 400px;
-        width: 400px;
-        overflow: visible;
-        text-overflow: ellipsis;
-
-        input {
-            border-top: 0;
-            border-left: 0;
-            border-right: 0;
-            margin-right: 24px;
-            background: transparent;
-            border-bottom: 1px solid #d3d3d3;
-        }
+    input {
+        background: transparent;
     }
 
+}
+
+.md-select-custom-disabled-text[disabled] {
+    .md-select-label {
+        cursor: not-allowed;
+        color: rgba(0,0,0,0.9) !important;
+        border-bottom: 0;
+        font-size: 12px;
+    }
+
+    .md-select-icon {
+        color: rgba(0,0,0,0.26) !important;
+    }
 }
 
 .cell-span {
@@ -60,7 +64,7 @@
 
 .user-row-button {
     float: right;
-    width: 49px;
+    width: 35px;
     height: 49px;
     color: #9E9E9E;
     border-radius: 25px;
@@ -73,3 +77,15 @@
     }
 }
 
+.user-admin-input[disabled] {
+    border: 0;
+}
+
+.user-admin-input {
+    height: 29px;
+    margin-right: 4px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #d3d3d3;
+}

@@ -1,183 +1,25 @@
 angular.module('katGui.util', [])
-    .directive('resizer', resizer)
-    .directive('dropdownMultiselect', dropdownMultiselect)
-    .directive('addListItemAnimation', addListItemAnimation)
-    .directive('loadingOverlay', loadingOverlay)
     .directive('autoGrow', autoGrow)
-    .directive('dropdownButtonMenu', dropdownButtonMenu)
     .constant('SERVER_URL', window.location.origin)
-    .factory('KatGuiUtil', katGuiUtil);
+    .factory('KatGuiUtil', katGuiUtil)
+    .filter('regexSearch', regexSearchFilter);
 
-function dropdownMultiselect() {
-    return {
-        restrict: 'E',
-        scope: {
-            model: '=',
-            options: '='
-        },
-        template: "<div class='btn-group' data-ng-class='{open: open}' style='overflow: visible;'>" +
-        "<md-button class='btn btn-small dropdown-toggle' style='text-transform: none' ng-click='toggleMenu();focusMenu();'>" +
-        "<span ng-if='model.roles.length > 0' ng-repeat='role in model.roles | orderBy:role' style='margin-left: 2px;'>{{role}},</span>" +
-        "<span ng-if='model.roles.length === 0'>Select Roles</span><span style='margin-left: 5px;' class='fa fa-caret-down'></span>" +
-        "</md-button>" +
-        "<div style='z-index: 1000; min-width: 210px;' class='dropdown-menu' aria-labelledby='dropdownMenu' ng-blur='closeMenu()'>" +
-        "<md-button aria-label='Select User Role Item' layout='row' ng-repeat='option in options' layout-align='start center' style='text-transform: none; text-align: start;width: 100%' data-ng-click='setSelectedItem(option)'>" +
-        "<span style='min-width: 24px; margin-left: 8px;' class='fa' ng-class='isChecked(option)'></span>" +
-        "<span flex style='margin: 4px; font-size: 14px; padding: 4px;'>{{::option.name}}</span>" +
-        "</md-button>" +
-        "</div>" +
-        "</div>",
-        link: function (scope, element, attrs) {
-            scope.focusMenu = function () {
-                var el = angular.element(element[0].getElementsByClassName("dropdown-menu"));
-                el[0].children[0].focus();
-            };
-        },
-        controller: function ($scope, $rootScope, $timeout) {
-
-            $scope.selected_items = [];
-
-            $scope.closeMenu = function () {
-                if ($scope.open) {
-                    $timeout(function() {
-                        $scope.open = false;
-                    }, 0);
-                }
-            };
-
-            $scope.toggleMenu = function () {
-                $rootScope.$emit('keydown', 27); //close other open menus
-                $timeout(function() {
-                    $scope.open = !$scope.open;
-                }, 0);
-            };
-
-            //TODO: fix this ugly hack of hiding menus and make a better directive
-            var unbindKeyDownListener = $rootScope.$on('keydown', function (event, value) {
-               if (value === 27) {
-                   $scope.closeMenu();
-               }
-            });
-
-            $scope.$on('$destroy', unbindKeyDownListener);
-
-            $scope.setSelectedItem = function (option) {
-
-                if (_.contains($scope.model.roles, option.value)) {
-                    $scope.model.roles = _.without($scope.model.roles, option.value);
-                } else {
-                    $scope.model.roles.push(option.value);
-                }
-
-            };
-            $scope.isChecked = function (option) {
-                if (_.contains($scope.model.roles, option.value)) {
-                    return 'fa-check';
-                }
-                return '';
-            };
-        }
-    };
-}
-
-function resizer($document) {
-
-    return function (scope, element, attrs) {
-
-        element.on('mousedown', function (event) {
-            event.preventDefault();
-
-            //angular.element(attrs.resizerFlexParent).removeAttr('flex');
-            $document.on('mousemove', mousemove);
-            $document.on('mouseup', mouseup);
-        });
-
-        function mousemove(event) {
-
-            if (attrs.resizer === 'vertical') {
-                // Handle vertical resizer
-                var x = window.innerWidth - event.pageX;
-                angular.element(attrs.resizerTarget).css({
-                    width: x + 'px'
-                });
-
-            } else {
-                // Handle horizontal resizer
-
-                var y = event.pageY - angular.element(attrs.resizerTarget).offset().top;
-
-                angular.element(attrs.resizerTarget).css({
-                    height: y - 8 + 'px'
-                });
-            }
-        }
-
-        function mouseup() {
-            $document.unbind('mousemove', mousemove);
-            $document.unbind('mouseup', mouseup);
-            //angular.element(attrs.resizerFlexParent).attr('flex');
-        }
-    };
-}
-
-//add this to the span containing either text or icon inside a md-button
-function addListItemAnimation($animate) {
-    return {
-        restrict: 'EA',
-        scope: {
-            list: '@',
-            height: '@'
-        },
-        link: function (scope, element) {
-            var parent = element.parent();
-            var parentRect = parent[0].getBoundingClientRect();
-
-            element.detach();
-            angular.element('body').append(element);
-            element.addClass('add-list-item');
-            parent.on('click', function () {
-
-                var listRect = angular.element(scope.list)[0].getBoundingClientRect();
-
-                $animate.addClass(element, 'on', {
-                    from: {
-                        width: parentRect.width,
-                        height: parentRect.height,
-                        left: parentRect.left + 'px',
-                        top: parentRect.top + 'px',
-                        //opacity: '0',
-                        display: 'block',
-                        //border: '1px solid lightgrey',
-                        background: 'white',
-                        'box-shadow': '0px 2px 5px 0 rgba(0, 0, 0, 0.26)'
-                    },
-                    to: {
-                        left: listRect.left + 'px',
-                        top: listRect.top + 'px',
-                        width: listRect.width + 'px',
-                        height: scope.height + 'px'
-                        //opacity: '0.8'
+function regexSearchFilter() {
+    return function(input, fields, regex) {
+        if (regex) {
+            var pattern = new RegExp(regex, 'i');
+            var out = [];
+            for (var i = 0; i < input.length; i++){
+                for (var idx in fields) {
+                    if(pattern.test(input[i][fields[idx].value])) {
+                        out.push(input[i]);
+                        break;
                     }
-                }).then(function () {
-                    //element.css('opacity', 0);
-                    element.removeClass('on');
-                    element.css('display', 'none');
-                });
-
-            });
-        }
-    };
-}
-
-//for the overlay to work, set parent style position: relative
-function loadingOverlay() {
-    return {
-        restrict: 'E',
-        template: '<div layout="row" layout-align="center center" class="overlay-loading-div">' +
-        '<md-progress-circular md-theme="{{themeSecondary}}" class="md-whiteframe-z4" md-mode="indeterminate" style="border-radius: 30px;"></md-progress-circular>' +
-        '</div>',
-        controller: function () {
-
+                }
+            }
+            return out;
+        } else {
+            return input;
         }
     };
 }
@@ -309,21 +151,17 @@ function katGuiUtil() {
         return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
     };
 
-    this.removeFirstFromArrayWhereProperty = function (array, property, propertyValueToLookup) {
-        for (var i = array.length; i--;) {
-            if (array[i][property] === propertyValueToLookup) {
-                array.splice(i, 1);
-                break;
-            }
+    this.getLongitudeFromDegrees = function (latitudeDegrees) {
+        var latSplit = latitudeDegrees.split(':');
+        var deg = parseInt(latSplit[0]);
+        var result = Math.abs(deg) + parseInt(latSplit[1])/60 + parseInt(latSplit[2])/3600;
+        if (deg < 0) {
+            result *= -1;
         }
+        return result;
     };
 
     return this;
-}
-
-function dropdownButtonMenu() {
-
-
 }
 
 var objToString = Object.prototype.toString;

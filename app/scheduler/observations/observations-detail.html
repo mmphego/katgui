@@ -1,6 +1,6 @@
 <div flex layout="column" style="min-width: 1515px; min-height: 850px; margin-bottom: 8px;" ng-controller="SubArrayObservationsDetail as vm">
     <div layout="row" flex>
-        <div flex layout="column" style="margin: 0;">
+        <div flex layout="column" style="margin: 0;" ng-click="vm.closeEditMenu();">
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
@@ -8,11 +8,11 @@
                     <div layout="row" layout-align="start center" layout-padding flex>
                         <span style="margin-left: 8px;">Observation Schedule for Sub-Array {{vm.subarray_id}}</span>
                         <span flex></span>
-                        <span></span>
-                        <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.toggleSchedulerMode()"
-                            style="font-size: 14px;">
-                            <span>Mode: {{vm.schedulerModes[vm.subarray_id].stringValue}}</span>
-                        </md-button>
+                        <span>Mode:</span>
+                        <md-select ng-model="vm.selectedMode" style="margin-top: 0px; margin-left: 4px; margin-right:8px;" ng-change="vm.schedulerModeChanged()"
+                                   class="md-primary" md-theme="{{themePrimaryButtons}}">
+                            <md-option ng-value="type" ng-repeat="type in vm.modeTypes">{{type}}</md-option>
+                        </md-select>
                     </div>
                 </md-toolbar>
 
@@ -24,6 +24,9 @@
                          class="schedule-draft-item animate-repeat" layout="column">
 
                         <div style="" layout="row" layout-align="center center">
+                            <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
+                            </md-progress-circular>
+                            <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
                             <div layout="row" class="schedule-block-name-div">
                                 <span class="schedule-block-id-text">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
@@ -34,22 +37,20 @@
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
                             <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
-                            <md-button aria-label="Move To Draft" md-theme="default" class="scheduler-inline-button"
-                                       ng-click="vm.moveScheduleRowToDraft(item)" title="Move to Draft">
-                                <span class="fa fa-chevron-up"></span>
-                            </md-button>
-                            <md-button ng-show="item.state !== 'ACTIVE'" md-theme="green" aria-label="Execute Schedule" class="scheduler-inline-button md-primary"
+                            <md-button ng-show="item.state !== 'ACTIVE' && !item.pendingVerify" md-theme="green" aria-label="Execute Schedule" class="scheduler-inline-button md-primary"
                                        ng-click="vm.executeSchedule(item, $event)" title="Execute">
                                 <span class="fa fa-play"></span>
                             </md-button>
-                            <md-button ng-show="item.state === 'ACTIVE'" md-theme="red" aria-label="Stop Executing Schedule" class="scheduler-inline-button md-primary"
+                            <md-button ng-show="item.state === 'ACTIVE' && !item.pendingVerify" md-theme="red" aria-label="Stop Executing Schedule" class="scheduler-inline-button md-primary"
                                        ng-click="vm.stopExecuteSchedule(item)" title="Stop Execution">
                                 <span class="fa fa-stop"></span>
                             </md-button>
-                            <md-button aria-label="Move Schedule To Finished" md-theme="default" class="scheduler-inline-button"
-                                       ng-click="vm.moveScheduleRowToFinished(item)" title="Complete">
-                                <span class="fa fa-check"></span>
+                            <md-button ng-show="!item.pendingVerify" aria-label="Show Edit Menu" ng-click="vm.openSchedulerEditMenu(item, $event);"
+                                       class="scheduler-inline-button">
+                                <span class="fa fa-ellipsis-v"></span>
                             </md-button>
+                            <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
+                            <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
                         </div>
                     </div>
                 </div>
@@ -97,24 +98,20 @@
                     </div>
                 </md-toolbar>
 
-                <div class="schedule-draft-data-list slide-in-vertically-panel-content" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
-                    <div ng-repeat="item in vm.scheduleCompletedData | filter:vm.q3  | filter:{sub_nr:vm.subarray_id} | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
+                <div flex class="schedule-draft-data-list slide-in-vertically-panel-content" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
+                    <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedOrderByFields:vm.q3 | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
                          class="schedule-draft-item animate-repeat" layout="column">
 
                         <div style="" layout="row" layout-align="center center">
                             <div layout="row" class="schedule-block-name-div">
-                                <span class="schedule-block-id-text" ng-click="vm.showScheduleBlockDetails(item)">{{item.id_code}}</span>
+                                <span class="schedule-block-id-text" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
-
                             <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
-
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
                                 <span style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
-
                             <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
-
                             <md-button aria-label="Clone To Draft" style="margin-left: 8px;" md-theme="default" class="scheduler-inline-button"
                                        ng-click="vm.cloneSchedule(item);" title="Clone To Draft">
                                 <span class="fa fa-copy"></span>
@@ -139,14 +136,7 @@
                         <md-subheader class="list-subheader-title">Allocated</md-subheader>
                         <div ng-repeat="resource in vm.allocations | filter:{sub_nr:vm.subarray_id} | filter:{sb_id_code:vm.selectedSchedule.id_code}" layout-align="center center"
                              class="resource-pool-item animate-repeat" layout="row">
-                            <!--<span class="fa" style="font-size: 18px; min-width: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>-->
-                            <!--<span class="fa fa-wrench maintenance-text" ng-if="resource.in_maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>-->
-                            <!--<span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>                            -->
                             <span flex style="font-size:18px; margin-left: 4px;">{{resource.name}}</span>
-                            <!--<md-button ng-click="vm.markResourceFaulty(resource);" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"-->
-                            <!--title="Mark Resource As Faulty">-->
-                            <!--<span class="fa fa-exclamation-circle"></span>-->
-                            <!--</md-button>-->
                         </div>
                     </div>
                     <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;" layout="column">
@@ -183,6 +173,27 @@
             </div>
         </div>
     </div>
-
+    <div id="schedulerEditMenu" ng-show="vm.showEditMenu" class="datepickerMenu md-whiteframe-z1">
+        <md-list layout="column">
+            <md-item>
+                <md-button aria-label="Move To Draft" class="scheduler-menu-item-button"
+                           ng-click="vm.moveSelectedSBToDraft()" title="Move Schedule Block to Draft">
+                    <span>Move to Draft</span>
+                </md-button>
+            </md-item>
+            <md-item>
+                <md-button aria-label="View Progress" class="scheduler-menu-item-button"
+                           ng-click="vm.viewSelectedSBTaskLog()" title="View Progress in a New Tab">
+                    <span>View Progress</span>
+                </md-button>
+            </md-item>
+            <md-item>
+                <md-button aria-label="Move Schedule To Completed" md-theme="default" class="scheduler-menu-item-button"
+                           ng-click="vm.moveSelectedSBToFinished()" title="Move Schedule Block to Complete">
+                    <span>Move To Completed</span>
+                </md-button>
+            </md-item>
+        </md-list>
+    </div>
 </div>
 

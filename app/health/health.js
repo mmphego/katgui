@@ -1,347 +1,116 @@
+/*jshint loopfunc: true */
 (function () {
 
-    angular.module('katGui.health', ['katGui.d3'])
+    angular.module('katGui.health', ['katGui'])
         .controller('HealthCtrl', HealthCtrl);
 
-    function HealthCtrl($rootScope, $scope, $window, $timeout) {
+    function HealthCtrl(MonitorService, ConfigService, StatusService, $scope, $rootScope, $timeout, $interval, d3Util) {
 
         var vm = this;
+        vm.topStatusTrees = StatusService.topStatusTrees;
+        $scope.itemsToUpdate = {};
 
-        var heightOffset = 60,
-            widthOffset = 35,
-            heightOffsetCollapsed = 40,
-            widthOffsetCollapsed = 35;
+        var unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
+            $scope.itemsToUpdate[sensor.name.replace(':', '_')] = sensor;
 
-        vm.treemapDisplayValue = 'size';
-        vm.showSelect = true;
-        vm.treeContainerDiv = angular.element('#ui-view-container-div')[0];
+            var stopUpdating = $interval(applyPendingUpdates, 200);
 
-        vm.treeChartSize = {width: $window.innerWidth - 500, height: $window.innerHeight - 160};
+            function applyPendingUpdates() {
+                var attributes = Object.keys($scope.itemsToUpdate);
 
-        //add the watchers on the next $digest cycle
-        $timeout(function () {
-            $scope.$watch(function () {
-                return $window.innerWidth;
-            }, function () {
-                calcTreeChartSize(250);
-            });
+                if (attributes.length > 0) {
+                    for (var i = 0; i < attributes.length; i++) {
+                        var queryString = '#' + attributes[i];
+                        var resultList = d3.selectAll(queryString);
+                        resultList.attr('class', function (d) {
+                            return setClassesOfSensor(d, attributes[i]);
+                        });
+                        //if (resultList[0].length === 0) {
+                        ////this just means that the status view is still in the process of being built and drawn in the DOM,
+                        ////the updates will be added in the next interval
+                        //    console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
+                        //}
+                    }
+                } else {
+                    if (angular.isDefined(stopUpdating)) {
+                        $interval.cancel(stopUpdating);
+                        stopUpdating = undefined;
+                    }
+                }
+            }
 
-            $scope.$watch(function () {
-                return $window.innerHeight;
-            }, function () {
-                calcTreeChartSize(250);
-            });
+            function setClassesOfSensor(d, sensorToUpdateName) {
+                if (d.depth > 0) {
+                    if (!d.sensorValue) {
+                        d.sensorValue = {};
+                    }
+                    var statusClassResult = "inactive-child";
+                    if ($scope.itemsToUpdate[sensorToUpdateName]) {
+                        d.sensorValue = $scope.itemsToUpdate[sensorToUpdateName].sensorValue;
+                        if (d.sensorValue) {
+                            statusClassResult = d3Util.statusClassFromNumber(d.sensorValue.status) + '-child child';
+                            delete $scope.itemsToUpdate[sensorToUpdateName];
+                        }
+                    } else {
+                        delete $scope.itemsToUpdate[sensorToUpdateName];
+                        console.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
+                        console.error(d);
+                    }
+                    return statusClassResult;
+                } else if (d.sensorValue) {
+                    delete $scope.itemsToUpdate[d.name + '_' + d.sensor];
+                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child parent';
+                } else {
+                    delete $scope.itemsToUpdate[sensorToUpdateName];
+                    console.error('deleting a sensor update because the sensorValue is null');
+                    console.error(d);
+                }
+            }
+        });
 
-            $rootScope.$watch('showSideNav', function (value) {
-                calcTreeChartSize(500);
-                vm.showSelect = value;
-            });
-            $rootScope.$watch('showNavbar', function (value) {
-                calcTreeChartSize(500);
-                vm.showSelect = value;
-            });
-        }, 1);
+        ConfigService.getStatusTreesForTop()
+            .success(function (statusTreeResult) {
 
-        vm.items = [
-            {value: 'tree', name: 'Treemap'},
-            {value: 'pack', name: 'Pack'},
-            {value: 'partition', name: 'Partition'},
-            {value: 'icicle', name: 'Icicle'},
-            {value: 'sunburst', name: 'Sunburst'}
-        ];
+                StatusService.setTopStatusTrees(statusTreeResult);
 
-        vm.mapType = 'tree';
+                StatusService.topStatusTrees.forEach(function (tree) {
+                    subscribeToChildSensors(tree);
+                });
 
-        function calcTreeChartSize(delay) {
-            //defer the calculation so that the view can update
-            //if we do it too fast some of the watch functions run this before
-            //the layout actually changed
-            $timeout(function () {
+                function subscribeToChildSensors(parent) {
+                    if (parent.status_children && parent.status_children.length > 0) {
+                        parent.status_children.forEach(function (child) {
+                            subscribeToChildSensors(child);
 
-                if ($rootScope.showSideNav && $rootScope.showNavbar) {
-                    vm.treeChartSize = {
-                        width: vm.treeContainerDiv.clientWidth - widthOffset,
-                        height: vm.treeContainerDiv.clientHeight - heightOffset
-                    };
-                } else if (!$rootScope.showSideNav && $rootScope.showNavbar) {
-                    vm.treeChartSize = {
-                        width: vm.treeContainerDiv.clientWidth - widthOffsetCollapsed,
-                        height: vm.treeContainerDiv.clientHeight - heightOffset
-                    };
-                } else if (!$rootScope.showNavbar) {
-                    vm.treeChartSize = {
-                        width: vm.treeContainerDiv.clientWidth - widthOffsetCollapsed,
-                        height: vm.treeContainerDiv.clientHeight - heightOffsetCollapsed
-                    };
+                        });
+                    } else if (parent.children && parent.children.length > 0) {
+                        parent.children.forEach(function (child) {
+                            subscribeToChildSensors(child);
+                        });
+                    } else if (parent.subs && parent.subs.length > 0) {
+                        parent.subs.forEach(function (sub) {
+                            if (!parent.children) {
+                                parent.children = [];
+                            }
+                            parent.children.push({name: sub, sensor: sub});
+                            MonitorService.subscribe(sub);
+                        });
+                    }
+
+                    if (parent.sensor) {
+                        MonitorService.subscribe(parent.sensor);
+                    }
                 }
 
-            }, delay);
-        }
+            })
+            .error(function () {
+                $rootScope.showSimpleDialog("Error retrieving status tree structure from katconf-webserver, is the server running?");
+            });
 
-        vm.d3TreemapData =
-        {
-            "name": "Sub-Array 1",
-            "children": [
-                {
-                    "name": "ANT1",
-                    "children": [
-                        {
-                            "name": "cluster",
-                            "children": [
-                                {"name": "AgglomerativeCluster", "value": 100},
-                                {"name": "CommunityStructure", "value": 100},
-                                {"name": "HierarchicalCluster", "value": 100},
-                                {"name": "MergeEdge", "value": 100}
-                            ]
-                        },
-                        {
-                            "name": "graph",
-                            "children": [
-                                {"name": "BetweennessCentrality", "value": 100},
-                                {
-                                    "name": "LinkDistance", "children": [
-                                    {"name": "AgglomerativeCluster", "value": 25},
-                                    {"name": "CommunityStructure", "value": 25},
-                                    {"name": "HierarchicalCluster", "value": 25},
-                                    {"name": "MergeEdge", "value": 25}
-                                ]
-                                },
-                                {"name": "MaxFlowMinCut", "value": 100},
-                                {"name": "ShortestPaths", "value": 100},
-                                {"name": "SpanningTree", "value": 100}
-                            ]
-                        },
-                        {
-                            "name": "optimization",
-                            "children": [
-                                {"name": "AspectRatioBanker", "value": 100}
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "ANT2",
-                    "children": [
-                        {"name": "Easing", "value": 50},
-                        {"name": "FunctionSequence", "value": 50},
-                        {
-                            "name": "Interpolate",
-                            "children": [
-                                {"name": "ArrayInterpolator", "value": 50},
-                                {"name": "ColorInterpolator", "value": 50},
-                                {"name": "DateInterpolator", "value": 50},
-                                {"name": "Interpolator", "value": 50},
-                                {"name": "MatrixInterpolator", "value": 50},
-                                {"name": "NumberInterpolator", "value": 50},
-                                {"name": "ObjectInterpolator", "value": 50},
-                                {"name": "PointInterpolator", "value": 50},
-                                {"name": "RectangleInterpolator", "value": 50}
-                            ]
-                        },
-                        {"name": "ISchedulable", "value": 50},
-                        {"name": "Parallel", "value": 50},
-                        {"name": "Pause", "value": 50},
-                        {"name": "Scheduler", "value": 50},
-                        {"name": "Sequence", "value": 50},
-                        {"name": "Transition", "value": 50},
-                        {"name": "Transitioner", "value": 50},
-                        {"name": "TransitionEvent", "value": 50},
-                        {"name": "Tween", "value": 50}
-                    ]
-                },
-                {
-                    "name": "ANT3",
-                    "children": [
-                        {
-                            "name": "converters",
-                            "children": [
-                                {"name": "Converters", "value": 100},
-                                {"name": "DelimitedTextConverter", "value": 100},
-                                {"name": "GraphMLConverter", "value": 100},
-                                {"name": "IDataConverter", "value": 100},
-                                {"name": "JSONConverter", "value": 100}
-                            ]
-                        },
-                        {"name": "DataField", "value": 100},
-                        {"name": "DataSchema", "value": 100},
-                        {"name": "DataSet", "value": 100},
-                        {"name": "DataSource", "value": 100},
-                        {"name": "DataTable", "value": 100}
-                    ]
-                },
-                {
-                    "name": "ANT4",
-                    "children": [
-                        {"name": "DirtySprite", "value": 200},
-                        {"name": "LineSprite", "value": 300},
-                        {"name": "RectSprite", "value": 200},
-                        {
-                            "name": "TextSprite",
-                            "children": [
-                                {"name": "DragForce", "value": 100},
-                                {"name": "GravityForce", "value": 100},
-                                {"name": "IForce", "value": 100}
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "ANT5",
-                    "children": [
-                        {"name": "DragForce", "value": 100},
-                        {"name": "GravityForce", "value": 100},
-                        {"name": "IForce", "value": 100},
-                        {"name": "NBodyForce", "value": 100},
-                        {"name": "Particle", "value": 100},
-                        {"name": "Simulation", "value": 100},
-                        {"name": "Spring", "value": 100},
-                        {"name": "SpringForce", "value": 300}
-                    ]
-                },
-                {
-                    "name": "ANT6",
-                    "children": [
-                        {
-                            "name": "axis",
-                            "children": [
-                                {"name": "Axes", "value": 100},
-                                {"name": "Axis", "value": 100},
-                                {"name": "AxisGridLine", "value": 100},
-                                {"name": "AxisLabel", "value": 50},
-                                {"name": "CartesianAxes", "value": 50}
-                            ]
-                        },
-                        {
-                            "name": "controls",
-                            "children": [
-                                {"name": "AnchorControl", "value": 100},
-                                {"name": "ClickControl", "value": 50},
-                                {"name": "Control", "value": 50},
-                                {"name": "ControlList", "value": 50},
-                                {"name": "DragControl", "value": 50},
-                                {"name": "ExpandControl", "value": 50},
-                                {"name": "HoverControl", "value": 50},
-                                {"name": "IControl", "value": 50},
-                                {"name": "PanZoomControl", "value": 50},
-                                {"name": "SelectionControl", "value": 50},
-                                {"name": "TooltipControl", "value": 50}
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "ANT7",
-                    "children": [
-                        {"name": "AggregateExpression", "value": 25},
-                        {"name": "And", "value": 25},
-                        {"name": "Arithmetic", "value": 25},
-                        {"name": "Average", "value": 25},
-                        {"name": "BinaryExpression", "value": 25},
-                        {"name": "Comparison", "value": 25},
-                        {"name": "CompositeExpression", "value": 25},
-                        {"name": "Count", "value": 25},
-                        {"name": "DateUtil", "value": 25},
-                        {"name": "Distinct", "value": 25},
-                        {"name": "Expression", "value": 25},
-                        {"name": "ExpressionIterator", "value": 25},
-                        {"name": "Fn", "value": 25},
-                        {"name": "If", "value": 25},
-                        {"name": "IsA", "value": 25},
-                        {"name": "Literal", "value": 25},
-                        {"name": "Match", "value": 25},
-                        {"name": "Maximum", "value": 25},
-                        {
-                            "name": "methods",
-                            "children": [
-                                {"name": "add", "value": 25},
-                                {"name": "and", "value": 25},
-                                {"name": "average", "value": 25},
-                                {"name": "count", "value": 25},
-                                {"name": "distinct", "value": 25},
-                                {"name": "div", "value": 25},
-                                {"name": "eq", "value": 25},
-                                {"name": "fn", "value": 25},
-                                {"name": "gt", "value": 25},
-                                {"name": "gte", "value": 25},
-                                {"name": "iff", "value": 25},
-                                {"name": "isa", "value": 25}
-                            ]
-                        },
-                        {"name": "Minimum", "value": 25},
-                        {"name": "Not", "value": 25},
-                        {"name": "Or", "value": 25},
-                        {"name": "Query", "value": 25},
-                        {"name": "Range", "value": 25},
-                        {"name": "StringUtil", "value": 25},
-                        {"name": "Sum", "value": 25},
-                        {"name": "Variable", "value": 25},
-                        {"name": "Variance", "value": 25},
-                        {"name": "Xor", "value": 25}
-                    ]
-                },
-                {
-                    "name": "ANT8",
-                    "children": [
-                        {
-                            "name": "axis",
-                            "children": [
-                                {"name": "Axes", "value": 100},
-                                {"name": "Axis", "value": 100},
-                                {"name": "AxisGridLine", "value": 100},
-                                {"name": "AxisLabel", "value": 50},
-                                {"name": "CartesianAxes", "value": 50}
-                            ]
-                        },
-                        {
-                            "name": "controls",
-                            "children": [
-                                {"name": "AnchorControl", "value": 100},
-                                {"name": "ClickControl", "value": 50},
-                                {"name": "Control", "value": 50},
-                                {"name": "ControlList", "value": 50},
-                                {"name": "DragControl", "value": 50},
-                                {"name": "ExpandControl", "value": 50},
-                                {"name": "HoverControl", "value": 50},
-                                {"name": "IControl", "value": 50},
-                                {"name": "PanZoomControl", "value": 50},
-                                {"name": "SelectionControl", "value": 50},
-                                {"name": "TooltipControl", "value": 50}
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "ANT9",
-                    "children": [
-                        {
-                            "name": "axis",
-                            "children": [
-                                {"name": "Axes", "value": 100},
-                                {"name": "Axis", "value": 100},
-                                {"name": "AxisGridLine", "value": 100},
-                                {"name": "AxisLabel", "value": 50},
-                                {"name": "CartesianAxes", "value": 50}
-                            ]
-                        },
-                        {
-                            "name": "controls",
-                            "children": [
-                                {"name": "AnchorControl", "value": 100},
-                                {"name": "ClickControl", "value": 50},
-                                {"name": "Control", "value": 50},
-                                {"name": "ControlList", "value": 50},
-                                {"name": "DragControl", "value": 50},
-                                {"name": "ExpandControl", "value": 50},
-                                {"name": "HoverControl", "value": 50},
-                                {"name": "IControl", "value": 50},
-                                {"name": "PanZoomControl", "value": 50},
-                                {"name": "SelectionControl", "value": 50},
-                                {"name": "TooltipControl", "value": 50}
-                            ]
-                        }
-                    ]
-                }
-            ]
-        };
+        $scope.$on('$destroy', function () {
+            unbindUpdate();
+        });
+
     }
-})();
+})
+();

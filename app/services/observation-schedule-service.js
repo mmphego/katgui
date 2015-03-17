@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil) {
+    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var connection = null;
@@ -18,11 +18,12 @@
         api.poolResources = [];
         api.poolResourcesFree = [];
         api.allocations = [];
+        api.pendingVerificationSBIds = {};
         api.schedulerModes = {};
 
         function onSockJSOpen() {
             if (connection && connection.readyState) {
-                console.log('Observation Schedule Connection Established.');
+                console.log('Observation Schedule Connection Established. Authenticating...');
                 authenticateSocketConnection();
             }
         }
@@ -42,7 +43,7 @@
         }
 
         function onSockJSClose() {
-            console.log('Disconnecting Observation Schedule Connection');
+            console.log('Disconnected Observation Schedule Connection.');
             connection = null;
         }
 
@@ -54,14 +55,24 @@
                 console.error(e.data);
             } else {
                 var result = jsonData.result;
-                console.log(result);
+//                console.log(result);
 
                 if (result.get_schedule_blocks) {
                     var getResult = JSON.parse(result.get_schedule_blocks);
                     getResult.forEach(function (item) {
                         if (item.state === "DRAFT") {
+                            for (var attr in api.pendingVerificationSBIds) {
+                                if (_.contains(api.pendingVerificationSBIds[attr].pendingList, item.id_code)) {
+                                    item.pendingVerify = true;
+                                }
+                            }
                             api.scheduleDraftData.push(item);
                         } else if (item.state === "SCHEDULED" || item.state === "ACTIVE") {
+                            for (var atr in api.pendingVerificationSBIds) {
+                                if (_.contains(api.pendingVerificationSBIds[atr].pendingList, item.id_code)) {
+                                    item.pendingVerify = true;
+                                }
+                            }
                             api.scheduleData.push(item);
                         }
                     });
@@ -323,7 +334,11 @@
                     console.warn('Observation Schedule returned an unfamiliar message: ');
                     console.warn(e);
                 } else if (result.session_id) {
+                    console.log('Observation Schedule Connection Authenticated.');
                     connection.authorized = true;
+                } else {
+                    console.error('Observation Schedule Connection Authentication failed!.');
+                    connection.authorized = false;
                 }
 
                 if (deferredMap[jsonData.id]) {
@@ -492,13 +507,69 @@
             return createCommandPromise(sendObsSchedCommand('list_allocations_for_subarray', [sub_nr]));
         };
 
-        api.getSchedulerModeForSubarray= function (sub_nr) {
+        api.getSchedulerModeForSubarray = function (sub_nr) {
             return createCommandPromise(sendObsSchedCommand('get_scheduler_mode_by_subarray', [sub_nr]));
         };
 
-        api.setSchedulerModeForSubarray= function (sub_nr, mode) {
+        api.setSchedulerModeForSubarray = function (sub_nr, mode) {
             return createCommandPromise(sendObsSchedCommand('set_scheduler_mode_by_subarray', [sub_nr, mode]));
         };
+
+        api.viewTaskLogForSBIdCode = function (id_code) {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/tailtask/" + id_code + "/progress").focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
+        };
+
+        api.receivedSchedMessage = function (messageName, messageData) {
+            console.log(messageName + ": " + messageData.value);
+            if (messageName.indexOf('pending_requests_') > -1) {
+                //Comma separated list of unserviced requests that wait for verification to complete.
+                var normalMessageName = messageName.replace(':', '_');
+                if (!api.pendingVerificationSBIds[normalMessageName]) {
+                    api.pendingVerificationSBIds[normalMessageName] = {pendingList: []};
+                }
+                var currentPending = api.pendingVerificationSBIds[normalMessageName].pendingList;
+                var noLongerPending = [];
+                var newPending = [];
+                var newListValue = messageData.value.split(',');
+                if (messageData.value.length !== 0) {
+                    newPending = _.difference(newListValue, currentPending);
+                    noLongerPending = _.difference(currentPending, newListValue);
+                    api.pendingVerificationSBIds[normalMessageName].pendingList = newListValue;
+                } else {
+                    newPending = [];
+                    noLongerPending = _.difference(currentPending, newListValue);
+                    api.pendingVerificationSBIds[normalMessageName].pendingList = [];
+                }
+
+                noLongerPending.forEach(function (id_code) {
+                    //all the id_codes of the sbs that are no longer pending verification
+                    var sb = _.findWhere(api.scheduleDraftData, {id_code:id_code});
+                    if (!sb) {
+                        sb = _.findWhere(api.scheduleData, {id_code:id_code});
+                    }
+                    if (sb) {
+                        sb.pendingVerify = false;
+                    }
+                });
+
+                newPending.forEach(function (id_code) {
+                    //all the id_codes of the sbs that are pending verification
+                    var sb = _.findWhere(api.scheduleDraftData, {id_code:id_code});
+                    if (!sb) {
+                        sb = _.findWhere(api.scheduleData, {id_code:id_code});
+                    }
+                    if (sb) {
+                        sb.pendingVerify = true;
+                    }
+                });
+            }
+        };
+
+
 
         function createCommandPromise(promiseId) {
             deferredMap[promiseId] = $q.defer();

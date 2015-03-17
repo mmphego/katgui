@@ -28,7 +28,7 @@
 <!--})();-->
 <!--</script>-->
 
-<body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="row">
+<body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="row" ng-cloak>
 
 <!-- Livereload script for development only (stripped during dist build) -->
 <script src="http://localhost:35729/livereload.js" data-concat="false"></script>
@@ -75,6 +75,7 @@
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/editable-directive.js"></script>
 <script src="app/services/control-service.js"></script>
+<script src="app/services/alarms-service.js"></script>
 <script src="app/services/config-service.js"></script>
 <script src="app/services/data-service.js"></script>
 <script src="app/services/monitor-service.js"></script>
@@ -88,7 +89,6 @@
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/d3/d3-chart-directive.js"></script>
 <script src="app/d3/d3-gantt-chart.js"></script>
-<script src="app/d3/d3-wind-rose.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
 <script src="app/d3/receptor-status-items.js"></script>
@@ -97,6 +97,7 @@
 <script src="app/d3/receptor-status-partition-map.js"></script>
 <script src="app/d3/receptor-status-icicle-map.js"></script>
 <script src="app/d3/receptor-status-sunburst-map.js"></script>
+<script src="app/d3/status-single-level-tree-map.js"></script>
 <script src="app/admin/admin.js"></script>
 <script src="app/util/util.js"></script>
 <script src="app/alarms/alarms.js"></script>
@@ -235,7 +236,7 @@
     </md-sidenav>
 
     <div layout="column" flex>
-        <md-toolbar ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true">
+        <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true">
             <div class="md-toolbar-tools" layout="row" style="padding: 0;  max-height: 56px;">
 
                 <md-button aria-label="Left Navbar" class="button-toolbar-flat-icon"
@@ -244,36 +245,7 @@
                     <span class="fa fa-navicon"></span>
                 </md-button>
 
-                <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentStateUpperCase()}}</span>
-
-                <!--<div class="btn-group"-->
-                <!--ng-class="{open: vm.operatorControlHover || vm.operatorControlMenuHover}" layout="row">-->
-
-                <!---->
-
-                <!--<md-button style="height: 40px;" md-theme="{{themePrimaryButtons}}" md-theme-watch="true" class=""-->
-                <!--aria-label="Operator Control"-->
-                <!--ng-mouseenter="vm.operatorControlHover = true"-->
-                <!--ng-mouseleave="vm.operatorControlHover = false"-->
-                <!--ng-click="vm.operatorControlHover = false; vm.operatorControlMenuHover = false; vm.stateGo('operatorControl')">-->
-                <!--Operator Control-->
-                <!--</md-button>-->
-
-                <!--<md-content flex style="margin: -7px -1px 0;" class="dropdown-menu"-->
-                <!--ng-mouseenter="vm.operatorControlMenuHover = true"-->
-                <!--ng-mouseleave="vm.operatorControlMenuHover = false"-->
-                <!--role="menu">-->
-                <!--<div style="color: rgba(0,0,0,0.73)" layout="column">-->
-                <!--<md-button ng-click="vm.inhibitAll()" aria-label="Inhibit All">Inhibit All</md-button>-->
-                <!--<md-button ng-click="vm.stowAll()" aria-label="Stow All">Stow All</md-button>-->
-                <!--<md-button ng-click="vm.stopAll()" aria-label="Stop All">Stop All</md-button>-->
-                <!--<md-button ng-click="vm.resumeOperations()" aria-label="Resume Operations">Resume Operations</md-button>-->
-                <!--<md-button disabled ng-click="vm.shutdownComputing()" aria-label="Shutdown Computing">Shutdown Computing</md-button>-->
-                <!--</div>-->
-                <!--</md-content>-->
-
-                <!--</div>-->
-
+                <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
                 <span flex></span>
 
                 <div ng-if="vm.julianDay" ng-show="showJulianDate">

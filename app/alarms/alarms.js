@@ -3,21 +3,19 @@
     angular.module('katGui.alarms', ['katGui.util'])
         .controller('AlarmsCtrl', AlarmsCtrl);
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, $document, $timeout) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
 
         var vm = this;
-
         vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
-            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Timestamp', value: 'date'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
             {label: 'Message', value: 'value'}
         ];
-
         vm.knownAlarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
-            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Timestamp', value: 'date'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
             {label: 'Message', value: 'value'}
@@ -33,7 +31,7 @@
             vm.alarmsOrderBy = newOrderBy;
         };
 
-        vm.setAlarmsOrderBy('timestamp', true);
+        vm.setAlarmsOrderBy('date', true);
 
         vm.setKnownAlarmsOrderBy = function (column, reverse) {
             var newOrderBy = _.findWhere(vm.knownAlarmsOrderByFields, {value: column});
@@ -45,11 +43,10 @@
             vm.knownAlarmsOrderBy = newOrderBy;
         };
 
-        vm.setKnownAlarmsOrderBy('timestamp', true);
+        vm.setKnownAlarmsOrderBy('date', true);
 
         vm.toggleSelectAllKnownAlarms = function (selected) {
-
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.priority === 'known') {
                     item.selected = selected;
                 }
@@ -57,8 +54,7 @@
         };
 
         vm.toggleSelectAllAlarms = function (selected) {
-
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.priority !== 'known') {
                     item.selected = selected;
                 }
@@ -66,9 +62,8 @@
         };
 
         vm.clearSelectedAlarms = function () {
-
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.clearAlarm(item.name);
@@ -83,9 +78,8 @@
         };
 
         vm.acknowledgeSelectedAlarms = function () {
-
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.acknowledgeAlarm(item.name);
@@ -100,9 +94,8 @@
         };
 
         vm.knowSelectedAlarms = function () {
-
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.addKnownAlarm(item.name);
@@ -117,9 +110,8 @@
         };
 
         vm.cancelKnowSelectedAlarms = function () {
-
             var timeout = 0;
-            $rootScope.alarmsData.forEach(function (item) {
+            AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
                     $timeout(function() {
                         ControlService.cancelKnowAlarm(item.name);
@@ -133,22 +125,19 @@
             ControlService.cancelKnowAlarm(alarm.name);
         };
 
-        var unbindShortcuts = $document.bind("keydown", function (e) {
-
-            if (e.keyCode === 27) {
+        vm.keydown = function (e, key) {
+            if (key === 27) {
                 //escape
-                $rootScope.alarmsData.forEach(function (item) {
+                AlarmsService.alarmsData.forEach(function (item) {
                     item.selected = false;
                 });
             }
+            $scope.$apply();
+        };
 
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
-        });
-
+        vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
         $scope.$on('$destroy', function () {
-            unbindShortcuts.unbind('keydown');
+            vm.unbindShortcuts('keydown');
         });
     }
 })();

@@ -3,14 +3,15 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail(ObservationScheduleService, $timeout, $stateParams, $scope, $document, $rootScope) {
+    function SubArrayObservationsDetail(ObservationScheduleService, $timeout, $stateParams, $scope, $rootScope, ConfigService) {
 
         var vm = this;
         vm.subarray_id = parseInt($stateParams.subarray_id);
         vm.draftListProcessingServerCall = false;
         vm.scheduleListProcessingServerCall = false;
-
         vm.selectedSchedule = null;
+        vm.showEditMenu = false;
+        vm.modeTypes = ['queue', 'manual'];
 
         vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
         vm.scheduleData = ObservationScheduleService.scheduleData;
@@ -33,7 +34,10 @@
                 .then(function () {
                     ObservationScheduleService.listAllocationsForSubarray(vm.subarray_id)
                         .then(function() {
-                            ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id);
+                            ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id)
+                                .then(function() {
+                                    vm.selectedMode = ObservationScheduleService.schedulerModes[vm.subarray_id].stringValue;
+                                });
                         });
                 });
         };
@@ -67,10 +71,13 @@
 
         vm.setCompletedOrderBy = function (column, reverse) {
             var newOrderBy = _.findWhere(vm.completedOrderByFields, {value: column});
-            if (newOrderBy.reverse === undefined) {
-                newOrderBy.reverse = reverse || false;
-            } else {
-                newOrderBy.reverse = !newOrderBy.reverse;
+            if ((vm.completedOrderBy || {}).value === column) {
+                if (newOrderBy.reverse === undefined) {
+                    newOrderBy.reverse = true;
+                } else if (newOrderBy.reverse) {
+                    newOrderBy.reverse = undefined;
+                    newOrderBy = null;
+                }
             }
             vm.completedOrderBy = newOrderBy;
         };
@@ -90,21 +97,72 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        vm.showScheduleBlockDetails = function (sb) {
-            //showSimpleDialog('Schedule Block Details', JSON.stringify(sb, null, 4));
-            alert(JSON.stringify(sb, null, 4));
-        };
-
-        vm.toggleSchedulerMode = function () {
-            ObservationScheduleService.setSchedulerModeForSubarray(
-                vm.subarray_id,
-                vm.schedulerModes[vm.subarray_id].stringValue !== 'manual'? 'manual' : 'queue')
+        vm.schedulerModeChanged = function () {
+            ObservationScheduleService.setSchedulerModeForSubarray(vm.subarray_id, vm.selectedMode)
                 .then($rootScope.displayPromiseResult);
         };
 
-        var unbindShortcuts = $document.bind("keydown", function (e) {
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
+        vm.openSchedulerEditMenu = function (item, $event) {
+            var rowIndex = vm.currentScheduleData.indexOf(item);
+            if (vm.currentEditMenuIndex !== rowIndex) {
+                vm.setSelectedSchedule(vm.currentScheduleData[rowIndex], true);
+                var rect = $event.currentTarget.getBoundingClientRect();
+                var offset = {x: 0, y: 44};
+                var overLayCSS = {
+                    left: rect.left + offset.x + 'px',
+                    top: rect.top + offset.y + 'px'
+                };
+                angular.element(document.getElementById('schedulerEditMenu')).css(overLayCSS);
+                vm.currentEditMenuIndex = vm.currentScheduleData.indexOf(vm.currentScheduleData[rowIndex]);
+                vm.showEditMenu = true;
+            } else {
+                //the same row's button was clicked, so close the popup
+                vm.closeEditMenu();
+            }
+            $event.stopPropagation();
+        };
 
-            if (e.keyCode === 40) {
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
+        vm.closeEditMenu = function() {
+            if (vm.showEditMenu) {
+                vm.showEditMenu = false;
+                vm.currentEditMenuIndex = -1;
+            }
+            $scope.$apply();
+        };
+
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
+        vm.moveSelectedSBToDraft = function() {
+            if (vm.selectedSchedule) {
+                vm.moveScheduleRowToDraft(vm.selectedSchedule);
+            }
+            vm.closeEditMenu();
+        };
+
+        //going to be replaced with angular material 0.10
+        vm.viewSelectedSBTaskLog = function() {
+            /* istanbul ignore else */
+            if (vm.selectedSchedule) {
+                ObservationScheduleService.viewTaskLogForSBIdCode(vm.selectedSchedule.id_code);
+            }
+            vm.closeEditMenu();
+        };
+
+        /* istanbul ignore next */
+        //going to be replaced with angular material 0.10
+        vm.moveSelectedSBToFinished = function() {
+            if (vm.selectedSchedule) {
+                vm.moveScheduleRowToFinished(vm.selectedSchedule);
+            }
+            vm.closeEditMenu();
+        };
+
+        vm.unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
+            if (key === 40) {
                 //down arrow
                 var index = vm.currentScheduleData.indexOf(vm.selectedSchedule);
                 if (index > -1 && index + 1 < vm.currentScheduleData.length) {
@@ -113,7 +171,7 @@
                     vm.setSelectedSchedule(vm.currentScheduleData[0]);
                 }
 
-            } else if (e.keyCode === 38) {
+            } else if (key === 38) {
                 //up arrow
                 var indexUp = vm.currentScheduleData.indexOf(vm.selectedSchedule);
                 if (indexUp > -1 && indexUp - 1 > -1) {
@@ -122,21 +180,17 @@
                 } else if (vm.currentScheduleData.length > 0) {
                     vm.setSelectedSchedule(vm.currentScheduleData[vm.currentScheduleData.length - 1]);
                 }
-            } else if (e.keyCode === 27) {
+            } else if (key === 27) {
                 //escape
                 vm.selectedSchedule = null;
             }
-
-            if (!$scope.$$phase) {
-                $scope.$digest();
-            }
+            $scope.$apply();
         });
 
         $scope.$on('$destroy', function () {
-            unbindShortcuts.unbind('keydown');
+            vm.unbindShortcuts('keydown');
         });
 
-        $timeout(vm.refreshScheduleBlocks, 100);
+        vm.refreshScheduleBlocks();
     }
-
 })();

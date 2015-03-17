@@ -6,80 +6,97 @@
     function ConfigCtrl($rootScope, $scope, $localStorage, THEMES) {
         var vm = this;
 
-        var showAlarms = $localStorage['showAlarmsNotify'] || $rootScope.showAlarms;
-        if ($rootScope.showAlarms === undefined) {
-            showAlarms = true;
-        }
+        vm.init = function () {
+            var showAlarms = $localStorage['showAlarmsNotify'] || $rootScope.showAlarms;
+            if ($rootScope.showAlarms === undefined) {
+                showAlarms = true;
+            }
 
-        vm.showJulianDate = $rootScope.showJulianDate;
-        vm.showLST = $rootScope.showLST;
-        vm.showAlarms = showAlarms;
-        vm.showLocalAndSAST = $rootScope.showLocalAndSAST;
-        $rootScope.showAlarms = showAlarms;
-        vm.showLargeAlarms = $rootScope.showLargeAlarms;
-        vm.themes = THEMES;
+            vm.showJulianDate = $rootScope.showJulianDate;
+            vm.showLST = $rootScope.showLST;
+            vm.showAlarms = showAlarms;
+            vm.showLocalAndSAST = $rootScope.showLocalAndSAST;
+            $rootScope.showAlarms = showAlarms;
+            vm.showLargeAlarms = $rootScope.showLargeAlarms;
+            vm.themes = THEMES;
 
-        vm.selectedTheme = _.find(THEMES, function (theme) {
-            return $localStorage['selectedTheme'] === theme.name;
-        });
+            vm.selectedTheme = 'Indigo';
 
-        if (!vm.selectedTheme) {
-            vm.selectedTheme = vm.themes[0];
-        } else {
-            vm.selectedTheme = _.find(THEMES, function (theme) {
-                return $localStorage['selectedTheme'] === theme.name;
-            });
-        }
-
-        vm.selectedThemeChanged = function (newTheme) {
-            $rootScope.themePrimary = newTheme.primary;
-            $rootScope.themeSecondary = newTheme.secondary;
-            $rootScope.themePrimaryButtons = newTheme.primaryButtons;
-            $localStorage['selectedTheme'] = newTheme.name;
+            if (!$localStorage['selectedTheme']) {
+                vm.selectedTheme = vm.themes[0].name;
+            } else {
+                vm.selectedThemeObj = _.find(THEMES, function (theme) {
+                    return $localStorage['selectedTheme'] === theme.name;
+                });
+            }
         };
 
-        var undbindShowJulianDate = $scope.$watch('vm.showJulianDate', function (newVal) {
+        vm.themeChange = function (newVal) {
+            if (typeof newVal !== 'undefined') {
+
+                var newTheme = _.find(THEMES, function (theme) {
+                    return theme.name === newVal;
+                });
+
+                $rootScope.themePrimary = newTheme.primary;
+                $rootScope.themeSecondary = newTheme.secondary;
+                $rootScope.themePrimaryButtons = newTheme.primaryButtons;
+                $localStorage['selectedTheme'] = newTheme;
+            }
+        };
+
+        vm.showJulianDateChange = function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showJulianDate = newVal;
                 $localStorage['showJulianDate'] = newVal;
             }
-        });
+        };
 
-        var undbindShowLST = $scope.$watch('vm.showLST', function (newVal) {
+        vm.showLSTChange = function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showLST = newVal;
                 $localStorage['showLST'] = newVal;
             }
-        });
+        };
 
-        var undbindShowLocalAndSAST = $scope.$watch('vm.showLocalAndSAST', function (newVal) {
+        vm.showLocalAndSASTChange = function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showLocalAndSAST = newVal;
                 $localStorage['showLocalAndSAST'] = newVal;
             }
-        });
+        };
 
-        var unbindShowLargeAlarms = $scope.$watch('vm.showLargeAlarms', function (newVal) {
+        vm.showLargeAlarmsChange = function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showLargeAlarms = newVal;
                 $localStorage['showLargeAlarms'] = newVal;
             }
-        });
+        };
 
-        var unbindShowAlarms = $scope.$watch('vm.showAlarms', function (newVal) {
+        vm.showAlarmsChange = function (newVal) {
             if (typeof newVal !== 'undefined') {
                 $rootScope.showAlarms = newVal;
                 $localStorage['showAlarmsNotify'] = newVal;
             }
-        });
+        };
+
+        vm.undbindThemeChange = $scope.$watch('vm.selectedTheme', vm.themeChange);
+        vm.undbindShowJulianDate = $scope.$watch('vm.showJulianDate', vm.showJulianDateChange);
+        vm.undbindShowLST = $scope.$watch('vm.showLST', vm.showLSTChange);
+        vm.undbindShowLocalAndSAST = $scope.$watch('vm.showLocalAndSAST', vm.showLocalAndSASTChange);
+        vm.unbindShowLargeAlarms = $scope.$watch('vm.showLargeAlarms', vm.showLargeAlarmsChange);
+        vm.unbindShowAlarms = $scope.$watch('vm.showAlarms', vm.showAlarmsChange);
 
         $scope.$on('$destroy', function () {
-            unbindShowAlarms();
-            unbindShowLargeAlarms();
-            undbindShowJulianDate();
-            undbindShowLST();
-            undbindShowLocalAndSAST();
+            vm.unbindShowAlarms();
+            vm.unbindShowLargeAlarms();
+            vm.undbindShowJulianDate();
+            vm.undbindShowLST();
+            vm.undbindShowLocalAndSAST();
+            vm.undbindThemeChange();
         });
+
+        vm.init();
     }
 
 })();
