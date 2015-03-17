@@ -5,7 +5,7 @@ angular.module('katGui.services')
 
 function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService, AlarmsService, ObservationScheduleService) {
 
-    var urlBase = SERVER_URL + ':8830';
+    var urlBase = SERVER_URL + '/katmonitor/api/v1';
     var connection = null;
     var api = {};
     api.connectionAuthorised = false;
