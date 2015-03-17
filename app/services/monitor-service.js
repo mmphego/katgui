@@ -6,7 +6,7 @@ angular.module('katGui.services')
 function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService) {
 
     var pendingSubscribeObjects = [];
-    var urlBase = SERVER_URL + ':8830';
+    var urlBase = SERVER_URL + '/katmonitor/api/v1';
 
     var connection = null;
     //use this alias because we are using some api functions within functions

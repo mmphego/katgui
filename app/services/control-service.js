@@ -5,7 +5,7 @@
 
     function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout) {
 
-        var urlBase = SERVER_URL + ':8820';
+        var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var connection = null,
             api = {};
 

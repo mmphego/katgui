@@ -5,7 +5,7 @@
 
     function SessionService($http, $state, $rootScope, $localStorage, SERVER_URL) {
 
-        var urlBase = SERVER_URL + ':8810';
+        var urlBase = SERVER_URL + '/katauth/api/v1';
         var api = {};
         $rootScope.jwt = $localStorage['currentUserToken'];
 
