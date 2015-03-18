@@ -10,7 +10,6 @@ describe('AlarmsService', function() {
     }));
 
     it('should add alarms and remove nominal alarms', inject(function() {
-
         spyOn(AlarmsService.alarmsData, 'splice');
         var alarmObj1 = {severity: "error", priority:"known", name: "Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj2 = {severity: "error", priority:"known", name: "Katstore_files_status2", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
@@ -28,5 +27,4 @@ describe('AlarmsService', function() {
         AlarmsService.receivedAlarmMessage("kataware:alarm_Katstore_files_status3", alarmObj4);
         expect(AlarmsService.alarmsData.length).toBe(3);
     }));
-
 });
