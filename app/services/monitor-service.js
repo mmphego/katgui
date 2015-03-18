@@ -92,9 +92,10 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     $localStorage['currentUserToken'] = $rootScope.jwt;
                     api.connection.authorized = true;
                     console.log('Monitor Connection Established. Authenticated.');
-                } else if (messages.result.length === 1) {
+                } else if (messages.result.length > 0) {
                     //subscribe response
-                    console.log('Subscribed to: ' + messages.result);
+                    console.log('Subscribed to: ');
+                    console.log(messages.result);
                 } else {
                     //bad auth response
                     api.connection.authorized = false;

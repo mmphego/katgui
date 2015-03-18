@@ -327,8 +327,8 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
-        $stateProvider.state('operatorControl', {
-            url: '/operatorControl',
+        $stateProvider.state('operator-control', {
+            url: '/operator-control',
             templateUrl: 'app/operator-control/operator-control.html',
             title: 'Operator Control',
             data: {
