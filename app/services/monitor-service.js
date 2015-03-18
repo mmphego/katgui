@@ -69,7 +69,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                             messageObj = JSON.parse(message);
                         }
                         if (messageObj.msg_channel) {
-                            console.log(messageObj);
                             var channelNameSplit = messageObj.msg_channel.split(":");
                             if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
                                 AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
@@ -93,6 +92,9 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     $localStorage['currentUserToken'] = $rootScope.jwt;
                     api.connection.authorized = true;
                     console.log('Monitor Connection Established. Authenticated.');
+                } else if (messages.result.length === 1) {
+                    //subscribe response
+                    console.log('Subscribed to: ' + messages.result);
                 } else {
                     //bad auth response
                     api.connection.authorized = false;

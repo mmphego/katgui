@@ -71,7 +71,9 @@
                     item.selected = false;
                 });
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         });
 
         $scope.$on('$destroy', function () {

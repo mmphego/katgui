@@ -166,7 +166,7 @@ describe('ControlService', function () {
     });
 
     it('should get the current server time', function () {
-        httpBackend.when('GET', 'http://localhost:9876:8820/time').respond(200, {});
+        httpBackend.when('GET', 'http://localhost:9876/katcontrol/api/v1/time').respond(200, {});
         var resultPromise = ControlService.getCurrentServerTime();
         httpBackend.flush();
         expect(resultPromise.success).toBeDefined();

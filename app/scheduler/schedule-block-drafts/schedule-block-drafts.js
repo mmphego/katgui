@@ -55,7 +55,9 @@
                 vm.closeDatePickerMenu();
                 vm.closeEditMenu();
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
 
@@ -200,7 +202,9 @@
                 vm.showEditMenu = false;
                 vm.currentEditMenuIndex = -1;
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         //ignore this because we are going to replace this datepicker in angular material 0.10
@@ -210,7 +214,9 @@
                 vm.showDatePicker = false;
                 vm.currentRowDatePickerIndex = -1;
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         $timeout(vm.refreshScheduleBlocks, 100);

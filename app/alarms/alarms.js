@@ -132,7 +132,9 @@
                     item.selected = false;
                 });
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);

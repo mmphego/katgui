@@ -32,7 +32,7 @@ describe('SchedulerHomeCtrl', function () {
     it('should load the KATObsPortalUrl for the task log view', function () {
         expect(connectListenerSpy).toHaveBeenCalled();
         expect(subscribeSpy).toHaveBeenCalled();
-        httpBackend.expect('GET', 'http://localhost:9876:8840/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
         scope.$digest();
     });
 
@@ -44,7 +44,7 @@ describe('SchedulerHomeCtrl', function () {
 
     it('should unbind watchers', inject(function () {
         //the get happens because we call $digest
-        httpBackend.expect('GET', 'http://localhost:9876:8840/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
         var unbindStateChangeStartSpy = spyOn(ctrl, "unbindStateChangeStart");
         var disconnectListenerSpy = spyOn(ObservationScheduleService, "disconnectListener");
         scope.$emit("$destroy");
@@ -55,7 +55,7 @@ describe('SchedulerHomeCtrl', function () {
 
     it('should hide the parent display when navigating to a child state', function () {
         //the get happens because we call $digest
-        httpBackend.expect('GET', 'http://localhost:9876:8840/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
         scope.$root.$broadcast('$stateChangeStart', {name: 'scheduler.drafts'});
         scope.$root.$digest();
         expect(ctrl.childStateShowing).toBeTruthy();

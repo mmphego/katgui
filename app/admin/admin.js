@@ -167,13 +167,17 @@
                     }
                 }
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
-            vm.undbindLoginSuccess('loginSuccess');
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess('loginSuccess');
+            }
         });
 
         vm.afterInit = function() {
