@@ -5,7 +5,7 @@
 
     function ConfigService($q, $http, SERVER_URL, $rootScope) {
 
-        var urlBase = SERVER_URL + ':8840';
+        var urlBase = SERVER_URL + '/katconf/api/v1';
         var api = {};
         api.receptorStatusTree = {};
         api.receptorList = [];

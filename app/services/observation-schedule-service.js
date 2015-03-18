@@ -5,7 +5,7 @@
 
     function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService) {
 
-        var urlBase = SERVER_URL + ':8820';
+        var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var connection = null;
         var api = {};
         var deferredMap = {};
