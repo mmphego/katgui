@@ -91,6 +91,7 @@
         vm.actionMenuOpen = false;
         $rootScope.toastPosition = 'bottom right';
         $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
+        $rootScope.alarmsData = AlarmsService.alarmsData;
 
         $rootScope.showSimpleToast = function (message) {
             $mdToast.show(

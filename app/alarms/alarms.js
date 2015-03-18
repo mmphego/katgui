@@ -6,6 +6,7 @@
     function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
 
         var vm = this;
+        
         vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
             {label: 'Timestamp', value: 'date'},
