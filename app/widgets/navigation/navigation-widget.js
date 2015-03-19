@@ -16,23 +16,28 @@
     }
 
     //include rootscope for theming binding
-    function NavigationWidgetCtrl($rootScope, $state) {
+    function NavigationWidgetCtrl($scope, $rootScope, $state) {
 
         var vm = this;
 
         vm.themePrimaryButtons = $rootScope.themePrimaryButtons;
         vm.themePrimary = $rootScope.themePrimary;
 
-        $rootScope.$watch('themePrimaryButtons', function (newVal) {
+        vm.unbindThemePrimaryButtons = $rootScope.$watch('themePrimaryButtons', function (newVal) {
             vm.themePrimaryButtons = newVal;
         });
 
-        $rootScope.$watch('themePrimary', function (newVal) {
+        vm.unbindThemePrimary = $rootScope.$watch('themePrimary', function (newVal) {
             vm.themePrimary = newVal;
         });
 
         vm.stateGo = function (newState) {
             $state.go(newState);
         };
+
+        $scope.$on('$destroy', function() {
+            vm.unbindThemePrimary();
+            vm.unbindThemePrimaryButtons();
+        });
     }
 })();

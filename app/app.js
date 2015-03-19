@@ -54,13 +54,11 @@
                              USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService, $mdDialog) {
 
         var vm = this;
-
         SessionService.recoverLogin();
 
         var theme = _.find(THEMES, function (theme) {
             return $localStorage['selectedTheme'] === theme.name;
         });
-
         if (!theme) {
             theme = THEMES[0];
         }
@@ -82,10 +80,6 @@
         vm.showNavbar = true;
         $rootScope.showNavbar = true;
         $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
-        if (typeof $rootScope.showLargeAlarms === 'undefined') {
-            $rootScope.showLargeAlarms = false;
-        }
-
         $scope.$watch('showNavbar', function (value) {
             $rootScope.showNavbar = value;
         });
@@ -94,10 +88,10 @@
         vm.userRoles = USER_ROLES;
         vm.userCanOperate = false;
         vm.userLoggedIn = false;
-
         vm.actionMenuOpen = false;
         $rootScope.toastPosition = 'bottom right';
         $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
+        $rootScope.alarmsData = AlarmsService.alarmsData;
 
         $rootScope.showSimpleToast = function (message) {
             $mdToast.show(
@@ -109,17 +103,12 @@
 
             console.log('Showing toast-message: ' + message);
         };
-        //this binding is only for the views
-        $rootScope.alarmsData = AlarmsService.alarmsData;
 
         $rootScope.connectEvents = function () {
-
             vm.showNavbar = true;
-            syncTimeWithServer();
-            $interval(updateTimeDisplay, 1000); //update local clock every second
-            $interval(function () {
-                syncTimeWithServer();
-            }, 600000); //sync time every 10 minutes
+            vm.syncTimeWithServer();
+            $interval(vm.updateTimeDisplay, 1000); //update local clock every second
+            $interval(vm.syncTimeWithServer, 600000); //sync time every 10 minutes
             MonitorService.connectListener();
             ControlService.connectListener();
         };
@@ -154,10 +143,6 @@
             $mdSidenav('right-sidenav').close();
         };
 
-        vm.isPageSelected = function (page) {
-            return $state.current.name === page;
-        };
-
         vm.currentState = function () {
             return $state.current.title;
         };
@@ -185,6 +170,7 @@
             }
         };
 
+        /* istanbul ignore next */
         $rootScope.showSimpleDialog = function (title, message) {
             var alert = $mdDialog.alert()
                 .title(title)
@@ -199,6 +185,7 @@
             console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
         };
 
+        /* istanbul ignore next */
         $rootScope.showSBDetails = function (sb, event) {
             $rootScope.mdDialogSb = sb;
             $mdDialog
@@ -208,8 +195,6 @@
                         $scope.themePrimary = $rootScope.themePrimaryButtons;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.sb = $rootScope.mdDialogSb;
-
-                        /* istanbul ignore next */
                         $scope.hide = function () {
                             $mdDialog.hide();
                             $rootScope.mdDialogSb = undefined;
@@ -227,7 +212,7 @@
                 });
         };
 
-        var updateTimeDisplay = function () {
+        vm.updateTimeDisplay = function () {
             if ($rootScope.serverTimeOnLoad > 0) {
                 var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
                 var localTime = moment($rootScope.serverTimeOnLoad, 'X');
@@ -244,7 +229,7 @@
             }
         };
 
-        function syncTimeWithServer() {
+        vm.syncTimeWithServer = function () {
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
@@ -263,7 +248,7 @@
                     console.error("Could not retrieve site location from config server, LST will not display correctly. ");
                     console.error(error);
                 });
-        }
+        };
 
         //so that all controllers and directives has access to which keys are pressed
         document.onkeydown = function (event) {
@@ -343,8 +328,8 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
-        $stateProvider.state('operatorControl', {
-            url: '/operatorControl',
+        $stateProvider.state('operator-control', {
+            url: '/operator-control',
             templateUrl: 'app/operator-control/operator-control.html',
             title: 'Operator Control',
             data: {
@@ -464,14 +449,11 @@
     function runKatGui($rootScope, $state, $localStorage) {
 
         $rootScope.$on('$stateChangeStart', function (event, toState) {
-
             if (!$rootScope.loggedIn && toState.name !== 'login') {
-
                 if (!$localStorage['currentUserToken']) {
                     event.preventDefault();
                     $state.go('login');
                 }
-
             } else if ($rootScope.loggedIn && toState.name === 'login') {
                 event.preventDefault();
                 $state.go('home');

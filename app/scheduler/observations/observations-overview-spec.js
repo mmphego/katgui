@@ -82,7 +82,7 @@ describe('SubArrayExecutorOverview', function () {
 
     it('should list the schedule blocks and subarrays', function() {
         var deferred = q.defer();
-        var listSubarraysSpy = spyOn(ObservationScheduleService, "listSubarrays").andReturn(deferred.promise);
+        var listSubarraysSpy = spyOn(ObservationScheduleService, "listSubarrays").and.returnValue(deferred.promise);
         var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks");
         ctrl.refreshScheduleBlocks();
         expect(listSubarraysSpy).toHaveBeenCalled();

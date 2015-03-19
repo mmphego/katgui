@@ -172,7 +172,7 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
     });
 
     it('should call the verifyScheduleBlock function in the ObservationScheduleService', function () {
-        var verifyScheduleBlockSpy = spyOn(ObservationScheduleService, "verifyScheduleBlock").andReturn(q.defer().promise);
+        var verifyScheduleBlockSpy = spyOn(ObservationScheduleService, "verifyScheduleBlock").and.returnValue(q.defer().promise);
         ctrl.verifyDraftRow(scope.filteredDraftItems[0]);
         expect(verifyScheduleBlockSpy).toHaveBeenCalledWith(1, "20150211-0001");
         expect(ctrl.selectedScheduleDraft).toBeNull();
@@ -190,7 +190,7 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
     });
 
     it('should call the deleteScheduleDraft function in the ObservationScheduleService', function () {
-        var deleteScheduleDraftSpy = spyOn(ObservationScheduleService, "deleteScheduleDraft").andReturn(q.defer().promise);
+        var deleteScheduleDraftSpy = spyOn(ObservationScheduleService, "deleteScheduleDraft").and.returnValue(q.defer().promise);
         ctrl.removeDraftRow(scope.filteredDraftItems[0]);
         expect(deleteScheduleDraftSpy).toHaveBeenCalledWith("20150211-0001");
         expect(ctrl.selectedScheduleDraft).toBeNull();

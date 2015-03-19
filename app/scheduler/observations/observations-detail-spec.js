@@ -100,11 +100,11 @@ describe('SubArrayObservationsDetail', function () {
         var deferred3 = q.defer();
         var deferred4 = q.defer();
         var deferred5 = q.defer();
-        var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks").andReturn(deferred1.promise);
-        var getScheduleBlocksFinishedSpy = spyOn(ObservationScheduleService, "getScheduleBlocksFinished").andReturn(deferred2.promise);
-        var listPoolResourcesSpy = spyOn(ObservationScheduleService, "listPoolResources").andReturn(deferred3.promise);
-        var listAllocationsForSubarraySpy = spyOn(ObservationScheduleService, "listAllocationsForSubarray").andReturn(deferred4.promise);
-        var getSchedulerModeForSubarraySpy = spyOn(ObservationScheduleService, "getSchedulerModeForSubarray").andReturn(deferred5.promise);
+        var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks").and.returnValue(deferred1.promise);
+        var getScheduleBlocksFinishedSpy = spyOn(ObservationScheduleService, "getScheduleBlocksFinished").and.returnValue(deferred2.promise);
+        var listPoolResourcesSpy = spyOn(ObservationScheduleService, "listPoolResources").and.returnValue(deferred3.promise);
+        var listAllocationsForSubarraySpy = spyOn(ObservationScheduleService, "listAllocationsForSubarray").and.returnValue(deferred4.promise);
+        var getSchedulerModeForSubarraySpy = spyOn(ObservationScheduleService, "getSchedulerModeForSubarray").and.returnValue(deferred5.promise);
         ctrl.refreshScheduleBlocks();
         expect(getScheduleBlocksSpy).toHaveBeenCalled();
         deferred1.resolve();
@@ -126,7 +126,7 @@ describe('SubArrayObservationsDetail', function () {
 
     it('should call the service function to execute the schedule', function () {
         var deferred = q.defer();
-        var executeScheduleSpy = spyOn(ObservationScheduleService, "executeSchedule").andReturn(deferred.promise);
+        var executeScheduleSpy = spyOn(ObservationScheduleService, "executeSchedule").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.executeSchedule(ObservationScheduleService.scheduleData[0]);
         expect(executeScheduleSpy).toHaveBeenCalledWith(1, ObservationScheduleService.scheduleData[0].id_code);
@@ -137,7 +137,7 @@ describe('SubArrayObservationsDetail', function () {
 
     it('should call the service function to stop executing the schedule', function () {
         var deferred = q.defer();
-        var cancelExecuteScheduleSpy = spyOn(ObservationScheduleService, "cancelExecuteSchedule").andReturn(deferred.promise);
+        var cancelExecuteScheduleSpy = spyOn(ObservationScheduleService, "cancelExecuteSchedule").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.stopExecuteSchedule(ObservationScheduleService.scheduleData[0]);
         expect(cancelExecuteScheduleSpy).toHaveBeenCalledWith(1, ObservationScheduleService.scheduleData[0].id_code);
@@ -148,7 +148,7 @@ describe('SubArrayObservationsDetail', function () {
 
     it('should call the service function to clone the schedule', function () {
         var deferred = q.defer();
-        var cloneScheduleSpy = spyOn(ObservationScheduleService, "cloneSchedule").andReturn(deferred.promise);
+        var cloneScheduleSpy = spyOn(ObservationScheduleService, "cloneSchedule").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.cloneSchedule(ObservationScheduleService.scheduleData[0]);
         expect(cloneScheduleSpy).toHaveBeenCalledWith(ObservationScheduleService.scheduleData[0].id_code);
@@ -159,7 +159,7 @@ describe('SubArrayObservationsDetail', function () {
 
     it('should call the service function to move the schedule to finished', function () {
         var deferred = q.defer();
-        var scheduleToCompleteSpy = spyOn(ObservationScheduleService, "scheduleToComplete").andReturn(deferred.promise);
+        var scheduleToCompleteSpy = spyOn(ObservationScheduleService, "scheduleToComplete").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.moveScheduleRowToFinished(ObservationScheduleService.scheduleData[0]);
         expect(scheduleToCompleteSpy).toHaveBeenCalledWith(1, ObservationScheduleService.scheduleData[0].id_code);
@@ -171,7 +171,7 @@ describe('SubArrayObservationsDetail', function () {
 
     it('should call the service function to move the schedule to draft', function () {
         var deferred = q.defer();
-        var scheduleToDraftSpy = spyOn(ObservationScheduleService, "scheduleToDraft").andReturn(deferred.promise);
+        var scheduleToDraftSpy = spyOn(ObservationScheduleService, "scheduleToDraft").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.moveScheduleRowToDraft(ObservationScheduleService.scheduleData[0]);
         expect(scheduleToDraftSpy).toHaveBeenCalledWith(1, ObservationScheduleService.scheduleData[0].id_code);
@@ -183,7 +183,7 @@ describe('SubArrayObservationsDetail', function () {
 
     it('should call the service function to mark the resource as faulty', function () {
         var deferred = q.defer();
-        var markResourceFaultySpy = spyOn(ObservationScheduleService, "markResourceFaulty").andReturn(deferred.promise);
+        var markResourceFaultySpy = spyOn(ObservationScheduleService, "markResourceFaulty").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.markResourceFaulty({name: 'anc', state: 'faulty'});
         expect(markResourceFaultySpy).toHaveBeenCalledWith('anc', 0);
@@ -252,7 +252,7 @@ describe('SubArrayObservationsDetail', function () {
 
     it('should call the service function when the scheduler mode changed', function () {
         var deferred = q.defer();
-        var setSchedulerModeForSubarraySpy = spyOn(ObservationScheduleService, "setSchedulerModeForSubarray").andReturn(deferred.promise);
+        var setSchedulerModeForSubarraySpy = spyOn(ObservationScheduleService, "setSchedulerModeForSubarray").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.selectedMode = 'test mode';
         ctrl.schedulerModeChanged();

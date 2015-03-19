@@ -7,6 +7,7 @@
 
         var vm = this;
         vm.receptorsData = ReceptorStateService.receptorsData;
+        ReceptorStateService.getReceptorList();
 
         vm.stowAll = function () {
             ControlService.stowAll();

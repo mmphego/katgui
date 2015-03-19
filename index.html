@@ -72,8 +72,6 @@
 <script src="app/weather/weather.js"></script>
 <script src="app/video/video.js"></script>
 <script src="app/operator-control/operator-control.js"></script>
-<script src="app/util/focus-directive.js"></script>
-<script src="app/util/editable-directive.js"></script>
 <script src="app/services/control-service.js"></script>
 <script src="app/services/alarms-service.js"></script>
 <script src="app/services/config-service.js"></script>
@@ -100,6 +98,7 @@
 <script src="app/d3/status-single-level-tree-map.js"></script>
 <script src="app/admin/admin.js"></script>
 <script src="app/util/util.js"></script>
+<script src="app/util/focus-directive.js"></script>
 <script src="app/alarms/alarms.js"></script>
 <script src="app/alarms/alarms-notify.js"></script>
 <script src="app/widgets/navigation/navigation-widget.js"></script>
@@ -146,7 +145,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operatorControl')">
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operator-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
                             <span class="fa fa-cogs"></span>
                             <button>Operator Control</button>

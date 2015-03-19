@@ -6,13 +6,11 @@ describe('WeatherCtrl', function () {
 
     beforeEach(inject(function ($rootScope, $controller) {
         scope = $rootScope.$new();
-
         ctrl = $controller('WeatherCtrl', {$scope: scope});
     }));
 
-    it('should ...', inject(function () {
-
-        expect(1).toEqual(1);
+    it('should create the controller', inject(function () {
+        expect(ctrl).toBeDefined();
 
     }));
 

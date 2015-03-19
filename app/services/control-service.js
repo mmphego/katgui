@@ -1,24 +1,25 @@
 (function () {
 
     angular.module('katGui.services', [])
+        .constant('SERVER_URL', window.location.host === 'localhost:9001' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
     function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
-        var connection = null,
-            api = {};
+        var api = {};
+        api.connection = null;
 
         api.onSockJSOpen = function () {
-            if (connection && connection.readyState) {
+            if (api.connection && api.connection.readyState) {
                 console.log('Control Connection Established. Authenticating...');
-                authenticateSocketConnection();
+                api.authenticateSocketConnection();
             }
         };
 
         api.onSockJSClose = function () {
             console.log('Disconnecting Control Connection');
-            connection = null;
+            api.connection = null;
         };
 
         api.onSockJSMessage = function (e) {
@@ -29,84 +30,86 @@
                 $rootScope.showSimpleToast(result.result.reply.replace(new RegExp('\\\\_', 'g'), ' '));
             }
             else if (result && result.result.session_id) {
-                connection.authorized = true;
+                api.connection.authorized = true;
                 console.log('Control Connection Established. Authenticated.');
             } else {
                 //bad auth response
-                api.connectionAuthorised = false;
+                api.connection.authorized = false;
                 console.log('Control Connection Established. Authentication failed.');
             }
         };
 
         api.connectListener = function () {
             console.log('Control Connecting...');
-            connection = new SockJS(urlBase + '/control');
-            connection.onopen = api.onSockJSOpen;
-            connection.onmessage = api.onSockJSMessage;
-            connection.onclose = api.onSockJSClose;
+            api.connection = new SockJS(urlBase + '/control');
+            api.connection.onopen = api.onSockJSOpen;
+            api.connection.onmessage = api.onSockJSMessage;
+            api.connection.onclose = api.onSockJSClose;
 
-            return connection !== null;
+            return api.connection !== null;
         };
 
         api.disconnectListener = function () {
-            if (connection) {
-                connection.close();
+            if (api.connection) {
+                api.connection.close();
+            } else {
+                console.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 
-        function authenticateSocketConnection() {
+        api.authenticateSocketConnection = function () {
 
-            if (connection) {
+            if (api.connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': 'authorise',
                     'params': [$rootScope.session_id],
                     'id': 'authorise' + KatGuiUtil.generateUUID()
                 };
-                connection.authorized = false;
-                return connection.send(JSON.stringify(jsonRPC));
+                api.connection.authorized = false;
+                return api.connection.send(JSON.stringify(jsonRPC));
             }
-        }
+        };
 
         api.stowAll = function () {
-            return api.sendControlCommand('sys', 'operator_stow_antennas', '');
+            api.sendControlCommand('sys', 'operator_stow_antennas', '');
         };
 
         api.inhibitAll = function () {
-            return api.sendControlCommand('sys', 'operator_inhibit_antennas', '');
+            api.sendControlCommand('sys', 'operator_inhibit_antennas', '');
         };
 
         api.stopAll = function () {
-            return api.sendControlCommand('sys', 'operator_stop_observations', '');
+            api.sendControlCommand('sys', 'operator_stop_observations', '');
         };
 
         api.resumeOperations = function () {
-            return api.sendControlCommand('sys', 'operator_resume_operations', '');
+            api.sendControlCommand('sys', 'operator_resume_operations', '');
         };
 
         api.shutdownComputing = function () {
-            return api.sendControlCommand('sys', 'operator_shutdown_computing', '');
+            api.sendControlCommand('sys', 'operator_shutdown_computing', '');
         };
 
         api.acknowledgeAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'alarm_ack', alarmName);
+            api.sendControlCommand('kataware', 'alarm_ack', alarmName);
         };
 
         api.addKnownAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'alarm_know', alarmName);
+            api.sendControlCommand('kataware', 'alarm_know', alarmName);
         };
 
         api.cancelKnowAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'alarm_cancel_know', alarmName);
+            api.sendControlCommand('kataware', 'alarm_cancel_know', alarmName);
         };
 
         api.clearAlarm = function (alarmName) {
-            return api.sendControlCommand('kataware', 'alarm_clear', alarmName);
+            api.sendControlCommand('kataware', 'alarm_clear', alarmName);
         };
 
         api.sendControlCommand = function (module, funcName, funcParams) {
 
-            if (connection && connection.authorized) {
+            if (api.connection && api.connection.authorized) {
                 var jsonRPC = {
                     'id': KatGuiUtil.generateUUID(),
                     'jsonrpc': '2.0',
@@ -114,7 +117,7 @@
                     'params': [module, funcName, funcParams]
                 };
 
-                connection.send(JSON.stringify(jsonRPC));
+                api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
                     api.sendControlCommand(module, funcName, funcParams);

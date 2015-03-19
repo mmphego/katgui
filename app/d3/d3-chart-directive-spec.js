@@ -25,21 +25,4 @@ describe('Directive: d3-chart', function () {
         scope.$digest();
 
     });
-
-    it('should ...', function () {
-
-//        var element = compile('<d3-line></d3-line>')(scope);
-//        expect(element.text()).toBe('');
-
-//        d3Service.d3()
-//            .then(function() {
-//                console.log('Success');
-//            });
-
-//        var handler = jasmine.createSpy('initChart');
-//        deferred.promise.then(handler);
-//        deferred.resolve());
-//        rootScope.$digest();
-//        expect(handler).toHaveBeenCalledWith(null);
-    });
 });

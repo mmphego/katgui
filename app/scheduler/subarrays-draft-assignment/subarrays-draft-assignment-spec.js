@@ -82,7 +82,7 @@ describe('SubArraysCtrl - draft assignments', function () {
 
     it('should list the schedule blocks and subarrays', function() {
         var deferred = q.defer();
-        var listSubarraysSpy = spyOn(ObservationScheduleService, "listSubarrays").andReturn(deferred.promise);
+        var listSubarraysSpy = spyOn(ObservationScheduleService, "listSubarrays").and.returnValue(deferred.promise);
         var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks");
         ctrl.refreshScheduleBlocks();
         expect(listSubarraysSpy).toHaveBeenCalled();
@@ -93,7 +93,7 @@ describe('SubArraysCtrl - draft assignments', function () {
 
     it('should call the service function to assign selected schedule blocks', function() {
         var deferred = q.defer();
-        var assignScheduleBlockSpy = spyOn(ObservationScheduleService, "assignScheduleBlock").andReturn(deferred.promise);
+        var assignScheduleBlockSpy = spyOn(ObservationScheduleService, "assignScheduleBlock").and.returnValue(deferred.promise);
         var displayPromiseResultSpy = spyOn(scope.$root, "displayPromiseResult");
         ObservationScheduleService.scheduleDraftData[1].selected = true;
         ctrl.assignSelectedScheduleBlocks({id: 1});
@@ -106,7 +106,7 @@ describe('SubArraysCtrl - draft assignments', function () {
 
     it('should call the service function to unassign a schedule block', function() {
         var deferred = q.defer();
-        var unassignScheduleBlockSpy = spyOn(ObservationScheduleService, "unassignScheduleBlock").andReturn(deferred.promise);
+        var unassignScheduleBlockSpy = spyOn(ObservationScheduleService, "unassignScheduleBlock").and.returnValue(deferred.promise);
         var displayPromiseResultSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.freeScheduleBlock({id: 1}, {id_code: '20150211-0002'});
         expect(unassignScheduleBlockSpy).toHaveBeenCalled();

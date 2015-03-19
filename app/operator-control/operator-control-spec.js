@@ -2,9 +2,11 @@ describe('OperatorControlCtrl', function () {
 
     beforeEach(module('katGui'));
 
-    var rootScope, scope, ctrl, receptorStateService, controlService, httpBackend, interval;
+    var rootScope, scope, ctrl, receptorStateService, controlService, configService, httpBackend, interval, q;
 
-    beforeEach(inject(function ($rootScope, $controller, _ReceptorStateService_, _ControlService_, $injector, $templateCache) {
+    beforeEach(inject(function ($rootScope, _$q_, $controller, _ReceptorStateService_, _ConfigService_, _ControlService_, $injector, $templateCache) {
+        configService = _ConfigService_;
+        q = _$q_;
         rootScope = $rootScope;
         scope = $rootScope.$new();
         scope.$root.loggedIn = true;
@@ -12,10 +14,6 @@ describe('OperatorControlCtrl', function () {
         httpBackend = $injector.get('$httpBackend');
         interval = $injector.get('$interval');
         receptorStateService = _ReceptorStateService_;
-        receptorStateService.receptorsData = [{name: 'm011', inhibited: false}, {name: 'm022', inhibited: false}, {name: 'm033', inhibited: false}, {name: 'm044', inhibited: false}, {
-            name: 'm055',
-            inhibited: false
-        }];
         controlService = _ControlService_;
 
         controlService.inhibitAll = function () {
@@ -281,11 +279,31 @@ describe('OperatorControlCtrl', function () {
         ctrl = $controller('OperatorControlCtrl', {$rootScope: rootScope, $scope: scope, ReceptorStateService: receptorStateService, ControlService: controlService});
     }));
 
+    //receptorStateService.receptorsData = [{name: 'm011', inhibited: false}, {name: 'm022', inhibited: false}, {name: 'm033', inhibited: false}, {name: 'm044', inhibited: false}, {
+    //    name: 'm055',
+    //    inhibited: false
+    //}];
     it('should have the configured receptors', inject(function () {
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+        var deferred = q.defer();
+        var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
+        receptorStateService.getReceptorList();
+        expect(getReceptorListSpy).toHaveBeenCalled();
+        deferred.resolve(['m011', 'm022', 'm033', 'm044', 'm055']);
+        scope.$digest();
         expect(ctrl.receptorsData.length).toBe(5);
     }));
 
     it('should update the time at each interval', function() {
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+        var deferred = q.defer();
+        var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
+        receptorStateService.getReceptorList();
+        expect(getReceptorListSpy).toHaveBeenCalled();
+        deferred.resolve(['m011', 'm022', 'm033', 'm044', 'm055']);
+        scope.$digest();
+        expect(ctrl.receptorsData.length).toBe(5);
+
         ctrl.receptorMessageReceived({}, {
             name: 'm011:mode',
             value: {
@@ -302,7 +320,7 @@ describe('OperatorControlCtrl', function () {
         expect(ctrl.receptorsData.length).toBe(5);
         //these GET happens in this test because we run a $digest loop when calling flush, the other tests doesnt need it
         //because the service is never created completely
-        httpBackend.expect('GET', 'http://localhost:9876:8840/installed-config/receptors').respond(200, {});
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
         interval.flush(10000);
         expect(ctrl.receptorsData[0].lastUpdate.length).not.toBe(0);
         expect(ctrl.receptorsData[0].since.length).not.toBe(0);
@@ -310,6 +328,15 @@ describe('OperatorControlCtrl', function () {
     });
 
     it('should update the inhibited message', inject(function () {
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+        var deferred = q.defer();
+        var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
+        receptorStateService.getReceptorList();
+        expect(getReceptorListSpy).toHaveBeenCalled();
+        deferred.resolve(['m011', 'm022', 'm033', 'm044', 'm055']);
+        scope.$digest();
+        expect(ctrl.receptorsData.length).toBe(5);
+
         ctrl.inhibitAll();
         ctrl.receptorsData.forEach(function (receptor) {
             expect(receptor.inhibited).toBeTruthy();
@@ -341,7 +368,7 @@ describe('OperatorControlCtrl', function () {
 
         //the GET happens in this test because we run a $digest loop, the other tests doesnt need it
         //because the service is never created completely
-        httpBackend.expect('GET', 'http://localhost:9876:8840/installed-config/receptors').respond(200, {});
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
         var cancelListeningToReceptorMessagesSpy = spyOn(ctrl, "cancelListeningToReceptorMessages");
         scope.$emit("$destroy");
         scope.$digest();

@@ -131,7 +131,9 @@
                 vm.showEditMenu = false;
                 vm.currentEditMenuIndex = -1;
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         /* istanbul ignore next */
@@ -184,7 +186,9 @@
                 //escape
                 vm.selectedSchedule = null;
             }
-            $scope.$apply();
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         });
 
         $scope.$on('$destroy', function () {
