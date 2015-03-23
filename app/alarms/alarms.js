@@ -1,22 +1,50 @@
 (function () {
 
     angular.module('katGui.alarms', ['katGui.util'])
-        .controller('AlarmsCtrl', AlarmsCtrl);
+        .controller('AlarmsCtrl', AlarmsCtrl)
+        .filter('alarmsFilter', function () {
+            return function (alarms, showCleared) {
+                var filtered = [];
+                for (var i = 0; i < alarms.length; i++) {
+                    var alarm = alarms[i];
+                    if (alarm.priority !== 'known' &&
+                        (alarm.priority === 'cleared' && showCleared || alarm.priority !== 'cleared')) {
+                        filtered.push(alarm);
+                    }
+                }
+                return filtered;
+            };
+        })
+        .filter('alarmsKnownFilter', function () {
+            return function (alarms, showKnownNominalAlarms, showKnownMaintenanceAlarms) {
+                var filtered = [];
+                for (var i = 0; i < alarms.length; i++) {
+                    var alarm = alarms[i];
+                    if (alarm.priority === 'known' &&
+                        (alarm.severity === 'nominal' && showKnownNominalAlarms || alarm.severity !== 'nominal') &&
+                        (alarm.severity === 'maintenance' && showKnownMaintenanceAlarms || alarm.severity !== 'maintenance')) {
+                        filtered.push(alarm);
+                    }
+                }
+                return filtered;
+            };
+        });
+
 
     function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
 
         var vm = this;
-        
+
         vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
-            {label: 'Timestamp', value: 'date'},
+            {label: 'Timestamp', value: 'timestamp'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
             {label: 'Message', value: 'value'}
         ];
         vm.knownAlarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
-            {label: 'Timestamp', value: 'date'},
+            {label: 'Timestamp', value: 'timestamp'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
             {label: 'Message', value: 'value'}
@@ -32,7 +60,7 @@
             vm.alarmsOrderBy = newOrderBy;
         };
 
-        vm.setAlarmsOrderBy('date', true);
+        vm.setAlarmsOrderBy('timestamp', true);
 
         vm.setKnownAlarmsOrderBy = function (column, reverse) {
             var newOrderBy = _.findWhere(vm.knownAlarmsOrderByFields, {value: column});
@@ -44,21 +72,19 @@
             vm.knownAlarmsOrderBy = newOrderBy;
         };
 
-        vm.setKnownAlarmsOrderBy('date', true);
+        vm.setKnownAlarmsOrderBy('timestamp', true);
 
-        vm.toggleSelectAllKnownAlarms = function (selected) {
-            AlarmsService.alarmsData.forEach(function (item) {
-                if (item.priority === 'known') {
-                    item.selected = selected;
-                }
+        vm.toggleSelectAllKnownAlarms = function () {
+            vm.selectAllKnownAlarms = !vm.selectAllKnownAlarms;
+            $scope.filteredKnownAlarms.forEach(function (item) {
+                item.selected = vm.selectAllKnownAlarms;
             });
         };
 
-        vm.toggleSelectAllAlarms = function (selected) {
-            AlarmsService.alarmsData.forEach(function (item) {
-                if (item.priority !== 'known') {
-                    item.selected = selected;
-                }
+        vm.toggleSelectAllAlarms = function () {
+            vm.selectAllAlarms = !vm.selectAllAlarms;
+            $scope.filteredAlarms.forEach(function (item) {
+                item.selected = vm.selectAllAlarms;
             });
         };
 
@@ -66,7 +92,7 @@
             var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function() {
+                    $timeout(function () {
                         ControlService.clearAlarm(item.name);
                     }, timeout);
                     timeout += 100;
@@ -82,7 +108,7 @@
             var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function() {
+                    $timeout(function () {
                         ControlService.acknowledgeAlarm(item.name);
                     }, timeout);
                     timeout += 100;
@@ -98,7 +124,7 @@
             var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function() {
+                    $timeout(function () {
                         ControlService.addKnownAlarm(item.name);
                     }, timeout);
                     timeout += 100;
@@ -114,7 +140,7 @@
             var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function() {
+                    $timeout(function () {
                         ControlService.cancelKnowAlarm(item.name);
                     }, timeout);
                     timeout += 100;

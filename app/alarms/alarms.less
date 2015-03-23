@@ -3,7 +3,7 @@
 @alarm-info-bg: #03a9f4;
 @alarm-maintenance-bg: #9c27b0;
 @alarm-critical-bg: #e51c23;
-@alarm-unknown-bg: #607d8b;
+@alarm-unknown-bg: #757575;
 @alarm-nominal-bg: #259b24;
 
 
@@ -71,7 +71,7 @@
     right: 0px;
     float: right;
     width: 280px;
-    height: 68px;
+    height: 108px;
 
     .datestamp {
         display: none;
@@ -105,21 +105,12 @@
     color: @textColor;
 }
 
-// Apply the mixin to the alarms
-.alarm-critical {
-    .alarm-glowing-critical
-}
-
-.alarm-error {
-    .alarm-glowing-error
-}
-
 .alarm-info {
     .alarm-styles(@alarm-info-bg, white);
 }
 
 .alarm-nominal {
-    .alarm-styles(@alarm-info-bg, white);
+    .alarm-styles(@alarm-nominal-bg, white);
 }
 
 .alarm-maintenance {
@@ -140,30 +131,6 @@
     border: none;
     border-radius: 2px;
     pointer-events: auto;
-}
-
-
-.alarm-glowing-error {
-    //  -webkit-animation: glowing-error 1s;
-    //  animation: glowing-error 1s;
-    //  -webkit-animation-iteration-count: 10;
-    //  animation-iteration-count: 10;
-    background-color: @alarm-error-bg;
-    color: black;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
-
-.alarm-glowing-critical {
-    //  -webkit-animation: glowing-critical 1s;
-    //  animation: glowing-critical 1s;
-    //  -webkit-animation-iteration-count: 10;
-    //  animation-iteration-count: 10;
-    border: none;
-    background-color: @alarm-critical-bg;
-    color: white;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
 }
 
 .alarm-close {
@@ -200,32 +167,21 @@ ul {
     }
 }
 
-.alarmsGridStyle {
-    border: 1px solid rgb(212, 212, 212);
-    height: 600px;
-}
-
 .alarms-buttons {
-
-    padding-left: 8px;
-    padding-right: 8px;
-
     button {
-        width: 10em;
-        margin-right: 10px;
+        margin-right: 6px;
+        font-size: 14px;
     }
-
 }
 
 .alarms-list-large {
-    min-height: 480px;
-//    max-height: 480px;
-    height: 100%;
+//    min-height: 480px;
+//    min-width: 940px;
+//    height: 100%;
 }
 
 .alarms-list-small {
     min-height: 250px;
-//    max-height: 250px;
     height: 100%;
 }
 
@@ -243,55 +199,43 @@ ul {
     overflow: auto;
 
     .alarms-list-item-content {
-        padding: 6px;
+        padding: 2px;
         cursor: pointer;
     }
 
-
     .alarm-list-item-badge-warn {
-        background: linear-gradient(150deg, rgba(255, 235, 59, 1) 0%, rgba(255, 235, 59, 0) 15%, rgba(255, 235, 59, 0) 100%);
-    }
-    .background-gradient-div-warn {
-        background: linear-gradient(150deg, rgba(255, 235, 59, 0.01) 0%, rgba(255, 235, 59, 0.01) 60%, rgba(255, 235, 59, 1) 100%);
+        background: rgb(255, 235, 59);
+        color: black;
     }
 
     .alarm-list-item-badge-error {
-        background: linear-gradient(150deg, rgba(255, 152, 0, 1) 0%, rgba(255, 152, 0, 0) 15%, rgba(255, 152, 0, 0) 100%);
-    }
-    .background-gradient-div-error {
-        background: linear-gradient(150deg, rgba(255, 152, 0, 0.01) 0%, rgba(255, 152, 0, 0.01) 60%, rgba(255, 152, 0, 1) 100%);
+        background: rgb(255, 152, 0);
+        color: black;
     }
 
     .alarm-list-item-badge-critical {
-        background: linear-gradient(150deg, rgba(229, 28, 35, 1) 0%, rgba(229, 28, 35, 0) 15%, rgba(229, 28, 35, 0) 100%);
-    }
-    .background-gradient-div-critical {
-        background: linear-gradient(150deg, rgba(229, 28, 35, 0.01) 0%, rgba(229, 28, 35, 0.01) 60%, rgba(229, 28, 35, 1) 100%);
+        background: rgb(229, 28, 35);
+        color: white;
     }
 
     .alarm-list-item-badge-maintenance {
-        background: linear-gradient(150deg, rgba(156, 39, 176, 1) 0%, rgba(156, 39, 176, 0) 15%, rgba(156, 39, 176, 0) 100%);
-    }
-    .background-gradient-div-maintenance {
-        background: linear-gradient(150deg, rgba(156, 39, 176, 0.01) 0%, rgba(156, 39, 176, 0.01) 60%, rgba(156, 39, 176, 1) 100%);
+        background: rgb(156, 39, 176);
+        color: white;
     }
 
     .alarm-list-item-badge-nominal {
-        background: linear-gradient(150deg, rgba(37, 155, 36, 1) 0%, rgba(37, 155, 36, 0) 15%, rgba(37, 155, 36, 0) 100%);
-    }
-    .background-gradient-div-nominal {
-        background: linear-gradient(150deg, rgba(37, 155, 36, 0.01) 0%, rgba(37, 155, 36, 0.01) 60%, rgba(37, 155, 36, 1) 100%);
+        background: rgb(37, 155, 36);
+        color: white;
     }
 
     .alarm-list-item-badge-unknown {
-        background: linear-gradient(150deg, rgba(96, 125, 139, 1) 0%, rgba(96, 125, 139, 0) 15%, rgba(96, 125, 139, 0) 100%);
-    }
-    .background-gradient-div-unknown {
-        background: linear-gradient(150deg, rgba(96, 125, 139, 0.01) 0%, rgba(96, 125, 139, 0.01) 60%, rgba(96, 125, 139, 1) 100%);
+        background: #757575;
+        color: white;
     }
 
     .selected-alarm-list-item {
         background-color: #B3E5FC;
+        color: black;
     }
 
     .alarms-list-item-icon {
@@ -307,7 +251,7 @@ ul {
 }
 
 .alarms-tools-checkbox {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .alarm-badge {
@@ -339,9 +283,9 @@ ul {
 }
 
 .alarm-row-item {
-    border-bottom: 1px solid #d3d3d3;
-    padding-left: 8px;
-    padding-right: 8px;
-    height: 36px;
+    border-bottom: 1px solid #424242;
+    padding-left: 4px;
+    padding-right: 4px;
+    height: 29px;
     position: relative;
 }
