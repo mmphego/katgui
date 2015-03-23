@@ -30,7 +30,6 @@
             };
         });
 
-
     function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
 
         var vm = this;
