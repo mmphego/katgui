@@ -107,8 +107,10 @@
         $rootScope.connectEvents = function () {
             vm.showNavbar = true;
             vm.syncTimeWithServer();
-            $interval(vm.updateTimeDisplay, 1000); //update local clock every second
-            $interval(vm.syncTimeWithServer, 600000); //sync time every 10 minutes
+            if (!angular.isDefined($scope.stopUpdateTimeDisplay)) {
+                $scope.stopUpdateTimeDisplay = $interval(vm.updateTimeDisplay, 1000); //update local clock every second
+            }
+            $interval(vm.syncTimeWithServer, 60000); //sync time every 1 minutes
             MonitorService.connectListener();
             ControlService.connectListener();
         };
@@ -226,6 +228,9 @@
                     vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
                 }
                 $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
+                if (!$scope.$$phase) {
+                    $scope.$digest();
+                }
             }
         };
 
