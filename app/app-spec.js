@@ -21,6 +21,7 @@ describe('ApplicationCtrl', function () {
         ConfigService = _ConfigService_;
         interval = _$interval_;
         localStorage = _$localStorage_;
+        localStorage['currentUserToken'] = 'some test value';
         ControlService.disconnectListener = function () {
         };
         MonitorService.disconnectListener = function () {
@@ -132,12 +133,14 @@ describe('ApplicationCtrl', function () {
     });
 
     it('should return the current state\'s title', function () {
+        scope.$root.loggedIn = true;
         ctrl.stateGo('home');
         scope.$root.$digest();
         expect(ctrl.currentState()).toEqual('Home');
     });
 
     it('should navigate to the parent state', function () {
+        scope.$root.loggedIn = true;
         ctrl.stateGo('scheduler');
         scope.$root.$digest();
         expect(ctrl.currentState()).toEqual('Scheduler');
