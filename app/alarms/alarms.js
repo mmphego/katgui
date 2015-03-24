@@ -33,6 +33,7 @@
     function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
 
         var vm = this;
+        var WAITIMEFORREQ = 250;
 
         vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
@@ -94,7 +95,7 @@
                     $timeout(function () {
                         ControlService.clearAlarm(item.name);
                     }, timeout);
-                    timeout += 100;
+                    timeout += WAITIMEFORREQ;
                 }
             });
         };
@@ -110,7 +111,7 @@
                     $timeout(function () {
                         ControlService.acknowledgeAlarm(item.name);
                     }, timeout);
-                    timeout += 100;
+                    timeout += WAITIMEFORREQ;
                 }
             });
         };
@@ -126,7 +127,7 @@
                     $timeout(function () {
                         ControlService.addKnownAlarm(item.name);
                     }, timeout);
-                    timeout += 100;
+                    timeout += WAITIMEFORREQ;
                 }
             });
         };
@@ -142,7 +143,7 @@
                     $timeout(function () {
                         ControlService.cancelKnowAlarm(item.name);
                     }, timeout);
-                    timeout += 100;
+                    timeout += WAITIMEFORREQ;
                 }
             });
         };
