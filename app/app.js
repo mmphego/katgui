@@ -372,7 +372,7 @@
             parent: schedulerHome,
             url: '/subarrays',
             templateUrl: 'app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.html',
-            title: 'Scheduler.Sub-Array Drafts',
+            title: 'Scheduler.Schedule Blocks',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -394,7 +394,7 @@
             parent: schedulerHome,
             url: '/observations',
             templateUrl: 'app/scheduler/observations/observations-overview.html',
-            title: 'Scheduler.Observations Overview',
+            title: 'Scheduler.Observations Schedules',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
