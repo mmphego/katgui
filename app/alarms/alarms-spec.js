@@ -174,36 +174,6 @@ describe('AlarmsCtrl', function () {
         expect(alarmsService.alarmsData[0].severity).toBe('warn');
     }));
 
-    it('should remove an existing known alarm if a nominal alarm is received', inject(function () {
-        var alarmObj = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
-        scope.$digest();
-        expect(alarmsService.alarmsData.length).toBe(1);
-        expect(alarmsService.alarmsData[0].priority).toBe('known');
-
-        alarmObj = {severity: "warn", priority: "known", value: "nominal,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status2", alarmObj);
-        scope.$digest();
-        expect(alarmsService.alarmsData.length).toBe(1);
-        expect(alarmsService.alarmsData[0].name).toBe('kataware:alarm.Katstore_files_status');
-        expect(alarmsService.alarmsData[0].severity).toBe('error');
-    }));
-
-    it('should remove an existing new alarm if a nominal alarm is received', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
-        scope.$digest();
-        expect(alarmsService.alarmsData.length).toBe(1);
-        expect(alarmsService.alarmsData[0].priority).toBe('new');
-
-        alarmObj = {severity: "warn", priority: "new", value: "nominal,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status2", alarmObj);
-        scope.$digest();
-        expect(alarmsService.alarmsData.length).toBe(1);
-        expect(alarmsService.alarmsData[0].name).toBe('kataware:alarm.Katstore_files_status');
-        expect(alarmsService.alarmsData[0].severity).toBe('error');
-    }));
-
     it('should set all alarms as selected when checked', inject(function () {
         var alarmObj1 = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj2 = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
@@ -214,15 +184,16 @@ describe('AlarmsCtrl', function () {
         alarmsService.receivedAlarmMessage("kataware:alarm.3", alarmObj3);
         alarmsService.receivedAlarmMessage("kataware:alarm.4", alarmObj4);
         scope.$digest();
+        scope.filteredAlarms = alarmsService.alarmsData;
         expect(alarmsService.alarmsData.length).toBe(4);
         ctrl.toggleSelectAllAlarms(true);
-        alarmsService.alarmsData.forEach(function (item) {
+        scope.filteredAlarms.forEach(function (item) {
             if (item.priority === 'new') {
                 expect(item.selected).toBeTruthy();
             }
         });
         ctrl.toggleSelectAllAlarms(false);
-        alarmsService.alarmsData.forEach(function (item) {
+        scope.filteredAlarms.forEach(function (item) {
             if (item.priority === 'new') {
                 expect(item.selected).toBeFalsy();
             }
@@ -239,15 +210,16 @@ describe('AlarmsCtrl', function () {
         alarmsService.receivedAlarmMessage("kataware:alarm.3", alarmObj3);
         alarmsService.receivedAlarmMessage("kataware:alarm.4", alarmObj4);
         scope.$digest();
+        scope.filteredKnownAlarms = alarmsService.alarmsData;
         expect(alarmsService.alarmsData.length).toBe(4);
         ctrl.toggleSelectAllKnownAlarms(true);
-        alarmsService.alarmsData.forEach(function (item) {
+        scope.filteredKnownAlarms.forEach(function (item) {
             if (item.priority === 'known') {
                 expect(item.selected).toBeTruthy();
             }
         });
         ctrl.toggleSelectAllKnownAlarms(false);
-        alarmsService.alarmsData.forEach(function (item) {
+        scope.filteredKnownAlarms.forEach(function (item) {
             if (item.priority === 'known') {
                 expect(item.selected).toBeFalsy();
             }
@@ -324,6 +296,7 @@ describe('AlarmsCtrl', function () {
         alarmsService.receivedAlarmMessage("kataware:alarm.3", alarmObj3);
         alarmsService.receivedAlarmMessage("kataware:alarm.4", alarmObj4);
         scope.$digest();
+        scope.filteredAlarms = alarmsService.alarmsData;
         expect(alarmsService.alarmsData.length).toBe(4);
         ctrl.toggleSelectAllAlarms(true);
         ctrl.keydown(null, 27);

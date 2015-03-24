@@ -551,6 +551,30 @@ md-toast {
     max-height: 40px;
 }
 
+.animate-repeat-opacity {
+    list-style: none;
+    box-sizing: border-box;
+}
+
+.animate-repeat-opacity.ng-move,
+.animate-repeat-opacity.ng-enter,
+.animate-repeat-opacity.ng-leave {
+    -webkit-transition: all linear 2s;
+    transition: all linear 0.2s;
+}
+
+.animate-repeat-opacity.ng-leave.ng-leave-active,
+.animate-repeat-opacity.ng-move,
+.animate-repeat-opacity.ng-enter {
+    opacity: 0;
+}
+
+.animate-repeat-opacity.ng-leave,
+.animate-repeat-opacity.ng-move.ng-move-active,
+.animate-repeat-opacity.ng-enter.ng-enter-active {
+    opacity: 1;
+}
+
 .md-select-label {
     span:not(.md-select-icon) {
         flex: 1;
