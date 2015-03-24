@@ -8,18 +8,13 @@
 
 
 .alarms-notify-list {
-    position: fixed;
+    position: absolute;
     top: 57px;
-    right: 2px;
-    float: right;
-    width: 500px;
+    right: 0px;
     overflow: auto;
     opacity: 0.9;
-    height: 100%;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
     z-index: 4;
-    pointer-events: none;
+    height: 100%;
 }
 
 .alarm-item-overlay {
@@ -33,11 +28,12 @@
 
 .large-alarm-item {
     opacity: 1.0;
-    right: 0px;
-    float: right;
-    height: 108px;
-    width: 480px;
+    min-height: 108px;
+    max-height: 108px;
+    min-width: 480px;
+    max-width: 480px;
     overflow: hidden;
+    margin-left:20px;
 
     span {
         overflow: hidden;
@@ -68,10 +64,11 @@
 
 .small-alarm-item {
     opacity: 1.0;
-    right: 0px;
-    float: right;
-    width: 280px;
-    height: 108px;
+    min-width: 280px;
+    max-width: 280px;
+    min-height: 108px;
+    max-height: 108px;
+    margin-left:20px;
 
     .datestamp {
         display: none;
@@ -150,12 +147,9 @@
     }
 }
 
-button.alarm-close {
-    -webkit-appearance: none;
-    padding: 0;
-    cursor: pointer;
-    background: transparent;
-    border: 0;
+.alarm-close {
+    font-size: 14px;
+    padding: 2px;
 }
 
 ul {

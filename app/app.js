@@ -69,11 +69,11 @@
         $rootScope.showJulianDate = $localStorage['showJulianDate'];
         $rootScope.showLST = $localStorage['showLST'];
         $rootScope.showLocalAndSAST = $localStorage['showLocalAndSAST'];
-        if (!angular.isDefined($localStorage['showLST'])) {
+        if (!angular.isDefined($rootScope.showLST)) {
             $rootScope.showLST = true;
         }
 
-        if (!angular.isDefined($localStorage['showLocalAndSAST'])) {
+        if (!angular.isDefined($rootScope.showLocalAndSAST)) {
             $rootScope.showLocalAndSAST = true;
         }
 
@@ -90,8 +90,12 @@
         vm.userLoggedIn = false;
         vm.actionMenuOpen = false;
         $rootScope.toastPosition = 'bottom right';
-        $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
         $rootScope.alarmsData = AlarmsService.alarmsData;
+
+        $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
+        if (!angular.isDefined($rootScope.showAlarms)) {
+            $rootScope.showAlarms = true;
+        }
 
         $rootScope.showSimpleToast = function (message) {
             $mdToast.show(
