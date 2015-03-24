@@ -6,10 +6,10 @@
 
     function AlarmDirective() {
         return {
-            restrict: 'A',
+            restrict: 'E',
             template: [
-            '<div ng-show="showAlarms" class="alarms-notify-list">',
-            '   <div class="alarm-item large-alarms-animate" ng-repeat="alarm in $root.alarmsData | orderBy:\'dateUnix\'" ng-if="alarm.priority === \'new\'" ' +
+            '<div ng-show="showAlarms" layout="column" layout-align="start end" class="alarms-notify-list">',
+            '   <div class="alarm-item large-alarms-animate" ng-repeat="alarm in $root.alarmsData | filter:{priority:\'new\'} | orderBy:\'dateUnix\'" ng-show="!alarm.hidden"' +
             '       ng-class="{\'large-alarm-item\': hover || showLargeAlarms, ' +
             '                   \'small-alarm-item\': !hover && !showLargeAlarms, ' +
             '                   \'alarm-critical\': alarm.severity === \'critical\', ' +
@@ -22,8 +22,9 @@
             '       ng-mouseover="hover = true;" ng-mouseleave="hover = false;" title="{{alarm.value}}">',
             '       <div>',
             '           <ul>',
-            '               <li class="li-inline"><button class="alarm-close" ng-click="vm.acknowledgeMessage(alarm)">Ack</button></li>',
-            '               <li class="li-inline"><button class="alarm-close" ng-click="vm.knowMessage(alarm)">Knw</button></li>',
+            '               <li class="li-inline"><md-button class="alarm-close" aria-label="Hide Alarm Notification" title="Hide Alarm Notification" ng-click="vm.hideAlarmNotification(alarm)"><span class="fa fa-eye-slash"></span></md-button></li>',
+            '               <li class="li-inline"><md-button class="alarm-close" aria-label="Acknowledge Alarm" title="Acknowledge Alarm" ng-click="vm.acknowledgeMessage(alarm)">Ack</md-button></li>',
+            '               <li class="li-inline"><md-button class="alarm-close" aria-label="Know Alarm" title="Know Alarm" ng-click="vm.knowMessage(alarm)">Know</md-button></li>',
             '           </ul>',
             '       </div>',
             '       <div class="datestamp"><span>{{alarm.date}}</span></div>',
@@ -34,7 +35,7 @@
             '   </div>',
             '</div>'
             ].join(''),
-            replace: false,
+            replace: true,
             scope: true,
             controller: 'AlarmsNotifyCtrl as vm'
         };
@@ -50,6 +51,10 @@
 
         vm.knowMessage = function (message) {
             ControlService.addKnownAlarm(message.name);
+        };
+
+        vm.hideAlarmNotification = function (message) {
+            message.hidden = true;
         };
     }
 })();

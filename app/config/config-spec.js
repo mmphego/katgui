@@ -43,7 +43,7 @@ describe('ConfigCtrl', function () {
 
         localStorage['selectedTheme'] = 'Blue-Grey';
         ctrl.init();
-        expect(ctrl.selectedThemeObj.name).toBe('Blue-Grey');
+        expect(ctrl.selectedTheme).toBe('Blue-Grey');
     });
 
     it('should update the values correctly when the value changes', function () {

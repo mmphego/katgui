@@ -7,11 +7,10 @@
         var vm = this;
 
         vm.init = function () {
-            var showAlarms = $localStorage['showAlarmsNotify'] || $rootScope.showAlarms;
+            var showAlarms = $rootScope.showAlarms;
             if ($rootScope.showAlarms === undefined) {
                 showAlarms = true;
             }
-
             vm.showJulianDate = $rootScope.showJulianDate;
             vm.showLST = $rootScope.showLST;
             vm.showAlarms = showAlarms;
@@ -19,29 +18,19 @@
             $rootScope.showAlarms = showAlarms;
             vm.showLargeAlarms = $rootScope.showLargeAlarms;
             vm.themes = THEMES;
-
-            vm.selectedTheme = 'Indigo';
-
-            if (!$localStorage['selectedTheme']) {
+            vm.selectedTheme = $localStorage['selectedTheme'];
+            if (!angular.isDefined(vm.selectedTheme)) {
                 vm.selectedTheme = vm.themes[0].name;
-            } else {
-                vm.selectedThemeObj = _.find(THEMES, function (theme) {
-                    return $localStorage['selectedTheme'] === theme.name;
-                });
             }
         };
 
         vm.themeChange = function (newVal) {
             if (typeof newVal !== 'undefined') {
-
-                var newTheme = _.find(THEMES, function (theme) {
-                    return theme.name === newVal;
-                });
-
+                var newTheme = _.findWhere(THEMES, {name: newVal});
                 $rootScope.themePrimary = newTheme.primary;
                 $rootScope.themeSecondary = newTheme.secondary;
                 $rootScope.themePrimaryButtons = newTheme.primaryButtons;
-                $localStorage['selectedTheme'] = newTheme;
+                $localStorage['selectedTheme'] = newTheme.name;
             }
         };
 

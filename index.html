@@ -288,13 +288,13 @@
     </div>
 
 </md-content>
-<button ng-if="loggedIn" class="unselectable toolbar-collapse-button" ng-class="{'toolbar-collapse-button-grey': !vm.showNavbar}"
-        ng-click="vm.showNavbar = !vm.showNavbar">
-    <i class="fa"
-       ng-class="{ 'fa-caret-up': vm.showNavbar,  'fa-caret-down': !vm.showNavbar}"></i>
-</button>
+<div ng-if="loggedIn" class="unselectable toolbar-collapse-button" ng-class="{'toolbar-collapse-button-grey': !vm.showNavbar}"
+        ng-click="vm.showNavbar = !vm.showNavbar" title="Expand or Collapse Toolbar">
+    <span class="fa"
+       ng-class="{ 'fa-caret-up': vm.showNavbar,  'fa-caret-down': !vm.showNavbar}"></span>
+</div>
 
-<div ng-if="loggedIn" alarms-notifier></div>
+<alarms-notifier ng-if="loggedIn"></alarms-notifier>
 
 </body>
 </html>
