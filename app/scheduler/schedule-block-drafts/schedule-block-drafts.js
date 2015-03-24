@@ -110,7 +110,8 @@
         };
 
         vm.removeDraftRow = function (item) {
-            ObservationScheduleService.deleteScheduleDraft(item.id_code);
+            ObservationScheduleService.deleteScheduleDraft(item.id_code)
+                .then($rootScope.displayPromiseResult);
             vm.selectedScheduleDraft = null;
         };
 

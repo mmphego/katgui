@@ -198,8 +198,13 @@
 
                 } else if (result.delete_schedule_block) {
 
-                    jsonData.clientResult = parseKATCPMessageResult(result.schedule_to_complete.result);
-                    if (jsonData.clientResult.result === 'ok') {
+                    if (result.delete_schedule_block.delete_result) {
+                        jsonData.clientResult = {message: "Deleted schedule block: " + result.delete_schedule_block.id_code};
+                    } else {
+                        jsonData.clientResult = {message: "Could not delete schedule block: " + result.delete_schedule_block.id_code};
+                    }
+                    jsonData.clientResult.result = result.delete_schedule_block.delete_result? 'ok' : 'error';
+                    if (result.delete_schedule_block.delete_result) {
                         var index2 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.delete_schedule_block.id_code}));
                         api.scheduleDraftData.splice(index2, 1);
                     }

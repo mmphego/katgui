@@ -25,9 +25,11 @@
                     itemsAssigned.push(item.name);
                 }
             });
-            var itemsString = itemsAssigned.join(',');
-            ObservationScheduleService.assignResourcesToSubarray(subarray.id, itemsString)
-                .then($rootScope.displayPromiseResult);
+            if (itemsAssigned.length > 0) {
+                var itemsString = itemsAssigned.join(',');
+                ObservationScheduleService.assignResourcesToSubarray(subarray.id, itemsString)
+                    .then($rootScope.displayPromiseResult);
+            }
         };
 
         vm.freeAssignedResource = function (subarray, resource) {
