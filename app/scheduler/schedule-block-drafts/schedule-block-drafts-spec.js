@@ -142,7 +142,7 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
     });
 
     it('should call the update function in the ObservationScheduleService when saving', function () {
-        var updateScheduleDraftSpy = spyOn(ObservationScheduleService, "updateScheduleDraft");
+        var updateScheduleDraftSpy = spyOn(ObservationScheduleService, "updateScheduleDraft").and.returnValue(q.defer().promise);
         scope.filteredDraftItems[0].isDirty = true;
         ctrl.saveDraft(scope.filteredDraftItems[0]);
         expect(updateScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[0]);

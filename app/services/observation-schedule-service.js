@@ -216,6 +216,8 @@
                     draftToUpdate.instruction_set = result.update_draft_schedule_block.instruction_set;
                     draftToUpdate.desired_start_time = result.update_draft_schedule_block.desired_start_time;
                     draftToUpdate.isDirty = false;
+                    jsonData.clientResult = {message: "Updated schedule block: " + result.update_draft_schedule_block.id_code, result: "ok"};
+
                 } else if (result.list_all_allocations) {
 
                     var allocationsResult = JSON.parse(result.list_all_allocations.result);

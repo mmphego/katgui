@@ -405,7 +405,7 @@
             parent: schedulerHome,
             url: '/observations/:subarray_id',
             templateUrl: 'app/scheduler/observations/observations-detail.html',
-            title: 'Scheduler.Observations Details',
+            title: 'Scheduler.Observations',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

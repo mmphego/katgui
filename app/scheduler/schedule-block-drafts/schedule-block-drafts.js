@@ -78,7 +78,8 @@
         });
 
         vm.saveDraft = function (item) {
-            ObservationScheduleService.updateScheduleDraft(item);
+            ObservationScheduleService.updateScheduleDraft(item)
+                .then($rootScope.displayPromiseResult);
         };
 
         vm.saveAllDirtyDrafts = function () {
@@ -113,6 +114,7 @@
             ObservationScheduleService.deleteScheduleDraft(item.id_code)
                 .then($rootScope.displayPromiseResult);
             vm.selectedScheduleDraft = null;
+            vm.currentEditMenuIndex = -1;
         };
 
         vm.refreshScheduleBlocks = function () {
