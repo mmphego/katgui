@@ -22,6 +22,10 @@
             $state.go(newState);
         };
 
+        vm.stateGoObservationSchedules = function (subarray_id) {
+            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
+        };
+
         vm.unbindStateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState) {
             if (toState.name === 'scheduler.drafts' ||
                 toState.name === 'scheduler.resources' ||

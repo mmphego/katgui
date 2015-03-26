@@ -498,6 +498,9 @@
         $mdThemingProvider.theme('deep-purple')
             .primaryPalette('deep-purple');
 
+        $mdThemingProvider.theme('purple')
+            .primaryPalette('purple');
+
         $mdThemingProvider.theme('teal')
             .primaryPalette('teal');
 

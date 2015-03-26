@@ -105,7 +105,8 @@
 }
 
 .resource-item {
-    max-height: 40px;
+    max-height: 32px;
+    min-height: 32px;
     padding: 4px;
     min-width: 200px;
     border-bottom: 1px solid darken(@item-border-bottom, 10%);
@@ -421,7 +422,7 @@
     width: 49px;
     height: 49px;
     color: #9E9E9E;
-//    border-radius: 25px;
+    //    border-radius: 25px;
     background: transparent;
     border: transparent;
     font-size: 18px;
@@ -449,11 +450,37 @@
     height: 290px;
 }
 
+.md-subarray-fab-button {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    margin-right: 4px;
+}
+
 .subarray-container {
     min-width: 1000px;
     margin-bottom: 8px;
-    min-height: 260px;
-    max-height: 260px;
+    min-height: 200px;
+}
+
+.subarray-state-toolbar {
+    max-height: 34px;
+    min-height: 34px;
+    margin-left: 32px;
+    margin-right: 32px;
+    box-shadow: none;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.inline-svg-icon {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    path {
+        stroke-width: 5 !important;
+    }
 }
 
 .svg-subarray, .svg-receptor, {

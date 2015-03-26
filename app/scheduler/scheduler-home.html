@@ -23,8 +23,26 @@
             <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.observations')">
                 <div layout="column">
                     <div flex style="font-size: 148px" ><span flex class="fa fa-binoculars"></span></div>
-                    <span>Observation Schedules Schedules</span></div>
+                    <span>Observation Schedules</span></div>
             </md-button>
+            <div layout="column" class="scheduler-nav-home-item" style="min-width: 400px; max-width: 400px;">
+                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(1)">
+                    <span style="margin-left: 35px;">Sub-Array 1 Observation Schedules</span>
+                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
+                </md-button>
+                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(2)">
+                    <span style="margin-left: 35px;">Sub-Array 2 Observation Schedules</span>
+                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
+                </md-button>
+                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(3)">
+                    <span style="margin-left: 35px;">Sub-Array 3 Observation Schedules</span>
+                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
+                </md-button>
+                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(4)">
+                    <span style="margin-left: 35px;">Sub-Array 4 Observation Schedules</span>
+                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
+                </md-button>
+            </div>
         </div>
     </md-content>
 

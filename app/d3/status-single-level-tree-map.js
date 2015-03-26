@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('statusSingleLevelTreeMap', function (d3Service, d3Util) {
+    .directive('statusSingleLevelTreeMap', function (d3Service, d3Util, $window) {
         return {
             restrict: 'EA',
             scope: {
@@ -11,17 +11,29 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
-                    var w = 220,
-                        h = 1200 - 180,
-                        x = d3.scale.linear().range([0, w]),
-                        y = d3.scale.linear().range([0, h]),
-                        root;
+                    var width = 220,
+                        height = element.parent()[0].clientHeight - 40,
+                        root, dataDiv;
 
-                    var tooltip = d3Util.createTooltip(element[0]);
+                    var tooltip = d3.select(angular.element('.treemap-tooltip')[0]);
 
-                    drawTreemap();
+                    var win = angular.element($window);
+                    var unbindResize = win.bind("resize",function(){
+                        height = element.parent()[0].clientHeight - 40;
+                        d3.select(element[0]).selectAll('div').remove();
+                        drawTreemap(width, height);
+                    });
 
-                    function drawTreemap() {
+                    scope.$on('$destroy', function() {
+                        unbindResize();
+                    });
+
+                    drawTreemap(width, height);
+
+                    function drawTreemap(w, h) {
+
+                        var x = d3.scale.linear().range([0, w]),
+                            y = d3.scale.linear().range([0, h]);
 
                         var treemap = d3.layout.treemap()
                             .sort(function (a, b) {
@@ -46,11 +58,12 @@ angular.module('katGui.d3')
                             .attr("class", "status-top-label-text")
                             .html(root.name);
 
-                        var svg = d3.select(element[0]).append("div")
-                            .attr("class", "md-whiteframe-z2")
+                        dataDiv = d3.select(element[0]).append("div")
+                            .attr("class", "md-whiteframe-z2 data-div")
                             .style("width", "100%")
-                            .style("height", h + "px")
-                            .append("svg:svg")
+                            .style("height", h + "px");
+
+                        var svg = dataDiv.append("svg:svg")
                             .attr("width", "100%")
                             .attr("height", h)
                             .append("svg:g");
@@ -62,7 +75,13 @@ angular.module('katGui.d3')
                             .data(nodes)
                             .enter().append("svg:g")
                             .attr("width", function(d) { return "100%"; })
-                            .attr("class", "inactive-child")
+                            .attr("class", function(d) {
+                                if (d.sensorValue) {
+                                    return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child';
+                                } else {
+                                    return 'inactive-child';
+                                }
+                            })
                             .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
                             .attr("id", function (d) {
                                 return d.sensor.replace(":", "_");

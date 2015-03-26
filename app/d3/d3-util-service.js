@@ -76,9 +76,17 @@ angular.module('katGui.d3')
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function (d) {
                     updateTooltipValues(d, tooltip);
+                    var x = d3.event.layerX;
+                    var y = d3.event.layerY;
+                    if (window.innerWidth - x < 280) {
+                        x = window.innerWidth - 280;
+                    }
+                    if (window.innerHeight - y < 205) {
+                        y = window.innerHeight - 205;
+                    }
                     tooltip
-                        .style("top", (d3.event.layerY + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
-                        .style("left", (d3.event.layerX + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
+                        .style("top", (y + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
+                        .style("left", (x + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });

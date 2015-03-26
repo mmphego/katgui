@@ -19,7 +19,8 @@
             '                   \'alarm-info\': alarm.severity === \'info\', ' +
             '                   \'alarm-nominal\': alarm.severity === \'nominal\', ' +
             '                   \'alarm-unknown\': alarm.severity === \'unknown\'}" ' +
-            '       ng-mouseover="hover = true;" ng-mouseleave="hover = false;" title="{{alarm.value}}">',
+            '                   title="{{showLargeAlarms? alarm.value : alarm.date + \' --- \' + alarm.severity + \' --- \' + alarm.value}}">',
+                //'       ng-mouseover="hover = true;" ng-mouseleave="hover = false;" title="{{alarm.value}}">',
             '       <div>',
             '           <ul>',
             '               <li class="li-inline"><md-button class="alarm-close" aria-label="Hide Alarm Notification" title="Hide Alarm Notification" ng-click="vm.hideAlarmNotification(alarm)"><span class="fa fa-eye-slash"></span></md-button></li>',

@@ -315,7 +315,6 @@
                         }
                         updatedResourceM.in_maintenance = result.set_resources_in_maintenance.in_maintenance;
                     }
-
                 } else if (result.get_scheduler_mode_by_subarray) {
 
                     var msgList = result.get_scheduler_mode_by_subarray.result.split(' ');
@@ -331,11 +330,12 @@
                     } else {
                         jsonData.clientResult = {result: msgList2[1], message: result.set_scheduler_mode_by_subarray.result};
                     }
-
-
                 } else if (result.free_subarray) {
-                    //todo fix this case
-                    console.log(result.free_subarray);
+                    jsonData.clientResult = parseKATCPMessageResult(result.free_subarray.result);
+                    var msgList3 = result.free_subarray.result.split(' ');
+                    if (msgList3[1] === 'ok') {
+                        jsonData.clientResult.message = "Sub-Array " + result.free_subarray.sub_nr + " freed.";
+                    }
                 } else if (!result.email && result.session_id) {
                     //todo fix this case, display error better
                     console.warn('Observation Schedule returned an unfamiliar message: ');

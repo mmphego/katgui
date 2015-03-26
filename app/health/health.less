@@ -112,10 +112,14 @@
 }
 
 .inactive-child {
-    background-color: #795548;
-    fill: #795548;
+//    background-color: #795548;
+    background-color: #000;
+//    fill: #795548;
+    fill: #000;
+
     rect {
-        fill: #795548;
+//        fill: #795548;
+        fill: #000;
     }
 
     text {
@@ -129,15 +133,18 @@
     font-weight: bold;
 }
 
+.transparent-legend {
+    opacity: 0.35;
+}
+
 .legend-popup {
     border-radius: 1px;
-    width: 150px;
     position: fixed;
-    right: 18px;
-    bottom: 18px;
+    right: 0px;
+    bottom: 0px;
     background: white;
     color: black;
-    padding: 16px;
+    padding: 0px;
     span {
         margin-top: 4px;
     }
