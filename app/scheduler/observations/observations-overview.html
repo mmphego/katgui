@@ -1,35 +1,24 @@
-<div flex layout="row" style="min-width: 1015px; min-height: 920px;" ng-controller="SubArrayExecutorOverview as vm">
+<div flex layout="row" style="min-width: 1015px; min-height: 920px; margin-top: 4px;" ng-controller="SubArrayExecutorOverview as vm">
 
-    <div flex layout="column" style="overflow: auto; padding: 16px;">
-        <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
+    <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 8px;">
+        <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start" flex
              style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false"
              md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}">
-
-            <div layout="column" layout-align="start" style="width: 220px; min-height: 295px; max-height: 295px">
-                <md-toolbar flex class="md-hue-2" layout="column" style="min-height: 74px;" title="{{::subarray.description}}">
-                    <div flex style="width: 100%; text-align: center" ng-class="{'subarray_in_maintenance_bg': subarray.in_maintenance}">
-                        <h2>Sub-Array {{subarray.id}}</h2>
-                    </div>
-                </md-toolbar>
-                <div layout="column" layout-align="center center" style="margin: 4px; height: 220px;">
-                    <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" layout="column" layout-align="center center" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
-                        <div style="transform:scale(0.7);" ng-include="'images/subarray.svg'"></div>
-                        <span>Manage Observations</span>
-                    </md-button>
-                    <span style="font-weight: bold" ng-if="subarray.description">{{::subarray.description}}</span>
-                    <span ng-if="!subarray.in_maintenance" title="State: {{subarray.state}}">{{subarray.state}}</span>
-                    <span ng-if="subarray.in_maintenance" class="maintenance-text" title="State: {{subarray.state}} - in maintenance">{{subarray.state}} - in maintenance</span>
-                </div>
-            </div>
 
             <div class="" style="margin-left: 0px;" layout="column" layout-align="start" flex>
 
                 <md-toolbar class="md-whiteframe-z1 md-hue-2">
-                    <div layout="row" class="unselectable md-toolbar-tools-small">
-                        <span flex>Observation Schedules</span>
-                    </div>
+                    <md-button layout="row" style="min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
+                        <span>Sub-Array {{subarray.id}}</span>
+                        <md-button ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center" ng-class="{'md-raised md-primary': subarray.in_maintenance}"
+                                   md-theme="{{subarray.in_maintenance ? 'purple' : subarray.state === 'in_use'? 'amber' : 'green'}}" class="md-hue-2 subarray-state-toolbar"
+                                   title="Click to Manage Observations for Sub-Array {{subarray.id}}">
+                            <span>{{subarray.state + " "}}</span>
+                            <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
+                        </md-button>
+                    </md-button>
                     <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="start center">
-                        <span style="max-width: 160px;min-width: 160px;" class="subheader-text-no-color" ng-click="vm.setDraftsOrderBy('id_code')">
+                        <span style="max-width: 120px;min-width: 120px;" class="subheader-text-no-color" ng-click="vm.setDraftsOrderBy('id_code')">
                             <span style="padding: 8px">ID</span>
                             <span class="fa"
                                   ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"

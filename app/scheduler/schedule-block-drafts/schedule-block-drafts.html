@@ -58,7 +58,7 @@
                            ng-model="item.description" placeholder="Description"/>
 
                     <md-select ng-model="item.type" aria-label="Schedule Draft Type" style="margin-top: 4px; width: 134px; margin-left: 4px; margin-right:4px;"
-                               class="md-primary" md-theme="{{themePrimaryButtons}}" ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
+                               class="md-primary" ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
                         <md-option ng-value="type" ng-repeat="type in vm.types">{{type}}</md-option>
                     </md-select>
                     <input ng-change="item.isDirty = true; vm.validateInputDate(item);" type="text" aria-label="Select a Date and Time" title="UTC"
@@ -85,7 +85,7 @@
                 <span style="cursor: pointer;">Schedule Block Details</span>
             </div>
         </md-toolbar>
-        <div flex style="padding-right: 8px; padding-top: 8px; padding-bottom: 8px;" layout="column">
+        <div flex style="padding-right: 8px; padding-top: 8px;" layout="column">
             <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
                  ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 

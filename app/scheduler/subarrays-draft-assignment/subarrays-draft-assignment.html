@@ -1,6 +1,6 @@
-<div flex layout="row" layout-align="start" style="min-width: 1220px; min-height: 500px; margin: 8px;" ng-controller="SubArraysCtrl as vm" ng-click="vm.closeActionsMenu()">
+<div flex layout="row" layout-align="start" style="min-width: 1220px; min-height: 500px; margin-top: 8px;" ng-controller="SubArraysCtrl as vm" ng-click="vm.closeActionsMenu()">
 
-    <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-bottom: 8px; padding-right: 16px;">
+    <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 16px;">
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
              md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}" flex>
 
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <div layout="row" style="min-height: 500px; max-width: 500px; min-width: 500px; padding-right: 16px; padding-bottom: 16px;" class="md-whitespace-z1">
+    <div layout="row" style="min-height: 500px; max-width: 500px; min-width: 500px; padding-right: 8px; padding-bottom: 8px;" class="md-whitespace-z1">
         <div class="md-whiteframe-z2" layout="column" flex>
             <md-toolbar class="panel-toolbar-small md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
                 <div layout="row" class="unselectable md-toolbar-tools">
@@ -97,7 +97,7 @@
             </md-toolbar>
             <div class="schedule-draft-data-list" flex>
                 <!--ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"-->
-                <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} track by item.id_code" title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
+                <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} | regexSearch:vm.draftsOrderByFields:vm.q track by item.id_code" title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
                      style="cursor: pointer !important;"
                      ng-class="{'selected-resource-item': item.selected}"
                      ng-click="item.selected = !item.selected;"

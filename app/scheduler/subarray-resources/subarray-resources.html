@@ -1,6 +1,6 @@
 <div flex layout="row" style="min-width: 1050px; min-height: 920px; margin-top: 4px;" ng-controller="SubArrayResourcesCtrl as vm">
 
-    <div flex layout="column" style="overflow: auto; padding-left: 16px; padding-right: 16px; padding-bottom: 16px;">
+    <div flex layout="column" style="overflow: auto; padding-left: 16px; padding-right: 16px; padding-bottom: 4px;">
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
              style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false" flex>
 
@@ -72,7 +72,7 @@
         </div>
     </div>
 
-    <div flex layout="column" style="max-width:280px; min-height: 500px; margin-right: 16px; margin-bottom: 16px;">
+    <div flex layout="column" style="max-width:280px; min-height: 500px; margin-right: 16px; margin-bottom: 4px;">
 
         <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
             <md-toolbar ng-init="vm.selectAll = false" class="md-whiteframe-z1" layout="row" layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">
