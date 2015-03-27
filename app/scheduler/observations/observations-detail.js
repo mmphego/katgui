@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail(ObservationScheduleService, $timeout, $stateParams, $scope, $rootScope, ConfigService) {
+    function SubArrayObservationsDetail(ObservationScheduleService, $stateParams, $scope, $rootScope) {
 
         var vm = this;
         vm.subarray_id = parseInt($stateParams.subarray_id);
@@ -37,6 +37,14 @@
                             ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id)
                                 .then(function() {
                                     vm.selectedMode = ObservationScheduleService.schedulerModes[vm.subarray_id].stringValue;
+                                    if (ObservationScheduleService.subarrays.length === 0) {
+                                        ObservationScheduleService.listSubarrays()
+                                            .then(function() {
+                                                vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                                            });
+                                    } else {
+                                        vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                                    }
                                 });
                         });
                 });
@@ -109,7 +117,7 @@
             if (vm.currentEditMenuIndex !== rowIndex) {
                 vm.setSelectedSchedule(vm.currentScheduleData[rowIndex], true);
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 44};
+                var offset = {x: 0, y: 37};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
@@ -159,6 +167,14 @@
         vm.moveSelectedSBToFinished = function() {
             if (vm.selectedSchedule) {
                 vm.moveScheduleRowToFinished(vm.selectedSchedule);
+            }
+            vm.closeEditMenu();
+        };
+
+        vm.verifySelectedRow = function () {
+            if (vm.selectedSchedule) {
+                ObservationScheduleService.verifyScheduleBlock(vm.subarray_id, vm.selectedSchedule.id_code)
+                    .then($rootScope.displayPromiseResult);
             }
             vm.closeEditMenu();
         };
