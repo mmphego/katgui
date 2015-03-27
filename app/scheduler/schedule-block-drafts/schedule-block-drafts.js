@@ -155,7 +155,7 @@
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
                 vm.closeDatePickerMenu();
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 44};
+                var offset = {x: 0, y: 32};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
@@ -182,7 +182,7 @@
                     vm.currentSelectedDate = existingVal;
                 }
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 30};
+                var offset = {x: 0, y: 24};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'

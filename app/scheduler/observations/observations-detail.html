@@ -28,13 +28,15 @@
                             </md-progress-circular>
                             <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
                             <div layout="row" class="schedule-block-name-div">
-                                <span class="schedule-block-id-text">{{item.id_code}}</span>
+                                <span ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                                      class="schedule-block-id-text">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
                             <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
 
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
-                                <span style="text-transform: uppercase;">{{item.type}}</span>
+                                <span ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                                      style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
                             <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
                             <md-button ng-show="item.state !== 'ACTIVE' && !item.pendingVerify" md-theme="green" aria-label="Execute Schedule" class="scheduler-inline-button md-primary"
@@ -104,12 +106,14 @@
 
                         <div style="" layout="row" layout-align="center center">
                             <div layout="row" class="schedule-block-name-div">
-                                <span class="schedule-block-id-text" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
+                                <span ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                                      class="schedule-block-id-text" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
                             <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
-                                <span style="text-transform: uppercase;">{{item.type}}</span>
+                                <span ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                                      style="text-transform: uppercase;">{{item.type}}</span>
                             </div>
                             <span style="margin-left: 5px; margin-top: 4px; width: 140px; margin-right: 3px;">{{item.desired_start_time}}</span>
                             <md-button aria-label="Clone To Draft" style="margin-left: 8px;" md-theme="default" class="scheduler-inline-button"

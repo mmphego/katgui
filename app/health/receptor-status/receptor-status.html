@@ -10,7 +10,7 @@
             <div layout="row" layout-align="start center"><div class="color-patch unreachable-child" title="Pink"></div><span>Unreachable</span></div>
             <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
         </div>
-        <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = true" ng-click="showLegend = !showLegend"
+        <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
                    ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true"
                    aria-label="Show Legend" class="md-primary md-raised">
             <span ng-if="!showLegend" class="fa fa-eye" title="Show Legend"></span>
