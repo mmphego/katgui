@@ -198,8 +198,13 @@
 
                 } else if (result.delete_schedule_block) {
 
-                    jsonData.clientResult = parseKATCPMessageResult(result.schedule_to_complete.result);
-                    if (jsonData.clientResult.result === 'ok') {
+                    if (result.delete_schedule_block.delete_result) {
+                        jsonData.clientResult = {message: "Deleted schedule block: " + result.delete_schedule_block.id_code};
+                    } else {
+                        jsonData.clientResult = {message: "Could not delete schedule block: " + result.delete_schedule_block.id_code};
+                    }
+                    jsonData.clientResult.result = result.delete_schedule_block.delete_result? 'ok' : 'error';
+                    if (result.delete_schedule_block.delete_result) {
                         var index2 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.delete_schedule_block.id_code}));
                         api.scheduleDraftData.splice(index2, 1);
                     }
@@ -211,6 +216,8 @@
                     draftToUpdate.instruction_set = result.update_draft_schedule_block.instruction_set;
                     draftToUpdate.desired_start_time = result.update_draft_schedule_block.desired_start_time;
                     draftToUpdate.isDirty = false;
+                    jsonData.clientResult = {message: "Updated schedule block: " + result.update_draft_schedule_block.id_code, result: "ok"};
+
                 } else if (result.list_all_allocations) {
 
                     var allocationsResult = JSON.parse(result.list_all_allocations.result);
@@ -308,7 +315,6 @@
                         }
                         updatedResourceM.in_maintenance = result.set_resources_in_maintenance.in_maintenance;
                     }
-
                 } else if (result.get_scheduler_mode_by_subarray) {
 
                     var msgList = result.get_scheduler_mode_by_subarray.result.split(' ');
@@ -324,11 +330,12 @@
                     } else {
                         jsonData.clientResult = {result: msgList2[1], message: result.set_scheduler_mode_by_subarray.result};
                     }
-
-
                 } else if (result.free_subarray) {
-                    //todo fix this case
-                    console.log(result.free_subarray);
+                    jsonData.clientResult = parseKATCPMessageResult(result.free_subarray.result);
+                    var msgList3 = result.free_subarray.result.split(' ');
+                    if (msgList3[1] === 'ok') {
+                        jsonData.clientResult.message = "Sub-Array " + result.free_subarray.sub_nr + " freed.";
+                    }
                 } else if (!result.email && result.session_id) {
                     //todo fix this case, display error better
                     console.warn('Observation Schedule returned an unfamiliar message: ');

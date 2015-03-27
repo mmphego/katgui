@@ -158,10 +158,10 @@ describe('ApplicationCtrl', function () {
         expect(ctrl.currentState()).toEqual('Home');
         ctrl.stateGo('scheduler.observations.detail');
         scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler.Observations Details');
+        expect(ctrl.currentState()).toEqual('Scheduler.Observations');
         ctrl.navigateToParentState();
         scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler.Observations Overview');
+        expect(ctrl.currentState()).toEqual('Scheduler.Observations Schedules');
     });
 
     it('should display the promise result as a toast when result is ok or a dialog when there\'s an error', function () {

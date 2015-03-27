@@ -17,6 +17,11 @@
             {label: 'Type', value: 'type'}
         ];
 
+        vm.limitTo = 5;
+        $scope.loadMore = function() {
+            vm.limitTo += 10;
+        };
+
         vm.setDraftsOrderBy = function (column) {
             var newOrderBy = _.findWhere(vm.draftsOrderByFields, {value: column});
             if ((vm.draftsOrderBy || {}).value === column) {
@@ -78,7 +83,8 @@
         });
 
         vm.saveDraft = function (item) {
-            ObservationScheduleService.updateScheduleDraft(item);
+            ObservationScheduleService.updateScheduleDraft(item)
+                .then($rootScope.displayPromiseResult);
         };
 
         vm.saveAllDirtyDrafts = function () {
@@ -110,8 +116,10 @@
         };
 
         vm.removeDraftRow = function (item) {
-            ObservationScheduleService.deleteScheduleDraft(item.id_code);
+            ObservationScheduleService.deleteScheduleDraft(item.id_code)
+                .then($rootScope.displayPromiseResult);
             vm.selectedScheduleDraft = null;
+            vm.currentEditMenuIndex = -1;
         };
 
         vm.refreshScheduleBlocks = function () {
@@ -147,7 +155,7 @@
                 vm.setSelectedScheduleDraft(vm.scheduleDraftData[rowIndex], true);
                 vm.closeDatePickerMenu();
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 44};
+                var offset = {x: 0, y: 32};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
@@ -174,7 +182,7 @@
                     vm.currentSelectedDate = existingVal;
                 }
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 30};
+                var offset = {x: 0, y: 24};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'

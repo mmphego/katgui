@@ -11,6 +11,19 @@
         vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
         vm.subarrays = ObservationScheduleService.subarrays;
 
+        vm.draftsOrderByFields = [
+            {label: 'ID', value: 'id_code'},
+            {label: 'Description', value: 'description'},
+            {label: 'Date', value: 'desired_start_time'},
+            {label: 'State', value: 'state'},
+            {label: 'Type', value: 'type'}
+        ];
+
+        vm.limitTo = 5;
+        $scope.loadMore = function() {
+            vm.limitTo += 10;
+        };
+
         vm.refreshScheduleBlocks = function () {
             ObservationScheduleService.listSubarrays()
                 .then(function () {

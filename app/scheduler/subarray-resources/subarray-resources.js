@@ -18,6 +18,12 @@
                 });
         };
 
+        vm.selectAllUnassignedResources = function (selected) {
+            vm.poolResourcesFree.forEach(function (item) {
+                item.selected = selected;
+            });
+        };
+
         vm.assignSelectedResources = function (subarray) {
             var itemsAssigned = [];
             vm.poolResourcesFree.forEach(function (item) {
@@ -25,9 +31,12 @@
                     itemsAssigned.push(item.name);
                 }
             });
-            var itemsString = itemsAssigned.join(',');
-            ObservationScheduleService.assignResourcesToSubarray(subarray.id, itemsString)
-                .then($rootScope.displayPromiseResult);
+            if (itemsAssigned.length > 0) {
+                var itemsString = itemsAssigned.join(',');
+                ObservationScheduleService.assignResourcesToSubarray(subarray.id, itemsString)
+                    .then($rootScope.displayPromiseResult);
+            }
+            vm.selectAll = false;
         };
 
         vm.freeAssignedResource = function (subarray, resource) {
@@ -37,7 +46,10 @@
 
         vm.freeSubarray = function (subarray) {
             ObservationScheduleService.freeSubarray(subarray.id)
-                .then(vm.refreshResources);
+                .then(function(result) {
+                    $rootScope.displayPromiseResult(result);
+                    vm.refreshResources();
+                });
         };
 
         vm.setSubarrayInUse = function (subarray) {
@@ -70,6 +82,7 @@
                 ObservationScheduleService.poolResourcesFree.forEach(function (item) {
                     item.selected = false;
                 });
+                vm.selectAll = false;
             }
             if (!$scope.$$phase) {
                 $scope.$apply();

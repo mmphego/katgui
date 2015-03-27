@@ -2,7 +2,16 @@ angular.module('katGui.util', [])
     .directive('autoGrow', autoGrow)
     .constant('SERVER_URL', window.location.host === 'localhost:9001' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
     .factory('KatGuiUtil', katGuiUtil)
-    .filter('regexSearch', regexSearchFilter);
+    .filter('regexSearch', regexSearchFilter)
+    .directive('postNgRepeatLoadMore', function($timeout) {
+        return function(scope) {
+            if (scope.$last){
+                // iteration is complete, do whatever post-processing
+                // is necessary
+                $timeout(scope.$parent.loadMore, 100);
+            }
+        };
+    });
 
 function regexSearchFilter() {
     return function (input, fields, regex) {
