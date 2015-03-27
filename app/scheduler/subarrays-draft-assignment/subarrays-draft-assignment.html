@@ -97,11 +97,11 @@
             </md-toolbar>
             <div class="schedule-draft-data-list" flex>
                 <!--ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"-->
-                <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} | regexSearch:vm.draftsOrderByFields:vm.q track by item.id_code" title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
+                <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} | regexSearch:vm.draftsOrderByFields:vm.q | limitTo:vm.limitTo track by item.id_code" title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
                      style="cursor: pointer !important;"
                      ng-class="{'selected-resource-item': item.selected}"
                      ng-click="item.selected = !item.selected;"
-                     class="schedule-draft-item animate-repeat" layout="column" layout-align="center start">
+                     class="schedule-draft-item animate-repeat" layout="column" layout-align="center start" post-ng-repeat-load-more>
                     <div layout="row" layout-align="center center">
                         <span class="fa fa-question-circle" style="pointer: cursor; font-size: 19px; width: 17px" title="Show Schedule Block Details"
                               ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();"></span>

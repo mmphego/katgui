@@ -19,6 +19,11 @@
             {label: 'Type', value: 'type'}
         ];
 
+        vm.limitTo = 5;
+        $scope.loadMore = function() {
+            vm.limitTo += 10;
+        };
+
         vm.refreshScheduleBlocks = function () {
             ObservationScheduleService.listSubarrays()
                 .then(function () {

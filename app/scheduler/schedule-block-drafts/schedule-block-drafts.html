@@ -14,7 +14,7 @@
             </div>
 
             <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1;" layout="row" layout-align="center center">
-                <span style="max-width: 120px;min-width: 120px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
+                <span style="max-width: 135px;min-width: 135px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
                     <span style="padding-left: 8px;">ID</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
@@ -40,10 +40,10 @@
                 </span>
             </div>
         </md-toolbar>
-        <div class="schedule-draft-data-list" flex>
-            <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse) track by item.id_code"
+        <div class="schedule-draft-data-list" style="direction: rtl" flex>
+            <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by $index"
                  ng-click="vm.setSelectedScheduleDraft(item)"
-                 ng-class="{'selected-draft-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat-opacity" layout="column">
+                 ng-class="{'selected-draft-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat-opacity" layout="column" post-ng-repeat-load-more>
                 <div layout="row" layout-align="center center">
                     <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
                     </md-progress-circular>
