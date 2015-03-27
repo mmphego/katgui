@@ -51,7 +51,7 @@
 
                     <div layout="row" class="schedule-block-name-div">
                         <span class="schedule-block-id-text"
-                              ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}">
+                              ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
                             {{::item.id_code}}</span>
                         <i>{{::item.owner}}</i>
                     </div>
@@ -60,7 +60,7 @@
                            ng-model="item.description" placeholder="Description"/>
 
                     <md-select ng-model="item.type" aria-label="Schedule Draft Type" style="margin-top: 4px; width: 134px; margin-left: 4px; margin-right:4px;"
-                               ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                               ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                class="md-primary" ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
                         <md-option ng-value="type" ng-repeat="type in vm.types">{{type}}</md-option>
                     </md-select>

@@ -9,8 +9,8 @@
                     <md-button layout="row" style="font-size: 16px; min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
                         <span>Sub-Array {{subarray.id}}</span>
                         <md-toolbar ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center"
-                                    ng-class="{'md-raised md-primary': subarray.in_maintenance, 'transparent-background': !subarray.in_maintenance}"
-                                   md-theme="{{subarray.in_maintenance ? 'purple' : subarray.state === 'in_use'? 'amber' : 'green'}}" class="md-hue-2 subarray-state-toolbar"
+                                    ng-class="{'md-raised md-primary': subarray.in_maintenance}"
+                                    class="md-hue-2 subarray-state-toolbar transparent-background"
                                    title="Click to Manage Observations for Sub-Array {{subarray.id}}">
                             <span>{{subarray.state + " "}}</span>
                             <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
@@ -45,7 +45,7 @@
                         <span style="min-width: 38px;"></span>
                     </div>
                 </md-toolbar>
-                <div flex class="schedule-draft-data-list">
+                <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.in_maintenance}">
                     <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id_code"
                          style="min-width: 650px !important;" flex layout="row" layout-align="start center"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
@@ -56,7 +56,7 @@
 
                         <div layout="row" class="schedule-block-name-div" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">
                             <span class="schedule-block-id-text"
-                                  ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}">
+                                  ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
                                 {{item.id_code}}</span>
                             <i>{{item.owner}}</i>
                         </div>
@@ -64,7 +64,7 @@
                         <span flex style="min-width: 300px; margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
 
                         <div style="min-width: 105px; margin-top: 4px; text-align: start;">
-                            <span ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                            <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                   style="text-transform: uppercase;">{{item.type}}</span>
                         </div>
                         <span style="margin-left: 5px; margin-top: 4px; width: 64px; margin-right: 3px; overflow: hidden; white-space: normal">{{item.desired_start_time}}</span>
@@ -111,7 +111,7 @@
                               ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();"></span>
 
                         <div layout="row" class="schedule-block-name-div">
-                            <span ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                            <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                   class="schedule-block-id-text">{{item.id_code}}</span>
                             <i style="margin-left: 18px !important;">{{item.owner}}</i>
                         </div>
@@ -120,7 +120,7 @@
                             <span style="text-overflow: ellipsis;">{{item.description}}</span>
                         </div>
 
-                        <span ng-class="{'blue-color': item.type === 'MANUAL', 'purple-color': item.type === 'MAINTENANCE', 'green-color': item.type === 'OBSERVATION'}"
+                        <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                               style="min-width: 85px;">{{item.type}}</span>
                         <span style="overflow: hidden; margin-left: 4px">{{item.desired_start_time}}</span>
                     </div>

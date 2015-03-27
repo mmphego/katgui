@@ -11,9 +11,9 @@
                         <md-button layout="row" style="min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
                             <span>Sub-Array {{subarray.id}}</span>
                             <md-toolbar flex ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center"
-                                        ng-class="{'md-raised md-primary': subarray.in_maintenance, 'transparent-background': !subarray.in_maintenance}"
-                                        md-theme="{{subarray.in_maintenance ? 'purple' : subarray.state === 'in_use'? 'amber' : 'green'}}" class="md-hue-2 subarray-state-toolbar"
+                                         class="subarray-state-toolbar transparent-background"
                                         title="Click to Manage Observations for Sub-Array {{subarray.id}}">
+                                <!--md-theme="{{subarray.in_maintenance ? 'purple' : subarray.state === 'in_use'? 'amber' : 'green'}}"-->
                                 <span>{{subarray.state + " "}}</span>
                                 <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
                             </md-toolbar>
@@ -42,9 +42,9 @@
                     </md-button>
                 </md-toolbar>
 
-                <div flex style="overflow: auto;">
+                <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.in_maintenance}">
                     <div flex class="resource-item animate-repeat-opacity" layout="row" layout-align="start center"
-                         ng-repeat="resource in vm.poolResources | filter:{sub_nr:subarray.id} | orderBy:'name'">
+                         ng-repeat="resource in vm.poolResources | filter:{sub_nr:subarray.id} | orderBy:'name'" ng-class="{'transparent-background':subarray.in_maintenance}">
                         <span style="min-width: 34px;">
                             <span class="fa" style="font-size: 18px;" ng-class="{'fa-wrench maintenance-text':resource.in_maintenance}" title="Resource Marked In Maintenance"></span>
                         </span>

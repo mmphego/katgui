@@ -85,7 +85,7 @@
             var rowIndex = ObservationScheduleService.scheduleDraftData.indexOf(item);
             if (vm.currentActionsMenuIndex !== rowIndex) {
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 44};
+                var offset = {x: 0, y: 27};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
