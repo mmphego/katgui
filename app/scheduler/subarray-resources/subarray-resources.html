@@ -7,23 +7,23 @@
             <div layout="column" layout-align="start" flex>
                 <md-toolbar md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'purple'}}" class="md-whiteframe-z1 md-hue-2"
                             layout="row" layout-align="center center" title="{{subarray.description}}" style="max-height: 50px; min-height: 50px;">
-                    <div layout="column" layout-align="center start">
-                        <md-button style="margin-left: 4px;margin-top: 5px; font-size: 16px; min-width: 125px;" class=""
-                                   ng-click="vm.navigateToSchedulerDetails(subarray.id)" title="Manage Observations for Sub-Array {{subarray.id}}">
+                    <div flex layout="column">
+                        <md-button layout="row" style="min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
                             <span>Sub-Array {{subarray.id}}</span>
+                            <md-toolbar flex ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center"
+                                        ng-class="{'md-raised md-primary': subarray.in_maintenance, 'transparent-background': !subarray.in_maintenance}"
+                                        md-theme="{{subarray.in_maintenance ? 'purple' : subarray.state === 'in_use'? 'amber' : 'green'}}" class="md-hue-2 subarray-state-toolbar"
+                                        title="Click to Manage Observations for Sub-Array {{subarray.id}}">
+                                <span>{{subarray.state + " "}}</span>
+                                <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
+                            </md-toolbar>
                         </md-button>
-                        <div style="margin-top: -8px;">
+                        <div style="margin-top: -16px;">
                             <span style="font-size: 10px; margin-right: 2px;" title="Resources in Maintenance">Maint.</span>
                             <span style="font-size: 10px;" title="Resources Marked as Faulty">Faulty</span>
                         </div>
                     </div>
-                    <md-button ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center" ng-class="{'md-raised md-primary': subarray.in_maintenance}"
-                               md-theme="{{subarray.in_maintenance ? 'purple' : subarray.state === 'in_use'? 'amber' : 'green'}}" class="md-hue-2 subarray-state-toolbar"
-                               title="Click to Manage Observations for Sub-Array {{subarray.id}}">
-                        <span>{{subarray.state + " "}}</span>
-                        <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
-                    </md-button>
-                    <span flex></span>
+
                     <span ng-show="subarray.state === 'in_use'" style="width: 36px;"></span>
                     <md-button md-theme="{{themePrimaryButtons}}" class="fade-in md-fab md-button-fab-small md-primary md-subarray-fab-button"
                                ng-show="subarray.state !== 'in_use'"

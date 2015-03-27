@@ -8,12 +8,13 @@
                 <md-toolbar class="md-whiteframe-z1 md-hue-2" style="max-height: 64px;min-height: 64px;">
                     <md-button layout="row" style="font-size: 16px; min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
                         <span>Sub-Array {{subarray.id}}</span>
-                        <md-button ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center" ng-class="{'md-raised md-primary': subarray.in_maintenance}"
+                        <md-toolbar ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center"
+                                    ng-class="{'md-raised md-primary': subarray.in_maintenance, 'transparent-background': !subarray.in_maintenance}"
                                    md-theme="{{subarray.in_maintenance ? 'purple' : subarray.state === 'in_use'? 'amber' : 'green'}}" class="md-hue-2 subarray-state-toolbar"
                                    title="Click to Manage Observations for Sub-Array {{subarray.id}}">
                             <span>{{subarray.state + " "}}</span>
                             <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
-                        </md-button>
+                        </md-toolbar>
                     </md-button>
 
                     <div flex class="unselectable list-subheader-title" style="padding-top: 0px; z-index: 0;" layout="row" layout-align="start center">
