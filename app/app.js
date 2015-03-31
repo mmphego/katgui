@@ -268,7 +268,7 @@
         $scope.$on('$destroy', vm.logout);
     }
 
-    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider, USER_ROLES, $locationProvider) {
+    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider, USER_ROLES) {
 
         //disable this in production for performance boost
         //batarang uses this for scope inspection
