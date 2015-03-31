@@ -16,9 +16,9 @@
 
         api.login = function (email, password) {
 
-            var jwtPayload = { "email": email };
+            var jwtPayload = {"email": email};
             var msg = window.btoa(JSON.stringify(jwtHeader)) + "." + window.btoa(JSON.stringify(jwtPayload));
-            msg = msg.replace(/=/g , "");
+            msg = msg.replace(/=/g, "");
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
             $http(createRequest('get', urlBase + '/user/login'))
@@ -32,6 +32,12 @@
                     .success(logoutResultSuccess)
                     .error(logoutResultError);
             }
+        };
+
+        api.forceLogout = function () {
+            $http(createRequest('get', urlBase + '/user/logout'))
+                .success(logoutResultSuccess)
+                .error(logoutResultError);
         };
 
         api.recoverLogin = function () {
@@ -89,9 +95,14 @@
                 $rootScope.showSimpleToast('Invalid username or password.');
                 $state.go('login');
             } else {
-                console.error('Error logging return, server returned with:');
-                console.error(result);
-                $rootScope.showSimpleToast('Error logging in.');
+                //console.error('Error logging return, server returned with:');
+                //console.error(result);
+                api.forceLogout();
+                $rootScope.currentUser = null;
+                $rootScope.loggedIn = false;
+                $localStorage['currentUserToken'] = null;
+                $rootScope.jwt = null;
+                $rootScope.showSimpleToast('Login expired, logging out.');
                 $state.go('login');
             }
         }

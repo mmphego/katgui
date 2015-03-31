@@ -18,14 +18,14 @@ angular.module('katGui.d3')
                     var tooltip = d3.select(angular.element('.treemap-tooltip')[0]);
 
                     var win = angular.element($window);
-                    var unbindResize = win.bind("resize",function(){
+                    var unbindResize = win.bind("resize", function () {
                         height = element.parent()[0].clientHeight - 40;
                         d3.select(element[0]).selectAll('div').remove();
                         drawTreemap(width, height);
                     });
 
-                    scope.$on('$destroy', function() {
-                        unbindResize();
+                    scope.$on('$destroy', function () {
+                        unbindResize.unbind();
                     });
 
                     drawTreemap(width, height);
@@ -43,7 +43,9 @@ angular.module('katGui.d3')
                             .size([w, h])
                             .sticky(true)
                             .mode("dice")
-                            .value(function() { return 1; });
+                            .value(function () {
+                                return 1;
+                            });
 
                         root = scope.data;
 
@@ -51,7 +53,7 @@ angular.module('katGui.d3')
                             .attr("class", "status-top-label md-whiteframe-z2")
                             .style("width", "100%")
                             .style("height", "35px")
-                            .style("background", function() {
+                            .style("background", function () {
                                 return window.getComputedStyle(document.getElementById('main-top-toolbar')).backgroundColor;
                             })
                             .append("div")
@@ -69,40 +71,54 @@ angular.module('katGui.d3')
                             .append("svg:g");
 
                         var nodes = treemap.nodes(root)
-                            .filter(function(d) { return !d.children; });
+                            .filter(function (d) {
+                                return !d.children;
+                            });
 
                         var cell = svg.selectAll("g")
                             .data(nodes)
                             .enter().append("svg:g")
-                            .attr("width", function(d) { return "100%"; })
-                            .attr("class", function(d) {
+                            .attr("width", function (d) {
+                                return "100%";
+                            })
+                            .attr("class", function (d) {
                                 if (d.sensorValue) {
                                     return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child';
                                 } else {
                                     return 'inactive-child';
                                 }
                             })
-                            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+                            .attr("transform", function (d) {
+                                return "translate(" + d.x + "," + d.y + ")";
+                            })
                             .attr("id", function (d) {
                                 return d.sensor.replace(":", "_");
                             });
 
                         //todo handle width/height when tree is spliced horizontally
                         cell.append("svg:rect")
-                            .attr("width", function(d) { return "100%"; })
-                            .attr("height", function(d) { return d.dy - 1; })
+                            .attr("width", function (d) {
+                                return "100%";
+                            })
+                            .attr("height", function (d) {
+                                return d.dy - 1;
+                            })
                             .call(function (d) {
                                 d3Util.applyTooltipValues(d, tooltip);
                             });
 
                         cell.append("svg:text")
-                            .attr("x", function(d) { return "50%"; })
-                            .attr("y", function(d) { return d.dy / 2; })
+                            .attr("x", function (d) {
+                                return "50%";
+                            })
+                            .attr("y", function (d) {
+                                return d.dy / 2;
+                            })
                             //.attr("class", "inactive-child-text")
                             .attr("dy", ".35em")
                             .attr("text-anchor", "middle")
-                            .text(function(d) {
-                                return d.name? d.name : d.sensor;
+                            .text(function (d) {
+                                return d.name ? d.name : d.sensor;
                             });
                     }
                 });
