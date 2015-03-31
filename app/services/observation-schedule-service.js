@@ -54,7 +54,7 @@
                 console.error(e.data);
             } else {
                 var result = jsonData.result;
-//                console.log(result);
+                //console.log(result);
 
                 if (result.get_schedule_blocks) {
                     var getResult = JSON.parse(result.get_schedule_blocks);
@@ -80,14 +80,6 @@
                     getResultFinished.forEach(function (item) {
                         api.scheduleCompletedData.push(item);
                     });
-                } else if (result.get_schedule_block) {
-
-                    for (var i = 0; i < api.scheduleDraftData.length; i++) {
-                        if (api.scheduleDraftData[i].id_code === result.get_schedule_block.id_code) {
-                            api.scheduleDraftData[i] = result.get_schedule_block;
-                            break;
-                        }
-                    }
                 } else if (result.list_allocations_for_subarray) {
 
                     var getResultAlloc = JSON.parse(result.list_allocations_for_subarray.result);
@@ -95,31 +87,6 @@
                         api.allocations.push({sub_nr: result.list_allocations_for_subarray.sub_nr, name: item[0], sb_id_code: item[1]});
                     });
 
-                } else if (result.list_pool_resources_for_subarray) {
-
-                    var resourcePoolResult = result.list_pool_resources_for_subarray.result.split(',');
-                    resourcePoolResult = resourcePoolResult.filter(function (n) {
-                        return n !== "";
-                    });
-
-                    var sub_nr = result.list_pool_resources_for_subarray.sub_nr;
-                    if (sub_nr === 'free') {
-                        sub_nr = 'Free';
-                    }
-
-                    if (!api['resourcePoolData' + sub_nr]) {
-                        api['resourcePoolData' + sub_nr] = [];
-                    }
-
-                    resourcePoolResult.forEach(function (item) {
-                        api['resourcePoolData' + sub_nr].push(item);
-                    });
-                } else if (result.create_schedule_block) {
-
-                    result.create_schedule_block.desired_start_time = '';
-                    result.create_schedule_block.hasValidInput = false;
-                    result.create_schedule_block.isDirty = true;
-                    api.scheduleDraftData.push(result.create_schedule_block);
                 } else if (result.assign_schedule_to_subarray) {
 
                     jsonData.clientResult = parseKATCPMessageResult(result.assign_schedule_to_subarray.result);
@@ -217,12 +184,6 @@
                     draftToUpdate.isDirty = false;
                     jsonData.clientResult = {message: "Updated schedule block: " + result.update_draft_schedule_block.id_code, result: "ok"};
 
-                } else if (result.list_all_allocations) {
-
-                    var allocationsResult = JSON.parse(result.list_all_allocations.result);
-                    allocationsResult.forEach(function (item) {
-                        api.allocations.push(item);
-                    });
                 } else if (result.list_pool_resources) {
 
                     var listPoolResources = JSON.parse(result.list_pool_resources);
@@ -299,10 +260,6 @@
                             updatedResource = _.findWhere(api.poolResourcesFree, {name: result.set_resources_faulty.resources_list});
                         }
                         updatedResource.state = result.set_resources_faulty.faulty ? 'faulty' : 'ok';
-                        //updatedResource = _.findWhere(api.allocations, {name: result.set_resources_faulty.resources_list});
-                        //if (updatedResource) {
-                        //    updatedResource.state = result.set_resources_faulty.faulty ? 'faulty' : 'ok';
-                        //}
                     }
                 } else if (result.set_resources_in_maintenance) {
 
@@ -408,14 +365,6 @@
             return createCommandPromise(api.sendObsSchedCommand('get_schedule_blocks_finished'));
         };
 
-        api.getScheduleBlock = function (id_code) {
-            return createCommandPromise(api.sendObsSchedCommand('get_schedule_block', [id_code]));
-        };
-
-        api.createScheduleBlock = function () {
-            return createCommandPromise(api.sendObsSchedCommand('create_schedule_block'));
-        };
-
         api.assignScheduleBlock = function (subarray_number, id_code) {
             return createCommandPromise(api.sendObsSchedCommand('assign_schedule_to_subarray', [subarray_number, id_code]));
         };
@@ -450,20 +399,6 @@
 
         api.cloneSchedule = function (id_code) {
             return createCommandPromise(api.sendObsSchedCommand('clone_schedule', [id_code]));
-        };
-
-        api.listPoolResourcesForSubarray = function (subarray_number) {
-
-            var camelCaseSubNr = subarray_number;
-            if (camelCaseSubNr === 'free') {
-                camelCaseSubNr = 'Free';
-            }
-
-            if (api['resourcePoolData' + camelCaseSubNr]) {
-                api['resourcePoolData' + camelCaseSubNr].splice(0, api['resourcePoolData' + camelCaseSubNr].length);
-            }
-
-            return createCommandPromise(api.sendObsSchedCommand('list_pool_resources_for_subarray', [subarray_number]));
         };
 
         api.listPoolResources = function () {
@@ -580,7 +515,7 @@
         }
 
         api.sendObsSchedCommand = function (method, funcParams, desired_jsonRPCId) {
-            if (api.connection && api.connection.authorized) {
+            if (api.connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': method,
@@ -599,7 +534,7 @@
                     //wait for the connection to be ready and retry the send
                     $timeout(function () {
                         api.sendObsSchedCommand(method, funcParams, jsonRPC.id);
-                    }, 500);
+                    }, 100);
                 }
                 return jsonRPC.id;
             }
