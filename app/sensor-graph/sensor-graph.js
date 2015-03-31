@@ -3,6 +3,8 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
+    /* istanbul ignore next */
+    //todo expand testing when implementing this module
     function SensorGraphCtrl(DataService, $rootScope) {
 
         var vm = this;

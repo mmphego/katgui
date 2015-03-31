@@ -77,7 +77,6 @@
                 $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
                 $rootScope.$emit('loginSuccess', true);
                 $rootScope.connectEvents();
-                //TODO implement timeout
             }
         }
 
