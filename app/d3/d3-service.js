@@ -9,10 +9,10 @@ angular.module('katGui.d3')
                 }
             };
 
-        function onScriptLoad() {
+        d3service.onScriptLoad = function () {
             // Load client in the browser
             d.resolve($window.d3);
-        }
+        };
 
         var scriptTag = $document[0].createElement('script');
         scriptTag.type = 'text/javascript';
@@ -20,10 +20,10 @@ angular.module('katGui.d3')
         scriptTag.src = 'bower_components/d3/d3.min.js';
         scriptTag.onreadystatechange = function () {
             if (this.readyState === 'complete') {
-                onScriptLoad();
+                d3service.onScriptLoad();
             }
         };
-        scriptTag.onload = onScriptLoad;
+        scriptTag.onload = d3service.onScriptLoad;
 
         var s = $document[0].getElementsByTagName('body')[0];
         s.appendChild(scriptTag);

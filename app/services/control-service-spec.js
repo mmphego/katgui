@@ -35,6 +35,7 @@ describe('ControlService', function () {
     var scope, ControlService, httpBackend, q, timeout;
 
     beforeEach(inject(function ($rootScope, _ControlService_, _$injector_, _$q_, _$timeout_) {
+        spyOn(console, 'log');
         timeout = _$timeout_;
         q = _$q_;
         ControlService = _ControlService_;

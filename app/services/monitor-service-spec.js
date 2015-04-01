@@ -69,6 +69,7 @@ describe('MonitorService', function () {
     var httpBackend, MonitorService, AlarmsService, ConfigService, ObservationScheduleService, StatusService,  scope, timeout;
 
     beforeEach(inject(function ($rootScope, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _AlarmsService_, _ObservationScheduleService_, _StatusService_, $templateCache) {
+        spyOn(console, 'log');
         timeout = _$timeout_;
         httpBackend = _$injector_.get('$httpBackend');
         MonitorService = _MonitorService_;

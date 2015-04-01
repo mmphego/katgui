@@ -20,6 +20,7 @@ describe('HealthCtrl', function () {
     };
 
     beforeEach(inject(function ($rootScope, $controller, _ConfigService_, _StatusService_, _MonitorService_, $interval, $q, _d3Util_, _d3Service_) {
+        spyOn(console, 'error');
         interval = $interval;
         d3Util = _d3Util_;
         q = $q;
