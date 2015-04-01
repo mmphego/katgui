@@ -58,10 +58,10 @@ describe('HealthCtrl', function () {
     it('should stop interval on scope destroy', inject(function () {
         ctrl.stopUpdating = function() {
         };
-        var stopUpdatingSpy = spyOn(ctrl, "stopUpdating");
+        var cancelSpy = spyOn(interval, "cancel");
         scope.$emit("$destroy");
         scope.$digest();
-        expect(stopUpdatingSpy).toHaveBeenCalled();
+        expect(cancelSpy).toHaveBeenCalled();
     }));
 
     it('should call the StatusService functions when getStatusTreesForTop returns', function () {

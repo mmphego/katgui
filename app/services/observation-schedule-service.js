@@ -6,9 +6,9 @@
     function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
-        var connection = null;
         var api = {};
-        var deferredMap = {};
+        api.connection = null;
+        api.deferredMap = {};
         api.scheduleDraftData = [];
         api.scheduleData = [];
         api.scheduleCompletedData = [];
@@ -21,33 +21,32 @@
         api.pendingVerificationSBIds = {};
         api.schedulerModes = {};
 
-        function onSockJSOpen() {
-            if (connection && connection.readyState) {
+        api.onSockJSOpen = function () {
+            if (api.connection && api.connection.readyState) {
                 console.log('Observation Schedule Connection Established. Authenticating...');
-                authenticateSocketConnection();
+                api.authenticateSocketConnection();
             }
-        }
+        };
 
-        function authenticateSocketConnection() {
-
-            if (connection) {
+        api.authenticateSocketConnection = function () {
+            if (api.connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': 'authorise',
                     'params': [$rootScope.session_id],
                     'id': 'authorise' + KatGuiUtil.generateUUID()
                 };
-                connection.authorized = false;
-                return connection.send(JSON.stringify(jsonRPC));
+                api.connection.authorized = false;
+                return api.connection.send(JSON.stringify(jsonRPC));
             }
-        }
+        };
 
-        function onSockJSClose() {
+        api.onSockJSClose = function () {
             console.log('Disconnected Observation Schedule Connection.');
-            connection = null;
-        }
+            api.connection = null;
+        };
 
-        function onSockJSMessage(e) {
+        api.onSockJSMessage = function (e) {
             var jsonData = JSON.parse(e.data);
 
             if (jsonData.error) {
@@ -55,7 +54,7 @@
                 console.error(e.data);
             } else {
                 var result = jsonData.result;
-//                console.log(result);
+                //console.log(result);
 
                 if (result.get_schedule_blocks) {
                     var getResult = JSON.parse(result.get_schedule_blocks);
@@ -81,14 +80,6 @@
                     getResultFinished.forEach(function (item) {
                         api.scheduleCompletedData.push(item);
                     });
-                } else if (result.get_schedule_block) {
-
-                    for (var i = 0; i < api.scheduleDraftData.length; i++) {
-                        if (api.scheduleDraftData[i].id_code === result.get_schedule_block.id_code) {
-                            api.scheduleDraftData[i] = result.get_schedule_block;
-                            break;
-                        }
-                    }
                 } else if (result.list_allocations_for_subarray) {
 
                     var getResultAlloc = JSON.parse(result.list_allocations_for_subarray.result);
@@ -96,31 +87,6 @@
                         api.allocations.push({sub_nr: result.list_allocations_for_subarray.sub_nr, name: item[0], sb_id_code: item[1]});
                     });
 
-                } else if (result.list_pool_resources_for_subarray) {
-
-                    var resourcePoolResult = result.list_pool_resources_for_subarray.result.split(',');
-                    resourcePoolResult = resourcePoolResult.filter(function (n) {
-                        return n !== "";
-                    });
-
-                    var sub_nr = result.list_pool_resources_for_subarray.sub_nr;
-                    if (sub_nr === 'free') {
-                        sub_nr = 'Free';
-                    }
-
-                    if (!api['resourcePoolData' + sub_nr]) {
-                        api['resourcePoolData' + sub_nr] = [];
-                    }
-
-                    resourcePoolResult.forEach(function (item) {
-                        api['resourcePoolData' + sub_nr].push(item);
-                    });
-                } else if (result.create_schedule_block) {
-
-                    result.create_schedule_block.desired_start_time = '';
-                    result.create_schedule_block.hasValidInput = false;
-                    result.create_schedule_block.isDirty = true;
-                    api.scheduleDraftData.push(result.create_schedule_block);
                 } else if (result.assign_schedule_to_subarray) {
 
                     jsonData.clientResult = parseKATCPMessageResult(result.assign_schedule_to_subarray.result);
@@ -203,7 +169,7 @@
                     } else {
                         jsonData.clientResult = {message: "Could not delete schedule block: " + result.delete_schedule_block.id_code};
                     }
-                    jsonData.clientResult.result = result.delete_schedule_block.delete_result? 'ok' : 'error';
+                    jsonData.clientResult.result = result.delete_schedule_block.delete_result ? 'ok' : 'error';
                     if (result.delete_schedule_block.delete_result) {
                         var index2 = _.indexOf(api.scheduleDraftData, _.findWhere(api.scheduleDraftData, {id_code: result.delete_schedule_block.id_code}));
                         api.scheduleDraftData.splice(index2, 1);
@@ -218,12 +184,6 @@
                     draftToUpdate.isDirty = false;
                     jsonData.clientResult = {message: "Updated schedule block: " + result.update_draft_schedule_block.id_code, result: "ok"};
 
-                } else if (result.list_all_allocations) {
-
-                    var allocationsResult = JSON.parse(result.list_all_allocations.result);
-                    allocationsResult.forEach(function (item) {
-                        api.allocations.push(item);
-                    });
                 } else if (result.list_pool_resources) {
 
                     var listPoolResources = JSON.parse(result.list_pool_resources);
@@ -300,10 +260,6 @@
                             updatedResource = _.findWhere(api.poolResourcesFree, {name: result.set_resources_faulty.resources_list});
                         }
                         updatedResource.state = result.set_resources_faulty.faulty ? 'faulty' : 'ok';
-                        //updatedResource = _.findWhere(api.allocations, {name: result.set_resources_faulty.resources_list});
-                        //if (updatedResource) {
-                        //    updatedResource.state = result.set_resources_faulty.faulty ? 'faulty' : 'ok';
-                        //}
                     }
                 } else if (result.set_resources_in_maintenance) {
 
@@ -342,17 +298,17 @@
                     console.warn(e);
                 } else if (result.session_id) {
                     console.log('Observation Schedule Connection Authenticated.');
-                    connection.authorized = true;
+                    api.connection.authorized = true;
                 } else {
                     console.error('Observation Schedule Connection Authentication failed!.');
-                    connection.authorized = false;
+                    api.connection.authorized = false;
                 }
 
-                if (deferredMap[jsonData.id]) {
-                    deferredMap[jsonData.id].resolve(jsonData.clientResult);
+                if (api.deferredMap[jsonData.id]) {
+                    api.deferredMap[jsonData.id].resolve(jsonData.clientResult);
                 }
             }
-        }
+        };
 
         function parseKATCPMessageResult(message) {
             var messageList = message.split(' ');
@@ -370,25 +326,27 @@
 
         api.connectListener = function () {
             console.log('Observation Schedule Connecting...');
-            connection = new SockJS(urlBase + '/obs-sched');
-            connection.onopen = onSockJSOpen;
-            connection.onmessage = onSockJSMessage;
-            connection.onclose = onSockJSClose;
-            return connection !== null;
+            api.connection = new SockJS(urlBase + '/obs-sched');
+            api.connection.onopen = api.onSockJSOpen;
+            api.connection.onmessage = api.onSockJSMessage;
+            api.connection.onclose = api.onSockJSClose;
+            return api.connection !== null;
         };
 
         api.disconnectListener = function () {
-            if (connection) {
-                connection.close();
+            if (api.connection) {
+                api.connection.close();
+            } else {
+                console.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 
         api.deleteScheduleDraft = function (idCode) {
-            return createCommandPromise(sendObsSchedCommand('delete_schedule_block', [idCode]));
+            return createCommandPromise(api.sendObsSchedCommand('delete_schedule_block', [idCode]));
         };
 
         api.updateScheduleDraft = function (scheduleBlockDraft) {
-            return createCommandPromise(sendObsSchedCommand('update_draft_schedule_block', [
+            return createCommandPromise(api.sendObsSchedCommand('update_draft_schedule_block', [
                 scheduleBlockDraft.id_code,
                 scheduleBlockDraft.type,
                 scheduleBlockDraft.instruction_set,
@@ -399,127 +357,100 @@
         api.getScheduleBlocks = function () {
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
             api.scheduleData.splice(0, api.scheduleData.length);
-            return createCommandPromise(sendObsSchedCommand('get_schedule_blocks'));
+            return createCommandPromise(api.sendObsSchedCommand('get_schedule_blocks'));
         };
 
         api.getScheduleBlocksFinished = function () {
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
-            return createCommandPromise(sendObsSchedCommand('get_schedule_blocks_finished'));
-        };
-
-        api.getScheduleBlock = function (id_code) {
-            return createCommandPromise(sendObsSchedCommand('get_schedule_block', [id_code]));
-        };
-
-        api.createScheduleBlock = function () {
-            return createCommandPromise(sendObsSchedCommand('create_schedule_block'));
+            return createCommandPromise(api.sendObsSchedCommand('get_schedule_blocks_finished'));
         };
 
         api.assignScheduleBlock = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('assign_schedule_to_subarray', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('assign_schedule_to_subarray', [subarray_number, id_code]));
         };
 
         api.unassignScheduleBlock = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('unassign_schedule_to_subarray', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('unassign_schedule_to_subarray', [subarray_number, id_code]));
         };
 
         api.scheduleDraft = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('schedule_draft', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('schedule_draft', [subarray_number, id_code]));
         };
 
         api.scheduleToDraft = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('schedule_to_draft', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('schedule_to_draft', [subarray_number, id_code]));
         };
 
         api.scheduleToComplete = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('schedule_to_complete', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('schedule_to_complete', [subarray_number, id_code]));
         };
 
         api.verifyScheduleBlock = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('verify_schedule_block', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('verify_schedule_block', [subarray_number, id_code]));
         };
 
         api.executeSchedule = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('execute_schedule', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('execute_schedule', [subarray_number, id_code]));
         };
 
         api.cancelExecuteSchedule = function (subarray_number, id_code) {
-            return createCommandPromise(sendObsSchedCommand('cancel_execute_schedule', [subarray_number, id_code]));
+            return createCommandPromise(api.sendObsSchedCommand('cancel_execute_schedule', [subarray_number, id_code]));
         };
 
         api.cloneSchedule = function (id_code) {
-            return createCommandPromise(sendObsSchedCommand('clone_schedule', [id_code]));
-        };
-
-        api.listPoolResourcesForSubarray = function (subarray_number) {
-
-            var camelCaseSubNr = subarray_number;
-            if (camelCaseSubNr === 'free') {
-                camelCaseSubNr = 'Free';
-            }
-
-            if (api['resourcePoolData' + subarray_number]) {
-                api['resourcePoolData' + camelCaseSubNr].splice(0, api['resourcePoolData' + camelCaseSubNr].length);
-            }
-
-            return createCommandPromise(sendObsSchedCommand('list_pool_resources_for_subarray', [subarray_number]));
-        };
-
-        api.listAllocations = function () {
-            api.allocations.splice(0, api.allocations.length);
-            return createCommandPromise(sendObsSchedCommand('list_all_allocations', []));
+            return createCommandPromise(api.sendObsSchedCommand('clone_schedule', [id_code]));
         };
 
         api.listPoolResources = function () {
             api.poolResourcesFree.splice(0, api.poolResourcesFree.length);
             api.poolResources.splice(0, api.poolResources.length);
-            return createCommandPromise(sendObsSchedCommand('list_pool_resources', []));
+            return createCommandPromise(api.sendObsSchedCommand('list_pool_resources'));
         };
 
         api.listSubarrays = function () {
             api.subarrays.splice(0, api.subarrays.length);
-            return createCommandPromise(sendObsSchedCommand('list_subarrays', []));
+            return createCommandPromise(api.sendObsSchedCommand('list_subarrays'));
         };
 
         api.assignResourcesToSubarray = function (subarray, resources) {
-            return createCommandPromise(sendObsSchedCommand('assign_resources_to_subarray', [subarray, resources]));
+            return createCommandPromise(api.sendObsSchedCommand('assign_resources_to_subarray', [subarray, resources]));
         };
 
         api.unassignResourcesFromSubarray = function (subarray, resources) {
-            return createCommandPromise(sendObsSchedCommand('unassign_resources_from_subarray', [subarray, resources]));
+            return createCommandPromise(api.sendObsSchedCommand('unassign_resources_from_subarray', [subarray, resources]));
         };
 
         api.setSubarrayInUse = function (subarray, set_to) {
-            return createCommandPromise(sendObsSchedCommand('set_subarray_in_use', [subarray, set_to])); //1 for true
+            return createCommandPromise(api.sendObsSchedCommand('set_subarray_in_use', [subarray, set_to])); //1 for true
         };
 
         api.setSubarrayMaintenance = function (subarray, set_to) {
-            return createCommandPromise(sendObsSchedCommand('set_subarray_in_maintenance', [subarray, set_to])); //1 for true
+            return createCommandPromise(api.sendObsSchedCommand('set_subarray_in_maintenance', [subarray, set_to])); //1 for true
         };
 
         api.freeSubarray = function (subarray) {
-            return createCommandPromise(sendObsSchedCommand('free_subarray', [subarray]));
+            return createCommandPromise(api.sendObsSchedCommand('free_subarray', [subarray]));
         };
 
         api.markResourceFaulty = function (resource, faulty) {
-            return createCommandPromise(sendObsSchedCommand('set_resources_faulty', [resource, faulty]));
+            return createCommandPromise(api.sendObsSchedCommand('set_resources_faulty', [resource, faulty]));
         };
 
         api.markResourceInMaintenance = function (resource, in_maintenance) {
-            return createCommandPromise(sendObsSchedCommand('set_resources_in_maintenance', [resource, in_maintenance]));
+            return createCommandPromise(api.sendObsSchedCommand('set_resources_in_maintenance', [resource, in_maintenance]));
         };
 
         api.listAllocationsForSubarray = function (sub_nr) {
             api.allocations.splice(0, api.allocations.length);
-            return createCommandPromise(sendObsSchedCommand('list_allocations_for_subarray', [sub_nr]));
+            return createCommandPromise(api.sendObsSchedCommand('list_allocations_for_subarray', [sub_nr]));
         };
 
         api.getSchedulerModeForSubarray = function (sub_nr) {
-            return createCommandPromise(sendObsSchedCommand('get_scheduler_mode_by_subarray', [sub_nr]));
+            return createCommandPromise(api.sendObsSchedCommand('get_scheduler_mode_by_subarray', [sub_nr]));
         };
 
         api.setSchedulerModeForSubarray = function (sub_nr, mode) {
-            return createCommandPromise(sendObsSchedCommand('set_scheduler_mode_by_subarray', [sub_nr, mode]));
+            return createCommandPromise(api.sendObsSchedCommand('set_scheduler_mode_by_subarray', [sub_nr, mode]));
         };
 
         api.viewTaskLogForSBIdCode = function (id_code) {
@@ -530,6 +461,8 @@
             }
         };
 
+        /* istanbul ignore next */
+        //this is not used anywhere and will change with new Obs Manager changes on server
         api.receivedSchedMessage = function (messageName, messageData) {
             console.log(messageName + ": " + messageData.value);
             if (messageName.indexOf('pending_requests_') > -1) {
@@ -554,9 +487,9 @@
 
                 noLongerPending.forEach(function (id_code) {
                     //all the id_codes of the sbs that are no longer pending verification
-                    var sb = _.findWhere(api.scheduleDraftData, {id_code:id_code});
+                    var sb = _.findWhere(api.scheduleDraftData, {id_code: id_code});
                     if (!sb) {
-                        sb = _.findWhere(api.scheduleData, {id_code:id_code});
+                        sb = _.findWhere(api.scheduleData, {id_code: id_code});
                     }
                     if (sb) {
                         sb.pendingVerify = false;
@@ -565,9 +498,9 @@
 
                 newPending.forEach(function (id_code) {
                     //all the id_codes of the sbs that are pending verification
-                    var sb = _.findWhere(api.scheduleDraftData, {id_code:id_code});
+                    var sb = _.findWhere(api.scheduleDraftData, {id_code: id_code});
                     if (!sb) {
-                        sb = _.findWhere(api.scheduleData, {id_code:id_code});
+                        sb = _.findWhere(api.scheduleData, {id_code: id_code});
                     }
                     if (sb) {
                         sb.pendingVerify = true;
@@ -576,16 +509,13 @@
             }
         };
 
-
-
         function createCommandPromise(promiseId) {
-            deferredMap[promiseId] = $q.defer();
-            return deferredMap[promiseId].promise;
+            api.deferredMap[promiseId] = $q.defer();
+            return api.deferredMap[promiseId].promise;
         }
 
-        function sendObsSchedCommand(method, funcParams, desired_jsonRPCId) {
-
-            if (connection) {
+        api.sendObsSchedCommand = function (method, funcParams, desired_jsonRPCId) {
+            if (api.connection) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': method,
@@ -598,17 +528,17 @@
                 if (funcParams) {
                     jsonRPC.params = funcParams;
                 }
-                if (connection.readyState === SockJS.OPEN && connection.authorized) {
-                    connection.send(JSON.stringify(jsonRPC));
+                if (api.connection.readyState === SockJS.OPEN && api.connection.authorized) {
+                    api.connection.send(JSON.stringify(jsonRPC));
                 } else {
                     //wait for the connection to be ready and retry the send
                     $timeout(function () {
-                        sendObsSchedCommand(method, funcParams, jsonRPC.id);
-                    }, 500);
+                        api.sendObsSchedCommand(method, funcParams, jsonRPC.id);
+                    }, 100);
                 }
                 return jsonRPC.id;
             }
-        }
+        };
 
         return api;
     }

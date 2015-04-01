@@ -103,7 +103,7 @@
         $scope.$on('$destroy', function() {
             vm.unbindUpdate();
             if (vm.stopUpdating) {
-                vm.stopUpdating();
+                $interval.cancel(vm.stopUpdating);
             }
         });
     }

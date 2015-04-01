@@ -23,7 +23,7 @@
             });
         };
 
-        api.setTopStatusTrees = function(statusTrees) {
+        api.setTopStatusTrees = function (statusTrees) {
             api.topStatusTrees.splice(0, api.topStatusTrees.length);
 
             for (var treeName in statusTrees) {
@@ -32,11 +32,7 @@
 
                 tree.children = [];
                 tree.subs.forEach(function (sub) {
-                    if (sub.name) {
-                        tree.children.push({sensor: sub.sensor, name: sub.name});
-                    } else {
-                        tree.children.push({sensor: sub});
-                    }
+                    tree.children.push({sensor: sub.sensor, name: sub.name});
                 });
             }
         };
@@ -70,10 +66,6 @@
                     applyValueToSensor(node.children[child], sensorName, value, rootName);
                 }
             }
-        }
-
-        function trimmedName(oldName) {
-            return oldName.replace('mon_proxy:agg_', '');
         }
 
         return api;
