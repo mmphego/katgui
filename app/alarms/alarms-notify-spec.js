@@ -54,6 +54,7 @@ describe('AlarmsCtrl', function () {
 
     it('should create the notifier directive', inject(function () {
         var element = compile('<alarms-notifier></alarms-notifier>')(scope);
-        expect(element[0]).toBeDefined();
+        scope.$digest();
+        expect(element.attr('class')).toContain('alarms-notify-list');
     }));
 });

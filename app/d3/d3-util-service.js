@@ -116,6 +116,7 @@ angular.module('katGui.d3')
         //because we subscribe to monitor for our data and have to wait for our data to trickle in
         //we cant just immediately bind to our data, this convenience function waits until we have
         //data that we can bind to and returns a promise that the client can wait on
+        //only applicable to the receptor status tree map, other directive's bindings works properly
         api.waitUntilDataExists = function (data) {
             var deferred = $q.defer();
             var retries = 0, maxRetries = 50;
