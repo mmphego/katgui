@@ -1,6 +1,8 @@
 angular.module('katGui.d3', [])
 
     .directive('d3Line', function ($window, d3Service) {
+        /* istanbul ignore next */
+        //experimental
         return{
             restrict: 'EA',
             scope: {

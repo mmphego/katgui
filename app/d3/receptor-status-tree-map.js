@@ -171,17 +171,6 @@ angular.module('katGui.d3')
                             }
                         }
 
-                        function getChildValue(node, nodeName, resultObj) {
-                            if (node.sensor === nodeName) {
-                                resultObj.value = node.sensorValue;
-                                return;
-                            } else if (node.children && node.children.length > 0) {
-                                for (var child in node.children) {
-                                    getChildValue(node.children[child], nodeName, resultObj);
-                                }
-                            }
-                        }
-
                         function display(d) {
                             grandparent
                                 .datum(d)
@@ -203,7 +192,6 @@ angular.module('katGui.d3')
                                     }
                                 });
 
-
                             var g1 = svg.insert("g", ".grandparent")
                                 .datum(d);
 
@@ -218,17 +206,6 @@ angular.module('katGui.d3')
                                     return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
                                 })
                                 .on("click", transition);
-
-                            //g.selectAll(".child")
-                            //    .data(function(d) {
-                            //        return d._children || [d];
-                            //    })
-                            //    .enter().append("rect")
-                            //.attr("class", "child")
-                            //.attr("id", function (d) {
-                            //    return d3Util.createSensorId(d, scope.dataMapName);
-                            //})
-                            //.call(rect);
 
                             g.append("rect")
                                 //.attr("class", "parent")

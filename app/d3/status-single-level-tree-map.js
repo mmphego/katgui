@@ -4,8 +4,7 @@ angular.module('katGui.d3')
         return {
             restrict: 'EA',
             scope: {
-                data: '=',
-                chartSize: '='
+                data: '='
             },
             link: function (scope, element) {
 
@@ -54,7 +53,7 @@ angular.module('katGui.d3')
                             .style("width", "100%")
                             .style("height", "35px")
                             .style("background", function () {
-                                return window.getComputedStyle(document.getElementById('main-top-toolbar')).backgroundColor;
+                                return (window.getComputedStyle(document.getElementById('main-top-toolbar')) || {}).backgroundColor;
                             })
                             .append("div")
                             .attr("class", "status-top-label-text")

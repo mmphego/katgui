@@ -205,6 +205,7 @@ module.exports = function (grunt) {
                 files: [  //this files data is also updated in the watch handler, if updated change there too
                     '<%= dom_munger.data.appjs %>',
                     'bower_components/angular-mocks/angular-mocks.js',
+                    'bower_components/d3/d3.min.js',
                     createFolderGlobs('*.html'),
                     'bower_components/angular-material/angular-material.css',
                     'app/**/*-spec.js'
@@ -290,6 +291,7 @@ module.exports = function (grunt) {
             if (grunt.file.exists(spec)) {
                 var files = [].concat(grunt.config('dom_munger.data.appjs'));
                 files.push('bower_components/angular-mocks/angular-mocks.js');
+                files.push('bower_components/d3/d3.min.js');
                 files.push(spec);
                 grunt.config('karma.options.files', files);
                 tasksToRun.push('karma:during_watch');
