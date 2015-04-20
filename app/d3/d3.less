@@ -41,9 +41,17 @@ rect.parent,
     font-size: 12px;
 }
 
+.child-big-text {
+    font-size: 18px;
+}
+
 .treemap-tooltip {
+    word-wrap: break-word;
+    max-width: 290px;
+    max-height: 225px;
     position: absolute;
     border: 1px solid;
+    pointer-events: none;
     margin: 10px;
     padding: 6px;
     opacity: 0.9;
@@ -87,12 +95,8 @@ path {
     opacity: 0.9;
 }
 
-.overlaidText	{
-    font-size: 2.2em;
-    text-anchor: middle;
-    fill: white;
-    fill-opacity: 0.8;
-    stroke: black;
-    stroke-width: 1px;
-    stroke-opacity: 0.5;
+actions-button {
+    background: transparent;
+    border: 0;
+
 }

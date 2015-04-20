@@ -78,15 +78,24 @@ angular.module('katGui.d3')
                     updateTooltipValues(d, tooltip);
                     var x = d3.event.layerX;
                     var y = d3.event.layerY;
-                    if (window.innerWidth - x < 280) {
-                        x = window.innerWidth - 280;
+                    //move the tooltip to 36,36 when we hover over the hide button
+                    if (d3.event.layerX - d.x < 24 && d3.event.layerY - d.y < 32) {
+                        //x = d3.x + 26;
+                        //y = d3.y + 32;
+                    } else {
+                        if (window.innerWidth - x < 320) {
+                            x = window.innerWidth - 320;
+                        }
+                        if (window.innerHeight - y < 225) {
+                            y = window.innerHeight - 225;
+                        }
+                        tooltip
+                            .style("top", (y + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
+                            .style("left", (x + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
                     }
-                    if (window.innerHeight - y < 205) {
-                        y = window.innerHeight - 205;
-                    }
-                    tooltip
-                        .style("top", (y + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
-                        .style("left", (x + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
+
+
+
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });
@@ -94,15 +103,21 @@ angular.module('katGui.d3')
         };
 
         function updateTooltipValues(d, tooltip) {
-            //to display readable tooltips, no matter the zoom level
             var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
-            tooltip.html(
-                "<div style='font-size: +"+ fontSizeAfterZoom +"px'>sensor: " + (d.depth === 0? d.name + ":" + d.sensor : d.sensor) +
-                "<br/>value: " + d.sensorValue.value +
-                "<br/>status: " + api.statusClassFromNumber(d.sensorValue.status) +
-                "<br/>timestamp: " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
-                "</div>"
-            );
+            if (d.sensorValue) {
+                //to display readable tooltips, no matter the zoom level
+                tooltip.html(
+                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'><i>sensor:</i> " + (d.depth === 0? d.name + ":" + d.sensor : d.sensor) +
+                    "<br/><i>value:</i> " + d.sensorValue.value +
+                    "<br/><i>status:</i> " + api.statusClassFromNumber(d.sensorValue.status) +
+                    "<br/><i>timestamp:</i> " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
+                    "</div>"
+                );
+            } else {
+                tooltip.html(
+                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'>Error Reading Sensor Value</div>"
+                );
+            }
         }
 
         //convenience function to create the tooltip div on the given element

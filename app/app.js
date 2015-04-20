@@ -329,6 +329,14 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
+        $stateProvider.state('customHealth', {
+            url: '/custom-health',
+            templateUrl: 'app/health/custom-health/custom-health.html',
+            title: 'Custom Health',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
         $stateProvider.state('home', {
             url: '/home',
             templateUrl: 'app/landing/landing.html',
