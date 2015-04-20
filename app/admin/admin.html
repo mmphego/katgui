@@ -67,7 +67,7 @@
                        label="Name" ng-disabled="!user.editing" ng-model="user.name" style="max-width: 265px; min-width: 265px;"/>
                 <input flex type="text" class="user-admin-input" style="max-width: 265px; min-width: 265px;" placeholder="Name" md-theme="{{themeSecondary}}"
                        label="Email" ng-disabled="!user.editing" ng-model="user.email" title="Email"/>
-                <md-select flex ng-disabled="!user.editing" ng-model="user.roles" multiple style="margin-top: 0px; margin-left: 4px; margin-right:8px;"
+                <md-select flex ng-disabled="!user.editing" ng-model="user.roles" multiple style="margin-left: 4px; margin-right:8px;"
                            class="md-primary md-select-custom-disabled-text" md-theme="{{themePrimaryButtons}}" placeholder="No Roles Assigned">
                     <md-option ng-value="role.value" ng-repeat="role in vm.userRoles">{{role.name}}</md-option>
                 </md-select>

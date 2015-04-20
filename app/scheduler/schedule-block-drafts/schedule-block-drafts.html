@@ -6,14 +6,15 @@
                 <span flex style="max-height: 10px;"></span>
                 <input class="fade-in search-input-box" ng-show="showDraftTools || vm.q" type="search"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
-                <md-button aria-label="Save All Changes" style="font-size: 16px; margin-top: -5px;margin-right: -5px;" class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
+                <md-button aria-label="Save All Changes" style="font-size: 16px; margin-top: -5px;margin-right: -5px;"
+                           class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}"
                            ng-click="vm.saveAllDirtyDrafts()">
-                    <span class="fa fa-check"></span>
+                    <md-icon class="fa" md-font-icon="fa-check" style="margin-top: -8px"></md-icon>
                     <md-tooltip>Save All Changes</md-tooltip>
                 </md-button>
             </div>
 
-            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1;" layout="row" layout-align="center center">
+            <div flex class="unselectable list-subheader-title" layout="row" layout-align="center center">
                 <span style="max-width: 135px;min-width: 135px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
                     <span style="padding-left: 8px;">ID</span>
                     <span class="fa"
@@ -44,7 +45,7 @@
             <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by $index"
                  ng-click="vm.setSelectedScheduleDraft(item)"
                  ng-class="{'selected-draft-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat-opacity" layout="column" post-ng-repeat-load-more>
-                <div layout="row" layout-align="center center">
+                <div layout="row" layout-align="center center" style="max-height: 38px;">
                     <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
                     </md-progress-circular>
                     <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
@@ -59,7 +60,7 @@
                            aria-label="Description" class="schedule-item-description-input" style="height: 27px;"
                            ng-model="item.description" placeholder="Description"/>
 
-                    <md-select ng-model="item.type" aria-label="Schedule Draft Type" style="margin-top: 4px; width: 134px; margin-left: 4px; margin-right:4px;"
+                    <md-select ng-model="item.type" aria-label="Schedule Draft Type" style="width: 134px; margin-left: 4px; margin-right:4px;"
                                ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                class="md-primary" ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
                         <md-option ng-value="type" ng-repeat="type in vm.types">{{type}}</md-option>

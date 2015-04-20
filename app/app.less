@@ -37,7 +37,22 @@
 @navbar-text-hover-color: lightgrey;
 
 @app-min-width: 770px;
+@ttf: format('truetype');
 
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto/Roboto-Regular.ttf') @ttf;
+}
+.rb {font-family: 'Roboto';}
+@font-face {
+    font-family: 'Roboto Black';
+    src: url('../fonts/Roboto/Roboto-Black.ttf') @ttf;
+}
+.rbB {font-family: 'Roboto Black';}
+@font-face {
+    font-family: 'Roboto Light';
+    src: url('../fonts/Roboto/Roboto-Light.ttf') @ttf;
+}
 /* Required for Angular UI Bootstrap */
 .nav, .pagination, .carousel a {
     cursor: pointer;
@@ -105,7 +120,7 @@
 }
 
 body {
-    //    font-family: RobotoDraft;
+    font-family: Roboto;
     min-width: @app-min-width;
     padding: 0 !important;
     overflow: hidden;
@@ -166,9 +181,9 @@ body {
     &:hover {
         background-color: #F5F5F5;
 
-        span {
-            font-size: 32px;
-        }
+//        span {
+//            font-size: 32px;
+//        }
 
         button {
             background-color: #F5F5F5;
@@ -587,4 +602,20 @@ md-toast {
 
 .green-color {
     color: #4CAF50;
+}
+
+.mainbar-navbar-button {
+    padding: 0;
+    font-size: 30px;
+    height: 56px;
+    margin: 4px !important;
+
+    md-icon {
+        margin-top: -10px;
+        margin-left: -4px;
+    }
+}
+
+*:focus {
+    outline: 0;
 }

@@ -28,7 +28,28 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             'id': 'monitor' + KatGuiUtil.generateUUID()
         };
 
-        if (api.connection && api.connection.readyState && api.connection.authorized) {
+        if (api.connection === null) {
+            console.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
+        } else if (api.connection.readyState && api.connection.authorized) {
+            return api.connection.send(JSON.stringify(jsonRPC));
+        } else {
+            $timeout(function () {
+                api.subscribe(pattern);
+            }, 500);
+        }
+    };
+
+    api.unsubscribe = function (pattern) {
+        var jsonRPC = {
+            'jsonrpc': '2.0',
+            'method': 'unsubscribe',
+            'params': [pattern],
+            'id': 'monitor' + KatGuiUtil.generateUUID()
+        };
+
+        if (api.connection === null) {
+            console.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
+        } else if (api.connection.readyState && api.connection.authorized) {
             return api.connection.send(JSON.stringify(jsonRPC));
         } else {
             $timeout(function () {

@@ -1,4 +1,4 @@
-<div flex style="min-width: 1015px; min-height: 920px;" ng-controller="ReceptorStatusCtrl as vm">
+<div flex layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button flex style="pointer-events: auto; width: 36px; height: 40px;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
@@ -17,17 +17,20 @@
             <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
         </div>
     </div>
-    <div style="padding-left:16px; padding-right:16px; padding-top:8px;">
-        <div md-theme="{{themePrimary}}" class="" layout="row" layout-align="start center" class="md-toolbar-tools-small">
-
-            <span flex></span>
-            <md-select ng-model="vm.mapType" style="margin-top: 0px; margin-left: 4px; margin-right:8px;"
-                       class="md-primary" md-theme="{{themePrimaryButtons}}">
-                <md-option ng-value="type" ng-repeat="type in vm.mapTypes">{{type}}</md-option>
-            </md-select>
-
-        </div>
-        <receptor-status-list flex></receptor-status-list>
+    <div layout="row" md-theme="{{themePrimaryButtons}}">
+        <input type="text" style="width: 600px;" ng-model="vm.regex" placeholder="Enter Regex" ng-init="vm.regex = 'anc:bms_kapb_*'"/>
+        <md-button id="btnBuildView" ng-click="vm.buildView(vm.regex)" aria-label="Build View" class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">Build View</md-button>
     </div>
-
+    <div flex layout="row" style="margin-top: 4px;">
+        <status-single-level-tree-map flex layout-mode="dice" style="display: inline-block; margin-left: 4px; margin-right:4px;"
+                                      ng-repeat="tree in vm.customStatusTrees" data="tree"
+                                      ng-mouseenter="tree.showHideButton = true" ng-mouseleave="tree.showHideButton = false">
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-show="tree.showHideButton"
+                       title="Remove Sensors"
+                       style="position: absolute; right: 4px; height: 35px; width: 35px;" ng-click="vm.removeStatusTree(tree);">
+                <span class="fa fa-eye-slash"></span>
+            </md-button>
+        </status-single-level-tree-map>
+    </div>
+    <div class="treemap-tooltip" style="visibility: hidden; background-color: #ffffff"></div>
 </div>

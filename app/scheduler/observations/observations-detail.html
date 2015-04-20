@@ -1,15 +1,15 @@
-<div flex layout="column" style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
-    <div layout="row" flex>
+<div flex layout="column"  style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
+    <div layout="row" flex style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;">
         <div flex layout="column" style="margin: 0;" ng-click="vm.closeEditMenu();">
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
                 <md-toolbar style="max-height: 40px; min-height: 40px;" class="md-whiteframe-z1" ng-mouseenter="showTools = true;" ng-mouseleave="showTools = false;">
-                    <div layout="row" layout-align="start center" layout-padding flex>
+                    <div layout="row" layout-align="start center" layout-padding flex style="max-height: 40px;">
                         <span style="margin-left: 8px;">Sub-Array {{vm.subarray_id}}</span>
                         <span flex></span>
                         <span>Mode:</span>
-                        <md-select ng-model="vm.selectedMode" style="margin-top: 0px; margin-left: 4px; margin-right:8px;" ng-change="vm.schedulerModeChanged()"
+                        <md-select ng-model="vm.selectedMode" style="margin-left: 4px; margin-right:8px;" ng-change="vm.schedulerModeChanged()"
                                    class="md-primary" md-theme="{{themePrimaryButtons}}">
                             <md-option ng-value="type" ng-repeat="type in vm.modeTypes">{{type}}</md-option>
                         </md-select>

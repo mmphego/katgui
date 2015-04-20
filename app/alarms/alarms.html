@@ -8,7 +8,7 @@
                         Current Alarms
                </span>
 
-                <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 640px;">
+                <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
                     <input class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search" style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
                     <md-button ng-click="vm.knowSelectedAlarms()" aria-label="Add as Known" class="md-primary md-raised">Know</md-button>
@@ -113,7 +113,7 @@
                         Known Alarms
                </span>
 
-                <div ng-show="vm.showKnownAlarmsList" md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 640px;">
+                <div ng-show="vm.showKnownAlarmsList" md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
                     <input flex class="fade-in search-input-box" ng-show="showKnownAlarmTools || vm.q2" type="search" style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Search Known Alarms..."/>
                     <md-button ng-click="vm.cancelKnowSelectedAlarms()" aria-label="Cancel Known" class="md-primary md-raised" style="font-size: 14px">Cancel Known</md-button>
@@ -126,9 +126,10 @@
                         </md-checkbox>
                     </div>
                 </div>
-                <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.showKnownAlarmsList = !vm.showKnownAlarmsList;" aria-label="Hide Known Alarms" class="md-primary md-raised"
-                           style="font-size: 14px">
-                    <span class="fa fa-chevron-up" ng-show="!vm.showKnownAlarmsList"></span><span class="fa fa-chevron-down" ng-show="vm.showKnownAlarmsList"></span></md-button>
+                <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.showKnownAlarmsList = !vm.showKnownAlarmsList;" aria-label="Hide Known Alarms" class="md-primary md-raised md-icon-button"
+                           style="font-size: 20px">
+                    <md-icon md-theme="white" class="fa md-primary" ng-show="!vm.showKnownAlarmsList" md-font-icon="fa-chevron-up"></md-icon>
+                    <md-icon md-theme="white" class="fa md-primary" ng-show="vm.showKnownAlarmsList" md-font-icon="fa-chevron-down"></md-icon>
             </div>
 
             <div ng-show="vm.showKnownAlarmsList" flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;" layout="row" layout-align="start center">
