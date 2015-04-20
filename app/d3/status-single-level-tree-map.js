@@ -178,11 +178,16 @@ angular.module('katGui.d3')
                                     dataDiv.remove();
                                     drawTreemap(w, h);
                                 })
-                                .append("xhtml:button")
-                                .style("cursor", "pointer")
+                                .append("xhtml:div")
+
                                 .attr("class", function (d) {
                                     return angular.element("#btnPrimaryTheme").prop("class");
                                 })
+                                .style("cursor", "pointer")
+                                .style("border", 0)
+                                .style("min-width", "26px")
+                                .style("margin", "0px")
+                                .style("line-height", "1.5")
                                 .attr("title", "Hide Sensor")
                                 .style("transform", "inherit")
                                 .style("position", "inherit")

@@ -105,6 +105,10 @@ module.exports = function (grunt) {
                     {
                         src: ['images/**'],
                         dest: 'dist/images', flatten: true, expand: true
+                    },
+                    {
+                        src: ['fonts/**'],
+                        dest: 'dist/', flatten: true, expand: true
                     }
                 ]
             }
