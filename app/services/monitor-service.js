@@ -28,7 +28,9 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             'id': 'monitor' + KatGuiUtil.generateUUID()
         };
 
-        if (api.connection !== null && api.connection.readyState && api.connection.authorized) {
+        if (api.connection === null) {
+            console.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
+        } else if (api.connection.readyState && api.connection.authorized) {
             return api.connection.send(JSON.stringify(jsonRPC));
         } else {
             $timeout(function () {
@@ -45,7 +47,9 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             'id': 'monitor' + KatGuiUtil.generateUUID()
         };
 
-        if (api.connection !== null && api.connection.readyState && api.connection.authorized) {
+        if (api.connection === null) {
+            console.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
+        } else if (api.connection.readyState && api.connection.authorized) {
             return api.connection.send(JSON.stringify(jsonRPC));
         } else {
             $timeout(function () {

@@ -45,6 +45,12 @@
                 primary: 'teal',
                 secondary: 'amber',
                 primaryButtons: 'indigo'
+            },
+            {
+                name: 'Dark',
+                primary: 'dark',
+                secondary: 'dark',
+                primaryButtons: 'dark'
             }])
         .config(configureKatGui)
         .run(runKatGui)
@@ -489,37 +495,54 @@
         //    .primaryPalette('indigo');
         //
         $mdThemingProvider.theme('indigo')
-            .primaryPalette('indigo');
+            .primaryPalette('indigo')
+            .accentPalette('indigo');
 
         $mdThemingProvider.theme('blue')
-            .primaryPalette('blue');
+            .primaryPalette('blue')
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('red')
-            .primaryPalette('red');
+            .primaryPalette('red')
+            .accentPalette('red');
 
         $mdThemingProvider.theme('green')
-            .primaryPalette('green');
+            .primaryPalette('green')
+            .accentPalette('green');
 
         $mdThemingProvider.theme('blue-grey')
-            .primaryPalette('blue-grey');
+            .primaryPalette('blue-grey')
+            .accentPalette('blue-grey');
 
         $mdThemingProvider.theme('deep-purple')
-            .primaryPalette('deep-purple');
+            .primaryPalette('deep-purple')
+            .accentPalette('deep-purple');
 
         $mdThemingProvider.theme('purple')
-            .primaryPalette('purple');
+            .primaryPalette('purple')
+            .accentPalette('purple');
 
         $mdThemingProvider.theme('teal')
-            .primaryPalette('teal');
+            .primaryPalette('teal')
+            .accentPalette('teal');
 
         $mdThemingProvider.theme('yellow')
-            .primaryPalette('yellow');
+            .primaryPalette('yellow')
+            .accentPalette('yellow');
 
         $mdThemingProvider.theme('amber')
-            .primaryPalette('amber');
+            .primaryPalette('amber')
+            .accentPalette('amber');
 
-        //$mdThemingProvider.theme('light-blue-dark')
-        //    .primaryPalette('red');
+        $mdThemingProvider.definePalette('white', $mdThemingProvider.extendPalette('blue', {'400': 'ffffff'}));
+        $mdThemingProvider.theme('white')
+            .primaryPalette('white', {
+                'default': '400'
+            });
+
+        $mdThemingProvider.theme('dark')
+            .primaryPalette('indigo')
+            .dark();
 
         $mdThemingProvider.alwaysWatchTheme(true);
     }
