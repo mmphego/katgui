@@ -79,7 +79,9 @@ angular.module('katGui.d3')
                     var x = d3.event.layerX;
                     var y = d3.event.layerY;
                     //move the tooltip to 36,36 when we hover over the hide button
+                    //TODO: fix the logic flow of this if statement
                     if (d3.event.layerX - d.x < 24 && d3.event.layerY - d.y < 32) {
+                        //todo rework this case for clarity, nothing should happen in this case
                         //x = d3.x + 26;
                         //y = d3.y + 32;
                     } else {
