@@ -14,18 +14,25 @@ angular.module('katGui.d3', [])
 
                     var elementParent = element.parent();
 
-                    var unbindResize = scope.$watch(function() {
+                    var unbindResize = scope.$watch(function () {
                         return elementParent[0].clientHeight + elementParent[0].clientWidth;
                     }, function () {
                         d3.select('svg').remove();
                         drawChart();
                     });
 
-                    var unbindShowGridLines = scope.$watch('showGridLines', function(newVal, oldVal) {
-                       if (newVal !== oldVal) {
-                           d3.select('svg').remove();
-                           drawChart();
-                       }
+                    var unbindShowGridLines = scope.$watch('showGridLines', function (newVal, oldVal) {
+                        if (newVal !== oldVal) {
+                            d3.select('svg').remove();
+                            drawChart();
+                        }
+                    });
+
+                    var unbindData = scope.$watch('data', function (newVal, oldVal) {
+                        if (newVal !== oldVal) {
+                            d3.select('svg').remove();
+                            drawChart();
+                        }
                     });
 
                     var colors = [
@@ -43,17 +50,15 @@ angular.module('katGui.d3', [])
                             width = element.parent()[0].clientWidth - margin.left - margin.right,
                             height = element.parent()[0].clientHeight - margin.top - margin.bottom - 54;
 
-                        var x = d3.scale.linear()
-                            .domain([0, 12])
-                            .range([0, width]);
+                        var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
-                        var y = d3.scale.linear()
-                            .domain([-1, 16])
-                            .range([height, 0]);
+                        var x = d3.time.scale().range([0, width]);
+
+                        var y = d3.scale.linear().range([height, 0]);
 
                         var xAxis = d3.svg.axis()
                             .scale(x)
-                            .tickSize(scope.showGridLines? -height : 0)
+                            .tickSize(scope.showGridLines ? -height : 0)
                             .tickPadding(10)
                             .tickSubdivide(true)
                             .orient("bottom");
@@ -61,7 +66,7 @@ angular.module('katGui.d3', [])
                         var yAxis = d3.svg.axis()
                             .scale(y)
                             .tickPadding(10)
-                            .tickSize(scope.showGridLines? -width : 0)
+                            .tickSize(scope.showGridLines ? -width : 0)
                             .tickSubdivide(true)
                             .orient("left");
 
@@ -70,6 +75,21 @@ angular.module('katGui.d3', [])
                             .y(y)
                             .scaleExtent([1, 10])
                             .on("zoom", zoomed);
+
+                        var values = [];
+                        values.push(d3.values(scope.data['m062_enviro_gust_wind_speed']));
+                        values[0].forEach(function(d) {
+                            d[0] = parseDate(moment(d[0], 'X').format('YYYY-MM-DD HH:mm:ss'));
+                            d[1] = parseFloat(d[1]);
+                        });
+
+                        x.domain(d3.extent(values[0], function(d) {
+                            return d[0];
+                        }));
+                        y.domain([0, d3.max(values[0], function(d) {
+                            return d[1];
+                        })]);
+
 
                         var svg = d3.select(element[0]).append("svg")
                             .call(zoom)
@@ -105,14 +125,14 @@ angular.module('katGui.d3', [])
                         var line = d3.svg.line()
                             .interpolate("linear")
                             .x(function (d) {
-                                return x(d.x);
+                                return x(d[0]);
                             })
                             .y(function (d) {
-                                return y(d.y);
+                                return y(d[1]);
                             });
 
                         svg.selectAll('.line')
-                            .data(scope.data)
+                            .data(values)
                             .enter()
                             .append("path")
                             .attr("class", "line")
@@ -122,32 +142,34 @@ angular.module('katGui.d3', [])
                             })
                             .attr("d", line);
 
-                        var points = svg.selectAll('.dots')
-                            .data(scope.data)
-                            .enter()
-                            .append("g")
-                            .attr("class", "dots")
-                            .attr("clip-path", "url(#clip)");
 
-                        points.selectAll('.dot')
-                            .data(function (d, index) {
-                                var a = [];
-                                d.forEach(function (point, i) {
-                                    a.push({'index': index, 'point': point});
-                                });
-                                return a;
-                            })
-                            .enter()
-                            .append('circle')
-                            .attr('class', 'dot')
-                            .attr("r", 2.5)
-                            .attr('fill', function (d, i) {
-                                return colors[d.index % colors.length];
-                            })
-                            .attr("transform", function (d) {
-                                return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")";
-                            }
-                        );
+
+                        //var points = svg.selectAll('.dots')
+                        //    .data(scope.data)
+                        //    .enter()
+                        //    .append("g")
+                        //    .attr("class", "dots")
+                        //    .attr("clip-path", "url(#clip)");
+                        //
+                        //points.selectAll('.dot')
+                        //    .data(function (d, index) {
+                        //        var a = [];
+                        //        d.forEach(function (point, i) {
+                        //            a.push({'index': index, 'point': point});
+                        //        });
+                        //        return a;
+                        //    })
+                        //    .enter()
+                        //    .append('circle')
+                        //    .attr('class', 'dot')
+                        //    .attr("r", 2.5)
+                        //    .attr('fill', function (d, i) {
+                        //        return colors[d.index % colors.length];
+                        //    })
+                        //    .attr("transform", function (d) {
+                        //        return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")";
+                        //    }
+                        //);
 
                         function zoomed() {
                             svg.select(".x.axis").call(xAxis);
@@ -161,7 +183,8 @@ angular.module('katGui.d3', [])
                         }
                     }
 
-                    scope.$on('$destroy', function() {
+                    scope.$on('$destroy', function () {
+                        unbindData();
                         unbindResize();
                         unbindShowGridLines();
                     });

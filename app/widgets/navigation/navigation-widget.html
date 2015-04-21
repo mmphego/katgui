@@ -4,20 +4,17 @@
 
     </md-toolbar>
 
-    <div flex layout-align="center center" class="navigation-buttons" md-theme="{{vm.themePrimaryButtons}}">
-
-        <md-button aria-label="Operator Control" class="md-raised md-primary" ng-click="vm.stateGo('operator-control')">Operator Control</md-button>
-        <md-button aria-label="Alarms" class="md-raised md-primary" ng-click="vm.stateGo('alarms')">Alarms</md-button>
-        <md-button aria-label="Health and State" class="md-raised md-primary" ng-click="vm.stateGo('health')">Health and State</md-button>
-        <md-button aria-label="Health and State" class="md-raised md-primary" ng-click="vm.stateGo('receptorStatus')">Receptor Status</md-button>
-
-        <md-button aria-label="Scheduler" class="md-raised md-primary" ng-click="vm.stateGo('scheduler')">Scheduler Home</md-button>
-        <!--<md-button aria-label="Weather" class="md-raised md-primary" ng-click="vm.stateGo('weather')" disabled>Weather</md-button>-->
-        <md-button aria-label="Sensor Graphs" class="md-raised md-primary" ng-click="vm.stateGo('sensorGraph')">Sensor Graphs</md-button>
-
-        <md-button aria-label="Admin" class="md-raised md-primary" ng-click="vm.stateGo('admin')">Admin</md-button>
-        <!--<md-button aria-label="Log Reports" class="md-raised md-primary" disabled>Log Reports</md-button>-->
-        <!--<md-button aria-label="Source Catalogues" class="md-raised md-primary" disabled>Source Catalogues</md-button>-->
-
+    <div layout="row" layout-align="center center" class="" md-theme="{{vm.themePrimaryButtons}}">
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('alarms')" aria-label="Alarms">Alarms</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('health')" aria-label="Health and State">Health and State</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('receptorStatus')" aria-label="Receptor Status">Receptor Status</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('operator-control')" aria-label="Operator Control">Operator Control</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('scheduler')" aria-label="Scheduler Home">Scheduler</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('sensorGraph')" aria-label="Sensor Graphs">Sensor Graphs</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('weather')" aria-label="Weather">Weather</md-button>
+    </div>
+    <div layout="row" layout-align="center center" class="" md-theme="{{vm.themePrimaryButtons}}">
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('admin')" aria-label="Admin">User Administration</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('config')" aria-label="Config">KATGUI Configuration</md-button>
     </div>
 </div>
