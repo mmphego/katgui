@@ -479,6 +479,20 @@ md-toast {
     margin: 0;
 }
 
+.md-toolbar-tools-medium {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    height: 41px;
+    min-height: 41px;
+    max-height: 41px;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 0 10px;
+    margin: 0;
+}
+
 .search-input-box {
     font-size: 14px;
     margin-right: 8px;
@@ -618,4 +632,26 @@ md-toast {
 
 *:focus {
     outline: 0;
+}
+
+md-option:not([selected]) {
+    div {
+        color: #333333 !important;
+    }
+}
+
+::-webkit-input-placeholder {
+    color: #dbdbdb;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color: #dbdbdb;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    color: #dbdbdb;
+}
+
+:-ms-input-placeholder {
+    color: #dbdbdb;
 }

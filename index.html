@@ -86,7 +86,7 @@
 <script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/health/custom-health/custom-health.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
-<script src="app/d3/d3-chart-directive.js"></script>
+<script src="app/d3/multi-line-chart.js"></script>
 <script src="app/d3/d3-gantt-chart.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
@@ -115,8 +115,8 @@
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
 <md-content layout="row" layout-fill>
-    <md-sidenav ng-if="loggedIn" class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-        <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
+    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <md-toolbar class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">katGUI</h1>
         </md-toolbar>
         <md-content class="md-content-padding" style="margin-top: 16px;" md-theme="default">
@@ -199,8 +199,8 @@
         </md-content>
     </md-sidenav>
 
-    <md-sidenav ng-if="loggedIn" class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
-        <md-toolbar md-theme="{{themeSecondary}}" class="md-whiteframe-z1" md-theme-watch="true">
+    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+        <md-toolbar class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">User Navigation</h1>
         </md-toolbar>
         <md-content class="md-content-padding" style="margin-top: 16px;" md-theme="default">

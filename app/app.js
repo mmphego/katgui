@@ -49,8 +49,8 @@
             {
                 name: 'Dark',
                 primary: 'dark',
-                secondary: 'dark',
-                primaryButtons: 'dark'
+                secondary: 'dark-secondary',
+                primaryButtons: 'dark-buttons'
             }])
         .config(configureKatGui)
         .run(runKatGui)
@@ -541,6 +541,14 @@
             });
 
         $mdThemingProvider.theme('dark')
+            .primaryPalette('blue-grey')
+            .dark();
+
+        $mdThemingProvider.theme('dark-secondary')
+            .primaryPalette('indigo')
+            .dark();
+
+        $mdThemingProvider.theme('dark-buttons')
             .primaryPalette('indigo')
             .dark();
 

@@ -1,4 +1,16 @@
-<div class="view-container" ng-controller="SensorGraphCtrl as vm">
+<div flex layout="column" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}">
 
+    <div flex layout="column" layout-align="center center" class="md-whiteframe-z1" style="margin: 8px;">
+        <md-toolbar class="md-toolbar-tools-medium">
+            <span flex>Sensor List</span>
+            <md-checkbox class="md-primary alarms-tools-checkbox" md-theme="{{themePrimaryButtons}}" style="margin-right: 32px;"
+                         ng-model="vm.showGridLines" aria-label="Show Grid Lines">Show Grid Lines</md-checkbox>
+            <input class="search-input-box" style="min-width: 350px;" ng-model="vm.sensorInput" placeholder="Add Sensor"/>
+            <md-button class="md-fab md-button-fab-small md-primary" md-theme="{{themePrimaryButtons}}" ng-click="vm.addSensor(vm.sensorInput)">
+                <md-icon style="margin-top: -8px;" md-font-icon="fa-plus" class="fa"></md-icon>
+            </md-button>
+        </md-toolbar>
+        <multi-line-chart flex data="vm.sensorData" show-grid-lines="vm.showGridLines"></multi-line-chart>
+    </div>
 
 </div>

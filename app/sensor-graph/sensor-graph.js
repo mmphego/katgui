@@ -3,83 +3,45 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    /* istanbul ignore next */
-    //todo expand testing when implementing this module
-    function SensorGraphCtrl(DataService, $rootScope) {
+    function SensorGraphCtrl(DataService) {
 
         var vm = this;
+        vm.showGridLines = false;
+        vm.sensorData = [
+            [{'x': 1, 'y': 0}, {'x': 2, 'y': 5}, {'x': 3, 'y': 10}, {'x': 4, 'y': 0}, {
+                'x': 5,
+                'y': 6
+            }, {'x': 6, 'y': 11}, {'x': 7, 'y': 9}, {'x': 8, 'y': 4}, {'x': 9, 'y': 11}, {'x': 10, 'y': 2}],
+            [{'x': 1, 'y': 1}, {'x': 2, 'y': 6}, {'x': 3, 'y': 11}, {'x': 4, 'y': 1}, {
+                'x': 5,
+                'y': 7
+            }, {'x': 6, 'y': 12}, {'x': 7, 'y': 8}, {'x': 8, 'y': 3}, {'x': 9, 'y': 13}, {'x': 10, 'y': 3}],
+            [{'x': 1, 'y': 2}, {'x': 2, 'y': 7}, {'x': 3, 'y': 12}, {'x': 4, 'y': 2}, {
+                'x': 5,
+                'y': 8
+            }, {'x': 6, 'y': 13}, {'x': 7, 'y': 7}, {'x': 8, 'y': 2}, {'x': 9, 'y': 4}, {'x': 10, 'y': 7}],
+            [{'x': 1, 'y': 3}, {'x': 2, 'y': 8}, {'x': 3, 'y': 13}, {'x': 4, 'y': 3}, {
+                'x': 5,
+                'y': 9
+            }, {'x': 6, 'y': 14}, {'x': 7, 'y': 6}, {'x': 8, 'y': 1}, {'x': 9, 'y': 7}, {'x': 10, 'y': 9}],
+            [{'x': 1, 'y': 4}, {'x': 2, 'y': 9}, {'x': 3, 'y': 14}, {'x': 4, 'y': 4}, {
+                'x': 5,
+                'y': 10
+            }, {'x': 6, 'y': 15}, {'x': 7, 'y': 5}, {'x': 8, 'y': 0}, {'x': 9, 'y': 8}, {'x': 10, 'y': 5}]
+        ];
 
-        vm.currentSensorFindSearch = 'wind.speed';
-        vm.currentSensorDataSearch = 'anc.averaged.1minute.asc.wind.speed';
-        vm.currentSensorMetaDataSearch = 'anc.averaged.1minute.asc.wind.speed';
-
-        vm.d3LineData = [];
-
-        vm.d3LineDataSize = 10;
-        vm.d3LineLastX = 10;
-
-
-        vm.findSensorByString = function () {
-            vm.findSensorMessage = null;
-
-            DataService.findSensor(vm.currentSensorFindSearch)
-                .success(function (findSensorResult) {
-                    vm.findSensorMessage = findSensorResult;
+        vm.addSensor = function (sensorName) {
+            DataService.findSensor(sensorName)
+                .success(function (result) {
+                    console.log(result);
                 })
                 .error(function (error) {
-                    vm.findSensorMessage = 'error retrieving sensor meta data, see console';
-                    console.log(error);
-                });
-        };
-
-        vm.getSensorMetaData = function () {
-            vm.sensorMetaData = null;
-
-            DataService.sensorMetaData(vm.currentSensorMetaDataSearch)
-                .success(function (metaDataResult) {
-                    vm.sensorMetaData = metaDataResult;
-                })
-                .error(function (error) {
-                    vm.sensorMetaData = 'error retrieving sensor meta data, see console';
-                    console.log(error);
-                });
-        };
-
-        vm.getSensorData = function () {
-            vm.sensorData = null;
-
-            DataService.sensorData(vm.currentSensorDataSearch)
-                .success(function (dataResult) {
-                    vm.sensorData = dataResult;
-                    if (dataResult.error) {
-                        $rootScope.showSimpleDialog('Error Retrieving Data', dataResult.error);
-                    } else {
-                        vm.mapSensorData();
-                    }
-                })
-                .error(function (error) {
-                    vm.sensorData = 'error retrieving sensor meta data, see console';
-                    console.log(error);
+                    console.error(error);
                 });
         };
 
         vm.mapSensorData = function () {
             vm.d3LineData = vm.sensorData.data;
-            vm.d3LineDataSize = vm.d3LineData.length;
         };
-
-
-
-//    $interval(function() {
-//        var max = 100,
-//            min = 0;
-//        var randomVal = Math.floor(Math.random() * (max - min + 1)) + min;
-//        vm.d3LineData.shift();
-//
-//        vm.d3LineLastX++;
-//        vm.d3LineData.push({x: vm.d3LineLastX, y: randomVal});
-//
-//        vm.d3LineDataSize++;
-//    }, 1000);
     }
 })();
