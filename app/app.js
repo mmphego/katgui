@@ -433,8 +433,8 @@
             .state(observationsOverview)
             .state(observationsDetail);
 
-        $stateProvider.state('sensorGraph', {
-            url: '/sensorGraph',
+        $stateProvider.state('sensor-graph', {
+            url: '/sensor-graph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
             title: 'Sensor Graphs',
             data: {

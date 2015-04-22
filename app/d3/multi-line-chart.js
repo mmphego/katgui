@@ -144,32 +144,32 @@ angular.module('katGui.d3', [])
 
 
 
-                        //var points = svg.selectAll('.dots')
-                        //    .data(scope.data)
-                        //    .enter()
-                        //    .append("g")
-                        //    .attr("class", "dots")
-                        //    .attr("clip-path", "url(#clip)");
-                        //
-                        //points.selectAll('.dot')
-                        //    .data(function (d, index) {
-                        //        var a = [];
-                        //        d.forEach(function (point, i) {
-                        //            a.push({'index': index, 'point': point});
-                        //        });
-                        //        return a;
-                        //    })
-                        //    .enter()
-                        //    .append('circle')
-                        //    .attr('class', 'dot')
-                        //    .attr("r", 2.5)
-                        //    .attr('fill', function (d, i) {
-                        //        return colors[d.index % colors.length];
-                        //    })
-                        //    .attr("transform", function (d) {
-                        //        return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")";
-                        //    }
-                        //);
+                        var points = svg.selectAll('.dots')
+                            .data(scope.data)
+                            .enter()
+                            .append("g")
+                            .attr("class", "dots")
+                            .attr("clip-path", "url(#clip)");
+
+                        points.selectAll('.dot')
+                            .data(function (d, index) {
+                                var a = [];
+                                d.forEach(function (point, i) {
+                                    a.push({'index': index, 'point': point});
+                                });
+                                return a;
+                            })
+                            .enter()
+                            .append('circle')
+                            .attr('class', 'dot')
+                            .attr("r", 2.5)
+                            .attr('fill', function (d, i) {
+                                return colors[d.index % colors.length];
+                            })
+                            .attr("transform", function (d) {
+                                return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")";
+                            }
+                        );
 
                         function zoomed() {
                             svg.select(".x.axis").call(xAxis);
