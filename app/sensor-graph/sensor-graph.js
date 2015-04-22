@@ -3,25 +3,24 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl(DataService) {
+    function SensorGraphCtrl($scope, DataService) {
 
         var vm = this;
         vm.showGridLines = false;
-        vm.sensorInput = 'm062_enviro_gust_wind_speed';
-        vm.sensorData = {};
+        //vm.sensorInput = 'm062_enviro_gust_wind_speed';
+        vm.sensorInput = 'sys_heartbeats_data_3';
+
 
         vm.addSensor = function (sensorName) {
-            DataService.findSensor(sensorName)
+            DataService.findSensor(sensorName, 100, 'ms', 'csv')
                 .success(function (result) {
-                    vm.sensorData = result;
+
+                    var newData = d3.csv.parse(result);
+                    vm.redrawChart(newData);
                 })
                 .error(function (error) {
                     console.error(error);
                 });
-        };
-
-        vm.mapSensorData = function () {
-            vm.d3LineData = vm.sensorData.data;
         };
     }
 })();

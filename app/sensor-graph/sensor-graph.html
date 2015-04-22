@@ -1,7 +1,7 @@
 <div flex layout="column" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}">
 
-    <div flex layout="column" layout-align="center center" class="md-whiteframe-z1" style="margin: 8px;">
-        <md-toolbar class="md-toolbar-tools-medium">
+    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px;">
+        <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1">
             <span flex>Sensor List</span>
             <md-checkbox class="md-primary alarms-tools-checkbox" md-theme="{{themePrimaryButtons}}" style="margin-right: 32px;"
                          ng-model="vm.showGridLines" aria-label="Show Grid Lines">Show Grid Lines</md-checkbox>
@@ -10,7 +10,7 @@
                 <md-icon style="margin-top: -8px;" md-font-icon="fa-plus" class="fa"></md-icon>
             </md-button>
         </md-toolbar>
-        <multi-line-chart flex data="vm.sensorData" show-grid-lines="vm.showGridLines"></multi-line-chart>
+        <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart" show-grid-lines="vm.showGridLines"></multi-line-chart>
     </div>
 
 </div>
