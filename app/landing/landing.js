@@ -37,7 +37,6 @@
         var vm = this;
         vm.name = 'katGuiLandingDashboard';
 
-        /* istanbul ignore else */
         if (!$localStorage[vm.name]) {
             $localStorage[vm.name] = defaultDashboardConfig;
         }

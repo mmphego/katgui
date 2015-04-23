@@ -51,7 +51,6 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        /* istanbul ignore next */
         //can ignore for now, is tested in another test and will change with the menu in angular material 0.10grunt te
         vm.scheduleCurrentMenuItemDraft = function () {
             if (vm.currentActionsMenuIndex > -1) {
@@ -61,7 +60,6 @@
             }
         };
 
-        /* istanbul ignore next */
         //can ignore for now, is tested in another test and will change with the menu in angular material 0.10
         vm.verifyCurrentMenuItemDraft = function () {
             if (vm.currentActionsMenuIndex > -1) {
@@ -71,7 +69,6 @@
             }
         };
 
-        /* istanbul ignore next */
         //can ignore for now, is tested in another test and will change with the menu in angular material 0.10
         vm.viewSBTasklog = function () {
             var sb = ObservationScheduleService.scheduleDraftData[vm.currentActionsMenuIndex];
@@ -79,7 +76,6 @@
             vm.closeActionsMenu();
         };
 
-        /* istanbul ignore next */
         //we can ignore this because it will be replaced by the menu in angular material 0.10
         vm.openSchedulerActionsMenu = function (item, $event) {
             var rowIndex = ObservationScheduleService.scheduleDraftData.indexOf(item);
@@ -101,7 +97,6 @@
             $event.stopPropagation();
         };
 
-        /* istanbul ignore next */
         //we can ignore this because it will be replaced by the menu in angular material 0.10
         vm.closeActionsMenu = function () {
             if (vm.showActionsMenu) {

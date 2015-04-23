@@ -7,8 +7,8 @@
 
         var urlBase = SERVER_URL + ':8850/katstore/';
 
-        this.findSensor = function (sensorName, limit, time_type, format) {
-            return $http.get(urlBase + '?sensor=' + sensorName + '&limit=' + limit + '&time_type=' + time_type + '&format=' + format);
+        this.findSensor = function (sensorName, startDate, endDate, limit, time_type, format) {
+            return $http.get(urlBase + '?sensor=' + sensorName + '&start_ts=' + startDate + '&end_ts=' + endDate + '&limit=' + limit + '&time_type=' + time_type + '&format=' + format);
         };
 
         //this.sensorMetaData = function (sensorName) {

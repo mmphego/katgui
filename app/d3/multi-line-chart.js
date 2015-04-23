@@ -5,7 +5,8 @@ angular.module('katGui.d3', [])
             restrict: 'EA',
             scope: {
                 showGridLines: '=',
-                redrawFunction: '='
+                redrawFunction: '=',
+                clearFunction: '='
             },
             replace: false,
             link: function (scope, element) {
@@ -13,9 +14,11 @@ angular.module('katGui.d3', [])
                 d3Service.d3().then(function (d3) {
 
                     var unbindResize = scope.$watch(function () {
-                        return element[0].clientHeight + element[0].clientWidth;
-                    }, function () {
-                        scope.redrawFunction();
+                        return element[0].clientHeight + ', ' + element[0].clientWidth;
+                    }, function (newVal, oldVal) {
+                        if (newVal !== oldVal) {
+                            scope.redrawFunction();
+                        }
                     });
 
                     var unbindShowGridLines = scope.$watch('showGridLines', function (newVal, oldVal) {
@@ -24,31 +27,33 @@ angular.module('katGui.d3', [])
                         }
                     });
 
-                    var colors = [
-                        '#42A5F5',
-                        '#4CAF50',
-                        '#E57373',
-                        '#CE93D8'
-                    ];
-
+                    var color = d3.scale.category10();
                     scope.data = [];
                     scope.redrawFunction = function (newData) {
                         if (newData) {
-                            newData.forEach(function(d) {
-                                d.date = new Date(parseFloat(d["'Timestamp'"].replace(/'/g, '')) * 1000);
-                                d.value = parseFloat(d["'Value'"].replace(/'/g, ''));
+                            newData.forEach(function (d) {
+                                d.date = new Date(parseFloat(d.Timestamp) * 1000);
+                                d.value = parseFloat(d.Value);
                                 scope.data.push(d);
                             });
                         }
+                        d3.selectAll('svg').remove();
+                        drawChart();
+                    };
+
+                    scope.clearFunction = function () {
+                        scope.data.splice(0, scope.data.length);
                         d3.select('svg').remove();
                         drawChart();
                     };
 
+                    drawChart();
+
                     function drawChart() {
 
-                        var margin = {top: 20, right: 30, bottom: 30, left: 80},
+                        var margin = {top: 20, right: 30, bottom: 100, left: 80},
                             width = element[0].clientWidth - margin.left - margin.right,
-                            height = element[0].clientHeight - margin.top - margin.bottom - 54;
+                            height = element[0].clientHeight - margin.top - margin.bottom - 8;
 
                         // set the ranges
                         var x = d3.time.scale().range([0, width]);
@@ -88,18 +93,20 @@ angular.module('katGui.d3', [])
                             y.domain([
                                 d3.min(scope.data, function (d) {
                                     return d.value;
-                                }),
+                                }) - 1,
                                 d3.max(scope.data, function (d) {
                                     return d.value;
-                                })
+                                }) + 1
                             ]);
 
                             // nest the entries by symbol
                             var dataNest = d3.nest()
                                 .key(function (d) {
-                                    return d["'Sensor'"];
+                                    return d.Sensor;
                                 })
                                 .entries(scope.data);
+
+                            var legendSpace = width / dataNest.length;
 
                             // loop through each symbol / key
                             dataNest.forEach(function (d, i) {
@@ -107,7 +114,31 @@ angular.module('katGui.d3', [])
                                 svg.append("path")
                                     .attr("d", line(d.values))
                                     .attr("class", "line")
-                                    .attr('stroke', colors[i % colors.length]);
+                                    .attr("id", 'tag' + d.key)
+                                    .style("stroke", function () {
+                                        return d.color = color(d.key);
+                                    });
+
+                                // Add the Legend
+                                svg.append("text")
+                                    .attr("x", (legendSpace / 2) + i * legendSpace) // spacing
+                                    .attr("y", height + 80)
+                                    .attr("class", "sensor-graph-legend")    // style the legend
+                                    .style("fill", function () { // dynamic colours
+                                        return d.color = color(d.key);
+                                    })
+                                    .on("click", function () {
+                                        // Determine if current line is visible
+                                        var active = d.active ? false : true,
+                                            newOpacity = active ? 0 : 1;
+                                        // Hide or show the elements based on the ID
+                                        d3.select("#tag" + d.key)
+                                            .transition().duration(100)
+                                            .style("opacity", newOpacity);
+                                        // Update whether or not the elements are active
+                                        d.active = active;
+                                    })
+                                    .text(d.key);
                             });
                         }
 
@@ -121,157 +152,6 @@ angular.module('katGui.d3', [])
                         svg.append("g")
                             .attr("class", "y axis")
                             .call(yAxis);
-
-                        //var zoom = d3.behavior.zoom()
-                        //    .x(x)
-                        //    .y(y)
-                        //    .scaleextent([1, 10])
-                        //    .on("zoom", zoomed);
-
-                        //var values = [];
-                        //for (var attr in scope.data) {
-                        //    //d3.values(scope.data[attr])
-                        //    values.push(scope.data[attr]);
-                        //}
-
-
-                        //var datagroup = d3.nest()
-                        //    .key(function (d) {
-                        //        return d["'sensor'"];
-                        //    })
-                        //    .entries(scope.data);
-                        //
-                        //datagroup.foreach(function (d) {
-                        //    if (angular.isarray(d.values) && d.values.length > 0) {
-                        //        for (var i = 0; i < d.values.length; i++) {
-                        //            console.log(d.values[i]["'timestamp'"]);
-                        //            if (!angular.isdate(d.values[i]["'timestamp'"])) {
-                        //                d.values[i]["'timestamp'"] = new date(parsefloat(d.values[i]["'timestamp'"].replace(/'/, '')) * 1000);
-                        //            }
-                        //            if (angular.isstring(d.values[i]["'value'"])) {
-                        //                d.values[i]["'value'"] = parsefloat(d.values[i]["'value'"].replace(/'/, ''));
-                        //            }
-                        //        }
-                        //    }
-                        //
-                        //});
-                        //
-                        //var x = d3.time.scale().range([0, width])
-                        //    .domain(d3.extent(scope.data, function(d) {
-                        //        return d["'timestamp'"];
-                        //    }));
-                        //
-                        //var y = d3.scale.linear().range(height, 0);
-                        //
-                        //y.domain([198593, 158593]);
-                        //    //.domain([d3.min(scope.data, function (d) {
-                        //    //    return d["'value'"];
-                        //    //}), d3.max(scope.data, function (d) {
-                        //    //    return d["'value'"];
-                        //    //})]);
-                        //
-                        //var xaxis = d3.svg.axis()
-                        //    .scale(x)
-                        //    .ticksize(-height)
-                        //    .tickpadding(10)
-                        //    .ticksubdivide(true)
-                        //    .orient("bottom");
-                        //
-                        //var yaxis = d3.svg.axis()
-                        //    .scale(y)
-                        //    .tickpadding(10)
-                        //    .ticksize(-width)
-                        //    .ticksubdivide(true)
-                        //    .orient("left");
-                        //
-                        //
-                        //var svg = d3.select(element[0]).append("svg")
-                        //    //.call(zoom)
-                        //    .attr("width", width + margin.left + margin.right)
-                        //    .attr("height", height + margin.top + margin.bottom)
-                        //    .append("g")
-                        //    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-                        //
-                        //svg.append("g")
-                        //    .attr("class", "x axis")
-                        //    .attr("transform", "translate(0," + height + ")")
-                        //    .call(xaxis);
-                        //
-                        //svg.append("g")
-                        //    .attr("class", "y axis")
-                        //    .call(yaxis);
-                        //
-                        //svg.append("g")
-                        //    .attr("class", "y axis")
-                        //    .append("text")
-                        //    .attr("class", "axis-label")
-                        //    .attr("transform", "rotate(-90)")
-                        //    .attr("y", (-margin.left) + 10)
-                        //    .attr("x", -height / 2)
-                        //    .text('axis label');
-                        //
-                        //svg.append("clippath")
-                        //    .attr("id", "clip")
-                        //    .append("rect")
-                        //    .attr("width", width)
-                        //    .attr("height", height);
-                        //
-                        //var line = d3.svg.line()
-                        //    //.interpolate("linear")
-                        //    .x(function (d) {
-                        //        return x(d["'timestamp'"]);
-                        //    })
-                        //    .y(function (d) {
-                        //        return y(d["'value'"]);
-                        //    });
-                        //
-                        //datagroup.foreach(function (d) {
-                        //    svg.append('path')
-                        //        .attr('d', line(d.values))
-                        //        .attr('stroke', function (d, i) {
-                        //            return colors[i % colors.length];
-                        //        })
-                        //        .attr('stroke-width', 2)
-                        //        .attr('fill', 'none');
-                        //});
-
-                        //var points = svg.selectall('.dots')
-                        //    .data(scope.data)
-                        //    .enter()
-                        //    .append("g")
-                        //    .attr("class", "dots")
-                        //    .attr("clip-path", "url(#clip)");
-                        //
-                        //points.selectall('.dot')
-                        //    .data(function (d, index) {
-                        //        var a = [];
-                        //        d.foreach(function (point, i) {
-                        //            a.push({'index': index, 'point': point});
-                        //        });
-                        //        return a;
-                        //    })
-                        //    .enter()
-                        //    .append('circle')
-                        //    .attr('class', 'dot')
-                        //    .attr("r", 2.5)
-                        //    .attr('fill', function (d, i) {
-                        //        return colors[d.index % colors.length];
-                        //    })
-                        //    .attr("transform", function (d) {
-                        //        return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")";
-                        //    }
-                        //);
-
-                        //function zoomed() {
-                        //    svg.select(".x.axis").call(xaxis);
-                        //    svg.select(".y.axis").call(yaxis);
-                        //    svg.selectall('path.line').attr('d', line);
-                        //
-                        //    points.selectall('circle').attr("transform", function (d) {
-                        //            return "translate(" + x(d.point.x) + "," + y(d.point.y) + ")";
-                        //        }
-                        //    );
-                        //}
                     }
 
                     scope.$on('$destroy', function () {

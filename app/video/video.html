@@ -3,51 +3,51 @@
 
     <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="row" md-theme-watch="true">
         <div layout="row" layout-align="center end">
-            <md-slider style="background: transparent; width: 250px;" flex min="0" max="100" ng-model="vm.zoom" aria-label="Zoom Slider">
+            <md-slider style="background: transparent; width: 250px;" flex min="0" max="100" ng-model="vm.zoom" >
             </md-slider>
-            <md-button ng-click="vm.rememberPos()" aria-label="Remember Current Position" class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.rememberPos()"  class="md-fab md-button-fab-small md-primary">
                 <span class="fa fa-save md-fab-fa-icon-small"></span>
                 <md-tooltip>Remember Current Position</md-tooltip>
             </md-button>
-            <md-button ng-click="vm.clearPos()" aria-label="Clear Current Position" class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.clearPos()"  class="md-fab md-button-fab-small md-primary">
                 <span class="fa fa-trash-o md-fab-fa-icon-small"></span>
                 <md-tooltip>Clear Current Position</md-tooltip>
             </md-button>
-            <md-button ng-click="vm.cyclePos()" aria-label="Cycle Through Positions" class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.cyclePos()"  class="md-fab md-button-fab-small md-primary">
                 <span class="fa fa-refresh md-fab-fa-icon-small"></span>
                 <md-tooltip>Cycle Through Positions</md-tooltip>
             </md-button>
         </div>
 
         <div layout="column" layout-align="center center">
-            <md-button ng-click="vm.tiltFarUp()" aria-label="Tilt Far Up" class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.tiltFarUp()"  class="md-fab md-button-fab-small md-primary">
                 <span style="transform:rotate(90deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
                 <md-tooltip>Tilt Far Up</md-tooltip>
             </md-button>
-            <md-button ng-click="vm.tiltUp()" aria-label="Tilt Up" class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.tiltUp()"  class="md-fab md-button-fab-small md-primary">
                 <span class="fa fa-caret-up md-fab-fa-icon-small"></span>
             </md-button>
             <div layout="row" style="width: 180px;">
-                <md-button ng-click="vm.panFarLeft()" aria-label="Pan Far Left" class="md-fab md-button-fab-small md-primary">
+                <md-button ng-click="vm.panFarLeft()"  class="md-fab md-button-fab-small md-primary">
                     <span class="fa fa-step-backward md-fab-fa-icon-small"></span>
                     <md-tooltip>Pan Far Left</md-tooltip>
                 </md-button>
-                <md-button ng-click="vm.panLeft()" aria-label="Pan Left" class="md-fab md-button-fab-small md-primary">
+                <md-button ng-click="vm.panLeft()"  class="md-fab md-button-fab-small md-primary">
                     <span class="fa fa-caret-left md-fab-fa-icon-small"></span>
                 </md-button>
                 <span flex></span>
-                <md-button ng-click="vm.panRight()" aria-label="Pan Right" class="md-fab md-button-fab-small md-primary">
+                <md-button ng-click="vm.panRight()"  class="md-fab md-button-fab-small md-primary">
                     <span class="fa fa-caret-right md-fab-fa-icon-small"></span>
                 </md-button>
-                <md-button ng-click="vm.panFarRight()" aria-label="Pan Far Right" class="md-fab md-button-fab-small md-primary">
+                <md-button ng-click="vm.panFarRight()"  class="md-fab md-button-fab-small md-primary">
                     <span class="fa fa-step-forward md-fab-fa-icon-small"></span>
                     <md-tooltip>Pan Far Right</md-tooltip>
                 </md-button>
             </div>
-            <md-button ng-click="vm.tiltDown()" aria-label="Tilt Down" class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.tiltDown()"  class="md-fab md-button-fab-small md-primary">
                 <span class="fa fa-caret-down md-fab-fa-icon-small"></span>
             </md-button>
-            <md-button ng-click="vm.tiltFarDown()" aria-label="Tilt Far Down" class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.tiltFarDown()"  class="md-fab md-button-fab-small md-primary">
                 <span style="transform:rotate(270deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
                 <md-tooltip>Tilt Far Down</md-tooltip>
             </md-button>

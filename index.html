@@ -235,7 +235,7 @@
         <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true">
             <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; overflow: hidden;">
 
-                <md-button class="md-icon-button mainbar-navbar-button" aria-label="Left Navbar" ng-click="vm.toggleLeftSidenav()">
+                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-navicon"></md-icon>
                 </md-button>
 
@@ -255,11 +255,11 @@
                     <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
                 </div>
 
-                <md-button class="md-icon-button mainbar-navbar-button" aria-label="Home" ng-click="vm.stateGo('home')">
+                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.stateGo('home')">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-home"></md-icon>
                 </md-button>
 
-                <md-button class="md-icon-button mainbar-navbar-button" aria-label="Alarms" ng-click="vm.stateGo('alarms')">
+                <md-button class="md-icon-button mainbar-navbar-button"  ng-click="vm.stateGo('alarms')">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-warning"></md-icon>
                     <span title="Warning Alarms" ng-show="newAlarms"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
@@ -269,7 +269,7 @@
                           class="badge alarm-badge alarm-badge-crit">{{critAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span>
                 </md-button>
 
-                <md-button class="mainbar-navbar-button md-icon-button" aria-label="Right Navbar" ng-click="vm.toggleRightSidenav()">
+                <md-button class="mainbar-navbar-button md-icon-button"  ng-click="vm.toggleRightSidenav()">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-user"></md-icon>
                 </md-button>
             </div>
@@ -288,7 +288,7 @@
 
 <alarms-notifier ng-if="loggedIn"></alarms-notifier>
 <!--this button is for d3 created buttons to be able to easily infer the current theme, but we do not need to display it-->
-<md-button aria-label="hidden button" id="btnPrimaryTheme" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" style="display: none"></md-button>
+<md-button  id="btnPrimaryTheme" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" style="display: none"></md-button>
 
 </body>
 </html>

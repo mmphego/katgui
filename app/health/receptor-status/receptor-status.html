@@ -3,7 +3,7 @@
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button flex style="pointer-events: auto; width: 36px; height: 40px;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
                    ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true"
-                   aria-label="Show Legend" class="md-primary md-raised md-icon-button">
+                    class="md-primary md-raised md-icon-button">
             <md-icon md-theme="white" class="fa md-primary" ng-show="!showLegend" md-font-icon="fa-eye" title="Show Legend"></md-icon>
             <md-icon md-theme="white" class="fa md-primary" ng-show="showLegend" md-font-icon="fa-eye-slash" title="Hide Legend"></md-icon>
         </md-button>

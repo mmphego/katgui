@@ -4,17 +4,17 @@
         <md-toolbar class="md-whiteframe-z1" style="padding: 0px;" ng-mouseenter="showAlarmTools = true;" ng-mouseleave="showAlarmTools = false;">
             <div style="align-items: center;" layout="row">
                <span flex ng-init="vm.selectAllAlarms = false" ng-click="vm.toggleSelectAllAlarms()" title="Select All Alarms"
-                     aria-label="Select All Alarms" class="unselectable" style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
+                      class="unselectable" style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
                         Current Alarms
                </span>
 
                 <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
                     <input class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search" style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
-                    <md-button ng-click="vm.knowSelectedAlarms()" aria-label="Add as Known" class="md-primary md-raised">Know</md-button>
-                    <md-button ng-click="vm.acknowledgeSelectedAlarms()" aria-label="Acknowledge" class="md-primary md-raised">Acknowledge</md-button>
-                    <md-button ng-click="vm.clearSelectedAlarms()" aria-label="Clear" class="md-primary md-raised">Clear</md-button>
-                    <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showClearedAlarms" aria-label="Show Cleared Alarms">Show Cleared</md-checkbox>
+                    <md-button ng-click="vm.knowSelectedAlarms()"  class="md-primary md-raised">Know</md-button>
+                    <md-button ng-click="vm.acknowledgeSelectedAlarms()"  class="md-primary md-raised">Acknowledge</md-button>
+                    <md-button ng-click="vm.clearSelectedAlarms()"  class="md-primary md-raised">Clear</md-button>
+                    <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showClearedAlarms" >Show Cleared</md-checkbox>
                 </div>
 
             </div>
@@ -88,15 +88,15 @@
                         <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.name}}">{{item.name}}</span>
                         <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Know Alarm" style="width: 24px; height: 38px;" aria-label="Know Alarm"
+                    <md-button title="Know Alarm" style="width: 24px; height: 38px;"
                                ng-click="vm.knowAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-check"></span>
                     </md-button>
-                    <md-button title="Acknowledge Alarm" style="width: 24px; height: 38px;" aria-label="Ack Alarm"
+                    <md-button title="Acknowledge Alarm" style="width: 24px; height: 38px;"
                                ng-click="vm.acknowledgeAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-check-circle-o"></span>
                     </md-button>
-                    <md-button title="Clear Alarm" style="width: 24px; height: 38px;" aria-label="Clear Alarm"
+                    <md-button title="Clear Alarm" style="width: 24px; height: 38px;"
                                ng-click="vm.clearAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-ban"></span>
                     </md-button>
@@ -116,17 +116,17 @@
                 <div ng-show="vm.showKnownAlarmsList" md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
                     <input flex class="fade-in search-input-box" ng-show="showKnownAlarmTools || vm.q2" type="search" style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Search Known Alarms..."/>
-                    <md-button ng-click="vm.cancelKnowSelectedAlarms()" aria-label="Cancel Known" class="md-primary md-raised" style="font-size: 14px">Cancel Known</md-button>
+                    <md-button ng-click="vm.cancelKnowSelectedAlarms()"  class="md-primary md-raised" style="font-size: 14px">Cancel Known</md-button>
                     <div layout="column" style="font-size: 12px;">
-                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;" class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms" aria-label="Show Nominal">Show
+                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;" class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms" >Show
                             Nominal
                         </md-checkbox>
-                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;" class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownMaintenanceAlarms" aria-label="Show Maintenance">
+                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;" class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownMaintenanceAlarms" >
                             Show Maintenance
                         </md-checkbox>
                     </div>
                 </div>
-                <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.showKnownAlarmsList = !vm.showKnownAlarmsList;" aria-label="Hide Known Alarms" class="md-primary md-raised md-icon-button"
+                <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.showKnownAlarmsList = !vm.showKnownAlarmsList;"  class="md-primary md-raised md-icon-button"
                            style="font-size: 20px">
                     <md-icon md-theme="white" class="fa md-primary" ng-show="!vm.showKnownAlarmsList" md-font-icon="fa-chevron-up"></md-icon>
                     <md-icon md-theme="white" class="fa md-primary" ng-show="vm.showKnownAlarmsList" md-font-icon="fa-chevron-down"></md-icon>
@@ -200,7 +200,7 @@
                         <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.name}}">{{item.name}}</span>
                         <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Cancel Known" style="width: 24px; height: 38px;" aria-label="Clear Alarm" class=""
+                    <md-button title="Cancel Known" style="width: 24px; height: 38px;"  class=""
                                ng-click="vm.cancelKnowAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-remove"></span>
                     </md-button>

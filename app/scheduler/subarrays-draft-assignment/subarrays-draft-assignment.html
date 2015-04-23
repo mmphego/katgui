@@ -70,11 +70,11 @@
                         <span style="margin-left: 5px; margin-top: 4px; width: 64px; margin-right: 3px; overflow: hidden; white-space: normal">{{item.desired_start_time}}</span>
                         <span class="inline-sb-button" ng-if="item.pendingVerify"></span>
                         <span class="inline-sb-button" ng-if="item.pendingVerify"></span>
-                        <md-button class="inline-sb-button" ng-if="!item.pendingVerify" ng-click="vm.freeScheduleBlock(subarray, item)" class="inline-sb-button" aria-label="Free SB"
+                        <md-button class="inline-sb-button" ng-if="!item.pendingVerify" ng-click="vm.freeScheduleBlock(subarray, item)" class="inline-sb-button"
                                    title="Free Schedule Blocks">
                             <span class="fa fa-minus md-fab-fa-icon-small"></span>
                         </md-button>
-                        <md-button ng-if="!item.pendingVerify" class="inline-sb-button" aria-label="Show Actions Menu"
+                        <md-button ng-if="!item.pendingVerify" class="inline-sb-button"
                                    ng-click="vm.openSchedulerActionsMenu(item, $event); $event.stopPropagation()">
                             <span class="fa fa-ellipsis-v"></span>
                         </md-button>
@@ -83,7 +83,7 @@
             </div>
 
             <md-button md-theme="{{themeButtonsPrimary}}" style="min-height: 100%; width: 31px; margin-left: 4px;"
-                       aria-label="Assign SB" class="md-primary md-raised"
+                        class="md-primary md-raised"
                        ng-click="vm.assignSelectedScheduleBlocks(subarray);" title="Assign Schedule Blocks to Sub-Array">
                 <span class="fa fa-chevron-left md-fab-fa-icon-small"></span>
             </md-button>

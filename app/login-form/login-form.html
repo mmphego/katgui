@@ -1,14 +1,17 @@
-<div class="md-whiteframe-z4 login-form" ng-controller="LoginFormCtrl as vm" md-theme="indigo">
-    <div layout="column" layout-align="center center">
-        <md-toolbar class="md-tall md-whiteframe-z1" layout-align="center center">
-            <h1>katGUI</h1>
-        </md-toolbar>
-        <md-content md-theme-watch="true">
-            <form name="form" layout="column" layout-align="center center" layout-padding md-theme="blue">
-                <md-input-container required class="long-input" focus flex ><label md-no-float>Username</label><input class="no-float" ng-model="vm.credentials.username"></md-input-container>
-                <md-input-container required class="long-input" flex ><label>Password</label><input type="password" ng-model="vm.credentials.password"></md-input-container>
-                <md-button aria-label="Login" style="margin: 8px;" ng-click="vm.login(vm.credentials)" class="md-raised md-primary">Login</md-button>
-            </form>
-        </md-content>
-    </div>
+<div class="md-whiteframe-z4 login-form" ng-controller="LoginFormCtrl as vm" layout="column"
+     layout-align="center center">
+    <md-toolbar class="md-tall md-whiteframe-z1" layout-align="center center" md-theme="indigo">
+        <h1>katGUI</h1>
+    </md-toolbar>
+    <form flex name="form" layout="column" layout-align="center center" layout-padding>
+        <md-input-container md-no-float required class="long-input">
+            <input focus ng-model="vm.credentials.username" placeholder="Email">
+        </md-input-container>
+        <md-input-container md-no-float required class="long-input">
+            <input type="password" ng-model="vm.credentials.password" placeholder="Password">
+        </md-input-container>
+        <md-button  style="margin: 8px;" ng-click="vm.login(vm.credentials)"
+                   class="md-raised md-primary" md-theme="blue">Login
+        </md-button>
+    </form>
 </div>

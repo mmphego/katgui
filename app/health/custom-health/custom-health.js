@@ -45,7 +45,6 @@
                 for (var i = 0; i < attributes.length; i++) {
                     var queryString = '#' + attributes[i];
                     var resultList = d3.selectAll(queryString);
-                    /* istanbul ignore next */
                     //difficult to test d3 classes here, so ignore it for now
                     resultList.attr('class', function (d) {
                         return vm.setClassesOfSensor(d, attributes[i]);

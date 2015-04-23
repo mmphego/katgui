@@ -27,16 +27,16 @@
                     <span ng-show="subarray.state === 'in_use'" style="width: 36px;"></span>
                     <md-button md-theme="{{themePrimaryButtons}}" class="fade-in md-fab md-button-fab-small md-primary md-subarray-fab-button"
                                ng-show="subarray.state !== 'in_use'"
-                               ng-click="vm.freeSubarray(subarray)" aria-label="Free Subarray" title="Free Subarray">
+                               ng-click="vm.freeSubarray(subarray)"  title="Free Subarray">
                         <span class="fa fa-recycle"></span>
                     </md-button>
                     <md-button md-theme="amber" class="md-fab md-button-fab-small md-primary md-subarray-fab-button"
-                               ng-click="vm.setSubarrayInUse(subarray)" aria-label="Set Subarray In Use"
+                               ng-click="vm.setSubarrayInUse(subarray)"
                                title="Set Sub-Array In Use" title="Set Sub-Array In Use">
                         <span class="fa fa-gear"></span>
                     </md-button>
                     <md-button md-theme="deep-purple" class="md-fab md-button-fab-small md-primary md-subarray-fab-button"
-                               ng-click="vm.setSubarrayInMaintenance(subarray)" aria-label="Set Subarray In Maintenance"
+                               ng-click="vm.setSubarrayInMaintenance(subarray)"
                                title="Set Sub-Array in Maintenance" title="Set Sub-Array in Maintenance">
                         <span class="fa fa-wrench"></span>
                     </md-button>
@@ -52,11 +52,11 @@
                             <span class="fa" style="font-size: 18px; margin-right: 4px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
                         </span>
                         <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>
-                        <md-button ng-click="vm.markResourceFaulty(resource)" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
+                        <md-button ng-click="vm.markResourceFaulty(resource)" style="height:38px; width:38px;"
                                    title="Mark Resource As Faulty">
                             <span class="fa fa-exclamation-circle md-fab-fa-icon-small"></span>
                         </md-button>
-                        <md-button ng-click="vm.freeAssignedResource(subarray, resource)" style="height:38px; width:38px;" aria-label="Free Resource"
+                        <md-button ng-click="vm.freeAssignedResource(subarray, resource)" style="height:38px; width:38px;"
                                    title="Free Assigned Resource">
                             <span class="fa fa-minus md-fab-fa-icon-small"></span>
                         </md-button>
@@ -65,7 +65,7 @@
             </div>
 
             <md-button md-theme="{{themePrimaryButtons}}" style="min-height: 100%; width: 31px; margin-left: 4px;"
-                       aria-label="Assign Resources" class="md-raised md-primary"
+                        class="md-raised md-primary"
                        ng-click="vm.assignSelectedResources(subarray);" title="Assign Resources to Sub-Array">
                 <span class="fa fa-chevron-left md-fab-fa-icon-small"></span>
             </md-button>
@@ -94,11 +94,11 @@
                         <span class="fa" style="font-size: 18px; min-width: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
                     </span>
                     <span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>
-                    <md-button ng-click="vm.markResourceFaulty(resource);" style="height:38px; width:38px;" aria-label="Mark Resource Faulty"
+                    <md-button ng-click="vm.markResourceFaulty(resource);" style="height:38px; width:38px;"
                                title="Mark Resource As Faulty">
                         <span class="fa fa-exclamation-circle md-fab-fa-icon-small"></span>
                     </md-button>
-                    <md-button ng-click="vm.markResourceInMaintenance(resource);" style="height:38px; width:38px;" aria-label="Mark Resource in Maintenance"
+                    <md-button ng-click="vm.markResourceInMaintenance(resource);" style="height:38px; width:38px;"
                                title="Mark Resource in Maintenance">
                         <span class="fa fa-wrench md-fab-fa-icon-small"></span>
                     </md-button>

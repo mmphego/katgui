@@ -69,6 +69,12 @@
             theme = THEMES[0];
         }
 
+        if (theme.name === 'Dark') {
+            angular.element('body').css('color', '#CFD8DC');
+        } else {
+            angular.element('body').css('color', '#333333');
+        }
+
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
@@ -182,7 +188,6 @@
             }
         };
 
-        /* istanbul ignore next */
         $rootScope.showSimpleDialog = function (title, message) {
             var alert = $mdDialog.alert()
                 .title(title)
@@ -197,14 +202,53 @@
             console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
         };
 
-        /* istanbul ignore next */
+        $rootScope.showSimpleDialog = function (title, message) {
+            var alert = $mdDialog.alert()
+                .title(title)
+                .content(message)
+                .ok('Close');
+            $mdDialog
+                .show(alert)
+                .finally(function () {
+                    alert = undefined;
+                });
+
+            console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
+        };
+
+        $rootScope.showDialog = function (title, html, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = title;
+                        $scope.html = html;
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                    },
+                    template:
+                    "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                        "<div style='padding: 0px; margin: 0px;' layout='column' layout-padding >" +
+                            "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                            "<div flex>{{html}}</div>" +
+                            "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                                "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>OK</md-button>" +
+                            "</div>" +
+                        "</div>" +
+                    "</md-dialog>",
+                    targetEvent: event
+                });
+        };
+
         $rootScope.showSBDetails = function (sb, event) {
             $rootScope.mdDialogSb = sb;
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
 
-                        $scope.themePrimary = $rootScope.themePrimaryButtons;
+                        $scope.themePrimary = $rootScope.themePrimary;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.sb = $rootScope.mdDialogSb;
                         $scope.hide = function () {
