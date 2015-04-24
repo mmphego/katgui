@@ -4,9 +4,9 @@ angular.module('katGui.d3', [])
         return {
             restrict: 'EA',
             scope: {
-                showGridLines: '=',
                 redrawFunction: '=',
-                clearFunction: '='
+                clearFunction: '=',
+                removeSensorFunction: '='
             },
             replace: false,
             link: function (scope, element) {
@@ -17,19 +17,13 @@ angular.module('katGui.d3', [])
                         return element[0].clientHeight + ', ' + element[0].clientWidth;
                     }, function (newVal, oldVal) {
                         if (newVal !== oldVal) {
-                            scope.redrawFunction();
-                        }
-                    });
-
-                    var unbindShowGridLines = scope.$watch('showGridLines', function (newVal, oldVal) {
-                        if (newVal !== oldVal) {
-                            scope.redrawFunction();
+                            scope.redrawFunction(null, scope.showGridLines);
                         }
                     });
 
                     var color = d3.scale.category10();
                     scope.data = [];
-                    scope.redrawFunction = function (newData) {
+                    scope.redrawFunction = function (newData, showGridLines) {
                         if (newData) {
                             newData.forEach(function (d) {
                                 d.date = new Date(parseFloat(d.Timestamp) * 1000);
@@ -37,12 +31,22 @@ angular.module('katGui.d3', [])
                                 scope.data.push(d);
                             });
                         }
+                        scope.showGridLines = showGridLines;
                         d3.selectAll('svg').remove();
                         drawChart();
                     };
 
                     scope.clearFunction = function () {
                         scope.data.splice(0, scope.data.length);
+                        d3.select('svg').remove();
+                        drawChart();
+                    };
+
+                    scope.removeSensorFunction = function (sensorName) {
+                        console.log('remove ' + sensorName);
+                        scope.data = _.reject(scope.data, function (item) {
+                           return item.Sensor === sensorName;
+                        });
                         d3.select('svg').remove();
                         drawChart();
                     };
@@ -66,6 +70,11 @@ angular.module('katGui.d3', [])
                         var yAxis = d3.svg.axis().scale(y)
                             .orient("left").ticks(10);
 
+                        if (scope.showGridLines) {
+                            xAxis.tickSize(-height);//.tickSubdivide(true);
+                            yAxis.tickSize(-width);//.tickSubdivide(true);
+                        }
+
                         // define the line
                         var line = d3.svg.line()
                             .x(function (d) {
@@ -74,6 +83,9 @@ angular.module('katGui.d3', [])
                             .y(function (d) {
                                 return y(d.value);
                             });
+
+                        //element.parent().css("max-height", element.parent().css("height"));
+                        //element.parent().css("max-width", element.parent().css("width"));
 
                         // adds the svg canvas
                         var svg = d3.select(element[0])
@@ -156,7 +168,6 @@ angular.module('katGui.d3', [])
 
                     scope.$on('$destroy', function () {
                         unbindResize();
-                        unbindShowGridLines();
                     });
                 });
             }

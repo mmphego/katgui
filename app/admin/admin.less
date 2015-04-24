@@ -9,15 +9,13 @@
     .user-row {
         padding-left: 8px;
         padding-right: 8px;
-        border-bottom: 1px solid #d3d3d3;
+        border-bottom: 1px solid rgba(158, 158, 158, 0.5);
         height: 49px;
         overflow: hidden;
         text-overflow: ellipsis;
         &:hover {
-            background: #f8f8f8;
+            background: rgba(158, 158, 158, 0.2);;
         }
-
-
     }
 
     input {
@@ -26,17 +24,22 @@
 
 }
 
-.md-select-custom-disabled-text[disabled] {
-    .md-select-label {
-        cursor: not-allowed;
-        color: rgba(0,0,0,0.9) !important;
-        border-bottom: 0;
-        font-size: 12px;
-    }
-
-    .md-select-icon {
-        color: rgba(0,0,0,0.26) !important;
-    }
+//.md-select-custom-disabled-text[disabled] {
+//    .md-select-label {
+//        cursor: not-allowed;
+////        color: rgba(0,0,0,0.9) !important;
+//        border-bottom: 0;
+//        font-size: 12px;
+//    }
+//
+//    .md-select-icon {
+////        color: rgba(0,0,0,0.26) !important;
+//    }
+//}
+//
+md-select.md-default-theme[disabled] .md-select-label {
+//    color: rgba(0,0,0,0.26);
+    color: currentColor;
 }
 
 .cell-span {
@@ -49,12 +52,13 @@
     float: right;
 }
 
+
 .deactivated-user {
-    background: #FFF3E0;
+    background: rgba(255, 224, 178, 0.1);
     text-decoration: line-through;
 
     &:hover {
-        background: #FFE0B2;
+        background: rgba(255, 224, 178, 0.2);
     }
 }
 
@@ -66,7 +70,7 @@
     float: right;
     width: 35px;
     height: 49px;
-    color: #9E9E9E;
+    color: currentColor;
     border-radius: 25px;
     background: transparent;
     border: transparent;
@@ -87,5 +91,5 @@
     border-top: 0;
     border-left: 0;
     border-right: 0;
-    border-bottom: 1px solid #d3d3d3;
+    border-bottom: 1px solid currentColor;
 }

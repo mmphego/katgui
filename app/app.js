@@ -70,9 +70,9 @@
         }
 
         if (theme.name === 'Dark') {
-            angular.element('body').css('color', '#CFD8DC');
+            angular.element('body').addClass('dark-theme');
         } else {
-            angular.element('body').css('color', '#333333');
+            angular.element('body').removeClass('dark-theme');
         }
 
         $rootScope.themePrimary = theme.primary;
@@ -593,7 +593,7 @@
             .dark();
 
         $mdThemingProvider.theme('dark-buttons')
-            .primaryPalette('indigo')
+            .primaryPalette('blue')
             .dark();
 
         $mdThemingProvider.alwaysWatchTheme(true);

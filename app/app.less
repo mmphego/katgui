@@ -62,6 +62,11 @@
     pointer-events: none;
 }
 
+.md-select-menu-container.md-active md-select-menu > * {
+    opacity: 1;
+    transition: all 0.1s cubic-bezier(0.55, 0, 0.55, 0.2);
+}
+
 .toolbar-collapse-button {
     position: absolute;
     top: 0px;
@@ -135,6 +140,10 @@ body {
     margin-right: auto;
 }
 
+.dark-theme {
+    color: #CFD8DC !important;
+}
+
 .view-container-full {
     width: 100%;
     height: 100%;
@@ -156,7 +165,7 @@ body {
 }
 
 .menu-item {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif;
     cursor: pointer;
     color: #757575;
     height: 48px;
@@ -496,9 +505,7 @@ md-toast {
         padding-bottom: 0;
         .md-input {
             text-shadow: 0px 0px;
-            -webkit-font-smoothing: antialiased;
         }
-
     }
 
     md-select {

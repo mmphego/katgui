@@ -11,6 +11,10 @@
             return $http.get(urlBase + '?sensor=' + sensorName + '&start_ts=' + startDate + '&end_ts=' + endDate + '&limit=' + limit + '&time_type=' + time_type + '&format=' + format);
         };
 
+        this.findSensorName = function (searchStr) {
+            return $http.get(urlBase + 'findsensor?sensor=' + searchStr);
+        };
+
         //this.sensorMetaData = function (sensorName) {
         //    return $http.get(urlBase + 'sensor_info?sensor=' + sensorName);
         //};
