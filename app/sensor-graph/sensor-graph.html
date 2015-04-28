@@ -1,4 +1,21 @@
-<div flex layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}" ng-click="vm.showDatePicker = false;">
+<div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}"
+     ng-click="vm.showDatePicker = false;"
+     style="min-height: 100%; height: 100%; min-width: 100%; width: 100%; position: absolute;">
+
+    <div class="sensor-graph-tips" layout="column" ng-show="vm.showTips">
+        <div layout="row" class="arrow-box sg-timerange-tip">
+            <span>1. Set a Time Range</span>
+        </div>
+        <div class="sg-findsensor-tip arrow-box">
+            <span>2. Type a sensor name search string and press enter (e.g. *wind_speed*)</span>
+        </div>
+        <div class="sg-sensordata-tip arrow-box">
+            <span>3. Click the sensor to map its data</span>
+        </div>
+        <div class="sg-options-tip arrow-box">
+            <span>4. Set your graphing options</span>
+        </div>
+    </div>
 
     <div layout="column" style="margin: 8px;">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
@@ -24,7 +41,7 @@
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
                 <md-button class="md-icon-button" style="margin-left: 0px; margin-top: 3px; width: 40px; height: 40px;"
-                    ng-click="vm.showDatePicker = !vm.showDatePicker; $event.stopPropagation()">
+                           ng-click="vm.showDatePicker = !vm.showDatePicker; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
 
@@ -55,9 +72,9 @@
                        placeholder="Search for sensors..." ng-model="vm.sensorSearchStr"
                        ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
                        ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>
-                <md-tooltip md-visible="vm.sensorSearchFieldShowTooltip" md-direction="right" md-autohide="false">
-                    Type a name and press enter
-                </md-tooltip>
+                <!--<md-tooltip md-visible="vm.sensorSearchFieldShowTooltip" md-direction="right" md-autohide="false">-->
+                <!--Type a name and press enter-->
+                <!--</md-tooltip>-->
             </md-input-container>
             <md-list class="sensor-search-name-list unselectable md-whiteframe-z1" ng-if="!vm.waitingForSearchResult">
                 <md-list-item ng-repeat="sensor in vm.sensorSearchNames track by $index"
@@ -65,9 +82,13 @@
                     <span>{{::sensor.name}}</span>
                 </md-list-item>
             </md-list>
-            <div layout="row" layout-align="center center" class="sensor-search-name-list unselectable md-whiteframe-z1" ng-show="vm.waitingForSearchResult"
-                style="background: rgba(158,158,158,0.1)">
-                <span style="font-size: 60px;" class="fa fa-refresh fa-spin"></span>
+            <div layout="row" layout-align="center center" class="sensor-search-name-list unselectable md-whiteframe-z1"
+                 ng-show="vm.waitingForSearchResult"
+                 style="background: rgba(158,158,158,0.1)">
+                <div class="spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
             </div>
             <div style="width: 100%; margin-top: 4px;" layout="row" layout-align="center center">
                 <span ng-show="vm.sensorSearchNames.length === 1000" title="Refine the search to see more sensors"
@@ -107,8 +128,9 @@
                 <!--</md-button>-->
             </div>
         </md-toolbar>
-        <multi-line-chart flex style="margin-top: 32px;" data="vm.sensorData" redraw-function="vm.redrawChart"
-                          clear-function="vm.clearChart" remove-sensor-function="vm.removeSensorLine"></multi-line-chart>
+        <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart"
+                          clear-function="vm.clearChart"
+                          remove-sensor-function="vm.removeSensorLine"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
             <md-button class="md-icon-button"
                        ng-click="vm.showHelp($event)">

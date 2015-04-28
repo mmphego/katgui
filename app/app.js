@@ -189,41 +189,17 @@
         };
 
         $rootScope.showSimpleDialog = function (title, message) {
-            var alert = $mdDialog.alert()
-                .title(title)
-                .content(message)
-                .ok('Close');
-            $mdDialog
-                .show(alert)
-                .finally(function () {
-                    alert = undefined;
-                });
-
-            console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
+            $rootScope.showDialog(title, message);
         };
 
-        $rootScope.showSimpleDialog = function (title, message) {
-            var alert = $mdDialog.alert()
-                .title(title)
-                .content(message)
-                .ok('Close');
-            $mdDialog
-                .show(alert)
-                .finally(function () {
-                    alert = undefined;
-                });
-
-            console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
-        };
-
-        $rootScope.showDialog = function (title, html, event) {
+        $rootScope.showDialog = function (title, content, event) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
                         $scope.themePrimary = $rootScope.themePrimary;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = title;
-                        $scope.html = html;
+                        $scope.content = content;
                         $scope.hide = function () {
                             $mdDialog.hide();
                         };
@@ -231,15 +207,17 @@
                     template:
                     "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
                         "<div style='padding: 0px; margin: 0px;' layout='column' layout-padding >" +
-                            "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
-                            "<div flex>{{html}}</div>" +
+                            "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                            "<div flex>{{content}}</div>" +
                             "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                                "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>OK</md-button>" +
+                                "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
                             "</div>" +
                         "</div>" +
                     "</md-dialog>",
                     targetEvent: event
                 });
+
+            console.log('Showing dialog, title: ' + title + ', message: ' + content);
         };
 
         $rootScope.showSBDetails = function (sb, event) {

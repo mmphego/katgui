@@ -14,6 +14,7 @@
         vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
+        vm.showTips = true;
 
         vm.findSensorDataForSelection = function () {
 
@@ -101,10 +102,11 @@
         };
 
         vm.showHelp = function ($event) {
-            $rootScope.showDialog('Sensor Graph Input Help',
-                'From left to right, set your sensor name, start date, and the duration of the timerange you want to search for. ' +
-                'For example: nm_monctl_mon_monctl_cpu, 2015-04-23 11:38:32, -, 1, Day(s), then the plus button will search for ' +
-                'the sensor data of nm_monctl_mon_monctl_cpu from 2015-04-22 11:38:32 to 2015-04-23 11:38:32', $event);
+            //$rootScope.showDialog('Sensor Graph Input Help',
+            //    'From left to right, set your sensor name, start date, and the duration of the timerange you want to search for. ' +
+            //    'For example: nm_monctl_mon_monctl_cpu, 2015-04-23 11:38:32, -, 1, Day(s), then the plus button will search for ' +
+            //    'the sensor data of nm_monctl_mon_monctl_cpu from 2015-04-22 11:38:32 to 2015-04-23 11:38:32', $event);
+            $rootScope.showDialog('Sensor Graph Help', 'This popup should probably show some helpful hints', $event);
         };
 
         vm.getMillisecondsDifference = function (plusMinus, time, count, type) {
@@ -155,6 +157,7 @@
                         vm.waitingForSearchResult = false;
                     })
                     .error(function (result) {
+                        $rootScope.showSimpleDialog('Error Finding Sensors', 'There was an error finding sensors, is the server running?');
                         console.error(result);
                         vm.waitingForSearchResult = false;
                     });
@@ -176,6 +179,7 @@
         };
 
         vm.findSensorData = function (sensorName, startDate, endDate) {
+            vm.showTips = false;
             $rootScope.showSimpleToast('Retrieving sensor data, please wait.');
             DataService.findSensor(sensorName, startDate, endDate, 10000, 'ms', 'json')
                 .success(function (result) {
@@ -198,6 +202,7 @@
                 })
                 .error(function (error) {
                     console.error(error);
+                    $rootScope.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
                 });
         };
 

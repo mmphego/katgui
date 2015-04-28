@@ -82,18 +82,18 @@
         </div>
     </div>
 
-    <div layout="column" style="max-width: 400px;min-width: 400px; padding-left: 24px;"
-         ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null}">
+    <div layout="column" style="max-width: 400px;min-width: 400px;"
+         ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null,'script-window-without-box-shadow': vm.selectedScheduleDraft === null}">
         <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
             <div flex style="margin: 8px;" layout="row" layout-align="start center">
                 <span style="cursor: pointer;">Schedule Block Details</span>
             </div>
         </md-toolbar>
-        <div flex style="padding-right: 8px; padding-top: 8px;" layout="column">
+        <div flex layout="column">
             <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
                  ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 
-                <div flex ng-if="vm.selectedScheduleDraft !== null" style="background: white;">
+                <div flex ng-if="vm.selectedScheduleDraft !== null" >
                     <textarea readonly auto-grow>{{vm.selectedScheduleDraft | json:4}}</textarea>
                 </div>
             </div>

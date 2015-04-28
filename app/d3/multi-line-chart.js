@@ -45,7 +45,7 @@ angular.module('katGui.d3', [])
                     scope.removeSensorFunction = function (sensorName) {
                         console.log('remove ' + sensorName);
                         scope.data = _.reject(scope.data, function (item) {
-                           return item.Sensor === sensorName;
+                            return item.Sensor === sensorName;
                         });
                         d3.select('svg').remove();
                         drawChart();
@@ -55,20 +55,32 @@ angular.module('katGui.d3', [])
 
                     function drawChart() {
 
-                        var margin = {top: 20, right: 30, bottom: 100, left: 80},
+                        var margin = {top: 10, right: 10, bottom: 100, left: 40},
+                            margin2 = {top: element[0].clientHeight - 70, right: 10, bottom: 20, left: 40},
                             width = element[0].clientWidth - margin.left - margin.right,
-                            height = element[0].clientHeight - margin.top - margin.bottom - 8;
+                            height = element[0].clientHeight - margin.top - margin.bottom,
+                            height2 = element[0].clientHeight - margin2.top - margin2.bottom;
 
                         // set the ranges
-                        var x = d3.time.scale().range([0, width]);
-                        var y = d3.scale.linear().range([height, 0]);
+                        var x = d3.time.scale().range([0, width]),
+                            x2 = d3.time.scale().range([0, width]),
+                            y = d3.scale.linear().range([height, 0]),
+                            y2 = d3.scale.linear().range([height2, 0]);
 
                         // define the axes
-                        var xAxis = d3.svg.axis().scale(x)
-                            .orient("bottom").ticks(10);
+                        var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10),
+                            xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
+                            yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
 
-                        var yAxis = d3.svg.axis().scale(y)
-                            .orient("left").ticks(10);
+                        var brush = d3.svg.brush()
+                            .x(x2)
+                            .on("brush", brushed);
+
+                        //var zoom = d3.behavior.zoom()
+                        //    .x(x)
+                        //    .y(y)
+                        //    .scaleExtent([1, 10])
+                        //    .on("zoom", zoomed);
 
                         if (scope.showGridLines) {
                             xAxis.tickSize(-height);//.tickSubdivide(true);
@@ -77,6 +89,7 @@ angular.module('katGui.d3', [])
 
                         // define the line
                         var line = d3.svg.line()
+                            .interpolate("cubic")
                             .x(function (d) {
                                 return x(d.date);
                             })
@@ -84,17 +97,33 @@ angular.module('katGui.d3', [])
                                 return y(d.value);
                             });
 
+                        var line2 = d3.svg.line()
+                            .interpolate("cubic")
+                            .x(function (d) {
+                                return x2(d.date);
+                            })
+                            .y(function (d) {
+                                return y2(d.value);
+                            });
+
                         //element.parent().css("max-height", element.parent().css("height"));
                         //element.parent().css("max-width", element.parent().css("width"));
 
-                        // adds the svg canvas
-                        var svg = d3.select(element[0])
-                            .append("svg")
+                        var svg = d3.select(element[0]).append("svg")
                             .attr("width", width + margin.left + margin.right)
-                            .attr("height", height + margin.top + margin.bottom)
-                            .append("g")
-                            .attr("transform",
-                            "translate(" + margin.left + "," + margin.top + ")");
+                            .attr("height", height + margin.top + margin.bottom);
+
+                        svg.append("defs").append("clipPath")
+                            .attr("id", "clip")
+                            .append("rect")
+                            .attr("width", width)
+                            .attr("height", height);
+
+                        var focus = svg.append("g")
+                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                        var context = svg.append("g")
+                            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
                         if (scope.data.length > 0) {
 
@@ -105,11 +134,14 @@ angular.module('katGui.d3', [])
                             y.domain([
                                 d3.min(scope.data, function (d) {
                                     return d.value;
-                                }) - 1,
+                                }),
                                 d3.max(scope.data, function (d) {
                                     return d.value;
-                                }) + 1
+                                })
                             ]);
+
+                            x2.domain(x.domain());
+                            y2.domain(y.domain());
 
                             // nest the entries by symbol
                             var dataNest = d3.nest()
@@ -118,52 +150,76 @@ angular.module('katGui.d3', [])
                                 })
                                 .entries(scope.data);
 
-                            var legendSpace = width / dataNest.length;
+                            // nest the entries by symbol
+                            //color.domain(d3.keys(scope.data[0]).filter(function(key) { return key !== "date"; }));
+                            //
+                            //var sources = color.domain().map(function(name) {
+                            //    return {
+                            //        name: name,
+                            //        values: scope.data.map(function(d) {
+                            //            return {date: d.date, value: +d[name]};
+                            //        })
+                            //    };
+                            //});
 
-                            // loop through each symbol / key
-                            dataNest.forEach(function (d, i) {
+                            var focuslineGroups = focus.selectAll("g")
+                                .data(dataNest)
+                                .enter().append("g");
 
-                                svg.append("path")
-                                    .attr("d", line(d.values))
-                                    .attr("class", "line")
-                                    .attr("id", 'tag' + d.key)
-                                    .style("stroke", function () {
-                                        return d.color = color(d.key);
-                                    });
+                            var focuslines = focuslineGroups.append("path")
+                                .attr("class", "line")
+                                .attr("d", function (d) {
+                                    return line(d.values);
+                                })
+                                .style("stroke", function (d) {
+                                    return color(d.key);
+                                })
+                                .attr("clip-path", "url(#clip)");
 
-                                // Add the Legend
-                                svg.append("text")
-                                    .attr("x", (legendSpace / 2) + i * legendSpace) // spacing
-                                    .attr("y", height + 80)
-                                    .attr("class", "sensor-graph-legend")    // style the legend
-                                    .style("fill", function () { // dynamic colours
-                                        return d.color = color(d.key);
-                                    })
-                                    .on("click", function () {
-                                        // Determine if current line is visible
-                                        var active = d.active ? false : true,
-                                            newOpacity = active ? 0 : 1;
-                                        // Hide or show the elements based on the ID
-                                        d3.select("#tag" + d.key)
-                                            .transition().duration(100)
-                                            .style("opacity", newOpacity);
-                                        // Update whether or not the elements are active
-                                        d.active = active;
-                                    })
-                                    .text(d.key);
-                            });
+                            focus.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + height + ")")
+                                .call(xAxis);
+
+                            focus.append("g")
+                                .attr("class", "y axis")
+                                .call(yAxis);
+
+                            var contextlineGroups = context.selectAll("g")
+                                .data(dataNest)
+                                .enter().append("g");
+
+                            var contextLines = contextlineGroups.append("path")
+                                .attr("class", "line")
+                                .attr("d", function (d) {
+                                    return line2(d.values);
+                                })
+                                .style("stroke", function (d) {
+                                    return color(d.key);
+                                })
+                                .attr("clip-path", "url(#clip)");
+
+                            context.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + height2 + ")")
+                                .call(xAxis2);
+
+                            context.append("g")
+                                .attr("class", "x brush")
+                                .call(brush)
+                                .selectAll("rect")
+                                .attr("y", -6)
+                                .attr("height", height2 + 7);
+
+                            function brushed() {
+                                x.domain(brush.empty() ? x2.domain() : brush.extent());
+                                focus.selectAll("path.line").attr("d", function (d) {
+                                    return line(d.values);
+                                });
+                                focus.select(".x.axis").call(xAxis);
+                                focus.select(".y.axis").call(yAxis);
+                            }
                         }
-
-                        // add the x axis
-                        svg.append("g")
-                            .attr("class", "x axis")
-                            .attr("transform", "translate(0," + height + ")")
-                            .call(xAxis);
-
-                        // add the y axis
-                        svg.append("g")
-                            .attr("class", "y axis")
-                            .call(yAxis);
                     }
 
                     scope.$on('$destroy', function () {

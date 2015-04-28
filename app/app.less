@@ -630,11 +630,11 @@ md-toast {
 }
 
 .manual-color {
-    color: #3F51B5;
+    color: #2196F3;
 }
 
 .maintenance-color {
-    color: #8E24AA;
+    color: #AB47BC;
 }
 
 .observation-color {
@@ -681,4 +681,23 @@ md-option:not([selected]) {
 
 :-ms-input-placeholder {
     color: #dbdbdb;
+}
+
+/* Needed to get scrollbar styling to take effect */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgba(158,158,158,0.8);
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(158,158,158,0.4);
 }
