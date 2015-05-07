@@ -518,43 +518,43 @@
         //
         $mdThemingProvider.theme('indigo')
             .primaryPalette('indigo')
-            .accentPalette('indigo');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('blue')
             .primaryPalette('blue')
-            .accentPalette('blue');
+            .accentPalette('indigo');
 
         $mdThemingProvider.theme('red')
             .primaryPalette('red')
-            .accentPalette('red');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('green')
             .primaryPalette('green')
-            .accentPalette('green');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('blue-grey')
             .primaryPalette('blue-grey')
-            .accentPalette('blue-grey');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('deep-purple')
             .primaryPalette('deep-purple')
-            .accentPalette('deep-purple');
+            .accentPalette('purple');
 
         $mdThemingProvider.theme('purple')
             .primaryPalette('purple')
-            .accentPalette('purple');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('teal')
             .primaryPalette('teal')
-            .accentPalette('teal');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('yellow')
             .primaryPalette('yellow')
-            .accentPalette('yellow');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('amber')
             .primaryPalette('amber')
-            .accentPalette('amber');
+            .accentPalette('blue');
 
         $mdThemingProvider.definePalette('white', $mdThemingProvider.extendPalette('blue', {'400': 'ffffff'}));
         $mdThemingProvider.theme('white')

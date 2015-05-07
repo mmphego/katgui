@@ -169,8 +169,8 @@ angular.module('katGui.d3')
                                 })
                                 //.attr("x", 3)
                                 //.attr("y", 3)
-                                .style("width", 26)
-                                .style("height", 32)
+                                .style("width", 24)
+                                .style("height", 24)
                                 .style("display", "none")
                                 .on("click", function (d) {
                                     scope.ignoreList.push(d.name);

@@ -46,7 +46,7 @@
             var receptor = sensorNameList[0];
             var sensorName = sensorNameList[1];
             ReceptorStateService.receptorsData.forEach(function (item) {
-                if (item.name === receptor) {
+                if (item.name === receptor && message.value) {
                     if (sensorName === 'mode' && item.status !== message.value.value) {
                         item.state = message.value.value;
                     } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {

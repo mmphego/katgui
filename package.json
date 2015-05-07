@@ -21,9 +21,9 @@
         "grunt-contrib-uglify": "~0.2.7",
         "grunt-contrib-watch": "~0.6.1",
         "grunt-dom-munger": "~3.4.0",
-        "grunt-karma": "~0.8.3",
-        "karma": "~0.12.31",
-        "karma-chrome-launcher": "~0.1.7",
+        "grunt-karma": "~0.10",
+        "karma": "latest",
+        "karma-chrome-launcher": "~0.1.8",
         "karma-coverage": "~0.2.7",
         "karma-firefox-launcher": "~0.1.4",
         "karma-jasmine": "~0.3.5",
@@ -38,10 +38,11 @@
         "negotiator": "~0.5.1",
         "node": "~0.0.0",
         "protractor": "~1.8.0",
-        "send": "~0.12.0"
+        "send": "~0.12.0",
+        "phantomjs": "~1.9"
     },
     "dependencies": {
-        "grunt-ng-annotate": "^0.4.0",
+        "grunt-ng-annotate": "~0.10",
         "karma-ng-html2js-preprocessor": "~0.1.2"
     }
 }

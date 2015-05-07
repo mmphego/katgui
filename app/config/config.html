@@ -9,7 +9,7 @@
         <md-content layout="column" layout-padding md-theme="{{themePrimaryButtons}}">
             <div class="config-div-item">
                 <md-subheader md-theme="{{themePrimary}}" class="md-primary">Themes</md-subheader>
-                <md-select md-theme="{{themePrimary}}" ng-model="vm.selectedTheme" style="min-width: 200px; margin-left: 8px;" placeholder="Select a Theme...">
+                <md-select md-theme="{{themePrimaryButtons}}" ng-model="vm.selectedTheme" style="min-width: 200px; margin-left: 8px;" placeholder="Select a Theme...">
                     <md-option ng-value="theme.name" ng-repeat="theme in vm.themes">{{theme.name}}</md-option>
                 </md-select>
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showJulianDate" >Show Julian Date</md-checkbox>
