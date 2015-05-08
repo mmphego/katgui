@@ -149,6 +149,14 @@
                 <md-checkbox class="md-primary" ng-model="vm.showTips">
                     Show Sensor Graph Tips
                 </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.liveData">
+                    Include Live Data
+                </md-checkbox>
+                <!--<md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}"-->
+                           <!--ng-disabled="vm.sensorNames.length === 0"-->
+                           <!--ng-click="vm.connectLiveFeed()">-->
+                    <!--Connect Live Data Feed-->
+                <!--</md-button>-->
             </div>
         </div>
     </div>
@@ -174,10 +182,10 @@
                           clear-function="vm.clearChart" ng-class="{'dot-hide':!vm.showDots}"
                           remove-sensor-function="vm.removeSensorLine"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
-            <md-button class="md-icon-button"
-                       ng-click="vm.showHelp($event)">
-                <md-icon class="fa" md-font-icon="fa-question"></md-icon>
-            </md-button>
+            <!--<md-button class="md-icon-button"-->
+                       <!--ng-click="vm.showHelp($event)">-->
+                <!--<md-icon class="fa" md-font-icon="fa-question"></md-icon>-->
+            <!--</md-button>-->
             <md-button class="md-icon-button"
                        ng-click="vm.clearData()" title="Clear Data">
                 <md-icon class="fa" md-font-icon="fa-remove"></md-icon>

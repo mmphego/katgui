@@ -3,7 +3,7 @@
 angular.module('katGui.services')
     .service('MonitorService', MonitorService);
 
-function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService, AlarmsService, ObservationScheduleService) {
+function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService, AlarmsService, ObservationScheduleService, $http) {
 
     var urlBase = SERVER_URL + '/katmonitor/api/v1';
     var api = {};
@@ -72,6 +72,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     };
 
     api.onSockJSMessage = function (e) {
+        console.log(e);
         if (e && e.data) {
             var messages = JSON.parse(e.data);
             if (messages.error) {
@@ -162,6 +163,20 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
 
             api.connection.send(JSON.stringify(jsonRPC));
         }
+    };
+
+    api.connectLiveFeed = function (sensor) {
+
+        var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+        sensorName = sensorName.replace(/\./g, '_');
+        var httpResponse =  $http.get(urlBase + '/addsensorstrategy' +
+        '?resource_name=' + sensor.component +
+        '&strategy_str=' + sensorName +
+        '&strategy_type=period' +
+        '&strategy_interval=10');
+
+        api.subscribe(sensor.component + ':' + sensorName);
+        return httpResponse;
     };
 
     return api;
