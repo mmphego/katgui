@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($rootScope, DataService, $filter, MonitorService) {
+    function SensorGraphCtrl($scope, $rootScope, DataService, $filter, MonitorService) {
 
         var vm = this;
         vm.showGridLines = false;
@@ -147,7 +147,9 @@
                 DataService.sensorInfo(sensor.name)
                     .success(function (result) {
                         vm.findSensorData(result, startDate, endDate);
-                        vm.connectLiveFeed(result);
+                        if (vm.liveData) {
+                            vm.connectLiveFeed(result, 1);
+                        }
                     })
                     .error(function (error) {
                         console.error(error);
@@ -162,6 +164,9 @@
             vm.showTips = false;
             var humanizedDuration = moment.duration(endDate).subtract(startDate).humanize();
             $rootScope.showSimpleToast('Retrieving sensor data for ' + humanizedDuration + ', please wait.');
+            if (vm.liveData && !angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.sensor}))) {
+                vm.sensorNames.push({name: sensor.sensor});
+            }
             DataService.findSensor(sensor.sensor, startDate, endDate, 1000, 'ms', 'json', vm.sensorType)
                 .success(function (result) {
                     vm.waitingForSearchResult = false;
@@ -230,7 +235,7 @@
                                 Value: result[attr][i].value
                             });
                         }
-                        if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensorName}))) {
+                        if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensorName})) || vm.liveData) {
                             vm.sensorNames.push({name: attr});
                         }
                     }
@@ -250,6 +255,7 @@
 
         vm.chipRemovePressed = function (chip) {
             vm.removeSensorLine(chip.name);
+            MonitorService.unsubscribe(sensor.name.replace(/:/g, '_'));
         };
 
         vm.setLineStrokeWidth = function (chipName) {
@@ -285,14 +291,31 @@
             }
         };
 
-        vm.connectLiveFeed = function (sensor) {
-            MonitorService.connectLiveFeed(sensor)
-                .success(function (result) {
-                   console.log(result);
-                })
-                .error(function (error) {
-                    console.log(error);
-                });
+        vm.connectLiveFeed = function (sensor, interval) {
+            //todo report on command success?
+            MonitorService.connectLiveFeed(sensor, interval);
+                //.success(function (result) {
+                //   console.log(result);
+                //})
+                //.error(function (error) {
+                //    console.log(error);
+                //});
         };
+
+        var unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
+            if (angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name.replace(/:/g, '_')}))) {
+                vm.redrawChart([{
+                    Sensor: sensor.name.replace(/:/g, '_'),
+                    Timestamp: sensor.sensorValue.timestamp,
+                    Value: sensor.sensorValue.value
+                }], vm.showGridLines);
+            } else {
+                MonitorService.unsubscribe(sensor.name.replace(/:/g, '_'));
+            }
+        });
+
+        $scope.$on('$destroy', function () {
+            unbindUpdate();
+        });
     }
 })();

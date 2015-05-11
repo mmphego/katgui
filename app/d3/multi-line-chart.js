@@ -41,6 +41,9 @@ angular.module('katGui.d3', [])
                                 } else {
                                     d.value = parseFloat(d.Value);
                                 }
+                                if (newData.length === 1 && scope.data.length > 100) {
+                                    scope.data.splice(0, 1);
+                                }
                                 scope.data.push(d);
                             });
 
