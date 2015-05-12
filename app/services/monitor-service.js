@@ -193,7 +193,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             api.connection.send(JSON.stringify(jsonRPC));
         } else {
             $timeout(function () {
-                api.sendMonitorCommand(module, funcName, funcParams);
+                api.sendMonitorCommand(method, params);
             }, 500);
         }
     };

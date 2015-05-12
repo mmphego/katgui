@@ -22,14 +22,12 @@
         "grunt-contrib-watch": "~0.6.1",
         "grunt-dom-munger": "~3.4.0",
         "grunt-karma": "~0.10",
-        "karma": "latest",
+        "karma": "~0.12.31",
         "karma-chrome-launcher": "~0.1.8",
         "karma-coverage": "~0.2.7",
         "karma-firefox-launcher": "~0.1.4",
         "karma-jasmine": "~0.3.5",
         "karma-junit-reporter": "^0.2.2",
-        "karma-mocha-reporter": "~0.2.8",
-        "karma-junit-reporter": "~0.2.2",
         "karma-mocha-reporter": "~0.2.8",
         "karma-phantomjs-launcher": "~0.1.4",
         "less": "~2.4.0",
@@ -43,6 +41,6 @@
     },
     "dependencies": {
         "grunt-ng-annotate": "~0.10",
-        "karma-ng-html2js-preprocessor": "~0.1.2"
+        "karma-ng-html2js-preprocessor": "~0.1"
     }
 }

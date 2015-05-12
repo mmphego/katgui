@@ -255,7 +255,7 @@
 
         vm.chipRemovePressed = function (chip) {
             vm.removeSensorLine(chip.name);
-            MonitorService.unsubscribe(sensor.name.replace(/:/g, '_'));
+            MonitorService.unsubscribe(chip.name.replace(/:/g, '_'));
         };
 
         vm.setLineStrokeWidth = function (chipName) {

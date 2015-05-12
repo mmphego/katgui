@@ -188,7 +188,7 @@ module.exports = function (grunt) {
         },
         karma: {
             options: {
-                browserNoActivityTimeout: 30000,
+                browserNoActivityTimeout: 10000,
                 browserDisconnectTolerance: 1,
                 browserDisconnectTimeout: 10000,
 
@@ -225,7 +225,7 @@ module.exports = function (grunt) {
                 }
             },
             all_tests: {
-                browsers: ['PhantomJS'],
+                browsers: ['Chrome'], //phantomjs is timing out for some reason, v2 (not out yet, might fix this)
 
                 files: {
                     src: [  //this files data is also updated in the watch handler, if updated change there too
