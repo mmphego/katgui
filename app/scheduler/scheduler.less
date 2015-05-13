@@ -94,10 +94,10 @@
 }
 
 .inline-sb-button {
-    font-size: 14px;
-    height: 32px;
-    width: 26px;
-    transition: 0s;
+    max-width: 26px;
+    max-height: 32px;
+    margin: 0 !important;
+    width: 26px !important;
 }
 
 @item-bg: #FFF;
@@ -106,6 +106,10 @@
 .selected-resource-item {
     background: #B3E5FC !important;
     border-bottom: 1px solid darken(@item-border-bottom, 10%) !important;
+    color: #333333;
+    span {
+        color: #333333;
+    }
 }
 
 .resource-item {
@@ -115,9 +119,10 @@
     min-width: 200px;
     border-bottom: 1px solid darken(@item-border-bottom, 10%);
     overflow: hidden;
-    background-color: @item-bg;
+//    background-color: @item-bg;
     &:hover {
-        background-color: darken(@item-bg, 5%);
+//        background-color: darken(@item-bg, 5%);
+        background-color: rgba(158,158,158,0.1)
     }
 }
 
@@ -227,6 +232,7 @@
     border-radius: 4px;
     background-color: white;
     margin-top: 5px;
+    color: #333333;
 }
 
 .glyphicon {
@@ -447,7 +453,7 @@
     background: #B3E5FC !important;
     box-shadow: 1px 2px 10px 0 #393939;
     border-bottom: 1px solid transparent;
-    color: black;
+    color: #333333;
 }
 
 .subarray-item {
@@ -548,4 +554,9 @@
 
 .maintenance-bg {
     background-color: rgba(206, 147, 216, 0.5);
+}
+
+.inline-action-button {
+    max-width: 32px;
+    max-height: 32px;
 }

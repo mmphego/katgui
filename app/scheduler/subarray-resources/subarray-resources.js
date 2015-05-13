@@ -62,13 +62,15 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        vm.markResourceFaulty = function (resource) {
-            ObservationScheduleService.markResourceFaulty(resource.name, resource.state === 'faulty' ? 0 : 1)
+        vm.markResourceFaulty = function (subarray, resource) {
+            ObservationScheduleService.markResourceFaulty(
+                subarray? subarray.id : '', resource.name, resource.state === 'faulty' ? 0 : 1)
                 .then($rootScope.displayPromiseResult);
         };
 
-        vm.markResourceInMaintenance = function (resource) {
-            ObservationScheduleService.markResourceInMaintenance(resource.name, resource.in_maintenance ? 0 : 1)
+        vm.markResourceInMaintenance = function (subarray, resource) {
+            ObservationScheduleService.markResourceInMaintenance(
+                subarray? subarray.id : '', resource.name, resource.in_maintenance ? 0 : 1)
                 .then($rootScope.displayPromiseResult);
         };
 

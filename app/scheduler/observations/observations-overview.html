@@ -53,7 +53,7 @@
                     </div>
 
                 </md-toolbar>
-                <div flex class="schedule-draft-data-list" style="border-left: 1px solid #d3d3d3; border-right: 1px solid #d3d3d3" ng-class="{'maintenance-bg':subarray.in_maintenance}">
+                <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.in_maintenance}">
                     <div style="min-width: 650px !important;"
                          ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id}"
                          class="schedule-draft-item animate-repeat" layout="column">

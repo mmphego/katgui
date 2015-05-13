@@ -432,12 +432,12 @@
             return createCommandPromise(api.sendObsSchedCommand('free_subarray', [subarray]));
         };
 
-        api.markResourceFaulty = function (resource, faulty) {
-            return createCommandPromise(api.sendObsSchedCommand('set_resources_faulty', [resource, faulty]));
+        api.markResourceFaulty = function (sub_nr, resource, faulty) {
+            return createCommandPromise(api.sendObsSchedCommand('set_resources_faulty', [sub_nr, resource, faulty]));
         };
 
-        api.markResourceInMaintenance = function (resource, in_maintenance) {
-            return createCommandPromise(api.sendObsSchedCommand('set_resources_in_maintenance', [resource, in_maintenance]));
+        api.markResourceInMaintenance = function (sub_nr, resource, in_maintenance) {
+            return createCommandPromise(api.sendObsSchedCommand('set_resources_in_maintenance', [sub_nr, resource, in_maintenance]));
         };
 
         api.listAllocationsForSubarray = function (sub_nr) {
