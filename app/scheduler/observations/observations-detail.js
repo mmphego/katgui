@@ -41,9 +41,11 @@
                                         ObservationScheduleService.listSubarrays()
                                             .then(function() {
                                                 vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                                                vm.subarrayState = vm.subarray.state.toUpperCase();
                                             });
                                     } else {
                                         vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                                        vm.subarrayState = vm.subarray.state.toUpperCase();
                                     }
                                 });
                         });
@@ -173,6 +175,30 @@
                     .then($rootScope.displayPromiseResult);
             }
             vm.closeEditMenu();
+        };
+
+        vm.freeSubarray = function () {
+            ObservationScheduleService.freeSubarray(vm.subarray_id)
+                .then(function(result) {
+                    $rootScope.displayPromiseResult(result);
+                    ObservationScheduleService.listSubarrays()
+                        .then(function() {
+                            vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                            vm.subarrayState = vm.subarray.state.toUpperCase();
+                        });
+                });
+        };
+
+        vm.activateSubarray = function () {
+            ObservationScheduleService.activateSubarray(vm.subarray_id)
+                .then(function (result) {
+                    $rootScope.displayPromiseResult(result);
+                    ObservationScheduleService.listSubarrays()
+                        .then(function() {
+                            vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                            vm.subarrayState = vm.subarray.state.toUpperCase();
+                        });
+                });
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", function (e, key) {

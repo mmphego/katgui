@@ -240,15 +240,13 @@
 
                     jsonData.clientResult = parseKATCPMessageResult(result.activate_subarray.result);
                     if (jsonData.clientResult.result === 'ok') {
-                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.activate_subarray.sub_nr}))]
-                            .state = 'active';
+                        api.findSubarrayById(result.activate_subarray.sub_nr).state = 'active';
                     }
                 } else if (result.set_subarray_in_maintenance) {
 
                     jsonData.clientResult = parseKATCPMessageResult(result.set_subarray_in_maintenance.result);
                     if (jsonData.clientResult.result === 'ok') {
-                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.set_subarray_in_maintenance.sub_nr}))]
-                            .in_maintenance = result.set_subarray_in_maintenance.in_maintenance;
+                        api.findSubarrayById(result.set_subarray_in_maintenance.sub_nr).in_maintenance = result.set_subarray_in_maintenance.in_maintenance;
                     }
                 } else if (result.set_resources_faulty) {
 
@@ -536,6 +534,10 @@
                 }
                 return jsonRPC.id;
             }
+        };
+
+        api.findSubarrayById = function (sub_nr) {
+            return api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: sub_nr.toString()}))];
         };
 
         return api;
