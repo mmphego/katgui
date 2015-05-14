@@ -18,9 +18,9 @@ describe('Directive: d3-chart', function () {
 //        });
     }));
 
-    it('should create a d3 line chart', function () {
+    it('should create a multi-line-chart chart', function () {
 
-        var element = compile('<d3-line></d3-line>')(scope);
+        var element = compile('<multi-line-chart></multi-line-chart>')(scope);
         expect(element[0]).toBeDefined();
         scope.$digest();
 

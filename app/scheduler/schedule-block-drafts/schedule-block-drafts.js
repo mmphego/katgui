@@ -66,14 +66,12 @@
         };
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
 
-        /* istanbul ignore next */
         //we can ignore these because the menu's are going to be replaced in angular material 0.10
         vm.unbindScroll = angular.element('#schedule-draft-data-list-id').bind("scroll", function () {
             vm.closeDatePickerMenu();
             vm.closeEditMenu();
         });
 
-        /* istanbul ignore next */
         //we can ignore these because the menu's are going to be replaced in angular material 0.10
         vm.unbindClick = angular.element('body').bind("click", function (e) {
             if (!e.target.parentNode.classList.contains('schedule-item-input')) {
@@ -148,7 +146,6 @@
         };
 
         //ignore this because we are going to replace this menu in angular material 0.10
-        /* istanbul ignore next */
         vm.openSchedulerEditMenu = function (item, $event) {
             var rowIndex = vm.scheduleDraftData.indexOf(item);
             if (vm.currentEditMenuIndex !== rowIndex) {
@@ -171,7 +168,6 @@
         };
 
         //ignore this because we are going to replace this datepicker in angular material 0.10
-        /* istanbul ignore next */
         vm.openDatePicker = function (item, $event) {
             var rowIndex = $scope.filteredDraftItems.indexOf(item);
             //TODO keyboard shortcut like escape to close datepicker
@@ -204,7 +200,6 @@
         };
 
         //ignore this because we are going to replace this menu in angular material 0.10
-        /* istanbul ignore next */
         vm.closeEditMenu = function () {
             if (vm.showEditMenu) {
                 vm.showEditMenu = false;
@@ -216,7 +211,6 @@
         };
 
         //ignore this because we are going to replace this datepicker in angular material 0.10
-        /* istanbul ignore next */
         vm.closeDatePickerMenu = function () {
             if (vm.showDatePicker) {
                 vm.showDatePicker = false;

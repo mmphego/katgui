@@ -8,18 +8,18 @@
         </md-toolbar>
         <md-content layout="column" layout-padding md-theme="{{themePrimaryButtons}}">
             <div class="config-div-item">
-                <md-subheader md-theme="{{themePrimaryButtons}}" class="md-primary">Themes</md-subheader>
-                <md-select md-theme="{{themePrimary}}" ng-model="vm.selectedTheme" style="min-width: 200px; margin-left: 8px;" placeholder="Select a Theme...">
+                <md-subheader md-theme="{{themePrimary}}" class="md-primary">Themes</md-subheader>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-model="vm.selectedTheme" style="min-width: 200px; margin-left: 8px;" placeholder="Select a Theme...">
                     <md-option ng-value="theme.name" ng-repeat="theme in vm.themes">{{theme.name}}</md-option>
                 </md-select>
-                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showJulianDate" aria-label="Show Julian Date">Show Julian Date</md-checkbox>
-                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLST" aria-label="Show Local Sidereal Time">Show Local Sidereal Time</md-checkbox>
-                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLocalAndSAST" aria-label="Show Local and South African Standard Time">Show Local and South African Standard Time</md-checkbox>
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showJulianDate" >Show Julian Date</md-checkbox>
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLST" >Show Local Sidereal Time</md-checkbox>
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLocalAndSAST" >Show Local and South African Standard Time</md-checkbox>
             </div>
             <div class="config-div-item" style="border: 0">
-                <md-subheader md-theme="{{themePrimaryButtons}}" class="md-primary">Alarms</md-subheader>
-                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showAlarms" aria-label="Show Alarm Notifications">Show Alarm Notifications</md-checkbox>
-                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLargeAlarms" aria-label="Show Detailed Alarm Notifications">Show Detailed Alarm Notifications</md-checkbox>
+                <md-subheader md-theme="{{themePrimary}}" class="md-primary">Alarms</md-subheader>
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showAlarms" >Show Alarm Notifications</md-checkbox>
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLargeAlarms" >Show Detailed Alarm Notifications</md-checkbox>
             </div>
 
         </md-content>

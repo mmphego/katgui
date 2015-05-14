@@ -115,8 +115,8 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                     console.log('Monitor Connection Established. Authenticated.');
                 } else if (messages.result.length > 0) {
                     //subscribe response
-                    console.log('Subscribed to: ');
-                    console.log(messages.result);
+                    //console.log('Subscribed to: ');
+                    //console.log(messages.result);
                 } else {
                     //bad auth response
                     api.connection.authorized = false;
@@ -161,6 +161,40 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             };
 
             api.connection.send(JSON.stringify(jsonRPC));
+        }
+    };
+
+    api.connectLiveFeed = function (sensor, interval) {
+
+        var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+        sensorName = sensorName.replace(/\./g, '_');
+        //var httpResponse =  $http.get(urlBase + '/addsensorstrategy' +
+        //'?resource_name=' + sensor.component +
+        //'&strategy_str=' + sensorName +
+        //'&strategy_type=period' +
+        //'&strategy_interval=' + interval);
+
+        api.sendMonitorCommand('add_sensor_listener', [sensor.component, sensorName, 'period', interval]);
+
+        api.subscribe(sensor.component + ':' + sensorName);
+        //return httpResponse;
+    };
+
+    api.sendMonitorCommand = function (method, params) {
+
+        if (api.connection && api.connection.authorized) {
+            var jsonRPC = {
+                'id': KatGuiUtil.generateUUID(),
+                'jsonrpc': '2.0',
+                'method': method,
+                'params': params
+            };
+
+            api.connection.send(JSON.stringify(jsonRPC));
+        } else {
+            $timeout(function () {
+                api.sendMonitorCommand(method, params);
+            }, 500);
         }
     };
 

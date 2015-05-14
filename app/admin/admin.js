@@ -115,7 +115,6 @@
 
         vm.resetPassword = function (event, user) {
             var passwordHash = null;
-            /* istanbul ignore next */
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {

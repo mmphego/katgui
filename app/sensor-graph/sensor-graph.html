@@ -1,4 +1,200 @@
-<div class="view-container" ng-controller="SensorGraphCtrl as vm">
+<div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}"
+     ng-click="vm.showDatePicker = false;"
+     style="min-height: 100%; height: 100%; min-width: 100%; width: 100%; position: absolute;">
 
+    <div class="sensor-graph-tips" layout="column" ng-show="vm.showTips">
+        <div layout="row" layout-align="start center" layout="row" class="arrow-box sg-timerange-tip">
+            <span>1. Set a Time Range</span>
+        </div>
+        <div layout="row" layout-align="start center" class="sg-findsensor-tip arrow-box">
+            <span>2. Select the sensor type</span>
+        </div>
+        <div layout="row" layout-align="start center" class="sg-findsensor-tip arrow-box">
+            <span>3. Type a sensor name search string and press enter (e.g. *wind_speed*)</span>
+        </div>
+        <div layout="row" layout-align="start center" class="sg-sensordata-tip arrow-box">
+            <span>4. Click the sensor to map its data</span>
+        </div>
+        <div layout="row" layout-align="start center" class="sg-options-tip arrow-box">
+            <span>5. Set your graphing options</span>
+        </div>
+    </div>
 
+    <div layout="column" style="margin: 8px;">
+        <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
+            Sensor Graph Tools
+        </md-toolbar>
+        <div flex class="md-whiteframe-z1" layout="column" layout-align="start center"
+             md-theme="{{themePrimaryButtons}}" style="overflow: auto; position: relative;">
+
+            <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z1"
+                            ng-init="vm.showDatePicker = false"
+                            style="position: absolute; left:23px; top: 46px; color: #333333;"
+                            ng-show="vm.showDatePicker" data-ng-model="vm.sensorStartDatetime"
+                            ng-keypress="vm.showDatePicker = false"
+                            vm.showDatePicker=false;"
+                            ng-click="$event.stopPropagation()"
+                            data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(newDate)"></datetimepicker>
+
+            <datetimepicker id="enddatePickerMenu" class="datepickerMenu md-whiteframe-z1"
+                            ng-init="vm.showEndDatePicker = false"
+                            style="position: absolute; left:23px; top: 80px; color: #333333;"
+                            ng-show="vm.showEndDatePicker" data-ng-model="vm.sensorEndDatetime"
+                            ng-keypress="vm.showEndDatePicker = false"
+                            vm.showDatePicker=false;"
+                            ng-click="$event.stopPropagation()"
+                            data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(newDate)"></datetimepicker>
+
+            <div layout="row">
+                <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
+                    <input type="text" ng-change="vm.startTimeChange()" class=""
+                           ng-model="vm.sensorStartDateReadable" placeholder="Start Date"
+                           ng-class="{'input-error':vm.dateTimeError}" title="End Date 'yyyy-MM-dd HH:mm:ss'"
+                           ng-click="$event.stopPropagation()"/>
+                </md-input-container>
+                <md-button class="md-icon-button" style="margin-left: 0px; margin-top: 3px; width: 40px; height: 40px;"
+                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                </md-button>
+            </div>
+
+            <div layout="row" layout="center center" style="margin-top: -10px;" ng-show="vm.showRelativeTime">
+                <md-switch ng-init="vm.plusMinus = false" class="md-primary" ng-model="vm.plusMinus"
+                           style="font-size: 34px; min-width: 65px; margin-right: -10px; margin-top: 12px">
+                    {{vm.plusMinus? '+' : '-'}}
+                </md-switch>
+                <md-input-container md-no-float style="padding: 0; vertical-align: middle">
+                    <input ng-init="vm.unitLength = 1" type="number" min="1" max="999"
+                           style="font-size: 16px; background: transparent; width: 45px; text-align: end; max-height: 30px; margin-top:21px;"
+                           placeholder="" ng-model="vm.unitLength" title="Range Unit Length">
+                </md-input-container>
+
+                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.unitType = 'h'" ng-model="vm.unitType"
+                           style="min-width: 105px;">
+                    <md-option value="s">Second(s)</md-option>
+                    <md-option value="m">Minute(s)</md-option>
+                    <md-option value="h">Hour(s)</md-option>
+                    <md-option value="d">Day(s)</md-option>
+                </md-select>
+            </div>
+
+            <div layout="row" layout="center center" style="margin-top: -10px;" ng-show="!vm.showRelativeTime">
+                <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
+                    <input type="text" ng-change="vm.endTimeChange()" class=""
+                           ng-model="vm.sensorEndDateReadable" placeholder="End Date"
+                           ng-class="{'input-error':vm.endDateTimeError}" title="Start Date 'yyyy-MM-dd HH:mm:ss'"
+                           ng-click="$event.stopPropagation()"/>
+                </md-input-container>
+                <md-button class="md-icon-button" style="margin-left: 0px; margin-top: 3px; width: 40px; height: 40px;"
+                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                </md-button>
+            </div>
+
+            <div layout="row" layout-align="center center" style="margin-left: 16px; margin-right:16px; width: 130px;">
+                <!--<span style="margin-right: 8px;">Sensor Type:</span>-->
+                <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'" ng-model="vm.sensorType"
+                    title="Sensor Type" ng-change="vm.sensorTypeChanged()">
+                    <md-option value="numeric">Numeric</md-option>
+                    <!--<md-option value="text">Text</md-option>-->
+                    <md-option value="discrete">Discrete</md-option>
+                </md-select>
+            </div>
+
+            <!--<md-input-container md-no-float class="sensor-search-input">-->
+                <!--<input type="text" ng-change="vm.validateSearchInputLength(vm.sensorRegexStr)"-->
+                       <!--placeholder="Search for sensors by regex..." ng-model="vm.sensorRegexStr"-->
+                       <!--ng-keypress="vm.findSensorDataFromRegex(vm.sensorRegexStr, $event)"-->
+                       <!--ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>-->
+            <!--</md-input-container>-->
+
+            <md-input-container md-no-float class="sensor-search-input">
+                <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
+                       placeholder="Search for sensors..." ng-model="vm.sensorSearchStr"
+                       ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
+                       ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Type a sensor name expression and press enter. E.g. *wind*"/>
+            </md-input-container>
+            <div class="sensor-search-name-list unselectable md-whiteframe-z1">
+                <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames track by $index"
+                              ng-click="vm.searchSensorClicked(sensor);">
+                    <span>{{::sensor.name}}</span>
+                </div>
+                <div layout="row" layout-align="center center" class="search-loading-overlay unselectable"
+                     ng-if="vm.waitingForSearchResult">
+                    <div class="spinner">
+                        <div class="double-bounce1"></div>
+                        <div class="double-bounce2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="width: 100%; margin-top: 4px;" layout="row" layout-align="center center">
+                <span ng-show="vm.sensorSearchNames.length === 1000" title="Refine the search to see more sensors"
+                      class="fa fa-warning"></span>
+                <span ng-show="vm.sensorSearchNames.length > 1" style="margin-left: 4px;">Displaying {{vm.sensorSearchNames.length}} results.</span>
+                <span ng-show="vm.sensorSearchNames.length === 1" style="margin-left: 4px;">There is 1 result.</span>
+                <span ng-show="vm.sensorSearchNames.length === 0" style="margin-left: 4px;">There are no results.</span>
+            </div>
+
+            <div layout="column" style="width: 100%;">
+                <md-checkbox class="md-primary" ng-model="vm.showRelativeTime">
+                    Show Relative Date-Time Picker
+                </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.showDots">
+                    Show Dots
+                </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showGridLinesChanged()">
+                    Show Grid Lines
+                </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.showTips">
+                    Show Sensor Graph Tips
+                </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.liveData">
+                    Include Live Data
+                </md-checkbox>
+                <!--<md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}"-->
+                           <!--ng-disabled="vm.sensorNames.length === 0"-->
+                           <!--ng-click="vm.connectLiveFeed()">-->
+                    <!--Connect Live Data Feed-->
+                <!--</md-button>-->
+            </div>
+        </div>
+    </div>
+
+    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px;">
+        <md-toolbar layout="row" layout-align="end center" class="md-whiteframe-z1 ">
+            <div flex layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}"
+                 class="md-toolbar-tools-medium">
+                <md-chips flex class="custom-chips" ng-model="vm.sensorNames" readonly="true">
+                    <md-chip-template ng-mouseenter="vm.setLineStrokeWidth($chip.name)"
+                                      ng-mouseleave="vm.removeLineStrokeWidth($chip.name)">
+                        <span class="{{$chip.name}}">
+                          <strong>{{$chip.name}}</strong>
+                        </span>
+                    </md-chip-template>
+                    <button md-chip-remove ng-click="vm.chipRemovePressed($chip)" class="md-primary sensor-name-chip">
+                        <md-icon md-font-icon="fa-close" class="fa"></md-icon>
+                    </button>
+                </md-chips>
+            </div>
+        </md-toolbar>
+        <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart"
+                          clear-function="vm.clearChart" ng-class="{'dot-hide':!vm.showDots}"
+                          remove-sensor-function="vm.removeSensorLine"></multi-line-chart>
+        <div layout="row" class="floating-chart-actions">
+            <!--<md-button class="md-icon-button"-->
+                       <!--ng-click="vm.showHelp($event)">-->
+                <!--<md-icon class="fa" md-font-icon="fa-question"></md-icon>-->
+            <!--</md-button>-->
+            <md-button class="md-icon-button"
+                       ng-click="vm.clearData()" title="Clear Data">
+                <md-icon class="fa" md-font-icon="fa-remove"></md-icon>
+            </md-button>
+            <md-button class="md-icon-button"
+                       ng-click="alert('not implemented')" title="Additional Actions">
+                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+            </md-button>
+        </div>
+
+    </div>
 </div>

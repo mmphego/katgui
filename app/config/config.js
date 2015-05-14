@@ -31,6 +31,11 @@
                 $rootScope.themeSecondary = newTheme.secondary;
                 $rootScope.themePrimaryButtons = newTheme.primaryButtons;
                 $localStorage['selectedTheme'] = newTheme.name;
+                if (newTheme.name === 'Dark') {
+                    angular.element('body').addClass('dark-theme');
+                } else {
+                    angular.element('body').removeClass('dark-theme');
+                }
             }
         };
 

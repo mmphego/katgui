@@ -49,8 +49,8 @@
             {
                 name: 'Dark',
                 primary: 'dark',
-                secondary: 'dark',
-                primaryButtons: 'dark'
+                secondary: 'dark-secondary',
+                primaryButtons: 'dark-buttons'
             }])
         .config(configureKatGui)
         .run(runKatGui)
@@ -67,6 +67,12 @@
         });
         if (!theme) {
             theme = THEMES[0];
+        }
+
+        if (theme.name === 'Dark') {
+            angular.element('body').addClass('dark-theme');
+        } else {
+            angular.element('body').removeClass('dark-theme');
         }
 
         $rootScope.themePrimary = theme.primary;
@@ -182,29 +188,45 @@
             }
         };
 
-        /* istanbul ignore next */
         $rootScope.showSimpleDialog = function (title, message) {
-            var alert = $mdDialog.alert()
-                .title(title)
-                .content(message)
-                .ok('Close');
-            $mdDialog
-                .show(alert)
-                .finally(function () {
-                    alert = undefined;
-                });
-
-            console.log('Showing simple dialog, title: ' + title + ', message: ' + message);
+            $rootScope.showDialog(title, message);
         };
 
-        /* istanbul ignore next */
+        $rootScope.showDialog = function (title, content, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = title;
+                        $scope.content = content;
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                    },
+                    template:
+                    "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                        "<div style='padding: 0px; margin: 0px;' layout='column' layout-padding >" +
+                            "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                            "<div flex>{{content}}</div>" +
+                            "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                                "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
+                            "</div>" +
+                        "</div>" +
+                    "</md-dialog>",
+                    targetEvent: event
+                });
+
+            console.log('Showing dialog, title: ' + title + ', message: ' + content);
+        };
+
         $rootScope.showSBDetails = function (sb, event) {
             $rootScope.mdDialogSb = sb;
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
 
-                        $scope.themePrimary = $rootScope.themePrimaryButtons;
+                        $scope.themePrimary = $rootScope.themePrimary;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.sb = $rootScope.mdDialogSb;
                         $scope.hide = function () {
@@ -433,8 +455,8 @@
             .state(observationsOverview)
             .state(observationsDetail);
 
-        $stateProvider.state('sensorGraph', {
-            url: '/sensorGraph',
+        $stateProvider.state('sensor-graph', {
+            url: '/sensor-graph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
             title: 'Sensor Graphs',
             data: {
@@ -496,43 +518,43 @@
         //
         $mdThemingProvider.theme('indigo')
             .primaryPalette('indigo')
-            .accentPalette('indigo');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('blue')
             .primaryPalette('blue')
-            .accentPalette('blue');
+            .accentPalette('indigo');
 
         $mdThemingProvider.theme('red')
             .primaryPalette('red')
-            .accentPalette('red');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('green')
             .primaryPalette('green')
-            .accentPalette('green');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('blue-grey')
             .primaryPalette('blue-grey')
-            .accentPalette('blue-grey');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('deep-purple')
             .primaryPalette('deep-purple')
-            .accentPalette('deep-purple');
+            .accentPalette('purple');
 
         $mdThemingProvider.theme('purple')
             .primaryPalette('purple')
-            .accentPalette('purple');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('teal')
             .primaryPalette('teal')
-            .accentPalette('teal');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('yellow')
             .primaryPalette('yellow')
-            .accentPalette('yellow');
+            .accentPalette('blue');
 
         $mdThemingProvider.theme('amber')
             .primaryPalette('amber')
-            .accentPalette('amber');
+            .accentPalette('blue');
 
         $mdThemingProvider.definePalette('white', $mdThemingProvider.extendPalette('blue', {'400': 'ffffff'}));
         $mdThemingProvider.theme('white')
@@ -541,7 +563,15 @@
             });
 
         $mdThemingProvider.theme('dark')
+            .primaryPalette('blue-grey')
+            .dark();
+
+        $mdThemingProvider.theme('dark-secondary')
             .primaryPalette('indigo')
+            .dark();
+
+        $mdThemingProvider.theme('dark-buttons')
+            .primaryPalette('blue')
             .dark();
 
         $mdThemingProvider.alwaysWatchTheme(true);

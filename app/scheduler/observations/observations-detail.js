@@ -110,7 +110,6 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        /* istanbul ignore next */
         //going to be replaced with angular material 0.10
         vm.openSchedulerEditMenu = function (item, $event) {
             var rowIndex = vm.currentScheduleData.indexOf(item);
@@ -132,7 +131,6 @@
             $event.stopPropagation();
         };
 
-        /* istanbul ignore next */
         //going to be replaced with angular material 0.10
         vm.closeEditMenu = function() {
             if (vm.showEditMenu) {
@@ -144,7 +142,6 @@
             }
         };
 
-        /* istanbul ignore next */
         //going to be replaced with angular material 0.10
         vm.moveSelectedSBToDraft = function() {
             if (vm.selectedSchedule) {
@@ -162,7 +159,6 @@
             vm.closeEditMenu();
         };
 
-        /* istanbul ignore next */
         //going to be replaced with angular material 0.10
         vm.moveSelectedSBToFinished = function() {
             if (vm.selectedSchedule) {

@@ -1,40 +1,305 @@
-path {
-  stroke: steelblue;
-  stroke-width: 2;
-  fill: none;
+.grid .tick {
+    stroke: #9e9e9e;
+    opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+
+.grid path {
+    stroke-width: 0;
+}
+
+.axis path {
+    fill: none;
+    stroke: #9e9e9e;
+    shape-rendering: crispEdges;
+}
+
+.domain path {
+    stroke: #333;
+}
+
+.axis text {
+    fill: #9e9e9e;
 }
 
 .axis line {
-  fill: none;
-  stroke: lightgrey;
-  stroke-width: 1;
-  shape-rendering: crispEdges;
-}
-
-.axis {
-  > .domain {
-    fill: none;
-    stroke: black;
-    stroke-width: 0;
+    stroke: rgba(158, 158, 158, 0.5);
     shape-rendering: crispEdges;
-  }
 }
 
-.gridrect {
-  stroke: black;
-  fill: none;
-  stroke-width: 1;
+.axis .axis-label {
+    font-size: 14px;
 }
 
-div.tooltip {
-  position: absolute;
-  text-align: center;
-  width: 60px;
-  height: 28px;
-  padding: 2px;
-  font: 12px sans-serif;
-  background: lightsteelblue;
-  border: 0px;
-  border-radius: 8px;
-  pointer-events: none;
+.line {
+    fill: none !important;
+    stroke-width: 1.5px;
+}
+
+.dot {
+    /* consider the stroke-with the mouse detect radius? */
+    stroke: transparent;
+    stroke-width: 10px;
+    cursor: pointer;
+}
+
+.dot-hide {
+    circle {
+        display: none;
+    }
+}
+
+.dot:hover {
+    stroke: rgba(68, 127, 255, 0.3);
+}
+
+.multi-line-tooltip {
+    background: rgba(255,255,255, 0.8);
+    color: #333333;
+    border: 0 solid #333333;
+    font-size: 14px;
+    pointer-events: none;
+    position: absolute;
+    padding: 8px;
+    max-width: 220px;
+    max-height: 220px;
+    word-wrap: break-word;
+}
+
+multi-line-chart {
+    circle {
+        stroke-width: 0;
+    }
+}
+
+.floating-chart-actions {
+    position: absolute;
+    top: 80px;
+    right: 16px;
+    opacity: 0.2;
+
+    &:hover {
+        opacity: 1.0;
+    }
+
+    .md-button {
+        width: 36px;
+        height: 36px;
+        margin: 2px;
+        line-height: 4.5rem;
+        //        padding: 0px !important;
+    }
+}
+
+.sensor-graph-legend {
+    font-size: 16px;
+    font-weight: bold;
+    text-anchor: middle;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.sensor-search-name-list {
+    .sensor-search-result-item {
+        cursor: pointer;
+        margin: 2px 4px 2px 4px;
+
+        &:focus {
+            outline: auto;
+        }
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    margin-left: 8px;
+    margin-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    min-width: 350px;
+    max-width: 350px;
+    min-height: 700px;
+    max-height: 700px;
+    font-size: 12px;
+    overflow: auto;
+    position: relative;
+    //    border: 1px solid rgba(158, 158, 158, 0.5);
+}
+
+//todo, better overlay without using fixed
+.search-loading-overlay {
+    background: rgba(158,158,158,0.1);
+    position: fixed;
+    left: 16px;
+    top: 287px;
+    height: 700px;
+    width: 350px;
+}
+
+.sensor-search-input {
+    width: 334px;
+    //    margin-left: 8px;
+    padding-bottom: 8px;
+}
+
+.custom-chips {
+    max-height: 52px;
+    min-height: 52px;
+    overflow: auto;
+//    .md-chip {
+//        background: rgba(158,158,158, 0.5) !important;
+//    }
+
+}
+
+.custom-chips .md-chip {
+    position: relative;
+    padding-right: 3.5rem;
+}
+
+.custom-chips .md-chip .md-chip-remove-container {
+    position: absolute;
+    right: 0.4rem;
+    top: 0.4rem;
+    margin-right: 0;
+    height: 2.4rem;
+    background: none;
+}
+
+.custom-chips .md-chip .md-chip-remove-container button.sensor-name-chip {
+    position: relative;
+    height: 2.4rem;
+    width: 2.4rem;
+    line-height: 3rem;
+    text-align: center;
+//    background: rgba(158,158,158, 0.5) !important;
+    border-radius: 50%;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+//    transition: background 0.15s linear;
+    display: block;
+}
+
+.custom-chips .md-chip .md-chip-remove-container button.sensor-name-chip md-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-49%, -34%, 0);
+    font-size: 18px;
+    color: white;
+    fill: white;
+}
+
+.custom-chips .md-chip .md-chip-remove-container button.sensor-name-chip:hover, .chipsdemoBasicUsage .custom-chips .md-chip .md-chip-remove-container button.vegetablechip:focus {
+    background: rgba(244, 67, 54, 1);
+}
+
+.sensor-graph-tips {
+    position: absolute;
+    left: 400px;
+    top: 60px;
+
+    .arrow-box {
+        position: relative;
+        background: #88b7d5;
+        border: 4px solid #c2e1f5;
+        z-index: 100;
+        color: black;
+        span {
+            font-size: 24px;
+        }
+    }
+    .arrow-box:after, .arrow-box:before {
+        right: 100%;
+        top: 50%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .arrow-box:after {
+        border-color: rgba(136, 183, 213, 0);
+        border-right-color: #88b7d5;
+        border-width: 20px;
+        margin-top: -20px;
+    }
+    .arrow-box:before {
+        border-color: rgba(194, 225, 245, 0);
+        border-right-color: #c2e1f5;
+        border-width: 26px;
+        margin-top: -26px;
+    }
+
+    .sg-timerange-tip {
+        width: 230px;
+        height: 54px;
+    }
+
+    .sg-findsensor-tip {
+        margin-top: 10px;
+        height: 54px;
+        width: 790px;
+    }
+
+    .sg-sensordata-tip {
+        margin-top: 10px;
+        width: 380px;
+        height: 54px;
+    }
+
+    .sg-options-tip {
+        margin-top: 660px;
+        width: 380px;
+        height: 54px;
+    }
+}
+
+.spinner {
+    width: 80px;
+    height: 80px;
+
+    position: relative;
+    margin: 100px auto;
+}
+
+.double-bounce1, .double-bounce2 {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: rgba(158, 158, 158, 0.8);
+    opacity: 0.6;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    -webkit-animation: bounce 2.0s infinite ease-in-out;
+    animation: bounce 2.0s infinite ease-in-out;
+}
+
+.double-bounce2 {
+    -webkit-animation-delay: -1.0s;
+    animation-delay: -1.0s;
+}
+
+@-webkit-keyframes bounce {
+    0%, 100% {
+        -webkit-transform: scale(0.0)
+    }
+    50% {
+        -webkit-transform: scale(1.0)
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: scale(0.0);
+        -webkit-transform: scale(0.0);
+    }
+    50% {
+        transform: scale(1.0);
+        -webkit-transform: scale(1.0);
+    }
 }

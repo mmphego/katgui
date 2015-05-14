@@ -10,7 +10,7 @@ var pkg = require('./package.json');
 //This enables users to create any directory structure they desire.
 var createFolderGlobs = function (fileTypePatterns) {
     fileTypePatterns = Array.isArray(fileTypePatterns) ? fileTypePatterns : [fileTypePatterns];
-    var ignore = ['node_modules', 'bower_components', 'dist', 'temp', 'test-results', 'images'];
+    var ignore = ['node_modules', 'bower_components', 'dist', 'temp', 'test-results', 'images', 'fonts'];
     var fs = require('fs');
     return fs.readdirSync(process.cwd())
         .map(function (file) {
@@ -74,8 +74,7 @@ module.exports = function (grunt) {
         },
         less: {
             production: {
-                options: {
-                },
+                options: {},
                 files: {
                     'temp/app.css': 'app/app.less'
                 }
@@ -143,16 +142,10 @@ module.exports = function (grunt) {
         },
         concat: {
             main: {
-                src: ['<%= dom_munger.data.appjs %>', '<%= ngtemplates.main.dest %>' ],
+                src: ['<%= dom_munger.data.appjs %>', '<%= ngtemplates.main.dest %>'],
                 dest: 'temp/app.full.js'
             }
         },
-//        ngmin: {
-//            main: {
-//                src: 'temp/app.full.js',
-//                dest: 'temp/app.full.js'
-//            }
-//        },
         ngAnnotate: {
             main: {
                 src: 'temp/app.full.js',
@@ -195,6 +188,10 @@ module.exports = function (grunt) {
         },
         karma: {
             options: {
+                browserNoActivityTimeout: 10000,
+                browserDisconnectTolerance: 1,
+                browserDisconnectTimeout: 10000,
+
                 frameworks: ['jasmine'],
 
                 preprocessors: {
@@ -205,15 +202,6 @@ module.exports = function (grunt) {
                 ngHtml2JsPreprocessor: {
                     moduleName: 'templates'
                 },
-
-                files: [  //this files data is also updated in the watch handler, if updated change there too
-                    '<%= dom_munger.data.appjs %>',
-                    'bower_components/angular-mocks/angular-mocks.js',
-                    'bower_components/d3/d3.min.js',
-                    createFolderGlobs('*.html'),
-                    'bower_components/angular-material/angular-material.css',
-                    'app/**/*-spec.js'
-                ],
 
                 port: 9876,
                 colors: true,
@@ -230,17 +218,30 @@ module.exports = function (grunt) {
 
                 coverageReporter: {
                     reporters: [
-                        { type: 'text', dir: 'test-results/', subdir: 'text', file: 'coverage.txt' },
-                        { type: 'html', dir: 'test-results/', subdir: 'html', file: 'coverage.html' },
-                        { type: 'cobertura', dir: 'test-results/', subdir: '.', file: 'cobertura.xml' }
+                        //{type: 'text', dir: 'test-results/', subdir: 'text', file: 'coverage.txt'},
+                        {type: 'html', dir: 'test-results/', subdir: 'html', file: 'coverage.html'},
+                        {type: 'cobertura', dir: 'test-results/', subdir: '.', file: 'cobertura.xml'}
                     ]
                 }
             },
             all_tests: {
-                browsers: ['PhantomJS']
+                browsers: ['Chrome'], //phantomjs is timing out for some reason, v2 (not out yet, might fix this)
+
+                files: {
+                    src: [  //this files data is also updated in the watch handler, if updated change there too
+                        '<%= dom_munger.data.appjs %>',
+                        'bower_components/angular-mocks/angular-mocks.js',
+                        'bower_components/d3/d3.min.js',
+                        //createFolderGlobs('*.html'),
+                        'app/**/*.html',
+                        'bower_components/angular-material/angular-material.css',
+                        'app/**/*-spec.js'
+                    ]
+                }
             },
             during_watch: {
-                browsers: ['PhantomJS']
+                browsers: ['PhantomJS'],
+                files: '<%= karma.all_tests.files %>'
             }
         }
 //        protractor_webdriver: {
@@ -274,41 +275,41 @@ module.exports = function (grunt) {
     grunt.registerTask('test', ['dom_munger:read', 'karma:all_tests']);
     grunt.registerTask('p:test', ['protractor_webdriver', 'protractor']);
 
-    grunt.event.on('watch', function (action, filepath) {
-        //https://github.com/gruntjs/grunt-contrib-watch/issues/156
-
-        var tasksToRun = [];
-
-        if (filepath.lastIndexOf('.js') !== -1 && filepath.lastIndexOf('.js') === filepath.length - 3) {
-
-            //lint the changed js file
-            grunt.config('jshint.main.src', filepath);
-            tasksToRun.push('jshint');
-
-            //find the appropriate unit test for the changed file
-            var spec = filepath;
-            if (filepath.lastIndexOf('-spec.js') === -1 || filepath.lastIndexOf('-spec.js') !== filepath.length - 8) {
-                spec = filepath.substring(0, filepath.length - 3) + '-spec.js';
-            }
-
-            //if the spec exists then lets run it
-            if (grunt.file.exists(spec)) {
-                var files = [].concat(grunt.config('dom_munger.data.appjs'));
-                files.push('bower_components/angular-mocks/angular-mocks.js');
-                files.push('bower_components/d3/d3.min.js');
-                files.push(spec);
-                grunt.config('karma.options.files', files);
-                tasksToRun.push('karma:during_watch');
-            }
-        }
-
-        //if index.html changed, we need to reread the <script> tags so our next run of karma
-        //will have the correct environment
-        if (filepath === 'index.html') {
-            tasksToRun.push('dom_munger:read');
-        }
-
-        grunt.config('watch.main.tasks', tasksToRun);
-
-    });
+    //grunt.event.on('watch', function (action, filepath) {
+    //    //https://github.com/gruntjs/grunt-contrib-watch/issues/156
+    //
+    //    var tasksToRun = [];
+    //
+    //    if (filepath.lastIndexOf('.js') !== -1 && filepath.lastIndexOf('.js') === filepath.length - 3) {
+    //
+    //        //lint the changed js file
+    //        grunt.config('jshint.main.src', filepath);
+    //        tasksToRun.push('jshint');
+    //
+    //        //find the appropriate unit test for the changed file
+    //        var spec = filepath;
+    //        if (filepath.lastIndexOf('-spec.js') === -1 || filepath.lastIndexOf('-spec.js') !== filepath.length - 8) {
+    //            spec = filepath.substring(0, filepath.length - 3) + '-spec.js';
+    //        }
+    //
+    //        //if the spec exists then lets run it
+    //        if (grunt.file.exists(spec)) {
+    //            var files = [].concat(grunt.config('dom_munger.data.appjs'));
+    //            files.push('bower_components/angular-mocks/angular-mocks.js');
+    //            files.push('bower_components/d3/d3.min.js');
+    //            files.push(spec);
+    //            grunt.config('karma.options.files', files);
+    //            tasksToRun.push('karma:during_watch');
+    //        }
+    //    }
+    //
+    //    //if index.html changed, we need to reread the <script> tags so our next run of karma
+    //    //will have the correct environment
+    //    if (filepath === 'index.html') {
+    //        tasksToRun.push('dom_munger:read');
+    //    }
+    //
+    //    grunt.config('watch.main.tasks', tasksToRun);
+    //
+    //});
 };

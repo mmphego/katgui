@@ -52,6 +52,7 @@ describe('Directive: d3-chart', function () {
             scope = _$rootScope_.$new();
             $q = _$q_;
             StatusService = _StatusService_;
+            _d3Util_.applyTooltipValues = function() {};
 
             _d3Util_.waitUntilDataExists = function () {
                 var deferred = $q.defer();

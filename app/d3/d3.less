@@ -46,6 +46,7 @@ rect.parent,
 }
 
 .treemap-tooltip {
+    color: #333333;
     word-wrap: break-word;
     max-width: 290px;
     max-height: 225px;
@@ -64,7 +65,7 @@ text.parent {
 }
 
 circle {
-    stroke: #fff;
+//    stroke: #fff;
     pointer-events: all;
 }
 
@@ -88,7 +89,7 @@ circle.child {
 
 }
 
-path {
+path:not(.line.domain) {
     stroke: #fff;
     stroke-width: 1.5;
     cursor: pointer;
@@ -99,4 +100,10 @@ actions-button {
     background: transparent;
     border: 0;
 
+}
+
+.brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
 }

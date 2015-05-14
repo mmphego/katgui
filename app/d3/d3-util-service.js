@@ -95,9 +95,6 @@ angular.module('katGui.d3')
                             .style("top", (y + 5 + angular.element('#ui-view-container-div').scrollTop()) + "px")
                             .style("left", (x + 5 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
                     }
-
-
-
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });
