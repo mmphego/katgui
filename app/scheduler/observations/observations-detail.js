@@ -36,14 +36,16 @@
                         .then(function() {
                             ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id)
                                 .then(function() {
-                                    vm.selectedMode = ObservationScheduleService.schedulerModes[vm.subarray_id].stringValue;
+                                    vm.selectedMode = ObservationScheduleService.schedulerModes[vm.subarray_id];
                                     if (ObservationScheduleService.subarrays.length === 0) {
                                         ObservationScheduleService.listSubarrays()
                                             .then(function() {
                                                 vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                                                vm.subarrayState = vm.subarray.state.toUpperCase();
                                             });
                                     } else {
                                         vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                                        vm.subarrayState = vm.subarray.state.toUpperCase();
                                     }
                                 });
                         });
@@ -101,7 +103,7 @@
         };
 
         vm.markResourceFaulty = function (resource) {
-            ObservationScheduleService.markResourceFaulty(resource.name, resource.state === 'faulty' ? 0 : 1)
+            ObservationScheduleService.markResourceFaulty(vm.subarray_id, resource.name, resource.state === 'faulty' ? 0 : 1)
                 .then($rootScope.displayPromiseResult);
         };
 
@@ -116,7 +118,7 @@
             if (vm.currentEditMenuIndex !== rowIndex) {
                 vm.setSelectedSchedule(vm.currentScheduleData[rowIndex], true);
                 var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 37};
+                var offset = {x: 0, y: 32};
                 var overLayCSS = {
                     left: rect.left + offset.x + 'px',
                     top: rect.top + offset.y + 'px'
@@ -173,6 +175,30 @@
                     .then($rootScope.displayPromiseResult);
             }
             vm.closeEditMenu();
+        };
+
+        vm.freeSubarray = function () {
+            ObservationScheduleService.freeSubarray(vm.subarray_id)
+                .then(function(result) {
+                    $rootScope.displayPromiseResult(result);
+                    ObservationScheduleService.listSubarrays()
+                        .then(function() {
+                            vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                            vm.subarrayState = vm.subarray.state.toUpperCase();
+                        });
+                });
+        };
+
+        vm.activateSubarray = function () {
+            ObservationScheduleService.activateSubarray(vm.subarray_id)
+                .then(function (result) {
+                    $rootScope.displayPromiseResult(result);
+                    ObservationScheduleService.listSubarrays()
+                        .then(function() {
+                            vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
+                            vm.subarrayState = vm.subarray.state.toUpperCase();
+                        });
+                });
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", function (e, key) {

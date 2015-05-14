@@ -2,9 +2,9 @@
 
     <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 16px;">
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
-             md-theme="{{subarray.state === 'free'? 'green' : subarray.state === 'in_use'? 'amber' : 'deep-purple'}}" flex>
+             md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'deep-purple'}}" flex>
 
-            <div class="" layout="column" flex>
+            <div layout="column" flex>
                 <md-toolbar class="md-whiteframe-z1 md-hue-2" style="max-height: 64px;min-height: 64px;">
                     <md-button layout="row" style="font-size: 16px; min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
                         <span>Sub-Array {{subarray.id}}</span>
@@ -45,7 +45,7 @@
                         <span style="min-width: 38px;"></span>
                     </div>
                 </md-toolbar>
-                <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.in_maintenance}">
+                <div md-theme="{{themePrimary}}" flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.in_maintenance}">
                     <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id_code"
                          style="min-width: 650px !important;" flex layout="row" layout-align="start center"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
@@ -70,31 +70,33 @@
                         <span style="margin-left: 5px; margin-top: 4px; width: 64px; margin-right: 3px; overflow: hidden; white-space: normal">{{item.desired_start_time}}</span>
                         <span class="inline-sb-button" ng-if="item.pendingVerify"></span>
                         <span class="inline-sb-button" ng-if="item.pendingVerify"></span>
-                        <md-button class="inline-sb-button" ng-if="!item.pendingVerify" ng-click="vm.freeScheduleBlock(subarray, item)" class="inline-sb-button"
+
+                        <md-button class="md-icon-button inline-sb-button" ng-if="!item.pendingVerify"
+                                   ng-click="vm.freeScheduleBlock(subarray, item); $event.stopPropagation()"
                                    title="Free Schedule Blocks">
-                            <span class="fa fa-minus md-fab-fa-icon-small"></span>
+                            <md-icon class="fa" md-font-icon="fa-minus"></md-icon>
                         </md-button>
-                        <md-button ng-if="!item.pendingVerify" class="inline-sb-button"
+                        <md-button ng-if="!item.pendingVerify" class="md-icon-button inline-sb-button"
                                    ng-click="vm.openSchedulerActionsMenu(item, $event); $event.stopPropagation()">
-                            <span class="fa fa-ellipsis-v"></span>
+                            <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                         </md-button>
                     </div>
                 </div>
             </div>
 
-            <md-button md-theme="{{themeButtonsPrimary}}" style="min-height: 100%; width: 31px; margin-left: 4px;"
-                        class="md-primary md-raised"
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised"
+                       style="min-height: 100%; max-width: 31px; min-width: 31px; margin-left: 4px;"
                        ng-click="vm.assignSelectedScheduleBlocks(subarray);" title="Assign Schedule Blocks to Sub-Array">
                 <span class="fa fa-chevron-left md-fab-fa-icon-small"></span>
             </md-button>
         </div>
     </div>
 
-    <div layout="row" style="min-height: 500px; max-width: 500px; min-width: 500px; padding-right: 8px; padding-bottom: 8px;" class="md-whitespace-z1">
+    <div layout="row" style="min-height: 500px; max-width: 385px; min-width: 385px; padding-right: 8px; padding-bottom: 8px;" class="md-whitespace-z1">
         <div class="md-whiteframe-z2" layout="column" flex>
             <md-toolbar class="panel-toolbar-small md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
                 <div layout="row" class="unselectable md-toolbar-tools">
-                    <span flex>Draft Schedule Blocks</span>
+                    <span flex>Drafts</span>
                     <input class="fade-in search-input-box" ng-show="showDraftTools || vm.q" type="search"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
                 </div>
