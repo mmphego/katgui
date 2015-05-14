@@ -82,11 +82,15 @@
 
         vm.saveDraft = function (item) {
             ObservationScheduleService.updateScheduleDraft(item)
-                .then($rootScope.displayPromiseResult);
+                .then(function(result) {
+                    item.editing = false;
+                    $rootScope.displayPromiseResult(result);
+                });
         };
 
         vm.saveAllDirtyDrafts = function () {
             vm.scheduleDraftData.forEach(function (item) {
+                item.editing = false;
                 if (item.isDirty) {
                     ObservationScheduleService.updateScheduleDraft(item);
                 }
@@ -167,7 +171,6 @@
             $event.stopPropagation();
         };
 
-        //ignore this because we are going to replace this datepicker in angular material 0.10
         vm.openDatePicker = function (item, $event) {
             var rowIndex = $scope.filteredDraftItems.indexOf(item);
             //TODO keyboard shortcut like escape to close datepicker
@@ -199,7 +202,6 @@
             return d.isValid();
         };
 
-        //ignore this because we are going to replace this menu in angular material 0.10
         vm.closeEditMenu = function () {
             if (vm.showEditMenu) {
                 vm.showEditMenu = false;
@@ -210,7 +212,6 @@
             }
         };
 
-        //ignore this because we are going to replace this datepicker in angular material 0.10
         vm.closeDatePickerMenu = function () {
             if (vm.showDatePicker) {
                 vm.showDatePicker = false;
@@ -218,6 +219,12 @@
             }
             if (!$scope.$$phase) {
                 $scope.$apply();
+            }
+        };
+
+        vm.editCurrentItem = function () {
+            if (vm.selectedScheduleDraft) {
+                vm.selectedScheduleDraft.editing = true;
             }
         };
 
