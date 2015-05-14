@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, DataService, $filter, MonitorService) {
+    function SensorGraphCtrl($scope, $rootScope, DataService, $filter, SensorsService) {
 
         var vm = this;
         vm.showGridLines = false;
@@ -21,6 +21,8 @@
         vm.showDots = false;
         vm.showRelativeTime = false;
         vm.liveData = false;
+
+        SensorsService.connectListener();
 
         vm.onTimeSet = function () {
             vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, 'yyyy-MM-dd HH:mm:ss');
@@ -255,7 +257,7 @@
 
         vm.chipRemovePressed = function (chip) {
             vm.removeSensorLine(chip.name);
-            MonitorService.unsubscribe(chip.name.replace(/:/g, '_'));
+            SensorsService.unsubscribe(chip.name.replace(/:/g, '_'));
         };
 
         vm.setLineStrokeWidth = function (chipName) {
@@ -293,7 +295,7 @@
 
         vm.connectLiveFeed = function (sensor, interval) {
             //todo report on command success?
-            MonitorService.connectLiveFeed(sensor, interval);
+            SensorsService.connectLiveFeed(sensor, interval);
                 //.success(function (result) {
                 //   console.log(result);
                 //})
@@ -302,7 +304,7 @@
                 //});
         };
 
-        var unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
+        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             if (angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name.replace(/:/g, '_')}))) {
                 vm.redrawChart([{
                     Sensor: sensor.name.replace(/:/g, '_'),
@@ -310,7 +312,7 @@
                     Value: sensor.sensorValue.value
                 }], vm.showGridLines);
             } else {
-                MonitorService.unsubscribe(sensor.name.replace(/:/g, '_'));
+                SensorsService.unsubscribe(sensor.name.replace(/:/g, '_'));
             }
         });
 
