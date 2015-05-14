@@ -174,7 +174,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
         //'&strategy_type=period' +
         //'&strategy_interval=' + interval);
 
-        api.sendMonitorCommand('add_sensor_listener', [sensor.component, sensorName, 'period', interval]);
+        api.sendMonitorCommand('add_sensor_strategy', [sensor.component, sensorName, 'period', interval]);
 
         api.subscribe(sensor.component + ':' + sensorName);
         //return httpResponse;
