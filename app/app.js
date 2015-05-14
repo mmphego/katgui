@@ -239,7 +239,7 @@
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
                     "<textarea style='resize: none; overflow: auto; border: 0; background: transparent' auto-grow readonly>{{sb | json:4}}</textarea>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
+                    "<md-button class='md-primary' style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
                     "</div>" +
                     "</md-content></md-dialog>",
                     targetEvent: event

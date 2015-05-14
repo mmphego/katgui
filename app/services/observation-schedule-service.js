@@ -201,7 +201,6 @@
                     });
 
                 } else if (result.list_subarrays) {
-
                     var listSubbarrays = JSON.parse(result.list_subarrays);
                     listSubbarrays.forEach(function (item) {
                         api.subarrays.push(item);
@@ -237,12 +236,12 @@
                             api.poolResourcesFree.push(updatedResource);
                         });
                     }
-                } else if (result.set_subarray_in_use) {
+                } else if (result.activate_subarray) {
 
-                    jsonData.clientResult = parseKATCPMessageResult(result.set_subarray_in_use.result);
+                    jsonData.clientResult = parseKATCPMessageResult(result.activate_subarray.result);
                     if (jsonData.clientResult.result === 'ok') {
-                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.set_subarray_in_use.sub_nr}))]
-                            .state = result.set_subarray_in_use.in_use ? 'in_use' : 'free';
+                        api.subarrays[_.indexOf(api.subarrays, _.findWhere(api.subarrays, {id: result.activate_subarray.sub_nr}))]
+                            .state = 'active';
                     }
                 } else if (result.set_subarray_in_maintenance) {
 
@@ -273,9 +272,8 @@
                     }
                 } else if (result.get_scheduler_mode_by_subarray) {
 
-                    var msgList = result.get_scheduler_mode_by_subarray.result.split(' ');
-                    jsonData.clientResult = {result: msgList[1], message: msgList[3]};
-                    api.schedulerModes[result.get_scheduler_mode_by_subarray.sub_nr] = {boolValue: msgList[2], stringValue: msgList[3]};
+                    jsonData.clientResult = {result: result.get_scheduler_mode_by_subarray.result};
+                    api.schedulerModes[result.get_scheduler_mode_by_subarray.sub_nr] = result.get_scheduler_mode_by_subarray.result;
 
                 } else if (result.set_scheduler_mode_by_subarray) {
 
@@ -420,8 +418,8 @@
             return createCommandPromise(api.sendObsSchedCommand('unassign_resources_from_subarray', [subarray, resources]));
         };
 
-        api.setSubarrayInUse = function (subarray, set_to) {
-            return createCommandPromise(api.sendObsSchedCommand('set_subarray_in_use', [subarray, set_to])); //1 for true
+        api.activateSubarray = function (subarray) {
+            return createCommandPromise(api.sendObsSchedCommand('activate_subarray', [subarray]));
         };
 
         api.setSubarrayMaintenance = function (subarray, set_to) {

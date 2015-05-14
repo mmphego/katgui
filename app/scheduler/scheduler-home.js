@@ -14,7 +14,7 @@
 
         ConfigService.loadKATObsPortalURL();
         ObservationScheduleService.connectListener();
-        MonitorService.subscribe('sched:pending_requests_*');
+        //MonitorService.subscribe('sched:pending_requests_*');
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
 

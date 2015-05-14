@@ -52,8 +52,8 @@
                 });
         };
 
-        vm.setSubarrayInUse = function (subarray) {
-            ObservationScheduleService.setSubarrayInUse(subarray.id, subarray.state === "in_use" ? 0 : 1)
+        vm.activateSubarray = function (subarray) {
+            ObservationScheduleService.activateSubarray(subarray.id)
                 .then($rootScope.displayPromiseResult);
         };
 
