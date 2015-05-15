@@ -7,18 +7,15 @@
 
             <div class="" style="margin-left: 0px;" layout="column" layout-align="start" flex>
 
-                <md-toolbar class="md-whiteframe-z1 md-hue-2">
-                    <md-button layout="row" style="min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
-                        <span>Sub-Array {{subarray.id}}</span>
-                        <md-toolbar flex ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center"
-                                    ng-class="{'md-raised md-primary': subarray.in_maintenance}"
-                                    class="md-hue-2 subarray-state-toolbar transparent-background"
-                                    title="Click to Manage Observations for Sub-Array {{subarray.id}}">
-                            <span>{{subarray.state + " "}}</span>
-                            <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
-                        </md-toolbar>
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}"
+                            class="md-whiteframe-z1 md-hue-2">
+                    <span style="position: absolute; left: 8px; top: 8px;">SUB-ARRAY {{subarray.id}}</span>
+                    <md-button flex layout="row" style="min-height: 42px; max-height: 42px;" class="unselectable" ng-click="vm.navigateToSchedulerDetails(subarray.id)"
+                               title="Click to Manage Observations for Sub-Array {{subarray.id}}">
+                        <span>{{subarray.state}}</span>
+                        <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
                     </md-button>
-                    <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="start center">
+                    <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center">
                         <span style="max-width: 120px;min-width: 120px;" class="subheader-text-no-color" ng-click="vm.setDraftsOrderBy('id_code')">
                             <span style="padding: 8px">ID</span>
                             <span class="fa"
