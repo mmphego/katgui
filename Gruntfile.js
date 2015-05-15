@@ -94,20 +94,20 @@ module.exports = function (grunt) {
             main: {
                 files: [
                     {
-                        src: ['bower_components/font-awesome/fonts/**'],
-                        dest: 'dist/fonts', flatten: true, expand: true
+                        src: ['bower_components/font-awesome/fonts/*'],
+                        dest: 'dist/fonts/', flatten: true, expand: true
                     },
                     {
                         src: ['bower_components/d3/d3.min.js'],
-                        dest: 'dist/bower_components/d3', flatten: true, expand: true
+                        dest: 'dist/bower_components/d3/', flatten: true, expand: true
                     },
                     {
-                        src: ['images/**'],
-                        dest: 'dist/images', flatten: true, expand: true
+                        src: ['images/*'],
+                        dest: 'dist/images/', flatten: true, expand: true
                     },
                     {
-                        src: ['fonts/**'],
-                        dest: 'dist/', flatten: true, expand: true
+                        src: ['fonts/Roboto/*'],
+                        dest: 'dist/', flatten: false, expand: false
                     }
                 ]
             }
