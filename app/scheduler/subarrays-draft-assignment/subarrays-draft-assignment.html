@@ -1,23 +1,21 @@
 <div flex layout="row" layout-align="start" style="min-width: 1220px; min-height: 500px; margin-top: 8px;" ng-controller="SubArraysCtrl as vm" ng-click="vm.closeActionsMenu()">
 
-    <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 16px;">
+    <div flex layout="column" style="overflow: auto; padding-left: 8px; margin-right: 16px;">
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
              md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'deep-purple'}}" flex>
 
             <div layout="column" flex>
-                <md-toolbar class="md-whiteframe-z1 md-hue-2" style="max-height: 64px;min-height: 64px;">
-                    <md-button layout="row" style="font-size: 16px; min-height: 42px;" class="unselectable md-toolbar-tools-small" ng-click="vm.navigateToSchedulerDetails(subarray.id)">
-                        <span>Sub-Array {{subarray.id}}</span>
-                        <md-toolbar ng-click="vm.navigateToSchedulerDetails(subarray.id)" layout="row" layout-align="center center"
-                                    ng-class="{'md-raised md-primary': subarray.in_maintenance}"
-                                    class="md-hue-2 subarray-state-toolbar transparent-background"
-                                   title="Click to Manage Observations for Sub-Array {{subarray.id}}">
-                            <span>{{subarray.state + " "}}</span>
-                            <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
-                        </md-toolbar>
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}"
+                            class="md-whiteframe-z1 md-hue-2" style="max-height: 64px;min-height: 64px; position: relative">
+                    <span style="position: absolute; left: 8px; top: 8px;">SUB-ARRAY {{subarray.id}}</span>
+                    <md-button flex layout="row" style="min-height: 42px; max-height: 42px;" class="unselectable" ng-click="vm.navigateToSchedulerDetails(subarray.id)"
+                               title="Click to Manage Observations for Sub-Array {{subarray.id}}">
+                        <span>{{subarray.state}}</span>
+                        <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
                     </md-button>
 
-                    <div flex class="unselectable list-subheader-title" style="padding-top: 0px; z-index: 0;" layout="row" layout-align="start center">
+                    <div flex style="padding: 0; margin:0; bottom:0; left: 0; position: absolute"
+                         layout="row" layout-align="start center" class="unselectable list-subheader-title">
                         <span style="max-width: 120px;min-width: 120px;" class="subheader-text-no-color" ng-click="vm.setDraftsOrderBy('id_code')">
                             <span style="padding-left: 8px">ID</span>
                             <span class="fa"
