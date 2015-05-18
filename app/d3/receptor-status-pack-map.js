@@ -55,9 +55,9 @@ angular.module('katGui.d3')
                             .enter().append("svg:circle")
                             .attr("class", function (d) {
                                 if (d.depth > 0) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child child';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child child';
                                 } else {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child parent';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child parent';
                                 }
                             })
                             .attr("cx", function (d) {
@@ -85,9 +85,9 @@ angular.module('katGui.d3')
                             .enter().append("svg:text")
                             .attr("class", function (d) {
                                 if (d.depth > 0) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text child';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text child';
                                 } else {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text parent';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text parent';
                                 }
                             })
                             .attr("x", function (d) {

@@ -56,7 +56,7 @@ angular.module('katGui.d3')
                                 for (var attr in scope.itemsToUpdate[sensorToUpdateName]) {
                                     d.sensorValue[attr] = scope.itemsToUpdate[sensorToUpdateName].sensorValue[attr];
                                 }
-                                statusClassResult = d3Util.statusClassFromNumber(scope.itemsToUpdate[sensorToUpdateName].sensorValue.status) + '-child child';
+                                statusClassResult = scope.itemsToUpdate[sensorToUpdateName].sensorValue.status + '-child child';
                                 delete scope.itemsToUpdate[sensorToUpdateName];
                             } else {
                                 delete scope.itemsToUpdate[sensorToUpdateName];
@@ -66,7 +66,7 @@ angular.module('katGui.d3')
                             return statusClassResult;
                         } else if (d.sensorValue) {
                             delete scope.itemsToUpdate[d.name + '_' + d.sensor];
-                            return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child parent';
+                            return d.sensorValue.status + '-child parent';
                         } else {
                             delete scope.itemsToUpdate[sensorToUpdateName];
                             console.error('deleting a sensor update because the sensorValue is null');

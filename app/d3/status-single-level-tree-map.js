@@ -105,7 +105,7 @@ angular.module('katGui.d3')
                                 .attr("class", function (d) {
                                     var classString = "";
                                     if (d.sensorValue) {
-                                        classString += d3Util.statusClassFromNumber(d.sensorValue.status) + '-child';
+                                        classString += d.sensorValue.status + '-child';
                                     } else {
                                         classString += 'inactive-child';
                                     }

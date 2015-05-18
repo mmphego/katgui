@@ -80,7 +80,7 @@ angular.module('katGui.d3')
                                 d3Util.applyTooltipValues(d, tooltip);
                             })
                             .attr("class", function (d) {
-                                return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child child';
+                                return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child child';
                             });
 
                         //add the text overlay for each node
@@ -92,9 +92,9 @@ angular.module('katGui.d3')
                             })
                             .attr("class", function (d) {
                                 if (d.depth > 0) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text child';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text child';
                                 } else {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text parent';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text parent';
                                 }
                             })
                             .text(function (d) {

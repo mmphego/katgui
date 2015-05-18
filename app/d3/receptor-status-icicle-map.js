@@ -71,7 +71,7 @@ angular.module('katGui.d3')
                             })
                             //style each element according to its status
                             .attr("class", function (d) {
-                                return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child child';
+                                return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child child';
                             })
                             .call(function (d) {
                                 d3Util.applyTooltipValues(d, tooltip);
@@ -97,9 +97,9 @@ angular.module('katGui.d3')
                             })
                             .attr("class", function (d) {
                                 if (d.depth > 0) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text child';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text child';
                                 } else {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text parent';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text parent';
                                 }
                             })
                             .attr("text-anchor", "middle")

@@ -108,7 +108,7 @@ angular.module('katGui.d3')
                 tooltip.html(
                     "<div style='font-size: +"+ fontSizeAfterZoom +"px'><i>sensor:</i> " + (d.depth === 0? d.name + ":" + d.sensor : d.sensor) +
                     "<br/><i>value:</i> " + d.sensorValue.value +
-                    "<br/><i>status:</i> " + api.statusClassFromNumber(d.sensorValue.status) +
+                    "<br/><i>status:</i> " + d.sensorValue.status +
                     "<br/><i>timestamp:</i> " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
                     "</div>"
                 );
