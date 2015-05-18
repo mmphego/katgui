@@ -135,9 +135,16 @@ module.exports = function (grunt) {
             }
         },
         cssmin: {
-            main: {
-                src: ['temp/app.css', '<%= dom_munger.data.appcss %>'],
-                dest: 'dist/app.full.min.css'
+            options: {
+                shorthandCompacting: false,
+                restructuring: false,
+                aggressiveMerging: false,
+                advanced: false
+            },
+            target: {
+                files: {
+                    'dist/app.full.min.css': ['temp/app.css', '<%= dom_munger.data.appcss %>']
+                }
             }
         },
         concat: {
