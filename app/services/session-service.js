@@ -63,20 +63,27 @@
         }
 
         function loginSuccess(result) {
-            var a = result.session_id.split(".");
-            $rootScope.session_id = result.session_id;
-            var payload = JSON.parse(window.atob(a[1]));
-            if (payload.name !== null) {
-                $rootScope.currentUser = payload;
-                $rootScope.loggedIn = true;
-                //only redirect when logging in from login screen
-                if ($state.current.name === 'login') {
-                    $state.go('home');
+            if (result.session_id) {
+                var a = result.session_id.split(".");
+                $rootScope.session_id = result.session_id;
+                var payload = JSON.parse(window.atob(a[1]));
+                if (payload.name !== null) {
+                    $rootScope.currentUser = payload;
+                    $rootScope.loggedIn = true;
+                    //only redirect when logging in from login screen
+                    if ($state.current.name === 'login') {
+                        $state.go('home');
+                    }
+                    $localStorage['currentUserToken'] = $rootScope.jwt;
+                    $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
+                    $rootScope.$emit('loginSuccess', true);
+                    $rootScope.connectEvents();
                 }
-                $localStorage['currentUserToken'] = $rootScope.jwt;
-                $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
-                $rootScope.$emit('loginSuccess', true);
-                $rootScope.connectEvents();
+            } else {
+                //User's session expired, we got a message
+                $localStorage['currentUserToken'] = null;
+                $state.go('login');
+                $rootScope.showSimpleToast(result.message);
             }
         }
 
