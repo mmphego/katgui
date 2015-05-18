@@ -169,8 +169,8 @@ angular.module('katGui.d3')
                                 })
                                 //.attr("x", 3)
                                 //.attr("y", 3)
-                                .style("width", 24)
-                                .style("height", 24)
+                                .style("width", 26)
+                                .style("height", 26)
                                 .style("display", "none")
                                 .on("click", function (d) {
                                     scope.ignoreList.push(d.name);
@@ -179,13 +179,13 @@ angular.module('katGui.d3')
                                     drawTreemap(w, h);
                                 })
                                 .append("xhtml:div")
-
                                 .attr("class", function (d) {
                                     return angular.element("#btnPrimaryTheme").prop("class");
                                 })
                                 .style("cursor", "pointer")
                                 .style("border", 0)
                                 .style("min-width", "26px")
+                                .style("min-height", "26px")
                                 .style("margin", "0px")
                                 .style("line-height", "1.5")
                                 .attr("title", "Hide Sensor")
