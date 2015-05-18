@@ -73,7 +73,7 @@
                 if ($scope.itemsToUpdate[sensorToUpdateName]) {
                     d.sensorValue = $scope.itemsToUpdate[sensorToUpdateName].sensorValue;
                     if (d.sensorValue) {
-                        statusClassResult = d3Util.statusClassFromNumber(d.sensorValue.status) + '-child';
+                        statusClassResult = d.sensorValue.status + '-child';
                         delete $scope.itemsToUpdate[sensorToUpdateName];
                     }
                 } else {
@@ -85,7 +85,7 @@
                 return statusClassResult;
             } else if (d.sensorValue) {
                 delete $scope.itemsToUpdate[d.name + '_' + d.sensor];
-                return d3Util.statusClassFromNumber(d.sensorValue.status) + '-child parent';
+                return d.sensorValue.status + '-child parent';
             } else {
                 delete $scope.itemsToUpdate[sensorToUpdateName];
                 console.error('deleting a sensor update because the sensorValue is null');

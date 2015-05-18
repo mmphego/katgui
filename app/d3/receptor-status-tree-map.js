@@ -178,7 +178,7 @@ angular.module('katGui.d3')
                                     return d3Util.createSensorId(d, scope.dataMapName);
                                 })
                                 .attr("class", function (d) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child';
                                 })
                                 .on("click", function (d) {
                                     transition(d.parent);
@@ -203,7 +203,7 @@ angular.module('katGui.d3')
                                 return d._children;
                             })
                                 .attr("class", function (d) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child';
                                 })
                                 .on("click", transition);
 
@@ -213,7 +213,7 @@ angular.module('katGui.d3')
                                     return d3Util.createSensorId(d, scope.dataMapName);
                                 })
                                 .attr("class", function (d) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child';
                                 })
                                 .call(rect)
                                 .append("title")
@@ -224,7 +224,7 @@ angular.module('katGui.d3')
                             g.append("text")
                                 .attr("dy", ".75em")
                                 .attr("class", function (d) {
-                                    return d3Util.statusClassFromNumber(d.sensorValue ? d.sensorValue.status : -1) + '-child-text';
+                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text';
                                 })
                                 .text(function (d) {
                                     return d.name;
