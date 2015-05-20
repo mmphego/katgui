@@ -3,11 +3,13 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
         api.connection = null;
+        api.deferredMap = {};
+        api.resources = {};
 
         api.subscribe = function (pattern) {
             var jsonRPC = {
@@ -37,7 +39,7 @@
             };
 
             if (api.connection === null) {
-                console.error('No Sensors Connection Present for subscribing, ignoring command for pattern ' + pattern);
+                console.error('No Sensors Connection Present for unsubscribing, ignoring command for pattern ' + pattern);
             } else if (api.connection.readyState && api.connection.authorized) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
@@ -83,9 +85,18 @@
                             console.error(messageObj);
                         }
                     });
-                }  else if (messages.result) {
-                    //auth response
-                    if (messages.result.email && messages.result.session_id) {
+                } else if (messages.result) {
+
+                    if (messages.result.list_resources) {
+                        for (var key in messages.result.list_resources.result) {
+                            api.resources[key] = messages.result.list_resources.result[key];
+                        }
+                        api.deferredMap[messages.id].resolve('Fetched resources.');
+                    } else if (messages.result.list_resource_sensors) {
+                        api.resources[messages.result.list_resource_sensors.resource_name].sensorsList = messages.result.list_resource_sensors.result;
+                        api.deferredMap[messages.id].resolve('Fetched ' + messages.result.list_resource_sensors.result.length + ' sensors.');
+                    } else if (messages.result.email && messages.result.session_id) {
+                        //auth response
                         $localStorage['currentUserToken'] = $rootScope.jwt;
                         api.connection.authorized = true;
                         console.log('Sensors Connection Established. Authenticated.');
@@ -141,27 +152,52 @@
         };
 
         api.connectLiveFeed = function (sensor, interval) {
-
             var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
             sensorName = sensorName.replace(/\./g, '_');
             api.sendSensorsCommand('set_sensor_strategy', [sensor.component, sensorName, 'period', interval]);
             api.subscribe(sensor.component + ':' + sensorName);
         };
 
-        api.sendSensorsCommand = function (method, params) {
+        api.connectResourceSensorListeners = function (resource_name) {
+            api.sendSensorsCommand('set_sensor_strategy', [resource_name, '', 'event', 1]);
+            api.subscribe(resource_name + ":*");
+        };
+
+        api.listResources = function () {
+            var desired_id = KatGuiUtil.generateUUID();
+            api.sendSensorsCommand('list_resources', [], desired_id);
+            api.deferredMap[desired_id] = $q.defer();
+            return api.deferredMap[desired_id].promise;
+        };
+
+        api.listResourceSensors = function (resourceName) {
+            var desired_id = KatGuiUtil.generateUUID();
+            api.sendSensorsCommand('list_resource_sensors', [resourceName], desired_id);
+            api.deferredMap[desired_id] = $q.defer();
+            return api.deferredMap[desired_id].promise;
+        };
+
+        api.removeResourceListeners = function (resourceName) {
+            api.sendSensorsCommand('remove_resource_listeners', [resourceName]);
+        };
+
+        api.sendSensorsCommand = function (method, params, desired_jsonRPCId) {
 
             if (api.connection && api.connection.authorized) {
                 var jsonRPC = {
-                    'id': KatGuiUtil.generateUUID(),
                     'jsonrpc': '2.0',
                     'method': method,
                     'params': params
                 };
 
+                if (desired_jsonRPCId) {
+                    jsonRPC.id = desired_jsonRPCId;
+                }
+
                 api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.sendSensorsCommand(method, params);
+                    api.sendSensorsCommand(method, params, desired_jsonRPCId);
                 }, 500);
             }
         };

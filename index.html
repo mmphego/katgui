@@ -87,6 +87,7 @@
 <script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/health/custom-health/custom-health.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
+<script src="app/sensor-list/sensor-list.js"></script>
 <script src="app/d3/multi-line-chart.js"></script>
 <script src="app/d3/d3-gantt-chart.js"></script>
 <script src="app/d3/d3-service.js"></script>
@@ -182,6 +183,12 @@
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-graph')">
                         <span class="fa fa-line-chart"></span>
                         <button>Sensor Graphs</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-list')">
+                        <span class="fa fa-th-list"></span>
+                        <button>Sensor List</button>
                     </md-item-content>
                 </md-item>
                 <md-item>

@@ -2,12 +2,123 @@ angular.module('katGui.util', [])
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
+    .filter('utcDateFromUnix', function() {
+        return function (input) {
+            return moment.utc(input, 'X').format('HH:mm:ss DD-MM-YYYY');
+        };
+    })
     .directive('postNgRepeatLoadMore', function($timeout) {
-        return function(scope) {
-            if (scope.$last){
-                // iteration is complete, do whatever post-processing
-                // is necessary
-                $timeout(scope.$parent.loadMore, 100);
+        return {
+            link: function (scope) {
+                if (scope.$last) {
+                    // iteration is complete, do whatever post-processing
+                    // is necessary
+                    $timeout(scope.$parent.loadMore, 100);
+                }
+            }
+        };
+    })
+    .directive('draggable', function($document) {
+        return {
+            link: function(scope, element, attr) {
+                var targetElement = angular.element(attr.draggable);
+                var offset = targetElement.offset();
+                var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
+
+                targetElement.css({
+                    position: 'fixed'
+                });
+
+                element.on('mousedown', function(event) {
+                    // Prevent default dragging of selected content
+                    event.preventDefault();
+                    startX = event.pageX - x;
+                    startY = event.pageY - y;
+                    $document.on('mousemove', mousemove);
+                    $document.on('mouseup', mouseup);
+                });
+
+                function mousemove(event) {
+                    if (targetElement.innerHeight() > 100) {
+                        y = event.pageY - startY;
+                        x = event.pageX - startX;
+
+                        targetElement.css({
+                            top: y + 'px',
+                            left: x + 'px'
+                        });
+
+                        targetElement.css({
+                            width: targetElement.innerWidth(),
+                            height: targetElement.innerHeight()
+                        });
+                    }
+
+                }
+
+                function mouseup() {
+                    $document.off('mousemove', mousemove);
+                    $document.off('mouseup', mouseup);
+                }
+            }
+        };
+    })
+    .directive('inheritBodyBg', function () {
+        return {
+            scope: {
+                target: '@targetColorInherit'
+            },
+            link: function (scope, element, attr) {
+
+                element.css({
+                    'background-color': angular.element(scope.target).css('background-color')
+                });
+            }
+        };
+    })
+    .directive('resizeable', function ($document) {
+        return {
+            link: function (scope, element, attr) {
+                var targetElement = angular.element(attr.resizeable);
+                var offset = targetElement.offset(),
+                    offsetX, offsetY;
+                var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
+
+                targetElement.css({
+                    position: 'fixed'
+                });
+
+                element.on('mousedown', function(event) {
+                    // Prevent default dragging of selected content
+                    event.preventDefault();
+                    startX = event.pageX - x;
+                    startY = event.pageY - y;
+                    offsetX = element.innerWidth() - event.offsetX;
+                    offsetY = element.innerHeight() - event.offsetY;
+
+                    $document.on('mousemove', mousemove);
+                    $document.on('mouseup', mouseup);
+                });
+
+                function mousemove(event) {
+                    if (targetElement.innerHeight() > 100) {
+                        y = event.pageY - startY;
+                        x = event.pageX - startX;
+                        var innerWidth = targetElement.innerWidth(),
+                            innerHeight = targetElement.innerHeight();
+
+                        targetElement.css({
+                            width: innerWidth - (targetElement.offset().left + innerWidth - event.pageX) + offsetX,
+                            height: innerHeight - (targetElement.offset().top + innerHeight - event.pageY)  + offsetY
+                        });
+                    }
+
+                }
+
+                function mouseup() {
+                    $document.off('mousemove', mousemove);
+                    $document.off('mouseup', mouseup);
+                }
             }
         };
     });

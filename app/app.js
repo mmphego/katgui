@@ -463,6 +463,12 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
+
+        $stateProvider.state('sensor-list', {
+            url: '/sensor-list',
+            templateUrl: 'app/sensor-list/sensor-list.html',
+            title: 'Sensor List',
+        });
         $stateProvider.state('about', {
             url: '/about',
             templateUrl: 'app/about/about.html',
