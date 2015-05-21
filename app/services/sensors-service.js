@@ -44,7 +44,7 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(pattern, guid);
+                    api.unsubscribe(pattern, guid);
                 }, 500);
             }
         };
