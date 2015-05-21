@@ -43,7 +43,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     };
 
     api.unsubscribe = function (pattern) {
-        if (pattern.indexOf('mon:') === -1) {
+        if (typeof(pattern) !== 'object' && pattern.indexOf('mon:') === -1) {
             pattern = 'mon:' + pattern;
         }
         var jsonRPC = {
