@@ -64,7 +64,7 @@
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 vm.limitTo = 50;
                 SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
-                SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ':*');
+                SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*');
                 vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
                 vm.clearChart();
             }
@@ -81,7 +81,7 @@
                     });
             } else {
                 vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
-                SensorsService.subscribe(resourceName + ':*');
+                SensorsService.subscribe(resourceName + '.*');
                 if (!$scope.$$phase) {
                     $scope.$digest();
                 }
@@ -164,7 +164,7 @@
                 SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
             }
 
-            SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ":*");
+            SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*");
             unbindUpdate();
         });
     }
