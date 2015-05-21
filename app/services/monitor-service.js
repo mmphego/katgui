@@ -11,16 +11,19 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
 
     api.subscribeToReceptorUpdates = function () {
         ConfigService.receptorList.forEach(function(receptor) {
-            var connectionParams = [receptor + ':mode', receptor + ':inhibited'];
+            var connectionParams = ['mon:' + receptor + '.mode', 'mon:' + receptor + '.inhibited'];
             api.subscribe(connectionParams);
         });
     };
 
     api.subscribeToAlarms = function () {
-        api.subscribe('kataware:alarm_*');
+        api.subscribe('kataware.alarm_*');
     };
 
     api.subscribe = function (pattern) {
+        if (typeof(pattern) !== 'object' && pattern.indexOf('mon:') === -1) {
+            pattern = 'mon:' + pattern;
+        }
         var jsonRPC = {
             'jsonrpc': '2.0',
             'method': 'subscribe',
@@ -40,6 +43,9 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     };
 
     api.unsubscribe = function (pattern) {
+        if (pattern.indexOf('mon:') === -1) {
+            pattern = 'mon:' + pattern;
+        }
         var jsonRPC = {
             'jsonrpc': '2.0',
             'method': 'unsubscribe',
@@ -53,7 +59,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
             return api.connection.send(JSON.stringify(jsonRPC));
         } else {
             $timeout(function () {
-                api.subscribe(pattern);
+                api.unsubscribe(pattern);
             }, 500);
         }
     };
@@ -90,8 +96,8 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                             messageObj = JSON.parse(message);
                         }
                         if (messageObj.msg_channel) {
-                            var channelNameSplit = messageObj.msg_channel.split(":");
-                            if (messageObj.msg_channel.lastIndexOf('kataware:', 0) === 0) {
+                            var channelNameSplit = messageObj.msg_channel.split(":")[1].split('.');
+                            if (channelNameSplit[0] === 'kataware') {
                                 AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                             } else if (channelNameSplit.length > 1 &&
                                 (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
@@ -162,22 +168,6 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
 
             api.connection.send(JSON.stringify(jsonRPC));
         }
-    };
-
-    api.connectLiveFeed = function (sensor, interval) {
-
-        var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
-        sensorName = sensorName.replace(/\./g, '_');
-        //var httpResponse =  $http.get(urlBase + '/addsensorstrategy' +
-        //'?resource_name=' + sensor.component +
-        //'&strategy_str=' + sensorName +
-        //'&strategy_type=period' +
-        //'&strategy_interval=' + interval);
-
-        api.sendMonitorCommand('add_sensor_strategy', [sensor.component, sensorName, 'period', interval]);
-
-        api.subscribe(sensor.component + ':' + sensorName);
-        //return httpResponse;
     };
 
     api.sendMonitorCommand = function (method, params) {

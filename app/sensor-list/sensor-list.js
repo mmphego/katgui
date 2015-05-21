@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorListCtrl', SensorListCtrl);
 
-    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout) {
+    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -11,6 +11,7 @@
         vm.sensorsToDisplay = [];
         vm.resourceSensorsBeingDisplayed = '';
         vm.sensorsPlotNames = [];
+        vm.guid = KatGuiUtil.generateUUID();
 
         vm.limitTo = 50;
         $scope.loadMore = function () {
@@ -76,7 +77,7 @@
                         if (!$scope.$$phase) {
                             $scope.$digest();
                         }
-                        SensorsService.connectResourceSensorListeners(resourceName);
+                        SensorsService.connectResourceSensorListeners(resourceName, vm.guid);
                     });
             } else {
                 vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
@@ -92,9 +93,35 @@
             return status + '-sensor-list-item';
         };
 
-        vm.plotLiveSensorFeed = function (sensor) {
+        vm.plotLiveSensorFeed = function (sensor, remove) {
             if (sensor.sensorValue) {
-                vm.sensorsPlotNames.push(sensor.sensorValue.name);
+                var sensorName = sensor.sensorValue.name.split(':')[1];
+                if (remove) {
+                    var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
+                        return item.name === sensorName;
+                    });
+                    if (sensorIndex > -1) {
+                        vm.sensorsPlotNames.splice(sensorIndex, 1);
+                        vm.removeSensorLine(sensorName);
+                    }
+                } else {
+                    vm.sensorsPlotNames.push({name: sensorName, class: sensorName.replace(/\./g, '_')});
+                }
+            }
+        };
+
+        vm.chipRemovePressed = function ($chip) {
+            var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
+                return item.name === $chip.name;
+            });
+            if (sensorIndex > -1) {
+                for (var i = 0; i < vm.sensorsToDisplay.length; i++) {
+                    if (vm.sensorsToDisplay[i].python_identifier === $chip.name.split('.')[1]) {
+                        vm.sensorsToDisplay[i].selectedForChart = false;
+                        break;
+                    }
+                }
+                vm.removeSensorLine($chip.name);
             }
         };
 
@@ -108,20 +135,25 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var resource = sensor.name.split(':');
-            vm.resources[resource[0]].sensorsList.forEach(function (oldSensor) {
-                if (resource[0] + ':' + oldSensor.python_identifier === sensor.name) {
+            var strList = sensor.name.split(':');
+            var sensorNameList = strList[1].split('.');
+            vm.resources[sensorNameList[0]].sensorsList.forEach(function (oldSensor) {
+                if (sensorNameList[0] + '.' + oldSensor.python_identifier === strList[1]) {
                     oldSensor.sensorValue = sensor.value;
                     oldSensor.status = sensor.value.status;
-                    oldSensor.timestamp = sensor.value.timestamp;
+                    oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
                     oldSensor.value = sensor.value.value;
                 }
             });
 
-            if (vm.sensorsPlotNames.indexOf(sensor.name) > -1) {
+            if (vm.sensorsPlotNames.length > 0 && _.findIndex(vm.sensorsPlotNames, function (item) {
+                    return item.name === strList[1];
+                }) > -1) {
                 vm.redrawChart([{
-                    Sensor: sensor.name.replace(/:/g, '_'),
+                    Sensor: strList[1].replace(/\./g, '_'),
                     Timestamp: sensor.value.timestamp,
+                    ReceivedTimestamp: sensor.value.received_timestamp,
                     Value: sensor.value.value
                 }], false, null, true, 100);
             }

@@ -24,7 +24,6 @@ angular.module('katGui.d3', [])
                     });
 
                     var color = d3.scale.category20();
-                    scope.data = [];
                     scope.nestedData = [];
                     scope.redrawFunction = function (newData, showGridLines, yAxisValues, dontSort, dataLimit) {
 
@@ -38,14 +37,20 @@ angular.module('katGui.d3', [])
 
                         if (newData) {
                             newData.forEach(function (d) {
-                                d.date = new Date(parseFloat(d.Timestamp) * 1000);
+                                d.date = new Date(parseFloat(d.ReceivedTimestamp) * 1000);
                                 if (yAxisValues) {
                                     d.value = d.Value;
                                 } else {
-                                    d.value = parseFloat(d.Value);
+                                    if (typeof(d.Value) === 'boolean') {
+                                        d.value = d.Value? 1 : 0;
+                                    } else if (typeof(d.Value) === 'number' || !isNaN(parseFloat(d.Value))) {
+                                        d.value = parseFloat(d.Value);
+                                    } else {
+                                        console.log('Cannot represent sensor ' + d.Sensor + ' on the chart.');
+                                        return;
+                                    }
                                 }
 
-                                scope.data.push(d);
                                 var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
                                 if (existingDataLine) {
                                     if (existingDataLine.values.length > dataLimit) {
@@ -58,17 +63,17 @@ angular.module('katGui.d3', [])
                             });
 
                             //TODO remove this and make postgres order the data when getting history data
-                            if (!dontSort) {
-                                scope.nestedData = d3.nest()
-                                    .key(function (d) {
-                                        return d.Sensor;
-                                    })
-                                    .entries(scope.data);
-                                scope.data = _.sortBy(scope.data, function (d) {
-                                    return d.Timestamp;
-                                });
-                                scope.data = _.uniq(scope.data);
-                            }
+                            //if (!dontSort) {
+                            //    scope.nestedData = d3.nest()
+                            //        .key(function (d) {
+                            //            return d.Sensor;
+                            //        })
+                            //        .entries(scope.data);
+                            //    scope.data = _.sortBy(scope.data, function (d) {
+                            //        return d.Timestamp;
+                            //    });
+                            //    scope.data = _.uniq(scope.data);
+                            //}
                         }
 
                         scope.showGridLines = showGridLines;
@@ -77,38 +82,32 @@ angular.module('katGui.d3', [])
 
                     scope.clearFunction = function () {
                         scope.yAxisValues = null;
-                        scope.data.splice(0, scope.data.length);
                         scope.nestedData.splice(0, scope.nestedData.length);
                         drawSvg();
                         drawValues();
                     };
 
                     scope.removeSensorFunction = function (sensorName) {
-                        console.log('remove ' + sensorName);
-                        scope.data = _.reject(scope.data, function (item) {
-                            return item.Sensor === sensorName;
-                        });
-                        drawSvg();
-                        drawValues();
+                        var existingDataLine = _.findWhere(scope.nestedData, {key: sensorName.replace(/\./g, '_')});
+                        if (existingDataLine) {
+                            scope.nestedData.splice(scope.nestedData.indexOf(existingDataLine), 1);
+                            drawValues();
+                        }
                     };
 
                     var tooltip = d3.select(element[0]).append("div")
                         .attr("class", "multi-line-tooltip")
                         .style("opacity", 0);
 
-                    scope.nestedData = d3.nest()
-                        .key(function (d) {
-                            return d.Sensor;
-                        })
-                        .entries(scope.data);
-
-                    var margin = {top: 10, right: 10, bottom: 100, left: 40};
+                    var margin = {top: 10, right: 10, bottom: 100, left: 40},
+                        width, height, height2;
 
                     if (scope.hideContextZoom) {
                         margin.bottom = 35;
                     }
 
-                    var margin2 = {top: element[0].clientHeight - 70, right: 10, bottom: 20, left: 40};
+                    height = element[0].clientHeight - margin.top - margin.bottom;
+                    var margin2 = {top: height, right: 10, bottom: 20, left: 40};
 
                     if (scope.yAxisValues) {
                         margin.left = 120;
@@ -121,9 +120,20 @@ angular.module('katGui.d3', [])
                     drawValues();
 
                     function drawSvg() {
+
                         width = element[0].clientWidth - margin.left - margin.right;
-                        height = element[0].clientHeight - margin.top - margin.bottom;
+                        height = element[0].clientHeight - margin.top - margin.bottom - 5;
                         height2 = element[0].clientHeight - margin2.top - margin2.bottom;
+                        if (height < 0) {
+                            height = 0;
+                        }
+
+                        margin2 = {top: height, right: 10, bottom: 20, left: 40};
+
+                        if (scope.yAxisValues) {
+                            margin.left = 120;
+                            margin2 = {top: height, right: 10, bottom: 20, left: 120};
+                        }
 
                         d3.select('svg').remove();
                         svg = d3.select(element[0]).append("svg")
@@ -201,7 +211,7 @@ angular.module('katGui.d3', [])
                         ]);
 
                         if (!scope.yAxisValues) {
-                            y.domain([
+                            var yExtent = [
                                 d3.min(scope.nestedData, function (sensors) {
                                     return d3.min(sensors.values, function (d) {
                                         return d.value;
@@ -212,7 +222,12 @@ angular.module('katGui.d3', [])
                                         return d.value;
                                     });
                                 })
-                            ]);
+                            ];
+                            if (yExtent[0] === yExtent[1]) {
+                                yExtent[0] = yExtent[0] - 1;
+                                yExtent[1] = yExtent[1] + 1;
+                            }
+                            y.domain(yExtent);
                         } else {
                             y.domain(scope.yAxisValues);
                         }
@@ -245,6 +260,8 @@ angular.module('katGui.d3', [])
                             .attr("d", function (d) {
                                 return line(d.values);
                             }).attr("clip-path", "url(#clip)");
+
+                        var legendSpace = width/scope.nestedData.length;
 
                         xAxisElement.call(xAxis);
                         yAxisElement.call(yAxis);

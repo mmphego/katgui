@@ -42,7 +42,7 @@
         }, 1000);
 
         vm.receptorMessageReceived = function (event, message) {
-            var sensorNameList = message.name.split(':');
+            var sensorNameList = message.name.split(':')[1].split('.');
             var receptor = sensorNameList[0];
             var sensorName = sensorNameList[1];
             ReceptorStateService.receptorsData.forEach(function (item) {

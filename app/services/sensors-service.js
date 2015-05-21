@@ -11,11 +11,11 @@
         api.deferredMap = {};
         api.resources = {};
 
-        api.subscribe = function (pattern) {
+        api.subscribe = function (pattern, guid) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [pattern],
+                'params': [guid + ':' + pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -25,16 +25,16 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(pattern);
+                    api.subscribe(pattern, guid);
                 }, 500);
             }
         };
 
-        api.unsubscribe = function (pattern) {
+        api.unsubscribe = function (pattern, guid) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [pattern],
+                'params': [guid + ':' + pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -44,7 +44,7 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(pattern);
+                    api.subscribe(pattern, guid);
                 }, 500);
             }
         };
@@ -151,16 +151,16 @@
             }
         };
 
-        api.connectLiveFeed = function (sensor, interval) {
+        api.connectLiveFeed = function (sensor, interval, guid) {
             var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
             sensorName = sensorName.replace(/\./g, '_');
             api.sendSensorsCommand('set_sensor_strategy', [sensor.component, sensorName, 'period', interval]);
-            api.subscribe(sensor.component + ':' + sensorName);
+            api.subscribe(sensor.component + '.' + sensorName, guid);
         };
 
-        api.connectResourceSensorListeners = function (resource_name) {
-            api.sendSensorsCommand('set_sensor_strategy', [resource_name, '', 'event', 1]);
-            api.subscribe(resource_name + ":*");
+        api.connectResourceSensorListeners = function (resource_name, guid) {
+            api.sendSensorsCommand('set_sensor_strategy', [guid, resource_name, '', 'event-rate', 3, 3]);
+            api.subscribe(resource_name + ".*", guid);
         };
 
         api.listResources = function () {

@@ -32,6 +32,8 @@ angular.module('katGui.util', [])
                 element.on('mousedown', function(event) {
                     // Prevent default dragging of selected content
                     event.preventDefault();
+                    offset = targetElement.offset();
+                    x = offset.left; y = offset.top;
                     startX = event.pageX - x;
                     startY = event.pageY - y;
                     $document.on('mousemove', mousemove);

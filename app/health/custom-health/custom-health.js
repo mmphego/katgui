@@ -12,7 +12,7 @@
         $scope.itemsToUpdate = {};
 
         vm.unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
-            if (!$scope.itemsToUpdate[sensor.name.replace(':', '_')]) {
+            if (!$scope.itemsToUpdate[sensor.name.replace('.', '_')]) {
                 for (var i = 0; i < vm.regexStrings.length; i++) {
 
                     if (!vm.customStatusTrees[i]) {
@@ -32,7 +32,7 @@
                     }
                 }
             }
-            $scope.itemsToUpdate[sensor.name.replace(':', '_')] = sensor;
+            $scope.itemsToUpdate[sensor.name.replace('.', '_')] = sensor;
             if (!vm.stopUpdating) {
                 vm.stopUpdating = $interval(vm.applyPendingUpdates, 200);
             }

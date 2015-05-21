@@ -38,8 +38,10 @@
         };
 
         api.messageReceivedSensors = function (messageName, message) {
+            messageName = messageName.split(':')[1];
+            message.name = messageName;
 
-            if (api.receptors.indexOf(messageName.split(":")[0]) > -1) {
+            if (api.receptors.indexOf(messageName.split(".")[0]) > -1) {
                 for (var receptor in api.statusData) {
                     if (messageName.indexOf(receptor) > -1) {
                         applyValueToSensor(api.statusData[receptor], messageName, message, receptor);
@@ -53,7 +55,7 @@
         };
 
         function applyValueToSensor(node, sensorName, value, rootName) {
-            if (sensorName === rootName + ':' + node.sensor) {
+            if (sensorName === rootName + '.' + node.sensor) {
                 if (!node.sensorValue) {
                     node.sensorValue = {};
                 }
