@@ -27,7 +27,7 @@
 
         vm.saveToLocalStorage = function (key, value) {
             $localStorage[key] = value;
-        }
+        };
     }
 
 })();

@@ -8,27 +8,28 @@
         "bower_components"
     ],
     "dependencies": {
-        "jquery": "~2.0",
+        "jquery": "~2.1",
         "underscore": "~1.8",
-        "bootstrap": "~3.2",
+        "bootstrap": "~3.3",
         "angular": "~1.4",
-        "angular-ui-router": "latest",
+        "angular-ui-router": "~0.2",
         "angular-animate": "~1.4",
         "angular-resource": "~1.4",
         "angular-cookies": "~1.4",
         "angular-mocks": "~1.4",
         "angular-ui-utils": "~0.1",
-        "angular-bootstrap": "~0.11.0",
+        "angular-bootstrap": "~0.12",
         "moment": "latest",
         "less.js": "latest",
-        "font-awesome": "~4.2",
+        "font-awesome": "~4.3",
         "jquery-ui": "~1.10.3",
         "d3": "~3",
-        "angular-material": "~0.9"
+        "angular-material": "~0.9",
+        "Sortable": "1.1.1"
     },
     "devDependencies": {
         "sockjs": "~0.3.4",
-        "angular-dashboard-framework": "0.3.2",
+        "angular-dashboard-framework": "0.9",
         "angular-bootstrap-datetimepicker": "latest",
         "ngstorage": "~0.3",
         "angular-aria": "~1.4",
@@ -36,11 +37,9 @@
         "cryptojslib": "3.1.2",
         "cryptojs": "*",
         "jsjws": "~3.0.2",
-        "jsrsasign": "~4.7.0",
-        "angular-ui-sortable": "0.13.0"
+        "jsrsasign": "~4.7.0"
     },
     "resolutions": {
-        "angular": "~1.4",
-        "font-awesome": "~4.2"
+        "angular": "~1.4"
     }
 }
