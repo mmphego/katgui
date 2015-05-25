@@ -46,8 +46,18 @@ angular.module('katGui.d3', [])
                                     } else if (typeof(d.Value) === 'number' || !isNaN(parseFloat(d.Value))) {
                                         d.value = parseFloat(d.Value);
                                     } else {
-                                        console.log('Cannot represent sensor ' + d.Sensor + ' on the chart.');
-                                        return;
+                                        d.value = d.Value;
+                                        if (!scope.yAxisValues) {
+                                            scope.yAxisValues = [];
+                                        }
+                                        var yAxisValue = d.Value.replace(/\'/g, '"');
+                                        if (scope.yAxisValues.indexOf(yAxisValue) === -1) {
+                                            scope.yAxisValues.push(yAxisValue);
+                                            scope.yAxisValues = _.sortBy(scope.yAxisValues, function (d) {
+                                                return d.toUpperCase();
+                                            });
+                                            drawSvg();
+                                        }
                                     }
                                 }
 
