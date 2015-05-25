@@ -78,6 +78,8 @@
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
+        $rootScope.showDate = $localStorage['showDate'];
+        $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
         $rootScope.showJulianDate = $localStorage['showJulianDate'];
         $rootScope.showLST = $localStorage['showLST'];
         $rootScope.showLocalAndSAST = $localStorage['showLocalAndSAST'];
