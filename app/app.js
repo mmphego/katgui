@@ -264,6 +264,8 @@
                 var localTime = moment($rootScope.serverTimeOnLoad, 'X');
                 vm.utcTime = utcTime.format('HH:mm:ss');
                 vm.localTime = localTime.format('HH:mm:ss');
+                vm.currentDate = utcTime.format('DD-MM-YYYY');
+                vm.dayOfYear = utcTime.dayOfYear();
 
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(utcTime.date(), utcTime.month() + 1, utcTime.year(), fractionalHours);
