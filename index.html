@@ -249,7 +249,14 @@
 
                 <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
                 <span flex></span>
-
+                <div ng-show="showDayOfYear && vm.dayOfYear">
+                    <span style="font-size: 32px;">{{vm.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
+                    <md-tooltip>Current UTC Day Of Year</md-tooltip>
+                </div>
+                <div ng-show="showDate && vm.currentDate">
+                    <span style="font-size: 32px;">{{vm.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
+                    <md-tooltip>Current UTC Date</md-tooltip>
+                </div>
                 <div ng-if="vm.julianDay" ng-show="showJulianDate">
                     <span style="font-size: 32px;">{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
                     <md-tooltip>Julian Day</md-tooltip>
