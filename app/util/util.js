@@ -139,7 +139,14 @@ angular.module('material.core')
 function regexSearchFilter() {
     return function (input, fields, regex) {
         if (regex) {
-            var pattern = new RegExp(regex, 'i');
+            var pattern;
+            try {
+                pattern = new RegExp(regex, 'i');
+            }
+            catch(e) {
+                return input;
+            }
+
             var out = [];
             for (var i = 0; i < input.length; i++) {
                 for (var idx in fields) {

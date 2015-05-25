@@ -21,6 +21,7 @@
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
             {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Received Timestamp', value: 'received_timestamp'},
             {label: 'Status', value: 'status'},
             {label: 'Value', value: 'value'}
         ];
@@ -36,6 +37,9 @@
                 }
             }
             vm.sensorsOrderBy = newOrderBy;
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         vm.sensorLoaded = function ($index) {

@@ -96,6 +96,16 @@
             $rootScope.showNavbar = value;
         });
 
+        $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
+        $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
+
+        if (!$rootScope.sensorListStrategyType) {
+            $rootScope.sensorListStrategyType = 'event-rate';
+        }
+        if (!$rootScope.sensorListStrategyInterval) {
+            $rootScope.sensorListStrategyType = 3;
+        }
+
         vm.currentUser = null;
         vm.userRoles = USER_ROLES;
         vm.userCanOperate = false;
