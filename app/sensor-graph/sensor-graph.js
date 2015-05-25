@@ -180,7 +180,7 @@
                         for (var i = 0; i < result[attr].length; i++) {
                             newData.push({
                                 Sensor: attr,
-                                ReceivedTimestamp: result[attr][i][0],
+                                Timestamp: result[attr][i][0],
                                 Value: result[attr][i][1],
                                 Details: sensor
                             });
@@ -234,7 +234,7 @@
                         for (var i = 0; i < result[attr].length; i++) {
                             newData.push({
                                 Sensor: attr,
-                                ReceivedTimestamp: result[attr][i].sample_ts,
+                                Timestamp: result[attr][i].sample_ts,
                                 Value: result[attr][i].value
                             });
                         }

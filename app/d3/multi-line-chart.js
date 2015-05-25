@@ -37,7 +37,7 @@ angular.module('katGui.d3', [])
 
                         if (newData) {
                             newData.forEach(function (d) {
-                                d.date = new Date(parseFloat(d.ReceivedTimestamp) * 1000);
+                                d.date = new Date(parseFloat(d.Timestamp) * 1000);
                                 if (yAxisValues) {
                                     d.value = d.Value;
                                 } else {

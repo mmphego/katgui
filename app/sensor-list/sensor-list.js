@@ -152,8 +152,8 @@
                 }) > -1) {
                 vm.redrawChart([{
                     Sensor: strList[1].replace(/\./g, '_'),
-                    Timestamp: sensor.value.timestamp,
-                    ReceivedTimestamp: sensor.value.received_timestamp,
+                    ValueTimestamp: sensor.value.timestamp,
+                    Timestamp: sensor.value.received_timestamp,
                     Value: sensor.value.value
                 }], false, null, true, 100);
             }
