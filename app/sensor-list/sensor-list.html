@@ -81,6 +81,14 @@
                 title="Clear Chart Data"  style="margin: 0">
                 <md-icon class="fa" md-font-icon="fa-eraser"></md-icon>
             </md-button>
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button" ng-click="vm.maximiseSensorGraph()"
+                       title="Maximise"  style="margin: 0">
+                <md-icon class="fa" md-font-icon="fa-expand"></md-icon>
+            </md-button>
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button" ng-click="vm.restoreSensorGraphSize()"
+                       title="Restore Original Size"  style="margin: 0">
+                <md-icon class="fa" md-font-icon="fa-compress"></md-icon>
+            </md-button>
             <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button" ng-click="vm.showChart = !vm.showChart"
                        title="Minimise Chart" style="margin-right: 4px; margin-left: 0px">
                 <md-icon ng-show="vm.showChart" class="fa" md-font-icon="fa-chevron-down"></md-icon>
