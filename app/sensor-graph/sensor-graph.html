@@ -166,7 +166,7 @@
             <div flex layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}"
                  class="md-toolbar-tools-medium">
                 <md-chips flex class="custom-chips" ng-model="vm.sensorNames" readonly="true">
-                    <md-chip-template ng-mouseenter="vm.setLineStrokeWidth($chip.name)"
+                    <md-chip-template title="{{$chip.name}}" ng-mouseenter="vm.setLineStrokeWidth($chip.name)"
                                       ng-mouseleave="vm.removeLineStrokeWidth($chip.name)">
                         <span class="{{$chip.name}}">
                           <strong>{{$chip.name}}</strong>

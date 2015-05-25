@@ -22,9 +22,9 @@
         };
 
         api.receptorMessageReceived = function (message) {
-            var sensorNameList = message.name.split(':');
-            var receptor = sensorNameList[0];
-            var sensorName = sensorNameList[1];
+            var sensorNameList = message.name.split(':')[1];
+            var receptor = sensorNameList.split('.')[0];
+            var sensorName = sensorNameList.split('.')[1];
             api.receptorsData.forEach(function (item) {
                 if (item.name === receptor) {
                     if (sensorName === 'mode' && item.status !== message.value.value) {

@@ -19,7 +19,7 @@ angular.module('katGui.d3')
                 //but we might have received the updates before the svg elements exists, so we retry the update
                 //until we have found the html element and applied the class change
                 var unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
-                    scope.itemsToUpdate[sensor.name.replace(':', '_')] = sensor;
+                    scope.itemsToUpdate[sensor.name.replace('.', '_')] = sensor;
 
                     var stopUpdating = $interval(applyPendingUpdates, 200);
 

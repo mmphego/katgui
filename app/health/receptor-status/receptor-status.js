@@ -27,7 +27,7 @@
                             StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);
                             for (var receptor in StatusService.statusData) {
                                 //subscribe to sensors_ok
-                                MonitorService.subscribe(receptor + ":" + StatusService.statusData[receptor].sensor);
+                                MonitorService.subscribe(receptor + "." + StatusService.statusData[receptor].sensor);
                                 //recursively subscribe to all child sensors
                                 vm.subscribeToChildSensors(StatusService.statusData[receptor], receptor);
                             }
@@ -46,10 +46,10 @@
                         parent.children = [];
                     }
                     parent.children.push({name: sub, sensor: sub, hidden: true});
-                    MonitorService.subscribe(receptor + ":" + sub);
+                    MonitorService.subscribe(receptor + "." + sub);
                 });
             }
-            MonitorService.subscribe(receptor + ":" + parent.sensor);
+            MonitorService.subscribe(receptor + "." + parent.sensor);
         };
 
         $scope.$watch('vm.mapType', function (newVal) {

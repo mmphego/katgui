@@ -1,0 +1,121 @@
+.resource-root-item {
+    margin: 0;
+    text-align: end;
+    width: 138px;
+    padding-right: 12px;
+}
+
+.resource-sensors-list {
+
+    margin-left: 8px;
+
+    .resource-sensor-item {
+        cursor: pointer;
+        margin: 2px;
+        &:hover {
+            background-color: rgba(158, 158, 158, 0.1);
+        }
+
+
+    }
+
+}
+
+.resource-sensor-name {
+    min-width: 250px;
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resource-sensor-status-item {
+    margin-left: 4px;
+    margin-right: 4px;
+    min-width: 80px;
+}
+
+.resource-sensor-time-item {
+    margin-left: 4px;
+    margin-right: 4px;
+    min-width: 138px;
+}
+
+.active-sensor-list-resource {
+    background-color: rgba(158, 158, 158, 0.3);
+}
+
+.unknown-sensor-list-item {
+    color: #9E9E9E
+}
+
+.nominal-sensor-list-item {
+    color: #4CAF50
+}
+
+.warn-sensor-list-item {
+    color: #FFC107
+}
+
+.error-sensor-list-item {
+    color: #F44336
+}
+
+.failure-sensor-list-item {
+    color: #3F51B5
+}
+
+.unreachable-sensor-list-item {
+    color: #EC407A
+}
+
+.sensor-list-chart-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    height: 500px;
+    width: 500px;
+    overflow: hidden;
+    z-index: 2
+}
+
+.sensor-list-multi-line-chart {
+    margin-top: 8px;
+
+}
+
+.selected-for-chart-row {
+    background-color: rgba(179, 229, 252, 0.8);
+    color: #333333;
+
+    &:hover {
+        background-color: rgba(179, 229, 252, 1.0) !important;
+    }
+}
+
+.small-hidden-sensor-graph-container {
+    height: 64px !important;
+    width: auto !important;
+    top: auto !important;
+    left: auto !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    //    transition: all 0.5s;
+    overflow: hidden;
+}
+
+.resize-grip {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    cursor: nwse-resize;
+    width: 16px;
+    height: 16px;
+    opacity: 0.2;
+    span {
+        transform: rotate(-45deg);
+        margin-left: 8px;
+    }
+    &:hover {
+        opacity: 1.0;
+    }
+}

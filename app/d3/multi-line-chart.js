@@ -6,7 +6,8 @@ angular.module('katGui.d3', [])
             scope: {
                 redrawFunction: '=',
                 clearFunction: '=',
-                removeSensorFunction: '='
+                removeSensorFunction: '=',
+                hideContextZoom: '=hideContextZoom'
             },
             replace: false,
             link: function (scope, element) {
@@ -17,13 +18,14 @@ angular.module('katGui.d3', [])
                         return element[0].clientHeight + ', ' + element[0].clientWidth;
                     }, function (newVal, oldVal) {
                         if (newVal !== oldVal) {
-                            scope.redrawFunction(null, scope.showGridLines);
+                            drawSvg();
+                            drawValues();
                         }
                     });
 
                     var color = d3.scale.category20();
-                    scope.data = [];
-                    scope.redrawFunction = function (newData, showGridLines, yAxisValues) {
+                    scope.nestedData = [];
+                    scope.redrawFunction = function (newData, showGridLines, yAxisValues, dontSort, dataLimit) {
 
                         if (yAxisValues) {
                             yAxisValues = yAxisValues.replace(/\'/g, '"');
@@ -39,82 +41,129 @@ angular.module('katGui.d3', [])
                                 if (yAxisValues) {
                                     d.value = d.Value;
                                 } else {
-                                    d.value = parseFloat(d.Value);
+                                    if (typeof(d.Value) === 'boolean') {
+                                        d.value = d.Value? 1 : 0;
+                                    } else if (typeof(d.Value) === 'number' || !isNaN(parseFloat(d.Value))) {
+                                        d.value = parseFloat(d.Value);
+                                    } else {
+                                        console.log('Cannot represent sensor ' + d.Sensor + ' on the chart.');
+                                        return;
+                                    }
                                 }
-                                if (newData.length === 1 && scope.data.length > 100) {
-                                    scope.data.splice(0, 1);
+
+                                var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
+                                if (existingDataLine) {
+                                    if (existingDataLine.values.length > dataLimit) {
+                                        existingDataLine.values.splice(0, 1);
+                                    }
+                                    existingDataLine.values.push(d);
+                                } else {
+                                    scope.nestedData.push({key: d.Sensor, values: [d]});
                                 }
-                                scope.data.push(d);
                             });
 
-                            scope.data = _.sortBy(scope.data, function (d) {
-                                return d.Timestamp;
-                            });
-                            scope.data = _.uniq(scope.data);
+                            //TODO remove this and make postgres order the data when getting history data
+                            //if (!dontSort) {
+                            //    scope.nestedData = d3.nest()
+                            //        .key(function (d) {
+                            //            return d.Sensor;
+                            //        })
+                            //        .entries(scope.data);
+                            //    scope.data = _.sortBy(scope.data, function (d) {
+                            //        return d.Timestamp;
+                            //    });
+                            //    scope.data = _.uniq(scope.data);
+                            //}
                         }
 
                         scope.showGridLines = showGridLines;
-                        d3.selectAll('svg').remove();
-                        drawChart();
+                        drawValues();
                     };
 
                     scope.clearFunction = function () {
                         scope.yAxisValues = null;
-                        scope.data.splice(0, scope.data.length);
-                        d3.select('svg').remove();
-                        drawChart();
+                        scope.nestedData.splice(0, scope.nestedData.length);
+                        drawSvg();
+                        drawValues();
                     };
 
                     scope.removeSensorFunction = function (sensorName) {
-                        console.log('remove ' + sensorName);
-                        scope.data = _.reject(scope.data, function (item) {
-                            return item.Sensor === sensorName;
-                        });
-                        d3.select('svg').remove();
-                        drawChart();
+                        var existingDataLine = _.findWhere(scope.nestedData, {key: sensorName.replace(/\./g, '_')});
+                        if (existingDataLine) {
+                            scope.nestedData.splice(scope.nestedData.indexOf(existingDataLine), 1);
+                            drawValues();
+                        }
                     };
 
                     var tooltip = d3.select(element[0]).append("div")
                         .attr("class", "multi-line-tooltip")
                         .style("opacity", 0);
 
-                    drawChart();
+                    var margin = {top: 10, right: 10, bottom: 100, left: 40},
+                        width, height, height2;
 
-                    function drawChart() {
+                    if (scope.hideContextZoom) {
+                        margin.bottom = 35;
+                    }
 
-                        var margin = {top: 10, right: 10, bottom: 100, left: 40},
-                            margin2 = {top: element[0].clientHeight - 70, right: 10, bottom: 20, left: 40},
-                            width = element[0].clientWidth - margin.left - margin.right,
-                            height = element[0].clientHeight - margin.top - margin.bottom,
-                            height2 = element[0].clientHeight - margin2.top - margin2.bottom;
+                    height = element[0].clientHeight - margin.top - margin.bottom;
+                    var margin2 = {top: height, right: 10, bottom: 20, left: 40};
 
-                        if (scope.yAxisValues) {
-                            margin = {top: 10, right: 10, bottom: 100, left: 120};
-                            margin2 = {top: element[0].clientHeight - 70, right: 10, bottom: 20, left: 120};
-                            width = element[0].clientWidth - margin.left - margin.right;
-                            height = element[0].clientHeight - margin.top - margin.bottom;
-                            height2 = element[0].clientHeight - margin2.top - margin2.bottom;
+                    if (scope.yAxisValues) {
+                        margin.left = 120;
+                        margin2 = {top: element[0].clientHeight - 70, right: 10, bottom: 20, left: 120};
+                    }
+
+                    var svg, x, y, xAxis, yAxis, focus, line, xAxisElement, yAxisElement;
+
+                    drawSvg();
+                    drawValues();
+
+                    function drawSvg() {
+
+                        width = element[0].clientWidth - margin.left - margin.right;
+                        height = element[0].clientHeight - margin.top - margin.bottom - 5;
+                        height2 = element[0].clientHeight - margin2.top - margin2.bottom;
+                        if (height < 0) {
+                            height = 0;
                         }
 
-                        // set the ranges
-                        var x = d3.time.scale().range([0, width]),
-                            x2 = d3.time.scale().range([0, width]);
+                        margin2 = {top: height, right: 10, bottom: 20, left: 40};
 
-                        var y = null;
-                        var y2 = null;
+                        if (scope.yAxisValues) {
+                            margin.left = 120;
+                            margin2 = {top: height, right: 10, bottom: 20, left: 120};
+                        }
+
+                        d3.select('svg').remove();
+                        svg = d3.select(element[0]).append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom);
+
+                        if (!scope.hideContextZoom) {
+                            svg.append("defs").append("clipPath")
+                                .attr("id", "clip")
+                                .append("rect")
+                                .attr("width", width)
+                                .attr("height", height);
+                        }
+
+                        focus = svg.append("g")
+                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                        // set the ranges
+                        x = d3.time.scale().range([0, width]);
+                        y = null;
                         if (scope.yAxisValues) {
                             y = d3.scale.ordinal().rangePoints([height, 0]);
-                            y2 = d3.scale.ordinal().rangePoints([height2, 0]);
                         } else {
                             y = d3.scale.linear().range([height, 0]);
-                            y2 = d3.scale.linear().range([height2, 0]);
                         }
 
                         // define the axes
-                        var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10),
-                            xAxis2 = d3.svg.axis().scale(x2).orient("bottom");
+                        xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
 
-                        var yAxis = null;
+                        yAxis = null;
                         if (scope.yAxisValues) {
                             yAxis = d3.svg.axis()
                                 .scale(y).orient("left")
@@ -126,31 +175,13 @@ angular.module('katGui.d3', [])
                             yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
                         }
 
-                        var brush = d3.svg.brush()
-                            .x(x2)
-                            .on("brush", function () {
-                                x.domain(brush.empty() ? x2.domain() : brush.extent());
-                                focus.selectAll("path.line").attr("d", function (d) {
-                                    return line(d.values);
-                                });
-                                focus.select(".x.axis").call(xAxis);
-                                focus.select(".y.axis").call(yAxis);
-                                d3.selectAll("circle")
-                                    .attr("cx", function (d) {
-                                        return x(d.date);
-                                    })
-                                    .attr("cy", function (d) {
-                                        return y(d.value);
-                                    });
-                            });
-
                         if (scope.showGridLines) {
                             xAxis.tickSize(-height);//.tickSubdivide(true);
                             yAxis.tickSize(-width);//.tickSubdivide(true);
                         }
 
                         // define the line
-                        var line = d3.svg.line()
+                        line = d3.svg.line()
                             .interpolate("cubic")
                             .x(function (d) {
                                 return x(d.date);
@@ -159,66 +190,55 @@ angular.module('katGui.d3', [])
                                 return y(d.value);
                             });
 
-                        var line2 = d3.svg.line()
-                            .interpolate("cubic")
-                            .x(function (d) {
-                                return x2(d.date);
-                            })
-                            .y(function (d) {
-                                return y2(d.value);
-                            });
+                        xAxisElement = focus.append("g")
+                            .attr("class", "x axis")
+                            .attr("transform", "translate(0," + height + ")");
 
-                        //element.parent().css("max-height", element.parent().css("height"));
-                        //element.parent().css("max-width", element.parent().css("width"));
+                        yAxisElement = focus.append("g")
+                            .attr("class", "y axis y-axis");
+                    }
 
-                        var svg = d3.select(element[0]).append("svg")
-                            .attr("width", width + margin.left + margin.right)
-                            .attr("height", height + margin.top + margin.bottom);
-
-                        svg.append("defs").append("clipPath")
-                            .attr("id", "clip")
-                            .append("rect")
-                            .attr("width", width)
-                            .attr("height", height);
-
-                        var focus = svg.append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-                        var context = svg.append("g")
-                            .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-                        //if (scope.data.length > 0) {
+                    function drawValues() {
 
                         // scale the range of the data
-                        x.domain(d3.extent(scope.data, function (d) {
-                            return d.date;
-                        }));
+                        x.domain([
+                            d3.min(scope.nestedData, function (sensors) {
+                               return sensors.values[0].date;
+                            }),
+                            d3.max(scope.nestedData, function (sensors) {
+                                return sensors.values[sensors.values.length - 1].date;
+                            })
+                        ]);
 
                         if (!scope.yAxisValues) {
-                            y.domain([
-                                d3.min(scope.data, function (d) {
-                                    return d.value;
-                                }) - 1,
-                                d3.max(scope.data, function (d) {
-                                    return d.value;
-                                }) + 1
-                            ]);
+                            var yExtent = [
+                                d3.min(scope.nestedData, function (sensors) {
+                                    return d3.min(sensors.values, function (d) {
+                                        return d.value;
+                                    });
+                                }),
+                                d3.max(scope.nestedData, function (sensors) {
+                                    return d3.max(sensors.values, function (d) {
+                                        return d.value;
+                                    });
+                                })
+                            ];
+                            if (yExtent[0] === yExtent[1]) {
+                                yExtent[0] = yExtent[0] - 1;
+                                yExtent[1] = yExtent[1] + 1;
+                            }
+                            y.domain(yExtent);
                         } else {
                             y.domain(scope.yAxisValues);
                         }
 
-                        x2.domain(x.domain());
-                        y2.domain(y.domain());
 
-                        var dataNest = d3.nest()
-                            .key(function (d) {
-                                return d.Sensor;
-                            })
-                            .entries(scope.data);
-
-                        var focuslineGroups = focus.selectAll("g")
-                            .data(dataNest)
-                            .enter().append("g");
+                        focus.selectAll(".path-container").remove();
+                        var focuslineGroups = focus.selectAll("svg")
+                            .data(scope.nestedData)
+                            .enter()
+                            .append("g")
+                            .attr("class", "path-container");
 
                         var focuslines = focuslineGroups.append("path")
                             .attr("id", function (d) {
@@ -235,21 +255,17 @@ angular.module('katGui.d3', [])
                                 return d.key;
                             })
                             .attr("class", function (d) {
-                                return "line " + d.key;
+                                return "line " + d.key + " path-line";
                             })
                             .attr("d", function (d) {
                                 return line(d.values);
-                            })
-                            .attr("clip-path", "url(#clip)");
+                            }).attr("clip-path", "url(#clip)");
 
-                        focus.append("g")
-                            .attr("class", "x axis")
-                            .attr("transform", "translate(0," + height + ")")
-                            .call(xAxis);
+                        var legendSpace = width/scope.nestedData.length;
 
-                        var yAxisElement = focus.append("g")
-                            .attr("class", "y axis y-axis")
-                            .call(yAxis);
+                        xAxisElement.call(xAxis);
+                        yAxisElement.call(yAxis);
+
                         if (scope.yAxisValues) {
                             yAxisElement.selectAll(".y-axis text")
                                 .each(function (d, i) {
@@ -257,78 +273,130 @@ angular.module('katGui.d3', [])
                                 });
                         }
 
-                        focus.selectAll("g.dot")
-                            .data(dataNest)
-                            .enter().append("g")
-                            .attr("class", function (d) {
-                                return "dot " + d.key;
-                            })
-                            .selectAll("circle")
-                            .data(function (d) {
-                                return d.values;
-                            })
-                            .enter().append("circle")
-                            .attr("r", 3)
-                            .attr("cx", function (d) {
-                                return x(d.date);
-                            })
-                            .attr("cy", function (d) {
-                                return y(d.value);
-                            })
-                            .attr("clip-path", "url(#clip)")
-                            .on("mouseover", function (d) {
-                                tooltip.transition().duration(1).style("opacity", 0.9);
-                                tooltip.html(
-                                    "<div><b>" + d.Sensor + "</b>" +
-                                    "<br/><i>value:</i> " + d.value +
-                                    "<br/>" + moment.utc(d.Timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
-                                    "</div>"
-                                );
+                        if (scope.showDots) {
+                            focus.selectAll("g.dot")
+                                .data(scope.nestedData)
+                                .enter().append("g")
+                                .attr("class", function (d) {
+                                    return "dot " + d.key;
+                                })
+                                .selectAll("circle")
+                                .data(function (d) {
+                                    return d.values;
+                                })
+                                .enter().append("circle")
+                                .attr("r", 3)
+                                .attr("cx", function (d) {
+                                    return x(d.date);
+                                })
+                                .attr("cy", function (d) {
+                                    return y(d.value);
+                                })
+                                .attr("clip-path", "url(#clip)")
+                                .on("mouseover", function (d) {
+                                    tooltip.transition().duration(1).style("opacity", 0.9);
+                                    tooltip.html(
+                                        "<div><b>" + d.Sensor + "</b>" +
+                                        "<br/><i>value:</i> " + d.value +
+                                        "<br/>" + moment.utc(d.Timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
+                                        "</div>"
+                                    );
 
-                                var x = d3.event.layerX;
-                                var y = d3.event.layerY;
-                                //move the tooltip to 36,36 when we hover over the hide button
-                                if (window.innerWidth - x < 240) {
-                                    x = window.innerWidth - 240;
-                                }
-                                if (window.innerHeight - y < 240) {
-                                    y = window.innerHeight - 240;
-                                }
-                                tooltip
-                                    .style("top", (y + 15 + angular.element('#ui-view-container-div').scrollTop()) + "px")
-                                    .style("left", (x + 15 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
-                            })
-                            .on("mouseout", function () {
-                                tooltip.transition()
-                                    .duration(1)
-                                    .style("opacity", 0);
-                            });
+                                    var x = d3.event.layerX;
+                                    var y = d3.event.layerY;
+                                    //move the tooltip to 36,36 when we hover over the hide button
+                                    if (window.innerWidth - x < 240) {
+                                        x = window.innerWidth - 240;
+                                    }
+                                    if (window.innerHeight - y < 240) {
+                                        y = window.innerHeight - 240;
+                                    }
+                                    tooltip
+                                        .style("top", (y + 15 + angular.element('#ui-view-container-div').scrollTop()) + "px")
+                                        .style("left", (x + 15 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
+                                })
+                                .on("mouseout", function () {
+                                    tooltip.transition()
+                                        .duration(1)
+                                        .style("opacity", 0);
+                                });
+                        }
 
-                        var contextlineGroups = context.selectAll("g")
-                            .data(dataNest)
-                            .enter().append("g");
+                        //context zoom element start
+                        if (!scope.hideContextZoom) {
+                            var y2 = null;
+                            var x2 = d3.time.scale().range([0, width]);
 
-                        var contextLines = contextlineGroups.append("path")
-                            .attr("class", "line")
-                            .attr("d", function (d) {
-                                return line2(d.values);
-                            })
-                            .style("stroke", function (d) {
-                                return color(d.key);
-                            })
-                            .attr("clip-path", "url(#clip)");
+                            if (scope.yAxisValues) {
+                                y2 = d3.scale.ordinal().rangePoints([height2, 0]);
+                            } else {
+                                y2 = d3.scale.linear().range([height2, 0]);
+                            }
 
-                        context.append("g")
-                            .attr("class", "x axis")
-                            .attr("transform", "translate(0," + height2 + ")")
-                            .call(xAxis2);
+                            var xAxis2 = d3.svg.axis().scale(x2).orient("bottom");
 
-                        context.append("g")
-                            .attr("class", "x brush")
-                            .call(brush)
-                            .selectAll("rect")
-                            .attr("y", -6)
-                            .attr("height", height2 + 7);
+                            var brush = d3.svg.brush()
+                                .x(x2)
+                                .on("brush", function () {
+                                    x.domain(brush.empty() ? x2.domain() : brush.extent());
+                                    focus.selectAll("path.line").attr("d", function (d) {
+                                        return line(d.values);
+                                    });
+                                    focus.select(".x.axis").call(xAxis);
+                                    focus.select(".y.axis").call(yAxis);
+                                    d3.selectAll("circle")
+                                        .attr("cx", function (d) {
+                                            return x(d.date);
+                                        })
+                                        .attr("cy", function (d) {
+                                            return y(d.value);
+                                        });
+                                });
+
+                            var line2 = d3.svg.line()
+                                .interpolate("cubic")
+                                .x(function (d) {
+                                    return x2(d.date);
+                                })
+                                .y(function (d) {
+                                    return y2(d.value);
+                                });
+
+                            var context = svg.append("g")
+                                .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
+
+                            x2.domain(x.domain());
+                            y2.domain(y.domain());
+
+
+                            var contextlineGroups = context.selectAll("g")
+                                .data(scope.nestedData)
+                                .enter().append("g");
+
+                            var contextLines = contextlineGroups.append("path")
+                                .attr("class", "line")
+                                .attr("d", function (d) {
+                                    return line2(d.values);
+                                })
+                                .style("stroke", function (d) {
+                                    return color(d.key);
+                                })
+                                .attr("clip-path", "url(#clip)");
+
+                            context.append("g")
+                                .attr("class", "x axis")
+                                .attr("transform", "translate(0," + height2 + ")")
+                                .call(xAxis2);
+
+                            context.append("g")
+                                .attr("class", "x brush")
+                                .call(brush)
+                                .selectAll("rect")
+                                .attr("y", -6)
+                                .attr("height", height2 + 7);
+                        }
+                        //context zoom element stop
+
                     }
 
                     function wrapText(text, d, width) {

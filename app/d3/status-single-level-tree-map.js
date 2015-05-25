@@ -116,16 +116,16 @@ angular.module('katGui.d3')
                                     return "translate(" + d.x + "," + d.y + ")";
                                 })
                                 .attr("id", function (d) {
-                                    return d.sensor.replace(":", "_");
+                                    return d.sensor.replace(".", "_");
                                 })
                                 .call(function (d) {
                                     d3Util.applyTooltipValues(d, tooltip);
                                 })
                                 .on("mouseenter", function(d) {
-                                    angular.element("#" + d.sensor.replace(":", "_") + "hideButton").css("display", "initial");
+                                    angular.element("#" + d.sensor.replace(".", "_") + "hideButton").css("display", "initial");
                                 })
                                 .on("mouseleave", function(d) {
-                                    angular.element("#" + d.sensor.replace(":", "_") + "hideButton").css("display", "none");
+                                    angular.element("#" + d.sensor.replace(".", "_") + "hideButton").css("display", "none");
                                 });
 
                             //todo handle width/height when tree is spliced horizontally
@@ -165,7 +165,7 @@ angular.module('katGui.d3')
 
                             cell.append("foreignObject")
                                 .attr("id", function (d) {
-                                    return d.sensor.replace(":", "_") + "hideButton";
+                                    return d.sensor.replace(".", "_") + "hideButton";
                                 })
                                 //.attr("x", 3)
                                 //.attr("y", 3)

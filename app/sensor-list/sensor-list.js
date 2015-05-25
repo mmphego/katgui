@@ -1,0 +1,171 @@
+(function () {
+
+    angular.module('katGui')
+        .controller('SensorListCtrl', SensorListCtrl);
+
+    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil) {
+
+        var vm = this;
+        vm.resources = SensorsService.resources;
+        vm.resourcesNames = [];
+        vm.sensorsToDisplay = [];
+        vm.resourceSensorsBeingDisplayed = '';
+        vm.sensorsPlotNames = [];
+        vm.guid = KatGuiUtil.generateUUID();
+
+        vm.limitTo = 50;
+        $scope.loadMore = function () {
+            vm.limitTo += 15;
+        };
+
+        vm.sensorsOrderByFields = [
+            {label: 'Name', value: 'name'},
+            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Status', value: 'status'},
+            {label: 'Value', value: 'value'}
+        ];
+
+        vm.setSensorsOrderBy = function (column) {
+            var newOrderBy = _.findWhere(vm.sensorsOrderByFields, {value: column});
+            if ((vm.sensorsOrderBy || {}).value === column) {
+                if (newOrderBy.reverse === undefined) {
+                    newOrderBy.reverse = true;
+                } else if (newOrderBy.reverse) {
+                    newOrderBy.reverse = undefined;
+                    newOrderBy = null;
+                }
+            }
+            vm.sensorsOrderBy = newOrderBy;
+        };
+
+        vm.sensorLoaded = function ($index) {
+            if ($index >= vm.limitTo - 1) {
+                $timeout($scope.loadMore, 100);
+            }
+            return true;
+        };
+
+        vm.setSensorsOrderBy('name');
+
+        SensorsService.connectListener();
+
+        SensorsService.listResources()
+            .then(function (message) {
+                //$rootScope.showSimpleToast(message);
+                for (var key in vm.resources) {
+                    vm.resourcesNames.push({name: key});
+                }
+            });
+
+        vm.listResourceSensors = function (resourceName) {
+            if (vm.resourceSensorsBeingDisplayed === resourceName) {
+                return;
+            }
+            if (vm.resourceSensorsBeingDisplayed.length > 0) {
+                vm.limitTo = 50;
+                SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
+                SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*');
+                vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
+                vm.clearChart();
+            }
+            if (!SensorsService.resources[resourceName].sensorsList) {
+                SensorsService.listResourceSensors(resourceName)
+                    .then(function (message) {
+                        $rootScope.showSimpleToast(message);
+                        vm.limitTo = 30;
+                        vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
+                        if (!$scope.$$phase) {
+                            $scope.$digest();
+                        }
+                        SensorsService.connectResourceSensorListeners(resourceName, vm.guid);
+                    });
+            } else {
+                vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
+                SensorsService.subscribe(resourceName + '.*');
+                if (!$scope.$$phase) {
+                    $scope.$digest();
+                }
+            }
+            vm.resourceSensorsBeingDisplayed = resourceName;
+        };
+
+        vm.sensorClass = function (status) {
+            return status + '-sensor-list-item';
+        };
+
+        vm.plotLiveSensorFeed = function (sensor, remove) {
+            if (sensor.sensorValue) {
+                var sensorName = sensor.sensorValue.name.split(':')[1];
+                if (remove) {
+                    var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
+                        return item.name === sensorName;
+                    });
+                    if (sensorIndex > -1) {
+                        vm.sensorsPlotNames.splice(sensorIndex, 1);
+                        vm.removeSensorLine(sensorName);
+                    }
+                } else {
+                    vm.sensorsPlotNames.push({name: sensorName, class: sensorName.replace(/\./g, '_')});
+                }
+            }
+        };
+
+        vm.chipRemovePressed = function ($chip) {
+            var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
+                return item.name === $chip.name;
+            });
+            if (sensorIndex > -1) {
+                for (var i = 0; i < vm.sensorsToDisplay.length; i++) {
+                    if (vm.sensorsToDisplay[i].python_identifier === $chip.name.split('.')[1]) {
+                        vm.sensorsToDisplay[i].selectedForChart = false;
+                        break;
+                    }
+                }
+                vm.removeSensorLine($chip.name);
+            }
+        };
+
+        vm.clearChartData = function () {
+            vm.sensorsToDisplay.forEach(function (sensor) {
+                sensor.selectedForChart = false;
+            });
+
+            vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
+            vm.clearChart();
+        };
+
+        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
+            var strList = sensor.name.split(':');
+            var sensorNameList = strList[1].split('.');
+            vm.resources[sensorNameList[0]].sensorsList.forEach(function (oldSensor) {
+                if (sensorNameList[0] + '.' + oldSensor.python_identifier === strList[1]) {
+                    oldSensor.sensorValue = sensor.value;
+                    oldSensor.status = sensor.value.status;
+                    oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                    oldSensor.value = sensor.value.value;
+                }
+            });
+
+            if (vm.sensorsPlotNames.length > 0 && _.findIndex(vm.sensorsPlotNames, function (item) {
+                    return item.name === strList[1];
+                }) > -1) {
+                vm.redrawChart([{
+                    Sensor: strList[1].replace(/\./g, '_'),
+                    ValueTimestamp: sensor.value.timestamp,
+                    Timestamp: sensor.value.received_timestamp,
+                    Value: sensor.value.value
+                }], false, null, true, 100);
+            }
+        });
+
+        $scope.$on('$destroy', function () {
+            if (vm.resourceSensorsBeingDisplayed.length > 0) {
+                SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
+            }
+
+            SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*");
+            unbindUpdate();
+        });
+    }
+})();

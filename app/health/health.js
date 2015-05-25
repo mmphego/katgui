@@ -11,7 +11,7 @@
         $scope.itemsToUpdate = {};
 
         vm.unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
-            $scope.itemsToUpdate[sensor.name.replace(':', '_')] = sensor;
+            $scope.itemsToUpdate[sensor.name.replace('.', '_')] = sensor;
             if (!vm.stopUpdating) {
                 vm.stopUpdating = $interval(vm.applyPendingUpdates, 200);
             }

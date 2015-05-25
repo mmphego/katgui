@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, DataService, $filter, SensorsService) {
+    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService) {
 
         var vm = this;
         vm.showGridLines = false;
@@ -21,6 +21,7 @@
         vm.showDots = false;
         vm.showRelativeTime = false;
         vm.liveData = false;
+        vm.guid = KatGuiUtil.generateUUID();
 
         SensorsService.connectListener();
 
@@ -294,14 +295,7 @@
         };
 
         vm.connectLiveFeed = function (sensor, interval) {
-            //todo report on command success?
-            SensorsService.connectLiveFeed(sensor, interval);
-                //.success(function (result) {
-                //   console.log(result);
-                //})
-                //.error(function (error) {
-                //    console.log(error);
-                //});
+            SensorsService.connectLiveFeed(sensor, interval, vm.guid);
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
