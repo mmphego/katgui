@@ -103,7 +103,7 @@
             $rootScope.sensorListStrategyType = 'event-rate';
         }
         if (!$rootScope.sensorListStrategyInterval) {
-            $rootScope.sensorListStrategyType = 3;
+            $rootScope.sensorListStrategyInterval = 3;
         }
 
         vm.currentUser = null;
