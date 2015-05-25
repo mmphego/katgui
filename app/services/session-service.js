@@ -66,7 +66,7 @@
             if (result.session_id) {
                 var a = result.session_id.split(".");
                 $rootScope.session_id = result.session_id;
-                var payload = JSON.parse(window.atob(a[1]));
+                var payload = JSON.parse(CryptoJS.enc.Base64.parse(a[1]).toString(CryptoJS.enc.Utf8));
                 if (payload.name !== null) {
                     $rootScope.currentUser = payload;
                     $rootScope.loggedIn = true;
