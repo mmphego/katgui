@@ -159,7 +159,16 @@
         };
 
         api.connectResourceSensorListeners = function (resource_name, guid) {
-            api.sendSensorsCommand('set_sensor_strategy', [guid, resource_name, '', 'event-rate', 3, 3]);
+            api.sendSensorsCommand(
+                'set_sensor_strategy',
+                [
+                    guid,
+                    resource_name,
+                    '',
+                    $rootScope.sensorListStrategyType,
+                    $rootScope.sensorListStrategyInterval,
+                    $rootScope.sensorListStrategyInterval
+                ]);
             api.subscribe(resource_name + ".*", guid);
         };
 

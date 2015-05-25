@@ -8,18 +8,41 @@
         </md-toolbar>
         <md-content layout="column" layout-padding md-theme="{{themePrimaryButtons}}">
             <div class="config-div-item">
-                <md-subheader md-theme="{{themePrimary}}" class="md-primary">Themes</md-subheader>
-                <md-select md-theme="{{themePrimaryButtons}}" ng-model="vm.selectedTheme" style="min-width: 200px; margin-left: 8px;" placeholder="Select a Theme...">
+                <md-subheader>Themes</md-subheader>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-model="vm.selectedTheme" class="config-md-select"
+                           style="min-width: 140px; margin-left: 8px;" placeholder="Select a Theme...">
                     <md-option ng-value="theme.name" ng-repeat="theme in vm.themes">{{theme.name}}</md-option>
                 </md-select>
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showJulianDate" >Show Julian Date</md-checkbox>
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLST" >Show Local Sidereal Time</md-checkbox>
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLocalAndSAST" >Show Local and South African Standard Time</md-checkbox>
             </div>
-            <div class="config-div-item" style="border: 0">
-                <md-subheader md-theme="{{themePrimary}}" class="md-primary">Alarms</md-subheader>
+            <div class="config-div-item">
+                <md-subheader>Alarms</md-subheader>
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showAlarms" >Show Alarm Notifications</md-checkbox>
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showLargeAlarms" >Show Detailed Alarm Notifications</md-checkbox>
+            </div>
+
+            <div class="config-div-item" style="border: 0">
+                <md-subheader>Sensor List</md-subheader>
+                <div layout="row" layout-align="start center" style="width: 400px;">
+                    <label style="text-align: end; width: 190px; font-weight: normal" >Sensor Strategy Type:</label>
+                    <md-select style="margin-left: 16px;" class="config-md-select" ng-model="vm.sensorListStrategyType"
+                               ng-change="vm.sensorListStrategyTypeChange()">
+                        <md-option value="period">Period</md-option>
+                        <md-option value="event">Event</md-option>
+                        <md-option value="event-rate">Event-Rate</md-option>
+                    </md-select>
+                </div>
+                <div layout="row" layout-align="start center" style="width: 400px;; height: 42px">
+                    <label style="text-align: end; width: 190px; font-weight: normal" >Sensor Strategy Interval:</label>
+                    <md-input-container md-no-float style="margin-left: 16px;text-align: start; padding: 0px;" class="md-primary"
+                        title="Between 1 and 10000 seconds">
+                        <input style="width: 80px;" placeholder="Seconds" ng-model="vm.sensorListStrategyInterval"
+                            ng-change="vm.sensorListStrategyIntervalChange()" type="number" maxlength="5" max="10000" min="1">
+                    </md-input-container>
+                    <span style="margin-left: 4px;">seconds</span>
+                </div>
             </div>
 
         </md-content>

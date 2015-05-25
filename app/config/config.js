@@ -17,6 +17,8 @@
             vm.showLocalAndSAST = $rootScope.showLocalAndSAST;
             $rootScope.showAlarms = showAlarms;
             vm.showLargeAlarms = $rootScope.showLargeAlarms;
+            vm.sensorListStrategyInterval = $rootScope.sensorListStrategyInterval;
+            vm.sensorListStrategyType = $rootScope.sensorListStrategyType;
             vm.themes = THEMES;
             vm.selectedTheme = $localStorage['selectedTheme'];
             if (!angular.isDefined(vm.selectedTheme)) {
@@ -72,6 +74,16 @@
                 $rootScope.showAlarms = newVal;
                 $localStorage['showAlarmsNotify'] = newVal;
             }
+        };
+
+        vm.sensorListStrategyTypeChange = function () {
+            $rootScope.sensorListStrategyType = vm.sensorListStrategyType;
+            $localStorage['sensorListStrategyType'] = vm.sensorListStrategyType;
+        };
+
+        vm.sensorListStrategyIntervalChange = function () {
+            $rootScope.sensorListStrategyInterval = vm.sensorListStrategyInterval;
+            $localStorage['sensorListStrategyInterval'] = vm.sensorListStrategyInterval;
         };
 
         vm.undbindThemeChange = $scope.$watch('vm.selectedTheme', vm.themeChange);

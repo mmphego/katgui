@@ -21,6 +21,7 @@
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
             {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Received Timestamp', value: 'received_timestamp'},
             {label: 'Status', value: 'status'},
             {label: 'Value', value: 'value'}
         ];
@@ -36,6 +37,9 @@
                 }
             }
             vm.sensorsOrderBy = newOrderBy;
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
         };
 
         vm.sensorLoaded = function ($index) {
@@ -132,6 +136,16 @@
 
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
+        };
+
+        vm.maximiseSensorGraph = function () {
+            var element = angular.element('.sensor-list-chart-container');
+            element.css({top: '60px', left: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 68px)'});
+        };
+
+        vm.restoreSensorGraphSize = function () {
+            var element = angular.element('.sensor-list-chart-container');
+            element.css({top: 'auto', left: 'auto', right: '20px', bottom: '20px', width: '500px', height: '500px'});
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
