@@ -1,5 +1,8 @@
 @import "../bower_components/bootstrap/less/bootstrap";
 @import "../bower_components/font-awesome/less/font-awesome";
+@import "../bower_components/angular-material/angular-material.min.css";
+@import "../bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css";
+@import "../bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css";
 /* Component LESS */
 @import "login-form/login-form";
 @import "landing/landing";
@@ -16,7 +19,6 @@
 @import "health/health";
 @import "d3/d3";
 @import "sensor-list/sensor-list";
-
 /* Add Component LESS Above */
 
 @button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
@@ -509,7 +511,7 @@ md-toast {
     md-input-container {
         padding-bottom: 0;
         .md-input {
-            text-shadow: 0px 0px;
+            text-shadow: 0 0;
         }
     }
 

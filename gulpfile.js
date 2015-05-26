@@ -19,6 +19,7 @@ var jasmine = require('gulp-jasmine');
 var stylish = require('jshint-stylish');
 var domSrc = require('gulp-dom-src');
 var karma = require('gulp-karma');
+var util = require('gulp-util');
 
 var htmlminOptions = {
     collapseBooleanAttributes: true,
@@ -38,15 +39,14 @@ gulp.task('clean-tests', function () {
     rimraf.sync('test-results');
 });
 
-
 gulp.task('css', ['clean'], function () {
-    return gulp.src('app/app.less')
-        .pipe(less())
-        .pipe(domSrc({
-            file: 'index.html',
-            selector: 'link[rel="stylesheet"]',
-            attribute: 'href'
-        }))
+    //todo use something like domSrc to pull this out of app.less
+    return gulp.src(['bower_components/angular-material/angular-material.min.css',
+        'bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
+        'bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
+        'app/app.less'])
+        .pipe(less().on('error', util.log))
+        .pipe(concat('app.full.min.css'))
         .pipe(cssmin({
             keepSpecialComments: false,
             shorthandCompacting: false,
@@ -54,16 +54,15 @@ gulp.task('css', ['clean'], function () {
             aggressiveMerging: false,
             advanced: false
         }))
-        .pipe(rename('app.full.min.css'))
         .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('js', ['clean'], function () {
 
     var templateStream = gulp.src(['app/**/*.html'])
-        .pipe(htmlmin(htmlminOptions))
         .pipe(ngHtml2js({
-            moduleName: packagejson.name
+            moduleName: 'katGui',
+            prefix: "app/"
         }));
 
     var jsStream = domSrc({
@@ -95,7 +94,7 @@ gulp.task('indexHtml', ['clean'], function () {
 });
 
 gulp.task('fonts', ['clean'], function () {
-    return gulp.src(['bower_components/font-awesome/fonts/**', 'fonts/Roboto/**'])
+    return gulp.src(['bower_components/font-awesome/fonts/**', 'fonts/**'])
         .pipe(gulp.dest('dist/fonts/'));
 });
 
