@@ -19,21 +19,21 @@ describe('AlarmsCtrl', function () {
         monitorService.$rootScope = rootScope;
         controlService.addKnownAlarm = function () {
             //send mock server response that alarm is now known
-            var alarmObj = {severity: "error", priority: "known", name: "kataware:alarm.Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-            alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+            var alarmObj = {severity: "error", priority: "known", name: "kataware.alarm.Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+            alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         };
         controlService.cancelKnowAlarm = function () {
             //send mock server response that alarm is now known
             var alarmObj = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-            alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+            alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         };
         controlService.clearAlarm = function () {
             var alarmObj = {severity: "error", priority: "cleared", value: "error,cleared,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-            alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+            alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         };
         controlService.acknowledgeAlarm = function () {
             var alarmObj = {severity: "error", priority: "acknowledged", value: "error,acknowledged,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-            alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+            alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         };
         state = $state;
         ctrl = $controller('AlarmsCtrl', {$rootScope: rootScope, $scope: scope, ControlService: controlService, AlarmsService: alarmsService});
@@ -41,7 +41,7 @@ describe('AlarmsCtrl', function () {
 
     it('should add new alarms', inject(function () {
         var alarmObj = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -49,7 +49,7 @@ describe('AlarmsCtrl', function () {
 
     it('should add known alarms', inject(function () {
         var alarmObj = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('known');
@@ -57,7 +57,7 @@ describe('AlarmsCtrl', function () {
 
     it('should add a \'new\' alarm as \'known\' when \'Add As Known\' is clicked on a selected row', inject(function () {
         var alarmObj = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         alarmsService.alarmsData[0].selected = true;
@@ -68,8 +68,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should NOT add a \'new\' alarm as \'known\' when \'Add As Known\' is clicked and no rows were selected', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", name: "kataware:alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "new", name: "kataware.alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         ctrl.knowSelectedAlarms(alarmObj);
@@ -79,8 +79,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should add a \'known\' alarm as \'new\' when \'Cancel Known\' is clicked on a selected row', inject(function () {
-        var alarmObj = {severity: "error", priority: "known", name: "kataware:alarm.Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "known", name: "kataware.alarm.Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         alarmsService.alarmsData[0].selected = true;
@@ -93,7 +93,7 @@ describe('AlarmsCtrl', function () {
 
     it('should NOT add a \'known\' alarm as \'new\' when \'Cancel Known\' is clicked and no rows were selected', inject(function () {
         var alarmObj = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         //test for no rows selected
@@ -105,8 +105,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should clear an alarm when \'Clear\' is clicked on a selected row', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", name: "kataware:alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "new", name: "kataware.alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -120,7 +120,7 @@ describe('AlarmsCtrl', function () {
 
     it('should NOT clear an alarm when \'Clear\' is clicked and no rows were selected', inject(function () {
         var alarmObj = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -133,8 +133,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should acknowledge an alarm when \'Acknowledge\' is clicked on a selected row', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", name: "kataware:alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "new", name: "kataware.alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -148,7 +148,7 @@ describe('AlarmsCtrl', function () {
 
     it('should NOT acknowledge an alarm when \'Acknowledge\' is clicked and no rows were selected', inject(function () {
         var alarmObj = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -162,13 +162,13 @@ describe('AlarmsCtrl', function () {
 
     it('should update an existing known alarm', inject(function () {
         var alarmObj = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('known');
 
         var alarmObj2 = {status: "warn", priority: "known", value: "warn,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj2);
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj2);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].severity).toBe('warn');
@@ -179,10 +179,10 @@ describe('AlarmsCtrl', function () {
         var alarmObj2 = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj3 = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj4 = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.1", alarmObj1);
-        alarmsService.receivedAlarmMessage("kataware:alarm.2", alarmObj2);
-        alarmsService.receivedAlarmMessage("kataware:alarm.3", alarmObj3);
-        alarmsService.receivedAlarmMessage("kataware:alarm.4", alarmObj4);
+        alarmsService.receivedAlarmMessage("kataware.alarm.1", alarmObj1);
+        alarmsService.receivedAlarmMessage("kataware.alarm.2", alarmObj2);
+        alarmsService.receivedAlarmMessage("kataware.alarm.3", alarmObj3);
+        alarmsService.receivedAlarmMessage("kataware.alarm.4", alarmObj4);
         scope.$digest();
         scope.filteredAlarms = alarmsService.alarmsData;
         expect(alarmsService.alarmsData.length).toBe(4);
@@ -205,10 +205,10 @@ describe('AlarmsCtrl', function () {
         var alarmObj2 = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj3 = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj4 = {severity: "error", priority: "warn", value: "error,warn,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.1", alarmObj1);
-        alarmsService.receivedAlarmMessage("kataware:alarm.2", alarmObj2);
-        alarmsService.receivedAlarmMessage("kataware:alarm.3", alarmObj3);
-        alarmsService.receivedAlarmMessage("kataware:alarm.4", alarmObj4);
+        alarmsService.receivedAlarmMessage("kataware.alarm.1", alarmObj1);
+        alarmsService.receivedAlarmMessage("kataware.alarm.2", alarmObj2);
+        alarmsService.receivedAlarmMessage("kataware.alarm.3", alarmObj3);
+        alarmsService.receivedAlarmMessage("kataware.alarm.4", alarmObj4);
         scope.$digest();
         scope.filteredKnownAlarms = alarmsService.alarmsData;
         expect(alarmsService.alarmsData.length).toBe(4);
@@ -227,8 +227,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should clear an alarm', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", name: "kataware:alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "new", name: "kataware.alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -240,8 +240,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should acknowledge an alarm', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", name: "kataware:alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "new", name: "kataware.alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -253,8 +253,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should know an alarm', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", name: "kataware:alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "new", name: "kataware.alarm.Katstore_files_status", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('new');
@@ -266,8 +266,8 @@ describe('AlarmsCtrl', function () {
     }));
 
     it('should cancel a known an alarm', inject(function () {
-        var alarmObj = {severity: "error", priority: "new", name: "kataware:alarm.Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.Katstore_files_status", alarmObj);
+        var alarmObj = {severity: "error", priority: "new", name: "kataware.alarm.Katstore_files_status", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
+        alarmsService.receivedAlarmMessage("kataware.alarm.Katstore_files_status", alarmObj);
         scope.$digest();
         expect(alarmsService.alarmsData.length).toBe(1);
         expect(alarmsService.alarmsData[0].priority).toBe('known');
@@ -291,10 +291,10 @@ describe('AlarmsCtrl', function () {
         var alarmObj2 = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj3 = {severity: "error", priority: "new", value: "error,new,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj4 = {severity: "error", priority: "known", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        alarmsService.receivedAlarmMessage("kataware:alarm.1", alarmObj1);
-        alarmsService.receivedAlarmMessage("kataware:alarm.2", alarmObj2);
-        alarmsService.receivedAlarmMessage("kataware:alarm.3", alarmObj3);
-        alarmsService.receivedAlarmMessage("kataware:alarm.4", alarmObj4);
+        alarmsService.receivedAlarmMessage("kataware.alarm.1", alarmObj1);
+        alarmsService.receivedAlarmMessage("kataware.alarm.2", alarmObj2);
+        alarmsService.receivedAlarmMessage("kataware.alarm.3", alarmObj3);
+        alarmsService.receivedAlarmMessage("kataware.alarm.4", alarmObj4);
         scope.$digest();
         scope.filteredAlarms = alarmsService.alarmsData;
         expect(alarmsService.alarmsData.length).toBe(4);

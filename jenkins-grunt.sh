@@ -3,16 +3,16 @@
 # Install the npm requirments as defined in package.json
 npm install
 npm install bower
-npm install grunt-cli
+sudo npm install -g gulp
 
 # Install the bower requirements
 ./node_modules/bower/bin/bower install
 
-GRUNT_ARGS=''
+GULP_ARGS=''
 # Setup the environment
-./node_modules/grunt-cli/bin/grunt $GRUNT_ARGS build
+gulp $GULP_ARGS build
 
 # Run the tests
-./node_modules/grunt-cli/bin/grunt $GRUNT_ARGS test
+gulp $GULP_ARGS test
 
 #

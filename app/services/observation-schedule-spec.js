@@ -282,15 +282,6 @@ describe('ObservationScheduleService', function () {
             expect(sendSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"unassign_resources_from_subarray","id":"test_id","params":["2",["m011","m022"]]}');
         });
 
-        it('should create a command promise and send obs sched command when setSubarrayInUse is called', function () {
-            var sendSpy = spyOn(ObservationScheduleService.connection, 'send');
-            var sendObsSchedCommandSpy = spyOn(ObservationScheduleService, 'sendObsSchedCommand').and.callThrough();
-            ObservationScheduleService.setSubarrayInUse('2', '1');
-            expect(sendObsSchedCommandSpy).toHaveBeenCalledWith('set_subarray_in_use', ['2', '1']);
-            expect(ObservationScheduleService.deferredMap['test_id']).toBeDefined({});
-            expect(sendSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"set_subarray_in_use","id":"test_id","params":["2","1"]}');
-        });
-
         it('should create a command promise and send obs sched command when setSubarrayMaintenance is called', function () {
             var sendSpy = spyOn(ObservationScheduleService.connection, 'send');
             var sendObsSchedCommandSpy = spyOn(ObservationScheduleService, 'sendObsSchedCommand').and.callThrough();
@@ -312,19 +303,19 @@ describe('ObservationScheduleService', function () {
         it('should create a command promise and send obs sched command when markResourceFaulty is called', function () {
             var sendSpy = spyOn(ObservationScheduleService.connection, 'send');
             var sendObsSchedCommandSpy = spyOn(ObservationScheduleService, 'sendObsSchedCommand').and.callThrough();
-            ObservationScheduleService.markResourceFaulty('m022', '1');
-            expect(sendObsSchedCommandSpy).toHaveBeenCalledWith('set_resources_faulty', ['m022', '1']);
+            ObservationScheduleService.markResourceFaulty('m022', '1', true);
+            expect(sendObsSchedCommandSpy).toHaveBeenCalledWith('set_resources_faulty', ['m022', '1', true]);
             expect(ObservationScheduleService.deferredMap['test_id']).toBeDefined({});
-            expect(sendSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"set_resources_faulty","id":"test_id","params":["m022","1"]}');
+            expect(sendSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"set_resources_faulty","id":"test_id","params":["m022","1",true]}');
         });
 
         it('should create a command promise and send obs sched command when markResourceInMaintenance is called', function () {
             var sendSpy = spyOn(ObservationScheduleService.connection, 'send');
             var sendObsSchedCommandSpy = spyOn(ObservationScheduleService, 'sendObsSchedCommand').and.callThrough();
-            ObservationScheduleService.markResourceInMaintenance('m022', '1');
-            expect(sendObsSchedCommandSpy).toHaveBeenCalledWith('set_resources_in_maintenance', ['m022', '1']);
+            ObservationScheduleService.markResourceInMaintenance('m022', '1', true);
+            expect(sendObsSchedCommandSpy).toHaveBeenCalledWith('set_resources_in_maintenance', ['m022', '1', true]);
             expect(ObservationScheduleService.deferredMap['test_id']).toBeDefined({});
-            expect(sendSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"set_resources_in_maintenance","id":"test_id","params":["m022","1"]}');
+            expect(sendSpy).toHaveBeenCalledWith('{"jsonrpc":"2.0","method":"set_resources_in_maintenance","id":"test_id","params":["m022","1",true]}');
         });
 
         it('should create a command promise and send obs sched command when listAllocationsForSubarray is called', function () {
@@ -539,15 +530,6 @@ describe('ObservationScheduleService', function () {
             expect(ObservationScheduleService.poolResourcesFree.length).toBe(3);
         });
 
-        it('should set the subarray flag in use', function () {
-            ObservationScheduleService.onSockJSMessage(list_subarrays);
-            expect(ObservationScheduleService.subarrays.length).toBe(2);
-            ObservationScheduleService.onSockJSMessage(set_subarray_in_use);
-            expect(ObservationScheduleService.subarrays[0].state).toBe('in_use');
-            ObservationScheduleService.onSockJSMessage(set_subarray_in_use_off);
-            expect(ObservationScheduleService.subarrays[1].state).toBe('free');
-        });
-
         it('should set the subarray maintenance flag on/off', function () {
             ObservationScheduleService.onSockJSMessage(list_subarrays);
             expect(ObservationScheduleService.subarrays.length).toBe(2);
@@ -575,11 +557,6 @@ describe('ObservationScheduleService', function () {
             expect(ObservationScheduleService.poolResourcesFree[0].in_maintenance).toBeTruthy();
             ObservationScheduleService.onSockJSMessage(set_resources_in_maintenance);
             expect(ObservationScheduleService.poolResources[0].in_maintenance).toBeTruthy();
-        });
-
-        it('should get the scheduler mode by subarray', function () {
-            ObservationScheduleService.onSockJSMessage(get_scheduler_mode_by_subarray);
-            expect(ObservationScheduleService.schedulerModes['2'].stringValue).toBe('queue');
         });
 
         it('should set the scheduler mode by subarray', function () {

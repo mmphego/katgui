@@ -84,7 +84,7 @@ describe('ReceptorStatusCtrl', function () {
             deferred2.resolve();
             scope.$digest();
             expect(setReceptorsAndStatusTreeSpy).toHaveBeenCalled();
-            expect(subscribeSpy).toHaveBeenCalledWith('m011:testsensor');
+            expect(subscribeSpy).toHaveBeenCalledWith('m011.testsensor');
             //expect(subscribeToChildSensorsSpy).toHaveBeenCalled();
         });
 
@@ -107,12 +107,12 @@ describe('ReceptorStatusCtrl', function () {
                 }]
             };
             ctrl.subscribeToChildSensors(StatusService.statusData['m011'], 'm011');
-            expect(subscribeSpy).toHaveBeenCalledWith('m011:apchildtestsub1');
-            expect(subscribeSpy).toHaveBeenCalledWith('m011:apchildtestsub2');
-            expect(subscribeSpy).toHaveBeenCalledWith('m011:apchildtestsensor');
-            expect(subscribeSpy).toHaveBeenCalledWith('m011:aptestsensor');
-            expect(subscribeSpy).toHaveBeenCalledWith('m011:aptestsensor2');
-            expect(subscribeSpy).toHaveBeenCalledWith('m011:testsensor');
+            expect(subscribeSpy).toHaveBeenCalledWith('m011.apchildtestsub1');
+            expect(subscribeSpy).toHaveBeenCalledWith('m011.apchildtestsub2');
+            expect(subscribeSpy).toHaveBeenCalledWith('m011.apchildtestsensor');
+            expect(subscribeSpy).toHaveBeenCalledWith('m011.aptestsensor');
+            expect(subscribeSpy).toHaveBeenCalledWith('m011.aptestsensor2');
+            expect(subscribeSpy).toHaveBeenCalledWith('m011.testsensor');
         });
     });
 });

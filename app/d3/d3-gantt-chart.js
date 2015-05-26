@@ -1,4 +1,4 @@
-angular.module('katGui.d3')
+angular.module('katGui.d3', [])
 
     .directive('observationScheduleGantt', function (d3Service) {
         /* istanbul ignore next */

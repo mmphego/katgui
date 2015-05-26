@@ -102,7 +102,7 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                             } else if (channelNameSplit.length > 1 &&
                                 (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
                                 $rootScope.$emit('operatorControlStatusMessage', {name: messageObj.msg_channel, value: messageObj.msg_data});
-                            }  else if (messageObj.msg_channel.lastIndexOf('sched:', 0) === 0) {
+                            }  else if (channelNameSplit[0] === 'sched') {
                                 ObservationScheduleService.receivedSchedMessage(messageObj.msg_channel, messageObj.msg_data);
                             } else if (channelNameSplit.length > 1) {
                                 StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);

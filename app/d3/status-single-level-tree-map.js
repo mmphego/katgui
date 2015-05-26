@@ -24,7 +24,7 @@ angular.module('katGui.d3')
 
                     scope.ignoreList = [];
 
-                    var tooltip = d3.select(angular.element('.treemap-tooltip')[0]);
+                    var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]);
 
                     var win = angular.element($window);
                     var unbindResize = win.bind("resize", function () {
@@ -122,10 +122,10 @@ angular.module('katGui.d3')
                                     d3Util.applyTooltipValues(d, tooltip);
                                 })
                                 .on("mouseenter", function(d) {
-                                    angular.element("#" + d.sensor.replace(".", "_") + "hideButton").css("display", "initial");
+                                    angular.element(document.querySelector("#" + d.sensor.replace(".", "_") + "hideButton")).css("display", "initial");
                                 })
                                 .on("mouseleave", function(d) {
-                                    angular.element("#" + d.sensor.replace(".", "_") + "hideButton").css("display", "none");
+                                    angular.element(document.querySelector("#" + d.sensor.replace(".", "_") + "hideButton")).css("display", "none");
                                 });
 
                             //todo handle width/height when tree is spliced horizontally
@@ -180,7 +180,7 @@ angular.module('katGui.d3')
                                 })
                                 .append("xhtml:div")
                                 .attr("class", function (d) {
-                                    return angular.element("#btnPrimaryTheme").prop("class");
+                                    return angular.element(document.querySelector("#btnPrimaryTheme")).prop("class");
                                 })
                                 .style("cursor", "pointer")
                                 .style("border", 0)

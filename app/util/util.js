@@ -1,4 +1,4 @@
-angular.module('katGui.util', [])
+angular.module('katGui.util')
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
@@ -21,7 +21,7 @@ angular.module('katGui.util', [])
     .directive('draggable', function($document) {
         return {
             link: function(scope, element, attr) {
-                var targetElement = angular.element(attr.draggable);
+                var targetElement = angular.element(document.querySelector(attr.draggable));
                 var offset = targetElement.offset();
                 var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
 
@@ -73,7 +73,7 @@ angular.module('katGui.util', [])
             link: function (scope, element, attr) {
 
                 element.css({
-                    'background-color': angular.element(scope.target).css('background-color')
+                    'background-color': angular.element(document.querySelector(scope.target)).css('background-color')
                 });
             }
         };
@@ -81,7 +81,7 @@ angular.module('katGui.util', [])
     .directive('resizeable', function ($document) {
         return {
             link: function (scope, element, attr) {
-                var targetElement = angular.element(attr.resizeable);
+                var targetElement = angular.element(document.querySelector(attr.resizeable));
                 var offset = targetElement.offset(),
                     offsetX, offsetY;
                 var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;

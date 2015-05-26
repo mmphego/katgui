@@ -1,4 +1,4 @@
-angular.module('katGui.d3', [])
+angular.module('katGui.d3')
 
     .directive('multiLineChart', function ($window, d3Service) {
         return {
@@ -322,8 +322,8 @@ angular.module('katGui.d3', [])
                                         y = window.innerHeight - 240;
                                     }
                                     tooltip
-                                        .style("top", (y + 15 + angular.element('#ui-view-container-div').scrollTop()) + "px")
-                                        .style("left", (x + 15 + angular.element('#ui-view-container-div').scrollLeft()) + "px");
+                                        .style("top", (y + 15 + angular.element(document.querySelector('#ui-view-container-div')).scrollTop()) + "px")
+                                        .style("left", (x + 15 + angular.element(document.querySelector('#ui-view-container-div')).scrollLeft()) + "px");
                                 })
                                 .on("mouseout", function () {
                                     tooltip.transition()

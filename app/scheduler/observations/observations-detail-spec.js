@@ -121,7 +121,6 @@ describe('SubArrayObservationsDetail', function () {
         expect(getSchedulerModeForSubarraySpy).toHaveBeenCalledWith(1);
         deferred5.resolve();
         scope.$digest();
-        expect(ctrl.selectedMode).toEqual('queue');
     });
 
     it('should call the service function to execute the schedule', function () {
@@ -186,9 +185,9 @@ describe('SubArrayObservationsDetail', function () {
         var markResourceFaultySpy = spyOn(ObservationScheduleService, "markResourceFaulty").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
         ctrl.markResourceFaulty({name: 'anc', state: 'faulty'});
-        expect(markResourceFaultySpy).toHaveBeenCalledWith('anc', 0);
+        expect(markResourceFaultySpy).toHaveBeenCalledWith(1, 'anc', 0);
         ctrl.markResourceFaulty({name: 'anc', state: 'ok'});
-        expect(markResourceFaultySpy).toHaveBeenCalledWith('anc', 1);
+        expect(markResourceFaultySpy).toHaveBeenCalledWith(1, 'anc', 1);
         deferred.resolve();
         scope.$digest();
         expect(displayPromiseSpy).toHaveBeenCalled();

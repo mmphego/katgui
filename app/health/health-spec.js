@@ -10,11 +10,11 @@ describe('HealthCtrl', function () {
         subs: [
             {
                 name: "m011",
-                sensor: "m011:comms_ok"
+                sensor: "mon:m011.comms_ok"
             },
             {
                 name: "m022",
-                sensor: "m022:comms_ok"
+                sensor: "mon:m022.comms_ok"
             }],
         children: []
     };
@@ -83,7 +83,7 @@ describe('HealthCtrl', function () {
 
     it('should start the update interval when sensor updates are received', function () {
         var sensor = {
-            name: 'test:test_sensor', sensorValue: {
+            name: 'test.test_sensor', sensorValue: {
                 received_timestamp: 1426073881.12494,
                 status: 1,
                 timestamp: 1426073881.122542,
@@ -102,7 +102,7 @@ describe('HealthCtrl', function () {
     it('should apply pending updates', function () {
         var cancelSpy = spyOn(interval, 'cancel');
         var sensor = {
-            name: 'test:test_sensor', sensorValue: {
+            name: 'test.test_sensor', sensorValue: {
                 received_timestamp: 1426073881.12494,
                 status: 1,
                 timestamp: 1426073881.122542,
@@ -128,7 +128,7 @@ describe('HealthCtrl', function () {
 
     it('should delete the sensor after the update is applies', function() {
         var sensor = {
-            name: 'test:test_sensor',
+            name: 'test.test_sensor',
             sensorValue: {
                 received_timestamp: 1426073881.12494,
                 status: 1,
@@ -139,7 +139,7 @@ describe('HealthCtrl', function () {
         };
 
         var sensor2 = {
-            name: 'test2:test_sensor2',
+            name: 'test2.test_sensor2',
             sensorValue: {
                 received_timestamp: 1426073881.12494,
                 status: 1,
@@ -150,7 +150,7 @@ describe('HealthCtrl', function () {
         };
 
         var sensor3 = {
-            name: 'test3:test_sensor3',
+            name: 'test3.test_sensor3',
             depth: 1,
             sensorValue: {
                 received_timestamp: 1426073881.12494,

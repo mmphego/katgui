@@ -31,15 +31,12 @@
 <body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="row" ng-cloak>
 
 <!-- Livereload script for development only (stripped during dist build) -->
-<script src="http://localhost:35729/livereload.js" data-concat="false"></script>
-<script src="bower_components/jquery/jquery.js"></script>
-<script src="bower_components/jquery-ui/ui/jquery.ui.core.js"></script>
-<script src="bower_components/jquery-ui/ui/jquery.ui.widget.js"></script>
-<script src="bower_components/jquery-ui/ui/jquery.ui.mouse.js"></script>
-<script src="bower_components/jquery-ui/ui/jquery.ui.sortable.js"></script>
+<script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/Sortable/Sortable.min.js"></script>
 
 <!-- JS from Bower Components -->
-<script src="bower_components/less.js/dist/less.min.js" data-concat="false"></script>
+<script src="bower_components/less.js/dist/less.min.js" data-build="exclude"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/underscore/underscore.js"></script>
 <script src="bower_components/moment/moment.js"></script>
@@ -64,16 +61,8 @@
 <!-- Add New Bower Component JS Above -->
 
 <!-- Main App JS -->
-<script src="app/app.js"></script>
-<script src="app/about/about.js"></script>
-<script src="app/config/config.js"></script>
-<script src="app/login-form/login-form.js"></script>
-<script src="app/landing/landing.js"></script>
-<script src="app/weather/weather.js"></script>
-<script src="app/video/video.js"></script>
-<script src="app/operator-control/operator-control.js"></script>
-<script src="app/services/control-service.js"></script>
 <script src="app/services/alarms-service.js"></script>
+<script src="app/services/control-service.js"></script>
 <script src="app/services/config-service.js"></script>
 <script src="app/services/data-service.js"></script>
 <script src="app/services/monitor-service.js"></script>
@@ -83,13 +72,12 @@
 <script src="app/services/user-service.js"></script>
 <script src="app/services/session-service.js"></script>
 <script src="app/services/status-service.js"></script>
-<script src="app/health/health.js"></script>
-<script src="app/health/receptor-status/receptor-status.js"></script>
-<script src="app/health/custom-health/custom-health.js"></script>
-<script src="app/sensor-graph/sensor-graph.js"></script>
-<script src="app/sensor-list/sensor-list.js"></script>
-<script src="app/d3/multi-line-chart.js"></script>
+
+<script src="app/util/focus-directive.js"></script>
+<script src="app/util/util.js"></script>
+
 <script src="app/d3/d3-gantt-chart.js"></script>
+<script src="app/d3/multi-line-chart.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
 <script src="app/d3/receptor-status-items.js"></script>
@@ -99,9 +87,21 @@
 <script src="app/d3/receptor-status-icicle-map.js"></script>
 <script src="app/d3/receptor-status-sunburst-map.js"></script>
 <script src="app/d3/status-single-level-tree-map.js"></script>
+
+<script src="app/app.js"></script>
+<script src="app/about/about.js"></script>
+<script src="app/config/config.js"></script>
+<script src="app/login-form/login-form.js"></script>
+<script src="app/landing/landing.js"></script>
+<script src="app/weather/weather.js"></script>
+<script src="app/video/video.js"></script>
+<script src="app/operator-control/operator-control.js"></script>
+<script src="app/health/health.js"></script>
+<script src="app/health/receptor-status/receptor-status.js"></script>
+<script src="app/health/custom-health/custom-health.js"></script>
+<script src="app/sensor-graph/sensor-graph.js"></script>
+<script src="app/sensor-list/sensor-list.js"></script>
 <script src="app/admin/admin.js"></script>
-<script src="app/util/util.js"></script>
-<script src="app/util/focus-directive.js"></script>
 <script src="app/alarms/alarms.js"></script>
 <script src="app/alarms/alarms-notify.js"></script>
 <script src="app/widgets/navigation/navigation-widget.js"></script>

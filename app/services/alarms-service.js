@@ -1,6 +1,6 @@
 /*jshint loopfunc: true */
 (function () {
-    angular.module('katGui.services')
+    angular.module('katGui.services', ['katGui.util', 'ngStorage'])
         .service('AlarmsService', AlarmsService);
 
     function AlarmsService($rootScope) {

@@ -1,6 +1,6 @@
 describe('MonitorService', function () {
 
-    beforeEach(module('katGui'));
+    beforeEach(module('katGui.services'));
 
     var authMessage = {
         type: "message",
@@ -38,22 +38,22 @@ describe('MonitorService', function () {
 
     var goodMessageKataware2 = {
         type: "message",
-        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"kataware:test", "msg_data":{"value":"test_value"}}]}'
+        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"mon:kataware.test", "msg_data":{"value":"test_value"}}]}'
     };
 
     var goodMessageMode = {
         type: "message",
-        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"test:mode", "msg_data":{"value":"test_value"}}]}'
+        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"mon:test.mode", "msg_data":{"value":"test_value"}}]}'
     };
 
     var goodMessageStatus = {
         type: "message",
-        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"test:test", "msg_data":{"value":"test_value"}}]}'
+        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"mon:test.test", "msg_data":{"value":"test_value"}}]}'
     };
 
     var goodMessageSched = {
         type: "message",
-        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"sched:test", "msg_data":{"value":"test_value"}}]}'
+        data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"mon:sched.test", "msg_data":{"value":"test_value"}}]}'
     };
 
     var badIDMessage = {
@@ -105,15 +105,15 @@ describe('MonitorService', function () {
         ConfigService.receptorList = ['test1', 'test2', 'test3'];
         var subscribeSpy = spyOn(MonitorService, 'subscribe');
         MonitorService.subscribeToReceptorUpdates();
-        expect(subscribeSpy.calls.argsFor(0)).toEqual([['test1:mode', 'test1:inhibited']]);
-        expect(subscribeSpy.calls.argsFor(1)).toEqual([['test2:mode', 'test2:inhibited']]);
-        expect(subscribeSpy.calls.argsFor(2)).toEqual([['test3:mode', 'test3:inhibited']]);
+        expect(subscribeSpy.calls.argsFor(0)).toEqual([['mon:test1.mode', 'mon:test1.inhibited']]);
+        expect(subscribeSpy.calls.argsFor(1)).toEqual([['mon:test2.mode', 'mon:test2.inhibited']]);
+        expect(subscribeSpy.calls.argsFor(2)).toEqual([['mon:test3.mode', 'mon:test3.inhibited']]);
     }));
 
     it('should subscribe to alarms', inject(function () {
         var subscribeSpy = spyOn(MonitorService, 'subscribe');
         MonitorService.subscribeToAlarms();
-        expect(subscribeSpy.calls.mostRecent().args[0]).toEqual('kataware:alarm_*');
+        expect(subscribeSpy.calls.mostRecent().args[0]).toEqual('kataware.alarm_*');
     }));
 
     it('should create a SockJS class and set the functions when connecting the listener', function () {
@@ -201,7 +201,7 @@ describe('MonitorService', function () {
         MonitorService.connection.readyState = true;
         MonitorService.connection.authorized = true;
         MonitorService.subscribe('test_subsribe');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["test_subsribe"\],"id":"monitor.*"\}/);
+        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["mon:test_subsribe"\],"id":"monitor.*"\}/);
     });
 
     it('should not send the subscribe command, but should create a timeout for a retry when the connection is not in readyState', function () {
@@ -214,7 +214,7 @@ describe('MonitorService', function () {
         expect(sendSpy).not.toHaveBeenCalled();
         var sendControlCommandSpy = spyOn(MonitorService, 'subscribe');
         timeout.flush(500);
-        expect(sendControlCommandSpy).toHaveBeenCalledWith('test_subscribe');
+        expect(sendControlCommandSpy).toHaveBeenCalledWith('mon:test_subscribe');
     });
 
     it('should set the connection as authorized when a session_id is received', function () {
@@ -286,37 +286,25 @@ describe('MonitorService', function () {
     it('should call the AlarmService function when receiving the appropriate alarm message', function () {
         var receivedAlarmMessageSpy = spyOn(AlarmsService, 'receivedAlarmMessage');
         MonitorService.onSockJSMessage(goodMessageKataware2);
-        expect(receivedAlarmMessageSpy).toHaveBeenCalledWith('kataware:test', { value: 'test_value' });
+        expect(receivedAlarmMessageSpy).toHaveBeenCalledWith('mon:kataware.test', { value: 'test_value' });
     });
 
     it('should emit a message on the rootScope when an operatorControlStatusMessage type is received', function () {
         var emitSpy = spyOn(scope.$root, '$emit');
         MonitorService.onSockJSMessage(goodMessageMode);
-        expect(emitSpy).toHaveBeenCalledWith('operatorControlStatusMessage', { name: 'test:mode', value: Object({ value: 'test_value' }) });
+        expect(emitSpy).toHaveBeenCalledWith('operatorControlStatusMessage', { name: 'mon:test.mode', value: Object({ value: 'test_value' }) });
     });
 
     it('should call the ObservationScheduleService function when receiving the appropriate sched message', function () {
         var receivedSchedMessageSpy = spyOn(ObservationScheduleService, 'receivedSchedMessage');
         MonitorService.onSockJSMessage(goodMessageSched);
-        expect(receivedSchedMessageSpy).toHaveBeenCalledWith('sched:test', { value: 'test_value' });
+        expect(receivedSchedMessageSpy).toHaveBeenCalledWith('mon:sched.test', { value: 'test_value' });
     });
 
     it('should call the StatusService function when receiving the appropriate status message', function () {
         var messageReceivedSensorsSpy = spyOn(StatusService, 'messageReceivedSensors');
         MonitorService.onSockJSMessage(goodMessageStatus);
-        expect(messageReceivedSensorsSpy).toHaveBeenCalledWith('test:test', { value: 'test_value' });
-    });
-
-    it('should do nothing with a garbage message', function () {
-        var messageReceivedSensorsSpy = spyOn(StatusService, 'messageReceivedSensors');
-        var receivedSchedMessageSpy = spyOn(ObservationScheduleService, 'receivedSchedMessage');
-        var emitSpy = spyOn(scope.$root, '$emit');
-        var errorSpy = spyOn(console, 'error');
-        MonitorService.onSockJSMessage(garbageMessage);
-        expect(messageReceivedSensorsSpy).not.toHaveBeenCalled();
-        expect(receivedSchedMessageSpy).not.toHaveBeenCalled();
-        expect(emitSpy).not.toHaveBeenCalled();
-        expect(errorSpy).not.toHaveBeenCalled();
+        expect(messageReceivedSensorsSpy).toHaveBeenCalledWith('mon:test.test', { value: 'test_value' });
     });
 
     it('should not parse an invalid message (the JSON string has no data attribute)', function() {

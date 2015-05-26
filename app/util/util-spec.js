@@ -11,24 +11,6 @@ describe('katGui util', function () {
         filter = _$filter_;
     }));
 
-    it('should resize a text area with the auto-grow attribute', function () {
-        element = angular.element('<div style="width: 555px; height: 666px"><textarea auto-grow></textarea></div>');
-        element.appendTo(document.body);
-        compile(element)(scope);
-        scope.$digest();
-        expect(element[0].clientWidth).toEqual(555);
-        expect(element[0].clientHeight).toEqual(666);
-    });
-
-    it('should not resize a text area with the auto-grow attribute when the height is 0', function () {
-        element = angular.element('<div style="width: 555px; height: 0px"><textarea auto-grow></textarea></div>');
-        element.appendTo(document.body);
-        compile(element)(scope);
-        scope.$digest();
-        expect(element[0].clientWidth).toEqual(555);
-        expect(element[0].clientHeight).toEqual(0);
-    });
-
     it('should search with a regex expression using a custom filter', function () {
         var orderByFields = [
             {label: 'Id', value: 'id'},

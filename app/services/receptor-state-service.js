@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui')
+    angular.module('katGui.services')
         .service('ReceptorStateService', ReceptorStateService);
 
     function ReceptorStateService($rootScope, MonitorService, ConfigService) {

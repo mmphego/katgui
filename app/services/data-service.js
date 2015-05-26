@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui')
+    angular.module('katGui.services')
         .service('DataService', DataService);
 
     function DataService($http, SERVER_URL) {

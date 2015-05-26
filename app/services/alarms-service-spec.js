@@ -16,13 +16,13 @@ describe('AlarmsService', function() {
         var alarmObj3 = {severity: "error", priority:"known", name: "Katstore_files_status3", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj4 = {severity: "nominal", priority:"known", name: "Katstore_files_status3", value: "nominal,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
         var alarmObj5 = {severity: "error", priority:"known", name: "Katstore_files_status3", value: "error,known,agg_anc_katstore_files_ok is 0", time: 1415957781.17167};
-        AlarmsService.receivedAlarmMessage("kataware:alarm_Katstore_files_status", alarmObj1);
-        AlarmsService.receivedAlarmMessage("kataware:alarm_Katstore_files_status2", alarmObj2);
-        AlarmsService.receivedAlarmMessage("kataware:alarm_Katstore_files_status3", alarmObj3);
+        AlarmsService.receivedAlarmMessage("kataware.alarm_Katstore_files_status", alarmObj1);
+        AlarmsService.receivedAlarmMessage("kataware.alarm_Katstore_files_status2", alarmObj2);
+        AlarmsService.receivedAlarmMessage("kataware.alarm_Katstore_files_status3", alarmObj3);
         expect(AlarmsService.alarmsData.length).toBe(3);
-        AlarmsService.receivedAlarmMessage("kataware:alarm_Katstore_files_status3", alarmObj5);
+        AlarmsService.receivedAlarmMessage("kataware.alarm_Katstore_files_status3", alarmObj5);
         expect(AlarmsService.alarmsData.length).toBe(3);
-        AlarmsService.receivedAlarmMessage("kataware:alarm_Katstore_files_status3", alarmObj4);
+        AlarmsService.receivedAlarmMessage("kataware.alarm_Katstore_files_status3", alarmObj4);
         expect(AlarmsService.alarmsData.length).toBe(3);
     }));
 });
