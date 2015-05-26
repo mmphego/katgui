@@ -18,8 +18,7 @@ var jshint = require('gulp-jshint');
 var jasmine = require('gulp-jasmine');
 var stylish = require('jshint-stylish');
 var domSrc = require('gulp-dom-src');
-var watch = require('gulp-watch');
-var karma = require('karma').server;
+var karma = require('gulp-karma');
 
 var htmlminOptions = {
     collapseBooleanAttributes: true,
@@ -34,6 +33,11 @@ var htmlminOptions = {
 gulp.task('clean', function () {
     rimraf.sync('dist');
 });
+
+gulp.task('clean-tests', function () {
+    rimraf.sync('test-results');
+});
+
 
 gulp.task('css', ['clean'], function () {
     return gulp.src('app/app.less')
@@ -111,14 +115,31 @@ gulp.task('jshint', function () {
         .pipe(jshint.reporter(stylish));
 });
 
-gulp.task('test', function () {
-    karma.start({
-        configFile: __dirname + '/karma.conf.js',
-        singleRun: true
-    }, function (arguments) {
-        console.log('-------------- Karma Tests Run Complete --------------');
-        console.log(arguments);
-    });
+gulp.task('test', ['clean-tests'], function() {
+    // Be sure to return the stream
+    // NOTE: Using the fake './foobar' so as to run the files
+    // listed in karma.conf.js INSTEAD of what was passed to
+    // gulp.src !
+    return gulp.src('./foobar')
+        .pipe(karma({
+            configFile: 'karma.conf.js',
+            action: 'run'
+        }))
+        .on('error', function(err) {
+            // Make sure failed tests cause gulp to exit non-zero
+            this.emit('end'); //instead of erroring the stream, end it
+        });
+});
+
+var webserver = require('gulp-webserver');
+
+gulp.task('webserver', function() {
+    gulp.src('.')
+        .pipe(webserver({
+            livereload: true,
+            //directoryListing: true,
+            open: true
+        }));
 });
 
 gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'fonts', 'images', 'd3']);

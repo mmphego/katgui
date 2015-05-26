@@ -76,19 +76,6 @@ describe('Subarray Resources Controller', function () {
         expect(refreshResourcesSpy).toHaveBeenCalled();
     });
 
-    it('should call the service function to set the subarray in use', function() {
-        var deferred = q.defer();
-        var setSubarrayInUseSpy = spyOn(ObservationScheduleService, "setSubarrayInUse").and.returnValue(deferred.promise);
-        var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
-        ctrl.setSubarrayInUse({id: 1, state: 'in_use'});
-        expect(setSubarrayInUseSpy).toHaveBeenCalledWith(1, 0);
-        ctrl.setSubarrayInUse({id: 1, state: 'free'});
-        expect(setSubarrayInUseSpy).toHaveBeenCalledWith(1, 1);
-        deferred.resolve();
-        scope.$digest();
-        expect(displayPromiseSpy).toHaveBeenCalled();
-    });
-
     it('should call the service function to set the subarray in maintenance', function() {
         var deferred = q.defer();
         var setSubarrayMaintenanceSpy = spyOn(ObservationScheduleService, "setSubarrayMaintenance").and.returnValue(deferred.promise);
@@ -106,10 +93,10 @@ describe('Subarray Resources Controller', function () {
         var deferred = q.defer();
         var markResourceFaultySpy = spyOn(ObservationScheduleService, "markResourceFaulty").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
-        ctrl.markResourceFaulty({name: 'anc', state: 'faulty'});
-        expect(markResourceFaultySpy).toHaveBeenCalledWith('anc', 0);
-        ctrl.markResourceFaulty({name: 'anc', state: 'ok'});
-        expect(markResourceFaultySpy).toHaveBeenCalledWith('anc', 1);
+        ctrl.markResourceFaulty(null, {name: 'anc', state: 'faulty'});
+        expect(markResourceFaultySpy).toHaveBeenCalledWith('', 'anc', 0);
+        ctrl.markResourceFaulty(null, {name: 'anc', state: 'ok'});
+        expect(markResourceFaultySpy).toHaveBeenCalledWith('', 'anc', 1);
         deferred.resolve();
         scope.$digest();
         expect(displayPromiseSpy).toHaveBeenCalled();
@@ -119,10 +106,10 @@ describe('Subarray Resources Controller', function () {
         var deferred = q.defer();
         var markResourceInMaintenanceSpy = spyOn(ObservationScheduleService, "markResourceInMaintenance").and.returnValue(deferred.promise);
         var displayPromiseSpy = spyOn(scope.$root, "displayPromiseResult");
-        ctrl.markResourceInMaintenance({name: 'anc', in_maintenance: true});
-        expect(markResourceInMaintenanceSpy).toHaveBeenCalledWith('anc', 0);
-        ctrl.markResourceInMaintenance({name: 'anc', in_maintenance: false});
-        expect(markResourceInMaintenanceSpy).toHaveBeenCalledWith('anc', 1);
+        ctrl.markResourceInMaintenance(null, {name: 'anc', in_maintenance: true});
+        expect(markResourceInMaintenanceSpy).toHaveBeenCalledWith('', 'anc', 0);
+        ctrl.markResourceInMaintenance(null, {name: 'anc', in_maintenance: false});
+        expect(markResourceInMaintenanceSpy).toHaveBeenCalledWith('', 'anc', 1);
         deferred.resolve();
         scope.$digest();
         expect(displayPromiseSpy).toHaveBeenCalled();

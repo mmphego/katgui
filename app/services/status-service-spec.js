@@ -1,4 +1,4 @@
-describe('SessionService', function () {
+describe('StatusService', function () {
 
     beforeEach(module('katGui.services'));
     beforeEach(module('ui.router'));
@@ -18,7 +18,7 @@ describe('SessionService', function () {
         all_sensors_ok: {children: [], name: 'All Sensors OK', sensor: '', subs: [{name: '1', sensor: '1sensor'}, {name: '2', sensor: '2sensor'}, {name: '3', sensor: '3sensor'}]}
     };
 
-    var messageReceivedName = 'anc:bms_kapb_temp';
+    var messageReceivedName = 'mon:anc.bms_kapb_temp';
     var messageValue = {
         received_timestamp: 1427795003.140423,
         status: 1,
@@ -73,33 +73,27 @@ describe('SessionService', function () {
     it('should apply the value of a message to a sensor', function () {
         var emitSpy = spyOn(scope.$root, '$emit');
         StatusService.messageReceivedSensors(messageReceivedName, messageValue);
-        expect(emitSpy).toHaveBeenCalledWith('sensorUpdateReceived', Object({
-            name: 'anc:bms_kapb_temp',
-            sensorValue: Object({received_timestamp: 1427795003.140423, status: 1, timestamp: 1427795003.135354, value: 22.4750928094})
-        }));
+        expect(emitSpy).toHaveBeenCalledWith('sensorUpdateReceived', Object({ name: 'anc.bms_kapb_temp', sensorValue: Object({ received_timestamp: 1427795003.140423, status: 1, timestamp: 1427795003.135354, value: 22.4750928094, name: 'anc.bms_kapb_temp' }) }) );
     });
 
     it('should apply the value of a message to a sensor\'s treemap clone', function () {
         var emitSpy = spyOn(scope.$root, '$emit');
         StatusService.messageReceivedSensors(messageReceivedName, messageValue);
-        expect(emitSpy).toHaveBeenCalledWith('sensorUpdateReceived', Object({
-            name: 'anc:bms_kapb_temp',
-            sensorValue: Object({received_timestamp: 1427795003.140423, status: 1, timestamp: 1427795003.135354, value: 22.4750928094})
-        }));
+        expect(emitSpy).toHaveBeenCalledWith('sensorUpdateReceived',  Object({ name: 'anc.bms_kapb_temp', sensorValue: Object({ received_timestamp: 1427795003.140423, status: 1, timestamp: 1427795003.135354, value: 22.4750928094, name: 'anc.bms_kapb_temp' }) }));
     });
 
     it('should apply a receptor message value', function () {
         StatusService.setReceptorsAndStatusTree(statusTree, receptors);
-        StatusService.messageReceivedSensors('m011:sensors_ok', receptorMessage);
+        StatusService.messageReceivedSensors('mon:m011.sensors_ok', receptorMessage);
         expect(StatusService.statusData['m011'].sensorValue).toEqual(receptorMessage);
         StatusService.statusData['m011treemapClone'] = StatusService.statusData['m011'];
-        StatusService.messageReceivedSensors('m011:sensors_ok', receptorMessage);
+        StatusService.messageReceivedSensors('mon:m011.sensors_ok', receptorMessage);
         expect(StatusService.statusData['m011treemapClone'].sensorValue).toEqual(receptorMessage);
     });
 
     it('should apply a receptor message value to child sensor', function () {
         StatusService.setReceptorsAndStatusTree(statusTree, receptors);
-        StatusService.messageReceivedSensors('m011:ap_sensor', receptorMessage);
+        StatusService.messageReceivedSensors('mon:m011.ap_sensor', receptorMessage);
         expect(StatusService.statusData['m011'].children[0].sensorValue).toEqual(receptorMessage);
     });
 });

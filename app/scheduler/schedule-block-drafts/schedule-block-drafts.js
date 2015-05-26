@@ -67,13 +67,13 @@
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
 
         //we can ignore these because the menu's are going to be replaced in angular material 0.10
-        vm.unbindScroll = angular.element('#schedule-draft-data-list-id').bind("scroll", function () {
+        vm.unbindScroll = angular.element(document.querySelector('#schedule-draft-data-list-id')).bind("scroll", function () {
             vm.closeDatePickerMenu();
             vm.closeEditMenu();
         });
 
         //we can ignore these because the menu's are going to be replaced in angular material 0.10
-        vm.unbindClick = angular.element('body').bind("click", function (e) {
+        vm.unbindClick = angular.element(document.querySelector('body')).bind("click", function (e) {
             if (!e.target.parentNode.classList.contains('schedule-item-input')) {
                 vm.closeEditMenu();
                 vm.closeDatePickerMenu();

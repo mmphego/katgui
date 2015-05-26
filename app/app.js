@@ -1,21 +1,23 @@
 (function () {
+    //
+
     angular.module('katGui', ['ngMaterial',
         'ui.bootstrap', 'ui.utils', 'ui.router',
-        'adf',
-        'ngAnimate',
-        'katGui.admin',
-        'katGui.alarms',
-        'katGui.config',
-        'katGui.d3',
-        'katGui.health',
-        'katGui.widgets.navigationWidget',
-        'katGui.widgets.ganttWidget',
-        'katGui.dashboardStructure',
-        'katGui.landing',
-        'katGui.util',
-        'katGui.scheduler',
-        'katGui.services',
-        'katGui.video'])
+        'adf', 'ngAnimate', 'katGui.services',
+            'katGui.admin',
+            'katGui.alarms',
+            'katGui.config',
+            'katGui.d3',
+            'katGui.health',
+            'katGui.widgets.navigationWidget',
+            'katGui.widgets.ganttWidget',
+            'katGui.dashboardStructure',
+            'katGui.landing',
+            'katGui.util',
+            'katGui.scheduler',
+            'katGui.services',
+            'katGui.video'
+        ])
         .constant('UI_VERSION', '0.0.1')
         .constant('USER_ROLES', {
             noAuth: 'noAuth',
@@ -70,9 +72,9 @@
         }
 
         if (theme.name === 'Dark') {
-            angular.element('body').addClass('dark-theme');
+            angular.element(document.querySelector('body')).addClass('dark-theme');
         } else {
-            angular.element('body').removeClass('dark-theme');
+            angular.element(document.querySelector('body')).removeClass('dark-theme');
         }
 
         $rootScope.themePrimary = theme.primary;
@@ -315,7 +317,7 @@
         //disable this in production for performance boost
         //batarang uses this for scope inspection
         //grunt
-        if (window.location.host !== 'localhost:9001') {
+        if (window.location.host !== 'localhost:8000') {
             $compileProvider.debugInfoEnabled(false);
         }
 

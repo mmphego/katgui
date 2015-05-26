@@ -10,11 +10,10 @@
             'MANUAL'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, ConfigService, MonitorService) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, ConfigService) {
 
         ConfigService.loadKATObsPortalURL();
         ObservationScheduleService.connectListener();
-        //MonitorService.subscribe('sched:pending_requests_*');
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
 

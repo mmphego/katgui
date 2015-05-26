@@ -1,10 +1,10 @@
 /*jshint loopfunc: true */
 (function () {
 
-    angular.module('katGui.health', ['katGui'])
+    angular.module('katGui.health', ['katGui', 'katGui.d3'])
         .controller('HealthCtrl', HealthCtrl);
 
-    function HealthCtrl(MonitorService, ConfigService, StatusService, $scope, $rootScope, $interval, d3Util) {
+    function HealthCtrl(MonitorService, ConfigService, StatusService, $scope, $rootScope, $interval) {
 
         var vm = this;
         vm.topStatusTrees = StatusService.topStatusTrees;

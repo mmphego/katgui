@@ -19,7 +19,7 @@ describe('OperatorControlCtrl', function () {
         controlService.inhibitAll = function () {
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm011:inhibited',
+                name: 'mon:m011.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -29,7 +29,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm022:inhibited',
+                name: 'mon:m022.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -39,7 +39,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm033:inhibited',
+                name: 'mon:m033.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -49,7 +49,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm044:inhibited',
+                name: 'mon:m044.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -59,7 +59,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm055:inhibited',
+                name: 'mon:m055.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -72,7 +72,7 @@ describe('OperatorControlCtrl', function () {
         controlService.stowAll = function () {
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm011:mode',
+                name: 'mon:m011.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -82,7 +82,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm022:mode',
+                name: 'mon:m022.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -92,7 +92,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm033:mode',
+                name: 'mon:m033.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -102,7 +102,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm044:mode',
+                name: 'mon:m044.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -112,7 +112,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm055:mode',
+                name: 'mon:m055.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -124,7 +124,7 @@ describe('OperatorControlCtrl', function () {
 
         controlService.stopAll = function () {
             ctrl.receptorMessageReceived({}, {
-                name: 'm011:mode',
+                name: 'mon:m011.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -134,7 +134,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm022:mode',
+                name: 'mon:m022.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -144,7 +144,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm033:mode',
+                name: 'mon:m033.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -154,7 +154,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm044:mode',
+                name: 'mon:m044.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -164,7 +164,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm055:mode',
+                name: 'mon:m055.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -174,7 +174,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm011:inhibited',
+                name: 'mon:m011:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -184,7 +184,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm022:inhibited',
+                name: 'mon:m022:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -194,7 +194,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm033:inhibited',
+                name: 'mon:m033:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -204,7 +204,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm044:inhibited',
+                name: 'mon:m044:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -214,7 +214,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm055:inhibited',
+                name: 'mon:m055:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -227,7 +227,7 @@ describe('OperatorControlCtrl', function () {
         controlService.resumeOperations = function () {
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm011:mode',
+                name: 'mon:m011.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -237,7 +237,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm022:mode',
+                name: 'mon:m022.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -247,7 +247,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm033:mode',
+                name: 'mon:m033.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -257,7 +257,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm044:mode',
+                name: 'mon:m044.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -267,7 +267,7 @@ describe('OperatorControlCtrl', function () {
             });
 
             ctrl.receptorMessageReceived({}, {
-                name: 'm055:mode',
+                name: 'mon:m055.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
                     status: 1,
@@ -305,7 +305,7 @@ describe('OperatorControlCtrl', function () {
         expect(ctrl.receptorsData.length).toBe(5);
 
         ctrl.receptorMessageReceived({}, {
-            name: 'm011:mode',
+            name: 'mon:m011.mode',
             value: {
                 received_timestamp: 1425975097.022549,
                 status: 1,
@@ -342,7 +342,7 @@ describe('OperatorControlCtrl', function () {
             expect(receptor.inhibited).toBeTruthy();
         });
         ctrl.receptorMessageReceived({}, {
-            name: 'm055:inhibited',
+            name: 'mon:m055.inhibited',
             value: {
                 received_timestamp: 1425975097.022549,
                 status: 1,
@@ -353,7 +353,7 @@ describe('OperatorControlCtrl', function () {
         expect(ctrl.receptorsData[4].inhibited).toBeFalsy();
         ctrl.receptorsData[4].inhibited = true;
         ctrl.receptorMessageReceived({}, {
-            name: 'm055:inhibited',
+            name: 'mon:m055.inhibited',
             value: {
                 received_timestamp: 1425975097.022549,
                 status: 1,

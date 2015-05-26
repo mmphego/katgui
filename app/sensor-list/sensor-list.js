@@ -139,12 +139,12 @@
         };
 
         vm.maximiseSensorGraph = function () {
-            var element = angular.element('.sensor-list-chart-container');
+            var element = angular.element(document.querySelector('.sensor-list-chart-container'));
             element.css({top: '60px', left: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 68px)'});
         };
 
         vm.restoreSensorGraphSize = function () {
-            var element = angular.element('.sensor-list-chart-container');
+            var element = angular.element(document.querySelector('.sensor-list-chart-container'));
             element.css({top: 'auto', left: 'auto', right: '20px', bottom: '20px', width: '500px', height: '500px'});
         };
 

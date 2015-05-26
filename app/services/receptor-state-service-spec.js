@@ -1,6 +1,6 @@
 describe('ReceptorStateService', function () {
 
-    beforeEach(module('katGui'));
+    beforeEach(module('katGui.services'));
 
     var MonitorService, ConfigService, ReceptorStateService, scope, timeout, q;
 
@@ -59,10 +59,10 @@ describe('ReceptorStateService', function () {
 
         expect(ReceptorStateService.receptorsData[0].state).toBeUndefined();
         expect(ReceptorStateService.receptorsData[0].inhibited).toBe(false);
-        ReceptorStateService.receptorMessageReceived({name:'m011:mode', value: {value:'STOW', timestamp:1400}});
+        ReceptorStateService.receptorMessageReceived({name:'mon:m011.mode', value: {value:'STOW', timestamp:1400}});
         expect(ReceptorStateService.receptorsData[0].state).toBe('STOW');
         expect(ReceptorStateService.receptorsData[0].lastUpdate).toBe(moment(1400, 'X').format('HH:mm:ss DD-MM-YYYY'));
-        ReceptorStateService.receptorMessageReceived({name:'m011:inhibited', value: {value:true, timestamp:1400}});
+        ReceptorStateService.receptorMessageReceived({name:'mon:m011.inhibited', value: {value:true, timestamp:1400}});
         expect(ReceptorStateService.receptorsData[0].inhibited).toEqual(true);
         expect(ReceptorStateService.receptorsData[0].lastUpdate).toBe(moment(1400, 'X').format('HH:mm:ss DD-MM-YYYY'));
     });
