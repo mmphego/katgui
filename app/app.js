@@ -515,7 +515,7 @@
 
     function runKatGui($rootScope, $state, $localStorage) {
 
-        $rootScope.$on('$stateChangeStart', function (event, toState) {
+        $rootScope.$on('$locationChangeSuccess', function (event, toState) {
             if (!$rootScope.loggedIn && toState.name !== 'login') {
                 if (!$localStorage['currentUserToken']) {
                     event.preventDefault();
