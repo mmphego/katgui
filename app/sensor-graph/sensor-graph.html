@@ -1,6 +1,5 @@
 <div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}"
-     ng-click="vm.showDatePicker = false;"
-     style="min-height: 100%; height: 100%; min-width: 100%; width: 100%; position: absolute;">
+     ng-click="vm.showDatePicker = false;" flex style="position: absolute; min-width: 100%">
 
     <div class="sensor-graph-tips" layout="column" ng-show="vm.showTips">
         <div layout="row" layout-align="start center" layout="row" class="arrow-box sg-timerange-tip">
@@ -20,12 +19,12 @@
         </div>
     </div>
 
-    <div layout="column" style="margin: 8px;">
+    <div layout="column" style="margin: 8px; min-width: 366px;">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
             Sensor Graph Tools
         </md-toolbar>
         <div flex class="md-whiteframe-z1" layout="column" layout-align="start center"
-             md-theme="{{themePrimaryButtons}}" style="overflow: auto; position: relative;">
+             md-theme="{{themePrimaryButtons}}">
 
             <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z1"
                             ng-init="vm.showDatePicker = false"
@@ -161,7 +160,7 @@
         </div>
     </div>
 
-    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px;">
+    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px; width:100%">
         <md-toolbar layout="row" layout-align="end center" class="md-whiteframe-z1 ">
             <div flex layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}"
                  class="md-toolbar-tools-medium">
