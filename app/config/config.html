@@ -8,12 +8,16 @@
         </md-toolbar>
         <md-content layout="column" layout-padding md-theme="{{themePrimaryButtons}}">
             <div class="config-div-item">
-                <md-subheader>Themes</md-subheader>
+                <md-subheader>Theme</md-subheader>
                 <md-select md-theme="{{themePrimaryButtons}}" ng-model="vm.selectedTheme" class="config-md-select"
                            style="min-width: 140px; margin-left: 8px;" placeholder="Select a Theme..."
                            ng-change="vm.themeChanged()">
                     <md-option ng-value="theme.name" ng-repeat="theme in vm.themes">{{theme.name}}</md-option>
                 </md-select>
+
+            </div>
+            <div class="config-div-item">
+                <md-subheader>Date and Time displays</md-subheader>
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.showDayOfYear"
                              ng-change="vm.saveToLocalStorage('showDayOfYear', $root.showDayOfYear)">Show Day of Year
                 </md-checkbox>

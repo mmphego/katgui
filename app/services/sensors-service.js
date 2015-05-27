@@ -70,7 +70,10 @@
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.id === 'redis-pubsub') {
                         var arrayResult = [];
-                        arrayResult.push({msg_data: messages.result.msg_data, msg_channel: messages.result.msg_channel});
+                        arrayResult.push({
+                            msg_data: messages.result.msg_data,
+                            msg_channel: messages.result.msg_channel
+                        });
                         messages.result = arrayResult;
                     }
                     messages.result.forEach(function (message) {
@@ -79,7 +82,10 @@
                             messageObj = JSON.parse(message);
                         }
                         if (messageObj.msg_channel) {
-                            $rootScope.$emit('sensorsServerUpdateMessage', {name: messageObj.msg_channel, value: messageObj.msg_data});
+                            $rootScope.$emit('sensorsServerUpdateMessage', {
+                                name: messageObj.msg_channel,
+                                value: messageObj.msg_data
+                            });
                         } else {
                             console.error('Dangling Sensors message...');
                             console.error(messageObj);
@@ -137,7 +143,7 @@
             }
         };
 
-        api.authenticateSocketConnection = function() {
+        api.authenticateSocketConnection = function () {
 
             if (api.connection) {
                 var jsonRPC = {
@@ -151,16 +157,23 @@
             }
         };
 
-        api.connectLiveFeed = function (sensor, interval, guid) {
+        api.connectLiveFeed = function (sensor, guid) {
             var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
             sensorName = sensorName.replace(/\./g, '_');
-            api.sendSensorsCommand('set_sensor_strategy', [sensor.component, sensorName, 'period', interval]);
+            api.sendSensorsCommand('set_sensor_strategy',
+                [
+                    guid,
+                    sensor.component,
+                    sensorName,
+                    $rootScope.sensorListStrategyType,
+                    $rootScope.sensorListStrategyInterval,
+                    $rootScope.sensorListStrategyInterval
+                ]);
             api.subscribe(sensor.component + '.' + sensorName, guid);
         };
 
         api.connectResourceSensorListeners = function (resource_name, guid) {
-            api.sendSensorsCommand(
-                'set_sensor_strategy',
+            api.sendSensorsCommand('set_sensor_strategy',
                 [
                     guid,
                     resource_name,

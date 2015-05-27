@@ -169,7 +169,7 @@
                     ValueTimestamp: sensor.value.timestamp,
                     Timestamp: sensor.value.received_timestamp,
                     Value: sensor.value.value
-                }], false, null, true, 100);
+                }], false, false, true, false, null, 100);
             }
         });
 
