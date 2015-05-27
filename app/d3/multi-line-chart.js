@@ -14,6 +14,8 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
+                    element.css({'background-color': angular.element(document.querySelector("body")).css('background-color')});
+
                     var unbindResize = scope.$watch(function () {
                         return element[0].clientHeight + ', ' + element[0].clientWidth;
                     }, function (newVal, oldVal) {
@@ -119,17 +121,20 @@ angular.module('katGui.d3')
                     height = element[0].clientHeight - margin.top - margin.bottom;
                     var margin2 = {top: height, right: 10, bottom: 20, left: 40};
 
-                    if (scope.yAxisValues) {
-                        margin.left = 120;
-                        margin2 = {top: element[0].clientHeight - 70, right: 10, bottom: 20, left: 120};
-                    }
-
                     var svg, x, y, xAxis, yAxis, focus, line, xAxisElement, yAxisElement;
 
                     drawSvg();
                     drawValues();
 
                     function drawSvg() {
+
+                        if (scope.yAxisValues) {
+                            margin.left = 120;
+                            margin2 = {top: element[0].clientHeight - 70, right: 10, bottom: 20, left: 120};
+                        } else {
+                            margin.left = 40;
+                            margin2.left = 40;
+                        }
 
                         width = element[0].clientWidth - margin.left - margin.right;
                         height = element[0].clientHeight - margin.top - margin.bottom - 5;
