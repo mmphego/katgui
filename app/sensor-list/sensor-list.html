@@ -1,19 +1,21 @@
-<div layout="column" ng-controller="SensorListCtrl as vm" md-theme="{{themePrimary}}">
+<div layout="column" flex ng-controller="SensorListCtrl as vm" md-theme="{{themePrimary}}">
 
     <div layout="row" style="margin: 16px;">
-        <div class="md-whiteframe-z1" layout="column" style="min-width:138px;">
-            <md-toolbar layout="row" layout-align="center center">
+        <div layout="column" style="min-width:138px;">
+            <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="center center">
                 <span>Components</span>
             </md-toolbar>
+            <div class="md-whiteframe-z1" style="position: absolute">
             <div ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
                  ng-repeat="resource in vm.resourcesNames | orderBy:'name' track by $index" style="position: relative">
                 <md-button class="resource-root-item" ng-click="vm.listResourceSensors(resource.name);">
                     {{resource.name}}
                 </md-button>
             </div>
+            </div>
         </div>
-        <div class="resource-sensors-list md-whiteframe-z1" flex>
-            <md-toolbar style="position: relative">
+        <div class="resource-sensors-list" flex>
+            <md-toolbar class="md-whiteframe-z1" style="position: relative">
                 <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
                     <span flex>Sensors</span>
                     <input class="fade-in search-input-box" type="search"
@@ -57,7 +59,7 @@
                     </span>
                 </div>
             </md-toolbar>
-            <div flex style="padding: 8px;">
+            <div flex style="margin-bottom: 16px; padding: 8px;" class="md-whiteframe-z1" ng-show="vm.sensorsToDisplay.length > 0">
                 <div ng-repeat="sensor in vm.sensorsToDisplay | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse | limitTo:vm.limitTo track by $index"
                      ng-show="vm.sensorLoaded($index)" title="{{sensor.description}}" class="resource-sensor-item" layout="row" class="unselectable"
                      ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
