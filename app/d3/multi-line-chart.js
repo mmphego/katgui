@@ -126,14 +126,11 @@ angular.module('katGui.d3')
                         .attr("class", "multi-line-tooltip")
                         .style("opacity", 0);
 
-                    var margin = {top: 10, right: 10, bottom: 100, left: 40},
+                    var margin = {top: 10, right: 10, bottom: 100, left: 60},
                         width, height, height2;
-
-
-                    var margin2 = {top: 0, right: 10, bottom: 20, left: 40};
-
-                    var svg, x, y, x2, y2, xAxis, yAxis, xAxis2,
-                        yAxis2, line, line2, xAxisElement, yAxisElement, xAxisElement2, yAxisElement2, context;
+                    var margin2 = {top: 0, right: 10, bottom: 20, left: 60};
+                    var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2,
+                        xAxisElement, yAxisElement, xAxisElement2, context;
 
                     drawSvg();
                     drawValues();
@@ -144,8 +141,8 @@ angular.module('katGui.d3')
                             margin.left = 120;
                             margin2 = {top: element[0].clientHeight - 80, right: 10, bottom: 20, left: 120};
                         } else {
-                            margin.left = 40;
-                            margin2 = {top: element[0].clientHeight - 80, right: 10, bottom: 20, left: 40};
+                            margin.left = 60;
+                            margin2 = {top: element[0].clientHeight - 80, right: 10, bottom: 20, left: 60};
                         }
 
                         if (scope.hideContextZoom) {
@@ -359,6 +356,11 @@ angular.module('katGui.d3')
                                 .each(function (d, i) {
                                     wrapText(this, scope.yAxisValues[i], margin.left);
                                 });
+                        } else {
+                            yAxisElement.selectAll(".y-axis text")
+                                .each(function (d) {
+                                    wrapText(this, d.toString(), margin.left);
+                                });
                         }
 
                         if (scope.showDots) {
@@ -383,7 +385,6 @@ angular.module('katGui.d3')
                                 })
                                 .attr("clip-path", "url(#clip)")
                                 .on("mouseover", function (d) {
-                                    debugger;
                                     tooltip.transition().duration(1).style("opacity", 0.9);
                                     tooltip.html(
                                         "<div><b>" + d.Sensor + "</b>" +
@@ -440,7 +441,6 @@ angular.module('katGui.d3')
 
                         }
                         //context zoom element stop
-
                     }
 
                     function wrapText(text, d, width) {

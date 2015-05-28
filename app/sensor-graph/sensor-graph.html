@@ -1,5 +1,5 @@
 <div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}"
-      flex style="position: absolute; min-width: 100%;min-height:100%">
+     flex style="position: absolute; min-width: 100%;min-height:100%">
 
     <div class="sensor-graph-tips" layout="column" ng-show="vm.showTips">
         <div layout="row" layout-align="start center" layout="row" class="arrow-box sg-timerange-tip">
@@ -15,7 +15,7 @@
             <span>4. Click the sensor to map its data</span>
         </div>
         <!--<div layout="row" layout-align="start center" class="sg-options-tip arrow-box">-->
-            <!--<span>5. Set your graphing options</span>-->
+        <!--<span>5. Set your graphing options</span>-->
         <!--</div>-->
     </div>
 
@@ -97,8 +97,9 @@
 
             <div layout="row" layout-align="center center" style="margin-left: 16px; margin-right:16px; width: 130px;">
                 <!--<span style="margin-right: 8px;">Sensor Type:</span>-->
-                <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'" ng-model="vm.sensorType"
-                    title="Sensor Type" ng-change="vm.sensorTypeChanged()">
+                <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'"
+                           ng-model="vm.sensorType"
+                           title="Sensor Type" ng-change="vm.sensorTypeChanged()">
                     <md-option value="numeric">Numeric</md-option>
                     <!--<md-option value="text">Text</md-option>-->
                     <md-option value="discrete">Discrete</md-option>
@@ -106,21 +107,22 @@
             </div>
 
             <!--<md-input-container md-no-float class="sensor-search-input">-->
-                <!--<input type="text" ng-change="vm.validateSearchInputLength(vm.sensorRegexStr)"-->
-                       <!--placeholder="Search for sensors by regex..." ng-model="vm.sensorRegexStr"-->
-                       <!--ng-keypress="vm.findSensorDataFromRegex(vm.sensorRegexStr, $event)"-->
-                       <!--ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>-->
+            <!--<input type="text" ng-change="vm.validateSearchInputLength(vm.sensorRegexStr)"-->
+            <!--placeholder="Search for sensors by regex..." ng-model="vm.sensorRegexStr"-->
+            <!--ng-keypress="vm.findSensorDataFromRegex(vm.sensorRegexStr, $event)"-->
+            <!--ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>-->
             <!--</md-input-container>-->
 
             <md-input-container md-no-float class="sensor-search-input">
                 <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
                        placeholder="Search for sensors..." ng-model="vm.sensorSearchStr"
                        ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
-                       ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Type a sensor name expression and press enter. E.g. *wind*"/>
+                       ng-class="{'input-error':vm.sensorSearchFieldLengthError}"
+                       title="Type a sensor name expression and press enter. E.g. *wind*"/>
             </md-input-container>
             <div class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames track by $index"
-                              ng-click="vm.searchSensorClicked(sensor);">
+                     ng-click="vm.searchSensorClicked(sensor);">
                     <span>{{::sensor.name}}</span>
                 </div>
                 <div layout="row" layout-align="center center" class="search-loading-overlay unselectable"
@@ -148,7 +150,8 @@
         </div>
     </div>
 
-    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px; width:100%" ng-click="vm.showSensorGraphOptionsMenu = false;vm.showSensorGraphSelectionsMenu = false;">
+    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px; width:100%"
+         ng-click="vm.showSensorGraphOptionsMenu = false;vm.showSensorGraphSelectionsMenu = false;">
         <md-toolbar layout="row" layout-align="end center" class="md-whiteframe-z1 ">
             <div flex layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}"
                  class="md-toolbar-tools-medium">
@@ -167,11 +170,12 @@
         </md-toolbar>
         <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart"
                           clear-function="vm.clearChart" ng-class="{'dot-hide':!vm.showDots}"
-                          remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue" y-min="vm.yAxisMinValue"></multi-line-chart>
+                          remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
+                          y-min="vm.yAxisMinValue"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
             <!--<md-button class="md-icon-button"-->
-                       <!--ng-click="vm.showHelp($event)">-->
-                <!--<md-icon class="fa" md-font-icon="fa-question"></md-icon>-->
+            <!--ng-click="vm.showHelp($event)">-->
+            <!--<md-icon class="fa" md-font-icon="fa-question"></md-icon>-->
             <!--</md-button>-->
             <md-button class="md-icon-button"
                        ng-click="vm.clearData()" title="Clear Data">
@@ -185,7 +189,8 @@
 
     </div>
 
-    <div ng-init="vm.showSensorGraphOptionsMenu = false" ng-show="vm.showSensorGraphOptionsMenu" class="sensor-graph-options-menu md-whiteframe-z3">
+    <div ng-init="vm.showSensorGraphOptionsMenu = false" ng-show="vm.showSensorGraphOptionsMenu"
+         class="sensor-graph-options-menu md-whiteframe-z3">
         <md-list layout="column" md-theme="{{themePrimaryButtons}}">
             <md-item>
                 <md-checkbox class="md-primary" ng-model="vm.showDots" ng-change="vm.showOptionsChanged()">
@@ -200,15 +205,17 @@
                 <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()">
                     Use Fixed Y Axis Values
                 </md-checkbox>
-                <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center" style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center"
+                     style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                     <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
                     <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
-                    class="md-primary" title="Set the desired Y-Axis Minimum Value">
-                    <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
-                           ng-change="vm.showOptionsChanged()" type="number" ng-model-options="{ debounce: 300 }">
+                                        class="md-primary" title="Set the desired Y-Axis Minimum Value">
+                        <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
+                               ng-change="vm.showOptionsChanged()" type="number" ng-model-options="{ debounce: 300 }">
                     </md-input-container>
                 </div>
-                <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center" style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center"
+                     style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                     <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
                     <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
                                         class="md-primary" title="Set the desired Y-Axis Maximum Value">
@@ -220,7 +227,8 @@
         </md-list>
     </div>
 
-    <div ng-init="vm.showSensorGraphSelectionsMenu = false" ng-show="vm.showSensorGraphSelectionsMenu" class="sensor-graph-selection-options-menu md-whiteframe-z3">
+    <div ng-init="vm.showSensorGraphSelectionsMenu = false" ng-show="vm.showSensorGraphSelectionsMenu"
+         class="sensor-graph-selection-options-menu md-whiteframe-z3">
         <md-list layout="column" md-theme="{{themePrimaryButtons}}">
             <md-item>
                 <md-checkbox class="md-primary" ng-model="vm.showRelativeTime">

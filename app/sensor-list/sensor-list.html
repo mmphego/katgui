@@ -6,12 +6,13 @@
                 <span>Components</span>
             </md-toolbar>
             <div class="md-whiteframe-z1" style="position: absolute">
-            <div ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
-                 ng-repeat="resource in vm.resourcesNames | orderBy:'name' track by $index" style="position: relative">
-                <md-button class="resource-root-item" ng-click="vm.listResourceSensors(resource.name);">
-                    {{resource.name}}
-                </md-button>
-            </div>
+                <div ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
+                     ng-repeat="resource in vm.resourcesNames | orderBy:'name' track by $index"
+                     style="position: relative">
+                    <md-button class="resource-root-item" ng-click="vm.listResourceSensors(resource.name);">
+                        {{resource.name}}
+                    </md-button>
+                </div>
             </div>
         </div>
         <div class="resource-sensors-list" flex>
@@ -22,7 +23,8 @@
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Sensors..."/>
                 </div>
 
-                <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center" style="padding-left: 8px;">
+                <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
+                     style="padding-left: 8px;">
                     <span class="subheader-text resource-sensor-name"
                           ng-click="vm.setSensorsOrderBy('name')">
                         <span>Name</span>
@@ -45,7 +47,7 @@
                     </span>
                     <span class="subheader-text resource-sensor-time-item"
                           ng-click="vm.setSensorsOrderBy('received_timestamp')">
-                        <span >Received Timestamp</span>
+                        <span>Received Timestamp</span>
                         <span class="fa"
                               ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'received_timestamp' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'received_timestamp' && vm.sensorsOrderBy.reverse}"
                               style="margin-right: 4px;"></span>
@@ -59,42 +61,58 @@
                     </span>
                 </div>
             </md-toolbar>
-            <div flex style="margin-bottom: 16px; padding: 8px;" class="md-whiteframe-z1" ng-show="vm.sensorsToDisplay.length > 0">
-                <div ng-repeat="sensor in vm.sensorsToDisplay | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse | limitTo:vm.limitTo track by $index"
-                     ng-show="vm.sensorLoaded($index)" title="{{sensor.description}}" class="resource-sensor-item" layout="row" class="unselectable"
-                     ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
-                     ng-class="{'selected-for-chart-row': sensor.selectedForChart}">
+            <div flex style="margin-bottom: 16px; padding: 8px;" class="md-whiteframe-z1"
+                 ng-show="vm.sensorsToDisplay.length > 0">
+                <div
+                    ng-repeat="sensor in vm.sensorsToDisplay | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse | limitTo:vm.limitTo track by $index"
+                    ng-show="vm.sensorLoaded($index)" title="{{sensor.description}}" class="resource-sensor-item"
+                    layout="row" class="unselectable"
+                    ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
+                    ng-class="{'selected-for-chart-row': sensor.selectedForChart}">
                     <span class="resource-sensor-name">{{sensor.name}}</span>
                     <span class="resource-sensor-status-item" ng-show="sensor.sensorValue"
-                        ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
+                          ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
                     <span class="resource-sensor-time-item" ng-show="sensor.sensorValue">{{sensor.timestamp}}</span>
-                    <span class="resource-sensor-time-item" ng-show="sensor.sensorValue">{{sensor.received_timestamp}}</span>
+                    <span class="resource-sensor-time-item"
+                          ng-show="sensor.sensorValue">{{sensor.received_timestamp}}</span>
                     <span flex class="resource-sensor-value-item" ng-show="sensor.sensorValue">{{sensor.value}}</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="md-whiteframe-z5 sensor-list-chart-container" layout="column" inherit-body-bg target-color-inherit="md-content" ng-init="vm.showChart = true"
-        ng-class="{'small-hidden-sensor-graph-container': !vm.showChart}">
+    <div class="md-whiteframe-z5 sensor-list-chart-container" layout="column" ng-init="vm.showChart = true"
+         inherit-body-bg target-color-inherit="md-content"
+         ng-class="{'small-hidden-sensor-graph-container': !vm.showChart}">
         <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="center center">
-            <span draggable=".sensor-list-chart-container" flex style="margin-left: 8px; cursor: move;">Sensor Graph</span>
-            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button" ng-click="vm.clearChartData()"
-                title="Clear Chart Data"  style="margin: 0">
+            <span draggable=".sensor-list-chart-container" flex style="margin-left: 8px; cursor: move;">
+                Sensor Graph</span>
+            <md-button ng-show="vm.showChart" md-theme="{{themePrimaryButtons}}"
+                       class="md-icon-button inline-action-button" ng-click="vm.clearChartData()"
+                       title="Clear Chart Data" style="margin: 0">
                 <md-icon class="fa" md-font-icon="fa-eraser"></md-icon>
             </md-button>
-            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button" ng-click="vm.maximiseSensorGraph()"
-                       title="Maximise"  style="margin: 0">
+            <md-button ng-show="vm.showChart" md-theme="{{themePrimaryButtons}}"
+                       class="md-icon-button inline-action-button" ng-click="vm.maximiseSensorGraph()"
+                       title="Maximise" style="margin: 0">
                 <md-icon class="fa" md-font-icon="fa-expand"></md-icon>
             </md-button>
-            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button" ng-click="vm.restoreSensorGraphSize()"
-                       title="Restore Original Size"  style="margin: 0">
+            <md-button ng-show="vm.showChart" md-theme="{{themePrimaryButtons}}"
+                       class="md-icon-button inline-action-button" ng-click="vm.restoreSensorGraphSize()"
+                       title="Restore Original Size" style="margin: 0">
                 <md-icon class="fa" md-font-icon="fa-compress"></md-icon>
             </md-button>
-            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button" ng-click="vm.showChart = !vm.showChart"
-                       title="Minimise Chart" style="margin-right: 4px; margin-left: 0px">
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button"
+                       ng-click="vm.showChart = !vm.showChart; vm.showSensorGraphOptionsMenu = false;"
+                       title="Minimise Chart" style="margin: 0px">
                 <md-icon ng-show="vm.showChart" class="fa" md-font-icon="fa-chevron-down"></md-icon>
                 <md-icon ng-show="!vm.showChart" class="fa" md-font-icon="fa-chevron-up"></md-icon>
+            </md-button>
+            <md-button ng-show="vm.showChart" md-theme="{{themePrimaryButtons}}"
+                       class="md-icon-button inline-action-button"
+                       ng-click="vm.showSensorGraphOptionsMenu = !vm.showSensorGraphOptionsMenu"
+                       title="Additional Options" style="margin-left:0;margin-right:4px;">
+                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
             </md-button>
         </md-toolbar>
         <md-chips flex class="custom-chips" ng-model="vm.sensorsPlotNames" readonly="true">
@@ -109,9 +127,50 @@
         </md-chips>
         <multi-line-chart ng-show="vm.showChart" flex redraw-function="vm.redrawChart" hide-context-zoom="true"
                           clear-function="vm.clearChart" class="dot-hide sensor-list-multi-line-chart"
-                          remove-sensor-function="vm.removeSensorLine"></multi-line-chart>
+                          remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
+                          y-min="vm.yAxisMinValue"></multi-line-chart>
         <div resizeable=".sensor-list-chart-container" class="resize-grip">
             <span flex class="fa fa-arrows-v"></span>
+        </div>
+
+        <div ng-init="vm.showSensorGraphOptionsMenu = false" ng-show="vm.showSensorGraphOptionsMenu"
+             class="sensor-list-graph-options-menu md-whiteframe-z3">
+            <md-list layout="column" md-theme="{{themePrimaryButtons}}">
+                <md-item>
+                    <!--<md-checkbox class="md-primary" ng-model="vm.showDots" ng-change="vm.showOptionsChanged()">-->
+                        <!--Show Data Dots-->
+                    <!--</md-checkbox>-->
+                    <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()">
+                        Show Grid Lines
+                    </md-checkbox>
+                    <md-checkbox class="md-primary" ng-model="vm.showContextZoom" ng-change="vm.showOptionsChanged()">
+                        Show Context Zoom
+                    </md-checkbox>
+                    <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()">
+                        Use Fixed Y Axis Values
+                    </md-checkbox>
+                    <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center"
+                         style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                        <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                        <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                            class="md-primary" title="Set the desired Y-Axis Minimum Value">
+                            <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
+                                   ng-change="vm.showOptionsChanged()" type="number"
+                                   ng-model-options="{ debounce: 300 }">
+                        </md-input-container>
+                    </div>
+                    <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center"
+                         style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                        <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                        <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                            class="md-primary" title="Set the desired Y-Axis Maximum Value">
+                            <input flex style="" placeholder="Maximum" ng-model="vm.yAxisMaxValue"
+                                   ng-change="vm.showOptionsChanged()" type="number"
+                                   ng-model-options="{ debounce: 300 }">
+                        </md-input-container>
+                    </div>
+                </md-item>
+            </md-list>
         </div>
     </div>
 
