@@ -15,13 +15,13 @@
             <div>
                 <div layout="row">
                     <div class="receptor-status-row-span" layout-align="start center" layout="row">
-                        <span>Health - Sensors OK</span>
+                        <span>Health - Device Status (AP)</span>
                     </div>
                     <div ng-repeat="receptor in vm.receptorsData track by $index"
-                         class="receptor-status-column-heading"
+                         class="receptor-status-column-heading nominal-item"
                          layout="column" layout-align="center center"
-                         ng-class="{'error-item':!receptor.sensors_ok.value}">
-                        <!--<span>{{receptor.sensors_ok.value}}</span>-->
+                         ng-class="{'error-item':receptor.ap_device_status.value !== 'ok'}">
+                        <span>{{receptor.ap_device_status.value}}</span>
                     </div>
                 </div>
                 <div layout="row">
@@ -40,27 +40,27 @@
                     <div class="receptor-status-row-span" layout-align="start center" layout="row">
                         <span>Assigned/Allocated</span>
                     </div>
-                    <!--leave vm.getReceptorSubarray(receptor) in there so that it gets called with every digest-->
                     <div ng-repeat="receptor in vm.receptorsData track by $index"
                          class="receptor-status-column-heading"
                          layout="column" layout-align="center center"
                          ng-class="{'in-maintenance-item':receptor.in_maintenance && !(receptor.assignedSubarray || receptor.allocatedSubarray), 'in-assigned-subarray-item': receptor.assignedSubarray, 'in-allocated-subarray-item': receptor.allocatedSubarray}">
+                        <!--leave vm.getReceptorSubarray(receptor) in there so that it gets called with every digest-->
                         <span ng-show="false">{{vm.getReceptorSubarray(receptor)}}</span>
                         <span ng-show="receptor.subarray">Sub-Array {{receptor.subarray}}</span>
                         <span ng-show="!receptor.subarray">Free</span>
                         <!--<span ng-show="receptor.allocation">SB {{receptor.allocation[1]}}</span>-->
                     </div>
                 </div>
-                <div layout="row">
-                    <div class="receptor-status-row-span" layout-align="start center" layout="row">
-                        <span>QA1</span>
-                    </div>
-                    <div ng-repeat="receptor in vm.receptorsData track by $index"
-                         class="receptor-status-column-heading"
-                         layout="column" layout-align="center center">
-                        <span>{{receptor.qa1}}</span>
-                    </div>
-                </div>
+                <!--<div layout="row">-->
+                    <!--<div class="receptor-status-row-span" layout-align="start center" layout="row">-->
+                        <!--<span>QA1</span>-->
+                    <!--</div>-->
+                    <!--<div ng-repeat="receptor in vm.receptorsData track by $index"-->
+                         <!--class="receptor-status-column-heading"-->
+                         <!--layout="column" layout-align="center center">-->
+                        <!--<span>{{receptor.qa1}}</span>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
         </div>
     </div>

@@ -17,7 +17,8 @@
                     vm.receptorsData.push({name: item});
                     SensorsService.connectResourceSensorNameLiveFeed(item, 'mode', vm.guid, 'event-rate', 1, 10);
                     SensorsService.connectResourceSensorNameLiveFeed(item, 'inhibited', vm.guid, 'event-rate', 1, 10);
-                    SensorsService.connectResourceSensorNameLiveFeed(item, 'sensors_ok', vm.guid, 'event-rate', 1, 10);
+                    //todo need an aggregated sensor for the receptor
+                    SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_device_status', vm.guid, 'event-rate', 1, 10);
                 });
 
                 SensorsService.connectResourceSensorNameLiveFeed('katpool', 'resources_in_maintenance', vm.guid, 'event-rate', 1, 10);
