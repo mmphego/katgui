@@ -11,6 +11,7 @@ describe('OperatorControlCtrl', function () {
         scope = $rootScope.$new();
         scope.$root.loggedIn = true;
         $templateCache.put('app/landing/landing.html', '');
+        $templateCache.put('app/login-form/login-form.html', '');
         httpBackend = $injector.get('$httpBackend');
         interval = $injector.get('$interval');
         receptorStateService = _ReceptorStateService_;

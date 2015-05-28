@@ -14,7 +14,7 @@
             var alarmValues = messageObj.value.toString().split(',');
             messageObj.severity = alarmValues[0];
             messageObj.priority = alarmValues[1];
-            messageObj.name = messageName.replace('kataware:alarm_', '');
+            messageObj.name = messageName.replace('mon:kataware.alarm_', '');
             messageObj.timestamp = messageObj.timestamp;
             messageObj.date = moment.utc(messageObj.timestamp, 'X').format('HH:mm:ss DD-MM-\'YY');
 

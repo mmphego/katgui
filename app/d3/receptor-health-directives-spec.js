@@ -69,7 +69,7 @@ describe('Directive: d3-chart', function () {
     });
 
     it('should create a d3 receptor status icicle map', function () {
-        html = '<receptor-status-icicle-map receptor="data" chart-size="size"></receptor-status-icicle-map>';
+        html = '<receptor-health-icicle-map receptor="data" chart-size="size"></receptor-health-icicle-map>';
         scope.$digest();
         scope.data = 'm011';
         scope.size = {width: 500, height: 500};
@@ -81,7 +81,7 @@ describe('Directive: d3-chart', function () {
     });
 
     it('should create a d3 receptor status pack map', function () {
-        html = '<receptor-status-pack-map receptor="data" chart-size="size"></receptor-status-pack-map>';
+        html = '<receptor-health-pack-map receptor="data" chart-size="size"></receptor-health-pack-map>';
         scope.$digest();
         scope.data = 'm011';
         scope.size = {width: 500, height: 500};
@@ -93,7 +93,7 @@ describe('Directive: d3-chart', function () {
     });
 
     it('should create a d3 receptor status partition map', function () {
-        html = '<receptor-status-partition-map receptor="data" chart-size="size"></receptor-status-partition-map>';
+        html = '<receptor-health-partition-map receptor="data" chart-size="size"></receptor-health-partition-map>';
         scope.$digest();
         scope.data = 'm011';
         scope.size = {width: 500, height: 500};
@@ -105,7 +105,7 @@ describe('Directive: d3-chart', function () {
     });
 
     it('should create a d3 receptor status sunburst map', function () {
-        html = '<receptor-status-sunburst-map receptor="data" chart-size="size"></receptor-status-sunburst-map>';
+        html = '<receptor-health-sunburst-map receptor="data" chart-size="size"></receptor-health-sunburst-map>';
         scope.$digest();
         scope.data = 'm011';
         scope.size = {width: 500, height: 500};
@@ -117,7 +117,7 @@ describe('Directive: d3-chart', function () {
     });
 
     it('should create a d3 receptor status tree map', function () {
-        html = '<receptor-status-tree-map receptor="data" chart-size="size"></receptor-status-tree-map>';
+        html = '<receptor-health-tree-map receptor="data" chart-size="size"></receptor-health-tree-map>';
         scope.$digest();
         scope.data = 'm011';
         scope.size = {width: 500, height: 500};

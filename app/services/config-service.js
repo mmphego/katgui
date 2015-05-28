@@ -7,7 +7,7 @@
 
         var urlBase = SERVER_URL + '/katconf/api/v1';
         var api = {};
-        api.receptorStatusTree = {};
+        api.receptorHealthTree = {};
         api.receptorList = [];
         api.KATObsPortalURL = null;
 

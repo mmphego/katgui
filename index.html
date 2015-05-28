@@ -72,12 +72,12 @@
 <script src="app/d3/multi-line-chart.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
-<script src="app/d3/receptor-status-items.js"></script>
-<script src="app/d3/receptor-status-tree-map.js"></script>
-<script src="app/d3/receptor-status-pack-map.js"></script>
-<script src="app/d3/receptor-status-partition-map.js"></script>
-<script src="app/d3/receptor-status-icicle-map.js"></script>
-<script src="app/d3/receptor-status-sunburst-map.js"></script>
+<script src="app/d3/receptor-health-items.js"></script>
+<script src="app/d3/receptor-health-tree-map.js"></script>
+<script src="app/d3/receptor-health-pack-map.js"></script>
+<script src="app/d3/receptor-health-partition-map.js"></script>
+<script src="app/d3/receptor-health-icicle-map.js"></script>
+<script src="app/d3/receptor-health-sunburst-map.js"></script>
 <script src="app/d3/status-single-level-tree-map.js"></script>
 
 <script src="app/app.js"></script>
@@ -89,6 +89,7 @@
 <script src="app/video/video.js"></script>
 <script src="app/operator-control/operator-control.js"></script>
 <script src="app/health/health.js"></script>
+<script src="app/health/receptor-health/receptor-health.js"></script>
 <script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/health/custom-health/custom-health.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
@@ -133,7 +134,7 @@
                             <span class="fa fa-heart"></span>
                             <button>Health & State</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorHealth')">
                             <span class="fa fa-th"></span>
                             <button>Receptor Status</button>
                         </div>

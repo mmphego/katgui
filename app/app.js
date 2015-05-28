@@ -366,6 +366,14 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
+        $stateProvider.state('receptorHealth', {
+            url: '/receptor-health',
+            templateUrl: 'app/health/receptor-health/receptor-health.html',
+            title: 'Receptor Health',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',

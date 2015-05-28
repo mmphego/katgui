@@ -1,0 +1,33 @@
+<div flex style="min-width: 1015px; min-height: 920px;" ng-controller="ReceptorHealthCtrl as vm">
+    <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
+         ng-class="{'transparent-legend':transparentLegend && !showLegend}">
+        <md-button flex style="pointer-events: auto; width: 36px; height: 40px;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
+                   ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true"
+                    class="md-primary md-raised md-icon-button">
+            <md-icon md-theme="white" class="fa md-primary" ng-show="!showLegend" md-font-icon="fa-eye" title="Show Legend"></md-icon>
+            <md-icon md-theme="white" class="fa md-primary" ng-show="showLegend" md-font-icon="fa-eye-slash" title="Hide Legend"></md-icon>
+        </md-button>
+        <div class="md-whiteframe-z3" layout="column" ng-show="showLegend" style="background: white; padding: 8px;">
+            <div layout="row" layout-align="start center"><div class="color-patch unknown-child" title="Grey"></div><span>Unknown</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch nominal-child" title="Green"></div><span>Nominal</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch warn-child" title="Amber"></div><span>Warn</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch error-child" title="Red"></div><span>Error</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch failure-child" title="Blue"></div><span>Failure</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch unreachable-child" title="Pink"></div><span>Unreachable</span></div>
+            <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
+        </div>
+    </div>
+    <div style="padding-left:16px; padding-right:16px; padding-top:8px;">
+        <div md-theme="{{themePrimary}}" class="" layout="row" layout-align="start center" class="md-toolbar-tools-small">
+
+            <span flex></span>
+            <md-select ng-model="vm.mapType" style="margin-top: 0px; margin-left: 4px; margin-right:8px;"
+                       class="md-primary" md-theme="{{themePrimaryButtons}}">
+                <md-option ng-value="type" ng-repeat="type in vm.mapTypes">{{type}}</md-option>
+            </md-select>
+
+        </div>
+        <receptor-health-list flex></receptor-health-list>
+    </div>
+
+</div>

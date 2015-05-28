@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorStatusPackMap', function (d3Service, StatusService, $timeout, $rootScope, d3Util) {
+    .directive('receptorHealthPackMap', function (d3Service, StatusService, $timeout, $rootScope, d3Util) {
         return {
             restrict: 'E',
             scope: {
