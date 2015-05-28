@@ -31,9 +31,10 @@
                     <div ng-repeat="receptor in vm.receptorsData track by $index"
                          class="receptor-status-column-heading nominal-item"
                          layout="column" layout-align="center center"
-                         ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.mode.value === 'WINDSTOW','inhibited-item':receptor.inhibited.value}">
-                        <span ng-show="!receptor.inhibited.value">{{receptor.mode.value}}</span>
-                        <span ng-show="receptor.inhibited.value">INHIBITED</span>
+                         ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
+                        <span ng-show="!receptor.windstow_active.value">{{receptor.mode.value}}</span>
+                        <span ng-show="receptor.windstow_active.value">WINDSTOW</span>
+                        <span style="width: 100%; text-align: center; border: 1px solid #333333;" class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</span>
                     </div>
                 </div>
                 <div layout="row">
