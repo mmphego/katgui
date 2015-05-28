@@ -319,9 +319,10 @@
         //grunt
         if (window.location.host !== 'localhost:8000') {
             $compileProvider.debugInfoEnabled(false);
+        } else {
+            $httpProvider.defaults.useXDomain = true;
+            delete $httpProvider.defaults.headers.common['X-Requested-With'];
         }
-
-        delete $httpProvider.defaults.headers.common['X-Requested-With'];
 
         configureThemes($mdThemingProvider);
 

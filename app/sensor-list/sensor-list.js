@@ -13,6 +13,13 @@
         vm.sensorsPlotNames = [];
         vm.guid = KatGuiUtil.generateUUID();
 
+        vm.showTips = false;
+        vm.showDots = false;
+        vm.showContextZoom = false;
+        vm.useFixedYAxis = false;
+        vm.yAxisMinValue = 0;
+        vm.yAxisMaxValue = 100;
+
         vm.limitTo = 50;
         $scope.loadMore = function () {
             vm.limitTo += 15;
@@ -161,17 +168,26 @@
                 }
             });
 
-            if (vm.sensorsPlotNames.length > 0 && _.findIndex(vm.sensorsPlotNames, function (item) {
-                    return item.name === strList[1];
-                }) > -1) {
+            if (vm.sensorsPlotNames.length > 0 &&
+                _.findIndex(vm.sensorsPlotNames,
+                    function (item) {
+                        return item.name === strList[1];
+                    }) > -1) {
                 vm.redrawChart([{
                     Sensor: strList[1].replace(/\./g, '_'),
                     ValueTimestamp: sensor.value.timestamp,
                     Timestamp: sensor.value.received_timestamp,
                     Value: sensor.value.value
-                }], false, null, true, 100);
+                }], vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis, null, 100);
             }
         });
+
+        vm.showOptionsChanged = function () {
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+            vm.redrawChart(null, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis);
+        };
 
         $scope.$on('$destroy', function () {
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
