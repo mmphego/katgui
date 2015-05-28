@@ -1,4 +1,4 @@
-<div flex style="min-width: 1015px; min-height: 920px;" ng-controller="ReceptorHealthCtrl as vm">
+<div flex style="min-width: 1015px; min-height: 920px;" ng-controller="ReceptorStatusCtrl as vm">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button flex style="pointer-events: auto; width: 36px; height: 40px;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
@@ -27,7 +27,7 @@
             </md-select>
 
         </div>
-        <receptor-health-list flex></receptor-health-list>
+        <receptor-status-list flex></receptor-status-list>
     </div>
 
 </div>

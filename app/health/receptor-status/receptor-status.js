@@ -19,7 +19,7 @@
                     SensorsService.connectResourceSensorNameLiveFeed(item, 'inhibited', vm.guid, 'event-rate', 1, 10);
                     //todo need an aggregated sensor for the receptor
                     SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_device_status', vm.guid, 'event-rate', 1, 10);
-                    SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_on_target', vm.guid, 'event-rate', 1, 10);
+                    SensorsService.connectResourceSensorNameLiveFeed(item, 'lock', vm.guid, 'event-rate', 1, 10);
                     SensorsService.connectResourceSensorNameLiveFeed(item, 'windstow_active', vm.guid, 'event-rate', 1, 10);
                 });
 
