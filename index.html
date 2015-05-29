@@ -267,7 +267,7 @@
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-home"></md-icon>
                 </md-button>
 
-                <md-button class="md-icon-button mainbar-navbar-button"  ng-click="vm.stateGo('alarms')">
+                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="vm.stateGo('alarms')">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-warning"></md-icon>
                     <span title="Warning Alarms" ng-show="newAlarms"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>

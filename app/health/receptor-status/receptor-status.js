@@ -3,11 +3,12 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $timeout) {
+    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state) {
 
         var vm = this;
         vm.receptorsData = [];
         vm.subarrays = {};
+        vm.sortBySubarrays = false;
         vm.guid = KatGuiUtil.generateUUID();
         SensorsService.connectListener();
 
@@ -28,6 +29,12 @@
                 SensorsService.connectResourceSensorNameLiveFeed('katpool', 'allocations_2', vm.guid, 'event-rate', 1, 5);
                 SensorsService.connectResourceSensorNameLiveFeed('katpool', 'allocations_3', vm.guid, 'event-rate', 1, 5);
                 SensorsService.connectResourceSensorNameLiveFeed('katpool', 'allocations_4', vm.guid, 'event-rate', 1, 5);
+                SensorsService.connectResourceSensorNameLiveFeed('katpool', 'subarrays_maintenance', vm.guid, 'event-rate', 1, 5);
+
+                SensorsService.connectResourceSensorNameLiveFeed('subarray_1', 'state', vm.guid, 'event-rate', 1, 10);
+                SensorsService.connectResourceSensorNameLiveFeed('subarray_2', 'state', vm.guid, 'event-rate', 1, 10);
+                SensorsService.connectResourceSensorNameLiveFeed('subarray_3', 'state', vm.guid, 'event-rate', 1, 10);
+                SensorsService.connectResourceSensorNameLiveFeed('subarray_4', 'state', vm.guid, 'event-rate', 1, 10);
             });
 
         vm.statusMessageReceived = function (event, message) {
@@ -54,7 +61,28 @@
                                 vm.subarrays['subarray_' + subarray] = {id: subarray};
                             }
                             vm.subarrays['subarray_' + subarray].allocations = JSON.parse(message.value.value);
+                        } else if (sensorName = 'subarrays_maintenance') {
+                            for (var i = 1; i < 5; i++) {
+                                if (!vm.subarrays['subarray_' + i]) {
+                                    vm.subarrays['subarray_' + i] = {id: i};
+                                }
+                                vm.subarrays['subarray_' + i].in_maintenance = false;
+                            }
+                            var subarrayIdList = message.value.value.split(',');
+                            subarrayIdList.forEach(function (id) {
+                                if (!vm.subarrays['subarray_' + id]) {
+                                    vm.subarrays['subarray_' + id] = {id: id};
+                                }
+                                vm.subarrays['subarray_' + id].in_maintenance = true;
+                            });
+
                         }
+                    } else if (resource.indexOf('subarray_') === 0) {
+                        var subarray = resource.split('_')[1];
+                        if (!vm.subarrays['subarray_' + subarray]) {
+                            vm.subarrays['subarray_' + subarray] = {id: subarray};
+                        }
+                        vm.subarrays['subarray_' + subarray][sensorName] = message.value.value;
                     } else if (receptor.name === resource) {
                         receptor[sensorName] = message.value;
                     }
@@ -68,6 +96,8 @@
             }
         };
 
+
+        //todo do this better!
         vm.getReceptorSubarray = function (receptor) {
             var updated = false;
             for (var attr in vm.subarrays) {
@@ -91,6 +121,15 @@
             }
         };
 
+        //todo do this better!
+        vm.getReceptorSubarrayPerSubarray = function (receptor) {
+            vm.getReceptorSubarray(receptor);
+        };
+
+        vm.navigateToSchedulerDetails = function (subarray_id) {
+            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
+        };
+
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
 
         $scope.$on('$destroy', function () {
@@ -98,7 +137,7 @@
             vm.receptorsData.forEach(function (item) {
                 SensorsService.unsubscribe(item.name + '.mode', vm.guid);
             });
-
+            SensorsService.disconnectListener();
         });
     }
 })();

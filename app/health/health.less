@@ -203,9 +203,9 @@
 }
 
 .receptor-status-column-heading {
-    width: 80px;
-    border-right: 1px solid #d3d3d3;
-    border-bottom: 1px solid #d3d3d3;
+    width: 60px;
+    border-right: 1px solid #ADADAD;
+    border-bottom: 1px solid #ADADAD;
     position: relative;
 }
 
@@ -213,9 +213,9 @@
     vertical-align: middle;
     padding-left: 8px;
     width: 200px;
-    height: 80px;
-    border-right: 1px solid #d3d3d3;
-    border-bottom: 1px solid #d3d3d3;
+    height: 60px;
+    border-right: 1px solid #ADADAD;
+    border-bottom: 1px solid #ADADAD;
 }
 
 .in-maintenance-item {
@@ -258,6 +258,11 @@
     color: white;
 }
 
+.amber-item {
+    background-color: rgb(255,143,0);
+    color: black;
+}
+
 .on-target-span {
     font-size: 18px;
     position: absolute;
@@ -265,3 +270,19 @@
     top: 2px;
     color: white;
 }
+
+.receptor-status-options-menu {
+    right: 18px;
+    top: 122px;
+    position: fixed;
+    z-index: 1000;
+    border: 1px solid #f1f1f1;
+    border-radius: 4px;
+    background-color: white;
+    margin-top: 5px;
+    color: #333333;
+    md-list {
+        padding: 0;
+    }
+}
+
