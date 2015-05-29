@@ -5,7 +5,7 @@
              style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false" flex>
 
             <div layout="column" layout-align="start" flex>
-                    <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}" class="md-whiteframe-z1 md-hue-2"
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}" class="md-whiteframe-z1 md-hue-2"
                             layout="row" layout-align="center center" title="{{subarray.description}}" style="max-height: 50px; min-height: 50px;">
                     <div flex style="position: relative">
                         <span style="position: absolute; left: 8px; top: 8px;">SUB-ARRAY {{subarray.id}}</span>
@@ -20,7 +20,17 @@
                         </div>
                     </div>
 
-                    <span ng-show="subarray.state === 'active'" style="width: 36px;"></span>
+                    <span ng-show="subarray.state === 'active'"></span>
+                    <md-select md-theme="black" placeholder="Product" ng-model="subarray.product">
+                        <md-option value="c856M4k">c856M4k</md-option>
+                        <md-option value="c856M32k">c856M32k</md-option>
+                    </md-select>
+                    <md-select md-theme="black" placeholder="Band" ng-model="subarray.band">
+                        <md-option value="l">l</md-option>
+                        <md-option value="s">s</md-option>
+                        <md-option value="u">u</md-option>
+                        <md-option value="x">x</md-option>
+                    </md-select>
                     <md-button class="md-icon-button inline-action-button" ng-click="vm.setSubarrayInMaintenance(subarray)"
                                title="Set Sub-Array in Maintenance">
                         <md-icon class="fa" md-font-icon="fa-wrench"></md-icon>
