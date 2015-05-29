@@ -347,6 +347,7 @@
             unbindUpdate();
             vm.liveData = false;
             vm.liveDataChanged();
+            SensorsService.disconnectListener();
         });
     }
 })();

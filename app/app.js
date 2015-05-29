@@ -382,6 +382,14 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
+        $stateProvider.state('receptorPointing', {
+            url: '/receptor-pointing',
+            templateUrl: 'app/health/receptor-pointing/receptor-pointing.html',
+            title: 'Receptor Pointing',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
         $stateProvider.state('customHealth', {
             url: '/custom-health',
             templateUrl: 'app/health/custom-health/custom-health.html',

@@ -3,13 +3,19 @@
     <md-toolbar class="md-tall md-whiteframe-z1" layout-align="center center">
         <h1>katGUI</h1>
     </md-toolbar>
-    <form flex name="form" layout="column" layout-align="center center" layout-padding md-theme="{{themePrimaryButtons}}">
+    <form style="padding-top: 24px;" flex name="form" layout="column" layout-align="center center" layout-padding md-theme="{{themePrimaryButtons}}">
         <md-input-container md-no-float required class="long-input">
             <input focus ng-model="vm.credentials.username" placeholder="Email">
         </md-input-container>
         <md-input-container  md-no-float required class="long-input">
             <input type="password" ng-model="vm.credentials.password" placeholder="Password">
         </md-input-container>
+        <md-select placeholder="Login As..." ng-model="vm.loginAs" style="width: 155px">
+            <md-option value="operator">Operator</md-option>
+            <md-option value="lead-operator">Lead Operator</md-option>
+            <md-option value="control-authority">Control Authority</md-option>
+            <md-option value="read-only">Monitor Only</md-option>
+        </md-select>
         <md-button style="margin: 8px;" ng-click="vm.login(vm.credentials)"
                    class="md-raised md-primary">Login
         </md-button>

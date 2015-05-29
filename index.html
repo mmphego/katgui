@@ -72,6 +72,7 @@
 <script src="app/d3/multi-line-chart.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
+<script src="app/d3/receptor-pointing.js"></script>
 <script src="app/d3/receptor-health-items.js"></script>
 <script src="app/d3/receptor-health-tree-map.js"></script>
 <script src="app/d3/receptor-health-pack-map.js"></script>
@@ -91,6 +92,7 @@
 <script src="app/health/health.js"></script>
 <script src="app/health/receptor-health/receptor-health.js"></script>
 <script src="app/health/receptor-status/receptor-status.js"></script>
+<script src="app/health/receptor-pointing/receptor-pointing.js"></script>
 <script src="app/health/custom-health/custom-health.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/sensor-list/sensor-list.js"></script>
@@ -134,9 +136,17 @@
                             <span class="fa fa-heart"></span>
                             <button>Health & State</button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorHealth')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
                             <span class="fa fa-th"></span>
                             <button>Receptor Status</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorPointing')">
+                            <span class="fa fa-crosshairs"></span>
+                            <button>Receptor Pointing</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorHealth')">
+                            <span class="fa fa-th-large"></span>
+                            <button>Receptor Health</button>
                         </div>
                     </md-item-content>
                 </md-item>

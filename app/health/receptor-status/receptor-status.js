@@ -134,9 +134,6 @@
 
         $scope.$on('$destroy', function () {
             vm.cancelListeningToSensorMessages();
-            vm.receptorsData.forEach(function (item) {
-                SensorsService.unsubscribe(item.name + '.mode', vm.guid);
-            });
             SensorsService.disconnectListener();
         });
     }
