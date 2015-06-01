@@ -246,7 +246,7 @@ function katGuiUtil() {
     };
 
     //UT as a fraction of hours
-    this.julianDay = function (day, month, year, UT) {
+    this.julianDay = function (day, month, year) {
         var Y = year, M = month, D = day, A, B, C, E, F, JD;
         A = Math.floor(Y / 100);
         B = Math.floor(A / 4);
@@ -261,14 +261,37 @@ function katGuiUtil() {
         return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
     };
 
-    this.getLongitudeFromDegrees = function (latitudeDegrees) {
-        var latSplit = latitudeDegrees.split(':');
+    this.degreesToFloat = function (degrees) {
+        var latSplit = degrees.split(':');
         var deg = parseInt(latSplit[0]);
         var result = Math.abs(deg) + parseInt(latSplit[1]) / 60 + parseInt(latSplit[2]) / 3600;
         if (deg < 0) {
             result *= -1;
         }
         return result;
+    };
+
+    this.ra_dec = function (jd, long, lat, azim, elev) {
+
+        var GMST = generalSiderealTime(jd);
+        var LMST = 24.0 * frac((GMST + long / 15.0) / 24.0);
+        var j = Math.sin(lat) * Math.sin(elev) + Math.cos(lat) * Math.cos(elev) * Math.cos(azim);
+        var dec = Math.asin(j);
+        j = (Math.sin(elev) - Math.sin(lat)*Math.sin(dec))/(Math.cos(lat)*Math.cos(dec));
+        var s = Math.acos(j);
+        j = Math.sin(azim);
+        if (j>0) {
+            s = 360-s;
+        }
+        var ra = LMST - s/15;
+        if (ra<0) {
+            ra += 24;
+        }
+        else if (ra>=24) {
+            ra-=24;
+        }
+
+        return [ra, dec];
     };
 
     return this;

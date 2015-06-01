@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorPointing', function (d3Service) {
+    .directive('receptorPointing', function (d3Service, $rootScope, KatGuiUtil) {
         return {
             restrict: 'EA',
             scope: {
@@ -18,139 +18,202 @@ angular.module('katGui.d3')
                     };
 
                     var margin = {top: 10, right: 20, bottom: 60, left: 60},
-                        width, height, chart, focus;
-                    var svg, x, y, xAxis, yAxis, xAxisElement, yAxisElement;
+                        width, height, chart, focus, projection, ticksAzimuth, scale;
+                    var svg, x, y, xAxis, yAxis, xAxisElement, yAxisElement, path;
+
+                    var formatNumber = d3.format(".1f"),
+                        formatAngle = function (d) {
+                            return formatNumber(d) + "°";
+                        };
 
                     drawSvg();
 
                     function drawSvg() {
+                        d3.select('svg').remove();
 
                         width = element[0].clientWidth - margin.left - margin.right;
                         height = element[0].clientHeight - margin.top - margin.bottom - 10;
+                        scale = width * .45;
 
-                        d3.select('svg').remove();
+                        projection = d3.geo.projection(flippedStereographic)
+                            .scale(scale)
+                            .clipAngle(130)
+                            .rotate([0, -90])
+                            .translate([width / 2 + .5, height / 2 + .5])
+                            .precision(.1);
+
+                        path = d3.geo.path()
+                            .projection(projection);
+
                         svg = d3.select(element[0]).append("svg")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.top + margin.bottom);
 
-                        chart = svg.append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                        svg.append("path")
+                            .datum(d3.geo.circle().origin([0, 90]).angle(90))
+                            .attr("class", "horizon")
+                            .attr("d", path);
 
-                        // set the ranges
-                        x = d3.scale.linear().range([0, width]);
-                        y = d3.scale.linear().range([height, 0]);
+                        svg.append("path")
+                            .datum(d3.geo.graticule())
+                            .attr("class", "graticule")
+                            .attr("d", path);
 
-                        // define the axes
-                        xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
-                        yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
+                        ticksAzimuth = svg.append("g")
+                            .attr("class", "ticks ticks--azimuth");
 
-                        if (scope.showGridLines) {
-                            xAxis.tickSize(-height);
-                            yAxis.tickSize(-width);
-                        }
+                        ticksAzimuth.selectAll("line")
+                            .data(d3.range(360))
+                            .enter().append("line")
+                            .each(function (d) {
+                                var p0 = projection([d, 0]),
+                                    p1 = projection([d, d % 10 ? -1 : -2]);
 
-                        xAxisElement = chart.append("g")
-                            .attr("class", "x axis")
-                            .attr("transform", "translate(0," + height + ")");
+                                d3.select(this)
+                                    .attr("x1", p0[0])
+                                    .attr("y1", p0[1])
+                                    .attr("x2", p1[0])
+                                    .attr("y2", p1[1]);
+                            });
 
-                        yAxisElement = chart.append("g")
-                            .attr("class", "y axis y-axis");
+                        ticksAzimuth.selectAll("text")
+                            .data(d3.range(0, 360, 10))
+                            .enter().append("text")
+                            .each(function (d) {
+                                var p = projection([d, -4]);
 
-                        focus = svg.append("g")
-                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                                d3.select(this)
+                                    .attr("x", p[0])
+                                    .attr("y", p[1]);
+                            })
+                            .attr("dy", ".35em")
+                            .text(function (d) {
+                                return d === 0 ? "N" : d === 90 ? "E" : d === 180 ? "S" : d === 270 ? "W" : d + "°";
+                            });
 
-                        x.domain([-185, 275]);
-                        y.domain([15, 92]);
-                        xAxisElement.call(xAxis);
-                        yAxisElement.call(yAxis);
+                        svg.append("g")
+                            .attr("class", "ticks ticks--elevation")
+                            .selectAll("text")
+                            .data(d3.range(10, 91, 10))
+                            .enter().append("text")
+                            .each(function (d) {
+                                var p = projection([0, d]);
+
+                                d3.select(this)
+                                    .attr("x", p[0])
+                                    .attr("y", p[1]);
+                            })
+                            .attr("dy", ".35em")
+                            .text(function (d) {
+                                return d + "°";
+                            });
                     }
 
                     function drawValues() {
 
-                        focus.selectAll("circle").remove();
-                        focus.selectAll("text").remove();
+                        svg.selectAll(".actual-pos-text").remove();
+                        svg.selectAll(".requested-pos-text").remove();
+                        svg.selectAll("circle").remove();
 
-                        focus.selectAll("g.actual-azel")
+                        svg.selectAll("g.actual-pos")
                             .data(scope.data)
                             .enter().append("circle")
-                            .attr("class", "actual-azel")
+                            .attr("class", "actual-pos")
                             .attr("r", 6)
-                            .attr("cx", function (d) {
-                                if (d.ap_actual_azim) {
-                                    return x(d.ap_actual_azim.value);
+                            .attr("transform", function (d) {
+                                if (d.ap_actual_azim && d.ap_actual_elev) {
+                                    return "translate(" + projection([d.ap_actual_azim.value, d.ap_actual_elev.value]) + ")";
                                 } else {
-                                    return -1000;
-                                }
-                            })
-                            .attr("cy", function (d) {
-                                if (d.ap_actual_elev) {
-                                    return y(d.ap_actual_elev.value);
-                                } else {
-                                    return -1000;
+                                    return 'translate(-100, -100)';
                                 }
                             });
 
-                        focus.selectAll("g.requested-azel-text")
-                            .data(scope.data)
-                            .enter().append("text")
-                            .attr("x", function (d) {
-                                if (d.ap_actual_azim) {
-                                    return x(d.ap_actual_azim.value);
-                                } else {
-                                    return -1000;
-                                }
-                            })
-                            .attr("y", function (d) {
-                                if (d.ap_actual_elev) {
-                                    return y(d.ap_actual_elev.value) + 15;
-                                } else {
-                                    return -1000;
-                                }
-                            })
-                            .text(function (d) {
-                                return d.name + ' - actual';
-                            });
-
-                        focus.selectAll("g.requested-azel")
+                        svg.selectAll("g.requested-pos")
                             .data(scope.data)
                             .enter().append("circle")
-                            .attr("class", "requested-azel")
+                            .attr("class", "requested-pos")
                             .attr("r", 2)
-                            .attr("cx", function (d) {
-                                if (d.ap_requested_azim) {
-                                    return x(d.ap_requested_azim.value);
+                            .attr("transform", function (d) {
+                                if (d.ap_requested_azim && d.ap_requested_elev) {
+                                    return "translate(" + projection([d.ap_requested_azim.value, d.ap_requested_elev.value]) + ")";
                                 } else {
-                                    return -1000;
-                                }
-                            })
-                            .attr("cy", function (d) {
-                                if (d.ap_requested_elev) {
-                                    return y(d.ap_requested_elev.value);
-                                } else {
-                                    return -1000;
+                                    return 'translate(-100, -100)';
                                 }
                             });
 
-                        focus.selectAll("g.requested-azel-text")
+                        svg.selectAll("g.requested-pos-text")
                             .data(scope.data)
-                            .enter().append("text")
-                            .attr("x", function (d) {
-                                if (d.ap_actual_azim) {
-                                    return x(d.ap_requested_azim.value);
+                            .enter().append("g")
+                            .attr("class", "requested-pos-text")
+                            .append("text")
+                            .attr("transform", function (d) {
+                                if (d.ap_requested_azim && d.ap_requested_elev) {
+                                    var proj = projection([d.ap_requested_azim.value, d.ap_requested_elev.value]);
+                                    proj[0] += 10;
+                                    proj[1] += 15;
+                                    return "translate(" + proj + ")";
                                 } else {
-                                    return -1000;
-                                }
-                            })
-                            .attr("y", function (d) {
-                                if (d.ap_actual_elev) {
-                                    return y(d.ap_requested_elev.value) + 30;
-                                } else {
-                                    return -1000;
+                                    return 'translate(-100, -100)';
                                 }
                             })
                             .text(function (d) {
-                                return d.name + ' - requested';
+                                if (d.ap_requested_azim && d.ap_requested_elev) {
+                                    return radecRadiansToString(KatGuiUtil.ra_dec(
+                                        $rootScope.julianDay,
+                                        $rootScope.longitude,
+                                        $rootScope.latitude,
+                                        d.ap_requested_azim.value,
+                                        d.ap_requested_elev.value
+                                    ));
+                                } else {
+                                    return '';
+                                }
                             });
+
+                        svg.selectAll("g.actual-pos-text")
+                            .data(scope.data)
+                            .enter().append("g")
+                            .attr("class", "actual-pos-text")
+                            .append("text")
+                            .attr("transform", function (d) {
+                                if (d.ap_actual_azim && d.ap_actual_elev) {
+                                    var proj = projection([d.ap_actual_azim.value, d.ap_actual_elev.value]);
+                                    proj[0] += 10;
+                                    return "translate(" + proj + ")";
+                                } else {
+                                    return 'translate(-100, -100)';
+                                }
+                            })
+                            .text(function (d) {
+                                if (d.ap_actual_azim && d.ap_actual_elev) {
+                                    return radecRadiansToString(KatGuiUtil.ra_dec(
+                                        $rootScope.julianDay,
+                                        $rootScope.longitude,
+                                        $rootScope.latitude,
+                                        d.ap_actual_azim.value,
+                                        d.ap_actual_elev.value
+                                    )) + " (actual)";
+                                } else {
+                                    return '';
+                                }
+                            });
+                    }
+
+                    function flippedStereographic(λ, φ) {
+                        var cosλ = Math.cos(λ),
+                            cosφ = Math.cos(φ),
+                            k = 1 / (1 + cosλ * cosφ);
+                        return [
+                            k * cosφ * Math.sin(λ),
+                            -k * Math.sin(φ)
+                        ];
+                    }
+
+                    function radecRadiansToString(radec) {
+                        return "RA: " +
+                            Math.round(((radec[0] * (180/Math.PI)) / Math.PI) * 100) / 100 +
+                            "h, D: " +
+                            Math.round(radec[1]*(180/Math.PI) * 100) / 100 + "d";
                     }
                 });
             }

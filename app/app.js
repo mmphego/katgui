@@ -272,6 +272,8 @@
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(utcTime.date(), utcTime.month() + 1, utcTime.year(), fractionalHours);
                 vm.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
+                //todo bind to the dates on the rootscope
+                $rootScope.julianDay = vm.julianDay;
                 if ($rootScope.longitude) {
                     vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
                 }
@@ -295,7 +297,9 @@
                 });
             ConfigService.getSiteLocation()
                 .success(function (result) {
-                    $rootScope.longitude = KatGuiUtil.getLongitudeFromDegrees(result.split(',')[1]);
+                    var trimmedResult = result.replace(/"/g, '');
+                    $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
+                    $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
                 })
                 .error(function (error) {
                     console.error("Could not retrieve site location from config server, LST will not display correctly. ");
