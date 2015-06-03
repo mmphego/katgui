@@ -135,7 +135,7 @@
     fill: #000;
 
     rect {
-//        fill: #795548;
+        //        fill: #795548;
         fill: #000;
     }
 
@@ -240,7 +240,7 @@
 
 .inhibited-item {
     background-color: #ffc107 !important;
-    color: #333333  !important;
+    color: #333333 !important;
 }
 
 .in-assigned-subarray-item {
@@ -259,7 +259,7 @@
 }
 
 .amber-item {
-    background-color: rgb(255,143,0);
+    background-color: rgb(255, 143, 0);
     color: black;
 }
 
@@ -286,13 +286,92 @@
     }
 }
 
+.receptor-pointing-options-menu {
+    right: 18px;
+    top: 40px;
+    position: absolute;
+    z-index: 1000;
+    border: 1px solid #f1f1f1;
+    border-radius: 4px;
+    background-color: white;
+    margin-top: 5px;
+    color: #333333;
+    md-list {
+        padding: 0;
+    }
+}
+
 .actual-pos {
-    stroke: green;
-    fill: green;
+    //    stroke: green;
+    //    fill: green;
+    opacity: 0.8;
 }
 
 .requested-pos {
-    stroke: red;
-    fill: red
+    stroke: #333333;
+    stroke-width: 2px;
+    fill: transparent;
+    opacity: 0.9;
 }
 
+.receptor-pointing-tooltip {
+    background: rgba(255, 255, 255, 0.8);
+    color: #333333;
+    border: 1px solid #333333;
+    font-size: 14px;
+    pointer-events: none;
+    position: absolute;
+    padding: 8px;
+    max-width: 280px;
+    word-wrap: break-word;
+}
+
+.receptor-legend-item {
+    position: relative;
+    border: 2px solid currentColor;
+    background: currentColor;
+    span {
+        color: white;
+        font-weight: 600;
+        text-shadow: 2px 2px #333;
+    }
+    min-width: 60px;
+    min-height: 66px;
+    margin-right: 8px;
+    overflow: hidden;
+    cursor: pointer !important;
+
+    &:hover {
+        border: 2px solid #333333;
+    }
+}
+
+.receptor-legend-item {
+    .on-target-span {
+        text-shadow: none;
+        left: 0;
+        top: 0;
+        font-size: 12px;
+    }
+
+    .horizon-mask-showing {
+        text-shadow: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 12px;
+    }
+}
+
+.actual-pos-border {
+    stroke: #333333 !important;
+    stroke-width: 2px;
+}
+
+.trail-circle {
+}
+
+.horizon-mask {
+    fill: transparent;
+    stroke: #333;
+}

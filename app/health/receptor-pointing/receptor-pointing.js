@@ -10,26 +10,34 @@
         vm.guid = KatGuiUtil.generateUUID();
         SensorsService.connectListener();
 
-        ConfigService.getReceptorList()
-            .then(function (result) {
-                $timeout(function() {
+        $timeout(function () {
+            ConfigService.getReceptorList()
+                .then(function (result) {
                     result.forEach(function (item) {
-                        vm.receptorsData.push({name: item});
-                        $timeout(function() {
+                        vm.receptorsData.push({name: item, showHorizonMask: false});
+                        $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_actual_azim', vm.guid, 'event-rate', 1, 10);
-                        }, 30);
-                        $timeout(function() {
+                        }, 10);
+                        $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_actual_elev', vm.guid, 'event-rate', 1, 10);
-                        }, 30);
-                        $timeout(function() {
+                        }, 10);
+                        $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_requested_azim', vm.guid, 'event-rate', 1, 10);
-                        }, 30);
-                        $timeout(function() {
+                        }, 10);
+                        $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_requested_elev', vm.guid, 'event-rate', 1, 10);
-                        }, 30);
+                        }, 10);
+
+                        $timeout(function () {
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'mode', vm.guid, 'event-rate', 1, 10);
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'inhibited', vm.guid, 'event-rate', 1, 10);
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_device_status', vm.guid, 'event-rate', 1, 10);
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'lock', vm.guid, 'event-rate', 1, 10);
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'windstow_active', vm.guid, 'event-rate', 1, 10);
+                        }, 10);
                     });
-                }, 1000);
-            });
+                });
+        }, 1000);
 
         vm.statusMessageReceived = function (event, message) {
 
@@ -56,8 +64,25 @@
             }
         };
 
-        vm.redraw = function () {
-            vm.redrawChart(vm.receptorsData);
+        vm.redraw = function (horizonMaskToggled) {
+            vm.redrawChart(vm.receptorsData, vm.showNames, vm.showTrails, vm.showGridLines, vm.trailDots, horizonMaskToggled);
+        };
+
+        vm.toggleHorizonMask = function (receptor) {
+            if (!receptor.horizonMask) {
+                ConfigService.getHorizonMask(receptor.name)
+                    .success(function (result) {
+                        receptor.showHorizonMask = true;
+                        receptor.horizonMask = "az el\r" + result;
+                        vm.redraw(true);
+                    })
+                    .error(function (result) {
+                        console.log(result);
+                    });
+            } else {
+                receptor.showHorizonMask = !receptor.showHorizonMask;
+                vm.redraw(true);
+            }
         };
 
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);

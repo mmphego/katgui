@@ -1,4 +1,65 @@
-<div flex style="min-width: 1015px; min-height: 920px; margin-top: 16px;" ng-controller="ReceptorPointingCtrl as vm" layout="column">
+<div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative;">
 
-    <receptor-pointing flex redraw-function="vm.redrawChart"></receptor-pointing>
+    <md-button class="md-icon-button" style="margin: 0; position: absolute; right: 8px; top: 8px;"
+               ng-click="vm.showPointingOptionsMenu = !vm.showPointingOptionsMenu;$event.stopPropagation()">
+        <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+    </md-button>
+
+    <div flex layout="column" ng-click="vm.showPointingOptionsMenu = false">
+        <div layout="row" layout-align="center center" style="overflow: auto; height: 90px;" ng-show="vm.showReceptorStates">
+            <div ng-repeat="receptor in vm.receptorsData" class="{{receptor.name + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
+                layout="column" layout-align="center center" ng-click="vm.toggleHorizonMask(receptor)"
+                title="{{'Click to toggle the horizon mask for ' + receptor.name}}">
+                <span>
+                    {{receptor.name}}
+                </span>
+                <span ng-show="!receptor.windstow_active.value">{{receptor.mode.value}}</span>
+                <span ng-show="receptor.windstow_active.value">WINDSTOW</span>
+                <span style="width: 100%; text-align: center;"
+                      class="inhibited-item" ng-show="receptor.inhibited.value">INHIBIT</span>
+                <span ng-show="receptor.lock.value" class="fa fa-asterisk on-target-span"
+                      title="AP on Target"></span>
+                <span ng-show="receptor.showHorizonMask" class="fa fa-area-chart horizon-mask-showing"
+                      title="Showing Horizon Mask"></span>
+            </div>
+        </div>
+        <receptor-pointing-equatorial ng-if="vm.useEquatorial" flex redraw-function="vm.redrawChart"></receptor-pointing-equatorial>
+        <receptor-pointing-horizontal ng-if="!vm.useEquatorial" flex redraw-function="vm.redrawChart"></receptor-pointing-horizontal>
+    </div>
+
+    <div ng-init="vm.showPointingOptionsMenu = false" ng-show="vm.showPointingOptionsMenu"
+         class="receptor-pointing-options-menu md-whiteframe-z3">
+        <md-list layout="column" md-theme="{{themePrimaryButtons}}">
+            <md-item>
+                <md-checkbox class="md-primary" ng-model="vm.useEquatorial" ng-init="vm.useEquatorial = true">
+                    <span>Use Equatorial Coordinates</span>
+                </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.showReceptorStates" ng-init="vm.showReceptorStates = true">
+                    <span>Show Receptor States</span>
+                </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.showNames" ng-change="vm.redraw()"
+                             ng-init="vm.showNames = false">
+                    <span>Show Names</span>
+                </md-checkbox>
+                <md-checkbox class="md-primary" ng-model="vm.showTrails" ng-change="vm.redraw()">
+                    <span>Show Trails</span>
+                </md-checkbox>
+                <div ng-show="vm.showTrails" layout="row" layout-align="start center"
+                     style="margin-left: 38px; margin-right: 8px; margin-bottom: 8px;">
+                    <label style="width: 63px; font-weight: normal; margin-top: 4px;">Trail Dots:</label>
+                    <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                        class="md-primary" title="Set the desired trail dots">
+                        <input flex style="" placeholder="Minimum" ng-model="vm.trailDots" ng-init="vm.trailDots = 30"
+                               ng-change="vm.redraw()" type="number" ng-model-options="{ debounce: 300 }"
+                            step="5" max="100" min="1">
+                    </md-input-container>
+                </div>
+                <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.redraw()"
+                    ng-init="vm.showGridLines = true">
+                    <span>Show Gridlines</span>
+                </md-checkbox>
+            </md-item>
+        </md-list>
+    </div>
+
 </div>
