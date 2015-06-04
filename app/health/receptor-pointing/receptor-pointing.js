@@ -27,6 +27,12 @@
                         $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_requested_elev', vm.guid, 'event-rate', 1, 10);
                         }, 10);
+                        $timeout(function () {
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'pos_request_base_dec', vm.guid, 'event-rate', 1, 10);
+                        }, 10);
+                        $timeout(function () {
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'pos_request_base_ra', vm.guid, 'event-rate', 1, 10);
+                        }, 10);
 
                         $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'mode', vm.guid, 'event-rate', 1, 10);

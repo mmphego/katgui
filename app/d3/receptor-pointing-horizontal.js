@@ -10,6 +10,8 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
+                    //precisionMultiplicative
+                    var pm = 10000;
                     //handle resizing
                     var unbindResize = scope.$watch(function () {
                         return element[0].clientHeight + ', ' + element[0].clientWidth;
@@ -160,8 +162,8 @@ angular.module('katGui.d3')
                         //and to group tooltip values for points in the same position
                         scope.data.forEach(function (d) {
                             if (d.ap_actual_azim && d.ap_actual_elev) {
-                                d.proj_requested_az_x = Math.floor(x(d.ap_actual_azim.value) * 100) / 100;
-                                d.proj_requested_el_y = Math.floor(y(d.ap_actual_elev.value) * 100) / 100;
+                                d.proj_requested_az_x = Math.floor(x(d.ap_actual_azim.value) * pm) / pm;
+                                d.proj_requested_el_y = Math.floor(y(d.ap_actual_elev.value) * pm) / pm;
                                 d.proj_actual = Math.floor(d.proj_requested_az_x) + ',' + Math.floor(d.proj_requested_el_y);
                                 if (!scope.positions[d.proj_actual]) {
                                     scope.positions[d.proj_actual] = [];
@@ -188,10 +190,13 @@ angular.module('katGui.d3')
 
                                     d.tooltipHtml += "<b>" + items[i].name + " </b>";
                                     if (items[i].ap_actual_azim) {
-                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_actual_azim.value * 100) / 100 + ", el: " + Math.round(items[i].ap_actual_elev.value * 100) / 100;
+                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_actual_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_actual_elev.value * pm) / pm;
                                     }
                                     if (items[i].ap_requested_azim) {
-                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_requested_azim.value * 100) / 100 + ", el: " + Math.round(items[i].ap_requested_elev.value * 100) / 100 + " (requested)";
+                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_requested_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_requested_elev.value * pm) / pm + " (requested)";
+                                    }
+                                    if (items[i].pos_request_base_ra) {
+                                        d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
                                     }
                                     d.tooltipHtml += "<br/>";
                                 }

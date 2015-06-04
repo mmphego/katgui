@@ -10,6 +10,9 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
+                    //precisionMultiplicative
+                    var pm = 10000;
+
                     //handle resizing
                     var unbindResize = scope.$watch(function () {
                         return element[0].clientHeight + ', ' + element[0].clientWidth;
@@ -203,8 +206,8 @@ angular.module('katGui.d3')
                         scope.data.forEach(function (d) {
                             if (d.ap_actual_azim && d.ap_actual_elev) {
                                 var proj_actual = projection([d.ap_actual_azim.value, d.ap_actual_elev.value]);
-                                d.proj_actual_az_x = Math.floor(proj_actual[0] * 100) / 100;
-                                d.proj_actual_el_y = Math.floor(proj_actual[1] * 100) / 100;
+                                d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
+                                d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
                                 d.proj_actual = Math.floor(proj_actual[0])  + ',' + Math.floor(proj_actual[1]);
                                 if (!scope.positions[d.proj_actual]) {
                                     scope.positions[d.proj_actual] = [];
@@ -214,8 +217,8 @@ angular.module('katGui.d3')
 
                             if (d.ap_requested_azim && d.ap_requested_elev) {
                                 var proj_requested = projection([d.ap_requested_azim.value, d.ap_requested_elev.value]);
-                                d.proj_requested_az_x = Math.floor(proj_requested[0] * 100) / 100;
-                                d.proj_requested_el_y = Math.floor(proj_requested[1] * 100) / 100;
+                                d.proj_requested_az_x = Math.floor(proj_requested[0] * pm) / pm;
+                                d.proj_requested_el_y = Math.floor(proj_requested[1] * pm) / pm;
                                 d.proj_requested = d.proj_requested_az_x + ',' + d.proj_requested_el_y;
                                 if (!scope.positions_requested[d.proj_requested]) {
                                     scope.positions_requested[d.proj_requested] = [];
@@ -234,10 +237,13 @@ angular.module('katGui.d3')
 
                                     d.tooltipHtml += "<b>" + items[i].name + " </b>";
                                     if (items[i].ap_actual_azim) {
-                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_actual_azim.value * 100) / 100 + ", el: " + Math.round(items[i].ap_actual_elev.value * 100) / 100;
+                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_actual_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_actual_elev.value * pm) / pm;
                                     }
                                     if (items[i].ap_requested_azim) {
-                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_requested_azim.value * 100) / 100 + ", el: " + Math.round(items[i].ap_requested_elev.value * 100) / 100 + " (requested)";
+                                        d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_requested_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_requested_elev.value * pm) / pm + " (requested)";
+                                    }
+                                    if (items[i].pos_request_base_ra) {
+                                        d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
                                     }
                                     d.tooltipHtml += "<br/>";
                                 }
