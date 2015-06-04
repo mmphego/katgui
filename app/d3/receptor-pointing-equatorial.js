@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorPointingEquatorial', function (d3Service, $rootScope, KatGuiUtil) {
+    .directive('receptorPointingEquatorial', function (d3Service) {
         return {
             restrict: 'EA',
             scope: {
@@ -10,6 +10,7 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
+                    //handle resizing
                     var unbindResize = scope.$watch(function () {
                         return element[0].clientHeight + ', ' + element[0].clientWidth;
                     }, function (newVal, oldVal) {
@@ -31,6 +32,7 @@ angular.module('katGui.d3')
                         scope.trailDots = trailDots;
                         scope.data = receptors;
 
+                        //parse the horizon mask data and sort it
                         var newHorizonData = false;
                         receptors.forEach(function (receptor) {
                             if (receptor.horizonMask && !receptor.horizonMaskData) {
@@ -56,6 +58,7 @@ angular.module('katGui.d3')
                         drawValues();
                     };
 
+                    //create a mouseover tooltip element
                     var tooltip = d3.select(element[0]).append("div")
                         .attr("class", "receptor-pointing-tooltip")
                         .style("opacity", 0);
@@ -68,6 +71,7 @@ angular.module('katGui.d3')
 
                     function drawSvg() {
 
+                        //remove because we are redrawing the entire svg
                         d3.select('svg').remove();
 
                         width = element[0].clientWidth - margin.left - margin.right;
@@ -78,6 +82,7 @@ angular.module('katGui.d3')
                             height = 0;
                         }
 
+                        //setup d3 projection for stereographic display
                         projection = d3.geo.projection(flippedStereographic)
                             .scale(scale)
                             .clipAngle(130)
@@ -88,15 +93,18 @@ angular.module('katGui.d3')
                         path = d3.geo.path()
                             .projection(projection);
 
+                        //add the svg canvas
                         svg = d3.select(element[0]).append("svg")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.top + margin.bottom);
 
+                        //draw the horizon circle
                         svg.append("path")
                             .datum(d3.geo.circle().origin([0, 90]).angle(90))
                             .attr("class", "horizon")
                             .attr("d", path);
 
+                        //draw all of the horizon masks that are selected to be shown
                         svg.selectAll("path.horizon-mask")
                             .data(scope.data)
                             .enter().append("path")
@@ -114,6 +122,7 @@ angular.module('katGui.d3')
                                 }
                             });
 
+                        //draw the graticule (grid lines)
                         if (scope.showGridLines) {
                             svg.append("path")
                                 .datum(d3.geo.graticule())
@@ -124,6 +133,7 @@ angular.module('katGui.d3')
                         ticksAzimuth = svg.append("g")
                             .attr("class", "ticks ticks--azimuth");
 
+                        //draw the azimuth tick lines
                         ticksAzimuth.selectAll("line")
                             .data(d3.range(360))
                             .enter().append("line")
@@ -138,6 +148,7 @@ angular.module('katGui.d3')
                                     .attr("y2", p1[1]);
                             });
 
+                        //draw the azimuth tick values
                         ticksAzimuth.selectAll("text")
                             .data(d3.range(0, 360, 10))
                             .enter().append("text")
@@ -152,6 +163,7 @@ angular.module('katGui.d3')
                                 return d === 0 ? "N" : d === 90 ? "E" : d === 180 ? "S" : d === 270 ? "W" : d + "°";
                             });
 
+                        //draw the elevation circle text
                         svg.append("g")
                             .attr("class", "ticks ticks--elevation")
                             .selectAll("text")
@@ -172,8 +184,7 @@ angular.module('katGui.d3')
 
                     function drawValues() {
 
-                        scope.positions = {};
-                        scope.positions_requested = {};
+                        //remove old positions before drawing new positions
                         svg.selectAll(".name-pos-text").remove();
                         svg.selectAll(".actual-pos-text").remove();
                         svg.selectAll(".requested-pos-text").remove();
@@ -181,9 +192,13 @@ angular.module('katGui.d3')
                             svg.selectAll("circle").remove();
                             svg.selectAll("g.requested-pos").remove();
                         } else {
-                            //svg.selectAll("circle").remove();
                             svg.selectAll("g.requested-pos").remove();
                         }
+
+                        //calculate and save the projection data to display points in the same position as bigger circles
+                        //and to group tooltip values for points in the same position
+                        scope.positions = {};
+                        scope.positions_requested = {};
 
                         scope.data.forEach(function (d) {
                             if (d.ap_actual_azim && d.ap_actual_elev) {
@@ -210,6 +225,7 @@ angular.module('katGui.d3')
                             d.tooltipHtml = null;
                         });
 
+                        //compute tooltip values for points in the same position
                         scope.data.forEach(function (d) {
                             if (!d.tooltipHtml) {
                                 var items = scope.positions[d.proj_actual];
@@ -229,6 +245,7 @@ angular.module('katGui.d3')
                             }
                         });
 
+                        //draw a crosshair where the requested position is
                         svg.selectAll("g.requested-pos")
                             .data(scope.data)
                             .enter().append('g')
@@ -248,11 +265,8 @@ angular.module('katGui.d3')
                             .on("mouseout", mouseOut)
                             .text('\uf05b');
 
-                            //.append("circle")
-
-                            //.attr("r", 5)
-
-
+                        //draw a color circle where the actual position is
+                        //and setup tooltip behaviour
                         svg.selectAll("g.actual-pos")
                             .data(scope.data)
                             .enter().append("circle")
@@ -282,6 +296,7 @@ angular.module('katGui.d3')
                                 }
                             })
                             .attr("r", function (d) {
+                                //for points in the same position, draw overlapping big circles
                                 if (d.proj_actual) {
                                     if (scope.positions[d.proj_actual].length > 1) {
                                         return 10;
@@ -295,6 +310,7 @@ angular.module('katGui.d3')
                             .on("mouseover", mouseOver)
                             .on("mouseout", mouseOut);
 
+                        //reduce the radius of the trail circles
                         if (scope.showTrails) {
                             scope.data.forEach(function (d) {
                                 var itemsList = svg.selectAll("." + d.name + "_actual")[0];
@@ -309,7 +325,7 @@ angular.module('katGui.d3')
                             });
                         }
 
-
+                        //draw the names of the receptor name
                         if (scope.showNames) {
                             svg.selectAll("g.name-pos-text")
                                 .data(scope.data)
@@ -337,20 +353,6 @@ angular.module('katGui.d3')
                                 .text(function (d) {
                                     return d.name;
                                 });
-
-                        //.text(function (d) {
-                        //        if (d.ap_requested_azim && d.ap_requested_elev) {
-                        //            return radecRadiansToString(KatGuiUtil.ra_dec(
-                        //                $rootScope.julianDay,
-                        //                $rootScope.longitude,
-                        //                $rootScope.latitude,
-                        //                d.ap_requested_azim.value,
-                        //                d.ap_requested_elev.value
-                        //            ));
-                        //        } else {
-                        //            return '';
-                        //        }
-                        //    });
                         }
                     }
 
@@ -362,13 +364,6 @@ angular.module('katGui.d3')
                             k * cosφ * Math.sin(λ),
                             -k * Math.sin(φ)
                         ];
-                    }
-
-                    function radecRadiansToString(radec) {
-                        return "RA: " +
-                            Math.round(((radec[0] * (180/Math.PI)) / Math.PI) * 100) / 100 +
-                            "h, D: " +
-                            Math.round(radec[1]*(180/Math.PI) * 100) / 100 + "d";
                     }
 
                     function mouseOver (d) {

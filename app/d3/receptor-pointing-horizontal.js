@@ -10,6 +10,7 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
+                    //handle resizing
                     var unbindResize = scope.$watch(function () {
                         return element[0].clientHeight + ', ' + element[0].clientWidth;
                     }, function (newVal, oldVal) {
@@ -20,6 +21,7 @@ angular.module('katGui.d3')
                     });
 
                     var color = d3.scale.category20();
+                    //create a mouseover tooltip element
                     var tooltip = d3.select(element[0]).append("div")
                         .attr("class", "receptor-pointing-tooltip")
                         .style("opacity", 0);
@@ -28,7 +30,6 @@ angular.module('katGui.d3')
                     var margin = {top: 10, right: 20, bottom: 60, left: 60},
                         width, height, chart, focus;
                     var svg, x, y, xAxis, yAxis, xAxisElement, yAxisElement;
-
 
                     scope.data = [];
                     scope.redrawFunction = function (receptors,
@@ -42,6 +43,7 @@ angular.module('katGui.d3')
                         scope.showNames = showNames;
                         scope.showTrails = showTrails;
 
+                        //parse the horizon mask data and sort it
                         var newHorizonData = false;
                         receptors.forEach(function (receptor) {
                             if (receptor.horizonMask && !receptor.horizonMaskData) {
@@ -79,6 +81,7 @@ angular.module('katGui.d3')
                             height = 0;
                         }
 
+                        //remove because we are redrawing the entire svg
                         d3.select('svg').remove();
                         svg = d3.select(element[0]).append("svg")
                             .attr("width", width + margin.left + margin.right)
@@ -109,12 +112,15 @@ angular.module('katGui.d3')
 
                         x.domain([-180, 180]);
                         y.domain([0, 92]);
+
+                        //create the axis
                         xAxisElement.call(xAxis);
                         yAxisElement.call(yAxis);
 
                         focus = svg.append("g")
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+                        //define the line for horizon masks
                         var line = d3.svg.line()
                             .interpolate("cubic")
                             .x(function (d) {
@@ -124,6 +130,7 @@ angular.module('katGui.d3')
                                 return y(d[1]);
                             });
 
+                        //draw the horizon masks
                         chart.selectAll(".horizon-mask")
                             .data(scope.data)
                             .enter().append("path")
@@ -149,6 +156,8 @@ angular.module('katGui.d3')
                         scope.positions = {};
                         scope.positions_requested = {};
 
+                        //calculate and save the projection data to display points in the same position as bigger circles
+                        //and to group tooltip values for points in the same position
                         scope.data.forEach(function (d) {
                             if (d.ap_actual_azim && d.ap_actual_elev) {
                                 d.proj_requested_az_x = Math.floor(x(d.ap_actual_azim.value) * 100) / 100;
@@ -170,6 +179,7 @@ angular.module('katGui.d3')
                             d.tooltipHtml = null;
                         });
 
+                        //compute tooltip values for points in the same position
                         scope.data.forEach(function (d) {
                             if (!d.tooltipHtml) {
                                 var items = scope.positions[d.proj_actual];
@@ -195,6 +205,7 @@ angular.module('katGui.d3')
                         focus.selectAll("text").remove();
                         focus.selectAll("g.requested-pos").remove();
 
+                        //draw a crosshair where the requested position is
                         focus.selectAll("g.requested-pos")
                             .data(scope.data)
                             .enter().append('g')
@@ -214,6 +225,8 @@ angular.module('katGui.d3')
                             .on("mouseout", mouseOut)
                             .text('\uf05b');
 
+                        //draw a color circle where the actual position is
+                        //and setup tooltip behaviour
                         focus.selectAll("g.actual-pos")
                             .data(scope.data)
                             .enter().append("circle")
@@ -263,6 +276,7 @@ angular.module('katGui.d3')
                             .on("mouseover", mouseOver)
                             .on("mouseout", mouseOut);
 
+                        //reduce the radius of the trail circles
                         if (scope.showTrails) {
                             scope.data.forEach(function (d) {
                                 var itemsList = svg.selectAll("." + d.name + "_actual")[0];
@@ -277,8 +291,8 @@ angular.module('katGui.d3')
                             });
                         }
 
+                        //draw the names of the receptor name
                         if (scope.showNames) {
-
                             focus.selectAll("g.actual-pos-text")
                                 .data(scope.data)
                                 .enter().append("text")
