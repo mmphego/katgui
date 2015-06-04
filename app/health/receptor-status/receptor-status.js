@@ -32,9 +32,13 @@
                 SensorsService.connectResourceSensorNameLiveFeed('katpool', 'subarrays_maintenance', vm.guid, 'event-rate', 1, 5);
 
                 SensorsService.connectResourceSensorNameLiveFeed('subarray_1', 'state', vm.guid, 'event-rate', 1, 10);
+                //SensorsService.connectResourceSensorNameLiveFeed('subarray_1', 'pool_resources', vm.guid, 'event-rate', 1, 10);
                 SensorsService.connectResourceSensorNameLiveFeed('subarray_2', 'state', vm.guid, 'event-rate', 1, 10);
+                //SensorsService.connectResourceSensorNameLiveFeed('subarray_2', 'pool_resources', vm.guid, 'event-rate', 1, 10);
                 SensorsService.connectResourceSensorNameLiveFeed('subarray_3', 'state', vm.guid, 'event-rate', 1, 10);
+                //SensorsService.connectResourceSensorNameLiveFeed('subarray_3', 'pool_resources', vm.guid, 'event-rate', 1, 10);
                 SensorsService.connectResourceSensorNameLiveFeed('subarray_4', 'state', vm.guid, 'event-rate', 1, 10);
+                //SensorsService.connectResourceSensorNameLiveFeed('subarray_4', 'pool_resources', vm.guid, 'event-rate', 1, 10);
             });
 
         vm.statusMessageReceived = function (event, message) {
@@ -82,7 +86,11 @@
                         if (!vm.subarrays['subarray_' + subarray]) {
                             vm.subarrays['subarray_' + subarray] = {id: subarray};
                         }
-                        vm.subarrays['subarray_' + subarray][sensorName] = message.value.value;
+                        //if (sensorName === 'pool_resources') {
+                        //    vm.subarrays['subarray_' + subarray]['assigned'] = message.value.value.split(',');
+                        //} else {
+                            vm.subarrays['subarray_' + subarray][sensorName] = message.value.value;
+                        //}
                     } else if (receptor.name === resource) {
                         receptor[sensorName] = message.value;
                     }

@@ -52,15 +52,14 @@
                         receptor[sensorName] = message.value;
                     }
                     if (!angular.isDefined(vm.stopUpdating)) {
-                        vm.stopUpdating = $interval(vm.redraw, 1000);
+                        vm.stopUpdating = $interval(function () {
+                            vm.redraw(false);
+                        }, 1000);
                     }
                 });
                 if (!$scope.$$phase) {
                     $scope.$digest();
                 }
-            } else {
-                //TODO some messages' value is null
-                //console.warn(message);
             }
         };
 

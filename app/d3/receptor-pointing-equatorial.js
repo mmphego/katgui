@@ -83,7 +83,7 @@ angular.module('katGui.d3')
                             .clipAngle(130)
                             .rotate([0, -90])
                             .translate([width / 2 + .5, height / 2 + .5])
-                            .precision(.1);
+                            .precision(.01);
 
                         path = d3.geo.path()
                             .projection(projection);
@@ -179,15 +179,18 @@ angular.module('katGui.d3')
                         svg.selectAll(".requested-pos-text").remove();
                         if (!scope.showTrails) {
                             svg.selectAll("circle").remove();
+                            svg.selectAll("g.requested-pos").remove();
                         } else {
                             //svg.selectAll("circle").remove();
-                            svg.selectAll("circle.requested-pos").remove();
+                            svg.selectAll("g.requested-pos").remove();
                         }
 
                         scope.data.forEach(function (d) {
                             if (d.ap_actual_azim && d.ap_actual_elev) {
                                 var proj_actual = projection([d.ap_actual_azim.value, d.ap_actual_elev.value]);
-                                d.proj_actual = Math.floor(proj_actual[0] * 100) / 100  + ',' + Math.floor(proj_actual[1] * 100) / 100 ;
+                                d.proj_actual_az_x = Math.floor(proj_actual[0] * 100) / 100;
+                                d.proj_actual_el_y = Math.floor(proj_actual[1] * 100) / 100;
+                                d.proj_actual = Math.floor(proj_actual[0])  + ',' + Math.floor(proj_actual[1]);
                                 if (!scope.positions[d.proj_actual]) {
                                     scope.positions[d.proj_actual] = [];
                                 }
@@ -196,7 +199,9 @@ angular.module('katGui.d3')
 
                             if (d.ap_requested_azim && d.ap_requested_elev) {
                                 var proj_requested = projection([d.ap_requested_azim.value, d.ap_requested_elev.value]);
-                                d.proj_requested = Math.floor(proj_requested[0] * 100) / 100  + ',' + Math.floor(proj_requested[1] * 100) / 100 ;
+                                d.proj_requested_az_x = Math.floor(proj_requested[0] * 100) / 100;
+                                d.proj_requested_el_y = Math.floor(proj_requested[1] * 100) / 100;
+                                d.proj_requested = d.proj_requested_az_x + ',' + d.proj_requested_el_y;
                                 if (!scope.positions_requested[d.proj_requested]) {
                                     scope.positions_requested[d.proj_requested] = [];
                                 }
@@ -226,18 +231,27 @@ angular.module('katGui.d3')
 
                         svg.selectAll("g.requested-pos")
                             .data(scope.data)
-                            .enter().append("circle")
+                            .enter().append('g')
                             .attr("class", "requested-pos")
-                            .attr("r", 5)
                             .attr("transform", function (d) {
                                 if (d.proj_requested) {
-                                    return "translate(" + d.proj_requested + ")";
+                                    return "translate(" + (d.proj_requested_az_x - 8.3) + "," + (d.proj_requested_el_y + 6.7)  + ")";
                                 } else {
                                     return 'translate(-100, -100)';
                                 }
                             })
+                            .append('text')
+                            .attr('font-family', 'FontAwesome')
+                            .attr('font-size', '19px')
+                            .attr('stroke-width', '0.5px')
                             .on("mouseover", mouseOver)
-                            .on("mouseout", mouseOut);
+                            .on("mouseout", mouseOut)
+                            .text('\uf05b');
+
+                            //.append("circle")
+
+                            //.attr("r", 5)
+
 
                         svg.selectAll("g.actual-pos")
                             .data(scope.data)
@@ -262,7 +276,7 @@ angular.module('katGui.d3')
                             })
                             .attr("transform", function (d) {
                                 if (d.proj_actual) {
-                                    return "translate(" + d.proj_actual + ")";
+                                    return "translate(" + (d.proj_actual_az_x) + "," + (d.proj_actual_el_y) + ")";
                                 } else {
                                     return 'translate(-100, -100)';
                                 }
@@ -270,7 +284,7 @@ angular.module('katGui.d3')
                             .attr("r", function (d) {
                                 if (d.proj_actual) {
                                     if (scope.positions[d.proj_actual].length > 1) {
-                                        return 8;
+                                        return 10;
                                     } else {
                                         return 4;
                                     }
@@ -360,15 +374,16 @@ angular.module('katGui.d3')
                     function mouseOver (d) {
                         tooltip.style("opacity", 0.9);
                         tooltip.html(d.tooltipHtml);
+                        var tooltipWidth = tooltip[0][0].offsetWidth;
+                        var tooltipHeight = tooltip[0][0].offsetHeight;
 
                         var x = d3.event.layerX;
                         var y = d3.event.layerY;
-                        //move the tooltip to 36,36 when we hover over the hide button
-                        if (window.innerWidth - x < 300) {
-                            x = window.innerWidth - 300;
+                        if (window.innerWidth - x < tooltipWidth + 50) {
+                            x = window.innerWidth - tooltipWidth - 50;
                         }
-                        if (window.innerHeight - y < 240) {
-                            y = window.innerHeight - 240;
+                        if (window.innerHeight - y < tooltipHeight + 50) {
+                            y = window.innerHeight - tooltipHeight - 50;
                         }
                         tooltip
                             .style("top", (y + 15) + "px")

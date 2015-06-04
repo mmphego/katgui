@@ -37,11 +37,11 @@
                 <md-checkbox class="md-primary" ng-model="vm.showReceptorStates" ng-init="vm.showReceptorStates = true">
                     <span>Show Receptor States</span>
                 </md-checkbox>
-                <md-checkbox class="md-primary" ng-model="vm.showNames" ng-change="vm.redraw()"
+                <md-checkbox class="md-primary" ng-model="vm.showNames" ng-change="vm.redraw(false)"
                              ng-init="vm.showNames = false">
                     <span>Show Names</span>
                 </md-checkbox>
-                <md-checkbox class="md-primary" ng-model="vm.showTrails" ng-change="vm.redraw()">
+                <md-checkbox class="md-primary" ng-model="vm.showTrails" ng-change="vm.redraw(false)">
                     <span>Show Trails</span>
                 </md-checkbox>
                 <div ng-show="vm.showTrails" layout="row" layout-align="start center"
@@ -50,11 +50,11 @@
                     <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
                                         class="md-primary" title="Set the desired trail dots">
                         <input flex style="" placeholder="Minimum" ng-model="vm.trailDots" ng-init="vm.trailDots = 30"
-                               ng-change="vm.redraw()" type="number" ng-model-options="{ debounce: 300 }"
+                               ng-change="vm.redraw(false)" type="number" ng-model-options="{ debounce: 300 }"
                             step="5" max="100" min="1">
                     </md-input-container>
                 </div>
-                <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.redraw()"
+                <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.redraw(false)"
                     ng-init="vm.showGridLines = true">
                     <span>Show Gridlines</span>
                 </md-checkbox>
