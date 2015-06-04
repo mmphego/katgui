@@ -198,6 +198,9 @@ angular.module('katGui.d3')
                                     if (items[i].pos_request_base_ra) {
                                         d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
                                     }
+                                    if (items[i].pos_delta_sky) {
+                                        d.tooltipHtml += "<br/>Error: " + Math.round(items[i].pos_delta_sky.value * pm) / pm;
+                                    }
                                     d.tooltipHtml += "<br/>";
                                 }
                                 d.tooltipHtml += "</div>";

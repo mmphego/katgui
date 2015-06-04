@@ -33,6 +33,9 @@
                         $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'pos_request_base_ra', vm.guid, 'event-rate', 1, 10);
                         }, 10);
+                        $timeout(function () {
+                            SensorsService.connectResourceSensorNameLiveFeed(item, 'pos_delta_sky', vm.guid, 'event-rate', 1, 10);
+                        }, 10);
 
                         $timeout(function () {
                             SensorsService.connectResourceSensorNameLiveFeed(item, 'mode', vm.guid, 'event-rate', 1, 10);

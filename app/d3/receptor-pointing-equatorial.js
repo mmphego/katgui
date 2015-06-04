@@ -245,6 +245,9 @@ angular.module('katGui.d3')
                                     if (items[i].pos_request_base_ra) {
                                         d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
                                     }
+                                    if (items[i].pos_delta_sky) {
+                                        d.tooltipHtml += "<br/>Delta Sky: " + Math.round(items[i].pos_delta_sky.value * pm) / pm;
+                                    }
                                     d.tooltipHtml += "<br/>";
                                 }
                                 d.tooltipHtml += "</div>";
@@ -267,9 +270,9 @@ angular.module('katGui.d3')
                             .attr('font-family', 'FontAwesome')
                             .attr('font-size', '19px')
                             .attr('stroke-width', '0.5px')
+                            .text('\uf05b')
                             .on("mouseover", mouseOver)
-                            .on("mouseout", mouseOut)
-                            .text('\uf05b');
+                            .on("mouseout", mouseOut);
 
                         //draw a color circle where the actual position is
                         //and setup tooltip behaviour
