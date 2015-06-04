@@ -236,13 +236,13 @@ angular.module('katGui.d3')
                                 for (var i in items) {
 
                                     d.tooltipHtml += "<b>" + items[i].name + " </b>";
-                                    if (items[i].ap_actual_azim) {
+                                    if (items[i].ap_actual_azim && items[i].ap_actual_elev) {
                                         d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_actual_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_actual_elev.value * pm) / pm;
                                     }
-                                    if (items[i].ap_requested_azim) {
+                                    if (items[i].ap_requested_azim && items[i].ap_requested_elev) {
                                         d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_requested_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_requested_elev.value * pm) / pm + " (requested)";
                                     }
-                                    if (items[i].pos_request_base_ra) {
+                                    if (items[i].pos_request_base_ra && items[i].pos_request_base_dec) {
                                         d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
                                     }
                                     if (items[i].pos_delta_sky) {
