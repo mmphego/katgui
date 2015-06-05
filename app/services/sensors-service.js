@@ -3,13 +3,24 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
         api.connection = null;
         api.deferredMap = {};
         api.resources = {};
+        //websocket default heartbeat is every 30 seconds
+        //so allow for 35 seconds before alerting about timeout
+        api.heartbeatTimeOutLimit = 35000;
+        api.checkAliveConnectionInterval = 10000;
+
+        api.getTimeoutPromise = function () {
+            if (!api.deferredMap['timeoutDefer']) {
+                api.deferredMap['timeoutDefer'] = $q.defer();
+            }
+            return api.deferredMap['timeoutDefer'].promise;
+        };
 
         api.subscribe = function (pattern, guid) {
             var jsonRPC = {
@@ -57,8 +68,21 @@
         };
 
         api.onSockJSClose = function () {
-            console.log('Disconnecting Sensors Connection');
+            console.log('Disconnecting Sensors Connection.');
             api.connection = null;
+            api.lastHeartBeat = null;
+        };
+
+        api.checkAlive = function () {
+            if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
+                console.warn('Sensors Connection Heartbeat timeout!');
+                api.deferredMap['timeoutDefer'].resolve();
+                api.deferredMap['timeoutDefer'] = null;
+            }
+        };
+
+        api.onSockJSHeartbeat = function () {
+            api.lastHeartBeat = new Date();
         };
 
         api.onSockJSMessage = function (e) {
@@ -105,7 +129,8 @@
                         //auth response
                         $localStorage['currentUserToken'] = $rootScope.jwt;
                         api.connection.authorized = true;
-                        console.log('Sensors Connection Established. Authenticated.');
+                        console.log('Sensors Connection Authenticated.');
+                        api.deferredMap['connectDefer'].resolve();
                     } else if (messages.result.length > 0) {
                         //subscribe response
                         //console.log('Subscribed to: ');
@@ -113,8 +138,9 @@
                     } else {
                         //bad auth response
                         api.connection.authorized = false;
-                        console.log('Sensors Connection Established. Authentication failed.');
+                        console.error('Sensors Connection Authentication failed!');
                         console.error(messages);
+                        api.deferredMap['connectDefer'].reject();
                     }
                 } else {
                     console.error('Dangling sensors message...');
@@ -127,17 +153,26 @@
         };
 
         api.connectListener = function () {
-            console.log('Sensors Connecting...');
-            api.connection = new SockJS(urlBase + '/sensors');
-            api.connection.onopen = api.onSockJSOpen;
-            api.connection.onmessage = api.onSockJSMessage;
-            api.connection.onclose = api.onSockJSClose;
-            return api.connection !== null;
+            api.deferredMap['connectDefer'] = $q.defer();
+            if (!api.connection) {
+                console.log('Sensors Connecting...');
+                api.connection = new SockJS(urlBase + '/sensors');
+                api.connection.onopen = api.onSockJSOpen;
+                api.connection.onmessage = api.onSockJSMessage;
+                api.connection.onclose = api.onSockJSClose;
+                api.connection.onheartbeat = api.onSockJSHeartbeat;
+                api.lastHeartBeat = new Date();
+                if (!api.checkAliveInterval) {
+                    api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+                }
+            }
+            return api.deferredMap['connectDefer'].promise;
         };
 
         api.disconnectListener = function () {
             if (api.connection) {
                 api.connection.close();
+                $interval.cancel(api.checkAliveInterval);
             } else {
                 console.error('Attempting to disconnect an already disconnected connection!');
             }
@@ -170,6 +205,23 @@
                 ]);
 
             api.subscribe(resource + '.' + sensorName, guid);
+        };
+
+        api.connectResourceSensorNamesLiveFeedWithList = function (
+            resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
+            api.sendSensorsCommand('set_sensor_strategy',
+                [
+                    guid,
+                    resource,
+                    sensorNames,
+                    strategyType,
+                    strategyIntervalMin,
+                    strategyIntervalMax
+                ]);
+
+            for (var i in sensorNames) {
+                api.subscribe(resource + '.' + sensorNames[i], guid);
+            }
         };
 
         api.connectLiveFeed = function (sensor, guid) {

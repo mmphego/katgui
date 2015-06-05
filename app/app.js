@@ -4,20 +4,20 @@
     angular.module('katGui', ['ngMaterial',
         'ui.bootstrap', 'ui.utils', 'ui.router',
         'adf', 'ngAnimate', 'katGui.services',
-            'katGui.admin',
-            'katGui.alarms',
-            'katGui.config',
-            'katGui.d3',
-            'katGui.health',
-            'katGui.widgets.navigationWidget',
-            'katGui.widgets.ganttWidget',
-            'katGui.dashboardStructure',
-            'katGui.landing',
-            'katGui.util',
-            'katGui.scheduler',
-            'katGui.services',
-            'katGui.video'
-        ])
+        'katGui.admin',
+        'katGui.alarms',
+        'katGui.config',
+        'katGui.d3',
+        'katGui.health',
+        'katGui.widgets.navigationWidget',
+        'katGui.widgets.ganttWidget',
+        'katGui.dashboardStructure',
+        'katGui.landing',
+        'katGui.util',
+        'katGui.scheduler',
+        'katGui.services',
+        'katGui.video'
+    ])
         .constant('UI_VERSION', '0.0.1')
         .constant('USER_ROLES', {
             noAuth: 'noAuth',
@@ -58,9 +58,9 @@
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService, ConfigService,
-                             USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast, TOAST_HIDE_DELAY, SessionService, $mdDialog) {
-
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
+                             ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -70,13 +70,13 @@
         if (!theme) {
             theme = THEMES[0];
         }
-
         if (theme.name === 'Dark') {
             angular.element(document.querySelector('body')).addClass('dark-theme');
         } else {
             angular.element(document.querySelector('body')).removeClass('dark-theme');
         }
 
+        vm.showNavbar = true;
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
@@ -85,29 +85,21 @@
         $rootScope.showJulianDate = $localStorage['showJulianDate'];
         $rootScope.showLST = $localStorage['showLST'];
         $rootScope.showLocalAndSAST = $localStorage['showLocalAndSAST'];
+        $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
+        $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
+        $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
+        if (!$rootScope.sensorListStrategyType) {
+            $rootScope.sensorListStrategyType = 'event-rate';
+        }
+        if (!$rootScope.sensorListStrategyInterval) {
+            $rootScope.sensorListStrategyInterval = 3;
+        }
         if (!angular.isDefined($rootScope.showLST)) {
             $rootScope.showLST = true;
         }
 
         if (!angular.isDefined($rootScope.showLocalAndSAST)) {
             $rootScope.showLocalAndSAST = true;
-        }
-
-        vm.showNavbar = true;
-        $rootScope.showNavbar = true;
-        $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
-        $scope.$watch('showNavbar', function (value) {
-            $rootScope.showNavbar = value;
-        });
-
-        $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
-        $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
-
-        if (!$rootScope.sensorListStrategyType) {
-            $rootScope.sensorListStrategyType = 'event-rate';
-        }
-        if (!$rootScope.sensorListStrategyInterval) {
-            $rootScope.sensorListStrategyInterval = 3;
         }
 
         vm.currentUser = null;
@@ -135,14 +127,56 @@
         };
 
         $rootScope.connectEvents = function () {
-            vm.showNavbar = true;
-            vm.syncTimeWithServer();
-            if (!angular.isDefined($scope.stopUpdateTimeDisplay)) {
-                $scope.stopUpdateTimeDisplay = $interval(vm.updateTimeDisplay, 1000); //update local clock every second
+
+            if (!vm.updateTimeDisplayInterval) {
+                vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000); //update local clock every second
+                vm.syncTimeWithServerInterval = $interval(vm.syncTimeWithServer, 60000); //sync time every minute
+                vm.syncTimeWithServer();
             }
-            $interval(vm.syncTimeWithServer, 60000); //sync time every 1 minutes
-            MonitorService.connectListener();
-            ControlService.connectListener();
+
+            MonitorService.connectListener()
+                .then(function () {
+                    if (vm.connectMonitorInterval) {
+                        $interval.cancel(vm.connectMonitorInterval);
+                        vm.connectMonitorInterval = null;
+                        console.log('Reconnected Monitor Connection.');
+                    }
+                }, function () {
+                    console.error('Could not establish Monitor connection. Retrying every 10 seconds.');
+                    if (!vm.connectMonitorInterval) {
+                        vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
+                    }
+                });
+            vm.handleMonitorSocketTimeout();
+        };
+
+        vm.toggleNavbar = function () {
+            vm.showNavbar = !vm.showNavbar;
+            if (vm.showNavbar) {
+                $rootScope.connectEvents();
+            } else {
+                $interval.cancel(vm.updateTimeDisplayInterval);
+                $interval.cancel(vm.syncTimeWithServerInterval);
+                vm.updateTimeDisplayInterval = null;
+                vm.syncTimeWithServerInterval = null;
+            }
+        };
+
+        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+            vm.showNavbar = true;
+        });
+
+        vm.handleMonitorSocketTimeout = function () {
+            MonitorService.getTimeoutPromise()
+                .then(function () {
+                    if (!vm.disconnectIssued) {
+                        console.log('Monitor connection timeout! Attempting to reconnect...');
+                        if (!vm.connectMonitorInterval) {
+                            vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
+                            $rootScope.connectEvents();
+                        }
+                    }
+                });
         };
 
         vm.toggleLeftSidenav = function () {
@@ -154,8 +188,8 @@
         };
 
         vm.logout = function () {
+            vm.disconnectIssued = true;
             MonitorService.disconnectListener();
-            ControlService.disconnectListener();
             $mdSidenav('right-sidenav').close();
             SessionService.logout();
             vm.showNavbar = false;
@@ -218,15 +252,14 @@
                             $mdDialog.hide();
                         };
                     },
-                    template:
-                    "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
-                        "<div style='padding: 0px; margin: 0px;' layout='column' layout-padding >" +
-                            "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
-                            "<div flex>{{content}}</div>" +
-                            "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                                "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
-                            "</div>" +
-                        "</div>" +
+                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                    "<div style='padding: 0px; margin: 0px;' layout='column' layout-padding >" +
+                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                    "<div flex>{{content}}</div>" +
+                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
+                    "</div>" +
+                    "</div>" +
                     "</md-dialog>",
                     targetEvent: event
                 });
@@ -270,7 +303,11 @@
                 vm.dayOfYear = utcTime.dayOfYear();
 
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
-                var julianDayWithTime = KatGuiUtil.julianDayWithTime(utcTime.date(), utcTime.month() + 1, utcTime.year(), fractionalHours);
+                var julianDayWithTime = KatGuiUtil.julianDayWithTime(
+                    utcTime.date(),
+                    utcTime.month() + 1,
+                    utcTime.year(),
+                    fractionalHours);
                 vm.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
                 //todo bind to the dates on the rootscope
                 $rootScope.julianDay = vm.julianDay;
@@ -288,10 +325,11 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    console.log('Syncing current time with katcontrol server (utc HH:mm:ss DD-MM-YYYY): ' + moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
+                    console.log('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
+                                moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
-                    console.error("Error syncing time with katcontrol portal! " + error);
+                    console.error("Error syncing time with KATPortal! " + error);
                     $rootScope.serverTimeOnLoad = 0;
                     vm.localSiderealTime = "Error syncing time!";
                 });
@@ -313,10 +351,14 @@
             $rootScope.$emit('keydown', event.keyCode);
         };
 
-        $scope.$on('$destroy', vm.logout);
+        $scope.$on('$destroy', function () {
+            MonitorService.disconnectListener();
+            vm.undbindLoginSuccess();
+        });
     }
 
-    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider, USER_ROLES) {
+    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider,
+                             USER_ROLES) {
 
         //disable this in production for performance boost
         //batarang uses this for scope inspection
@@ -428,7 +470,6 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         };
-
         var sbDrafts = {
             name: 'scheduler.drafts',
             parent: schedulerHome,
@@ -439,7 +480,6 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         };
-
         var subArrays = {
             name: 'scheduler.subarrays',
             parent: schedulerHome,
@@ -450,7 +490,6 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         };
-
         var subArrayResources = {
             name: 'scheduler.resources',
             parent: schedulerHome,
@@ -461,7 +500,6 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         };
-
         var observationsOverview = {
             name: 'scheduler.observations',
             parent: schedulerHome,
@@ -472,7 +510,6 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         };
-
         var observationsDetail = {
             name: 'scheduler.observations.detail',
             parent: schedulerHome,
@@ -491,7 +528,6 @@
             .state(subArrayResources)
             .state(observationsOverview)
             .state(observationsDetail);
-
         $stateProvider.state('sensor-graph', {
             url: '/sensor-graph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
@@ -500,7 +536,6 @@
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
         });
-
         $stateProvider.state('sensor-list', {
             url: '/sensor-list',
             templateUrl: 'app/sensor-list/sensor-list.html',

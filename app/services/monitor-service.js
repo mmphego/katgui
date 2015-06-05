@@ -3,11 +3,25 @@
 angular.module('katGui.services')
     .service('MonitorService', MonitorService);
 
-function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService, ConfigService, AlarmsService, ObservationScheduleService) {
+function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService,
+                        ConfigService, AlarmsService, ObservationScheduleService, $interval, $q) {
 
     var urlBase = SERVER_URL + '/katmonitor/api/v1';
     var api = {};
+    api.deferredMap = {};
     api.connection = null;
+
+    //websocket default heartbeat is every 30 seconds
+    //so allow for 35 seconds before alerting about timeout
+    api.heartbeatTimeOutLimit = 35000;
+    api.checkAliveConnectionInterval = 10000;
+
+    api.getTimeoutPromise = function () {
+        if (!api.deferredMap['timeoutDefer']) {
+            api.deferredMap['timeoutDefer'] = $q.defer();
+        }
+        return api.deferredMap['timeoutDefer'].promise;
+    };
 
     api.subscribeToReceptorUpdates = function () {
         ConfigService.receptorList.forEach(function(receptor) {
@@ -68,13 +82,25 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
         if (api.connection && api.connection.readyState) {
             console.log('Monitor Connection Established. Authenticating...');
             api.authenticateSocketConnection();
-            api.subscribeToAlarms();
         }
     };
 
+    api.checkAlive = function () {
+        if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
+            console.warn('Sensors Connection Heartbeat timeout!');
+            api.deferredMap['timeoutDefer'].resolve();
+            api.deferredMap['timeoutDefer'] = null;
+        }
+    };
+
+    api.onSockJSHeartbeat = function () {
+        api.lastHeartBeat = new Date();
+    };
+
     api.onSockJSClose = function () {
-        console.log('Disconnecting Monitor Connection');
+        console.log('Disconnecting Monitor Connection.');
         api.connection = null;
+        api.lastHeartBeat = null;
     };
 
     api.onSockJSMessage = function (e) {
@@ -118,7 +144,9 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                 if (messages.result.email && messages.result.session_id) {
                     $localStorage['currentUserToken'] = $rootScope.jwt;
                     api.connection.authorized = true;
-                    console.log('Monitor Connection Established. Authenticated.');
+                    console.log('Monitor Connection Authenticated.');
+                    api.deferredMap['connectDefer'].resolve();
+                    api.subscribeToAlarms();
                 } else if (messages.result.length > 0) {
                     //subscribe response
                     //console.log('Subscribed to: ');
@@ -126,8 +154,9 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
                 } else {
                     //bad auth response
                     api.connection.authorized = false;
-                    console.log('Monitor Connection Established. Authentication failed.');
+                    console.log('Monitor Connection Authentication failed.');
                     console.error(messages);
+                    api.deferredMap['connectDefer'].reject();
                 }
             } else {
                 console.error('Dangling monitor message...');
@@ -140,17 +169,26 @@ function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $time
     };
 
     api.connectListener = function () {
-        console.log('Monitor Connecting...');
-        api.connection = new SockJS(urlBase + '/monitor');
-        api.connection.onopen = api.onSockJSOpen;
-        api.connection.onmessage = api.onSockJSMessage;
-        api.connection.onclose = api.onSockJSClose;
-        return api.connection !== null;
+        api.deferredMap['connectDefer'] = $q.defer();
+        if (!api.connection) {
+            console.log('Monitor Connecting...');
+            api.connection = new SockJS(urlBase + '/monitor');
+            api.connection.onopen = api.onSockJSOpen;
+            api.connection.onmessage = api.onSockJSMessage;
+            api.connection.onclose = api.onSockJSClose;
+            api.connection.onheartbeat = api.onSockJSHeartbeat;
+            api.lastHeartBeat = new Date();
+            if (!api.checkAliveInterval) {
+                api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+            }
+        }
+        return api.deferredMap['connectDefer'].promise;
     };
 
     api.disconnectListener = function () {
         if (api.connection) {
             api.connection.close();
+            $interval.cancel(api.checkAliveInterval);
         } else {
             console.error('Attempting to disconnect an already disconnected connection!');
         }
