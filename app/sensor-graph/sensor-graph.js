@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService) {
+    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval) {
 
         var vm = this;
         vm.showGridLines = false;
@@ -26,8 +26,49 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.guid = KatGuiUtil.generateUUID();
+        vm.disconnectIssued = false;
+        vm.connectInterval = null;
 
-        SensorsService.connectListener();
+        vm.connectListeners = function () {
+            SensorsService.connectListener()
+                .then(function () {
+                    vm.initSensors();
+                    if (vm.connectInterval) {
+                        $interval.cancel(vm.connectInterval);
+                        vm.connectInterval = null;
+                        $rootScope.showSimpleToast('Reconnected :)');
+                    }
+                }, function () {
+                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                    }
+                });
+            vm.handleSocketTimeout();
+        };
+
+        vm.handleSocketTimeout = function () {
+            SensorsService.getTimeoutPromise()
+                .then(function () {
+                    if (!vm.disconnectIssued) {
+                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        if (!vm.connectInterval) {
+                            vm.connectInterval = $interval(vm.connectListeners, 10000);
+                            vm.connectListeners();
+                        }
+                    }
+                });
+        };
+
+        vm.connectListeners();
+
+        vm.initSensors = function () {
+            if (vm.liveData) {
+                vm.sensorNames.forEach(function (sensor) {
+                    vm.connectLiveFeed(sensor.name);
+                });
+            }
+        };
 
         vm.onTimeSet = function () {
             vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, 'yyyy-MM-dd HH:mm:ss');
@@ -347,6 +388,7 @@
             unbindUpdate();
             vm.liveData = false;
             vm.liveDataChanged();
+            vm.disconnectIssued = true;
             SensorsService.disconnectListener();
         });
     }
