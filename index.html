@@ -72,12 +72,14 @@
 <script src="app/d3/multi-line-chart.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
-<script src="app/d3/receptor-status-items.js"></script>
-<script src="app/d3/receptor-status-tree-map.js"></script>
-<script src="app/d3/receptor-status-pack-map.js"></script>
-<script src="app/d3/receptor-status-partition-map.js"></script>
-<script src="app/d3/receptor-status-icicle-map.js"></script>
-<script src="app/d3/receptor-status-sunburst-map.js"></script>
+<script src="app/d3/receptor-pointing-equatorial.js"></script>
+<script src="app/d3/receptor-pointing-horizontal.js"></script>
+<script src="app/d3/receptor-health-items.js"></script>
+<script src="app/d3/receptor-health-tree-map.js"></script>
+<script src="app/d3/receptor-health-pack-map.js"></script>
+<script src="app/d3/receptor-health-partition-map.js"></script>
+<script src="app/d3/receptor-health-icicle-map.js"></script>
+<script src="app/d3/receptor-health-sunburst-map.js"></script>
 <script src="app/d3/status-single-level-tree-map.js"></script>
 
 <script src="app/app.js"></script>
@@ -89,7 +91,9 @@
 <script src="app/video/video.js"></script>
 <script src="app/operator-control/operator-control.js"></script>
 <script src="app/health/health.js"></script>
+<script src="app/health/receptor-health/receptor-health.js"></script>
 <script src="app/health/receptor-status/receptor-status.js"></script>
+<script src="app/health/receptor-pointing/receptor-pointing.js"></script>
 <script src="app/health/custom-health/custom-health.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/sensor-list/sensor-list.js"></script>
@@ -136,6 +140,14 @@
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
                             <span class="fa fa-th"></span>
                             <button>Receptor Status</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorPointing')">
+                            <span class="fa fa-crosshairs"></span>
+                            <button>Receptor Pointing</button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorHealth')">
+                            <span class="fa fa-th-large"></span>
+                            <button>Receptor Health</button>
                         </div>
                     </md-item-content>
                 </md-item>
@@ -266,7 +278,7 @@
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-home"></md-icon>
                 </md-button>
 
-                <md-button class="md-icon-button mainbar-navbar-button"  ng-click="vm.stateGo('alarms')">
+                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="vm.stateGo('alarms')">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-warning"></md-icon>
                     <span title="Warning Alarms" ng-show="newAlarms"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>

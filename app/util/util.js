@@ -246,7 +246,7 @@ function katGuiUtil() {
     };
 
     //UT as a fraction of hours
-    this.julianDay = function (day, month, year, UT) {
+    this.julianDay = function (day, month, year) {
         var Y = year, M = month, D = day, A, B, C, E, F, JD;
         A = Math.floor(Y / 100);
         B = Math.floor(A / 4);
@@ -261,8 +261,8 @@ function katGuiUtil() {
         return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
     };
 
-    this.getLongitudeFromDegrees = function (latitudeDegrees) {
-        var latSplit = latitudeDegrees.split(':');
+    this.degreesToFloat = function (degrees) {
+        var latSplit = degrees.split(':');
         var deg = parseInt(latSplit[0]);
         var result = Math.abs(deg) + parseInt(latSplit[1]) / 60 + parseInt(latSplit[2]) / 3600;
         if (deg < 0) {

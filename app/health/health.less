@@ -6,12 +6,14 @@
 }
 
 .unknown-child {
+    stroke: #fff;
     background-color: #9E9E9E;
     fill: #9E9E9E;
     rect {
         fill: #9E9E9E;
     }
     text {
+        stroke: transparent;
         fill: black;
         font-weight: bold;
     }
@@ -19,16 +21,19 @@
 
 .unknown-child-text {
     fill: black;
+    stroke: transparent;
     font-weight: bold;
 }
 
 .nominal-child {
     background-color: #4CAF50;
     fill: #4CAF50;
+    stroke: #fff;
     rect {
         fill: #4CAF50;
     }
     text {
+        stroke: transparent;
         fill: white;
         font-weight: bold;
     }
@@ -36,10 +41,12 @@
 
 .nominal-child-text {
     fill: white;
+    stroke: transparent;
     font-weight: bold;
 }
 
 .warn-child {
+    stroke: #fff;
     background-color: #FFC107;
     fill: #FFC107;
     rect {
@@ -47,6 +54,7 @@
     }
 
     text {
+        stroke: transparent;
         fill: black;
         font-weight: bold;
     }
@@ -54,17 +62,20 @@
 
 .warn-child-text {
     fill: black;
+    stroke: transparent;
     font-weight: bold;
 }
 
 .error-child {
     background-color: #F44336;
     fill: #F44336;
+    stroke: #fff;
     rect {
         fill: #F44336;
     }
 
     text {
+        stroke: transparent;
         fill: white;
         font-weight: bold;
     }
@@ -72,10 +83,12 @@
 
 .error-child-text {
     fill: white;
+    stroke: transparent;
     font-weight: bold;
 }
 
 .failure-child {
+    stroke: #fff;
     background-color: #3F51B5;
     fill: #3F51B5;
     rect {
@@ -83,6 +96,7 @@
     }
 
     text {
+        stroke: transparent;
         fill: white;
         font-weight: bold;
     }
@@ -90,10 +104,12 @@
 
 .failure-child-text {
     fill: white;
+    stroke: transparent;
     font-weight: bold;
 }
 
 .unreachable-child {
+    stroke: #fff;
     background-color: #EC407A;
     fill: #EC407A;
     rect {
@@ -101,6 +117,7 @@
     }
 
     text {
+        stroke: transparent;
         fill: black;
         font-weight: bold;
     }
@@ -108,21 +125,22 @@
 
 .unreachable-child-text {
     fill: black;
+    stroke: transparent;
     font-weight: bold;
 }
 
 .inactive-child {
-//    background-color: #795548;
+    stroke: #fff;
     background-color: #000;
-//    fill: #795548;
     fill: #000;
 
     rect {
-//        fill: #795548;
+        //        fill: #795548;
         fill: #000;
     }
 
     text {
+        stroke: transparent;
         fill: white;
         font-weight: bold;
     }
@@ -130,6 +148,7 @@
 
 .inactive-child-text {
     fill: white;
+    stroke: transparent;
     font-weight: bold;
 }
 
@@ -181,4 +200,177 @@
 .status-top-label-text {
     color: white;
     font-size: 22px;
+}
+
+.receptor-status-column-heading {
+    width: 60px;
+    border-right: 1px solid #ADADAD;
+    border-bottom: 1px solid #ADADAD;
+    position: relative;
+}
+
+.receptor-status-row-span {
+    vertical-align: middle;
+    padding-left: 8px;
+    width: 200px;
+    height: 60px;
+    border-right: 1px solid #ADADAD;
+    border-bottom: 1px solid #ADADAD;
+}
+
+.in-maintenance-item {
+    background-color: #9C27B0;
+    color: white;
+}
+
+.error-item {
+    background-color: #F44336;
+    color: white;
+}
+
+.nominal-item {
+    background-color: #43A047;
+    color: white;
+}
+
+.stop-item {
+    background-color: #757575;
+    color: white;
+}
+
+.inhibited-item {
+    background-color: #ffc107 !important;
+    color: #333333 !important;
+    text-shadow: none !important;
+}
+
+.in-assigned-subarray-item {
+    background-color: #8BC34A;
+    color: black;
+}
+
+.in-allocated-subarray-item {
+    background-color: #2196F3;
+    color: white;
+}
+
+.stow-item {
+    background-color: #01579B;
+    color: white;
+}
+
+.amber-item {
+    background-color: rgb(255, 143, 0);
+    color: black;
+}
+
+.on-target-span {
+    font-size: 18px;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    color: white;
+}
+
+.receptor-status-options-menu {
+    right: 18px;
+    top: 122px;
+    position: fixed;
+    z-index: 1000;
+    border: 1px solid #f1f1f1;
+    border-radius: 4px;
+    background-color: white;
+    margin-top: 5px;
+    color: #333333;
+    md-list {
+        padding: 0;
+    }
+}
+
+.receptor-pointing-options-menu {
+    right: 18px;
+    top: 40px;
+    position: absolute;
+    z-index: 1000;
+    border: 1px solid #f1f1f1;
+    border-radius: 4px;
+    background-color: white;
+    margin-top: 5px;
+    color: #333333;
+    md-list {
+        padding: 0;
+    }
+}
+
+.actual-pos {
+    //    stroke: green;
+    //    fill: green;
+    opacity: 1.0;
+}
+
+.requested-pos {
+    stroke: #333333;
+    opacity: 0.9;
+}
+
+.receptor-pointing-tooltip {
+    background: rgba(255, 255, 255, 0.8);
+    color: #333333;
+    border: 1px solid #333333;
+    font-size: 14px;
+    pointer-events: none;
+    position: absolute;
+    padding: 8px;
+    max-width: 280px;
+    word-wrap: break-word;
+}
+
+.receptor-legend-item {
+    position: relative;
+    border: 2px solid currentColor;
+    background: currentColor;
+    span {
+        color: white;
+        font-weight: 600;
+        text-shadow: 1px 1px #333;
+    }
+    min-width: 60px;
+    min-height: 66px;
+    margin-right: 8px;
+    overflow: hidden;
+    cursor: pointer !important;
+
+    &:hover {
+        border: 2px solid #333333;
+    }
+}
+
+.receptor-legend-item {
+    .on-target-span {
+        text-shadow: none;
+        left: 0;
+        top: 0;
+        font-size: 12px;
+    }
+
+    .horizon-mask-showing {
+        text-shadow: none;
+        position: absolute;
+        right: 0;
+        top: 0;
+        font-size: 12px;
+    }
+}
+
+.actual-pos-border {
+    stroke: #333333 !important;
+    stroke-width: 1px;
+}
+
+.trail-circle {
+}
+
+.horizon-mask {
+    fill: transparent;
+    stroke: #333;
 }

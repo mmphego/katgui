@@ -5,14 +5,18 @@
     </md-toolbar>
 
     <div layout="row" layout-align="center center" class="" md-theme="{{vm.themePrimaryButtons}}">
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('alarms')">Alarms</md-button>
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('health')">Health and State</md-button>
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('receptorStatus')">Receptor Status</md-button>
         <md-button class="md-raised md-primary" ng-click="vm.stateGo('operator-control')">Operator Control</md-button>
         <md-button class="md-raised md-primary" ng-click="vm.stateGo('scheduler')" >Scheduler</md-button>
         <md-button class="md-raised md-primary" ng-click="vm.stateGo('sensor-graph')">Sensor Graphs</md-button>
         <md-button class="md-raised md-primary" ng-click="vm.stateGo('sensor-list')">Sensor list</md-button>
         <md-button class="md-raised md-primary" ng-click="vm.stateGo('weather')">Weather</md-button>
+    </div>
+    <div layout="row" layout-align="center center" class="" md-theme="{{vm.themePrimaryButtons}}">
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('alarms')">Alarms</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('health')">Health and State</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('receptorHealth')">Receptor Health</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('receptorStatus')">Receptor Status</md-button>
+        <md-button class="md-raised md-primary" ng-click="vm.stateGo('receptorPointing')">Receptor Pointing</md-button>
     </div>
     <div layout="row" layout-align="center center" class="" md-theme="{{vm.themePrimaryButtons}}">
         <md-button class="md-raised md-primary" ng-click="vm.stateGo('admin')">User Administration</md-button>

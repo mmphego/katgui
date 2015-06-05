@@ -16,13 +16,17 @@
 
         <md-list class="receptor-state-list">
             <md-item ng-repeat="rec in vm.receptorsData">
-                <md-item-content ng-class="{'receptor-state-div-error': rec.since === 'error'}" class="receptor-state-div md-whiteframe-z1" layout="column">
-                    <p style="min-height: 25px; max-width: 140px;" title="Last Changed; Since: {{rec.since}}">{{rec.fromNow}}</p>
-                    <p style="font-size: 26px;"><b>{{::rec.name}}</b></p>
-                    <div style="min-height: 25px; min-width: 100%">
-                        <p ng-show="rec.inhibited" class="inhibited">Inhibited</p>
+                <md-item-content ng-class="{'receptor-state-div-error': rec.since === 'error'}"
+                                 class="receptor-state-div md-whiteframe-z1" layout="column" layout-align="start center">
+                    <span style="min-height: 25px; max-width: 140px;" title="Last Changed; Since: {{rec.since}}">{{rec.fromNow}}</span>
+                    <span style="font-size: 26px;" flex><b>{{::rec.name}}</b></span>
+                    <span class="flash-receptor-state"
+                          ng-class="{'receptor-stop-state': rec.state==='STOP', 'receptor-stow-state': rec.state==='STOW'}">
+                        <b>{{rec.state}}</b>
+                    </span>
+                    <div style="max-height: 20px; min-height: 20px; min-width: 100%">
+                        <p ng-show="rec.inhibited" class="inhibited">INHIBIT</p>
                     </div>
-                    <p class="flash-receptor-state" ng-class="{'receptor-stop-state': rec.state==='STOP', 'receptor-stow-state': rec.state==='STOW'}"><b>{{rec.state}}</b></p>
                 </md-item-content>
             </md-item>
         </md-list>

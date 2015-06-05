@@ -106,3 +106,63 @@ actions-button {
     fill-opacity: .125;
     shape-rendering: crispEdges;
 }
+
+.horizon {
+    stroke: currentColor;
+    fill: transparent;
+    stroke-width: 1.5px;
+}
+
+.graticule {
+    stroke: currentColor;
+    fill: transparent;
+    stroke-opacity: .15;
+}
+
+.solar-path {
+    stroke: currentColor;
+    stroke-width: 2px;
+}
+
+.sun circle {
+    fill: red;
+    stroke: currentColor;
+}
+
+.sun text {
+    text-anchor: middle;
+}
+
+.ticks--sun circle {
+    fill: red;
+    stroke: #fff;
+    stroke-width: 2px;
+}
+
+.requested-pos-text {
+    text {
+        fill: currentColor;
+    }
+
+}
+
+.actual-pos-text {
+    text {
+        fill: currentColor;
+
+    }
+}
+
+.ticks line {
+    stroke: #333333;
+}
+
+.ticks text {
+    text-anchor: middle;
+    fill: currentColor;
+}
+
+.ticks--azimuth text:nth-of-type(9n + 1) {
+    font-weight: bold;
+    font-size: 14px;
+}

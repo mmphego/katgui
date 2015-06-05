@@ -1,15 +1,15 @@
 /*jshint loopfunc: true */
 angular.module('katGui.d3')
 
-    .directive('receptorStatusList', function ($rootScope, d3Util, $timeout, $interval) {
+    .directive('receptorHealthList', function ($rootScope, d3Util, $timeout, $interval) {
         return {
             restrict: 'E',
             template: '<div ng-repeat="receptor in vm.receptorList" ng-if="vm.receptorList.length > 0" ng-switch="vm.mapType" style="display: inline">' +
-            '<receptor-status-tree-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Treemap"></receptor-status-tree-map>' +
-            '<receptor-status-pack-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Pack"></receptor-status-pack-map>' +
-            '<receptor-status-partition-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Partition"></receptor-status-partition-map>' +
-            '<receptor-status-icicle-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Icicle"></receptor-status-icicle-map>' +
-            '<receptor-status-sunburst-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Sunburst"></receptor-status-sunburst-map>' +
+            '<receptor-health-tree-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Treemap"></receptor-health-tree-map>' +
+            '<receptor-health-pack-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Pack"></receptor-health-pack-map>' +
+            '<receptor-health-partition-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Partition"></receptor-health-partition-map>' +
+            '<receptor-health-icicle-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Icicle"></receptor-health-icicle-map>' +
+            '<receptor-health-sunburst-map class="treemap-container" receptor="receptor" chart-size="vm.treeChartSize" ng-switch-when="Sunburst"></receptor-health-sunburst-map>' +
             '</div>',
             link: function (scope, element) {
 

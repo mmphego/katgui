@@ -7,7 +7,7 @@
 
         var urlBase = SERVER_URL + '/katconf/api/v1';
         var api = {};
-        api.receptorStatusTree = {};
+        api.receptorHealthTree = {};
         api.receptorList = [];
         api.KATObsPortalURL = null;
 
@@ -16,7 +16,7 @@
                 .success(function (result) {
                     api.KATObsPortalURL = "http://" + JSON.parse(result);
                 })
-                .error(function(message) {
+                .error(function (message) {
                     console.error(message);
                 });
         };
@@ -49,7 +49,11 @@
         };
 
         api.getSiteLocation = function () {
-          return $http(createRequest('get', urlBase + '/array/position'));
+            return $http(createRequest('get', urlBase + '/array/position'));
+        };
+
+        api.getHorizonMask = function (receptorId) {
+            return $http(createRequest('get', urlBase + '/horizon-mask/' + receptorId));
         };
 
         function createRequest(method, url) {

@@ -196,6 +196,7 @@
 
             SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*");
             unbindUpdate();
+            SensorsService.disconnectListener();
         });
     }
 })();
