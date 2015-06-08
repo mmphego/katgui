@@ -15,8 +15,7 @@
             });
     }
 
-    //include rootscope for theming binding
-    function NavigationWidgetCtrl($scope, $rootScope, $state) {
+    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil) {
 
         var vm = this;
 
@@ -33,6 +32,11 @@
 
         vm.stateGo = function (newState) {
             $state.go(newState);
+        };
+
+        vm.openCentralLogger = function () {
+            //TODO get from config and eventually redo central logger
+            KatGuiUtil.openRelativePath('', 9021);
         };
 
         $scope.$on('$destroy', function() {
