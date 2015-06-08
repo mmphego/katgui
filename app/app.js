@@ -54,6 +54,7 @@
                 secondary: 'dark-secondary',
                 primaryButtons: 'dark-buttons'
             }])
+        .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
@@ -326,7 +327,7 @@
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
                     console.log('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
-                                moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
+                    moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
                     console.error("Error syncing time with KATPortal! " + error);
@@ -343,6 +344,11 @@
                     console.error("Could not retrieve site location from config server, LST will not display correctly. ");
                     console.error(error);
                 });
+        };
+
+        vm.openCentralLogger = function () {
+            //TODO get from config and eventually redo central logger
+            KatGuiUtil.openRelativePath('', 9021);
         };
 
         //so that all controllers and directives has access to which keys are pressed
