@@ -245,7 +245,7 @@
 
     <div layout="column" flex>
         <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true">
-            <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; overflow: hidden;">
+            <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden; margin-bottom: 16px;">
 
                 <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-navicon"></md-icon>
@@ -300,9 +300,9 @@
 
 </md-content>
 <div ng-if="loggedIn" class="unselectable toolbar-collapse-button" ng-class="{'toolbar-collapse-button-grey': !vm.showNavbar}"
-        ng-click="vm.showNavbar = !vm.showNavbar" title="Expand or Collapse Toolbar">
+        ng-click="vm.toggleNavbar()" title="Expand or Collapse Toolbar">
     <span class="fa"
-       ng-class="{ 'fa-caret-up': vm.showNavbar,  'fa-caret-down': !vm.showNavbar}"></span>
+       ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
 </div>
 
 <alarms-notifier ng-if="loggedIn"></alarms-notifier>

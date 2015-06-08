@@ -208,7 +208,7 @@ angular.module('katGui.d3')
                                 var proj_actual = projection([d.ap_actual_azim.value, d.ap_actual_elev.value]);
                                 d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
                                 d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
-                                d.proj_actual = Math.floor(proj_actual[0])  + ',' + Math.floor(proj_actual[1]);
+                                d.proj_actual = round(proj_actual[0], 5)  + ',' + round(proj_actual[1], 5);
                                 if (!scope.positions[d.proj_actual]) {
                                     scope.positions[d.proj_actual] = [];
                                 }
@@ -397,6 +397,10 @@ angular.module('katGui.d3')
                     function mouseOut (d) {
                         tooltip
                             .style("opacity", 0);
+                    }
+
+                    function round(i, v) {
+                        return Math.round(i/v) * v;
                     }
 
                     scope.$on('$destroy', function () {

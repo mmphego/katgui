@@ -97,7 +97,7 @@
             } else {
                 console.error('Error logging return, server returned with:');
                 console.error(result);
-                $rootScope.showSimpleToast('Error logging in.');
+                $rootScope.showSimpleToast('Error connecting to KATPortal.');
                 $state.go('login');
             }
         }

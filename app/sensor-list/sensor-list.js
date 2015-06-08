@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorListCtrl', SensorListCtrl);
 
-    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil) {
+    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -12,6 +12,8 @@
         vm.resourceSensorsBeingDisplayed = '';
         vm.sensorsPlotNames = [];
         vm.guid = KatGuiUtil.generateUUID();
+        vm.disconnectIssued = false;
+        vm.connectInterval = null;
 
         vm.showTips = false;
         vm.showDots = false;
@@ -32,6 +34,43 @@
             {label: 'Status', value: 'status'},
             {label: 'Value', value: 'value'}
         ];
+
+        vm.connectListeners = function () {
+            SensorsService.connectListener()
+                .then(function () {
+                    vm.initSensors();
+                    if (vm.connectInterval) {
+                        $interval.cancel(vm.connectInterval);
+                        vm.connectInterval = null;
+                        $rootScope.showSimpleToast('Reconnected :)');
+                    }
+                }, function () {
+                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                    }
+                });
+            vm.handleSocketTimeout();
+        };
+
+        vm.handleSocketTimeout = function () {
+            SensorsService.getTimeoutPromise()
+                .then(function () {
+                    if (!vm.disconnectIssued) {
+                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        if (!vm.connectInterval) {
+                            vm.connectInterval = $interval(vm.connectListeners, 10000);
+                            vm.connectListeners();
+                        }
+                    }
+                });
+        };
+
+        vm.connectListeners();
+
+        vm.initSensors = function () {
+            SensorsService.connectResourceSensorListeners(vm.resourceSensorsBeingDisplayed, vm.guid);
+        };
 
         vm.setSensorsOrderBy = function (column) {
             var newOrderBy = _.findWhere(vm.sensorsOrderByFields, {value: column});
@@ -58,11 +97,8 @@
 
         vm.setSensorsOrderBy('name');
 
-        SensorsService.connectListener();
-
         SensorsService.listResources()
-            .then(function (message) {
-                //$rootScope.showSimpleToast(message);
+            .then(function () {
                 for (var key in vm.resources) {
                     vm.resourcesNames.push({name: key});
                 }
@@ -196,6 +232,7 @@
 
             SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*");
             unbindUpdate();
+            vm.disconnectIssued = true;
             SensorsService.disconnectListener();
         });
     }

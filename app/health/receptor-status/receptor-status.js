@@ -3,52 +3,83 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state) {
+    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval) {
 
         var vm = this;
         vm.receptorsData = [];
-        vm.subarrays = {};
+        vm.subarrays = {subarray_free: {id: 'free', state: 'inactive'}};
         vm.sortBySubarrays = false;
         vm.guid = KatGuiUtil.generateUUID();
-        SensorsService.connectListener();
+        vm.disconnectIssued = false;
+        vm.connectInterval = null;
 
-        ConfigService.getReceptorList()
-            .then(function (result) {
-                result.forEach(function (item) {
-                    vm.receptorsData.push({name: item});
-                    SensorsService.connectResourceSensorNameLiveFeed(item, 'mode', vm.guid, 'event-rate', 1, 10);
-                    SensorsService.connectResourceSensorNameLiveFeed(item, 'inhibited', vm.guid, 'event-rate', 1, 10);
-                    //todo need an aggregated sensor for the receptor
-                    SensorsService.connectResourceSensorNameLiveFeed(item, 'ap_device_status', vm.guid, 'event-rate', 1, 10);
-                    SensorsService.connectResourceSensorNameLiveFeed(item, 'lock', vm.guid, 'event-rate', 1, 10);
-                    SensorsService.connectResourceSensorNameLiveFeed(item, 'windstow_active', vm.guid, 'event-rate', 1, 10);
+        vm.receptorSensorsToConnect = [
+            'mode',
+            'inhibited',
+            'ap_device_status',
+            'lock',
+            'windstow_active'
+        ];
+
+        vm.subarraySensorsToConnect = [
+            'state',
+            'allocations',
+            'maintenance'
+        ];
+
+        vm.connectListeners = function () {
+            SensorsService.connectListener()
+                .then(function () {
+                    vm.initSensors();
+                    if (vm.connectInterval) {
+                        $interval.cancel(vm.connectInterval);
+                        vm.connectInterval = null;
+                        $rootScope.showSimpleToast('Reconnected :)');
+                    }
+                }, function () {
+                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                    }
                 });
+            vm.handleSocketTimeout();
+        };
 
-                SensorsService.connectResourceSensorNameLiveFeed('katpool', 'resources_in_maintenance', vm.guid, 'event-rate', 1, 10);
-                SensorsService.connectResourceSensorNameLiveFeed('katpool', 'allocations_1', vm.guid, 'event-rate', 1, 5);
-                SensorsService.connectResourceSensorNameLiveFeed('katpool', 'allocations_2', vm.guid, 'event-rate', 1, 5);
-                SensorsService.connectResourceSensorNameLiveFeed('katpool', 'allocations_3', vm.guid, 'event-rate', 1, 5);
-                SensorsService.connectResourceSensorNameLiveFeed('katpool', 'allocations_4', vm.guid, 'event-rate', 1, 5);
-                SensorsService.connectResourceSensorNameLiveFeed('katpool', 'subarrays_maintenance', vm.guid, 'event-rate', 1, 5);
+        vm.handleSocketTimeout = function () {
+            SensorsService.getTimeoutPromise()
+                .then(function () {
+                    if (!vm.disconnectIssued) {
+                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        if (!vm.connectInterval) {
+                            vm.connectInterval = $interval(vm.connectListeners, 10000);
+                            vm.connectListeners();
+                        }
+                    }
+                });
+        };
 
-                SensorsService.connectResourceSensorNameLiveFeed('subarray_1', 'state', vm.guid, 'event-rate', 1, 10);
-                //SensorsService.connectResourceSensorNameLiveFeed('subarray_1', 'pool_resources', vm.guid, 'event-rate', 1, 10);
-                SensorsService.connectResourceSensorNameLiveFeed('subarray_2', 'state', vm.guid, 'event-rate', 1, 10);
-                //SensorsService.connectResourceSensorNameLiveFeed('subarray_2', 'pool_resources', vm.guid, 'event-rate', 1, 10);
-                SensorsService.connectResourceSensorNameLiveFeed('subarray_3', 'state', vm.guid, 'event-rate', 1, 10);
-                //SensorsService.connectResourceSensorNameLiveFeed('subarray_3', 'pool_resources', vm.guid, 'event-rate', 1, 10);
-                SensorsService.connectResourceSensorNameLiveFeed('subarray_4', 'state', vm.guid, 'event-rate', 1, 10);
-                //SensorsService.connectResourceSensorNameLiveFeed('subarray_4', 'pool_resources', vm.guid, 'event-rate', 1, 10);
-            });
+        vm.initSensors = function () {
+            vm.receptorsData.splice(0, vm.receptorsData.length);
+            ConfigService.getReceptorList()
+                .then(function (result) {
+                    result.forEach(function (item) {
+                        vm.receptorsData.push({name: item, subarray: 'free'});
+                        SensorsService.connectResourceSensorNamesLiveFeedWithList(item, vm.receptorSensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                    });
+                    for (var i = 1; i <= 4; i++) {
+                        SensorsService.connectResourceSensorNamesLiveFeedWithList('subarray_' + i, vm.subarraySensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                    }
+                    SensorsService.connectResourceSensorNameLiveFeed('katpool', 'resources_in_maintenance', vm.guid, 'event-rate', 1, 10);
+                });
+        };
+        vm.connectListeners();
 
         vm.statusMessageReceived = function (event, message) {
-
             if (message.value) {
                 var sensor = message.name.split(':')[1];
                 var resource = sensor.split('.')[0];
                 var sensorName = sensor.split('.')[1];
 
-                //todo make receptorsData a dictionary
                 vm.receptorsData.forEach(function (receptor) {
                     if (resource === 'katpool') {
                         if (sensorName === 'resources_in_maintenance') {
@@ -59,79 +90,89 @@
                                     receptor.in_maintenance = true;
                                 }
                             });
-                        } else if (sensorName.indexOf('allocations_') === 0) {
-                            var subarray = sensorName.split('_')[1];
-                            if (!vm.subarrays['subarray_' + subarray]) {
-                                vm.subarrays['subarray_' + subarray] = {id: subarray};
-                            }
-                            vm.subarrays['subarray_' + subarray].allocations = JSON.parse(message.value.value);
-                        } else if (sensorName = 'subarrays_maintenance') {
-                            for (var i = 1; i < 5; i++) {
-                                if (!vm.subarrays['subarray_' + i]) {
-                                    vm.subarrays['subarray_' + i] = {id: i};
-                                }
-                                vm.subarrays['subarray_' + i].in_maintenance = false;
-                            }
-                            var subarrayIdList = message.value.value.split(',');
-                            subarrayIdList.forEach(function (id) {
-                                if (!vm.subarrays['subarray_' + id]) {
-                                    vm.subarrays['subarray_' + id] = {id: id};
-                                }
-                                vm.subarrays['subarray_' + id].in_maintenance = true;
-                            });
-
                         }
-                    } else if (resource.indexOf('subarray_') === 0) {
-                        var subarray = resource.split('_')[1];
-                        if (!vm.subarrays['subarray_' + subarray]) {
-                            vm.subarrays['subarray_' + subarray] = {id: subarray};
-                        }
-                        //if (sensorName === 'pool_resources') {
-                        //    vm.subarrays['subarray_' + subarray]['assigned'] = message.value.value.split(',');
-                        //} else {
-                            vm.subarrays['subarray_' + subarray][sensorName] = message.value.value;
-                        //}
                     } else if (receptor.name === resource) {
                         receptor[sensorName] = message.value;
                     }
                 });
+
+                if (resource.indexOf('subarray_') === 0) {
+                    if (!vm.subarrays[resource]) {
+                        vm.subarrays[resource] = {id: resource.split('_')[1]};
+                    }
+                    if (sensorName === 'allocations') {
+                        if (message.value.value.length > 0) {
+                            vm.subarrays[resource]['oldAllocations'] = vm.subarrays[resource]['allocations'];
+                            var newAllocations = JSON.parse(message.value.value);
+                            vm.subarrays[resource]['allocations'] = newAllocations;
+                            var oldAllocsToFree = [];
+                            _.each(vm.subarrays[resource]['oldAllocations'], function (oldAllocation) {
+                                var foundOldAlloc = _.find(newAllocations, function (newAllocation) {
+                                   return oldAllocation[0] === newAllocation[0];
+                                });
+                                if (!foundOldAlloc) {
+                                    oldAllocsToFree.push(oldAllocation);
+                                }
+                            });
+                            if (oldAllocsToFree.length > 0) {
+                                oldAllocsToFree.forEach(function (oldAlloc) {
+                                    var receptor = _.find(vm.receptorsData, function (receptor) {
+                                        return receptor.name === oldAlloc[0];
+                                    });
+                                    if (receptor) {
+                                        receptor.subarray = 'free';
+                                    }
+                                });
+
+                            }
+                        } else {
+                            vm.subarrays[resource]['allocations'] = [];
+                        }
+
+                        var receptorsChangedSubarrays = [];
+
+                        vm.receptorsData.forEach(function (receptor) {
+                            _.find(vm.subarrays[resource].allocations, function (d) {
+                                if (d[0] === receptor.name) {
+                                    var subarrayId = resource.split('_')[1];
+                                    if (subarrayId !== receptor.subarray) {
+                                        receptor.oldSubarray = receptor.subarray
+                                        receptorsChangedSubarrays.push(receptor);
+                                    }
+                                    receptor.subarray = subarrayId;
+                                    if (d[1] === 'None') {
+                                        receptor.allocatedSubarray = false;
+                                        receptor.assignedSubarray = true;
+                                    } else {
+                                        receptor.allocatedSubarray = true;
+                                        receptor.assignedSubarray = false;
+                                    }
+                                    return true;
+                                }
+                                return false;
+                            });
+                        });
+
+                        //resource moved from one subarray to another
+                        _.each(receptorsChangedSubarrays, function (receptor) {
+                            var oldAlloc = _.find(vm.subarrays['subarray_' + receptor.oldSubarray].allocations, function (d) {
+                                return d[0] === receptor.name;
+                            });
+                            if (oldAlloc) {
+                                var oldAllocIndex = vm.subarrays['subarray_' + receptor.oldSubarray].allocations.indexOf(oldAlloc);
+                                vm.subarrays['subarray_' + receptor.oldSubarray].allocations.splice(oldAllocIndex, 1);
+                            }
+                            delete receptor.oldSubarray;
+                        });
+                    } else {
+                        vm.subarrays[resource][sensorName] = message.value.value;
+                    }
+                }
+
                 if (!$scope.$$phase) {
                     $scope.$digest();
                 }
-            } else {
-                //TODO some messages' value is null
-                //console.warn(message);
             }
-        };
-
-
-        //todo do this better!
-        vm.getReceptorSubarray = function (receptor) {
-            var updated = false;
-            for (var attr in vm.subarrays) {
-                if (vm.subarrays[attr].allocations) {
-                    vm.subarrays[attr].allocations.forEach(function (allocation) {
-                        if (allocation[0] === receptor.name) {
-                            receptor.subarray = vm.subarrays[attr].id;
-                            receptor.allocation = allocation;
-                            receptor.assignedSubarray = allocation[1] === 'None';
-                            receptor.allocatedSubarray = allocation[1] !== 'None';
-                            updated = true;
-                        }
-                    });
-                }
-            }
-            if (!updated) {
-                receptor.allocation = '';
-                receptor.subarray = '';
-                receptor.assignedSubarray = false;
-                receptor.allocatedSubarray = false;
-            }
-        };
-
-        //todo do this better!
-        vm.getReceptorSubarrayPerSubarray = function (receptor) {
-            vm.getReceptorSubarray(receptor);
         };
 
         vm.navigateToSchedulerDetails = function (subarray_id) {

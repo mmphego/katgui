@@ -164,7 +164,7 @@ angular.module('katGui.d3')
                             if (d.ap_actual_azim && d.ap_actual_elev) {
                                 d.proj_requested_az_x = Math.floor(x(d.ap_actual_azim.value) * pm) / pm;
                                 d.proj_requested_el_y = Math.floor(y(d.ap_actual_elev.value) * pm) / pm;
-                                d.proj_actual = Math.floor(d.proj_requested_az_x) + ',' + Math.floor(d.proj_requested_el_y);
+                                d.proj_actual = round(d.proj_requested_az_x, 5) + ',' + round(d.proj_requested_el_y, 5);
                                 if (!scope.positions[d.proj_actual]) {
                                     scope.positions[d.proj_actual] = [];
                                 }
@@ -349,6 +349,10 @@ angular.module('katGui.d3')
 
                         function mouseOut (d) {
                             tooltip.style("opacity", 0);
+                        }
+
+                        function round(i, v) {
+                            return Math.round(i/v) * v;
                         }
                     }
 
