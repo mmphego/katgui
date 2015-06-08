@@ -7,8 +7,8 @@
 
         var vm = this;
         vm.receptorsData = [];
-        vm.subarrays = {};
-        vm.sortBySubarrays = false;
+        vm.subarrays = {subarray_free: {id: 'free', state: 'inactive'}};
+        vm.sortBySubarrays = true;
         vm.guid = KatGuiUtil.generateUUID();
         SensorsService.connectListener();
 
@@ -29,7 +29,7 @@
         ConfigService.getReceptorList()
             .then(function (result) {
                 result.forEach(function (item) {
-                    vm.receptorsData.push({name: item});
+                    vm.receptorsData.push({name: item, subarray: 'free'});
                     SensorsService.connectResourceSensorNamesLiveFeedWithList(item, vm.receptorSensorsToConnect, vm.guid, 'event-rate', 1, 10);
                 });
 
@@ -62,22 +62,73 @@
                     }
                 });
 
-                //WIP TODO fix up the receptor status to use subarray sensors
                 if (resource.indexOf('subarray_') === 0) {
                     if (!vm.subarrays[resource]) {
-                        vm.subarrays[resource] = {};
+                        vm.subarrays[resource] = {id: resource.split('_')[1]};
                     }
                     if (sensorName === 'allocations') {
                         if (message.value.value.length > 0) {
-                            vm.subarrays[resource]['allocations'] = JSON.parse(message.value.value);
+                            vm.subarrays[resource]['oldAllocations'] = vm.subarrays[resource]['allocations'];
+                            var newAllocations = JSON.parse(message.value.value);
+                            vm.subarrays[resource]['allocations'] = newAllocations;
+                            var oldAllocsToFree = [];
+                            _.each(vm.subarrays[resource]['oldAllocations'], function (oldAllocation) {
+                                var foundOldAlloc = _.find(newAllocations, function (newAllocation) {
+                                   return oldAllocation[0] === newAllocation[0];
+                                });
+                                if (!foundOldAlloc) {
+                                    oldAllocsToFree.push(oldAllocation);
+                                }
+                            });
+                            if (oldAllocsToFree.length > 0) {
+                                oldAllocsToFree.forEach(function (oldAlloc) {
+                                    var receptor = _.find(vm.receptorsData, function (receptor) {
+                                        return receptor.name === oldAlloc[0];
+                                    });
+                                    if (receptor) {
+                                        receptor.subarray = 'free';
+                                    }
+                                });
+
+                            }
                         } else {
                             vm.subarrays[resource]['allocations'] = [];
                         }
 
+                        var receptorsChangedSubarrays = [];
+
                         vm.receptorsData.forEach(function (receptor) {
-                            if (_.contains(vm.subarrays[resource].allocations, receptor.name)) {
-                                receptor.subarray = resource;
+                            _.find(vm.subarrays[resource].allocations, function (d) {
+                                if (d[0] === receptor.name) {
+                                    var subarrayId = resource.split('_')[1];
+                                    if (subarrayId !== receptor.subarray) {
+                                        receptor.oldSubarray = receptor.subarray
+                                        receptorsChangedSubarrays.push(receptor);
+                                    }
+                                    receptor.subarray = subarrayId;
+                                    if (d[1] === 'None') {
+                                        receptor.allocatedSubarray = false;
+                                        receptor.assignedSubarray = true;
+                                    } else {
+                                        receptor.allocatedSubarray = true;
+                                        receptor.assignedSubarray = false;
+                                    }
+                                    return true;
+                                }
+                                return false;
+                            });
+                        });
+
+                        //resource moved from one subarray to another
+                        _.each(receptorsChangedSubarrays, function (receptor) {
+                            var oldAlloc = _.find(vm.subarrays['subarray_' + receptor.oldSubarray].allocations, function (d) {
+                                return d[0] === receptor.name;
+                            });
+                            if (oldAlloc) {
+                                var oldAllocIndex = vm.subarrays['subarray_' + receptor.oldSubarray].allocations.indexOf(oldAlloc);
+                                vm.subarrays['subarray_' + receptor.oldSubarray].allocations.splice(oldAllocIndex, 1);
                             }
+                            delete receptor.oldSubarray;
                         });
                     } else {
                         vm.subarrays[resource][sensorName] = message.value.value;

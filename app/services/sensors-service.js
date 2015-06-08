@@ -76,8 +76,10 @@
         api.checkAlive = function () {
             if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
                 console.warn('Sensors Connection Heartbeat timeout!');
-                api.deferredMap['timeoutDefer'].resolve();
-                api.deferredMap['timeoutDefer'] = null;
+                if (api.deferredMap['timeoutDefer']) {
+                    api.deferredMap['timeoutDefer'].resolve();
+                    api.deferredMap['timeoutDefer'] = null;
+                }
             }
         };
 
@@ -164,6 +166,9 @@
                 api.lastHeartBeat = new Date();
                 if (!api.checkAliveInterval) {
                     api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+                } else {
+                    $interval.cancel(api.checkAliveInterval);
+                    api.checkAliveInterval = null;
                 }
             }
             return api.deferredMap['connectDefer'].promise;
