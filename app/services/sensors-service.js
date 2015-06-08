@@ -76,10 +76,8 @@
         api.checkAlive = function () {
             if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
                 console.warn('Sensors Connection Heartbeat timeout!');
-                if (api.deferredMap['timeoutDefer']) {
-                    api.deferredMap['timeoutDefer'].resolve();
-                    api.deferredMap['timeoutDefer'] = null;
-                }
+                api.deferredMap['timeoutDefer'].resolve();
+                api.deferredMap['timeoutDefer'] = null;
             }
         };
 
@@ -156,20 +154,18 @@
 
         api.connectListener = function () {
             api.deferredMap['connectDefer'] = $q.defer();
-            if (!api.connection) {
-                console.log('Sensors Connecting...');
-                api.connection = new SockJS(urlBase + '/sensors');
-                api.connection.onopen = api.onSockJSOpen;
-                api.connection.onmessage = api.onSockJSMessage;
-                api.connection.onclose = api.onSockJSClose;
-                api.connection.onheartbeat = api.onSockJSHeartbeat;
-                api.lastHeartBeat = new Date();
-                if (!api.checkAliveInterval) {
-                    api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
-                } else {
-                    $interval.cancel(api.checkAliveInterval);
-                    api.checkAliveInterval = null;
-                }
+            console.log('Sensors Connecting...');
+            api.connection = new SockJS(urlBase + '/sensors');
+            api.connection.onopen = api.onSockJSOpen;
+            api.connection.onmessage = api.onSockJSMessage;
+            api.connection.onclose = api.onSockJSClose;
+            api.connection.onheartbeat = api.onSockJSHeartbeat;
+            api.lastHeartBeat = new Date();
+            if (!api.checkAliveInterval) {
+                api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+            } else {
+                $interval.cancel(api.checkAliveInterval);
+                api.checkAliveInterval = null;
             }
             return api.deferredMap['connectDefer'].promise;
         };
@@ -178,6 +174,7 @@
             if (api.connection) {
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
+                api.checkAliveInterval = null;
             } else {
                 console.error('Attempting to disconnect an already disconnected connection!');
             }
@@ -197,8 +194,7 @@
             }
         };
 
-        api.connectResourceSensorNameLiveFeed = function (
-            resource, sensorName, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
+        api.connectResourceSensorNameLiveFeed = function (resource, sensorName, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
             api.sendSensorsCommand('set_sensor_strategy',
                 [
                     guid,
@@ -212,8 +208,7 @@
             api.subscribe(resource + '.' + sensorName, guid);
         };
 
-        api.connectResourceSensorNamesLiveFeedWithList = function (
-            resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
+        api.connectResourceSensorNamesLiveFeedWithList = function (resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
             api.sendSensorsCommand('set_sensor_strategy',
                 [
                     guid,
