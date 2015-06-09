@@ -17,7 +17,7 @@
     "dependencies": {
         "angular-animate": "~1.4",
         "angular-bootstrap-datetimepicker": "~0.3",
-        "angular-bootstrap": "0.12.0",
+        "angular-bootstrap": "~0.12",
         "angular-material": "~0.9",
         "angular-cookies": "~1.4",
         "angular-resource": "~1.4",
@@ -40,6 +40,7 @@
         "underscore": "~1.8"
     },
     "resolutions": {
-        "angular": "~1.4"
+        "angular": "~1.4",
+        "angular-bootstrap": "~0.12"
     }
 }
