@@ -42,6 +42,7 @@
     "resolutions": {
         "angular": "~1.4",
         "angular-bootstrap": "~0.12",
-        "jquery": "~2.1"
+        "jquery": "~2.1",
+        "bootstrap": "~3.3"
     }
 }

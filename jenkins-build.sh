@@ -7,7 +7,7 @@ sudo npm install -g gulp
 npm install
 
 # Install the bower requirements
-./node_modules/bower/bin/bower install
+./node_modules/bower/bin/bower install --force-latest
 
 GULP_ARGS=''
 # Setup the environment
