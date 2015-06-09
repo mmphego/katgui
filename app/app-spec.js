@@ -59,11 +59,9 @@ describe('ApplicationCtrl', function () {
     }));
 
     it('should call the service functions to log the user out and disconnect all listeners', inject(function () {
-        var disconnectControlServiceSpy = spyOn(ControlService, 'disconnectListener');
         var disconnectMonitorServiceSpy = spyOn(MonitorService, 'disconnectListener');
         var logoutSessionServiceSpy = spyOn(SessionService, 'logout');
         ctrl.logout();
-        expect(disconnectControlServiceSpy).toHaveBeenCalled();
         expect(disconnectMonitorServiceSpy).toHaveBeenCalled();
         expect(logoutSessionServiceSpy).toHaveBeenCalled();
         expect(ctrl.showNavbar).toBe(false);
@@ -101,14 +99,9 @@ describe('ApplicationCtrl', function () {
     });
 
     it('should connect events and start the time sync with the web server', function () {
-        var MonitorServiceConnectSpy = spyOn(MonitorService, 'connectListener');
-        var ControlServiceConnectSpy = spyOn(ControlService, 'connectListener');
         var updateTimeDisplaySpy = spyOn(ctrl, 'updateTimeDisplay');
         var syncTimeWithServerSpy = spyOn(ctrl, 'syncTimeWithServer');
         scope.$root.connectEvents();
-        expect(ctrl.showNavbar).toBeTruthy();
-        expect(MonitorServiceConnectSpy).toHaveBeenCalled();
-        expect(ControlServiceConnectSpy).toHaveBeenCalled();
         interval.flush(60000);
         expect(updateTimeDisplaySpy).toHaveBeenCalled();
         expect(syncTimeWithServerSpy).toHaveBeenCalled();

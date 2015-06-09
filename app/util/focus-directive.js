@@ -1,4 +1,4 @@
-angular.module('katGui.util', [])
+angular.module('katGui.util', ['katGui.services'])
 
     .directive('focus', function ($timeout) {
         return {

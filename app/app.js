@@ -60,7 +60,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog) {
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -326,7 +326,7 @@
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
                     console.log('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
-                                moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
+                    moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
                     console.error("Error syncing time with KATPortal! " + error);
@@ -343,6 +343,11 @@
                     console.error("Could not retrieve site location from config server, LST will not display correctly. ");
                     console.error(error);
                 });
+        };
+
+        vm.openCentralLogger = function () {
+            //TODO get from config and eventually redo central logger
+            KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
 
         //so that all controllers and directives has access to which keys are pressed

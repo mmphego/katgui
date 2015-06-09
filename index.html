@@ -190,9 +190,17 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-list')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-list')"
+                                     style="border-bottom: 1px solid #e5e5e5;">
                         <span class="fa fa-th-list"></span>
                         <button>Sensor List</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openCentralLogger()"
+                                     style="border-bottom: 1px solid #e5e5e5;">
+                        <span class="fa fa-file-text-o"></span>
+                        <button>Central Logger</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
