@@ -1,15 +1,24 @@
 <div flex ng-controller="ReceptorStatusCtrl as vm" layout="column" layout-align="start"
      style="margin: 16px;">
 
-    <div flex layout="column" ng-click="vm.showStatusOptions = false">
+    <div flex layout="column">
         <md-toolbar md-theme="{{themePrimary}}" layout="row" layout-align="start center"
                     class="md-whiteframe-z1">
             <span flex style="margin-left: 16px;" ng-show="!vm.sortBySubarrays">All Receptors</span>
             <span flex style="margin-left: 16px;" ng-show="vm.sortBySubarrays">Receptors by Subarray</span>
-            <md-button class="md-icon-button inline-action-button" title="Status Display Actions"
-                       ng-click="vm.showStatusOptions = !vm.showStatusOptions;$event.stopPropagation()">
-                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
-            </md-button>
+            <md-menu md-theme="{{themePrimaryButtons}}">
+                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
+                           style="margin-left: 0px; margin-right: 8px;">
+                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                </md-button>
+                <md-menu-content width="4" style="padding-left: 16px;">
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.sortBySubarrays" ng-click="">
+                            Sort By Sub-Arrays
+                        </md-checkbox>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" style="padding: 16px;">
 
@@ -137,15 +146,10 @@
         <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row"
              ng-init="transparentLegend = true"
              ng-class="{'transparent-legend':transparentLegend && !showLegend}">
-            <md-button flex style="pointer-events: auto; z-index: 100"
-                       md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false"
-                       ng-click="showLegend = !showLegend"
-                       ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true"
-                       class="md-primary md-raised md-icon-button">
-                <md-icon md-theme="white" class="fa md-primary" ng-show="!showLegend" md-font-icon="fa-eye"
-                         title="Show Legend"></md-icon>
-                <md-icon md-theme="white" class="fa md-primary" ng-show="showLegend" md-font-icon="fa-eye-slash"
-                         title="Hide Legend"></md-icon>
+            <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
+                       ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true" class="md-fab md-mini md-primary">
+                <md-icon class="fa center-md-icon" ng-if="!showLegend" md-font-icon="fa-eye"></md-icon>
+                <md-icon class="fa center-md-icon" ng-if="showLegend" md-font-icon="fa-eye-slash"></md-icon>
             </md-button>
             <div class="md-whiteframe-z3" layout="column" ng-show="showLegend"
                  style="background: white; padding: 8px;">
@@ -187,16 +191,5 @@
                     <span>Nothing to Report</span></div>
             </div>
         </div>
-    </div>
-
-    <div ng-init="vm.showStatusOptions = false" ng-show="vm.showStatusOptions"
-         class="receptor-status-options-menu md-whiteframe-z3">
-        <md-list layout="column" md-theme="{{themePrimaryButtons}}">
-            <md-item>
-                <md-checkbox class="md-primary" ng-model="vm.sortBySubarrays">
-                    Sort By Sub-Arrays
-                </md-checkbox>
-            </md-item>
-        </md-list>
     </div>
 </div>
