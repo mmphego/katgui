@@ -41,6 +41,7 @@
     },
     "resolutions": {
         "angular": "~1.4",
-        "angular-bootstrap": "~0.12"
+        "angular-bootstrap": "~0.12",
+        "jquery": "~2.1"
     }
 }

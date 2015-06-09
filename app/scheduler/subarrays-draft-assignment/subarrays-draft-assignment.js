@@ -51,7 +51,7 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        //can ignore for now, is tested in another test and will change with the menu in angular material 0.10grunt te
+        //can ignore for now, is tested in another test and will change with the menu in angular material 0.10
         vm.scheduleCurrentMenuItemDraft = function () {
             if (vm.currentActionsMenuIndex > -1) {
                 var sb = ObservationScheduleService.scheduleDraftData[vm.currentActionsMenuIndex];

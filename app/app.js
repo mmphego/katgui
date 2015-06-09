@@ -367,7 +367,6 @@
 
         //disable this in production for performance boost
         //batarang uses this for scope inspection
-        //grunt
         if (window.location.host !== 'localhost:8000') {
             $compileProvider.debugInfoEnabled(false);
         } else {

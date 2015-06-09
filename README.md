@@ -15,7 +15,7 @@ Navigate to the project folder
 
 >bower install
 
-To use grunt to host the project do:
+To use gulp to host the project do:
 >gulp webserver
 
 This hosts the project on http://localhost:8000, open in a Chrome browser
