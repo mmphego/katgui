@@ -54,14 +54,13 @@
                 secondary: 'dark-secondary',
                 primaryButtons: 'dark-buttons'
             }])
-        .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .config(configureKatGui)
         .run(runKatGui)
         .controller('ApplicationCtrl', ApplicationCtrl);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog) {
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -348,7 +347,7 @@
 
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath('', 9021);
+            KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
 
         //so that all controllers and directives has access to which keys are pressed

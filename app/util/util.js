@@ -1,4 +1,5 @@
 angular.module('katGui.util')
+    .constant('CENTRAL_LOGGER_PORT', 9021)
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)

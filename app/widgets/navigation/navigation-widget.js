@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui.widgets.navigationWidget', ['adf.provider'])
+    angular.module('katGui.widgets.navigationWidget', ['adf.provider', 'katGui.util'])
         .config(configureNavigationWidget)
         .controller('NavigationWidgetCtrl', NavigationWidgetCtrl);
 
@@ -15,7 +15,7 @@
             });
     }
 
-    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil) {
+    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil, CENTRAL_LOGGER_PORT) {
 
         var vm = this;
 
@@ -36,7 +36,7 @@
 
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath('', 9021);
+            KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
 
         $scope.$on('$destroy', function() {
