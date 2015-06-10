@@ -53,7 +53,7 @@
                         <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
 
                         <div layout="row" class="schedule-block-name-div" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">
-                            <span class="schedule-block-id-text"
+                            <span class="schedule-block-id-text" style="cursor: pointer"
                                   ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
                                 {{item.id_code}}</span>
                             <i>{{item.owner}}</i>
@@ -74,10 +74,23 @@
                                    title="Free Schedule Blocks">
                             <md-icon class="fa" md-font-icon="fa-minus"></md-icon>
                         </md-button>
-                        <md-button ng-if="!item.pendingVerify" class="md-icon-button inline-sb-button"
-                                   ng-click="vm.openSchedulerActionsMenu(item, $event); $event.stopPropagation()">
-                            <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
-                        </md-button>
+                        <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}">
+                            <md-button class="md-icon-button inline-action-button" ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                                       style="margin: 0">
+                                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                            </md-button>
+                            <md-menu-content style="padding: 8px;">
+                                <md-menu-item ng-if="item.loadMenuContents && item.type === 'OBSERVATION'">
+                                    <md-button ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
+                                </md-menu-item>
+                                <md-menu-item ng-if="item.loadMenuContents">
+                                    <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
+                                </md-menu-item>
+                                <md-menu-item ng-if="item.loadMenuContents">
+                                    <md-button ng-click="vm.scheduleDraft(item)">Schedule Draft</md-button>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
                     </div>
                 </div>
             </div>
@@ -129,25 +142,4 @@
         </div>
 
     </div>
-
-    <div id="schedulerActionsMenu" ng-show="vm.showActionsMenu" class="datepickerMenu md-whiteframe-z1">
-        <md-list layout="column">
-            <md-item ng-show="vm.showVerifyMenuItem">
-                <md-button role="menuitem" style="width: 170px; font-size:14px; height: 38px; padding: 2px;"
-                           ng-click="vm.verifyCurrentMenuItemDraft()">Verify Draft
-                </md-button>
-            </md-item>
-            <md-item>
-                <md-button role="menuitem" style="width: 170px; font-size:14px; height: 38px; padding: 2px;"
-                           ng-click="vm.viewSBTasklog()">View Tasklog
-                </md-button>
-            </md-item>
-            <md-item>
-                <md-button role="menuitem" style="width: 170px; font-size: 14px; height: 38px; padding: 2px;"
-                           ng-click="vm.scheduleCurrentMenuItemDraft()">Schedule Draft
-                </md-button>
-            </md-item>
-        </md-list>
-    </div>
-
 </div>

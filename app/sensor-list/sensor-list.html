@@ -103,17 +103,66 @@
                 <md-icon class="fa" md-font-icon="fa-compress"></md-icon>
             </md-button>
             <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button"
-                       ng-click="vm.showChart = !vm.showChart; vm.showSensorGraphOptionsMenu = false;"
+                       ng-click="vm.showChart = !vm.showChart;"
                        title="Minimise Chart" style="margin: 0px">
                 <md-icon ng-show="vm.showChart" class="fa" md-font-icon="fa-chevron-down"></md-icon>
                 <md-icon ng-show="!vm.showChart" class="fa" md-font-icon="fa-chevron-up"></md-icon>
             </md-button>
-            <md-button ng-show="vm.showChart" md-theme="{{themePrimaryButtons}}"
-                       class="md-icon-button inline-action-button"
-                       ng-click="vm.showSensorGraphOptionsMenu = !vm.showSensorGraphOptionsMenu"
-                       title="Additional Options" style="margin-left:0;margin-right:4px;">
-                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
-            </md-button>
+            <md-menu md-theme="{{themePrimaryButtons}}">
+                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
+                           style="margin-left: 0px; margin-right: 8px;">
+                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                </md-button>
+                <md-menu-content width="4" style="padding-left: 16px;">
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()"
+                                     ng-click="$event.stopPropagation()">
+                            Show Grid Lines
+                        </md-checkbox>
+                    </md-menu-item>
+                    <!--<md-menu-item>-->
+                        <!--<md-checkbox class="md-primary" ng-model="vm.showDots" ng-change="vm.showOptionsChanged()">-->
+                            <!--Show Data Dots-->
+                        <!--</md-checkbox>-->
+                    <!--</md-menu-item>-->
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.showContextZoom"
+                                     ng-change="vm.showOptionsChanged()" ng-click="$event.stopPropagation()">
+                            Show Context Zoom
+                        </md-checkbox>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()"
+                                     ng-click="$event.stopPropagation()">
+                            Use Fixed Y Axis Values
+                        </md-checkbox>
+                    </md-menu-item>
+                    <md-menu-item ng-if="vm.useFixedYAxis">
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Y-Axis Minimum Value">
+                                <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
+                                       ng-change="vm.showOptionsChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                    <md-menu-item ng-if="vm.useFixedYAxis">
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Y-Axis Maximum Value">
+                                <input flex style="" placeholder="Maximum" ng-model="vm.yAxisMaxValue"
+                                       ng-change="vm.showOptionsChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
         </md-toolbar>
         <md-chips flex class="custom-chips" ng-model="vm.sensorsPlotNames" readonly="true">
             <md-chip-template title="{{$chip.name}}">
@@ -132,46 +181,5 @@
         <div resizeable=".sensor-list-chart-container" class="resize-grip">
             <span flex class="fa fa-arrows-v"></span>
         </div>
-
-        <div ng-init="vm.showSensorGraphOptionsMenu = false" ng-show="vm.showSensorGraphOptionsMenu"
-             class="sensor-list-graph-options-menu md-whiteframe-z3">
-            <md-list layout="column" md-theme="{{themePrimaryButtons}}">
-                <md-item>
-                    <!--<md-checkbox class="md-primary" ng-model="vm.showDots" ng-change="vm.showOptionsChanged()">-->
-                        <!--Show Data Dots-->
-                    <!--</md-checkbox>-->
-                    <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()">
-                        Show Grid Lines
-                    </md-checkbox>
-                    <md-checkbox class="md-primary" ng-model="vm.showContextZoom" ng-change="vm.showOptionsChanged()">
-                        Show Context Zoom
-                    </md-checkbox>
-                    <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()">
-                        Use Fixed Y Axis Values
-                    </md-checkbox>
-                    <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center"
-                         style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                        <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                        <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
-                                            class="md-primary" title="Set the desired Y-Axis Minimum Value">
-                            <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
-                                   ng-change="vm.showOptionsChanged()" type="number"
-                                   ng-model-options="{ debounce: 300 }">
-                        </md-input-container>
-                    </div>
-                    <div ng-show="vm.useFixedYAxis" layout="row" layout-align="start center"
-                         style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                        <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                        <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
-                                            class="md-primary" title="Set the desired Y-Axis Maximum Value">
-                            <input flex style="" placeholder="Maximum" ng-model="vm.yAxisMaxValue"
-                                   ng-change="vm.showOptionsChanged()" type="number"
-                                   ng-model-options="{ debounce: 300 }">
-                        </md-input-container>
-                    </div>
-                </md-item>
-            </md-list>
-        </div>
     </div>
-
 </div>

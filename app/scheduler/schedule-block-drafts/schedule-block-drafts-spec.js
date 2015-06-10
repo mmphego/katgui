@@ -93,54 +93,6 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
         expect(ctrl.draftsOrderBy.reverse).toBeFalsy();
     });
 
-    it('should select the next and previous sb draft when up and down arrows are pressed', function () {
-
-        var setSelectedScheduleDraftSpy = spyOn(ctrl, "setSelectedScheduleDraft");
-        var closeDatePickerMenuSpy = spyOn(ctrl, "closeDatePickerMenu");
-        var closeEditMenuSpy = spyOn(ctrl, "closeEditMenu");
-        //down arrow
-        ctrl.keydown(null, 40);
-        expect(setSelectedScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[0], true);
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[0];
-        ctrl.keydown(null, 40);
-        expect(setSelectedScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[1], true);
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[1];
-        ctrl.keydown(null, 40);
-        expect(setSelectedScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[2], true);
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[2];
-        //up arrow
-        ctrl.keydown(null, 38);
-        expect(setSelectedScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[1], true);
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[1];
-        ctrl.keydown(null, 38);
-        expect(setSelectedScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[0], true);
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[0];
-        ctrl.keydown(null, 38);
-        expect(setSelectedScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[2], true);
-
-        //escape
-        ctrl.keydown(null, 27);
-        expect(setSelectedScheduleDraftSpy).toHaveBeenCalledWith(null);
-        expect(closeEditMenuSpy).toHaveBeenCalled();
-        expect(closeDatePickerMenuSpy).toHaveBeenCalled();
-    });
-
-    it('should not do something unexpected when the filtered list is empty or when an invalid key is pressed', function () {
-        var setSelectedScheduleDraftSpy = spyOn(ctrl, "setSelectedScheduleDraft");
-        var closeDatePickerMenuSpy = spyOn(ctrl, "closeDatePickerMenu");
-        var closeEditMenuSpy = spyOn(ctrl, "closeEditMenu");
-        scope.filteredDraftItems = [];
-        ctrl.keydown(null, 40);
-        expect(setSelectedScheduleDraftSpy).not.toHaveBeenCalled();
-        ctrl.keydown(null, 38);
-        expect(setSelectedScheduleDraftSpy).not.toHaveBeenCalled();
-
-        ctrl.keydown(null, -1);
-        expect(setSelectedScheduleDraftSpy).not.toHaveBeenCalled();
-        expect(closeEditMenuSpy).not.toHaveBeenCalled();
-        expect(closeDatePickerMenuSpy).not.toHaveBeenCalled();
-    });
-
     it('should call the update function in the ObservationScheduleService when saving', function () {
         var updateScheduleDraftSpy = spyOn(ObservationScheduleService, "updateScheduleDraft").and.returnValue(q.defer().promise);
         scope.filteredDraftItems[0].isDirty = true;
@@ -160,42 +112,6 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
         expect(updateScheduleDraftSpy).toHaveBeenCalledWith(ctrl.scheduleDraftData[2]);
     });
 
-    it('should verify the selected draft row and close the edit menu', function () {
-        var verifyDraftRowSpy = spyOn(ctrl, "verifyDraftRow");
-        ctrl.selectedScheduleDraft = null;
-        ctrl.verifySelectedDraftRow();
-        expect(verifyDraftRowSpy).not.toHaveBeenCalled();
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[0];
-        ctrl.verifySelectedDraftRow();
-        expect(verifyDraftRowSpy).toHaveBeenCalledWith(ctrl.selectedScheduleDraft);
-        expect(ctrl.showEditMenu).toBeFalsy();
-    });
-
-    it('should call the verifyScheduleBlock function in the ObservationScheduleService', function () {
-        var verifyScheduleBlockSpy = spyOn(ObservationScheduleService, "verifyScheduleBlock").and.returnValue(q.defer().promise);
-        ctrl.verifyDraftRow(scope.filteredDraftItems[0]);
-        expect(verifyScheduleBlockSpy).toHaveBeenCalledWith(1, "20150211-0001");
-        expect(ctrl.selectedScheduleDraft).toBeNull();
-    });
-
-    it('should call the remove on the selected draft row', function () {
-        var removeDraftRowSpy = spyOn(ctrl, "removeDraftRow");
-        ctrl.selectedScheduleDraft = null;
-        ctrl.removeSelectedDraftRow();
-        expect(removeDraftRowSpy).not.toHaveBeenCalled();
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[0];
-        ctrl.removeSelectedDraftRow();
-        expect(removeDraftRowSpy).toHaveBeenCalledWith(ctrl.selectedScheduleDraft);
-        expect(ctrl.showEditMenu).toBeFalsy();
-    });
-
-    it('should call the deleteScheduleDraft function in the ObservationScheduleService', function () {
-        var deleteScheduleDraftSpy = spyOn(ObservationScheduleService, "deleteScheduleDraft").and.returnValue(q.defer().promise);
-        ctrl.removeDraftRow(scope.filteredDraftItems[0]);
-        expect(deleteScheduleDraftSpy).toHaveBeenCalledWith("20150211-0001");
-        expect(ctrl.selectedScheduleDraft).toBeNull();
-    });
-
     it('should call the getScheduleBlocks function in the ObservationScheduleService', function () {
         var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks");
         ctrl.refreshScheduleBlocks(scope.filteredDraftItems[0]);
@@ -210,15 +126,6 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
         ctrl.setSelectedScheduleDraft(scope.filteredDraftItems[0]);
         ctrl.setSelectedScheduleDraft(scope.filteredDraftItems[0], true);
         expect(ctrl.selectedScheduleDraft).toEqual(scope.filteredDraftItems[0]);
-    });
-
-    it('should call the viewTaskLogForSBIdCode in the ObservationScheduleService', function () {
-        var closeEditMenuSpy = spyOn(ctrl, "closeEditMenu");
-        var viewTaskLogForSBIdCodeSpy = spyOn(ObservationScheduleService, "viewTaskLogForSBIdCode");
-        ctrl.selectedScheduleDraft = scope.filteredDraftItems[0];
-        ctrl.viewSBTasklog();
-        expect(closeEditMenuSpy).toHaveBeenCalled();
-        expect(viewTaskLogForSBIdCodeSpy).toHaveBeenCalled();
     });
 
     it('should set the time for the current selected draft', function () {
@@ -238,11 +145,4 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
         ctrl.validateInputDate(scope.filteredDraftItems[0]);
         expect(scope.filteredDraftItems[0].hasValidInput).toBeFalsy();
     });
-
-    it('should unbind watchers', inject(function () {
-        var unbindShortcutsSpy = spyOn(ctrl, "unbindShortcuts");
-        scope.$emit("$destroy");
-        scope.$digest();
-        expect(unbindShortcutsSpy).toHaveBeenCalled();
-    }));
 });
