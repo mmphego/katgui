@@ -17,7 +17,7 @@
                             <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                         </md-button>
                         <span>Mode:</span>
-                        <md-select ng-model="vm.selectedMode" style="margin-left: 4px; margin-right:8px; margin-top: -8px;" ng-change="vm.schedulerModeChanged()"
+                        <md-select ng-model="vm.selectedMode" style="margin-left: 4px; margin-right:8px; margin-top: -10px; padding: 0" ng-change="vm.schedulerModeChanged()"
                                    class="md-primary" md-theme="{{themePrimaryButtons}}">
                             <md-option ng-value="type" ng-repeat="type in vm.modeTypes">{{type}}</md-option>
                         </md-select>
@@ -28,9 +28,8 @@
                          ng-class="{'selected-schedule-row': item.state !== 'ACTIVE' && item === vm.selectedSchedule,
                                 'schedule-row-executing': item.state === 'ACTIVE' && item !== vm.selectedSchedule,
                                 'schedule-row-executing-and-selected': item.state === 'ACTIVE' && item === vm.selectedSchedule}"
-                         class="schedule-draft-item animate-repeat" layout="column">
+                         class="schedule-draft-item animate-repeat" layout="row"  layout-align="center center">
 
-                        <div style="" layout="row" layout-align="center center">
                             <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
                             </md-progress-circular>
                             <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
@@ -56,13 +55,28 @@
                                        title="Stop Execution">
                                 <md-icon class="fa" md-font-icon="fa-stop"></md-icon>
                             </md-button>
-                            <md-button class="md-icon-button inline-action-button" ng-show="!item.pendingVerify"
-                                       ng-click="vm.openSchedulerEditMenu(item, $event)">
-                                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
-                            </md-button>
+                            <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}">
+                                <md-button class="md-icon-button inline-action-button" ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                                           style="margin: 0">
+                                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                                </md-button>
+                                <md-menu-content style="padding: 8px;">
+                                    <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION'">
+                                        <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify Schedule</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item ng-if="item.loadMenuContents">
+                                        <md-button ng-click="vm.moveScheduleRowToDraft(item)" title="Move Schedule Block to Draft">Move to Draft</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.moveScheduleRowToFinished(item)" title="Move Schedule Block to Complete">Move To Completed</md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
                             <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
                             <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -186,39 +200,13 @@
                          ng-class="{'highlight-script-window': vm.selectedSchedule !== null, 'md-whiteframe-z2': vm.selectedSchedule === null}">
 
                         <span flex ng-if="vm.selectedSchedule !== null" style="max-width: 650px;">
+                            <!--todo change the textarea into a div that resizes better-->
                             <textarea readonly auto-grow>{{vm.selectedSchedule | json:4}}</textarea>
                         </span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div id="schedulerEditMenu" ng-show="vm.showEditMenu" class="datepickerMenu md-whiteframe-z1">
-        <md-list layout="column">
-            <md-item ng-if="vm.selectedSchedule.type == 'OBSERVATION'">
-                <md-button role="menuitem" style="width: 170px; font-size:14px; height: 38px; padding: 2px;" ng-disabled="!vm.selectedSchedule.sub_nr"
-                           ng-click="vm.verifySelectedRow()">Verify Schedule
-                </md-button>
-            </md-item>
-            <md-item>
-                <md-button  class="scheduler-menu-item-button"
-                           ng-click="vm.moveSelectedSBToDraft()" title="Move Schedule Block to Draft">
-                    <span>Move to Draft</span>
-                </md-button>
-            </md-item>
-            <md-item>
-                <md-button  class="scheduler-menu-item-button"
-                           ng-click="vm.viewSelectedSBTaskLog()" title="View Progress in a New Tab">
-                    <span>View Progress</span>
-                </md-button>
-            </md-item>
-            <md-item>
-                <md-button  md-theme="default" class="scheduler-menu-item-button"
-                           ng-click="vm.moveSelectedSBToFinished()" title="Move Schedule Block to Complete">
-                    <span>Move To Completed</span>
-                </md-button>
-            </md-item>
-        </md-list>
     </div>
 </div>
 

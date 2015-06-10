@@ -86,13 +86,6 @@ describe('SubArrayObservationsDetail', function () {
         expect(ctrl.schedulerModes).toBeDefined();
     }));
 
-    it('should unbind watchers', inject(function () {
-        var unbindShortcutsSpy = spyOn(ctrl, "unbindShortcuts");
-        scope.$emit("$destroy");
-        scope.$digest();
-        expect(unbindShortcutsSpy).toHaveBeenCalledWith('keydown');
-    }));
-
     it('should list the schedule blocks and resources and scheduler mode', function () {
         ObservationScheduleService.schedulerModes['1'] = {stringValue: 'queue'};
         var deferred1 = q.defer();
@@ -192,62 +185,6 @@ describe('SubArrayObservationsDetail', function () {
         scope.$digest();
         expect(displayPromiseSpy).toHaveBeenCalled();
     });
-
-    it('should call the viewTaskLogForSBIdCode in the ObservationScheduleService', function () {
-        var closeEditMenuSpy = spyOn(ctrl, "closeEditMenu");
-        var viewTaskLogForSBIdCodeSpy = spyOn(ObservationScheduleService, "viewTaskLogForSBIdCode");
-        ctrl.selectedSchedule = ObservationScheduleService.scheduleData[0];
-        ctrl.viewSelectedSBTaskLog();
-        expect(closeEditMenuSpy).toHaveBeenCalled();
-        expect(viewTaskLogForSBIdCodeSpy).toHaveBeenCalled();
-    });
-
-    it('should clear selection when pressing escape', inject(function () {
-        ObservationScheduleService.poolResourcesFree = ctrl.poolResourcesFree;
-        ctrl.selectedSchedule = ObservationScheduleService.scheduleData[0];
-        scope.$root.$broadcast('keydown', 27);
-        expect(ctrl.selectedSchedule).toBeNull();
-    }));
-
-    it('should set selection when pressing up and down', inject(function () {
-        ObservationScheduleService.poolResourcesFree = ctrl.poolResourcesFree;
-        ctrl.selectedSchedule = null;
-        scope.$root.$broadcast('keydown', 40);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[0]);
-        scope.$root.$broadcast('keydown', 40);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[1]);
-        scope.$root.$broadcast('keydown', 40);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[2]);
-        scope.$root.$broadcast('keydown', 40);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[3]);
-        scope.$root.$broadcast('keydown', 40);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[0]);
-
-        scope.$root.$broadcast('keydown', 27);
-        expect(ctrl.selectedSchedule).toBeNull();
-
-        scope.$root.$broadcast('keydown', 38);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[3]);
-        scope.$root.$broadcast('keydown', 38);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[2]);
-        scope.$root.$broadcast('keydown', 38);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[1]);
-        scope.$root.$broadcast('keydown', 38);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[0]);
-        scope.$root.$broadcast('keydown', 38);
-        expect(ctrl.selectedSchedule).toBe(ObservationScheduleService.scheduleData[3]);
-
-        scope.$root.$broadcast('keydown', 27);
-        expect(ctrl.selectedSchedule).toBeNull();
-        scope.$root.$broadcast('keydown', -1);
-        expect(ctrl.selectedSchedule).toBeNull();
-
-        ctrl.currentScheduleData = [];
-        scope.$root.$broadcast('keydown', 38);
-        expect(ctrl.selectedSchedule).toBeNull();
-        scope.$root.$broadcast('keydown', 40);
-        expect(ctrl.selectedSchedule).toBeNull();
-    }));
 
     it('should call the service function when the scheduler mode changed', function () {
         var deferred = q.defer();

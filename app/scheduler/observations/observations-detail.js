@@ -33,13 +33,13 @@
                 .then(ObservationScheduleService.listPoolResources)
                 .then(function () {
                     ObservationScheduleService.listAllocationsForSubarray(vm.subarray_id)
-                        .then(function() {
+                        .then(function () {
                             ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id)
-                                .then(function() {
+                                .then(function () {
                                     vm.selectedMode = ObservationScheduleService.schedulerModes[vm.subarray_id];
                                     if (ObservationScheduleService.subarrays.length === 0) {
                                         ObservationScheduleService.listSubarrays()
-                                            .then(function() {
+                                            .then(function () {
                                                 vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
                                                 vm.subarrayState = vm.subarray.state.toUpperCase();
                                             });
@@ -68,13 +68,11 @@
         };
 
         vm.moveScheduleRowToFinished = function (item) {
-            vm.selectedSchedule = null;
             ObservationScheduleService.scheduleToComplete(vm.subarray_id, item.id_code)
                 .then($rootScope.displayPromiseResult);
         };
 
         vm.moveScheduleRowToDraft = function (item) {
-            vm.selectedSchedule = null;
             ObservationScheduleService.scheduleToDraft(vm.subarray_id, item.id_code)
                 .then($rootScope.displayPromiseResult);
         };
@@ -112,77 +110,21 @@
                 .then($rootScope.displayPromiseResult);
         };
 
-        //going to be replaced with angular material 0.10
-        vm.openSchedulerEditMenu = function (item, $event) {
-            var rowIndex = vm.currentScheduleData.indexOf(item);
-            if (vm.currentEditMenuIndex !== rowIndex) {
-                vm.setSelectedSchedule(vm.currentScheduleData[rowIndex], true);
-                var rect = $event.currentTarget.getBoundingClientRect();
-                var offset = {x: 0, y: 32};
-                var overLayCSS = {
-                    left: rect.left + offset.x + 'px',
-                    top: rect.top + offset.y + 'px'
-                };
-                angular.element(document.getElementById('schedulerEditMenu')).css(overLayCSS);
-                vm.currentEditMenuIndex = vm.currentScheduleData.indexOf(vm.currentScheduleData[rowIndex]);
-                vm.showEditMenu = true;
-            } else {
-                //the same row's button was clicked, so close the popup
-                vm.closeEditMenu();
-            }
-            $event.stopPropagation();
+        vm.viewSBTaskLog = function (sb) {
+            ObservationScheduleService.viewTaskLogForSBIdCode(sb.id_code);
         };
 
-        //going to be replaced with angular material 0.10
-        vm.closeEditMenu = function() {
-            if (vm.showEditMenu) {
-                vm.showEditMenu = false;
-                vm.currentEditMenuIndex = -1;
-            }
-            if (!$scope.$$phase) {
-                $scope.$apply();
-            }
-        };
-
-        //going to be replaced with angular material 0.10
-        vm.moveSelectedSBToDraft = function() {
-            if (vm.selectedSchedule) {
-                vm.moveScheduleRowToDraft(vm.selectedSchedule);
-            }
-            vm.closeEditMenu();
-        };
-
-        //going to be replaced with angular material 0.10
-        vm.viewSelectedSBTaskLog = function() {
-            /* istanbul ignore else */
-            if (vm.selectedSchedule) {
-                ObservationScheduleService.viewTaskLogForSBIdCode(vm.selectedSchedule.id_code);
-            }
-            vm.closeEditMenu();
-        };
-
-        //going to be replaced with angular material 0.10
-        vm.moveSelectedSBToFinished = function() {
-            if (vm.selectedSchedule) {
-                vm.moveScheduleRowToFinished(vm.selectedSchedule);
-            }
-            vm.closeEditMenu();
-        };
-
-        vm.verifySelectedRow = function () {
-            if (vm.selectedSchedule) {
-                ObservationScheduleService.verifyScheduleBlock(vm.subarray_id, vm.selectedSchedule.id_code)
-                    .then($rootScope.displayPromiseResult);
-            }
-            vm.closeEditMenu();
+        vm.verifySB = function (sb) {
+            ObservationScheduleService.verifyScheduleBlock(vm.subarray_id, sb.id_code)
+                .then($rootScope.displayPromiseResult);
         };
 
         vm.freeSubarray = function () {
             ObservationScheduleService.freeSubarray(vm.subarray_id)
-                .then(function(result) {
+                .then(function (result) {
                     $rootScope.displayPromiseResult(result);
                     ObservationScheduleService.listSubarrays()
-                        .then(function() {
+                        .then(function () {
                             vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
                             vm.subarrayState = vm.subarray.state.toUpperCase();
                         });
@@ -194,44 +136,12 @@
                 .then(function (result) {
                     $rootScope.displayPromiseResult(result);
                     ObservationScheduleService.listSubarrays()
-                        .then(function() {
+                        .then(function () {
                             vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
                             vm.subarrayState = vm.subarray.state.toUpperCase();
                         });
                 });
         };
-
-        vm.unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
-            if (key === 40) {
-                //down arrow
-                var index = vm.currentScheduleData.indexOf(vm.selectedSchedule);
-                if (index > -1 && index + 1 < vm.currentScheduleData.length) {
-                    vm.setSelectedSchedule(vm.currentScheduleData[index + 1]);
-                } else if (vm.currentScheduleData.length > 0) {
-                    vm.setSelectedSchedule(vm.currentScheduleData[0]);
-                }
-
-            } else if (key === 38) {
-                //up arrow
-                var indexUp = vm.currentScheduleData.indexOf(vm.selectedSchedule);
-                if (indexUp > -1 && indexUp - 1 > -1) {
-                    //filteredDraftItems
-                    vm.setSelectedSchedule(vm.currentScheduleData[indexUp - 1]);
-                } else if (vm.currentScheduleData.length > 0) {
-                    vm.setSelectedSchedule(vm.currentScheduleData[vm.currentScheduleData.length - 1]);
-                }
-            } else if (key === 27) {
-                //escape
-                vm.selectedSchedule = null;
-            }
-            if (!$scope.$$phase) {
-                $scope.$apply();
-            }
-        });
-
-        $scope.$on('$destroy', function () {
-            vm.unbindShortcuts('keydown');
-        });
 
         vm.refreshScheduleBlocks();
     }

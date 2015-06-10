@@ -2,12 +2,12 @@
 
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 8px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()">
-            <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+            <md-icon md-menu-origin class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
         </md-button>
         <md-menu-content width="4" style="padding-left: 16px;">
             <md-menu-item>
                 <md-checkbox class="md-primary" ng-model="vm.useEquatorial" ng-init="vm.useEquatorial = true"
-                    ng-click="$event.stopPropagation()">
+                    ng-click="$event.stopPropagation()" md-menu-align-target>
                     <span>Use Equatorial Coordinates</span>
                 </md-checkbox>
             </md-menu-item>
