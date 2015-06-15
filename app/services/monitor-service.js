@@ -41,7 +41,7 @@
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [pattern],
+                'params': [pattern, true],
                 'id': 'monitor' + KatGuiUtil.generateUUID()
             };
 
