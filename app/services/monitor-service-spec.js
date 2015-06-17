@@ -201,7 +201,7 @@ describe('MonitorService', function () {
         MonitorService.connection.readyState = true;
         MonitorService.connection.authorized = true;
         MonitorService.subscribe('test_subsribe');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["mon:test_subsribe"\],"id":"monitor.*"\}/);
+        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["mon:test_subsribe",true\],"id":"monitor.*"\}/);
     });
 
     it('should not send the subscribe command, but should create a timeout for a retry when the connection is not in readyState', function () {
