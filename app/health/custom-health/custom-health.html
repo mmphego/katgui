@@ -1,11 +1,10 @@
-<div flex layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
+<div layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
-                   ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true"
-                    class="md-primary md-raised md-icon-button">
-            <md-icon md-theme="white" class="fa md-primary" ng-show="!showLegend" md-font-icon="fa-eye" title="Show Legend"></md-icon>
-            <md-icon md-theme="white" class="fa md-primary" ng-show="showLegend" md-font-icon="fa-eye-slash" title="Hide Legend"></md-icon>
+                   ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true" class="md-fab md-mini md-primary">
+            <md-icon class="fa center-md-icon" ng-if="!showLegend" md-font-icon="fa-eye"></md-icon>
+            <md-icon class="fa center-md-icon" ng-if="showLegend" md-font-icon="fa-eye-slash"></md-icon>
         </md-button>
         <div class="md-whiteframe-z3" layout="column" ng-show="showLegend" style="background: white; padding: 8px;">
             <div layout="row" layout-align="start center"><div class="color-patch unknown-child" title="Grey"></div><span>Unknown</span></div>
@@ -17,20 +16,38 @@
             <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
         </div>
     </div>
-    <div layout="row" md-theme="{{themePrimaryButtons}}">
-        <input type="text" style="width: 600px;" ng-model="vm.regex" placeholder="Enter Regex" ng-init="vm.regex = 'anc.bms_kapb_*'"/>
-        <md-button id="btnBuildView" ng-click="vm.buildView(vm.regex)"  class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">Build View</md-button>
-    </div>
-    <div flex layout="row" style="margin-top: 4px;">
-        <status-single-level-tree-map flex layout-mode="dice" style="display: inline-block; margin-left: 4px; margin-right:4px;"
-                                      ng-repeat="tree in vm.customStatusTrees" data="tree"
-                                      ng-mouseenter="tree.showHideButton = true" ng-mouseleave="tree.showHideButton = false">
-            <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-show="tree.showHideButton"
-                       title="Remove Sensors"
-                       style="position: absolute; right: 4px; height: 35px; width: 35px;" ng-click="vm.removeStatusTree(tree);">
-                <span class="fa fa-eye-slash"></span>
+    <md-toolbar layout="row" layout-align="center center" md-theme="{{themePrimary}}" class="custom-health-toolbar md-whiteframe-z1"
+        ng-init="vm.showToolbar = true" ng-show="vm.showToolbar" style="width: calc(100% - 8px);">
+
+        <md-select ng-model="vm.resource" style="margin-left: 8px; margin-right:4px; padding: 0; color: white"
+                   class="" placeholder="Select a Resource">
+            <md-option ng-value="resource.name" ng-repeat="resource in vm.resourcesNames | orderBy:'name' track by $index">{{resource.name}}</md-option>
+        </md-select>
+
+        <input type="text" style="width: 300px; height: 32px; color: #333333;" ng-model="vm.regex" placeholder="Enter Sensor Regex"/>
+        <span style="margin-left: 8px;">Width:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedWidth" placeholder="View Width"/>
+        <span style="margin-left: 8px;">Height:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedHeight" placeholder="View Height"/>
+        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.buildView(vm.resource, vm.regex)"
+                   class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">
+            Add View
+        </md-button>
+        <span flex></span>
+    </md-toolbar>
+    <div style="margin-top: 4px; position: relative; display:inline-block" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
+        <status-single-level-tree-map layout-mode="dice" height="vm.selectedHeight" width="vm.selectedWidth"
+                                      style="position: relative; display: inline-block; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
+                                      ng-repeat="tree in vm.customStatusTrees track by $index" data="tree">
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button custom-health-hide-tree"
+                       title="Remove Sensors" ng-click="vm.removeStatusTree(tree);">
+                <md-icon class="fa center-md-icon" md-font-icon="fa-eye-slash"></md-icon>
             </md-button>
         </status-single-level-tree-map>
     </div>
+    <md-button flex md-theme="{{themePrimaryButtons}}" class="md-fab md-mini md-primary custom-health-hide-toolbar-button"
+               ng-click="vm.showToolbar = !vm.showToolbar;"
+               title="Hide Toolbar">
+        <md-icon class="fa center-md-icon" ng-if="!vm.showToolbar" md-font-icon="fa-chevron-down"></md-icon>
+        <md-icon class="fa center-md-icon" ng-if="vm.showToolbar" md-font-icon="fa-chevron-up"></md-icon>
+    </md-button>
     <div class="treemap-tooltip" style="visibility: hidden; background-color: #ffffff"></div>
 </div>
