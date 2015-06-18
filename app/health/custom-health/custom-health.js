@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('CustomHealthCtrl', CustomHealthCtrl);
 
-    function CustomHealthCtrl(MonitorService, $scope, $rootScope, $interval, SensorsService, KatGuiUtil) {
+    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -97,7 +97,7 @@
 
             $scope.itemsToUpdate[sensorNameList[1]] = sensor;
             if (!vm.stopUpdating) {
-                vm.stopUpdating = $interval(vm.applyPendingUpdates, 200);
+                vm.stopUpdating = $interval(vm.applyPendingUpdates, $rootScope.sensorListStrategyInterval);
             }
         });
 
@@ -108,11 +108,13 @@
             var attributes = Object.keys($scope.itemsToUpdate);
             if (attributes.length > 0) {
                 for (var i = 0; i < attributes.length; i++) {
-                    var queryString = '#' + attributes[i];
+                    var sensorName = $scope.itemsToUpdate[attributes[i]].name.split(':')[1].replace(/\./g, '-');
+                    var queryString = '.' + sensorName;
                     var resultList = d3.selectAll(queryString);
-                    //difficult to test d3 classes here, so ignore it for now
-                    resultList.attr('class', function (d) {
-                        return vm.setClassesOfSensor(d, attributes[i]);
+                    resultList[0].forEach(function (element) {
+                        d3.select(element).attr('class', function (d) {
+                            return vm.setClassesOfSensor(d, attributes[i], sensorName);
+                        });
                     });
                     //if (resultList[0].length === 0) {
                     ////this just means that the status view is still in the process of being built and drawn in the DOM,
@@ -128,17 +130,16 @@
             }
         };
 
-        vm.setClassesOfSensor = function (d, sensorToUpdateName) {
+        vm.setClassesOfSensor = function (d, sensorToUpdateName, fixedClassName) {
             if (d.depth > 0) {
                 if (!d.sensorValue) {
                     d.sensorValue = {};
                 }
-                var statusClassResult = "inactive-child";
+                var statusClassResult = fixedClassName;
                 if ($scope.itemsToUpdate[sensorToUpdateName]) {
                     d.sensorValue = $scope.itemsToUpdate[sensorToUpdateName].value;
                     if (d.sensorValue) {
-                        statusClassResult = d.sensorValue.status + '-child';
-                        delete $scope.itemsToUpdate[sensorToUpdateName];
+                        statusClassResult += ' ' + d.sensorValue.status + '-child';
                     }
                 } else {
                     //delete $scope.itemsToUpdate[sensorToUpdateName];
@@ -148,16 +149,11 @@
                 statusClassResult += d.dx > 300 ? " child-big-text" : " child";
                 return statusClassResult;
             } else if (d.sensorValue) {
-                delete $scope.itemsToUpdate[d.name + '_' + d.sensor];
-                return d.sensorValue.status + '-child parent';
-            } else {
-                delete $scope.itemsToUpdate[sensorToUpdateName];
-                console.error('deleting a sensor update because the sensorValue is null');
-                console.error(d);
+                return fixedClassName + ' ' + d.sensorValue.status + '-child parent';
             }
         };
 
-        vm.buildView = function (resource, regex, layoutPosition) {
+        vm.buildView = function (resource, regex) {
             var sensorRegex = resource + '.' + regex;
             if (vm.regexStrings.indexOf(sensorRegex) === -1) {
                 vm.regexStrings.push(sensorRegex);
@@ -168,22 +164,20 @@
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
                     $rootScope.sensorListStrategyInterval,
-                    true);
+                    true
+                );
             }
         };
 
+        //note: we dont unsubscribe from sensors here because if we have duplicates on the view,
+        //the duplicate will be in black and unsubscribing from that sensor would mean the other sensors with the same name
+        //will not get the updates any longer
         vm.removeStatusTree = function (tree) {
-            //MonitorService.unsubscribe(tree.name);
             vm.regexStrings.splice(vm.regexStrings.indexOf(tree.name), 1);
-            vm.customStatusTrees.splice(vm.customStatusTrees.indexOf(tree));
+            vm.customStatusTrees.splice(vm.customStatusTrees.indexOf(tree), 1);
         };
 
         $scope.$on('$destroy', function () {
-            if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
-            }
-
-            SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*", vm.guid);
             vm.unbindSetSensorStrategy();
             vm.unbindSensorsUpdate();
             if (vm.stopUpdating) {

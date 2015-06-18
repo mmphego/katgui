@@ -117,21 +117,25 @@ angular.module('katGui.d3')
                                 .enter().append("svg:g")
                                 .attr("class", function (d) {
                                     var classString = "";
-                                    if (d.objectValue) {
+                                    if (angular.isDefined(d.objectValue)) {
                                         classString += d.objectValue.status + '-child';
                                     } else if (d.sensorValue) {
                                         classString += d.sensorValue.status + '-child';
                                     } else {
                                         classString += 'inactive-child';
                                     }
-                                    classString += d.dx > 300 ? " child-big-text" : " child";
+                                    classString += d.dx > 300 ? " child-big-text" : " child ";
+                                    if (angular.isDefined(d.objectValue)) {
+                                        classString += " " + d.objectValue.parent_name;
+                                        classString += "-" + d.sensor.replace(/\./g, "_");
+                                    } else {
+                                        classString += " " + d.sensor.split('.')[0];
+                                        classString += "-" + d.sensor.split('.')[1];
+                                    }
                                     return classString;
                                 })
                                 .attr("transform", function (d) {
                                     return "translate(" + d.x + "," + d.y + ")";
-                                })
-                                .attr("id", function (d) {
-                                    return d.sensor.replace(".", "_");
                                 })
                                 .call(function (d) {
                                     d3Util.applyTooltipValues(d, tooltip);
