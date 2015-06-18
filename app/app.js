@@ -363,7 +363,7 @@
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider,
-                             USER_ROLES) {
+                             USER_ROLES, $locationProvider) {
 
         //disable this in production for performance boost
         //batarang uses this for scope inspection
@@ -373,6 +373,8 @@
             $httpProvider.defaults.useXDomain = true;
             delete $httpProvider.defaults.headers.common['X-Requested-With'];
         }
+
+        $locationProvider.html5Mode(true);
 
         configureThemes($mdThemingProvider);
 
