@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('CustomHealthCtrl', CustomHealthCtrl);
 
-    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil) {
+    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams, $timeout) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -49,7 +49,7 @@
 
         vm.initSensors = function () {
             if (vm.regexStrings.length > 0) {
-                //SensorsService.connectResourceSensorListeners(vm.resourceSensorsBeingDisplayed, vm.guid);
+                //todo init sensors on reconnect
             }
         };
 
@@ -64,16 +64,20 @@
 
             for (var i = 0; i < vm.regexStrings.length; i++) {
 
-                if (!vm.customStatusTrees[i]) {
+                if (!_.findWhere(vm.customStatusTrees, {name: vm.regexStrings[i].name})) {
                     vm.customStatusTrees[i] = {
-                        name: vm.regexStrings[i],
+                        name: vm.regexStrings[i].name,
+                        resource: vm.regexStrings[i].name.split('.')[0],
+                        size: vm.regexStrings[i].size,
                         sensor: '',
                         children: []
                     };
                 }
 
                 for (var k in message.sensors) {
-                    if (!_.findWhere(vm.customStatusTrees[i].children, {name: message.sensors[k][2]})) {
+                    if (message.sensors[k][0].parent_name === vm.customStatusTrees[i].resource
+                        && (message.sensors[k][2]).indexOf(vm.customStatusTrees[i].name.split('.')[1]) !== -1
+                        && !_.findWhere(vm.customStatusTrees[i].children, {name: message.sensors[k][2]})) {
                         vm.customStatusTrees[i].children.push({
                             name: message.sensors[k][2],
                             sensor: message.sensors[k][2],
@@ -116,11 +120,6 @@
                             return vm.setClassesOfSensor(d, attributes[i], sensorName);
                         });
                     });
-                    //if (resultList[0].length === 0) {
-                    ////this just means that the status view is still in the process of being built and drawn in the DOM,
-                    ////the updates will be added in the next interval
-                    //    console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
-                    //}
                 }
             } else {
                 if (angular.isDefined(vm.stopUpdating)) {
@@ -141,10 +140,6 @@
                     if (d.sensorValue) {
                         statusClassResult += ' ' + d.sensorValue.status + '-child';
                     }
-                } else {
-                    //delete $scope.itemsToUpdate[sensorToUpdateName];
-                    //console.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
-                    //console.error(d);
                 }
                 statusClassResult += d.dx > 300 ? " child-big-text" : " child";
                 return statusClassResult;
@@ -154,8 +149,13 @@
         };
 
         vm.buildView = function (resource, regex) {
-            var sensorRegex = resource + '.' + regex;
-            if (vm.regexStrings.indexOf(sensorRegex) === -1) {
+            var sensorRegex = {
+                name: resource + '.' + regex,
+                size: {w: vm.selectedWidth, h: vm.selectedHeight},
+                sizeString: vm.selectedWidth + 'x' + vm.selectedHeight
+            };
+            var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
+            if (!existingItem) {
                 vm.regexStrings.push(sensorRegex);
                 SensorsService.connectResourceSensorNameLiveFeed(
                     resource,
@@ -173,8 +173,23 @@
         //the duplicate will be in black and unsubscribing from that sensor would mean the other sensors with the same name
         //will not get the updates any longer
         vm.removeStatusTree = function (tree) {
-            vm.regexStrings.splice(vm.regexStrings.indexOf(tree.name), 1);
-            vm.customStatusTrees.splice(vm.customStatusTrees.indexOf(tree), 1);
+            var existingItem = _.findWhere(vm.regexStrings, {name: tree.name});
+            if (existingItem) {
+                vm.regexStrings.splice(vm.regexStrings.indexOf(existingItem), 1);
+                vm.customStatusTrees.splice(vm.customStatusTrees.indexOf(tree), 1);
+            }
+        };
+
+        vm.exportToUrl = function () {
+            var url = $location.absUrl();
+            if (url.indexOf('?') !== -1) {
+                url = url.split('?')[0];
+            }
+            url += '?layout=';
+            vm.regexStrings.forEach(function (item) {
+                url += item.name + ',' + item.sizeString + ';';
+            });
+            $rootScope.showSimpleDialog('Exported URL', url);
         };
 
         $scope.$on('$destroy', function () {
@@ -186,5 +201,30 @@
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
         });
+
+        if ($stateParams.layout) {
+            var lastTimeout = 200;
+            var layouts = $stateParams.layout.split(';');
+            layouts.forEach(function (layout) {
+                if (layout) {
+                    var regex = layout.split(',')[0];
+                    var size = layout.split(',')[1].split('x');
+                    var resource = regex.split('.')[0];
+                    var sensor = regex.split('.')[1];
+
+                    //todo possible timing issue between when we build the status trees
+                    //and when getting multiple setSensorStrategyMessage on rootScope
+                    $timeout(function () {
+                        vm.selectedWidth = parseInt(size[0]);
+                        vm.selectedHeight = parseInt(size[1]);
+                        vm.buildView(resource, sensor);
+                    }, lastTimeout);
+                    lastTimeout += 500;
+                }
+            });
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        }
     }
 })();

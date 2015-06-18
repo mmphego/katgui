@@ -31,10 +31,14 @@
                    class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">
             Add View
         </md-button>
+        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.exportToUrl()"
+                   class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">
+            Export to Url
+        </md-button>
         <span flex></span>
     </md-toolbar>
     <div style="margin-top: 4px; position: relative; display:inline-block" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
-        <status-single-level-tree-map layout-mode="dice" height="vm.selectedHeight" width="vm.selectedWidth"
+        <status-single-level-tree-map layout-mode="dice" height="tree.size.h" width="tree.size.w"
                                       style="position: relative; display: inline-block; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
                                       ng-repeat="tree in vm.customStatusTrees track by $index" data="tree">
             <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button custom-health-hide-tree"
