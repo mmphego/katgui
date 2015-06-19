@@ -55,10 +55,6 @@
 
             for (var i = 0; i < vm.regexStrings.length; i++) {
 
-                //if (!_.findWhere(vm.customStatusTrees, {name: vm.regexStrings[i].name})) {
-                //
-                //}
-
                 for (var k in message.sensors) {
                     if (message.sensors[k][0].parent_name === vm.regexStrings[i].name.split('.')[0]
                         && (message.sensors[k][2]).indexOf(vm.regexStrings[i].name.split('.')[1]) !== -1) {
@@ -101,7 +97,6 @@
                 vm.stopUpdating = $interval(vm.applyPendingUpdates, $rootScope.sensorListStrategyInterval);
             }
         });
-
 
         $scope.itemsToUpdate = {};
 
