@@ -115,6 +115,10 @@
             $rootScope.showAlarms = true;
         }
 
+        $rootScope.isNavbarVisible = function () {
+            return vm.showNavbar;
+        };
+
         $rootScope.showSimpleToast = function (message) {
             $mdToast.show(
                 $mdToast.simple()

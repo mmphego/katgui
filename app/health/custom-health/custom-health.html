@@ -19,7 +19,7 @@
     <md-toolbar layout="row" layout-align="center center" md-theme="{{themePrimary}}" class="custom-health-toolbar md-whiteframe-z1"
         ng-init="vm.showToolbar = true" ng-show="vm.showToolbar" style="width: calc(100% - 8px);">
 
-        <md-select ng-model="vm.resource" style="margin-left: 8px; margin-right:4px; padding: 0; color: white"
+        <md-select ng-model="vm.resource" style="margin-left: 8px; margin-right:4px; padding: 0;"
                    class="" placeholder="Select a Resource">
             <md-option ng-value="resource.name" ng-repeat="resource in vm.resourcesNames | orderBy:'name' track by $index">{{resource.name}}</md-option>
         </md-select>

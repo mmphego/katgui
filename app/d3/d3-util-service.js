@@ -76,25 +76,25 @@ angular.module('katGui.d3')
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function (d) {
                     updateTooltipValues(d, tooltip);
-                    var x = d3.event.layerX;
-                    var y = d3.event.layerY;
-                    //move the tooltip to 36,36 when we hover over the hide button
-                    //TODO: fix the logic flow of this if statement
-                    if (d3.event.layerX - d.x < 24 && d3.event.layerY - d.y < 32) {
-                        //todo rework this case for clarity, nothing should happen in this case
-                        //x = d3.x + 26;
-                        //y = d3.y + 32;
-                    } else {
-                        if (window.innerWidth - x < 320) {
-                            x = window.innerWidth - 320;
-                        }
-                        if (window.innerHeight - y < 225) {
-                            y = window.innerHeight - 225;
-                        }
-                        tooltip
-                            .style("top", (y + 5 + angular.element(document.querySelector('#ui-view-container-div')).scrollTop()) + "px")
-                            .style("left", (x + 5 + angular.element(document.querySelector('#ui-view-container-div')).scrollLeft()) + "px");
+                    var rect = d3.event.toElement.getBoundingClientRect();
+                    var offset = d3.mouse(this);
+                    var x = rect.left + offset[0];
+                    var y = rect.top + offset[1];
+
+                    if ($rootScope.isNavbarVisible()) {
+                        y -= 58;
                     }
+
+                    if (window.innerWidth - x < 320) {
+                        x = window.innerWidth - 320;
+                    }
+                    if (window.innerHeight - y < 225) {
+                        y = window.innerHeight - 225;
+                    }
+                    tooltip
+                        .style("top", (y + 15 + angular.element(document.querySelector('#ui-view-container-div')).scrollTop()) + "px")
+                        .style("left", (x + 5 + angular.element(document.querySelector('#ui-view-container-div')).scrollLeft()) + "px");
+
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });

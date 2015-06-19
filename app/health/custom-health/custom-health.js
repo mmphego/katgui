@@ -55,31 +55,37 @@
 
             for (var i = 0; i < vm.regexStrings.length; i++) {
 
-                if (!_.findWhere(vm.customStatusTrees, {name: vm.regexStrings[i].name})) {
-                    vm.customStatusTrees[i] = {
-                        name: vm.regexStrings[i].name,
-                        resource: vm.regexStrings[i].name.split('.')[0],
-                        size: vm.regexStrings[i].size,
-                        sensor: '',
-                        children: []
-                    };
-                }
+                //if (!_.findWhere(vm.customStatusTrees, {name: vm.regexStrings[i].name})) {
+                //
+                //}
 
                 for (var k in message.sensors) {
-                    if (message.sensors[k][0].parent_name === vm.customStatusTrees[i].resource
-                        && (message.sensors[k][2]).indexOf(vm.customStatusTrees[i].name.split('.')[1]) !== -1
-                        && !_.findWhere(vm.customStatusTrees[i].children, {name: message.sensors[k][2]})) {
-                        vm.customStatusTrees[i].children.push({
-                            name: message.sensors[k][2],
-                            sensor: message.sensors[k][2],
-                            sensorValue: {
-                                timestamp: message.sensors[k][0].reading[0],
-                                received_timestamp: message.sensors[k][0].reading[1],
-                                status: message.sensors[k][0].reading[2],
-                                value: message.sensors[k][0].reading[3]
-                            },
-                            objectValue: message.sensors[k][0]
-                        });
+                    if (message.sensors[k][0].parent_name === vm.regexStrings[i].name.split('.')[0]
+                        && (message.sensors[k][2]).indexOf(vm.regexStrings[i].name.split('.')[1]) !== -1) {
+
+                        if (!vm.customStatusTrees[i]) {
+                            vm.customStatusTrees[i] = {
+                                name: vm.regexStrings[i].name,
+                                resource: vm.regexStrings[i].name.split('.')[0],
+                                size: vm.regexStrings[i].size,
+                                sensor: '',
+                                children: []
+                            };
+                        }
+
+                        if (!_.findWhere(vm.customStatusTrees[i].children, {name: message.sensors[k][2]})) {
+                            vm.customStatusTrees[i].children.push({
+                                name: message.sensors[k][2],
+                                sensor: message.sensors[k][2],
+                                sensorValue: {
+                                    timestamp: message.sensors[k][0].reading[0],
+                                    received_timestamp: message.sensors[k][0].reading[1],
+                                    status: message.sensors[k][0].reading[2],
+                                    value: message.sensors[k][0].reading[3]
+                                },
+                                objectValue: message.sensors[k][0]
+                            });
+                        }
                     }
                     SensorsService.subscribe(message.resource + '.' + message.sensors[k][2], vm.guid);
                 }
@@ -221,6 +227,6 @@
             }
         }
 
-        $timeout(vm.connectListeners, 200);
+        $timeout(vm.connectListeners, 500);
     }
 })();
