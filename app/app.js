@@ -115,6 +115,10 @@
             $rootScope.showAlarms = true;
         }
 
+        $rootScope.isNavbarVisible = function () {
+            return vm.showNavbar;
+        };
+
         $rootScope.showSimpleToast = function (message) {
             $mdToast.show(
                 $mdToast.simple()
@@ -362,9 +366,10 @@
         });
     }
 
-    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider,
-                             USER_ROLES) {
+    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider,
+                             $httpProvider, USER_ROLES, $locationProvider, $urlMatcherFactoryProvider) {
 
+        $urlMatcherFactoryProvider.strictMode(false);
         //disable this in production for performance boost
         //batarang uses this for scope inspection
         if (window.location.host !== 'localhost:8000') {
@@ -373,8 +378,11 @@
             $httpProvider.defaults.useXDomain = true;
             delete $httpProvider.defaults.headers.common['X-Requested-With'];
         }
-
+        //todo nginx needs the following config before we can switch on html5Mode
+        //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
+        //$locationProvider.html5Mode(true);
         configureThemes($mdThemingProvider);
+
 
         $stateProvider.state('login', {
             url: '/login',
@@ -441,7 +449,7 @@
             }
         });
         $stateProvider.state('customHealth', {
-            url: '/custom-health',
+            url: '/custom-health?layout',
             templateUrl: 'app/health/custom-health/custom-health.html',
             title: 'Custom Health',
             data: {

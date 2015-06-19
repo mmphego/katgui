@@ -115,6 +115,8 @@
                             console.error(messageObj);
                         }
                     });
+                } else if (messages.result.id === 'set_sensor_strategy') {
+                    $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else if (messages.result) {
 
                     if (messages.result.list_resources) {
@@ -194,7 +196,7 @@
             }
         };
 
-        api.connectResourceSensorNameLiveFeed = function (resource, sensorName, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
+        api.connectResourceSensorNameLiveFeed = function (resource, sensorName, guid, strategyType, strategyIntervalMin, strategyIntervalMax, skipSubscribe) {
             api.sendSensorsCommand('set_sensor_strategy',
                 [
                     guid,
@@ -204,8 +206,9 @@
                     strategyIntervalMin,
                     strategyIntervalMax
                 ]);
-
-            api.subscribe(resource + '.' + sensorName, guid);
+            if (!skipSubscribe) {
+                api.subscribe(resource + '.' + sensorName, guid);
+            }
         };
 
         api.connectResourceSensorNamesLiveFeedWithList = function (resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {

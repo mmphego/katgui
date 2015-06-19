@@ -22,11 +22,14 @@
             var attributes = Object.keys($scope.itemsToUpdate);
             if (attributes.length > 0) {
                 for (var i = 0; i < attributes.length; i++) {
-                    var queryString = '#' + attributes[i];
+                    var sensorName = $scope.itemsToUpdate[attributes[i]].name;
+                    sensorName = sensorName.replace(/\./g, '-');
+                    var queryString = '.' + sensorName;
                     var resultList = d3.selectAll(queryString);
-                    //difficult to test d3 classes here, so ignore it for now
-                    resultList.attr('class', function (d) {
-                        return vm.setClassesOfSensor(d, attributes[i]);
+                    resultList[0].forEach(function (element) {
+                        d3.select(element).attr('class', function (d) {
+                            return vm.setClassesOfSensor(d, attributes[i], sensorName);
+                        });
                     });
                     //if (resultList[0].length === 0) {
                     ////this just means that the status view is still in the process of being built and drawn in the DOM,
@@ -42,31 +45,26 @@
             }
         };
 
-        vm.setClassesOfSensor = function (d, sensorToUpdateName) {
+        vm.setClassesOfSensor = function (d, sensorToUpdateName, fixedClassName) {
             if (d.depth > 0) {
                 if (!d.sensorValue) {
                     d.sensorValue = {};
                 }
-                var statusClassResult = "inactive-child";
+                var statusClassResult = fixedClassName;
                 if ($scope.itemsToUpdate[sensorToUpdateName]) {
                     d.sensorValue = $scope.itemsToUpdate[sensorToUpdateName].sensorValue;
                     if (d.sensorValue) {
-                        statusClassResult = d.sensorValue.status + '-child child';
-                        delete $scope.itemsToUpdate[sensorToUpdateName];
+                        statusClassResult += ' ' + d.sensorValue.status + '-child';
                     }
                 } else {
-                    delete $scope.itemsToUpdate[sensorToUpdateName];
-                    console.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
-                    console.error(d);
+                    //delete $scope.itemsToUpdate[sensorToUpdateName];
+                    //console.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
+                    //console.error(d);
                 }
+                statusClassResult += d.dx > 300 ? " child-big-text" : " child";
                 return statusClassResult;
             } else if (d.sensorValue) {
-                delete $scope.itemsToUpdate[d.name + '_' + d.sensor];
-                return d.sensorValue.status + '-child parent';
-            } else {
-                delete $scope.itemsToUpdate[sensorToUpdateName];
-                console.error('deleting a sensor update because the sensorValue is null');
-                console.error(d);
+                return fixedClassName + ' ' + d.sensorValue.status + '-child parent';
             }
         };
 
