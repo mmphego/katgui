@@ -60,7 +60,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT) {
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, $log) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -127,7 +127,7 @@
                     .hideDelay(TOAST_HIDE_DELAY)
             );
 
-            console.log('Showing toast-message: ' + message);
+            $log.info('Showing toast-message: ' + message);
         };
 
         $rootScope.connectEvents = function () {
@@ -143,10 +143,10 @@
                     if (vm.connectMonitorInterval) {
                         $interval.cancel(vm.connectMonitorInterval);
                         vm.connectMonitorInterval = null;
-                        console.log('Reconnected Monitor Connection.');
+                        $log.info('Reconnected Monitor Connection.');
                     }
                 }, function () {
-                    console.error('Could not establish Monitor connection. Retrying every 10 seconds.');
+                    $error('Could not establish Monitor connection. Retrying every 10 seconds.');
                     if (!vm.connectMonitorInterval) {
                         vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
                     }
@@ -174,7 +174,7 @@
             MonitorService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        console.log('Monitor connection timeout! Attempting to reconnect...');
+                        $log.info('Monitor connection timeout! Attempting to reconnect...');
                         if (!vm.connectMonitorInterval) {
                             vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
                             $rootScope.connectEvents();
@@ -268,7 +268,7 @@
                     targetEvent: event
                 });
 
-            console.log('Showing dialog, title: ' + title + ', message: ' + content);
+            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
         };
 
         $rootScope.showSBDetails = function (sb, event) {
@@ -329,11 +329,11 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    console.log('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
+                    $log.info('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
                     moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
-                    console.error("Error syncing time with KATPortal! " + error);
+                    $log.error("Error syncing time with KATPortal! " + error);
                     $rootScope.serverTimeOnLoad = 0;
                     vm.localSiderealTime = "Error syncing time!";
                 });
@@ -344,8 +344,8 @@
                     $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
                 })
                 .error(function (error) {
-                    console.error("Could not retrieve site location from config server, LST will not display correctly. ");
-                    console.error(error);
+                    $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
+                    $log.error(error);
                 });
         };
 
@@ -596,8 +596,8 @@
         });
 
         $rootScope.$on('$stateChangeError', function (event) {
-            console.error('$stateChangeError - debugging required. Event: ');
-            console.error(event);
+            $log.error('$stateChangeError - debugging required. Event: ');
+            $log.error(event);
         });
     }
 

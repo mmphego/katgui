@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ConfigService', ConfigService);
 
-    function ConfigService($q, $http, SERVER_URL, $rootScope) {
+    function ConfigService($q, $http, SERVER_URL, $rootScope, $log) {
 
         var urlBase = SERVER_URL + '/katconf/api/v1';
         var api = {};
@@ -17,7 +17,7 @@
                     api.KATObsPortalURL = "http://" + JSON.parse(result);
                 })
                 .error(function (message) {
-                    console.error(message);
+                    $log.error(message);
                 });
         };
 
@@ -41,7 +41,7 @@
                     deferred.resolve(api.receptorList);
                 })
                 .error(function (result) {
-                    console.error(result);
+                    $log.error(result);
                     deferred.reject();
                 });
 

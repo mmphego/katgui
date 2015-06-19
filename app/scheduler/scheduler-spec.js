@@ -14,7 +14,6 @@ describe('SchedulerHomeCtrl', function () {
         MonitorService = _MonitorService_;
         ConfigService = _ConfigService_;
         ObservationScheduleService.connectListener = function () {
-            console.log('spying');
         };
         ObservationScheduleService.disconnectListener = function () {
         };

@@ -2,10 +2,11 @@ describe('ReceptorStateService', function () {
 
     beforeEach(module('katGui.services'));
 
-    var MonitorService, ConfigService, ReceptorStateService, scope, timeout, q;
+    var MonitorService, ConfigService, ReceptorStateService, scope, timeout, q, $log;
 
-    beforeEach(inject(function ($rootScope, _$q_, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _ReceptorStateService_) {
+    beforeEach(inject(function ($rootScope, _$q_, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _ReceptorStateService_, _$log_) {
         timeout = _$timeout_;
+        $log = _$log_;
         q = _$q_;
         MonitorService = _MonitorService_;
         ReceptorStateService = _ReceptorStateService_;
@@ -37,7 +38,7 @@ describe('ReceptorStateService', function () {
         var getReceptorListSpy = spyOn(ConfigService, 'getReceptorList').and.returnValue(deferred.promise);
         ReceptorStateService.getReceptorList();
         expect(getReceptorListSpy).toHaveBeenCalled();
-        var errorSpy = spyOn(console, 'error');
+        var errorSpy = spyOn($log, 'error');
         var showSimpleDialogSpy = spyOn(scope.$root, 'showSimpleDialog');
         deferred.reject('test error message');
         scope.$digest();

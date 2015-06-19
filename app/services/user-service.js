@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserService', UserService);
 
-    function UserService($http, $q, SERVER_URL, $rootScope) {
+    function UserService($http, $q, SERVER_URL, $rootScope, $log) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katauth/api/v1';
@@ -23,7 +23,7 @@
                         });
                         def.resolve();
                     } else {
-                        console.error('Could not retrieve any users.');
+                        $log.error('Could not retrieve any users.');
                         def.reject();
                     }
                 });

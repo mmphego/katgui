@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval) {
+    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval, $log) {
 
         var vm = this;
         vm.receptorsData = [];
@@ -37,7 +37,7 @@
                         $rootScope.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
-                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }

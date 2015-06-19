@@ -1,7 +1,7 @@
 /*jshint loopfunc: true */
 angular.module('katGui.d3')
 
-    .directive('receptorHealthList', function ($rootScope, d3Util, $timeout, $interval) {
+    .directive('receptorHealthList', function ($rootScope, d3Util, $timeout, $interval, $log) {
         return {
             restrict: 'E',
             template: '<div ng-repeat="receptor in vm.receptorList" ng-if="vm.receptorList.length > 0" ng-switch="vm.mapType" style="display: inline">' +
@@ -35,7 +35,7 @@ angular.module('katGui.d3')
                                 });
                                 if (resultList[0].length === 0) {
                                     delete scope.itemsToUpdate[attributes[i]];
-                                    //console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
+                                    //$log.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
                                 }
                             }
                         } else {
@@ -60,8 +60,8 @@ angular.module('katGui.d3')
                                 delete scope.itemsToUpdate[sensorToUpdateName];
                             } else {
                                 delete scope.itemsToUpdate[sensorToUpdateName];
-                                console.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
-                                console.error(d);
+                                $log.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
+                                $log.error(d);
                             }
                             return statusClassResult;
                         } else if (d.sensorValue) {
@@ -69,8 +69,8 @@ angular.module('katGui.d3')
                             return d.sensorValue.status + '-child parent';
                         } else {
                             delete scope.itemsToUpdate[sensorToUpdateName];
-                            console.error('deleting a sensor update because the sensorValue is null');
-                            console.error(d);
+                            $log.error('deleting a sensor update because the sensorValue is null');
+                            $log.error(d);
                         }
                     }
 
