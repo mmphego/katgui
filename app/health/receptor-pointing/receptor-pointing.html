@@ -1,4 +1,5 @@
-<div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative;">
+<div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative;"
+     ng-class="{'connection-lost-bg':vm.connectionLost}">
 
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 8px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()">
