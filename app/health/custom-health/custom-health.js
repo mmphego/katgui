@@ -15,7 +15,6 @@
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
-                    vm.initSensors();
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
@@ -43,14 +42,6 @@
                         }
                     }
                 });
-        };
-
-        vm.connectListeners();
-
-        vm.initSensors = function () {
-            if (vm.regexStrings.length > 0) {
-                //todo init sensors on reconnect
-            }
         };
 
         SensorsService.listResources()
@@ -198,6 +189,9 @@
             if (vm.stopUpdating) {
                 $interval.cancel(vm.stopUpdating);
             }
+            if (vm.connectInterval) {
+                $interval.cancel(vm.connectInterval);
+            }
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
         });
@@ -226,5 +220,7 @@
                 $scope.$digest();
             }
         }
+
+        $timeout(vm.connectListeners, 200);
     }
 })();
