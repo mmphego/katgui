@@ -42,7 +42,9 @@
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
-                        $rootScope.showSimpleToast('Reconnected :)');
+                        if (!vm.disconnectIssued) {
+                            $rootScope.showSimpleToast('Reconnected :)');
+                        }
                     }
                 }, function () {
                     console.error('Could not establish sensor connection. Retrying every 10 seconds.');
@@ -69,7 +71,9 @@
         vm.connectListeners();
 
         vm.initSensors = function () {
-            SensorsService.connectResourceSensorListeners(vm.resourceSensorsBeingDisplayed, vm.guid);
+            if (vm.resourceSensorsBeingDisplayed.length > 0) {
+                SensorsService.connectResourceSensorListeners(vm.resourceSensorsBeingDisplayed, vm.guid);
+            }
         };
 
         vm.setSensorsOrderBy = function (column) {
@@ -111,7 +115,7 @@
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 vm.limitTo = 50;
                 SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
-                SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*');
+                SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*', vm.guid);
                 vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
                 vm.clearChart();
             }
@@ -128,7 +132,7 @@
                     });
             } else {
                 vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
-                SensorsService.subscribe(resourceName + '.*');
+                SensorsService.subscribe(resourceName + '.*', vm.guid);
                 if (!$scope.$$phase) {
                     $scope.$digest();
                 }
@@ -230,7 +234,7 @@
                 SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
             }
 
-            SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*");
+            SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*", vm.guid);
             unbindUpdate();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();

@@ -267,7 +267,7 @@
         };
 
         api.removeResourceListeners = function (resourceName) {
-            api.sendSensorsCommand('remove_resource_listeners', [resourceName]);
+            api.sendSensorsCommand('remove_sensor_listeners_from_resource', [resourceName]);
         };
 
         api.sendSensorsCommand = function (method, params, desired_jsonRPCId) {
