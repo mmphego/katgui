@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService, $log) {
+    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService, $log, $interval) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
@@ -20,6 +20,17 @@
         api.allocations = [];
         api.pendingVerificationSBIds = {};
         api.schedulerModes = {};
+        //websocket default heartbeat is every 30 seconds
+        //so allow for 35 seconds before alerting about timeout
+        api.heartbeatTimeOutLimit = 35000;
+        api.checkAliveConnectionInterval = 10000;
+
+        api.getTimeoutPromise = function () {
+            if (!api.deferredMap['timeoutDefer']) {
+                api.deferredMap['timeoutDefer'] = $q.defer();
+            }
+            return api.deferredMap['timeoutDefer'].promise;
+        };
 
         api.onSockJSOpen = function () {
             if (api.connection && api.connection.readyState) {
@@ -44,6 +55,19 @@
         api.onSockJSClose = function () {
             $log.info('Disconnected Observation Schedule Connection.');
             api.connection = null;
+            api.lastHeartBeat = null;
+        };
+
+        api.checkAlive = function () {
+            if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
+                $log.warn('Observation Schedule Connection Heartbeat timeout!');
+                api.deferredMap['timeoutDefer'].resolve();
+                api.deferredMap['timeoutDefer'] = null;
+            }
+        };
+
+        api.onSockJSHeartbeat = function () {
+            api.lastHeartBeat = new Date();
         };
 
         api.onSockJSMessage = function (e) {
@@ -295,9 +319,11 @@
                 } else if (result.session_id) {
                     $log.info('Observation Schedule Connection Authenticated.');
                     api.connection.authorized = true;
+                    api.deferredMap['connectDefer'].resolve();
                 } else {
                     $log.error('Observation Schedule Connection Authentication failed!.');
                     api.connection.authorized = false;
+                    api.deferredMap['connectDefer'].reject();
                 }
 
                 if (api.deferredMap[jsonData.id]) {
@@ -321,17 +347,28 @@
         }
 
         api.connectListener = function () {
+            api.deferredMap['connectDefer'] = $q.defer();
             $log.info('Observation Schedule Connecting...');
             api.connection = new SockJS(urlBase + '/obs-sched');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
             api.connection.onclose = api.onSockJSClose;
-            return api.connection !== null;
+            api.connection.onheartbeat = api.onSockJSHeartbeat;
+            api.lastHeartBeat = new Date();
+            if (!api.checkAliveInterval) {
+                api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+            } else {
+                $interval.cancel(api.checkAliveInterval);
+                api.checkAliveInterval = null;
+            }
+            return api.deferredMap['connectDefer'].promise;
         };
 
         api.disconnectListener = function () {
             if (api.connection) {
                 api.connection.close();
+                $interval.cancel(api.checkAliveInterval);
+                api.checkAliveInterval = null;
             } else {
                 $log.error('Attempting to disconnect an already disconnected connection!');
             }

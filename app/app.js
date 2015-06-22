@@ -107,6 +107,7 @@
         vm.userCanOperate = false;
         vm.userLoggedIn = false;
         vm.actionMenuOpen = false;
+        vm.connectionToMonitorLost = false;
         $rootScope.toastPosition = 'bottom right';
         $rootScope.alarmsData = AlarmsService.alarmsData;
 
@@ -143,12 +144,14 @@
                     if (vm.connectMonitorInterval) {
                         $interval.cancel(vm.connectMonitorInterval);
                         vm.connectMonitorInterval = null;
+                        vm.connectionToMonitorLost = false;
                         $log.info('Reconnected Monitor Connection.');
                     }
                 }, function () {
-                    $error('Could not establish Monitor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish Monitor connection. Retrying every 10 seconds.');
                     if (!vm.connectMonitorInterval) {
                         vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
+                        vm.connectionToMonitorLost = true;
                     }
                 });
             vm.handleMonitorSocketTimeout();
@@ -177,6 +180,7 @@
                         $log.info('Monitor connection timeout! Attempting to reconnect...');
                         if (!vm.connectMonitorInterval) {
                             vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
+                            vm.connectionToMonitorLost = true;
                             $rootScope.connectEvents();
                         }
                     }
