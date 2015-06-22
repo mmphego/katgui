@@ -1,4 +1,4 @@
-<div layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; overflow: auto; padding: 8px;"
+<div flex layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; overflow: auto; padding: 8px;"
      ng-class="{'connection-lost-bg':vm.connectionLost}">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
@@ -38,8 +38,8 @@
         </md-button>
         <span flex></span>
     </md-toolbar>
-    <div style="margin-top: 4px; position: relative; display:inline-block" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
-        <status-single-level-tree-map layout-mode="dice" height="tree.size.h" width="tree.size.w"
+    <div flex style="margin-top: 4px; position: relative; display:inline-block; overflow: auto" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
+        <status-single-level-tree-map relative-draggable layout-mode="dice" height="tree.size.h" width="tree.size.w"
                                       style="position: relative; display: inline-block; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
                                       ng-repeat="tree in vm.customStatusTrees track by $index" data="tree">
             <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button custom-health-hide-tree"
