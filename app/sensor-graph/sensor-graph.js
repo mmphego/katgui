@@ -127,6 +127,21 @@
             }
         };
 
+        vm.relativeTimeToSeconds = function (count, type) {
+            switch (type) {
+                case 's':
+                    return (count);
+                case 'm':
+                    return (60 * count);
+                case 'h':
+                    return (60 * 60 * count);
+                case 'd':
+                    return (60 * 60 * 24 * count);
+                default:
+                    return (count);
+            }
+        };
+
         vm.clearData = function () {
             vm.sensorNames.forEach(function (item) {
                 var sensorName = item.sensor.katcp_sensor_name.substr(item.sensor.katcp_sensor_name.indexOf('.') + 1);
@@ -224,7 +239,12 @@
             if (vm.liveData && !angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.sensor}))) {
                 vm.sensorNames.push({name: sensor.sensor, liveData: vm.liveData, sensor: sensor});
             }
-            DataService.findSensor(sensor.sensor, startDate, endDate, 1000, 'ms', 'json', vm.sensorType)
+            var interval = null;
+            if (vm.sensorType === 'numeric') {
+                interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
+            }
+
+            DataService.findSensor(sensor.sensor, startDate, endDate, 5000, 'ms', 'json', interval)
                 .success(function (result) {
                     vm.waitingForSearchResult = false;
                     var newData = [];
