@@ -35,7 +35,6 @@ describe('ControlService', function () {
     var scope, ControlService, httpBackend, q, timeout;
 
     beforeEach(inject(function ($rootScope, _ControlService_, _$injector_, _$q_, _$timeout_) {
-        spyOn(console, 'log');
         timeout = _$timeout_;
         q = _$q_;
         ControlService = _ControlService_;
@@ -79,12 +78,6 @@ describe('ControlService', function () {
         var closeSpy = spyOn(ControlService.connection, 'close');
         ControlService.disconnectListener();
         expect(closeSpy).toHaveBeenCalled();
-    });
-
-    it('should not disconnect the connection when there is no connection', function () {
-        spyOn(console, 'error');
-        ControlService.disconnectListener();
-        expect(console.error).toHaveBeenCalledWith('Attempting to disconnect an already disconnected connection!');
     });
 
     it('should authenticate the socket connection on socket open when connection is in readyState', function () {

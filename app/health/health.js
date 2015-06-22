@@ -34,7 +34,7 @@
                     //if (resultList[0].length === 0) {
                     ////this just means that the status view is still in the process of being built and drawn in the DOM,
                     ////the updates will be added in the next interval
-                    //    console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
+                    //    $log.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
                     //}
                 }
             } else {
@@ -58,8 +58,8 @@
                     }
                 } else {
                     //delete $scope.itemsToUpdate[sensorToUpdateName];
-                    //console.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
-                    //console.error(d);
+                    //$log.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
+                    //$log.error(d);
                 }
                 statusClassResult += d.dx > 300 ? " child-big-text" : " child";
                 return statusClassResult;

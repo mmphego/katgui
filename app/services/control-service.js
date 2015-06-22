@@ -4,7 +4,7 @@
         .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
-    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout) {
+    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout, $log) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
@@ -12,13 +12,13 @@
 
         api.onSockJSOpen = function () {
             if (api.connection && api.connection.readyState) {
-                console.log('Control Connection Established. Authenticating...');
+                $log.info('Control Connection Established. Authenticating...');
                 api.authenticateSocketConnection();
             }
         };
 
         api.onSockJSClose = function () {
-            console.log('Disconnecting Control Connection');
+            $log.info('Disconnecting Control Connection');
             api.connection = null;
         };
 
@@ -31,16 +31,16 @@
             }
             else if (result && result.result.session_id) {
                 api.connection.authorized = true;
-                console.log('Control Connection Established. Authenticated.');
+                $log.info('Control Connection Established. Authenticated.');
             } else {
                 //bad auth response
                 api.connection.authorized = false;
-                console.log('Control Connection Established. Authentication failed.');
+                $log.info('Control Connection Established. Authentication failed.');
             }
         };
 
         api.connectListener = function () {
-            console.log('Control Connecting...');
+            $log.info('Control Connecting...');
             api.connection = new SockJS(urlBase + '/control');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
@@ -53,7 +53,7 @@
             if (api.connection) {
                 api.connection.close();
             } else {
-                console.error('Attempting to disconnect an already disconnected connection!');
+                $log.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 

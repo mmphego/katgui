@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('CustomHealthCtrl', CustomHealthCtrl);
 
-    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams, $timeout) {
+    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams, $timeout, $log) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -23,7 +23,7 @@
                         }
                     }
                 }, function () {
-                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }

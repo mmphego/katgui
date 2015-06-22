@@ -2,7 +2,7 @@
     angular.module('katGui.admin', ['katGui.services', 'katGui.util'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl($scope, UserService, KatGuiUtil, $mdDialog, $rootScope) {
+    function AdminCtrl($scope, UserService, KatGuiUtil, $mdDialog, $rootScope, $log) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
@@ -149,7 +149,7 @@
                         $rootScope.showSimpleToast('Password successfully reset.');
                     }, function (result) {
                         $rootScope.showSimpleToast('There was an error resetting the password.');
-                        console.error(result);
+                        $log.error(result);
                     });
                 }, function () {
                     $rootScope.showSimpleToast('Cancelled Password reset.');

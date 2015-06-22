@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval, $log) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
@@ -31,7 +31,7 @@
             };
 
             if (api.connection === null) {
-                console.error('No Sensors Connection Present for subscribing, ignoring command for pattern ' + pattern);
+                $log.error('No Sensors Connection Present for subscribing, ignoring command for pattern ' + pattern);
             } else if (api.connection.readyState && api.connection.authorized) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
@@ -50,7 +50,7 @@
             };
 
             if (api.connection === null) {
-                console.error('No Sensors Connection Present for unsubscribing, ignoring command for pattern ' + pattern);
+                $log.error('No Sensors Connection Present for unsubscribing, ignoring command for pattern ' + pattern);
             } else if (api.connection.readyState && api.connection.authorized) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
@@ -62,20 +62,20 @@
 
         api.onSockJSOpen = function () {
             if (api.connection && api.connection.readyState) {
-                console.log('Sensors Connection Established. Authenticating...');
+                $log.info('Sensors Connection Established. Authenticating...');
                 api.authenticateSocketConnection();
             }
         };
 
         api.onSockJSClose = function () {
-            console.log('Disconnecting Sensors Connection.');
+            $log.info('Disconnecting Sensors Connection.');
             api.connection = null;
             api.lastHeartBeat = null;
         };
 
         api.checkAlive = function () {
             if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
-                console.warn('Sensors Connection Heartbeat timeout!');
+                $log.warn('Sensors Connection Heartbeat timeout!');
                 api.deferredMap['timeoutDefer'].resolve();
                 api.deferredMap['timeoutDefer'] = null;
             }
@@ -89,8 +89,8 @@
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {
-                    console.error('There was an error sending a jsonrpc request:');
-                    console.error(messages);
+                    $log.error('There was an error sending a jsonrpc request:');
+                    $log.error(messages);
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.id === 'redis-pubsub') {
                         var arrayResult = [];
@@ -111,8 +111,8 @@
                                 value: messageObj.msg_data
                             });
                         } else {
-                            console.error('Dangling Sensors message...');
-                            console.error(messageObj);
+                            $log.error('Dangling Sensors message...');
+                            $log.error(messageObj);
                         }
                     });
                 } else if (messages.result.id === 'set_sensor_strategy') {
@@ -131,32 +131,32 @@
                         //auth response
                         $localStorage['currentUserToken'] = $rootScope.jwt;
                         api.connection.authorized = true;
-                        console.log('Sensors Connection Authenticated.');
+                        $log.info('Sensors Connection Authenticated.');
                         api.deferredMap['connectDefer'].resolve();
                     } else if (messages.result.length > 0) {
                         //subscribe response
-                        //console.log('Subscribed to: ');
-                        //console.log(messages.result);
+                        //$log.info('Subscribed to: ');
+                        //$log.info(messages.result);
                     } else {
                         //bad auth response
                         api.connection.authorized = false;
-                        console.error('Sensors Connection Authentication failed!');
-                        console.error(messages);
+                        $log.error('Sensors Connection Authentication failed!');
+                        $log.error(messages);
                         api.deferredMap['connectDefer'].reject();
                     }
                 } else {
-                    console.error('Dangling sensors message...');
-                    console.error(e);
+                    $log.error('Dangling sensors message...');
+                    $log.error(e);
                 }
             } else {
-                console.error('Dangling sensors message...');
-                console.error(e);
+                $log.error('Dangling sensors message...');
+                $log.error(e);
             }
         };
 
         api.connectListener = function () {
             api.deferredMap['connectDefer'] = $q.defer();
-            console.log('Sensors Connecting...');
+            $log.info('Sensors Connecting...');
             api.connection = new SockJS(urlBase + '/sensors');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
@@ -178,7 +178,7 @@
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
             } else {
-                console.error('Attempting to disconnect an already disconnected connection!');
+                $log.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 

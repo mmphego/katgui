@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService) {
+    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService, $log) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
@@ -23,7 +23,7 @@
 
         api.onSockJSOpen = function () {
             if (api.connection && api.connection.readyState) {
-                console.log('Observation Schedule Connection Established. Authenticating...');
+                $log.info('Observation Schedule Connection Established. Authenticating...');
                 api.authenticateSocketConnection();
             }
         };
@@ -42,7 +42,7 @@
         };
 
         api.onSockJSClose = function () {
-            console.log('Disconnected Observation Schedule Connection.');
+            $log.info('Disconnected Observation Schedule Connection.');
             api.connection = null;
         };
 
@@ -50,11 +50,11 @@
             var jsonData = JSON.parse(e.data);
 
             if (jsonData.error) {
-                console.error('Server Error when processing command: ');
-                console.error(e.data);
+                $log.error('Server Error when processing command: ');
+                $log.error(e.data);
             } else {
                 var result = jsonData.result;
-                //console.log(result);
+                //$log.info(result);
 
                 if (result.get_schedule_blocks) {
                     var getResult = JSON.parse(result.get_schedule_blocks);
@@ -290,13 +290,13 @@
                     }
                 } else if (!result.email && result.session_id) {
                     //todo fix this case, display error better
-                    console.warn('Observation Schedule returned an unfamiliar message: ');
-                    console.warn(e);
+                    $log.warn('Observation Schedule returned an unfamiliar message: ');
+                    $log.warn(e);
                 } else if (result.session_id) {
-                    console.log('Observation Schedule Connection Authenticated.');
+                    $log.info('Observation Schedule Connection Authenticated.');
                     api.connection.authorized = true;
                 } else {
-                    console.error('Observation Schedule Connection Authentication failed!.');
+                    $log.error('Observation Schedule Connection Authentication failed!.');
                     api.connection.authorized = false;
                 }
 
@@ -321,7 +321,7 @@
         }
 
         api.connectListener = function () {
-            console.log('Observation Schedule Connecting...');
+            $log.info('Observation Schedule Connecting...');
             api.connection = new SockJS(urlBase + '/obs-sched');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
@@ -333,7 +333,7 @@
             if (api.connection) {
                 api.connection.close();
             } else {
-                console.error('Attempting to disconnect an already disconnected connection!');
+                $log.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 
@@ -460,7 +460,7 @@
         /* istanbul ignore next */
         //this is not used anywhere and will change with new Obs Manager changes on server
         api.receivedSchedMessage = function (messageName, messageData) {
-            console.log(messageName + ": " + messageData.value);
+            $log.info(messageName + ": " + messageData.value);
             if (messageName.indexOf('pending_requests_') > -1) {
                 //Comma separated list of unserviced requests that wait for verification to complete.
                 var normalMessageName = messageName.replace(':', '_');

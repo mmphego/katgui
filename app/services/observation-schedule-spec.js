@@ -3,10 +3,10 @@ describe('ObservationScheduleService', function () {
     beforeEach(module('katGui.services'));
     beforeEach(module('katGui.util'));
 
-    var scope, ObservationScheduleService, q, timeout, KatGuiUtil, ConfigService;
+    var scope, ObservationScheduleService, q, timeout, KatGuiUtil, ConfigService, $log;
 
-    beforeEach(inject(function ($rootScope, _ObservationScheduleService_, _$q_, _$timeout_, _KatGuiUtil_, _ConfigService_) {
-        spyOn(console, 'log');
+    beforeEach(inject(function ($rootScope, _ObservationScheduleService_, _$q_, _$timeout_, _KatGuiUtil_, _ConfigService_, _$log_) {
+        $log = _$log_;
         KatGuiUtil = _KatGuiUtil_;
         ConfigService = _ConfigService_;
         timeout = _$timeout_;
@@ -45,12 +45,6 @@ describe('ObservationScheduleService', function () {
         var closeSpy = spyOn(ObservationScheduleService.connection, 'close');
         ObservationScheduleService.disconnectListener();
         expect(closeSpy).toHaveBeenCalled();
-    });
-
-    it('should not disconnect the connection when there is no connection', function () {
-        spyOn(console, 'error');
-        ObservationScheduleService.disconnectListener();
-        expect(console.error).toHaveBeenCalledWith('Attempting to disconnect an already disconnected connection!');
     });
 
     it('should authenticate the socket connection on socket open when connection is in readyState', function () {
@@ -395,8 +389,8 @@ describe('ObservationScheduleService', function () {
         var session_id_unknown_msg = {data: '{"result": {"session_id": "some session id"}}'};
         var session_id_unknown_error_msg = {data: '{"result": {}}'};
 
-        it('should log an error to console when the message contains an error attribute', function () {
-            var errorSpy = spyOn(console, 'error');
+        it('should log an error to $log when the message contains an error attribute', function () {
+            var errorSpy = spyOn($log, 'error');
             ObservationScheduleService.onSockJSMessage(errorMessage);
             expect(errorSpy).toHaveBeenCalled();
         });
@@ -573,8 +567,8 @@ describe('ObservationScheduleService', function () {
             expect(ObservationScheduleService.connection).toBeDefined();
             ObservationScheduleService.onSockJSMessage(session_id_msg);
             expect(ObservationScheduleService.connection.authorized).toBeTruthy();
-            var warnSpy = spyOn(console, 'warn');
-            var errorSpy = spyOn(console, 'error');
+            var warnSpy = spyOn($log, 'warn');
+            var errorSpy = spyOn($log, 'error');
             ObservationScheduleService.onSockJSMessage(session_id_unknown_msg);
             expect(warnSpy).toHaveBeenCalled();
             ObservationScheduleService.onSockJSMessage(session_id_unknown_error_msg);

@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .factory('d3Util', function ($q, $timeout, $rootScope) {
+    .factory('d3Util', function ($q, $timeout, $rootScope, $log) {
 
         var api = {};
 
@@ -158,7 +158,7 @@ angular.module('katGui.d3')
 
         api.displayInitErrorMessage = function (dataMapName) {
             $rootScope.showSimpleDialog('Error displaying data', 'Could not display the Receptor Status data, contact the katGUI support team.');
-            console.error('Error binding to StatusService data for receptor ' + dataMapName);
+            $log.error('Error binding to StatusService data for receptor ' + dataMapName);
         };
 
         return api;

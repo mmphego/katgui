@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval) {
+    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval, $log) {
 
         var vm = this;
         vm.showGridLines = false;
@@ -39,7 +39,7 @@
                         $rootScope.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
-                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }
@@ -166,7 +166,7 @@
                     })
                     .error(function (result) {
                         $rootScope.showSimpleDialog('Error Finding Sensors', 'There was an error finding sensors, is the server running?');
-                        console.error(result);
+                        $log.error(result);
                         vm.waitingForSearchResult = false;
                     });
             }
@@ -197,7 +197,7 @@
                         vm.findSensorData(result, startDate, endDate, result.params);
                     })
                     .error(function (error) {
-                        console.error(error);
+                        $log.error(error);
                         $rootScope.showSimpleDialog('Error Finding Sensor Info', 'There was an error plotting the discrete sensor data, is the server running?');
                     });
             } else {
@@ -209,7 +209,7 @@
                         }
                     })
                     .error(function (error) {
-                        console.error(error);
+                        $log.error(error);
                         $rootScope.showSimpleDialog('Error Finding Sensor Info', 'There was an error plotting the discrete sensor data, is the server running?');
                     });
             }
@@ -254,7 +254,7 @@
                 })
                 .error(function (error) {
                     vm.waitingForSearchResult = false;
-                    console.error(error);
+                    $log.error(error);
                     $rootScope.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
                 });
         };
@@ -305,7 +305,7 @@
                     }
                 })
                 .error(function (error) {
-                    console.error(error);
+                    $log.error(error);
                     $rootScope.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
                 });
         };
@@ -365,7 +365,7 @@
                         Value: sensor.value.value
                     }], vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 } else {
-                    console.warn('Dangling sensor update after unsubscribe: ' + sensor.name);
+                    $log.warn('Dangling sensor update after unsubscribe: ' + sensor.name);
                 }
             }
         });
