@@ -12,6 +12,7 @@
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
+        vm.connectionLost = false;
 
         vm.receptorSensorsToConnect = [
             'mode',
@@ -34,11 +35,13 @@
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
+                        vm.connectionLost = false;
                         $rootScope.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
                     $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
+                        vm.connectionLost = true;
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }
                 });
@@ -51,6 +54,7 @@
                     if (!vm.disconnectIssued) {
                         $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
+                            vm.connectionLost = true;
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
                             vm.connectListeners();
                         }

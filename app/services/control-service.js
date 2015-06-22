@@ -4,11 +4,23 @@
         .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
-    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout, $log) {
+    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout, $log, $interval, $q) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
         api.connection = null;
+        api.deferredMap = {};
+        //websocket default heartbeat is every 30 seconds
+        //so allow for 35 seconds before alerting about timeout
+        api.heartbeatTimeOutLimit = 35000;
+        api.checkAliveConnectionInterval = 10000;
+
+        api.getTimeoutPromise = function () {
+            if (!api.deferredMap['timeoutDefer']) {
+                api.deferredMap['timeoutDefer'] = $q.defer();
+            }
+            return api.deferredMap['timeoutDefer'].promise;
+        };
 
         api.onSockJSOpen = function () {
             if (api.connection && api.connection.readyState) {
@@ -32,26 +44,50 @@
             else if (result && result.result.session_id) {
                 api.connection.authorized = true;
                 $log.info('Control Connection Established. Authenticated.');
+                api.deferredMap['connectDefer'].resolve();
             } else {
                 //bad auth response
                 api.connection.authorized = false;
                 $log.info('Control Connection Established. Authentication failed.');
+                api.deferredMap['connectDefer'].reject();
             }
         };
 
+        api.checkAlive = function () {
+            if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
+                $log.warn('Control Connection Heartbeat timeout!');
+                api.deferredMap['timeoutDefer'].resolve();
+                api.deferredMap['timeoutDefer'] = null;
+            }
+        };
+
+        api.onSockJSHeartbeat = function () {
+            api.lastHeartBeat = new Date();
+        };
+
         api.connectListener = function () {
+            api.deferredMap['connectDefer'] = $q.defer();
             $log.info('Control Connecting...');
             api.connection = new SockJS(urlBase + '/control');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
             api.connection.onclose = api.onSockJSClose;
-
-            return api.connection !== null;
+            api.connection.onheartbeat = api.onSockJSHeartbeat;
+            api.lastHeartBeat = new Date();
+            if (!api.checkAliveInterval) {
+                api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+            } else {
+                $interval.cancel(api.checkAliveInterval);
+                api.checkAliveInterval = null;
+            }
+            return api.deferredMap['connectDefer'].promise;
         };
 
         api.disconnectListener = function () {
             if (api.connection) {
                 api.connection.close();
+                $interval.cancel(api.checkAliveInterval);
+                api.checkAliveInterval = null;
             } else {
                 $log.error('Attempting to disconnect an already disconnected connection!');
             }

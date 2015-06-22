@@ -3,11 +3,56 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService) {
+    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService, KatGuiUtil, $log) {
 
         var vm = this;
         vm.receptorsData = ReceptorStateService.receptorsData;
-        ReceptorStateService.getReceptorList();
+        vm.guid = KatGuiUtil.generateUUID();
+        vm.disconnectIssued = false;
+        vm.connectInterval = null;
+        vm.connectionLost = false;
+
+        vm.connectListeners = function () {
+            ControlService.connectListener()
+                .then(function () {
+                    vm.initReceptors();
+                    if (vm.connectInterval) {
+                        $interval.cancel(vm.connectInterval);
+                        vm.connectionLost = false;
+                        vm.connectInterval = null;
+                        if (!vm.disconnectIssued) {
+                            $rootScope.showSimpleToast('Reconnected :)');
+                        }
+                    }
+                }, function () {
+                    $log.error('Could not establish control connection. Retrying every 10 seconds.');
+                    if (!vm.connectInterval) {
+                        vm.connectionLost = true;
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                    }
+                });
+            vm.handleSocketTimeout();
+        };
+
+        vm.handleSocketTimeout = function () {
+            ControlService.getTimeoutPromise()
+                .then(function () {
+                    if (!vm.disconnectIssued) {
+                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        if (!vm.connectInterval) {
+                            vm.connectionLost = true;
+                            vm.connectInterval = $interval(vm.connectListeners, 10000);
+                            vm.connectListeners();
+                        }
+                    }
+                });
+        };
+
+        vm.connectListeners();
+
+        vm.initReceptors = function () {
+            ReceptorStateService.getReceptorList();
+        };
 
         vm.stowAll = function () {
             ControlService.stowAll();
@@ -60,8 +105,13 @@
         vm.cancelListeningToReceptorMessages = $rootScope.$on('operatorControlStatusMessage', vm.receptorMessageReceived);
 
         $scope.$on('$destroy', function () {
+            if (!vm.connectInterval) {
+                $interval.cancel(vm.connectInterval);
+            }
             $interval.cancel(stopInterval);
             vm.cancelListeningToReceptorMessages();
+            ControlService.disconnectListener();
+            vm.disconnectIssued = true;
         });
     }
 })();
