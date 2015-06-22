@@ -106,11 +106,32 @@
             <div layout="row" layout-align="center center" style="margin-left: 16px; margin-right:16px; width: 130px;">
                 <!--<span style="margin-right: 8px;">Sensor Type:</span>-->
                 <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'"
-                           ng-model="vm.sensorType"
+                           ng-model="vm.sensorType" style="padding: 8px"
                            title="Sensor Type" ng-change="vm.sensorTypeChanged()">
                     <md-option value="numeric">Numeric</md-option>
                     <!--<md-option value="text">Text</md-option>-->
                     <md-option value="discrete">Discrete</md-option>
+                </md-select>
+            </div>
+            <div layout="row" layout-align="center center" ng-show="vm.sensorType === 'numeric'">
+                <span style="margin-right: 8px;">Interval:</span>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalNum = 1" ng-model="vm.intervalNum"
+                           style="margin: 0; padding: 8px">
+                    <md-option value="1">1</md-option>
+                    <md-option value="2">2</md-option>
+                    <md-option value="5">5</md-option>
+                    <md-option value="10">10</md-option>
+                    <md-option value="15">15</md-option>
+                    <md-option value="30">30</md-option>
+                    <md-option value="60">60</md-option>
+                    <md-option value="100">100</md-option>
+                </md-select>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalType = 'm'" ng-model="vm.intervalType"
+                           style="margin: 0; padding: 8px">
+                    <md-option value="s">Second(s)</md-option>
+                    <md-option value="m">Minute(s)</md-option>
+                    <md-option value="h">Hour(s)</md-option>
+                    <md-option value="d">Day(s)</md-option>
                 </md-select>
             </div>
 

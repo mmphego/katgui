@@ -8,8 +8,18 @@
         var urlBase = SERVER_URL + ':8850/katstore/';
         var api = {};
 
-        api.findSensor = function (sensorName, startDate, endDate, limit, time_type, format) {
-            return $http.get(urlBase + '?sensor=' + sensorName + '&start=' + startDate + '&end=' + endDate + '&limit=' + limit + '&time_type=' + time_type + '&format=' + format);
+        api.findSensor = function (sensorName, startDate, endDate, limit, time_type, format, interval) {
+            var requestStr = urlBase +
+                '?sensor=' + sensorName +
+                '&start=' + startDate +
+                '&end=' + endDate +
+                '&limit=' + limit +
+                '&time_type=' + time_type +
+                '&format=' + format;
+            if (interval) {
+                requestStr += '&interval=' + interval;
+            }
+            return $http.get(requestStr);
         };
 
         api.findSensorName = function (searchStr, sensor_type) {
