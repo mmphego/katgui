@@ -585,17 +585,20 @@
         $urlRouterProvider.otherwise('/login');
     }
 
-    function runKatGui($rootScope, $state, $localStorage) {
+    function runKatGui($rootScope, $state, $localStorage, $log) {
 
-        $rootScope.$on('$locationChangeSuccess', function (event, toState) {
+        $rootScope.$on('$stateChangeStart', function (event, toState) {
             if (!$rootScope.loggedIn && toState.name !== 'login') {
                 if (!$localStorage['currentUserToken']) {
                     event.preventDefault();
+                    $rootScope.requestedStateBeforeLogin = toState.name;
                     $state.go('login');
                 }
-            } else if ($rootScope.loggedIn && toState.name === 'login') {
+            } else if ($rootScope.loggedIn && $rootScope.requestedStateBeforeLogin) {
+                var newStateName = $rootScope.requestedStateBeforeLogin ? $rootScope.requestedStateBeforeLogin : 'home';
+                $rootScope.requestedStateBeforeLogin = null;
                 event.preventDefault();
-                $state.go('home');
+                $state.go(newStateName);
             }
         });
 
