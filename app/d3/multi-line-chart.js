@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('multiLineChart', function ($window, d3Service) {
+    .directive('multiLineChart', function ($window, d3Service, d3Util) {
         return {
             restrict: 'EA',
             scope: {
@@ -9,7 +9,8 @@ angular.module('katGui.d3')
                 removeSensorFunction: '=',
                 hideContextZoom: '=hideContextZoom',
                 yMin: '=yMin',
-                yMax: '=yMax'
+                yMax: '=yMax',
+                mouseOverTooltip: '='
             },
             replace: false,
             link: function (scope, element) {
@@ -33,6 +34,7 @@ angular.module('katGui.d3')
                     });
 
                     var color = d3.scale.category20();
+                    var bisectDate = d3.bisector(function(d) { return d.date; }).left;
                     scope.showGridLines = false;
                     scope.currentBrush = {};
                     scope.nestedData = [];
@@ -130,7 +132,9 @@ angular.module('katGui.d3')
                         width, height, height2;
                     var margin2 = {top: 0, right: 10, bottom: 20, left: 60};
                     var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2,
-                        xAxisElement, yAxisElement, xAxisElement2, context;
+                        xAxisElement, yAxisElement, xAxisElement2, context, focus;
+
+                    var formatTwoDecimals = d3.format(",.2f");
 
                     drawSvg();
                     drawValues();
@@ -178,6 +182,20 @@ angular.module('katGui.d3')
 
                         focus = svg.append("g")
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                        if (scope.mouseOverTooltip) {
+                            scope.overlay = svg.append("rect")
+                                .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                                .attr("width", width)
+                                .attr("height", height)
+                                .attr("class", "overlay")
+                                //.on("mouseover", function() {
+                                //})
+                                .on("mouseout", function() {
+                                    d3.selectAll(".focus-tooltip").style("display", "none");
+                                })
+                                .on("mousemove", mousemove);
+                        }
 
                         // set the ranges
                         x = d3.time.scale().range([0, width]);
@@ -261,7 +279,7 @@ angular.module('katGui.d3')
                                 });
                                 focus.select(".x.axis").call(xAxis);
                                 focus.select(".y.axis").call(yAxis);
-                                d3.selectAll("circle")
+                                d3.selectAll("g.dot circle")
                                     .attr("cx", function (d) {
                                         return x(d.date);
                                     })
@@ -347,6 +365,22 @@ angular.module('katGui.d3')
                             .attr("d", function (d) {
                                 return line(d.values);
                             }).attr("clip-path", "url(#clip)");
+
+                        if (scope.mouseOverTooltip) {
+                            d3.selectAll('.focus-tooltip').remove();
+                            scope.nestedData.forEach(function (data) {
+                                var focusTooltip = svg.append("g")
+                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
+                                    .style("display", "none");
+                                focusTooltip.append("circle")
+                                    .attr("class", "focus-tooltip-circle")
+                                    .attr("r", 4.5);
+                                focusTooltip.append('foreignObject')
+                                    .attr("x", 0)
+                                    .attr("width", "185")
+                                    .attr("height", "65");
+                            });
+                        }
 
                         xAxisElement.call(xAxis);
                         yAxisElement.call(yAxis);
@@ -458,6 +492,42 @@ angular.module('katGui.d3')
                             .html(d);
 
                         el.remove();
+                    }
+
+                    function mousemove () {
+                        d3.selectAll(".focus-tooltip").style("display", null);
+                        scope.nestedData.forEach(function (data) {
+
+                            var mouse = d3.mouse(scope.overlay[0][0]);
+                            var x0 = x.invert(mouse[0]);
+
+                            var i = bisectDate(data.values, x0, 1),
+                                d0 = data.values[i - 1],
+                                d1 = data.values[i];
+                            var d;
+                            if (d0 && d0.date && d1 && d1.date) {
+                                d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+
+                                var xTranslate = (x(d.date) + margin.left);
+                                var yTranslate = (y(d.value) + margin.top);
+                                var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
+                                focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
+                                if (xTranslate + 185 > width) {
+                                    xTranslate = -194;
+                                } else {
+                                    xTranslate = 9;
+                                }
+                                if (yTranslate + 65 > height) {
+                                    yTranslate = -65;
+                                } else {
+                                    yTranslate = 0;
+                                }
+                                var focusToolTipDiv = d3.select(focusToolTip[0][0].children[1]);
+                                focusToolTipDiv.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
+                                d.TooltipValue = formatTwoDecimals(d.value);
+                                d3Util.updateGraphTooltipValues(d, focusToolTipDiv);
+                            }
+                        });
                     }
 
                     scope.$on('$destroy', function () {
