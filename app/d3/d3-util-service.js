@@ -72,10 +72,10 @@ angular.module('katGui.d3')
             //d.on is not defined while transitioning
             if (node.on) {
                 node.on("mouseover", function (d) {
-                    updateTooltipValues(d, tooltip);
+                    api.updateTooltipValues(d, tooltip);
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function (d) {
-                    updateTooltipValues(d, tooltip);
+                    api.updateTooltipValues(d, tooltip);
                     var rect = d3.event.toElement.getBoundingClientRect();
                     var offset = d3.mouse(this);
                     var x = rect.left + offset[0];
@@ -101,7 +101,7 @@ angular.module('katGui.d3')
             }
         };
 
-        function updateTooltipValues(d, tooltip) {
+        api.updateTooltipValues = function (d, tooltip) {
             var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
             if (d.sensorValue) {
                 //to display readable tooltips, no matter the zoom level
@@ -117,7 +117,16 @@ angular.module('katGui.d3')
                     "<div style='font-size: +"+ fontSizeAfterZoom +"px'>Error Reading Sensor Value</div>"
                 );
             }
-        }
+        };
+
+        api.updateGraphTooltipValues = function (d, tooltip) {
+            tooltip.html(
+                "<div class='chart-tooltip'>" +
+                "<b>" + d.TooltipValue + "</b>" +
+                "<br/>"+ moment.utc(d.Timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') + "(UTC)" +
+                "</div>"
+            );
+        };
 
         //convenience function to create the tooltip div on the given element
         api.createTooltip = function (element) {

@@ -146,6 +146,7 @@
                         vm.connectMonitorInterval = null;
                         vm.connectionToMonitorLost = false;
                         $log.info('Reconnected Monitor Connection.');
+                        vm.syncTimeWithServer();
                     }
                 }, function () {
                     $log.error('Could not establish Monitor connection. Retrying every 10 seconds.');

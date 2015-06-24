@@ -1,6 +1,6 @@
-<div flex layout="row" layout-align="start" style="min-width: 1220px; min-height: 500px; margin-top: 8px;" ng-controller="SubArraysCtrl as vm" ng-click="vm.closeActionsMenu()">
+<div flex layout="row" layout-align="start" style="min-width: 1220px; min-height: 500px; margin-top: 8px;" ng-controller="SubArraysCtrl as vm">
 
-    <div flex layout="column" style="overflow: auto; padding-left: 8px; margin-right: 16px;">
+    <div flex layout="column" style="overflow: auto; padding-left: 8px; margin-right: 392px;">
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
              md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'deep-purple'}}" flex>
 
@@ -103,7 +103,7 @@
         </div>
     </div>
 
-    <div layout="row" style="min-height: 500px; max-width: 385px; min-width: 385px; padding-right: 8px; padding-bottom: 8px;" class="md-whitespace-z1">
+    <div layout="row" style="position: absolute; max-height: calc(100% - 8px); min-height: calc(100% - 8px); max-width: 385px; min-width: 385px; padding-right: 8px; padding-bottom: 8px; right: 0px;" class="md-whitespace-z1">
         <div class="md-whiteframe-z2" layout="column" flex>
             <md-toolbar class="panel-toolbar-small md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
                 <div layout="row" class="unselectable md-toolbar-tools">
