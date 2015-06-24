@@ -86,8 +86,8 @@ gulp.task('indexHtml', ['clean'], function () {
         .pipe(gCheerio(function ($) {
             $('script[data-remove!="exclude"]').remove();
             $('link').remove();
-            $('body').append('<script src="/katgui/app.full.min.js"></script>');
-            $('head').append('<link rel="stylesheet" href="/katgui/app.full.min.css">');
+            $('body').append('<script src="app.full.min.js"></script>');
+            $('head').append('<link rel="stylesheet" href="app.full.min.css">');
         }))
         .pipe(htmlmin(htmlminOptions))
         .pipe(gulp.dest('dist/'));
