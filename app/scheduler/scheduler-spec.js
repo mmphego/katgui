@@ -6,7 +6,7 @@ describe('SchedulerHomeCtrl', function () {
 
     var scope, ctrl, state, httpBackend, ObservationScheduleService, MonitorService, ConfigService, connectListenerSpy, subscribeSpy;
 
-    beforeEach(inject(function ($rootScope, $controller, $state, _ObservationScheduleService_, _ConfigService_, _MonitorService_, $injector) {
+    beforeEach(inject(function ($rootScope, $controller, $state, _ObservationScheduleService_, _ConfigService_, _MonitorService_, $injector, _$q_) {
         scope = $rootScope.$new();
         state = $state;
         httpBackend = $injector.get('$httpBackend');
@@ -19,7 +19,7 @@ describe('SchedulerHomeCtrl', function () {
         };
         MonitorService.subscribe = function () {
         };
-        connectListenerSpy = spyOn(ObservationScheduleService, "connectListener");
+        connectListenerSpy = spyOn(ObservationScheduleService, "connectListener").and.returnValue(_$q_.defer().promise);
 
         subscribeSpy = spyOn(MonitorService, "subscribe");
         ctrl = $controller('SchedulerHomeCtrl', {
