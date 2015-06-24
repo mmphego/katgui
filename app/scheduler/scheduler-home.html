@@ -1,5 +1,5 @@
 <div ng-controller="SchedulerHomeCtrl as vm" flex layout="column" layout-fill ng-class="{'connection-lost-bg':vm.connectionLost}">
-    <div ng-show="!vm.childStateShowing" layout="column" layout-align="center" md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z4"
+    <div ng-if="!vm.childStateShowing" layout="column" layout-align="center" md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z4"
          style="margin-left:auto; margin-right: auto; margin-top: 8px; max-width: 1150px; min-width: 1150px;min-height: 800px;">
         <div layout="row" layout-align="center center">
             <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.drafts')">
