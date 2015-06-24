@@ -167,7 +167,7 @@ angular.module('katGui.d3')
                             margin2 = {top: height, right: 10, bottom: 20, left: 120};
                         }
 
-                        d3.select('svg').remove();
+                        d3.select(element[0]).select('svg').remove();
                         svg = d3.select(element[0]).append("svg")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.top + margin.bottom);
