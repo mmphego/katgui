@@ -18,6 +18,7 @@ angular.module('katGui.d3')
 
                 d3Service.d3().then(function (d3) {
 
+                    scope.lockShowTooltip = false;
                     var bgColor = angular.element(document.querySelector("md-content")).css('background-color');
                     element.css({'background-color': bgColor});
                     var contextBrushColor = '#333';
@@ -119,9 +120,16 @@ angular.module('katGui.d3')
                                 //.on("mouseover", function() {
                                 //})
                                 .on("mouseout", function() {
-                                    d3.selectAll(".focus-tooltip").style("display", "none");
+                                    if (!scope.lockShowTooltip) {
+                                        d3.selectAll(".focus-tooltip").style("display", "none");
+                                    }
                                 })
-                                .on("mousemove", mousemove);
+                                .on("mousemove", function () {
+                                    mousemove(scope.lockShowTooltip);
+                                })
+                                .on("mousedown", function () {
+                                    scope.lockShowTooltip = !scope.lockShowTooltip;
+                                });
                         }
 
                         // set the ranges
@@ -230,20 +238,22 @@ angular.module('katGui.d3')
                             });
 
                         if (scope.mouseOverTooltip) {
-                            d3.selectAll('.focus-tooltip').remove();
                             scope.nestedData.forEach(function (data) {
-                                var focusTooltip = svg.append("g")
-                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
-                                    .style("display", "none");
-                                focusTooltip.append("circle")
-                                    .attr("class", "focus-tooltip-circle " + data.key)
-                                    .style("fill", "none")
-                                    .attr("r", 4.5);
-                                focusTooltip.append('foreignObject')
-                                    .attr("x", 0)
-                                    .attr("width", "185")
-                                    .attr("height", "65");
+                                if (!d3.select("." + data.key + "-tooltip")[0][0]) {
+                                    var focusTooltip = svg.append("g")
+                                        .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
+                                        .style("display", "none");
+                                    focusTooltip.append("circle")
+                                        .attr("class", "focus-tooltip-circle " + data.key)
+                                        .style("fill", "none")
+                                        .attr("r", 4.5);
+                                    focusTooltip.append('foreignObject')
+                                        .attr("x", 0)
+                                        .attr("width", "185")
+                                        .attr("height", "65");
+                                }
                             });
+                            mousemove(true);
                         }
 
                         xAxisElement.call(xAxis);
@@ -273,16 +283,29 @@ angular.module('katGui.d3')
                         el.remove();
                     }
 
-                    function mousemove () {
-                        d3.selectAll(".focus-tooltip").style("display", null);
+                    function mousemove (calledWithoutEvent) {
+                        if (calledWithoutEvent !== true) {
+                            d3.selectAll(".focus-tooltip").style("display", null);
+                        }
+                        var mouse = null;
                         scope.nestedData.forEach(function (data) {
+                            if (!calledWithoutEvent) {
+                                mouse = d3.mouse(scope.overlay[0][0]);
+                            } else {
+                                //this method was called from somewhere else
+                                //not by an actual mouse move event
+                                //to update the tooltip position for moving data
+                                mouse = scope.lastMouse;
+                            }
+                            if (!mouse) {
+                                return;
+                            }
 
-                            var mouse = d3.mouse(scope.overlay[0][0]);
-                            var x0 = x.invert(mouse[0]);
-
-                            var i = bisectDate(data.values, x0, 1),
-                                d0 = data.values[i - 1],
+                            var x0 = x.invert(mouse[0]),
+                                i = bisectDate(data.values, x0, 1);
+                            var d0 = data.values[i - 1],
                                 d1 = data.values[i];
+
                             var d;
                             if (d0 && d0.date && d1 && d1.date) {
                                 d = x0 - d0.date > d1.date - x0 ? d1 : d0;
@@ -313,6 +336,9 @@ angular.module('katGui.d3')
                                 d3Util.updateGraphTooltipValues(d, focusToolTipDiv);
                             }
                         });
+                        if (!calledWithoutEvent) {
+                            scope.lastMouse = mouse;
+                        }
                     }
 
                     scope.$on('$destroy', function () {

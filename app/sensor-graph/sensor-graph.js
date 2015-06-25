@@ -18,7 +18,6 @@
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
         vm.showTips = false;
-        vm.showDots = false;
         vm.showContextZoom = true;
         vm.showRelativeTime = false;
         vm.liveData = false;
@@ -104,7 +103,7 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
-            vm.redrawChart(null, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis);
+            vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
         };
 
         vm.showHelp = function ($event) {
@@ -266,7 +265,7 @@
                         if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.sensor}))) {
                             vm.sensorNames.push({name: sensor.sensor, liveData: vm.liveData, sensor: sensor});
                         }
-                        vm.redrawChart(newData, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis, yAxisValues);
+                        vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, yAxisValues);
                     } else {
                         $rootScope.showSimpleToast('No sensor data found for ' + sensor.sensor + '.');
                     }
@@ -319,7 +318,7 @@
 
                     if (newData.length !== 0) {
                         $rootScope.showSimpleToast(newData.length + ' sensor data points found for ' + sensorName + '.');
-                        vm.redrawChart(newData, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis);
+                        vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
                     } else {
                         $rootScope.showSimpleToast('No sensor data found for ' + sensorName + '.');
                     }
@@ -383,7 +382,7 @@
                         ValueTimestamp: sensor.value.timestamp,
                         Timestamp: sensor.value.received_timestamp,
                         Value: sensor.value.value
-                    }], vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                    }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 } else {
                     $log.warn('Dangling sensor update after unsubscribe: ' + sensor.name);
                 }
