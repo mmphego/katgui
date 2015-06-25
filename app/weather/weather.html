@@ -102,6 +102,58 @@
             <multi-line-two-y-axis-chart flex redraw-function="vm.redrawChart" clear-function="vm.clearChart" class="sensor-list-multi-line-chart"
                                          remove-sensor-function="vm.removeSensorLine" y-left-max="vm.yAxisMaxValue"
                                          y-left-min="vm.yAxisMinValue" y-right-min="vm.yAxisRightMinValue" y-right-max="vm.yAxisRightMaxValue" mouse-over-tooltip="true"></multi-line-two-y-axis-chart>
+
+        </div>
+        <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" style="padding-right: 0; margin-top: 8px">
+            <span flex>Wind Speed</span>
+            <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0">
+                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
+                           style="margin-left: 0px; margin-right: 8px;">
+                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                </md-button>
+                <md-menu-content width="4" style="padding-left: 16px;">
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.showWindGridLines" ng-change="vm.showWindOptionsChanged()"
+                                     ng-click="$event.stopPropagation()">
+                            Show Grid Lines
+                        </md-checkbox>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.useFixedWindYAxis"
+                                     ng-click="$event.stopPropagation()">
+                            Use Fixed Left Y Axis Values
+                        </md-checkbox>
+                    </md-menu-item>
+                    <md-menu-item ng-if="vm.useFixedWindYAxis">
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Y-Axis Minimum Value">
+                                <input flex style="" placeholder="Minimum" ng-model="vm.yAxisWindMinValue"
+                                       ng-change="vm.showWindOptionsChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                    <md-menu-item ng-if="vm.useFixedWindYAxis">
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Y-Axis Maximum Value">
+                                <input flex style="" placeholder="Maximum" ng-model="vm.yAxisWindMaxValue"
+                                       ng-change="vm.showWindOptionsChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </md-toolbar>
+        <div class="md-whiteframe-z1" flex style="padding: 8px; min-height: 235px; max-height: 235px" layout="column">
+            <multi-line-chart flex redraw-function="vm.redrawWindChart" y-max="vm.yAxisWindMaxValue" hide-context-zoom="true"
+                              y-min="vm.yAxisWindMinValue" mouse-over-tooltip="true"></multi-line-chart>
         </div>
     </div>
 

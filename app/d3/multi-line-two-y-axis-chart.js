@@ -145,7 +145,6 @@ angular.module('katGui.d3')
                         if (scope.showGridLines) {
                             xAxis.tickSize(-height);
                             yAxis.tickSize(-width);
-                            yAxisRight.tickSize(-width);
                         }
 
                         // define the line

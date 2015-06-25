@@ -20,13 +20,17 @@
         vm.connectInterval = null;
 
         vm.showTips = false;
-        vm.showDots = false;
+        vm.showGridLines = false;
+        vm.showWindGridLines = false;
         vm.useFixedYAxis = true;
         vm.useFixedRightYAxis = true;
+        vm.useFixedWindYAxis = true;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.yAxisRightMinValue = 0;
         vm.yAxisRightMaxValue = 1000;
+        vm.yAxisWindMinValue = 0;
+        vm.yAxisWindMaxValue = 20;
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -103,7 +107,15 @@
                 vm.redrawCompass(windDirection, windSpeed);
             }
 
-            if (strList[1].indexOf('temperature') > -1
+            if (windSpeed) {
+                var newSensor = {
+                    Sensor: strList[1].replace(/\./g, '_'),
+                    ValueTimestamp: sensor.value.timestamp,
+                    Timestamp: sensor.value.received_timestamp,
+                    Value: sensor.value.value
+                };
+                vm.redrawWindChart([newSensor], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 100);
+            } else if (strList[1].indexOf('temperature') > -1
                 || strList[1].indexOf('humidity') > -1
                 || strList[1].indexOf('pressure') > -1) {
 
@@ -120,6 +132,14 @@
                 vm.redrawChart([newSensor], vm.showGridLines, 100);
             }
         });
+
+        vm.showOptionsChanged = function () {
+            vm.redrawChart(null, vm.showGridLines, 100);
+        };
+
+        vm.showWindOptionsChanged = function () {
+            vm.redrawWindChart(null, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 100);
+        };
 
         vm.sensorClass = function (status) {
             return status + '-sensor-list-item';
