@@ -251,8 +251,9 @@
         };
 
         $scope.$on('$destroy', function () {
-            //SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
-            //SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + ".*", vm.guid);
+            vm.ancResource.sensorList.forEach(function (sensor) {
+                SensorsService.unsubscribe(sensor.python_identifier, vm.guid);
+            });
             unbindUpdate();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
