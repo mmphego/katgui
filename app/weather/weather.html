@@ -1,26 +1,127 @@
 <div flex layout="column" ng-controller="WeatherCtrl as vm" style="padding: 16px;">
     <div layout="column">
         <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
-            <span>Sensor Values</span>
+            <span style="margin-top: -10px" flex>Sensor Values</span>
+            <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" style="font-size: 14px">
+                <span style="margin-right: 8px;">Historic values at a</span>
+                <md-input-container md-no-float style="margin-left: 8px; padding: 0px; width: 40px"
+                                    class="" title="Data Interval Grouping">
+                    <input flex style="color: inherit;" placeholder="Interval" ng-model="vm.sensorGroupingInterval" type="number"
+                           ng-model-options="{ debounce: 750 }" ng-change="vm.historicalRangeChanged()">
+                </md-input-container>
+                <span style="margin-right: 8px;">seconds interval (on average), for the last</span>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-model="vm.historicalRange"
+                           ng-change="vm.historicalRangeChanged()" style="min-width: 105px; padding: 0; margin-top: -5px;">
+                    <md-option value="1h">1 Hour</md-option>
+                    <md-option value="2h">2 Hours</md-option>
+                    <md-option value="8h">8 Hours</md-option>
+                    <md-option value="1d">1 Day</md-option>
+                    <md-option value="2d">2 Days</md-option>
+                    <md-option value="1w">1 Week</md-option>
+                </md-select>
+            </div>
+
+            <div flex style="position: absolute; bottom: 0; left: 0" layout="row" layout-align="start center">
+                <span style="margin-left: 25px; min-width: 158px; max-width: 158px;" class="subheader-text">
+                    Wind Direction ({{vm.latestWindDirection | number:1}}°)
+                </span>
+                <span style="width: 120px;" class="subheader-text">
+                    Sensor
+                </span>
+                <span style="width: 125px;" class="subheader-text">
+                    Value
+                </span>
+                <span style="width: 62px;" class="subheader-text">
+                    MAX
+                </span>
+                <span class="subheader-text">
+                    MAX at
+                </span>
+            </div>
         </md-toolbar>
         <div class="md-whiteframe-z1" flex style="padding: 8px;" layout="row">
             <compass-chart redraw-function="vm.redrawCompass" style="min-width: 150px; min-height: 150px;">
             </compass-chart>
             <div layout="column" style="margin-left: 24px;">
                 <div ng-repeat="sensor in vm.ancResource.sensorList track by $index" title="{{sensor.description}}"
-                     class="resource-sensor-item"
+                     class="resource-sensor-item" ng-if="sensor.name !== 'wind direction'"
                      layout="row" class="unselectable">
                     <span style="min-width: 120px" ng-class="vm.classNameFromPythonID(sensor)">{{sensor.name}}</span>
-                    <!--<span class="resource-sensor-status-item" ng-show="sensor.sensorValue"-->
-                          <!--ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>-->
-                    <!--<span style="min-width: 80px" ng-show="sensor.sensorValue">{{sensor.timestamp}}</span>-->
-                    <span flex class="resource-sensor-value-item"
+                    <span class="resource-sensor-value-item" style="width: 120px"
                           ng-show="sensor.sensorValue">{{sensor.value | number:1}}</span>
+                    <span style="margin-left: 8px; width: 60px" ng-if="vm.maxSensorValue[sensor.name]">
+                        {{vm.maxSensorValue[sensor.name].value | number:1}}
+                    </span>
+                    <span ng-if="vm.maxSensorValue[sensor.name]">
+                        {{vm.maxSensorValue[sensor.name].timestamp}}
+                    </span>
                 </div>
             </div>
         </div>
     </div>
     <div layout="column" style="margin-top: 8px;" flex>
+        <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" style="padding-right: 0;">
+            <span flex>Wind Speed</span>
+            <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0">
+                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
+                           style="margin-left: 0px; margin-right: 8px;">
+                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                </md-button>
+                <md-menu-content width="4" style="padding-left: 16px;">
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.showWindGridLines" ng-change="vm.showWindOptionsChanged()"
+                                     ng-click="$event.stopPropagation()">
+                            Show Grid Lines
+                        </md-checkbox>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()">
+                            <label style="font-weight: normal; margin-top: 4px;">Wind Speed Limit:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px; width: 60px"
+                                                class="md-primary" title="Wind Speed Limit Line">
+                                <input flex style="" placeholder="Minimum" ng-model="vm.windSpeedLimitLine"
+                                       ng-change="vm.showWindOptionsChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-checkbox class="md-primary" ng-model="vm.useFixedWindYAxis"
+                                     ng-click="$event.stopPropagation()">
+                            Use Fixed Left Y Axis Values
+                        </md-checkbox>
+                    </md-menu-item>
+                    <md-menu-item ng-if="vm.useFixedWindYAxis">
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Y-Axis Minimum Value">
+                                <input flex style="" placeholder="Minimum" ng-model="vm.yAxisWindMinValue"
+                                       ng-change="vm.showWindOptionsChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                    <md-menu-item ng-if="vm.useFixedWindYAxis">
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
+                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Y-Axis Maximum Value">
+                                <input flex style="" placeholder="Maximum" ng-model="vm.yAxisWindMaxValue"
+                                       ng-change="vm.showWindOptionsChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </md-toolbar>
+        <div class="md-whiteframe-z1" flex style="padding: 8px; min-height: 235px; max-height: 235px; margin-bottom: 8px" layout="column">
+            <multi-line-chart flex redraw-function="vm.redrawWindChart" y-max="vm.yAxisWindMaxValue" hide-context-zoom="true"
+                              y-min="vm.yAxisWindMinValue" mouse-over-tooltip="true" clear-function="vm.clearWindChart"></multi-line-chart>
+        </div>
         <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" style="padding-right: 0">
             <span flex>Pressure, Humidity and Temperature</span>
             <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0">
@@ -103,57 +204,6 @@
                                          remove-sensor-function="vm.removeSensorLine" y-left-max="vm.yAxisMaxValue"
                                          y-left-min="vm.yAxisMinValue" y-right-min="vm.yAxisRightMinValue" y-right-max="vm.yAxisRightMaxValue" mouse-over-tooltip="true"></multi-line-two-y-axis-chart>
 
-        </div>
-        <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" style="padding-right: 0; margin-top: 8px">
-            <span flex>Wind Speed</span>
-            <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0">
-                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
-                           style="margin-left: 0px; margin-right: 8px;">
-                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
-                </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
-                    <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showWindGridLines" ng-change="vm.showWindOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
-                            Show Grid Lines
-                        </md-checkbox>
-                    </md-menu-item>
-                    <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.useFixedWindYAxis"
-                                     ng-click="$event.stopPropagation()">
-                            Use Fixed Left Y Axis Values
-                        </md-checkbox>
-                    </md-menu-item>
-                    <md-menu-item ng-if="vm.useFixedWindYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
-                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
-                                                class="md-primary" title="Set the desired Y-Axis Minimum Value">
-                                <input flex style="" placeholder="Minimum" ng-model="vm.yAxisWindMinValue"
-                                       ng-change="vm.showWindOptionsChanged()" type="number"
-                                       ng-model-options="{ debounce: 300 }">
-                            </md-input-container>
-                        </div>
-                    </md-menu-item>
-                    <md-menu-item ng-if="vm.useFixedWindYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
-                             style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
-                                                class="md-primary" title="Set the desired Y-Axis Maximum Value">
-                                <input flex style="" placeholder="Maximum" ng-model="vm.yAxisWindMaxValue"
-                                       ng-change="vm.showWindOptionsChanged()" type="number"
-                                       ng-model-options="{ debounce: 300 }">
-                            </md-input-container>
-                        </div>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
-        </md-toolbar>
-        <div class="md-whiteframe-z1" flex style="padding: 8px; min-height: 235px; max-height: 235px" layout="column">
-            <multi-line-chart flex redraw-function="vm.redrawWindChart" y-max="vm.yAxisWindMaxValue" hide-context-zoom="true"
-                              y-min="vm.yAxisWindMinValue" mouse-over-tooltip="true"></multi-line-chart>
         </div>
     </div>
 

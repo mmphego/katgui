@@ -39,7 +39,7 @@ angular.module('katGui.d3')
                     scope.showGridLines = false;
                     scope.currentBrush = {};
                     scope.nestedData = [];
-                    scope.redrawFunction = function (newData, showGridLines, hideContextZoom, useFixedYAxis, yAxisValues, dataLimit) {
+                    scope.redrawFunction = function (newData, showGridLines, hideContextZoom, useFixedYAxis, yAxisValues, dataLimit, limitOverlayValue) {
 
                         if (yAxisValues) {
                             yAxisValues = yAxisValues.replace(/\'/g, '"');
@@ -92,8 +92,13 @@ angular.module('katGui.d3')
                             drawSvg();
                         }
 
-                        if (hideContextZoom !== scope.hideContextZoom) {
-                            scope.hideContextZoom = hideContextZoom;
+                        if (showGridLines !== scope.showGridLines) {
+                            scope.showGridLines = showGridLines;
+                            drawSvg();
+                        }
+
+                        if (limitOverlayValue !== scope.limitOverlayValue) {
+                            scope.limitOverlayValue = limitOverlayValue;
                             drawSvg();
                         }
 
@@ -131,6 +136,16 @@ angular.module('katGui.d3')
                         xAxisElement, yAxisElement, xAxisElement2, context, focus;
 
                     var formatTwoDecimals = d3.format(",.2f");
+                    var limitOverlayElement;
+
+                    var overlayLine = d3.svg.line()
+                        .interpolate("cubic")
+                        .x(function (d) {
+                            return x(d.date);
+                        })
+                        .y(function (d) {
+                            return y(d.value);
+                        });
 
                     drawSvg();
                     drawValues();
@@ -179,7 +194,7 @@ angular.module('katGui.d3')
                         focus = svg.append("g")
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                        if (scope.mouseOverTooltip) {
+                        if (scope.mouseOverTooltip && width > 0 && height > 0) {
                             scope.overlay = svg.append("rect")
                                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                                 .attr("width", width)
@@ -189,7 +204,7 @@ angular.module('katGui.d3')
                                 //})
                                 .on("mouseout", function() {
                                     if (!scope.lockShowTooltip) {
-                                        d3.selectAll(".focus-tooltip").style("display", "none");
+                                        d3.select(element[0]).selectAll(".focus-tooltip").style("display", "none");
                                     }
                                 })
                                 .on("mousemove", function () {
@@ -201,7 +216,7 @@ angular.module('katGui.d3')
                         }
 
                         // set the ranges
-                        x = d3.time.scale().range([0, width]);
+                        x = d3.time.scale.utc().range([0, width]);
                         y = null;
                         if (scope.yAxisValues) {
                             y = d3.scale.ordinal().rangePoints([height, 0]);
@@ -249,7 +264,7 @@ angular.module('katGui.d3')
                         if (!scope.hideContextZoom) {
 
                             y2 = null;
-                            x2 = d3.time.scale().range([0, width]);
+                            x2 = d3.time.scale.utc().range([0, width]);
 
                             if (scope.yAxisValues) {
                                 y2 = d3.scale.ordinal().rangePoints([height2, 0]);
@@ -295,6 +310,13 @@ angular.module('katGui.d3')
                                 .selectAll("rect")
                                 .attr("y", -6)
                                 .attr("height", height2 + 7);
+                        }
+
+                        if (scope.limitOverlayValue) {
+                            limitOverlayElement = focus.append("line")
+                                .style("stroke", "#333")
+                                .style("stroke-dasharray", "10, 5")
+                                .attr("class", "limit-overlay-path");
                         }
                     }
 
@@ -423,6 +445,13 @@ angular.module('katGui.d3')
 
                         }
                         //context zoom element stop
+
+                        if (scope.limitOverlayValue) {
+                            limitOverlayElement.attr("x1", "0")
+                                .attr("x2", width)
+                                .attr("y1", y(scope.limitOverlayValue))
+                                .attr("y2", y(scope.limitOverlayValue));
+                        }
                     }
 
                     function wrapText(text, d, width) {
@@ -444,7 +473,7 @@ angular.module('katGui.d3')
 
                     function mousemove (calledWithoutEvent) {
                         if (calledWithoutEvent !== true) {
-                            d3.selectAll(".focus-tooltip").style("display", null);
+                            d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
                         }
                         var mouse = null;
                         scope.nestedData.forEach(function (data) {

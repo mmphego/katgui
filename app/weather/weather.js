@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('WeatherCtrl', WeatherCtrl);
 
-    function WeatherCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log) {
+    function WeatherCtrl($rootScope, $scope, DataService, SensorsService, KatGuiUtil, $interval, $log, $q) {
 
         var vm = this;
         vm.ancResource = {
@@ -11,10 +11,11 @@
                 {python_identifier: 'anc.weather_pressure'},
                 {python_identifier: 'anc.weather_temperature'},
                 {python_identifier: 'anc.weather_relative_humidity'},
-                {python_identifier: 'anc.weather_rainfall'},
-                {python_identifier: 'anc.weather_wind_direction'},
-                {python_identifier: 'anc.weather_wind_speed'}]
+                {python_identifier: 'anc.weather_rainfall', skipHistory: true},
+                {python_identifier: 'anc.weather_wind_speed'},
+                {python_identifier: 'anc.weather_wind_direction', skipHistory: true}]
         };
+        vm.resourcesHistoriesCount = 4;
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
@@ -31,6 +32,11 @@
         vm.yAxisRightMaxValue = 1000;
         vm.yAxisWindMinValue = 0;
         vm.yAxisWindMaxValue = 20;
+        vm.windSpeedLimitLine = 15;
+        vm.maxSensorValue = {};
+        vm.historicalRange = '2h';
+        vm.sensorGroupingInterval = 30;
+        vm.dataTimeWindow = new Date().getTime();
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -67,19 +73,82 @@
 
         vm.connectListeners();
 
-        vm.initSensors = function () {
+        vm.initSensors = function (skipConnectSensorListeners) {
+            var startDate = vm.getTimestampFromHistoricalRange();
+            vm.dataTimeWindow = new Date().getTime() - startDate;
             var sensorNameList = [];
+            var deferred = $q.defer();
+            var resourcesHistoriesReceived = 0;
+
+            if (!skipConnectSensorListeners) {
+                deferred.promise.then(function () {
+                    SensorsService.connectResourceSensorNamesLiveFeedWithList(
+                        'anc',
+                        sensorNameList,
+                        vm.guid,
+                        $rootScope.sensorListStrategyType,
+                        $rootScope.sensorListStrategyInterval,
+                        $rootScope.sensorListStrategyInterval);
+                });
+            }
+
             vm.ancResource.sensorList.forEach(function (sensor) {
                 sensorNameList.push(sensor.python_identifier.replace('anc.', ''));
-            });
-            SensorsService.connectResourceSensorNamesLiveFeedWithList(
-                'anc',
-                sensorNameList,
-                vm.guid,
-                $rootScope.sensorListStrategyType,
-                $rootScope.sensorListStrategyInterval,
-                $rootScope.sensorListStrategyInterval);
+                if (!sensor.skipHistory) {
+                    var katstoreSensorName = sensor.python_identifier.replace(/\./g, '_');
+                    DataService.findSensor(katstoreSensorName, startDate, new Date().getTime(), 0, 'ms', 'json', vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
+                        .success(function (result) {
+                            resourcesHistoriesReceived++;
+                            var newData = [];
+                            //pack the result in the way our chart needs it
+                            //because the json we receive is not good enough for d3
+                            for (var attr in result) {
+                                var name = attr.replace('anc_', '').replace('weather_', '').replace('_', ' ');
+                                for (var i = 0; i < result[attr].length; i++) {
+                                    var newSensor = {
+                                        name: name,
+                                        Sensor: attr,
+                                        Timestamp: result[attr][i][0],
+                                        Value: result[attr][i][1],
+                                        timestamp: moment.utc(result[attr][i][0], 'X').format('HH:mm:ss DD-MM-YYYY')
+                                    };
+                                    if (sensor.python_identifier.indexOf('pressure') !== -1) {
+                                        newSensor.rightAxis = true;
+                                    }
+                                    newData.push(newSensor);
 
+                                    if (!vm.maxSensorValue[name]) {
+                                        vm.maxSensorValue[name] = {
+                                            timestamp: newSensor.timestamp,
+                                            value: newSensor.Value
+                                        };
+                                    } else if (newSensor.Value >= vm.maxSensorValue[newSensor.name].value) {
+                                        vm.maxSensorValue[name] = {
+                                            timestamp: newSensor.timestamp,
+                                            value: newSensor.Value
+                                        };
+                                    }
+                                }
+                            }
+                            if (sensor.python_identifier.indexOf('wind_speed') > -1) {
+                                vm.redrawWindChart(newData, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, vm.windSpeedLimitLine);
+                            } else {
+                                vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
+                            }
+
+                            if (resourcesHistoriesReceived >= vm.resourcesHistoriesCount) {
+                                deferred.resolve();
+                            }
+                        })
+                        .error(function (error) {
+                            resourcesHistoriesReceived++;
+                            if (resourcesHistoriesReceived >= vm.resourcesHistoriesCount) {
+                                deferred.resolve();
+                            }
+                            $log.error(error);
+                        });
+                }
+            });
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
@@ -96,9 +165,16 @@
 
                     if (oldSensor.python_identifier.indexOf('wind_direction') !== -1) {
                         windDirection = oldSensor.value;
+                        vm.latestWindDirection = windDirection;
                     }
                     if (oldSensor.python_identifier.indexOf('wind_speed') !== -1) {
                         windSpeed = oldSensor.value;
+                    }
+
+                    if (!vm.maxSensorValue[oldSensor.name]) {
+                        vm.maxSensorValue[oldSensor.name] = {timestamp: oldSensor.timestamp, value: oldSensor.value};
+                    } else if (oldSensor.value >= vm.maxSensorValue[oldSensor.name].value) {
+                        vm.maxSensorValue[oldSensor.name] = {timestamp: oldSensor.timestamp, value: oldSensor.value};
                     }
                 }
             });
@@ -114,7 +190,7 @@
                     Timestamp: sensor.value.received_timestamp,
                     Value: sensor.value.value
                 };
-                vm.redrawWindChart([newSensor], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 100);
+                vm.redrawWindChart([newSensor], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, vm.windSpeedLimitLine);
             } else if (strList[1].indexOf('temperature') > -1
                 || strList[1].indexOf('humidity') > -1
                 || strList[1].indexOf('pressure') > -1) {
@@ -129,16 +205,16 @@
                 if (strList[1].indexOf('pressure') !== -1) {
                     newSensor.rightAxis = true;
                 }
-                vm.redrawChart([newSensor], vm.showGridLines, 100);
+                vm.redrawChart([newSensor], vm.showGridLines, vm.dataTimeWindow);
             }
         });
 
         vm.showOptionsChanged = function () {
-            vm.redrawChart(null, vm.showGridLines, 100);
+            vm.redrawChart(null, vm.showGridLines, vm.dataTimeWindow);
         };
 
         vm.showWindOptionsChanged = function () {
-            vm.redrawWindChart(null, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 100);
+            vm.redrawWindChart(null, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, vm.windSpeedLimitLine);
         };
 
         vm.sensorClass = function (status) {
@@ -147,6 +223,31 @@
 
         vm.classNameFromPythonID = function (sensor) {
             return sensor.python_identifier.replace(/\./g, '_');
+        };
+
+        vm.getTimestampFromHistoricalRange = function () {
+            var now = new Date().getTime();
+            switch (vm.historicalRange) {
+                case '1h':
+                    return now - (60 * 60 * 1000);
+                case '2h':
+                    return now - (2 * 60 * 60 * 1000);
+                case '8h':
+                    return now - (8 * 60 * 60 * 1000);
+                case '1d':
+                    return now - (24 * 60 * 60 * 1000);
+                case '2d':
+                    return now - (48 * 60 * 60 * 1000);
+                case '1w':
+                    return now - (168 * 60 * 60 * 1000);
+            }
+        };
+
+        vm.historicalRangeChanged = function () {
+            vm.clearWindChart();
+            vm.clearChart();
+            vm.maxSensorValue = {};
+            vm.initSensors(true);
         };
 
         $scope.$on('$destroy', function () {

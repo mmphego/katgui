@@ -115,15 +115,23 @@ angular.module('katGui.d3')
                         svg.append("circle")
                             .attr("class", "wind-direction")
                             .attr("transform", function () {
-                                var proj = projection([scope.data.windDirection, 0]);
-                                return "translate(" + proj[0] + "," + proj[1] + ")";
+                                if (scope.data.windDirection) {
+                                    var proj = projection([scope.data.windDirection, 0]);
+                                    return "translate(" + proj[0] + "," + proj[1] + ")";
+                                } else {
+                                    return null;
+                                }
                             })
                             .attr("r", 3);
 
                         svg.append("path")
                             .attr("class", "wind-direction-path")
                             .attr("d", function () {
-                                return line([projection([scope.data.windDirection, 0]), projection([0, 90])]);
+                                if (scope.data.windDirection) {
+                                    return line([projection([scope.data.windDirection, 0]), projection([0, 90])]);
+                                } else {
+                                    return null;
+                                }
                             });
                     }
 

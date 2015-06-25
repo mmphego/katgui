@@ -36,11 +36,13 @@ angular.module('katGui.d3')
                     });
 
                     var color = d3.scale.category10();
-                    var bisectDate = d3.bisector(function(d) { return d.date; }).left;
+                    var bisectDate = d3.bisector(function (d) {
+                        return d.date;
+                    }).left;
                     scope.showGridLines = false;
                     scope.currentBrush = {};
                     scope.nestedData = [];
-                    scope.redrawFunction = function (newData, showGridLines, dataLimit) {
+                    scope.redrawFunction = function (newData, showGridLines, dataWindowDuration) {
 
                         if (newData) {
                             newData.forEach(function (d) {
@@ -49,7 +51,8 @@ angular.module('katGui.d3')
 
                                 var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
                                 if (existingDataLine) {
-                                    if (existingDataLine.values.length > dataLimit) {
+                                    while (existingDataLine.values.length > 0
+                                    &&  new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
                                         existingDataLine.values.splice(0, 1);
                                     }
                                     existingDataLine.values.push(d);
@@ -111,7 +114,7 @@ angular.module('katGui.d3')
                         focus = svg.append("g")
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                        if (scope.mouseOverTooltip) {
+                        if (scope.mouseOverTooltip && width > 0 && height > 0) {
                             scope.overlay = svg.append("rect")
                                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                                 .attr("width", width)
@@ -119,9 +122,9 @@ angular.module('katGui.d3')
                                 .attr("class", "overlay")
                                 //.on("mouseover", function() {
                                 //})
-                                .on("mouseout", function() {
+                                .on("mouseout", function () {
                                     if (!scope.lockShowTooltip) {
-                                        d3.selectAll(".focus-tooltip").style("display", "none");
+                                        d3.select(element[0]).selectAll(".focus-tooltip").style("display", "none");
                                     }
                                 })
                                 .on("mousemove", function () {
@@ -133,7 +136,7 @@ angular.module('katGui.d3')
                         }
 
                         // set the ranges
-                        x = d3.time.scale().range([0, width]);
+                        x = d3.time.scale.utc().range([0, width]);
                         y = d3.scale.linear().range([height, 0]);
                         yRight = d3.scale.linear().range([height, 0]);
 
@@ -282,9 +285,9 @@ angular.module('katGui.d3')
                         el.remove();
                     }
 
-                    function mousemove (calledWithoutEvent) {
+                    function mousemove(calledWithoutEvent) {
                         if (calledWithoutEvent !== true) {
-                            d3.selectAll(".focus-tooltip").style("display", null);
+                            d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
                         }
                         var mouse = null;
                         scope.nestedData.forEach(function (data) {
