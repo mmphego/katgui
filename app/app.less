@@ -19,6 +19,7 @@
 @import "health/health";
 @import "d3/d3";
 @import "sensor-list/sensor-list";
+
 /* Add Component LESS Above */
 
 @button-background-gradient: linear-gradient(to bottom, #79a3c9 0%, #4772a0 100%);
@@ -44,18 +45,28 @@
 
 @font-face {
     font-family: 'Roboto';
-    src: url('/fonts/Roboto/Roboto-Regular.ttf') @ttf;
+    src: url('fonts/Roboto/Roboto-Regular.ttf') @ttf,
+    url('../fonts/Roboto/Roboto-Regular.ttf') @ttf;
 }
 
-.rb {font-family: 'Roboto';}
+.rb {
+    font-family: 'Roboto';
+}
+
 @font-face {
     font-family: 'Roboto Black';
-    src: url('/fonts/Roboto/Roboto-Black.ttf') @ttf;
+    src: url('fonts/Roboto/Roboto-Black.ttf') @ttf,
+    url('../fonts/Roboto/Roboto-Black.ttf') @ttf;
 }
-.rbB {font-family: 'Roboto Black';}
+
+.rbB {
+    font-family: 'Roboto Black';
+}
+
 @font-face {
     font-family: 'Roboto Light';
-    src: url('/fonts/Roboto/Roboto-Light.ttf') @ttf;
+    src: url('fonts/Roboto/Roboto-Light.ttf') @ttf,
+    url('../fonts/Roboto/Roboto-Light.ttf') @ttf;
 }
 
 /* Required for Angular UI Bootstrap */
@@ -84,7 +95,7 @@ div[role="button"] {
     height: 32px;
     margin-left: auto;
     margin-right: auto;
-    color: rgba(255,255,255,0.5);
+    color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
     border: 0;
     background: none;
@@ -93,8 +104,8 @@ div[role="button"] {
     text-align: center;
 
     &:hover {
-        color: rgba(227,227,227,0.8);
-        background-color: rgba(255,255,255,0.2);
+        color: rgba(227, 227, 227, 0.8);
+        background-color: rgba(255, 255, 255, 0.2);
         font-size: 24px;
         margin-top: -5px;
     }
@@ -185,7 +196,7 @@ md-list.md-dark-secondary-theme {
 .menu-item {
     font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
     cursor: pointer;
-//    color: #757575;
+    //    color: #757575;
     height: 48px;
     width: 100%;
     padding-left: 24px;
@@ -206,22 +217,22 @@ md-list.md-dark-secondary-theme {
     }
 
     &:hover {
-        background-color: rgba(255,255,255, 0.1);
+        background-color: rgba(255, 255, 255, 0.1);
 
         span {
-//            font-size: 32px;
+            //            font-size: 32px;
         }
 
         button {
-//            background-color: #F5F5F5;
+            //            background-color: #F5F5F5;
         }
     }
 
     &:active {
-//        background-color: #E0E0E0;
+        //        background-color: #E0E0E0;
 
         button {
-//            background-color: #E0E0E0;
+            //            background-color: #E0E0E0;
         }
     }
 }
@@ -331,7 +342,7 @@ md-sidenav {
 .slide-in-vertically-navbar.ng-hide-remove {
     max-height: 0px;
     min-height: 0px;
-//    margin-bottom: 0px;
+    //    margin-bottom: 0px;
     overflow: hidden;
 }
 
@@ -339,7 +350,7 @@ md-sidenav {
 .slide-in-vertically-navbar.ng-hide-add.ng-hide-add-active {
     max-height: 0px;
     min-height: 0px;
-//    margin-bottom: 0px;
+    //    margin-bottom: 0px;
     overflow: hidden;
 }
 
@@ -347,7 +358,7 @@ md-sidenav {
 .slide-in-vertically-navbar.ng-hide-remove.ng-hide-remove-active {
     max-height: 56px;
     min-height: 56px;
-//    margin-bottom: 16px;
+    //    margin-bottom: 16px;
     overflow: visible;
 }
 
@@ -401,8 +412,8 @@ md-toast {
 }
 
 .list-subheader-title {
-//    min-height: 30px;
-//    max-height: 30px;
+    //    min-height: 30px;
+    //    max-height: 30px;
     width: 100%;
     padding: 2px;
     cursor: pointer;
@@ -494,16 +505,16 @@ md-toast {
 
 .md-toolbar-tools-small {
     display: flex !important;
-    align-items: center!important;
-    flex-direction: row!important;
-    width: 100%!important;
-    height: 25px!important;
-    min-height: 25px!important;
-    max-height: 25px!important;
-    font-size: inherit!important;
-    font-weight: normal!important;
-    padding: 0 10px!important;
-    margin: 0!important;
+    align-items: center !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    height: 25px !important;
+    min-height: 25px !important;
+    max-height: 25px !important;
+    font-size: inherit !important;
+    font-weight: normal !important;
+    padding: 0 10px !important;
+    margin: 0 !important;
 }
 
 .md-toolbar-tools-medium {
@@ -521,9 +532,9 @@ md-toast {
 
     md-input-container {
         padding-bottom: 0;
-//        .md-input {
-//            text-shadow: 0 0;
-//        }
+        //        .md-input {
+        //            text-shadow: 0 0;
+        //        }
     }
 
     md-select {
@@ -693,11 +704,13 @@ md-option:not([selected]) {
     color: #dbdbdb;
 }
 
-:-moz-placeholder { /* Firefox 18- */
+:-moz-placeholder {
+    /* Firefox 18- */
     color: #dbdbdb;
 }
 
-::-moz-placeholder {  /* Firefox 19+ */
+::-moz-placeholder {
+    /* Firefox 19+ */
     color: #dbdbdb;
 }
 
@@ -712,20 +725,21 @@ md-option:not([selected]) {
 
 /* Track */
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: rgba(158,158,158,0.8);
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background: rgba(158, 158, 158, 0.8);
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
+
 ::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(158,158,158,0.4);
+    background: rgba(158, 158, 158, 0.4);
 }
 
 md-chips .md-chip {
-    background: rgba(224,224,224, 0.5) !important;
+    background: rgba(224, 224, 224, 0.5) !important;
 }
 
 .center-md-icon {
@@ -740,11 +754,11 @@ md-chips .md-chip {
 
 //to restyle datetimepicker selected day
 .datetimepicker table tr td.active:active, .datetimepicker table tr td.active:hover:active, .datetimepicker table tr td.active.disabled:active, .datetimepicker table tr td.active.disabled:hover:active, .datetimepicker table tr td.active.active, .datetimepicker table tr td.active:hover.active, .datetimepicker table tr td.active.disabled.active, .datetimepicker table tr td.active.disabled:hover.active {
-    background: rgb(63,81,181) !important;
+    background: rgb(63, 81, 181) !important;
 }
 
 .datetimepicker table tr td span.active:active, .datetimepicker table tr td span.active:hover:active, .datetimepicker table tr td span.active.disabled:active, .datetimepicker table tr td span.active.disabled:hover:active, .datetimepicker table tr td span.active.active, .datetimepicker table tr td span.active:hover.active, .datetimepicker table tr td span.active.disabled.active, .datetimepicker table tr td span.active.disabled:hover.active {
-    background: rgb(63,81,181) !important;
+    background: rgb(63, 81, 181) !important;
 }
 
 .md-select-label {
@@ -754,6 +768,7 @@ md-chips .md-chip {
 .connection-lost-bg {
     background-color: rgba(244, 67, 54, 0.4) !important;
 }
+
 .connection-lost-bg-bright {
     background-color: rgba(244, 67, 54, 1.0) !important;
 }
