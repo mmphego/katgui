@@ -3,12 +3,109 @@
     angular.module('katGui')
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
-    function ProcessControlCtrl($scope) {
+    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService) {
 
         var vm = this;
 
-        $scope.$on('$destroy', function () {
+        vm.resourcesNames = {};
+        vm.guid = KatGuiUtil.generateUUID();
+        vm.disconnectIssued = false;
+        vm.connectInterval = null;
 
+        ConfigService.getSystemConfig().then(function (systemConfig) {
+           vm.systemConfig = systemConfig;
+        });
+
+        var sensorNameList = ['version', 'build'];
+
+        vm.connectListeners = function () {
+            SensorsService.connectListener()
+                .then(function () {
+                    vm.initSensors();
+                    if (vm.connectInterval) {
+                        $interval.cancel(vm.connectInterval);
+                        vm.connectInterval = null;
+                        if (!vm.disconnectIssued) {
+                            $rootScope.showSimpleToast('Reconnected :)');
+                        }
+                    }
+                }, function () {
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                    }
+                });
+            vm.handleSocketTimeout();
+        };
+
+        vm.handleSocketTimeout = function () {
+            SensorsService.getTimeoutPromise()
+                .then(function () {
+                    if (!vm.disconnectIssued) {
+                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        if (!vm.connectInterval) {
+                            vm.connectInterval = $interval(vm.connectListeners, 10000);
+                            vm.connectListeners();
+                        }
+                    }
+                });
+        };
+
+        vm.initSensors = function () {
+            for (var key in SensorsService.resources) {
+                vm.resourcesNames[key] = {
+                    name: key,
+                    sensors: {},
+                    address: SensorsService.resources[key].address,
+                    connected: false
+                };
+                SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
+                    key, sensorNameList, vm.guid, 'event', 0, 0);
+                SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
+                    'sys', 'config_label', vm.guid, 'event', 0, 0);
+                SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
+                    'sys', 'monitor', vm.guid, 'event', 0, 0);
+            }
+        };
+
+        vm.connectListeners();
+
+        SensorsService.listResources()
+            .then(function () {
+                vm.initSensors();
+            });
+
+        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
+            var strList = sensor.name.split(':');
+            var sensorNameList = strList[1].split('.');
+            if (sensorNameList[1].indexOf('monitor_') !== -1) {
+                var resource = sensorNameList[1].split('monitor_')[1];
+                vm.resourcesNames[resource].connected = sensor.value.value;
+            } else {
+                vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
+                    name: sensorNameList[1],
+                    value: sensor.value.value
+                };
+            }
+        });
+
+        $scope.objectKeys = function (obj) {
+            return Object.keys(obj);
+        };
+
+        $scope.$on('$destroy', function () {
+            //todo check katportal if this is neccesary
+            for (var key in SensorsService.resources) {
+                for (var i in sensorNameList) {
+                    SensorsService.unsubscribe(key + '.*' + sensorNameList[i] + '*', vm.guid);
+                }
+                SensorsService.removeResourceListeners(key);
+            }
+            SensorsService.unsubscribe('sys.config_label', vm.guid);
+            SensorsService.unsubscribe('sys.monitor*', vm.guid);
+            unbindUpdate();
+            vm.disconnectIssued = true;
+            SensorsService.disconnectListener();
         });
     }
 })();
