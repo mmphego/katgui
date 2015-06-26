@@ -17,7 +17,7 @@
            vm.systemConfig = systemConfig;
         });
 
-        var sensorNameList = ['version', 'build'];
+        var sensorNameList = ['version*', 'build*'];
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -65,7 +65,9 @@
                         };
                         vm.resourcesNames[key].nodeman = vm.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
                         SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                            key, sensorNameList, vm.guid, 'event', 0, 0);
+                            key, sensorNameList[0], vm.guid, 'event', 0, 0);
+                        SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
+                            key, sensorNameList[1], vm.guid, 'event', 0, 0);
                     }
 
                     SensorsService.connectResourceSensorNameLiveFeed(
