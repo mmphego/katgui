@@ -1,4 +1,4 @@
-angular.module('katGui.d3')
+angular.module('katGui.d3', ['katGui.util'])
 
     .directive('compassChart', function (d3Service) {
         return {
