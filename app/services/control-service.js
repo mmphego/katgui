@@ -123,6 +123,10 @@
             api.sendControlCommand('sys', 'operator_resume_operations', '');
         };
 
+        api.floodlightsOn = function (onOff) {
+            api.sendControlCommand('anc', 'vds_floodlight_on', onOff);
+        };
+
         api.shutdownComputing = function () {
             api.sendControlCommand('sys', 'operator_shutdown_computing', '');
         };
