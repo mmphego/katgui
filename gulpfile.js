@@ -20,6 +20,7 @@ var stylish = require('jshint-stylish');
 var domSrc = require('gulp-dom-src');
 var karma = require('gulp-karma');
 var util = require('gulp-util');
+var insert = require('gulp-insert');
 
 var htmlminOptions = {
     collapseBooleanAttributes: true,
@@ -45,6 +46,7 @@ gulp.task('css', ['clean'], function () {
         'bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
         'bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
         'app/app.less'])
+        .pipe(insert.prepend('@fa-font-path: "fonts";'))
         .pipe(less().on('error', util.log))
         .pipe(concat('app.full.min.css'))
         .pipe(cssmin({
