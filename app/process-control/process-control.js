@@ -78,7 +78,6 @@
                     'Error Sending Request',
                     'Could not send process request because KATGUI does not know which node manager to use for ' + key + '.');
             }
-
         };
 
         vm.connectListeners();
