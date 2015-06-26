@@ -23,6 +23,7 @@
             SensorsService.connectListener()
                 .then(function () {
                     vm.initSensors();
+
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
@@ -53,21 +54,26 @@
         };
 
         vm.initSensors = function () {
-            for (var key in SensorsService.resources) {
-                vm.resourcesNames[key] = {
-                    name: key,
-                    sensors: {},
-                    address: SensorsService.resources[key].address,
-                    connected: false
-                };
-                vm.resourcesNames[key].nodeman = vm.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
-                SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                    key, sensorNameList, vm.guid, 'event', 0, 0);
-                SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                    'sys', 'config_label', vm.guid, 'event', 0, 0);
-                SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                    'sys', 'monitor', vm.guid, 'event', 0, 0);
-            }
+            SensorsService.listResources()
+                .then(function () {
+                    for (var key in SensorsService.resources) {
+                        vm.resourcesNames[key] = {
+                            name: key,
+                            sensors: {},
+                            address: SensorsService.resources[key].address,
+                            connected: false
+                        };
+                        vm.resourcesNames[key].nodeman = vm.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
+                        SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
+                            key, sensorNameList, vm.guid, 'event', 0, 0);
+                    }
+
+                    SensorsService.connectResourceSensorNameLiveFeed(
+                        'sys', 'monitor_*', vm.guid, 'event', 0, 0);
+                    SensorsService.connectResourceSensorNameLiveFeed(
+                        'sys', 'config_label', vm.guid, 'event', 0, 0);
+                });
+
         };
 
         vm.processCommand = function (key, command) {
@@ -82,23 +88,22 @@
 
         vm.connectListeners();
 
-        SensorsService.listResources()
-            .then(function () {
-                vm.initSensors();
-            });
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
             var sensorNameList = strList[1].split('.');
-            if (sensorNameList[1].indexOf('monitor_') !== -1) {
-                var resource = sensorNameList[1].split('monitor_')[1];
-                vm.resourcesNames[resource].connected = sensor.value.value;
-            } else {
-                vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
-                    name: sensorNameList[1],
-                    value: sensor.value.value
-                };
-            }
+            $scope.$apply(function () {
+                if (sensorNameList[1].indexOf('monitor_') !== -1) {
+                    var resource = sensorNameList[1].split('monitor_')[1];
+                    vm.resourcesNames[resource].connected = sensor.value.value;
+                    console.log(sensor);
+                } else {
+                    vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
+                        name: sensorNameList[1],
+                        value: sensor.value.value
+                    };
+                }
+            });
         });
 
         $scope.objectKeys = function (obj) {

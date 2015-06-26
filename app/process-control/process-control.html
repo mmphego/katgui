@@ -19,7 +19,7 @@
     </md-toolbar>
 
     <div class="md-whiteframe-z1" md-theme="{{themePrimaryButtons}}">
-        <div ng-repeat="key in objectKeys(vm.resourcesNames) | orderBy:key track by $index"
+        <div ng-repeat="key in objectKeys(vm.resourcesNames) | orderBy:key track by key"
             class="process-control-container">
             <div flex ng-click="vm.resourcesNames[key].showBuildState = !vm.resourcesNames[key].showBuildState" role="heading"
                  ng-init="vm.resourcesNames[key].showBuildState = false" class="process-control-bg-transition md-whiteframe-z1"
@@ -46,11 +46,11 @@
                 </div>
 
             </div>
-            <div ng-show="vm.resourcesNames[key].showBuildState" class="grow-height-animation" style="cursor: auto;">
+            <div ng-if="vm.resourcesNames[key].showBuildState" class="grow-height-animation" style="cursor: auto;">
                 <div ng-repeat="(key, sensor) in vm.resourcesNames[key].sensors | orderBy:'name' track by key"
                     style="margin: 4px;">
-                    <div style="text-align: end; width: 230px; display: inline-block"><span>{{::sensor.name}}:</span></div>
-                    <div style="display: inline-block; margin-left: 4px;"><span><b>{{::sensor.value}}</b></span></div>
+                    <div style="text-align: end; width: 230px; display: inline-block"><span>{{sensor.name}}:</span></div>
+                    <div style="display: inline-block; margin-left: 4px;"><span><b>{{sensor.value}}</b></span></div>
                 </div>
             </div>
         </div>
