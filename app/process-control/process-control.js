@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
-    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService) {
+    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService) {
 
         var vm = this;
 
@@ -11,6 +11,7 @@
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
+        ControlService.connectListener();
 
         ConfigService.getSystemConfig().then(function (systemConfig) {
            vm.systemConfig = systemConfig;
@@ -59,6 +60,7 @@
                     address: SensorsService.resources[key].address,
                     connected: false
                 };
+                vm.resourcesNames[key].nodeman = vm.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
                 SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
                     key, sensorNameList, vm.guid, 'event', 0, 0);
                 SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
@@ -66,6 +68,17 @@
                 SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
                     'sys', 'monitor', vm.guid, 'event', 0, 0);
             }
+        };
+
+        vm.processCommand = function (key, command) {
+            if (vm.resourcesNames[key].nodeman) {
+                ControlService.sendControlCommand(vm.resourcesNames[key].nodeman, command, key);
+            } else {
+                $rootScope.showSimpleDialog(
+                    'Error Sending Request',
+                    'Could not send process request because KATGUI does not know which node manager to use for ' + key + '.');
+            }
+
         };
 
         vm.connectListeners();
