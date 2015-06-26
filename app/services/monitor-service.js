@@ -28,6 +28,7 @@
                 var connectionParams = ['mon:' + receptor + '.mode', 'mon:' + receptor + '.inhibited'];
                 api.subscribe(connectionParams);
             });
+            api.subscribe('anc.vds_flood_lights_on');
         };
 
         api.subscribeToAlarms = function () {
@@ -129,7 +130,8 @@
                                 if (channelNameSplit[0] === 'kataware') {
                                     AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                                 } else if (channelNameSplit.length > 1 &&
-                                    (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited')) {
+                                    (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
+                                     channelNameSplit[1] === 'vds_flood_lights_on')) {
                                     $rootScope.$emit('operatorControlStatusMessage', {
                                         name: messageObj.msg_channel,
                                         value: messageObj.msg_data

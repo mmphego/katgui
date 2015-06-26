@@ -11,6 +11,7 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
+        vm.floodLightSensor = false;
 
         vm.connectListeners = function () {
             ControlService.connectListener()
@@ -70,6 +71,14 @@
             ControlService.resumeOperations();
         };
 
+        vm.toggleFloodLights = function () {
+            if (vm.floodLightSensor.value){
+                ControlService.floodlightsOn("off");
+            } else{
+                ControlService.floodlightsOn("on");
+            }
+        };
+
         //vm.shutdownComputing = function () {
         //    ControlService.shutdownComputing();
         //};
@@ -90,16 +99,20 @@
             var sensorNameList = message.name.split(':')[1].split('.');
             var receptor = sensorNameList[0];
             var sensorName = sensorNameList[1];
-            ReceptorStateService.receptorsData.forEach(function (item) {
-                if (item.name === receptor && message.value) {
-                    if (sensorName === 'mode' && item.status !== message.value.value) {
-                        item.state = message.value.value;
-                    } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
-                        item.inhibited = message.value.value;
+            if (sensorName === 'vds_flood_lights_on') {
+                vm.floodLightSensor = message.value;
+            } else {
+                ReceptorStateService.receptorsData.forEach(function (item) {
+                    if (item.name === receptor && message.value) {
+                        if (sensorName === 'mode' && item.status !== message.value.value) {
+                            item.state = message.value.value;
+                        } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
+                            item.inhibited = message.value.value;
+                        }
+                        item.lastUpdate = moment(message.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
                     }
-                    item.lastUpdate = moment(message.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
-                }
-            });
+                });
+            }
         };
 
         vm.cancelListeningToReceptorMessages = $rootScope.$on('operatorControlStatusMessage', vm.receptorMessageReceived);
