@@ -93,11 +93,11 @@
             var strList = sensor.name.split(':');
             var sensorNameList = strList[1].split('.');
             $scope.$apply(function () {
-                if (sensorNameList[1].indexOf('monitor_') !== -1) {
+                if (sensorNameList[1].indexOf('monitor_') === 0) {
                     var resource = sensorNameList[1].split('monitor_')[1];
                     vm.resourcesNames[resource].connected = sensor.value.value;
-                    console.log(sensor);
                 } else {
+
                     vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
                         name: sensorNameList[1],
                         value: sensor.value.value
