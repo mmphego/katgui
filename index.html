@@ -71,8 +71,10 @@
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/util.js"></script>
 
+<script src="app/d3/compass-chart.js"></script>
 <script src="app/d3/d3-gantt-chart.js"></script>
 <script src="app/d3/multi-line-chart.js"></script>
+<script src="app/d3/multi-line-two-y-axis-chart.js"></script>
 <script src="app/d3/d3-service.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
 <script src="app/d3/receptor-pointing-equatorial.js"></script>
@@ -214,6 +216,12 @@
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('video')">
                         <span class="fa fa-video-camera"></span>
                         <button>Video</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('weather')">
+                        <span class="fa fa-cloud"></span>
+                        <button>Weather</button>
                     </md-item-content>
                 </md-item>
                 <md-item>

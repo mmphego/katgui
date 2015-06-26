@@ -123,7 +123,7 @@ angular.module('katGui.d3')
             tooltip.html(
                 "<div class='chart-tooltip'>" +
                 "<b>" + d.TooltipValue + "</b>" +
-                "<br/>"+ moment.utc(d.Timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') + "(UTC)" +
+                "<br/>"+ moment.utc(d.Timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
                 "</div>"
             );
         };

@@ -16,7 +16,6 @@
         vm.connectInterval = null;
 
         vm.showTips = false;
-        vm.showDots = false;
         vm.showContextZoom = false;
         vm.useFixedYAxis = false;
         vm.yAxisMinValue = 0;
@@ -218,7 +217,7 @@
                     ValueTimestamp: sensor.value.timestamp,
                     Timestamp: sensor.value.received_timestamp,
                     Value: sensor.value.value
-                }], vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis, null, 100);
+                }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 100);
             }
         });
 
@@ -226,7 +225,7 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
-            vm.redrawChart(null, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis);
+            vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
         };
 
         $scope.$on('$destroy', function () {

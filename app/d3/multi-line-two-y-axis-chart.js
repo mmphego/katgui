@@ -1,15 +1,16 @@
 angular.module('katGui.d3')
 
-    .directive('multiLineChart', function ($window, d3Service, d3Util) {
+    .directive('multiLineTwoYAxisChart', function ($window, d3Service, d3Util) {
         return {
             restrict: 'EA',
             scope: {
                 redrawFunction: '=',
                 clearFunction: '=',
                 removeSensorFunction: '=',
-                hideContextZoom: '=hideContextZoom',
-                yMin: '=yMin',
-                yMax: '=yMax',
+                yLeftMin: '=yLeftMin',
+                yLeftMax: '=yLeftMax',
+                yRightMin: '=yRightMin',
+                yRightMax: '=yRightMax',
                 mouseOverTooltip: '='
             },
             replace: false,
@@ -34,55 +35,29 @@ angular.module('katGui.d3')
                         }
                     });
 
-                    var color = d3.scale.category20();
-                    var bisectDate = d3.bisector(function(d) { return d.date; }).left;
+                    var color = d3.scale.category10();
+                    var bisectDate = d3.bisector(function (d) {
+                        return d.date;
+                    }).left;
                     scope.showGridLines = false;
                     scope.currentBrush = {};
                     scope.nestedData = [];
-                    scope.redrawFunction = function (newData, showGridLines, hideContextZoom, useFixedYAxis, yAxisValues, dataLimit, limitOverlayValue) {
-
-                        if (yAxisValues) {
-                            yAxisValues = yAxisValues.replace(/\'/g, '"');
-                            scope.yAxisValues = JSON.parse(yAxisValues);
-                            scope.yAxisValues = _.sortBy(scope.yAxisValues, function (d) {
-                                return d.toUpperCase();
-                            });
-                        }
+                    scope.redrawFunction = function (newData, showGridLines, dataWindowDuration) {
 
                         if (newData) {
                             newData.forEach(function (d) {
                                 d.date = new Date(parseFloat(d.Timestamp) * 1000);
-                                if (yAxisValues) {
-                                    d.value = d.Value;
-                                } else {
-                                    if (typeof(d.Value) === 'boolean') {
-                                        d.value = d.Value? 1 : 0;
-                                    } else if (typeof(d.Value) === 'number' || !isNaN(parseFloat(d.Value))) {
-                                        d.value = parseFloat(d.Value);
-                                    } else {
-                                        d.value = d.Value;
-                                        if (!scope.yAxisValues) {
-                                            scope.yAxisValues = [];
-                                        }
-                                        var yAxisValue = d.Value.replace(/\'/g, '"');
-                                        if (scope.yAxisValues.indexOf(yAxisValue) === -1) {
-                                            scope.yAxisValues.push(yAxisValue);
-                                            scope.yAxisValues = _.sortBy(scope.yAxisValues, function (d) {
-                                                return d.toUpperCase();
-                                            });
-                                            drawSvg();
-                                        }
-                                    }
-                                }
+                                d.value = parseFloat(d.Value);
 
                                 var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
                                 if (existingDataLine) {
-                                    if (existingDataLine.values.length > dataLimit) {
+                                    while (existingDataLine.values.length > 0
+                                    &&  new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
                                         existingDataLine.values.splice(0, 1);
                                     }
                                     existingDataLine.values.push(d);
                                 } else {
-                                    scope.nestedData.push({key: d.Sensor, values: [d]});
+                                    scope.nestedData.push({key: d.Sensor, values: [d], rightAxis: d.rightAxis});
                                 }
                             });
                         }
@@ -92,26 +67,10 @@ angular.module('katGui.d3')
                             drawSvg();
                         }
 
-                        if (showGridLines !== scope.showGridLines) {
-                            scope.showGridLines = showGridLines;
-                            drawSvg();
-                        }
-
-                        if (limitOverlayValue !== scope.limitOverlayValue) {
-                            scope.limitOverlayValue = limitOverlayValue;
-                            drawSvg();
-                        }
-
-                        scope.useFixedYAxis = useFixedYAxis;
-
                         drawValues();
-                        if (!hideContextZoom) {
-                            scope.brushFunction();
-                        }
                     };
 
                     scope.clearFunction = function () {
-                        scope.yAxisValues = null;
                         scope.nestedData.splice(0, scope.nestedData.length);
                         drawSvg();
                         drawValues();
@@ -129,67 +88,28 @@ angular.module('katGui.d3')
                         .attr("class", "multi-line-tooltip")
                         .style("opacity", 0);
 
-                    var margin = {top: 10, right: 10, bottom: 100, left: 60},
-                        width, height, height2;
-                    var margin2 = {top: 0, right: 10, bottom: 20, left: 60};
-                    var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2,
-                        xAxisElement, yAxisElement, xAxisElement2, context, focus;
+                    var margin = {top: 10, right: 60, bottom: 35, left: 60},
+                        width, height;
+                    var svg, x, y, yRight, xAxis, yAxis, yAxisRight, line, lineRight,
+                        xAxisElement, yAxisElement, yAxisRightElement, focus;
 
                     var formatTwoDecimals = d3.format(",.2f");
-                    var limitOverlayElement;
-
-                    var overlayLine = d3.svg.line()
-                        .interpolate("cubic")
-                        .x(function (d) {
-                            return x(d.date);
-                        })
-                        .y(function (d) {
-                            return y(d.value);
-                        });
 
                     drawSvg();
                     drawValues();
 
                     function drawSvg() {
 
-                        if (scope.yAxisValues) {
-                            margin.left = 120;
-                            margin2 = {top: element[0].clientHeight - 80, right: 10, bottom: 20, left: 120};
-                        } else {
-                            margin.left = 60;
-                            margin2 = {top: element[0].clientHeight - 80, right: 10, bottom: 20, left: 60};
-                        }
-
-                        if (scope.hideContextZoom) {
-                            margin.bottom = 35;
-                        } else {
-                            margin.bottom = 100;
-                        }
-
                         width = element[0].clientWidth - margin.left - margin.right;
                         height = element[0].clientHeight - margin.top - margin.bottom - 5;
-                        height2 = 70;
                         if (height < 0) {
                             height = 0;
-                        }
-
-                        if (scope.yAxisValues) {
-                            margin.left = 120;
-                            margin2 = {top: height, right: 10, bottom: 20, left: 120};
                         }
 
                         d3.select(element[0]).select('svg').remove();
                         svg = d3.select(element[0]).append("svg")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.top + margin.bottom);
-
-                        if (!scope.hideContextZoom) {
-                            svg.append("defs").append("clipPath")
-                                .attr("id", "clip")
-                                .append("rect")
-                                .attr("width", width)
-                                .attr("height", height);
-                        }
 
                         focus = svg.append("g")
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -202,7 +122,7 @@ angular.module('katGui.d3')
                                 .attr("class", "overlay")
                                 //.on("mouseover", function() {
                                 //})
-                                .on("mouseout", function() {
+                                .on("mouseout", function () {
                                     if (!scope.lockShowTooltip) {
                                         d3.select(element[0]).selectAll(".focus-tooltip").style("display", "none");
                                     }
@@ -217,27 +137,13 @@ angular.module('katGui.d3')
 
                         // set the ranges
                         x = d3.time.scale.utc().range([0, width]);
-                        y = null;
-                        if (scope.yAxisValues) {
-                            y = d3.scale.ordinal().rangePoints([height, 0]);
-                        } else {
-                            y = d3.scale.linear().range([height, 0]);
-                        }
+                        y = d3.scale.linear().range([height, 0]);
+                        yRight = d3.scale.linear().range([height, 0]);
 
                         // define the axes
                         xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
-
-                        yAxis = null;
-                        if (scope.yAxisValues) {
-                            yAxis = d3.svg.axis()
-                                .scale(y).orient("left")
-                                .ticks(scope.yAxisValues.length)
-                                .tickFormat(function (d, i) {
-                                    return scope.yAxisValues[i];
-                                });
-                        } else {
-                            yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
-                        }
+                        yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
+                        yAxisRight = d3.svg.axis().scale(yRight).orient("right").ticks(10);
 
                         if (scope.showGridLines) {
                             xAxis.tickSize(-height);
@@ -254,6 +160,15 @@ angular.module('katGui.d3')
                                 return y(d.value);
                             });
 
+                        lineRight = d3.svg.line()
+                            .interpolate("cubic")
+                            .x(function (d) {
+                                return x(d.date);
+                            })
+                            .y(function (d) {
+                                return yRight(d.value);
+                            });
+
                         xAxisElement = focus.append("g")
                             .attr("class", "x axis")
                             .attr("transform", "translate(0," + height + ")");
@@ -261,63 +176,9 @@ angular.module('katGui.d3')
                         yAxisElement = focus.append("g")
                             .attr("class", "y axis y-axis");
 
-                        if (!scope.hideContextZoom) {
-
-                            y2 = null;
-                            x2 = d3.time.scale.utc().range([0, width]);
-
-                            if (scope.yAxisValues) {
-                                y2 = d3.scale.ordinal().rangePoints([height2, 0]);
-                            } else {
-                                y2 = d3.scale.linear().range([height2, 0]);
-                            }
-
-                            line2 = d3.svg.line()
-                                .interpolate("cubic")
-                                .x(function (d) {
-                                    return x2(d.date);
-                                })
-                                .y(function (d) {
-                                    return y2(d.value);
-                                });
-
-                            context = svg.append("g")
-                                .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-                            xAxis2 = d3.svg.axis().scale(x2).orient("bottom").ticks(0);
-
-                            xAxisElement2 = context.append("g")
-                                .attr("class", "x axis")
-                                .attr("transform", "translate(0," + height2 + ")");
-
-                            scope.brushFunction = function () {
-                                x.domain(brush.empty() ? x2.domain() : brush.extent());
-                                focus.selectAll("path.line").attr("d", function (d) {
-                                    return line(d.values);
-                                });
-                                focus.select(".x.axis").call(xAxis);
-                                focus.select(".y.axis").call(yAxis);
-                            };
-
-                            var brush = d3.svg.brush()
-                                .x(x2)
-                                .on("brush", scope.brushFunction);
-
-                            context.append("g")
-                                .attr("class", "x brush")
-                                .style("stroke", contextBrushColor)
-                                .call(brush)
-                                .selectAll("rect")
-                                .attr("y", -6)
-                                .attr("height", height2 + 7);
-                        }
-
-                        if (scope.limitOverlayValue) {
-                            limitOverlayElement = focus.append("line")
-                                .style("stroke", "#333")
-                                .style("stroke-dasharray", "10, 5")
-                                .attr("class", "limit-overlay-path");
-                        }
+                        yAxisRightElement = focus.append("g")
+                            .attr("class", "y y-axis y-axis-opacity right-y-axis")
+                            .attr("transform", "translate(" + width + ", 0)");
                     }
 
                     function drawValues() {
@@ -325,36 +186,15 @@ angular.module('katGui.d3')
                         // scale the range of the data
                         x.domain([
                             d3.min(scope.nestedData, function (sensors) {
-                               return sensors.values[0].date;
+                                return sensors.values[0].date;
                             }),
                             d3.max(scope.nestedData, function (sensors) {
                                 return sensors.values[sensors.values.length - 1].date;
                             })
                         ]);
 
-                        if (scope.useFixedYAxis && !scope.yAxisValues) {
-                            y.domain([scope.yMin, scope.yMax]);
-                        } else if (!scope.yAxisValues) {
-                            var yExtent = [
-                                d3.min(scope.nestedData, function (sensors) {
-                                    return d3.min(sensors.values, function (d) {
-                                        return d.value;
-                                    });
-                                }),
-                                d3.max(scope.nestedData, function (sensors) {
-                                    return d3.max(sensors.values, function (d) {
-                                        return d.value;
-                                    });
-                                })
-                            ];
-                            if (yExtent[0] === yExtent[1]) {
-                                yExtent[0] = yExtent[0] - 1;
-                                yExtent[1] = yExtent[1] + 1;
-                            }
-                            y.domain(yExtent);
-                        } else {
-                            y.domain(scope.yAxisValues);
-                        }
+                        y.domain([scope.yLeftMin, scope.yLeftMax]);
+                        yRight.domain([scope.yRightMin, scope.yRightMax]);
 
                         focus.selectAll(".path-container").remove();
                         var focuslineGroups = focus.selectAll("svg")
@@ -375,14 +215,29 @@ angular.module('katGui.d3')
                                 style.id = d.key + '_style_tag';
                                 style.innerHTML = '.' + d.key + ' {color:' + c + '; stroke:' + c + '; fill:' + c + '}';
                                 document.getElementsByTagName('head')[0].appendChild(style);
+                                if (d.rightAxis) {
+                                    var axisStyle = document.getElementById('right-y-axis');
+                                    if (axisStyle && axisStyle.parentNode) {
+                                        axisStyle.parentNode.removeChild(axisStyle);
+                                    }
+                                    axisStyle = document.createElement('style');
+                                    axisStyle.type = 'text/css';
+                                    axisStyle.id = 'right-y-axis';
+                                    axisStyle.innerHTML = '.right-y-axis {color:' + c + '; fill:' + c + '}';
+                                    document.getElementsByTagName('head')[0].appendChild(axisStyle);
+                                }
                                 return d.key;
                             })
                             .attr("class", function (d) {
                                 return "line " + d.key + " path-line";
                             })
                             .attr("d", function (d) {
-                                return line(d.values);
-                            }).attr("clip-path", "url(#clip)");
+                                if (d.rightAxis) {
+                                    return lineRight(d.values);
+                                } else {
+                                    return line(d.values);
+                                }
+                            });
 
                         if (scope.mouseOverTooltip) {
                             scope.nestedData.forEach(function (data) {
@@ -391,7 +246,8 @@ angular.module('katGui.d3')
                                         .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
                                         .style("display", "none");
                                     focusTooltip.append("circle")
-                                        .attr("class", "focus-tooltip-circle")
+                                        .attr("class", "focus-tooltip-circle " + data.key)
+                                        .style("fill", "none")
                                         .attr("r", 4.5);
                                     focusTooltip.append('foreignObject')
                                         .attr("x", 0)
@@ -404,54 +260,12 @@ angular.module('katGui.d3')
 
                         xAxisElement.call(xAxis);
                         yAxisElement.call(yAxis);
+                        yAxisRightElement.call(yAxisRight);
 
-                        if (scope.yAxisValues) {
-                            yAxisElement.selectAll(".y-axis text")
-                                .each(function (d, i) {
-                                    wrapText(this, scope.yAxisValues[i], margin.left);
-                                });
-                        } else {
-                            yAxisElement.selectAll(".y-axis text")
-                                .each(function (d) {
-                                    wrapText(this, d.toString(), margin.left);
-                                });
-                        }
-
-                        //context zoom element start
-                        if (!scope.hideContextZoom) {
-
-                            x2.domain(x.domain());
-                            y2.domain(y.domain());
-
-                            context.selectAll(".brush-container").remove();
-
-                            var contextlineGroups = context.selectAll("svg")
-                                .data(scope.nestedData)
-                                .enter()
-                                .append("g")
-                                .attr("class", "brush-container");
-
-                            var contextLines = contextlineGroups.append("path")
-                                .attr("class", "line context-line")
-                                .attr("d", function (d) {
-                                    return line2(d.values);
-                                })
-                                .style("stroke", function (d) {
-                                    return color(d.key);
-                                })
-                                .attr("clip-path", "url(#clip)");
-
-                            xAxisElement2.call(xAxis2);
-
-                        }
-                        //context zoom element stop
-
-                        if (scope.limitOverlayValue) {
-                            limitOverlayElement.attr("x1", "0")
-                                .attr("x2", width)
-                                .attr("y1", y(scope.limitOverlayValue))
-                                .attr("y2", y(scope.limitOverlayValue));
-                        }
+                        yAxisElement.selectAll(".y-axis text")
+                            .each(function (d) {
+                                wrapText(this, d.toString(), margin.left);
+                            });
                     }
 
                     function wrapText(text, d, width) {
@@ -471,7 +285,7 @@ angular.module('katGui.d3')
                         el.remove();
                     }
 
-                    function mousemove (calledWithoutEvent) {
+                    function mousemove(calledWithoutEvent) {
                         if (calledWithoutEvent !== true) {
                             d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
                         }
@@ -499,7 +313,12 @@ angular.module('katGui.d3')
                                 d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 
                                 var xTranslate = (x(d.date) + margin.left);
-                                var yTranslate = (y(d.value) + margin.top);
+                                var yTranslate;
+                                if (d.rightAxis) {
+                                    yTranslate = (yRight(d.value) + margin.top);
+                                } else {
+                                    yTranslate = (y(d.value) + margin.top);
+                                }
 
                                 var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                                 focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
