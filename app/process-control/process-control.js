@@ -61,10 +61,24 @@
             for (var i in vm.nodemans) {
                 SensorsService.resources[vm.nodemans[i]] = {};
             }
-            vm.listResourceSensors(vm.nodemans[0]);
+            $timeout(function () {
+                vm.listResourceSensors(vm.nodemans[0]);
+            }, 1000);
             $timeout(function () {
                 vm.listResourceSensors(vm.nodemans[1]);
-            }, 1000);
+            }, 2000);
+        };
+
+        vm.collapseAll = function (nm_name) {
+            for (var key in vm.detailedProcesses[nm_name]) {
+                vm.detailedProcesses[nm_name][key].showDetail = false;
+            }
+        };
+
+        vm.expandAll = function (nm_name) {
+            for (var key in vm.detailedProcesses[nm_name]) {
+                vm.detailedProcesses[nm_name][key].showDetail = true;
+            }
         };
 
         vm.listResourceSensors = function (resource) {

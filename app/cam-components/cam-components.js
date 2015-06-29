@@ -112,6 +112,18 @@
             return Object.keys(obj);
         };
 
+        vm.collapseAll = function () {
+            for (var key in vm.resourcesNames) {
+                vm.resourcesNames[key].showDetails = false;
+            }
+        };
+
+        vm.expandAll = function () {
+            for (var key in vm.resourcesNames) {
+                vm.resourcesNames[key].showDetails = true;
+            }
+        };
+
         $scope.$on('$destroy', function () {
             //todo check katportal if this is neccesary
             for (var key in SensorsService.resources) {

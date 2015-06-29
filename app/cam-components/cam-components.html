@@ -15,7 +15,13 @@
         </div>
     </div>
     <md-toolbar class="md-whiteframe-z1 md-toolbar-tools" layout="row" layout-align="start center">
-        <span style="margin-top: -5px;">CAM Components - Versions and Build State</span>
+        <span flex style="margin-top: -5px;">CAM Components - Versions and Build State</span>
+        <md-button ng-click="vm.collapseAll()" title="Collapse All" class="inline-action-button no-margin-no-padding" style="font-size: 16px;">
+            <i class="fa fa-minus-square-o"></i>
+        </md-button>
+        <md-button ng-click="vm.expandAll()" title="Expand All" class="inline-action-button no-margin-no-padding" style="font-size: 16px;">
+            <i class="fa fa-plus-square-o"></i>
+        </md-button>
         <div flex class="unselectable list-subheader-title" layout="row" layout-align="center center"
             style="position: absolute; left: 0; bottom: 0; padding-left: 6px;">
             <span style="width: 160px;" class="subheader-text">
@@ -39,9 +45,9 @@
     <div class="md-whiteframe-z1" md-theme="{{themePrimaryButtons}}">
         <div ng-repeat="key in objectKeys(vm.resourcesNames) | orderBy:key track by key"
              class="process-control-container">
-            <div flex ng-click="vm.resourcesNames[key].showBuildState = !vm.resourcesNames[key].showBuildState" role="heading"
-                 ng-init="vm.resourcesNames[key].showBuildState = false" class="process-control-bg-transition md-whiteframe-z1"
-                 style="padding: 6px;" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.resourcesNames[key].showBuildState}">
+            <div flex ng-click="vm.resourcesNames[key].showDetails = !vm.resourcesNames[key].showDetails" role="heading"
+                 ng-init="vm.resourcesNames[key].showDetails = false" class="process-control-bg-transition md-whiteframe-z1"
+                 style="padding: 6px;" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.resourcesNames[key].showDetails}">
                 <span ng-show="!vm.resourcesNames[key].connected" class="red-color" style="width: 160px; margin: 0;"><b>{{::key | uppercase}}</b></span>
                 <span ng-show="vm.resourcesNames[key].connected" class="green-color" style="width: 160px; margin: 0;"><b>{{::key | uppercase}}</b></span>
                 <span>{{::vm.resourcesNames[key].address[0]}}</span>
@@ -64,7 +70,7 @@
                 </div>
 
             </div>
-            <div ng-if="vm.resourcesNames[key].showBuildState" class="grow-height-animation" style="cursor: auto;">
+            <div ng-if="vm.resourcesNames[key].showDetails" class="grow-height-animation" style="cursor: auto;">
                 <div ng-repeat="(key, sensor) in vm.resourcesNames[key].sensors | orderBy:'name' track by key"
                      style="margin: 4px;">
                     <div style="text-align: end; width: 230px; display: inline-block"><span>{{sensor.name}}:</span></div>
