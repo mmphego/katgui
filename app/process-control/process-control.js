@@ -16,12 +16,6 @@
         vm.nodemans = ['nm_monctl', 'nm_proxy'];
         ControlService.connectListener();
 
-        ConfigService.getSystemConfig().then(function (systemConfig) {
-           vm.systemConfig = systemConfig;
-        });
-
-        var sensorNameList = ['version*', 'build*'];
-
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
@@ -104,16 +98,6 @@
                 });
         };
 
-        vm.processCommand = function (key, command) {
-            if (vm.resourcesNames[key].nodeman) {
-                ControlService.sendControlCommand(vm.resourcesNames[key].nodeman, command, key);
-            } else {
-                $rootScope.showSimpleDialog(
-                    'Error Sending Request',
-                    'Could not send process request because KATGUI does not know which node manager to use for ' + key + '.');
-            }
-        };
-
         vm.processNMCommand = function (nm, key, command) {
             ControlService.sendControlCommand(nm, command, key);
         };
@@ -143,15 +127,6 @@
         };
 
         $scope.$on('$destroy', function () {
-            //todo check katportal if this is neccesary
-            for (var key in SensorsService.resources) {
-                for (var i in sensorNameList) {
-                    SensorsService.unsubscribe(key + '.*' + sensorNameList[i] + '*', vm.guid);
-                }
-                SensorsService.removeResourceListeners(key);
-            }
-            SensorsService.unsubscribe('sys.config_label', vm.guid);
-            SensorsService.unsubscribe('sys.monitor*', vm.guid);
             unbindUpdate();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
