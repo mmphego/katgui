@@ -485,6 +485,14 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
+        $stateProvider.state('cam-components', {
+            url: '/cam-components',
+            templateUrl: 'app/cam-components/cam-components.html',
+            title: 'CAM Components',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
 
         var schedulerHome = {
             name: 'scheduler',

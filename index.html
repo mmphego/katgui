@@ -115,6 +115,7 @@
 <script src="app/scheduler/observations/observations-detail.js"></script>
 <script src="app/scheduler/observations/observations-overview.js"></script>
 <script src="app/process-control/process-control.js"></script>
+<script src="app/cam-components/cam-components.js"></script>
 <!-- Add New Component JS Above -->
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
@@ -166,6 +167,14 @@
                         <div class="menu-item" layout="row" layout-align="start center">
                             <span class="fa fa-cogs"></span>
                             <button>Operator Control</button>
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('cam-components')">
+                        <div class="menu-item" layout="row" layout-align="start center">
+                            <span class="fa fa-cubes"></span>
+                            <button>CAM Components</button>
                         </div>
                     </md-item-content>
                 </md-item>
