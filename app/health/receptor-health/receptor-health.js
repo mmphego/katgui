@@ -9,7 +9,7 @@
         vm.receptorHealthTree = ConfigService.receptorHealthTree;
         vm.receptorList = ConfigService.receptorList;
         vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst'];
-        vm.treeChartSize = {width: 880, height: 880};
+        vm.treeChartSize = {width: 480, height: 480};
 
         if ($localStorage['receptorHealthDisplayMapType']) {
             vm.mapType = $localStorage['receptorHealthDisplayMapType'];

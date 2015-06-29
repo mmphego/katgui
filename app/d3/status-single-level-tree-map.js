@@ -184,14 +184,8 @@ angular.module('katGui.d3')
                                 .attr("id", function (d) {
                                     return d.sensor.replace(".", "_") + "hideButton";
                                 })
-                                .attr("x", function (d) {
-                                    return d.x + 4;
-                                })
-                                .attr("y", function (d) {
-                                    return d.y + 4;
-                                })
-                                .style("width", 26)
-                                .style("height", 26)
+                                //.style("width", 26)
+                                //.style("height", 26)
                                 .style("display", "none")
                                 .on("click", function (d) {
                                     scope.ignoreList.push(d.name);
@@ -209,7 +203,7 @@ angular.module('katGui.d3')
                                 .attr("title", "Hide Sensor")
                                 .style("position", "inherit")
                                 .style("color", "white")
-                                .html('<span class="fa fa-eye-slash"></span>');
+                                .html('<i style="position: fixed" class="fa fa-eye-slash"></i>');
                         }
                     }
                 });

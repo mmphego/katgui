@@ -76,14 +76,10 @@ angular.module('katGui.d3')
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function (d) {
                     api.updateTooltipValues(d, tooltip);
-                    var rect = d3.event.toElement.getBoundingClientRect();
-                    var offset = d3.mouse(this);
-                    var x = rect.left + offset[0];
-                    var y = rect.top + offset[1];
-
-                    if ($rootScope.isNavbarVisible()) {
-                        y -= 58;
-                    }
+                    var uiViewDiv = document.querySelector('#ui-view-container-div');
+                    var offset = d3.mouse(uiViewDiv);
+                    var x = offset[0];
+                    var y = offset[1];
 
                     if (window.innerWidth - x < 320) {
                         x = window.innerWidth - 320;
@@ -92,8 +88,8 @@ angular.module('katGui.d3')
                         y = window.innerHeight - 225;
                     }
                     tooltip
-                        .style("top", (y + 15 + angular.element(document.querySelector('#ui-view-container-div')).scrollTop()) + "px")
-                        .style("left", (x + 5 + angular.element(document.querySelector('#ui-view-container-div')).scrollLeft()) + "px");
+                        .style("top", (y + 15 + angular.element(uiViewDiv).scrollTop()) + "px")
+                        .style("left", (x + 5 + angular.element(uiViewDiv).scrollLeft()) + "px");
 
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
