@@ -126,7 +126,11 @@
                         api.deferredMap[messages.id].resolve('Fetched resources.');
                     } else if (messages.result.list_resource_sensors) {
                         api.resources[messages.result.list_resource_sensors.resource_name].sensorsList = messages.result.list_resource_sensors.result;
-                        api.deferredMap[messages.id].resolve('Fetched ' + messages.result.list_resource_sensors.result.length + ' sensors.');
+                        api.deferredMap[messages.id].resolve({
+                            resource: messages.result.list_resource_sensors.resource_name,
+                            result: messages.result.list_resource_sensors.result,
+                            message: 'Fetched ' + messages.result.list_resource_sensors.result.length + ' sensors.'
+                        });
                     } else if (messages.result.email && messages.result.session_id) {
                         //auth response
                         $localStorage['currentUserToken'] = $rootScope.jwt;

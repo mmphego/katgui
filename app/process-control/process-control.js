@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
-    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService) {
+    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService, $timeout) {
 
         var vm = this;
 
@@ -11,6 +11,9 @@
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
+        vm.detailedProcesses = { nm_monctl: {}, nm_proxy: {}};
+        vm.sensorsToDisplay = {};
+        vm.nodemans = ['nm_monctl', 'nm_proxy'];
         ControlService.connectListener();
 
         ConfigService.getSystemConfig().then(function (systemConfig) {
@@ -54,28 +57,37 @@
         };
 
         vm.initSensors = function () {
-            SensorsService.listResources()
-                .then(function () {
-                    for (var key in SensorsService.resources) {
-                        vm.resourcesNames[key] = {
-                            name: key,
-                            sensors: {},
-                            address: SensorsService.resources[key].address,
-                            connected: false
-                        };
-                        vm.resourcesNames[key].nodeman = vm.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
-                        SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                            key, sensorNameList[0], vm.guid, 'event', 0, 0);
-                        SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                            key, sensorNameList[1], vm.guid, 'event', 0, 0);
-                    }
+            SensorsService.resources = {};
+            for (var i in vm.nodemans) {
+                SensorsService.resources[vm.nodemans[i]] = {};
+            }
+            vm.listResourceSensors(vm.nodemans[0]);
+            $timeout(function () {
+                vm.listResourceSensors(vm.nodemans[1]);
+            }, 1000);
+        };
 
-                    SensorsService.connectResourceSensorNameLiveFeed(
-                        'sys', 'monitor_*', vm.guid, 'event', 0, 0);
-                    SensorsService.connectResourceSensorNameLiveFeed(
-                        'sys', 'config_label', vm.guid, 'event', 0, 0);
+        vm.listResourceSensors = function (resource) {
+            SensorsService.listResourceSensors(resource)
+                .then(function (result) {
+                    SensorsService.resources[result.resource].sensorsList.forEach(function (item) {
+                        if (item.name.indexOf('.') > -1) {
+                            var processName = item.name.split('.')[0];
+                            if (!vm.detailedProcesses[result.resource][processName]) {
+                                vm.detailedProcesses[result.resource][processName] = {sensors: {}};
+                            }
+                            vm.sensorsToDisplay[item.python_identifier] = item;
+                            vm.detailedProcesses[result.resource][processName].sensors[item.python_identifier] = item;
+                            if (item.python_identifier.indexOf('running') !== -1) {
+                                SensorsService.connectResourceSensorNameLiveFeed(
+                                    result.resource, item.python_identifier, vm.guid, 'event-rate', 3, 3);
+                            } else {
+                                SensorsService.connectResourceSensorNameLiveFeed(
+                                    result.resource, item.python_identifier, vm.guid, 'event-rate', 3, 120);
+                            }
+                        }
+                    });
                 });
-
         };
 
         vm.processCommand = function (key, command) {
@@ -88,22 +100,26 @@
             }
         };
 
-        vm.connectListeners();
+        vm.processNMCommand = function (nm, key, command) {
+            ControlService.sendControlCommand(nm, command, key);
+        };
 
+        $timeout(vm.connectListeners, 500);
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
             var sensorNameList = strList[1].split('.');
             $scope.$apply(function () {
-                if (sensorNameList[1].indexOf('monitor_') === 0) {
-                    var resource = sensorNameList[1].split('monitor_')[1];
-                    vm.resourcesNames[resource].connected = sensor.value.value;
+                if (vm.sensorsToDisplay[sensorNameList[1]]) {
+                    vm.sensorsToDisplay[sensorNameList[1]].value = sensor.value.value;
+                    vm.sensorsToDisplay[sensorNameList[1]].timestamp = sensor.value.timestamp;
+                    vm.sensorsToDisplay[sensorNameList[1]].date = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                    vm.sensorsToDisplay[sensorNameList[1]].received_timestamp = sensor.value.received_timestamp;
+                    vm.sensorsToDisplay[sensorNameList[1]].status = sensor.value.status;
+                    vm.sensorsToDisplay[sensorNameList[1]].name = sensorNameList[1];
                 } else {
-
-                    vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
-                        name: sensorNameList[1],
-                        value: sensor.value.value
-                    };
+                    $log.error('Dangling sensor message');
+                    $log.error(sensor);
                 }
             });
         });
