@@ -107,7 +107,7 @@
                             vm.detailedProcesses[result.resource][processName].sensors[item.python_identifier] = item;
                             if (item.python_identifier.indexOf('running') !== -1) {
                                 SensorsService.connectResourceSensorNameLiveFeed(
-                                    result.resource, item.python_identifier, vm.guid, 'event-rate', 3, 3);
+                                    result.resource, item.python_identifier, vm.guid, 'event-rate', 1, 3);
                             } else {
                                 SensorsService.connectResourceSensorNameLiveFeed(
                                     result.resource, item.python_identifier, vm.guid, 'event-rate', 3, 120);
