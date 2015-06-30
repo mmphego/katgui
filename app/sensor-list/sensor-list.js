@@ -120,8 +120,8 @@
             }
             if (!SensorsService.resources[resourceName].sensorsList) {
                 SensorsService.listResourceSensors(resourceName)
-                    .then(function (message) {
-                        $rootScope.showSimpleToast(message);
+                    .then(function (result) {
+                        $rootScope.showSimpleToast(result.message);
                         vm.limitTo = 30;
                         vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
                         if (!$scope.$$phase) {
