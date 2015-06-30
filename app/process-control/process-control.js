@@ -11,9 +11,10 @@
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
-        vm.detailedProcesses = { nm_monctl: {}, nm_proxy: {}};
+        vm.detailedProcesses = {};
         vm.sensorsToDisplay = {};
-        vm.nodemans = ['nm_monctl', 'nm_proxy'];
+        vm.nodemans = [];
+
         ControlService.connectListener();
 
         vm.connectListeners = function () {
@@ -52,15 +53,33 @@
 
         vm.initSensors = function () {
             SensorsService.resources = {};
-            for (var i in vm.nodemans) {
-                SensorsService.resources[vm.nodemans[i]] = {};
-            }
-            $timeout(function () {
-                vm.listResourceSensors(vm.nodemans[0]);
-            }, 1000);
-            $timeout(function () {
-                vm.listResourceSensors(vm.nodemans[1]);
-            }, 2000);
+            vm.detailedProcesses = {};
+            vm.nodemans.splice(0, vm.nodemans.length);
+            var lastTimeout = 0;
+            ConfigService.getSystemConfig()
+                .then(function (result) {
+                    if (result.nodes) {
+                        for (var node in result.nodes) {
+                            var nodeName = 'nm_' + node;
+                            vm.detailedProcesses[nodeName] = {};
+                            vm.nodemans.push(nodeName);
+                            SensorsService.resources[nodeName] = {};
+                            SensorsService.resources[nodeName].subscribed = false;
+                            /*todo - fix, we cant send lots of messages quickly after each other via sockjs
+                            sockjs on katportal throws an error, so we need to give it some breathing space*/
+                            lastTimeout += 500;
+                            $timeout(function () {
+                                for (var node in vm.detailedProcesses) {
+                                    if (!SensorsService.resources[node].subscribed) {
+                                        vm.listResourceSensors(node);
+                                        SensorsService.resources[node].subscribed = true;
+                                        return;
+                                    }
+                                }
+                            }, lastTimeout);
+                        }
+                    }
+                });
         };
 
         vm.collapseAll = function (nm_name) {
