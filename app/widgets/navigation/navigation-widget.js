@@ -39,6 +39,11 @@
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
 
+        vm.openKatsnifferLogger = function () {
+            //TODO get from config and eventually redo central logger
+            KatGuiUtil.openRelativePath(KATSNIFFER_PATH, KATSNIFFER_LOGGER_PORT);
+        };
+
         $scope.$on('$destroy', function() {
             vm.unbindThemePrimary();
             vm.unbindThemePrimaryButtons();

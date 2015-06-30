@@ -60,7 +60,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, $log) {
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, KATSNIFFER_LOGGER_PORT, KATSNIFFER_PATH, $log) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -88,8 +88,12 @@
         $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
         $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
         $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
+        $rootScope.logNumberOfLines = $localStorage['logNumberOfLines'];
         if (!$rootScope.sensorListStrategyType) {
             $rootScope.sensorListStrategyType = 'event-rate';
+        }
+        if (!$rootScope.logNumberOfLines) {
+            $rootScope.logNumberOfLines = 200;
         }
         if (!$rootScope.sensorListStrategyInterval) {
             $rootScope.sensorListStrategyInterval = 3;
@@ -358,6 +362,12 @@
             //TODO get from config and eventually redo central logger
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
+
+        vm.openKatsnifferLogger = function () {
+            //TODO get from config and eventually redo central logger
+            KatGuiUtil.openRelativePath(KATSNIFFER_PATH + $rootScope.logNumberOfLines, KATSNIFFER_LOGGER_PORT);
+        };
+
 
         //so that all controllers and directives has access to which keys are pressed
         document.onkeydown = function (event) {

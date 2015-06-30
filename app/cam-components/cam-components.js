@@ -78,6 +78,11 @@
 
         };
 
+        vm.sendControlCommand = function (resource) {
+	    ControlService.sendControlCommand(resource, 'enable_katcpmsgs_devices_logging', '1');
+        };
+
+
         vm.processCommand = function (key, command) {
             if (vm.resourcesNames[key].nodeman) {
                 ControlService.sendControlCommand(vm.resourcesNames[key].nodeman, command, key);

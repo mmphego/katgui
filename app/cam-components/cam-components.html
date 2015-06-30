@@ -55,6 +55,9 @@
                 <span style="width: 180px;"><i>{{::vm.resourcesNames[key].sensors.api_version.value}}</i></span>
                 <span flex><i>{{::vm.resourcesNames[key].sensors.build_state.value}}</i></span>
                 <div layout="row" style="position: absolute; right: 0; top: 0">
+                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.sendControlCommand(key); $event.stopPropagation()" title="Toggle Logging ">
+                        <i class="fa fa-info"></i>
+                    </md-button>
                     <md-button ng-show="!vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'start'); $event.stopPropagation()" title="Start Process">
                         <i class="fa fa-play"></i>
                     </md-button>
