@@ -1,4 +1,4 @@
-<div flex style="min-width: 1015px; min-height: 920px;" ng-controller="ReceptorHealthCtrl as vm">
+<div flex style="min-width: 600px; min-height: 600px;" ng-controller="ReceptorHealthCtrl as vm">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
@@ -18,16 +18,51 @@
         </div>
     </div>
     <div style="padding-left:16px; padding-right:16px; padding-top:8px;">
-        <div md-theme="{{themePrimary}}" class="" layout="row" layout-align="start center" class="md-toolbar-tools-small">
+        <div md-theme="{{themePrimaryButtons}}" class="" layout="row" layout-align="start center"
+            style="position: absolute; right: 0; top: 0">
+            <md-menu style="padding: 0">
+                <md-button class="md-icon-button" ng-click="$mdOpenMenu()">
+                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                </md-button>
+                <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;">
+                    <md-menu-item>
+                        <md-select ng-model="vm.mapType" style="margin: 0; padding: 0" ng-click="$event.stopPropagation()"
+                                   class="md-primary" md-theme="{{themePrimaryButtons}}" ng-change="vm.mapTypeChanged()">
+                            <md-option ng-value="type" ng-repeat="type in vm.mapTypes">{{type}}</md-option>
+                        </md-select>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <div layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-right: 8px; margin-bottom: 8px; padding: 0">
+                            <label style="width: 82px; font-weight: normal; margin-top: 4px;">Chart Width:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Chart Width for each Tree View">
+                                <input flex style="" placeholder="Minimum" ng-model="vm.treeChartSize.width"
+                                       ng-change="vm.chartSizeChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <div layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                             style="margin-right: 8px; margin-bottom: 8px; padding: 0">
+                            <label style="width: 82px; font-weight: normal; margin-top: 4px;">Chart Height:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                                                class="md-primary" title="Set the desired Chart Height for each Tree View">
+                                <input flex style="" placeholder="Minimum" ng-model="vm.treeChartSize.height"
+                                       ng-change="vm.chartSizeChanged()" type="number"
+                                       ng-model-options="{ debounce: 300 }">
+                            </md-input-container>
+                        </div>
+                    </md-menu-item>
 
-            <span flex></span>
-            <md-select ng-model="vm.mapType" style="margin-top: 0px; margin-left: 4px; margin-right:8px;"
-                       class="md-primary" md-theme="{{themePrimaryButtons}}">
-                <md-option ng-value="type" ng-repeat="type in vm.mapTypes">{{type}}</md-option>
-            </md-select>
+                </md-menu-content>
+            </md-menu>
 
         </div>
-        <receptor-health-list flex></receptor-health-list>
+        <receptor-health-list redraw-charts="vm.redraw" flex></receptor-health-list>
     </div>
+
+    <div class="treemap-tooltip" style="visibility: hidden; background-color: #ffffff"></div>
 
 </div>
