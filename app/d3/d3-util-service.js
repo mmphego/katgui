@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .factory('d3Util', function ($q, $timeout, $rootScope, $log) {
+    .factory('d3Util', function ($q, $timeout, $rootScope, $log, StatusService) {
 
         var api = {};
 
@@ -68,14 +68,14 @@ angular.module('katGui.d3')
         };
 
         //convenience function to populate every item's tooltip
-        api.applyTooltipValues = function (node, tooltip) {
+        api.applyTooltipValues = function (node, tooltip, rootName) {
             //d.on is not defined while transitioning
             if (node.on) {
                 node.on("mouseover", function (d) {
-                    api.updateTooltipValues(d, tooltip);
+                    api.updateTooltipValues(d, tooltip, rootName);
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function (d) {
-                    api.updateTooltipValues(d, tooltip);
+                    api.updateTooltipValues(d, tooltip, rootName);
                     var uiViewDiv = document.querySelector('#ui-view-container-div');
                     var offset = d3.mouse(uiViewDiv);
                     var x = offset[0];
@@ -97,15 +97,22 @@ angular.module('katGui.d3')
             }
         };
 
-        api.updateTooltipValues = function (d, tooltip) {
+        api.updateTooltipValues = function (d, tooltip, rootName) {
             var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
-            if (d.sensorValue) {
+            var sensorValue;
+            if (StatusService.sensorValues && StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor]) {
+                sensorValue = StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor].sensorValue;
+            } else  {
+                sensorValue = d.sensorValue;
+            }
+            if (sensorValue) {
                 //to display readable tooltips, no matter the zoom level
                 tooltip.html(
-                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'><i>sensor:</i> " + (d.depth === 0? d.name + "." + d.sensor : d.sensor) +
-                    "<br/><i>value:</i> " + d.sensorValue.value +
-                    "<br/><i>status:</i> " + d.sensorValue.status +
-                    "<br/><i>timestamp:</i> " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
+                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'>" +
+                    "<div><b>" + sensorValue.name + "</b></div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') + "</div>" +
                     "</div>"
                 );
             } else {

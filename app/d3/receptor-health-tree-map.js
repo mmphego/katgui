@@ -1,29 +1,24 @@
 angular.module('katGui.d3')
 
-    .directive('receptorHealthTreeMap', function (d3Service, StatusService, $timeout, $rootScope, d3Util) {
+    .directive('receptorHealthTreeMap', function (d3Service, StatusService, $localStorage, $rootScope, d3Util) {
         return {
             restrict: 'EA',
             scope: {
-                dataMapName: '=receptor',
-                chartSize: '='
+                dataMapName: '=receptor'
             },
             link: function (scope, element) {
 
                 d3Service.d3().then(function (d3) {
+                    var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]), containerSvg;
 
-                    if (!StatusService.statusData[scope.dataMapName + "treemapClone"]) {
-                        StatusService.statusData[scope.dataMapName + "treemapClone"] = clone(StatusService.statusData[scope.dataMapName]);
-                        StatusService.statusData[scope.dataMapName + "treemapClone"].inited = false;
-                    }
+                    StatusService.statusData[scope.dataMapName + "treemapClone"] = clone(StatusService.statusData[scope.dataMapName]);
 
                     function clone(obj) {
                         var copy;
-
                         // Handle the 3 simple types, and null or undefined
                         if (null === obj || "object" !== typeof obj) {
                             return obj;
                         }
-
                         // Handle Array
                         if (obj instanceof Array) {
                             copy = [];
@@ -32,39 +27,43 @@ angular.module('katGui.d3')
                             }
                             return copy;
                         }
-
                         // Handle Object
                         if (obj instanceof Object) {
                             copy = {};
                             for (var attr in obj) {
-                                if (obj.hasOwnProperty(attr)) {
+                                if (attr !== 'parent' && obj.hasOwnProperty(attr)) {
                                     copy[attr] = clone(obj[attr]);
                                 }
                             }
                             return copy;
                         }
-
                         throw new Error("Unable to copy obj! Its type isn't supported.");
                     }
 
-                    var data = StatusService.statusData[scope.dataMapName];
-                    d3Util.waitUntilDataExists(data)
-                        .then(function () {
-                            $timeout(function () {
-                                drawTreemap(data);
-                            }, 1000);
-                        }, function () {
-                            d3Util.displayInitErrorMessage(scope.dataMapName);
-                        });
+                    if ($localStorage['receptorHealthDisplaySize']) {
+                        scope.chartSize = JSON.parse($localStorage['receptorHealthDisplaySize']);
+                    } else {
+                        scope.chartSize = {width: 480, height: 480};
+                    }
 
-                    function drawTreemap() {
+                    $rootScope.$on('redrawChartMessage', function (event, message) {
+                        if (message.size.width) {
+                            scope.chartSize.width = message.size.width;
+                        }
+                        if (message.size.height) {
+                            scope.chartSize.height = message.size.height;
+                        }
+                        containerSvg.remove();
+                        scope.redraw();
+                    });
+
+                    scope.redraw = function () {
 
                         var root = StatusService.statusData[scope.dataMapName + "treemapClone"];
 
                         var margin = {top: 20, right: 0, bottom: 0, left: 0},
                             width = scope.chartSize.width,
                             height = scope.chartSize.height - margin.top - margin.bottom,
-                            formatNumber = d3.format(",d"),
                             transitioning;
 
                         var x = d3.scale.linear()
@@ -75,13 +74,13 @@ angular.module('katGui.d3')
                             .domain([0, height])
                             .range([0, height]);
 
-                        var svg = d3.select(element[0]).append("svg")
+                        containerSvg = d3.select(element[0]).append("svg")
                             .attr("width", width + margin.left + margin.right)
                             .attr("height", height + margin.bottom + margin.top)
                             .style("margin-left", -margin.left + "px")
                             .style("margin.right", -margin.right + "px")
-                            .attr("class", "health-chart md-whiteframe-z2 treemapHealthChart" + scope.dataMapName)
-                            .append("g")
+                            .attr("class", "health-chart treemapHealthChart" + scope.dataMapName);
+                        var svg = containerSvg.append("g")
                             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                             .style("shape-rendering", "crispEdges");
 
@@ -95,12 +94,9 @@ angular.module('katGui.d3')
                             .ratio(height / width * 0.5 * (1 + Math.sqrt(5)))
                             .round(false);
 
-                        if (!root.inited) {
-                            StatusService.statusData[scope.dataMapName + "treemapClone"].inited = true;
-                            initialize(root);
-                            accumulate(root);
-                            layout(root);
-                        }
+                        initialize(root);
+                        accumulate(root);
+                        layout(root);
 
                         var grandparent = svg.append("g")
                             .attr("class", "grandparent")
@@ -178,7 +174,8 @@ angular.module('katGui.d3')
                                     return d3Util.createSensorId(d, scope.dataMapName);
                                 })
                                 .attr("class", function (d) {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child';
+                                    return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                            StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
                                 })
                                 .on("click", function (d) {
                                     transition(d.parent);
@@ -201,11 +198,7 @@ angular.module('katGui.d3')
 
                             g.filter(function (d) {
                                 return d._children;
-                            })
-                                .attr("class", function (d) {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child';
-                                })
-                                .on("click", transition);
+                            }).on("click", transition);
 
                             g.append("rect")
                                 //.attr("class", "parent")
@@ -213,18 +206,19 @@ angular.module('katGui.d3')
                                     return d3Util.createSensorId(d, scope.dataMapName);
                                 })
                                 .attr("class", function (d) {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child';
+                                    return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                            StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
                                 })
                                 .call(rect)
-                                .append("title")
-                                .text(function (d) {
-                                    return d.sensor;
+                                .call(function (d) {
+                                    d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
                                 });
 
                             g.append("text")
                                 .attr("dy", ".75em")
                                 .attr("class", function (d) {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text';
+                                    return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                            StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
                                 })
                                 .text(function (d) {
                                     return d.name;
@@ -300,9 +294,9 @@ angular.module('katGui.d3')
                             return d.parent ? name(d.parent) + "." + d.name
                                 : d.name;
                         }
-                    }
+                    };
 
-
+                    scope.redraw();
                 });
             }
         };
