@@ -1,51 +1,66 @@
 angular.module('katGui.d3')
 
-    .directive('receptorHealthPackMap', function (d3Service, StatusService, $timeout, $rootScope, d3Util) {
+    .directive('receptorHealthPackMap', function (d3Service, StatusService, $localStorage, $rootScope, d3Util) {
         return {
             restrict: 'E',
             scope: {
-                dataMapName: '=receptor',
-                chartSize: '='
+                dataMapName: '=receptor'
             },
             link: function (scope, element) {
 
                 d3Service.d3().then(function (d3) {
 
                     var data = StatusService.statusData[scope.dataMapName];
-                    var r = 640, node, root, transitionDuration = 250;
+                    var node, root, transitionDuration = 250;
                     var margin = {top: 8, right: 8, left: 8, bottom: 8};
-                    var tooltip = d3Util.createTooltip(element[0]);
+                    var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]);
+                    var containerSvg, svg;
 
-                    drawPackMap(data);
+                    if ($localStorage['receptorHealthDisplaySize']) {
+                        scope.chartSize = JSON.parse($localStorage['receptorHealthDisplaySize']);
+                    } else {
+                        scope.chartSize = {width: 480, height: 480};
+                    }
 
-                    function drawPackMap() {
+                    $rootScope.$on('redrawChartMessage', function (event, message) {
+                        if (message.size.width) {
+                            scope.chartSize.width = message.size.width;
+                        }
+                        if (message.size.height) {
+                            scope.chartSize.height = message.size.height;
+                        }
+                        containerSvg.remove();
+                        scope.redraw();
+                    });
+
+                    scope.redraw = function () {
                         var width = scope.chartSize.width;
                         var height = scope.chartSize.height;
+                        var radius = height;
                         node = root = data;
-
-                        r = height - 10;
-                        //create our x,y axis linear scales
-                        var x = d3.scale.linear().range([0, r]);
-                        var y = d3.scale.linear().range([0, r]);
 
                         //create our maplayout for the data and sort it alphabetically
                         //the bockvalue is the relative size of each child element, it is
                         //set to a static 100 when we get our monitor data in the StatusService
                         var mapLayout = d3.layout.pack()
-                            .size([r, r])
+                            .size([radius, radius])
                             .value(function () {
                                 return 1;
                             });
 
+                        //create our x,y axis linear scales
+                        var x = d3.scale.linear().range([0, radius]);
+                        var y = d3.scale.linear().range([0, radius]);
+
                         //create the main svg element
-                        var svg = d3.select(element[0]).append("svg")
+                        containerSvg = d3.select(element[0]).append("svg")
                                 .attr("width", width)
                                 .attr("height", height)
-                                .attr("class", "health-chart md-whiteframe-z2 treemapHealthChart" + scope.dataMapName)
+                                .attr("class", "health-chart treemapHealthChart" + scope.dataMapName)
                                 .style("margin-left", margin.left + "px")
-                                .style("margin-right", margin.right + "px")
-                                .append("g");
-                            svg.attr("transform", "translate(" + (width - r) / 2 + "," + (height - r) / 2 + ")");
+                                .style("margin-right", margin.right + "px");
+                        svg = containerSvg.append("g");
+                        containerSvg.attr("transform", "translate(" + (width - radius) / 2 + "," + (height - radius) / 2 + ")");
 
                         var nodes = mapLayout.nodes(data);
 
@@ -54,10 +69,12 @@ angular.module('katGui.d3')
                             .data(nodes)
                             .enter().append("svg:circle")
                             .attr("class", function (d) {
-                                if (d.depth > 0) {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child child';
+                                var classString = StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive';
+                                if (d.depth === 0) {
+                                    return classString + '-child parent';
                                 } else {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child parent';
+                                    return classString + '-child child';
                                 }
                             })
                             .attr("cx", function (d) {
@@ -76,7 +93,7 @@ angular.module('katGui.d3')
                                 return d3Util.createSensorId(d, scope.dataMapName);
                             })
                             .call(function (d) {
-                                d3Util.applyTooltipValues(d, tooltip);
+                                d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
                             });
 
                         //create a svg:text element for each child node
@@ -84,10 +101,12 @@ angular.module('katGui.d3')
                             .data(nodes)
                             .enter().append("svg:text")
                             .attr("class", function (d) {
-                                if (d.depth > 0) {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text child';
+                                var classString = StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive';
+                                if (d.depth === 0) {
+                                    return classString + '-child-text parent';
                                 } else {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text parent';
+                                    return classString + '-child-text child';
                                 }
                             })
                             .attr("x", function (d) {
@@ -116,7 +135,7 @@ angular.module('katGui.d3')
                         //zoom functionality when clicking a child element
                         function zoomPack(d) {
 
-                            var k = r / d.r / 2;
+                            var k = radius / d.r / 2;
                             x.domain([d.x - d.r, d.x + d.r]);
                             y.domain([d.y - d.r, d.y + d.r]);
 
@@ -134,7 +153,7 @@ angular.module('katGui.d3')
                                     return k * d.r;
                                 })
                                 .call(function (d) {
-                                    d3Util.applyTooltipValues(d, tooltip);
+                                    d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
                                 });
 
                             transition.selectAll("text")
@@ -159,7 +178,8 @@ angular.module('katGui.d3')
                             node = d;
                             d3.event.stopPropagation();
                         }
-                    }
+                    };
+                    scope.redraw();
                 });
             }
         };

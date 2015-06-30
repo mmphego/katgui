@@ -1,52 +1,65 @@
 angular.module('katGui.d3')
 
-    .directive('receptorHealthSunburstMap', function (d3Service, StatusService, $timeout, $rootScope, d3Util) {
+    .directive('receptorHealthSunburstMap', function ($rootScope, d3Service, StatusService, d3Util, $localStorage) {
         return {
             restrict: 'E',
             scope: {
-                dataMapName: '=receptor',
-                chartSize: '='
+                dataMapName: '=receptor'
             },
             link: function (scope, element) {
 
                 d3Service.d3().then(function (d3) {
 
-                    var data = StatusService.statusData[scope.dataMapName];
-                    var r = 640, node, root, transitionDuration = 250;
-                    var margin = {top: 8, right: 8, left: 8, bottom: 8};
-                    var tooltip = d3Util.createTooltip(element[0]);
+                    var node, root, transitionDuration = 250;
+                    var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]), containerSvg;
+                    //create our maplayout for the data and sort it alphabetically
+                    //the bockvalue is the relative size of each child element, it is
+                    //set to a static 100 when we get our monitor data in the StatusService
+                    var mapLayout = d3.layout.partition()
+                        .value(function () {
+                            return 10;
+                        })
+                        .sort(function (a, b) {
+                            return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+                        });
 
-                    drawSunburstMap();
 
-                    function drawSunburstMap() {
+                    if ($localStorage['receptorHealthDisplaySize']) {
+                        scope.chartSize = JSON.parse($localStorage['receptorHealthDisplaySize']);
+                    } else {
+                        scope.chartSize = {width: 480, height: 480};
+                    }
+
+                    $rootScope.$on('redrawChartMessage', function (event, message) {
+                        if (message.size.width) {
+                            scope.chartSize.width = message.size.width;
+                        }
+                        if (message.size.height) {
+                            scope.chartSize.height = message.size.height;
+                        }
+                        containerSvg.remove();
+                        scope.redraw();
+                    });
+
+                    scope.redraw = function () {
                         var width = scope.chartSize.width;
                         var height = scope.chartSize.height;
                         var radius = height / 2;
                         var padding = 2;
-                        node = root = data;
+                        node = root = StatusService.statusData[scope.dataMapName];
 
-                        r = height - 10;
                         //create our x,y axis linear scales
                         var x = d3.scale.linear().range([0, 2 * Math.PI]);
                         var y = d3.scale.linear().range([0, radius]);
 
-                        //create our maplayout for the data and sort it alphabetically
-                        //the bockvalue is the relative size of each child element, it is
-                        //set to a static 100 when we get our monitor data in the StatusService
-                        var mapLayout = d3.layout.partition()
-                            .value(function () {
-                                return 10;
-                            })
-                            .sort(function (a, b) {
-                                return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
-                            });
 
                         //create the main svg element
-                        var svg = d3.select(element[0]).append("svg")
-                            .attr("class", "health-chart md-whiteframe-z2 treemapHealthChart" + scope.dataMapName)
+                        containerSvg = d3.select(element[0]).append("svg")
+                            .attr("class", "health-chart treemapHealthChart" + scope.dataMapName)
                             .attr("width", width + padding * 2)
-                            .attr("height", height + padding * 2)
-                            .append("g")
+                            .attr("height", height + padding * 2);
+
+                        var svg = containerSvg.append("g")
                             .attr("transform", "translate(" + [radius + padding, radius + padding] + ")");
 
                         //define the math for calculating the child node's arcs
@@ -66,7 +79,7 @@ angular.module('katGui.d3')
 
                         //create each child node svg:g element
                         var g = svg.selectAll("g")
-                            .data(mapLayout.nodes(data))
+                            .data(mapLayout.nodes(StatusService.statusData[scope.dataMapName]))
                             .enter().append("g");
 
                         //add the arc math as a svg:path element
@@ -76,10 +89,11 @@ angular.module('katGui.d3')
                                 return d3Util.createSensorId(d, scope.dataMapName);
                             })
                             .attr("class", function (d) {
-                                return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child child';
+                                return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                        StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
                             })
                             .call(function (d) {
-                                d3Util.applyTooltipValues(d, tooltip);
+                                d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
                             })
                             .on("click", click);
 
@@ -98,14 +112,26 @@ angular.module('katGui.d3')
                             .attr("dx", "4") // margin
                             .attr("dy", ".35em") // vertical-align
                             .attr("class", function (d) {
-                                if (d.depth > 0) {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text child';
+                                var classString = StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive';
+                                if (d.depth === 0) {
+                                    return classString + '-child-text parent';
                                 } else {
-                                    return (d.sensorValue ? d.sensorValue.status : 'inactive') + '-child-text parent';
+                                    return classString + '-child-text child';
                                 }
                             })
                             .text(function (d) {
-                                return d.name;
+                                if (d.depth > 0) {
+                                    var name = d.name;
+                                    var parentNode = d.parent;
+                                    for (var i = d.depth; i > 0; i--) {
+                                        name = name.replace(parentNode.name + '_', '');
+                                        parentNode = parentNode.parent;
+                                    }
+                                    return name;
+                                } else {
+                                    return d.name;
+                                }
                             });
 
                         //zoom functionality when clicking on an item
@@ -116,7 +142,7 @@ angular.module('katGui.d3')
                             path.transition()
                                 .duration(transitionDuration)
                                 .attrTween("d", arcTween(d))
-                                .each("end", function (e, i) {
+                                .each("end", function (e) {
                                     // check if the animated element's data e lies within the visible angle span given in d
                                     if (e.x >= d.x && e.x < (d.x + d.dx)) {
                                         // get a selection of the associated text element
@@ -153,7 +179,9 @@ angular.module('katGui.d3')
                         function computeTextRotation(d) {
                             return (x(d.x + d.dx / 2) - Math.PI / 2) / Math.PI * 180;
                         }
-                    }
+                    };
+
+                    scope.redraw();
                 });
             }
         };
