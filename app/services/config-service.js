@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ConfigService', ConfigService);
 
-    function ConfigService($q, $http, SERVER_URL, $rootScope, $log) {
+    function ConfigService($q, $http, SERVER_URL, $rootScope, $log, $timeout) {
 
         var urlBase = SERVER_URL + '/katconf/api/v1';
         var api = {};
@@ -11,6 +11,7 @@
         api.receptorList = [];
         api.KATObsPortalURL = null;
         api.systemConfig = {};
+        api.aggregateSensorDetail = null;
 
         api.loadKATObsPortalURL = function () {
             $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
@@ -20,6 +21,27 @@
                 .error(function (message) {
                     $log.error(message);
                 });
+        };
+
+        api.loadAggregateSensorDetail = function () {
+            var deferred = $q.defer();
+            if (!api.aggregateSensorDetail) {
+                $http(createRequest('get', urlBase + '/aggregates'))
+                    .success(function (result) {
+                        api.aggregateSensorDetail = result;
+                        deferred.resolve(api.aggregateSensorDetail);
+                    })
+                    .error(function (message) {
+                        $log.error(message);
+                        deferred.reject(message);
+                    });
+            } else {
+                $timeout(function () {
+                    deferred.resolve(api.aggregateSensorDetail);
+                }, 1);
+            }
+
+            return deferred.promise;
         };
 
         api.getSystemConfig = function () {
@@ -72,7 +94,7 @@
         };
 
         api.getAlarmConfig = function (filePath) {
-            return $http(createRequest('get', urlBase + '/alarm-config/' + filePath));
+            return $http(createRequest('get', urlBase + '/config-file/' + filePath));
         };
 
         function createRequest(method, url) {

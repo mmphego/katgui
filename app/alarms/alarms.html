@@ -1,26 +1,47 @@
 <div flex ng-controller="AlarmsCtrl as vm" layout="column" style="padding: 8px; min-width: 948px;">
 
     <div flex class="md-whiteframe-z2" layout="column" style="min-height: 600px;">
-        <md-toolbar class="md-whiteframe-z1" style="padding: 0px;" ng-mouseenter="showAlarmTools = true;" ng-mouseleave="showAlarmTools = false;">
-            <div style="align-items: center;" layout="row">
-               <span ng-init="vm.selectAllAlarms = false" ng-click="vm.toggleSelectAllAlarms()" title="Select All Alarms"
-                      class="unselectable" style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
+        <md-toolbar class="md-whiteframe-z1" style="padding: 0px;" ng-mouseenter="showAlarmTools = true;"
+                    ng-mouseleave="showAlarmTools = false;">
+            <div style="align-items: center;" layout="row" md-theme="{{themePrimaryButtons}}">
+                <span flex ng-init="vm.selectAllAlarms = false" ng-click="vm.toggleSelectAllAlarms()"
+                      title="Select All Alarms" class="unselectable"
+                      style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
                         Current Alarms
-               </span>
-
-                <div flex md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
-                    <input flex class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search" style="min-width: 200px;"
-                           ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
-                    <md-button ng-click="vm.viewAlarmSystemConfig()"  class="md-primary md-raised">Alarms' System Config</md-button>
-                    <md-button ng-click="vm.viewAlarmsHistory()"  class="md-primary md-raised">Alarms History</md-button>
-                    <md-button ng-click="vm.knowSelectedAlarms()"  class="md-primary md-raised">Know</md-button>
-                    <md-button ng-click="vm.acknowledgeSelectedAlarms()"  class="md-primary md-raised">Acknowledge</md-button>
-                    <md-button ng-click="vm.clearSelectedAlarms()"  class="md-primary md-raised">Clear</md-button>
-                    <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="vm.showClearedAlarms" >Show Cleared</md-checkbox>
-                </div>
+                </span>
+                <input class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search"
+                       style="min-width: 200px;"
+                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
+                <md-menu style="padding: 0">
+                    <md-button class="md-icon-button" style="margin: 0" ng-click="$mdOpenMenu()">
+                        <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                    </md-button>
+                    <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;">
+                        <md-menu-item>
+                            <md-button ng-click="vm.knowSelectedAlarms()">Know Selected Alarms</md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="vm.acknowledgeSelectedAlarms()">Acknowledge Selected Alarms</md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="vm.clearSelectedAlarms()">Clear Selected Alarms</md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-checkbox class="md-primary" ng-model="vm.showClearedAlarms">Show Cleared Alarms
+                            </md-checkbox>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="vm.viewAlarmSystemConfig($event)">View System Config for Alarms</md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="vm.viewAlarmsHistory()">View Alarm History</md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
 
             </div>
-            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;" layout="row" layout-align="start center">
+            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;"
+                 layout="row" layout-align="start center">
                 <span style="width: 26px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('severity')">
                     <span style="padding: 8px"></span>
                     <span class="fa"
@@ -84,11 +105,16 @@
                             <md-tooltip>Error</md-tooltip>
                         </span>
                     </div>
-                    <div flex class="alarms-list-item-content" layout="row" layout-align="start">
-                        <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                        <span flex style="max-width: 130px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.priority}}">{{item.priority}}</span>
-                        <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.name}}">{{item.name}}</span>
-                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{item.value}}">{{item.value}}</span>
+                    <div flex class="alarms-list-item-content" layout="row">
+                        <span flex
+                              style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
+                        <span flex style="max-width: 130px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;"
+                              title="{{item.priority}}">{{item.priority}}</span>
+                        <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;"
+                              title="{{item.name}}">{{item.name}}</span>
+                        <span flex
+                              style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                              title="{{item.value}}">{{item.value}}</span>
                     </div>
                     <md-button title="Know Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.knowAlarm(item); $event.stopPropagation();">
@@ -108,33 +134,47 @@
     </div>
 
     <div class="md-whiteframe-z2" layout="column" style="margin-top: 16px;" ng-init="vm.showKnownAlarmsList = false;">
-        <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showKnownAlarmTools = true;" ng-mouseleave="showKnownAlarmTools = false;">
+        <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showKnownAlarmTools = true;"
+                    ng-mouseleave="showKnownAlarmTools = false;">
             <div class="md-toolbar-tools" layout="row">
-               <span flex ng-init="vm.selectAllKnownAlarms = false" ng-click="vm.toggleSelectAllKnownAlarms()" title="Select All Known Alarms"
-                     class="unselectable" style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
+               <span flex ng-init="vm.selectAllKnownAlarms = false" ng-click="vm.toggleSelectAllKnownAlarms()"
+                     title="Select All Known Alarms"
+                     class="unselectable"
+                     style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
                         Known Alarms
                </span>
 
-                <div ng-show="vm.showKnownAlarmsList" md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
-                    <input flex class="fade-in search-input-box" ng-show="showKnownAlarmTools || vm.q2" type="search" style="min-width: 200px;"
+                <div ng-show="vm.showKnownAlarmsList" md-theme="{{themePrimaryButtons}}" layout="row"
+                     layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
+                    <input flex class="fade-in search-input-box" ng-show="showKnownAlarmTools || vm.q2" type="search"
+                           style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Search Known Alarms..."/>
-                    <md-button ng-click="vm.cancelKnowSelectedAlarms()"  class="md-primary md-raised" style="font-size: 14px">Cancel Known</md-button>
+                    <md-button ng-click="vm.cancelKnowSelectedAlarms()" class="md-primary md-raised"
+                               style="font-size: 14px">Cancel Known
+                    </md-button>
                     <div layout="column" style="font-size: 12px;">
-                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;" class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms" >Show
+                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;"
+                                     class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms">Show
                             Nominal
                         </md-checkbox>
-                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;" class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownMaintenanceAlarms" >
+                        <md-checkbox style="margin-top: 2px; margin-bottom: 2px;"
+                                     class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownMaintenanceAlarms">
                             Show Maintenance
                         </md-checkbox>
                     </div>
                 </div>
-                <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.showKnownAlarmsList = !vm.showKnownAlarmsList;"  class="md-primary md-raised md-icon-button"
+                <md-button md-theme="{{themePrimaryButtons}}"
+                           ng-click="vm.showKnownAlarmsList = !vm.showKnownAlarmsList;"
+                           class="md-primary md-raised md-icon-button"
                            style="font-size: 20px">
-                    <md-icon md-theme="white" class="fa md-primary" ng-show="!vm.showKnownAlarmsList" md-font-icon="fa-chevron-up"></md-icon>
-                    <md-icon md-theme="white" class="fa md-primary" ng-show="vm.showKnownAlarmsList" md-font-icon="fa-chevron-down"></md-icon>
+                    <md-icon md-theme="white" class="fa md-primary" ng-show="!vm.showKnownAlarmsList"
+                             md-font-icon="fa-chevron-up"></md-icon>
+                    <md-icon md-theme="white" class="fa md-primary" ng-show="vm.showKnownAlarmsList"
+                             md-font-icon="fa-chevron-down"></md-icon>
             </div>
 
-            <div ng-show="vm.showKnownAlarmsList" flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;" layout="row" layout-align="start center">
+            <div ng-show="vm.showKnownAlarmsList" flex class="unselectable list-subheader-title"
+                 style="padding-top: 8px; z-index: 1; border: 0;" layout="row" layout-align="start center">
                  <span style="width: 26px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('severity')">
                     <span style="padding: 8px"></span>
                     <span class="fa"
@@ -164,7 +204,8 @@
         </md-toolbar>
 
         <div ng-show="vm.showKnownAlarmsList" flex class="alarms-list" ng-click="vm.selectAllKnownAlarms = false">
-            <div ng-repeat="item in filteredKnownAlarms = ($root.alarmsData | alarmsKnownFilter:vm.showKnownNominalAlarms:vm.showKnownMaintenanceAlarms | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse)"
+            <div
+                ng-repeat="item in filteredKnownAlarms = ($root.alarmsData | alarmsKnownFilter:vm.showKnownNominalAlarms:vm.showKnownMaintenanceAlarms | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse)"
                 class="animate-repeat-opacity">
                 <div ng-click="item.selected = !item.selected" flex class="alarm-row-item"
                      ng-switch="item.severity" layout="row" layout-align="start center"
@@ -197,12 +238,17 @@
                         </span>
                     </div>
                     <div flex class="alarms-list-item-content" layout="row" layout-align="start">
-                        <span flex style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
-                        <span flex style="max-width: 130px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.priority}}">{{item.priority}}</span>
-                        <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.name}}">{{item.name}}</span>
-                        <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{item.value}}">{{item.value}}</span>
+                        <span flex
+                              style="max-width: 170px; font-weight: bold; font-size: 16px;"><b>{{item.date}}</b></span>
+                        <span flex style="max-width: 130px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;"
+                              title="{{item.priority}}">{{item.priority}}</span>
+                        <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;"
+                              title="{{item.name}}">{{item.name}}</span>
+                        <span flex
+                              style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                              title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Cancel Known" style="width: 24px; height: 38px;"  class=""
+                    <md-button title="Cancel Known" style="width: 24px; height: 38px;" class=""
                                ng-click="vm.cancelKnowAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-remove"></span>
                     </md-button>
