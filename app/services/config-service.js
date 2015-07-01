@@ -71,6 +71,10 @@
             return $http(createRequest('get', urlBase + '/horizon-mask/' + receptorId));
         };
 
+        api.getAlarmConfig = function (filePath) {
+            return $http(createRequest('get', urlBase + '/alarm-config/' + filePath));
+        };
+
         function createRequest(method, url) {
             return {
                 method: method,

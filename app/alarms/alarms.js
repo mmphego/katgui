@@ -30,7 +30,7 @@
             };
         });
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $timeout, $log, KatGuiUtil, CENTRAL_LOGGER_PORT) {
 
         var vm = this;
         var WAITIMEFORREQ = 250;
@@ -162,6 +162,20 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
+        };
+
+        vm.viewAlarmSystemConfig = function () {
+            ConfigService.getAlarmConfig()
+                .success(function (result) {
+                    vm.alarmConfig = result;
+                })
+                .error(function (result) {
+                    $log.error(result);
+                })
+        };
+
+        vm.viewAlarmsHistory = function () {
+            KatGuiUtil.openRelativePath('?name=kat.kataware', CENTRAL_LOGGER_PORT);
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);

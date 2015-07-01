@@ -3,14 +3,16 @@
     <div flex class="md-whiteframe-z2" layout="column" style="min-height: 600px;">
         <md-toolbar class="md-whiteframe-z1" style="padding: 0px;" ng-mouseenter="showAlarmTools = true;" ng-mouseleave="showAlarmTools = false;">
             <div style="align-items: center;" layout="row">
-               <span flex ng-init="vm.selectAllAlarms = false" ng-click="vm.toggleSelectAllAlarms()" title="Select All Alarms"
+               <span ng-init="vm.selectAllAlarms = false" ng-click="vm.toggleSelectAllAlarms()" title="Select All Alarms"
                       class="unselectable" style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
                         Current Alarms
                </span>
 
-                <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
-                    <input class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search" style="min-width: 200px;"
+                <div flex md-theme="{{themePrimaryButtons}}" layout="row" layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
+                    <input flex class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search" style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
+                    <md-button ng-click="vm.viewAlarmSystemConfig()"  class="md-primary md-raised">Alarms' System Config</md-button>
+                    <md-button ng-click="vm.viewAlarmsHistory()"  class="md-primary md-raised">Alarms History</md-button>
                     <md-button ng-click="vm.knowSelectedAlarms()"  class="md-primary md-raised">Know</md-button>
                     <md-button ng-click="vm.acknowledgeSelectedAlarms()"  class="md-primary md-raised">Acknowledge</md-button>
                     <md-button ng-click="vm.clearSelectedAlarms()"  class="md-primary md-raised">Clear</md-button>
