@@ -68,6 +68,10 @@
                             key, sensorNameList[0], vm.guid, 'event', 0, 0);
                         SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
                             key, sensorNameList[1], vm.guid, 'event', 0, 0);
+			SensorsService.connectResourceSensorNameLiveFeed(
+                            key, 'logging_katcpmsgs_device_enabled', vm.guid, 'event', 0, 0);
+			SensorsService.connectResourceSensorNameLiveFeed(
+                            key, 'logging_katcpmsgs_proxy_enabled', vm.guid, 'event', 0, 0);
                     }
 
                     SensorsService.connectResourceSensorNameLiveFeed(
@@ -104,7 +108,8 @@
                     var resource = sensorNameList[1].split('monitor_')[1];
                     vm.resourcesNames[resource].connected = sensor.value.value;
                 } else {
-
+			console.log(sensor.name)
+			console.log(sensor.value)
                     vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
                         name: sensorNameList[1],
                         value: sensor.value.value
