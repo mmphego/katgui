@@ -1,7 +1,7 @@
 angular.module('katGui.util')
     .constant('CENTRAL_LOGGER_PORT', 9021)
     .constant('KATSNIFFER_LOGGER_PORT', 8081)
-    .constant('KATSNIFFER_PATH', '/logfile/katcpmsgs.log/tail/')
+    .constant('KATSNIFFER_PATH', '/logfile/')
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)

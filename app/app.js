@@ -363,9 +363,9 @@
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
 
-        vm.openKatsnifferLogger = function () {
+        vm.openKatsnifferLogger = function (logFileName) {
             //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath(KATSNIFFER_PATH + $rootScope.logNumberOfLines, KATSNIFFER_LOGGER_PORT);
+            KatGuiUtil.openRelativePath(KATSNIFFER_PATH + logFileName + '/tail/'+ $rootScope.logNumberOfLines, KATSNIFFER_LOGGER_PORT);
         };
 
 

@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
-    function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService) {
+    function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService, KATSNIFFER_LOGGER_PORT, KATSNIFFER_PATH) {
 
         var vm = this;
 
@@ -93,6 +93,12 @@
         vm.toggleKATCPMessageProxy = function (resource, newValue) {
             vm.sendControlCommand(resource, 'enable_katcpmsgs_proxy_logging', newValue? '1' : '0');
         };
+
+        vm.openKatsnifferLogger = function (logFileName) {
+            //TODO get from config and eventually redo central logger
+            KatGuiUtil.openRelativePath(KATSNIFFER_PATH + logFileName + '/tail/'+ $rootScope.logNumberOfLines, KATSNIFFER_LOGGER_PORT);
+        };
+
 
         vm.processCommand = function (key, command) {
             if (vm.resourcesNames[key].nodeman) {

@@ -66,7 +66,8 @@
                         ng-model="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled.value" style="margin: 0">
                                     d
             		    </md-switch>
-                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.sendControlCommand(key); $event.stopPropagation()" title="Toggle Logging ">
+                    <md-button  ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled || vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled" 
+		    ng-show="vm.resourcesNames[key].connected" ng-click="vm.openKatsnifferLogger('katcpmsgs.log'); $event.stopPropagation()" title="View Logs">
                         <i class="fa fa-info"></i>
                     </md-button>
                     <md-button ng-show="!vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'start'); $event.stopPropagation()" title="Start Process">
