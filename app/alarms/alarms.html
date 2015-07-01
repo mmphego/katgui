@@ -90,15 +90,15 @@
                         <span flex style="max-width: 260px; overflow: hidden;text-overflow: ellipsis; font-size: 14px;" title="{{item.name}}">{{item.name}}</span>
                         <span flex style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Know Alarm" style="width: 24px; height: 38px;"
+                    <md-button title="Know Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.knowAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-check"></span>
                     </md-button>
-                    <md-button title="Acknowledge Alarm" style="width: 24px; height: 38px;"
+                    <md-button title="Acknowledge Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.acknowledgeAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-check-circle-o"></span>
                     </md-button>
-                    <md-button title="Clear Alarm" style="width: 24px; height: 38px;"
+                    <md-button title="Clear Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.clearAlarm(item); $event.stopPropagation();">
                         <span class="fa fa-ban"></span>
                     </md-button>
