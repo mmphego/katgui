@@ -68,10 +68,10 @@
                             key, sensorNameList[0], vm.guid, 'event', 0, 0);
                         SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
                             key, sensorNameList[1], vm.guid, 'event', 0, 0);
-			SensorsService.connectResourceSensorNameLiveFeed(
-                            key, 'logging_katcpmsgs_device_enabled', vm.guid, 'event', 0, 0);
-			SensorsService.connectResourceSensorNameLiveFeed(
-                            key, 'logging_katcpmsgs_proxy_enabled', vm.guid, 'event', 0, 0);
+                        SensorsService.connectResourceSensorNameLiveFeed(
+                            key, 'logging_katcpmsgs_devices_enabled', vm.guid, 'event-rate', 1, 10);
+                        SensorsService.connectResourceSensorNameLiveFeed(
+                            key, 'logging_katcpmsgs_proxy_enabled', vm.guid, 'event-rate', 1, 10);
                     }
 
                     SensorsService.connectResourceSensorNameLiveFeed(
@@ -82,10 +82,17 @@
 
         };
 
-        vm.sendControlCommand = function (resource) {
-	    ControlService.sendControlCommand(resource, 'enable_katcpmsgs_devices_logging', '1');
+        vm.sendControlCommand = function (resource, command, params) {
+            ControlService.sendControlCommand(resource, command, params);
+        };
+        
+        vm.toggleKATCPMessageDevices = function (resource, newValue) {
+            vm.sendControlCommand(resource, 'enable_katcpmsgs_devices_logging', newValue? '1' : '0');
         };
 
+        vm.toggleKATCPMessageProxy = function (resource, newValue) {
+            vm.sendControlCommand(resource, 'enable_katcpmsgs_proxy_logging', newValue? '1' : '0');
+        };
 
         vm.processCommand = function (key, command) {
             if (vm.resourcesNames[key].nodeman) {
@@ -108,8 +115,6 @@
                     var resource = sensorNameList[1].split('monitor_')[1];
                     vm.resourcesNames[resource].connected = sensor.value.value;
                 } else {
-			console.log(sensor.name)
-			console.log(sensor.value)
                     vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
                         name: sensorNameList[1],
                         value: sensor.value.value
