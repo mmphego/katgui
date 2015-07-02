@@ -7,6 +7,7 @@
     function HealthCtrl(MonitorService, ConfigService, StatusService, $scope, $rootScope, $interval) {
 
         var vm = this;
+        ConfigService.loadAggregateSensorDetail();
         vm.topStatusTrees = StatusService.topStatusTrees;
         $scope.itemsToUpdate = {};
         vm.subscriptions = {};
