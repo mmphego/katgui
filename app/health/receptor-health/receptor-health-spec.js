@@ -42,52 +42,6 @@ describe('ReceptorHealthCtrl', function () {
             expect(ctrl.mapType).toEqual('Partition');
         });
 
-        it('should init the status view when the mapType changes', function () {
-
-            //wrap the spy promises so that it looks like the $http promise that our service is returning
-            function wrapPromise(promise) {
-                return {
-                    then: promise.then,
-                    success: function (fn) {
-                        promise.then(fn);
-                        return wrapPromise(promise);
-                    },
-                    error: function (fn) {
-                        promise.then(null, fn);
-                        return wrapPromise(promise);
-                    }
-                };
-            }
-
-            var deferred1 = q.defer();
-            var deferred2 = q.defer();
-            var initStatusViewSpy = spyOn(ctrl, 'initStatusView');
-            var getStatusTreeForReceptorSpy = spyOn(ConfigService, 'getStatusTreeForReceptor').and.returnValue(wrapPromise(deferred1.promise));
-            var getReceptorListSpy = spyOn(ConfigService, 'getReceptorList').and.returnValue(deferred2.promise);
-            var setReceptorsAndStatusTreeSpy = spyOn(StatusService, 'setReceptorsAndStatusTree');
-            var subscribeSpy = spyOn(MonitorService, 'subscribe');
-            //var subscribeToChildSensorsSpy = spyOn(ctrl, 'subscribeToChildSensors');
-
-            ctrl.mapType = 'Random type';
-            scope.$digest();
-            expect(initStatusViewSpy).toHaveBeenCalled();
-            expect(getStatusTreeForReceptorSpy).toHaveBeenCalled();
-            deferred1.resolve();
-            scope.$digest();
-            expect(getReceptorListSpy).toHaveBeenCalled();
-            //StatusService.setReceptorsAndStatusTree({}, ['m011', 'm022', 'm033']);
-            StatusService.statusData['m011'] = {
-                name: 'm011',
-                sensor: 'testsensor',
-                children: null
-            };
-            deferred2.resolve();
-            scope.$digest();
-            expect(setReceptorsAndStatusTreeSpy).toHaveBeenCalled();
-            expect(subscribeSpy).toHaveBeenCalledWith('m011.testsensor');
-            //expect(subscribeToChildSensorsSpy).toHaveBeenCalled();
-        });
-
         it('should subscribe to child sensors in the tree structure', function() {
             var subscribeSpy = spyOn(MonitorService, 'subscribe');
             StatusService.statusData['m011'] = {

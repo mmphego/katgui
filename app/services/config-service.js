@@ -22,7 +22,6 @@
                     $log.error(message);
                 });
         };
-        api.loadKATObsPortalURL();
 
         api.loadAggregateSensorDetail = function () {
             var deferred = $q.defer();
