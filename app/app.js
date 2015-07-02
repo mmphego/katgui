@@ -88,6 +88,7 @@
         $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
         $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
         $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
+        $rootScope.disableAlarmSounds = $localStorage['disableAlarmSounds'];
         if (!$rootScope.sensorListStrategyType) {
             $rootScope.sensorListStrategyType = 'event-rate';
         }
