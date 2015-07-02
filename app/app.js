@@ -394,6 +394,10 @@
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
 
+        vm.openGangliaLink = function () {
+            window.open('ganglia/');
+        };
+
         vm.openIRCDisplay = function ($event) {
             $rootScope.showPreDialog(
                 'IRC Information',
