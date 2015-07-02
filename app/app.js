@@ -60,7 +60,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, KATSNIFFER_LOGGER_PORT, KATSNIFFER_PATH, $log) {
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, $log) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -391,12 +391,6 @@
             //TODO get from config and eventually redo central logger
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
-
-        vm.openKatsnifferLogger = function (logFileName) {
-            //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath(KATSNIFFER_PATH + logFileName + '/tail/'+ $rootScope.logNumberOfLines, KATSNIFFER_LOGGER_PORT);
-        };
-
 
         //so that all controllers and directives has access to which keys are pressed
         document.onkeydown = function (event) {

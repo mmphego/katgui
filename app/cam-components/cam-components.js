@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
-    function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService, KATSNIFFER_LOGGER_PORT, KATSNIFFER_PATH) {
+    function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService) {
 
         var vm = this;
 
@@ -95,10 +95,12 @@
         };
 
         vm.openKatsnifferLogger = function (logFileName) {
-            //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath(KATSNIFFER_PATH + logFileName + '/tail/'+ $rootScope.logNumberOfLines, KATSNIFFER_LOGGER_PORT);
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
         };
-
 
         vm.processCommand = function (key, command) {
             if (vm.resourcesNames[key].nodeman) {

@@ -15,7 +15,7 @@
             });
     }
 
-    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil, CENTRAL_LOGGER_PORT) {
+    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil, CENTRAL_LOGGER_PORT, ConfigService) {
 
         var vm = this;
 
@@ -37,11 +37,6 @@
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
-        };
-
-        vm.openKatsnifferLogger = function () {
-            //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath(KATSNIFFER_PATH, KATSNIFFER_LOGGER_PORT);
         };
 
         $scope.$on('$destroy', function() {

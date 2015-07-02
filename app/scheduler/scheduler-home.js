@@ -12,7 +12,6 @@
 
     function SchedulerHomeCtrl($state, $rootScope, $scope, ObservationScheduleService, ConfigService, $interval) {
 
-        ConfigService.loadKATObsPortalURL();
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
         vm.disconnectIssued = false;
