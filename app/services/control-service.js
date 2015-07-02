@@ -163,6 +163,7 @@
 
                 api.connection.send(JSON.stringify(jsonRPC));
             } else {
+                $log.error('Cannot send katcp_request, the connection is not established yet.')
                 $timeout(function () {
                     api.sendControlCommand(module, funcName, funcParams);
                 }, 500);
