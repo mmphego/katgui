@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('statusSingleLevelTreeMap', function (d3Service, d3Util, $window, $rootScope) {
+    .directive('statusSingleLevelTreeMap', function (d3Service, d3Util, $window) {
         return {
             restrict: 'EA',
             scope: {

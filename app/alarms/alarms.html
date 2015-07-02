@@ -74,7 +74,7 @@
             <div
                 ng-repeat="item in filteredAlarms = ($root.alarmsData | alarmsFilter:vm.showClearedAlarms | regexSearch:vm.alarmsOrderByFields:vm.q | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse)"
                 class="animate-repeat-opacity">
-                <div ng-click="item.selected = !item.selected" class="alarm-row-item"
+                <div ng-click="item.selected = !item.selected;" class="alarm-row-item"
 
                      ng-switch="item.severity" layout="row" layout-align="start center"
                      ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
@@ -83,9 +83,11 @@
                     'alarm-list-item-badge-maintenance': item.severity === 'maintenance',
                     'alarm-list-item-badge-nominal': item.severity === 'nominal',
                     'alarm-list-item-badge-unknown': item.severity === 'unknown',
-                    'selected-alarm-list-item': item.selected}">
+                    'selected-alarm-list-item-color': item.selected}">
 
-                    <div class="alarms-list-item-icon">
+                    <div ng-if="item.selected" class="selected-alarm-list-item"></div>
+
+                    <div class="alarms-list-item-icon" ng-click="$event.stopPropagation(); vm.showAggregateSensorDetail(item)">
                         <span class="fa fa-warning" ng-switch-when="warn">
                             <md-tooltip>Warning</md-tooltip>
                         </span>
@@ -215,7 +217,9 @@
                     'alarm-list-item-badge-maintenance': item.severity === 'maintenance',
                     'alarm-list-item-badge-nominal': item.severity === 'nominal',
                     'alarm-list-item-badge-unknown': item.severity === 'unknown',
-                    'selected-alarm-list-item': item.selected}">
+                    'selected-alarm-list-item-color': item.selected}">
+
+                    <div ng-if="item.selected" class="selected-alarm-list-item"></div>
 
                     <div class="alarms-list-item-icon">
                         <span class="fa fa-warning" ng-switch-when="warn">
