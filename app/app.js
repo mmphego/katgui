@@ -394,11 +394,11 @@
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
         };
 
-        vm.openIRCDisplay = function () {
-            //todo fix
-
-            window.open('irc://katfs.kat.ac.za:6667/', '', 'location=no').focus();
-            window.open('https://katfs.kat.ac.za/irclog/logs/katirc/').focus();
+        vm.openIRCDisplay = function ($event) {
+            $rootScope.showPreDialog(
+                'IRC Information',
+                'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
+                $event);
         };
 
         //so that all controllers and directives has access to which keys are pressed
