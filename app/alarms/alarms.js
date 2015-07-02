@@ -35,7 +35,6 @@
         var vm = this;
         var WAITIMEFORREQ = 250;
 
-        ConfigService.loadKATObsPortalURL();
         ConfigService.loadAggregateSensorDetail();
 
         vm.alarmsOrderByFields = [

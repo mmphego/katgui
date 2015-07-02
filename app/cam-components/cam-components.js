@@ -68,6 +68,10 @@
                             key, sensorNameList[0], vm.guid, 'event', 0, 0);
                         SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
                             key, sensorNameList[1], vm.guid, 'event', 0, 0);
+                        SensorsService.connectResourceSensorNameLiveFeed(
+                            key, 'logging_katcpmsgs_devices_enabled', vm.guid, 'event-rate', 1, 10);
+                        SensorsService.connectResourceSensorNameLiveFeed(
+                            key, 'logging_katcpmsgs_proxy_enabled', vm.guid, 'event-rate', 1, 10);
                     }
 
                     SensorsService.connectResourceSensorNameLiveFeed(
@@ -76,6 +80,26 @@
                         'sys', 'config_label', vm.guid, 'event', 0, 0);
                 });
 
+        };
+
+        vm.sendControlCommand = function (resource, command, params) {
+            ControlService.sendControlCommand(resource, command, params);
+        };
+
+        vm.toggleKATCPMessageDevices = function (resource, newValue) {
+            vm.sendControlCommand(resource, 'enable_katcpmsgs_devices_logging', newValue? '1' : '0');
+        };
+
+        vm.toggleKATCPMessageProxy = function (resource, newValue) {
+            vm.sendControlCommand(resource, 'enable_katcpmsgs_proxy_logging', newValue? '1' : '0');
+        };
+
+        vm.openKatsnifferLogger = function (logFileName) {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
         };
 
         vm.processCommand = function (key, command) {
@@ -99,7 +123,6 @@
                     var resource = sensorNameList[1].split('monitor_')[1];
                     vm.resourcesNames[resource].connected = sensor.value.value;
                 } else {
-
                     vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
                         name: sensorNameList[1],
                         value: sensor.value.value
@@ -121,6 +144,19 @@
         vm.expandAll = function () {
             for (var key in vm.resourcesNames) {
                 vm.resourcesNames[key].showDetails = true;
+            }
+        };
+
+        vm.disableAllKATCPMessageLogging = function () {
+            for (var name in vm.resourcesNames) {
+                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled
+                    && vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled.value) {
+                    vm.sendControlCommand(name, 'enable_katcpmsgs_devices_logging', '0');
+                }
+                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled
+                    && vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled.value) {
+                    vm.sendControlCommand(name, 'enable_katcpmsgs_proxy_logging', '0');
+                }
             }
         };
 

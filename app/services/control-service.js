@@ -1,7 +1,7 @@
 (function () {
 
     angular.module('katGui.services')
-        .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
+        .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devq.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
     function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout, $log, $interval, $q) {
@@ -56,8 +56,12 @@
         api.checkAlive = function () {
             if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
                 $log.warn('Control Connection Heartbeat timeout!');
-                api.deferredMap['timeoutDefer'].resolve();
-                api.deferredMap['timeoutDefer'] = null;
+                if (!api.deferredMap['timeoutDefer']) {
+                    api.connectListener();
+                } else {
+                    api.deferredMap['timeoutDefer'].resolve();
+                    api.deferredMap['timeoutDefer'] = null;
+                }
             }
         };
 
@@ -159,6 +163,7 @@
 
                 api.connection.send(JSON.stringify(jsonRPC));
             } else {
+                $log.error('Cannot send katcp_request, the connection is not established yet.')
                 $timeout(function () {
                     api.sendControlCommand(module, funcName, funcParams);
                 }, 500);
