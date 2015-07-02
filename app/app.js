@@ -88,6 +88,7 @@
         $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
         $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
         $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
+        $rootScope.disableAlarmSounds = $localStorage['disableAlarmSounds'];
         if (!$rootScope.sensorListStrategyType) {
             $rootScope.sensorListStrategyType = 'event-rate';
         }
@@ -262,12 +263,39 @@
                         };
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
-                    "<div style='padding: 0px; margin: 0px;' layout='column' layout-padding >" +
+                    "<div style='padding: 0px; margin: 0px; overflow: auto' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
                     "<div flex>{{content}}</div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
                     "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
                     "</div>" +
+                    "</div>" +
+                    "</md-dialog>",
+                    targetEvent: event
+                });
+
+            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
+        };
+
+        $rootScope.showPreDialog = function (title, content, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = title;
+                        $scope.content = content;
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                    },
+                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                    "<div style='padding: 0px; margin: 0px; overflow: auto' layout='column' layout-padding >" +
+                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                    "<div flex><pre>{{content}}</pre></div>" +
+                    "</div>" +
+                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
                     "</div>" +
                     "</md-dialog>",
                     targetEvent: event

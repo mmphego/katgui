@@ -44,6 +44,9 @@
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.showLargeAlarms"
                              ng-change="vm.saveToLocalStorage('showLargeAlarms', $root.showLargeAlarms)">Show Detailed Alarm Notifications
                 </md-checkbox>
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.disableAlarmSounds"
+                             ng-change="vm.saveToLocalStorage('disableAlarmSounds', $root.disableAlarmSounds)">Disable Alarm Sounds
+                </md-checkbox>
             </div>
 
             <div class="config-div-item" style="border: 0">

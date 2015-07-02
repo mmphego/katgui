@@ -106,12 +106,17 @@
             if (!receptor.horizonMask) {
                 ConfigService.getHorizonMask(receptor.name)
                     .success(function (result) {
-                        receptor.showHorizonMask = true;
-                        receptor.horizonMask = "az el\r" + result;
-                        vm.redraw(true);
+                        if (!result.error) {
+                            receptor.showHorizonMask = true;
+                            receptor.horizonMask = "az el\r" + JSON.parse(result);
+                            vm.redraw(true);
+                        } else {
+                            $rootScope.showSimpleDialog('Error Retrieving Horizon Mask', result.error);
+                        }
+
                     })
-                    .error(function (result) {
-                        $log.error(result);
+                    .error(function () {
+                        $rootScope.showSimpleDialog('Error Retrieving Horizon Mask', 'Could not retrieve a horizon mask for ' + receptor.name);
                     });
             } else {
                 receptor.showHorizonMask = !receptor.showHorizonMask;

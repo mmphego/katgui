@@ -30,10 +30,13 @@
             };
         });
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $timeout, $log) {
 
         var vm = this;
         var WAITIMEFORREQ = 250;
+
+        ConfigService.loadKATObsPortalURL();
+        ConfigService.loadAggregateSensorDetail();
 
         vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
@@ -162,6 +165,41 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
+        };
+
+        vm.viewAlarmSystemConfig = function ($event) {
+            ConfigService.getSystemConfig()
+                .then(function () {
+                    ConfigService.getAlarmConfig('static/alarms/common.conf')
+                        .success(function (commonResult) {
+                            ConfigService.getAlarmConfig(ConfigService.systemConfig.kataware.alarms)
+                                .success(function (alarmsResult) {
+                                    var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
+                                    $rootScope.showPreDialog('System Config for Alarms', displayResult, $event);
+                                })
+                                .error(function (result) {
+                                    $log.error(result);
+                                })
+                        })
+                        .error(function (result) {
+                            $log.error(result);
+                        });
+                });
+        };
+
+        vm.showAggregateSensorDetail = function (item) {
+            if (item.value.indexOf('agg_') > -1) {
+                var sensorName = item.value.split(',')[2].split(' ')[0];
+                if (ConfigService.aggregateSensorDetail[sensorName]) {
+                    $rootScope.showPreDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+                } else {
+                    $rootScope.showSimpleToast('Cannot find aggregate sensor details in ConfigService ' + sensorName);
+                }
+            }
+        };
+
+        vm.viewAlarmsHistory = function () {
+            AlarmsService.tailAlarmsHistory();
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
