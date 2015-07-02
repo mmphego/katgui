@@ -181,10 +181,16 @@
                 </md-item>
                 <md-item>
                     <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('process-control')">
-                        <div style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center">
+                        <div class="menu-item" layout="row" layout-align="start center">
                             <span class="fa fa-wrench"></span>
                             <button>Process Control</button>
                         </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.openCentralLogger()">
+                        <span class="fa fa-file-text-o"></span>
+                        <button>Central Logger</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -225,21 +231,21 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openCentralLogger()">
-                        <span class="fa fa-file-text-o"></span>
-                        <button>Central Logger</button>
-                    </md-item-content>
-                </md-item>
-                <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('video')">
                         <span class="fa fa-video-camera"></span>
                         <button>Video</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('weather')">
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('weather')">
                         <span class="fa fa-cloud"></span>
                         <button>Weather</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openIRCDisplay()">
+                        <span class="fa fa-info"></span>
+                        <button>IRC Channel</button>
                     </md-item-content>
                 </md-item>
                 <md-item>

@@ -7,9 +7,9 @@ describe('AlarmsCtrl', function () {
 
     var rootScope, scope, ctrl, location, controlService, monitorService, state, alarmsService, timeout;
 
-    beforeEach(inject(function ($rootScope, $controller, $location, _ControlService_, _MonitorService_, _AlarmsService_, $state, $templateCache, $httpBackend, $timeout) {
+    beforeEach(inject(function ($rootScope, $controller, $location, _ControlService_, _MonitorService_, _AlarmsService_, $state, $templateCache, $httpBackend, $timeout, _ConfigService_) {
         scope = $rootScope.$new();
-
+        _ConfigService_.loadAggregateSensorDetail = function() {};
         rootScope = $rootScope;
         location = $location;
         controlService = _ControlService_;

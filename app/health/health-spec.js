@@ -25,7 +25,10 @@ describe('HealthCtrl', function () {
         q = $q;
         scope = $rootScope.$new();
         d3Service = _d3Service_;
+        _ConfigService_.loadAggregateSensorDetail = function () {
+        };
         ConfigService = _ConfigService_;
+
         StatusService = _StatusService_;
         StatusService.setTopStatusTrees = function () {
             StatusService.topStatusTrees = [testTree];

@@ -38,26 +38,26 @@
         }
 
         api.playAlarm = function () {
-            playSound('alarm');
+            api.playSound('alarm');
         };
 
         api.playBeep = function () {
-            playSound('beep');
+            api.playSound('beep');
         };
 
         api.playCriticalAlarm = function () {
-            playSound('critical');
+            api.playSound('critical');
         };
 
-        function playSound (key) {
-            if (!api.disableAlarmSounds) {
+        api.playSound = function (key) {
+            if (!api.disableAlarmSounds && myBuffers[key] && myAudioContext) {
                 var source = myAudioContext.createBufferSource();
                 source.buffer = myBuffers[key];
                 source.loop = false;
                 source.connect(myAudioContext.destination);
                 source.start(0);
             }
-        }
+        };
 
         //Buffer loader class start
         function BufferLoader(context, urlList, callback) {

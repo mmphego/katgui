@@ -51,6 +51,7 @@ describe('Directive: d3-chart', function () {
             $compile = _$compile_;
             scope = _$rootScope_.$new();
             $q = _$q_;
+            _StatusService_.sensorValues = {};
             StatusService = _StatusService_;
             _d3Util_.applyTooltipValues = function() {};
 

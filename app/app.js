@@ -117,6 +117,8 @@
         $rootScope.toastPosition = 'bottom right';
         $rootScope.alarmsData = AlarmsService.alarmsData;
 
+        ConfigService.loadKATObsPortalURL();
+
         $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
         if (!angular.isDefined($rootScope.showAlarms)) {
             $rootScope.showAlarms = true;
@@ -390,6 +392,13 @@
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
+        };
+
+        vm.openIRCDisplay = function () {
+            //todo fix
+
+            window.open('irc://katfs.kat.ac.za:6667/', '', 'location=no').focus();
+            window.open('https://katfs.kat.ac.za/irclog/logs/katirc/').focus();
         };
 
         //so that all controllers and directives has access to which keys are pressed
