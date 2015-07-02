@@ -134,7 +134,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
                         <span class="fa fa-warning"></span>
                         <button>Alarms</button>
                     </md-item-content>
@@ -246,6 +246,12 @@
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('about')">
                         <span class="fa fa-info"></span>
                         <button>About katGUI</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openGangliaLink()">
+                        <span class="fa fa-area-chart"></span>
+                        <button>Cluster Monitoring (Ganglia)</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
