@@ -56,8 +56,12 @@
         api.checkAlive = function () {
             if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
                 $log.warn('Control Connection Heartbeat timeout!');
-                api.deferredMap['timeoutDefer'].resolve();
-                api.deferredMap['timeoutDefer'] = null;
+                if (!api.deferredMap['timeoutDefer']) {
+                    api.connectListener();
+                } else {
+                    api.deferredMap['timeoutDefer'].resolve();
+                    api.deferredMap['timeoutDefer'] = null;
+                }
             }
         };
 

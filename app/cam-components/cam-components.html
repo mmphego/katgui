@@ -1,10 +1,13 @@
-<div flex layout="column" ng-controller="CamComponentsCtrl as vm" style="margin-left: 16px; margin-right: 16px; margin-bottom: 16px; min-width: 1065px">
+<div flex layout="column" ng-controller="CamComponentsCtrl as vm"
+     style="margin-left: 16px; margin-right: 16px; margin-bottom: 16px; min-width: 1065px">
     <div class="cam-build-info" layout-align="center center" layout="column">
         <div flex style="padding: 16px;" class="md-whiteframe-z5" layout="column">
-            <span flex style="text-align: center; font-size: 16px; cursor: pointer;" ng-click="vm.showDetailedCamBuildInfo = !vm.showDetailedCamBuildInfo"
+            <span flex style="text-align: center; font-size: 16px; cursor: pointer;"
+                  ng-click="vm.showDetailedCamBuildInfo = !vm.showDetailedCamBuildInfo"
                   ng-init="vm.showDetailedCamBuildInfo = false">
                 Current Build: <b>{{::vm.systemConfig.version.description}}</b>
             </span>
+
             <div ng-show="vm.showDetailedCamBuildInfo" layout="column" class="grow-height-animation"
                  style="margin-top: 8px;">
                 <div layout="row" ng-repeat="(key, value) in vm.systemConfig.version">
@@ -14,16 +17,26 @@
             </div>
         </div>
     </div>
-    <md-toolbar class="md-whiteframe-z1 md-toolbar-tools" layout="row" layout-align="start center">
+    <md-toolbar class="md-whiteframe-z1 md-toolbar-tools" layout="row" layout-align="start center" style="padding-right: 0">
         <span flex style="margin-top: -5px;">CAM Components - Versions and Build State</span>
-        <md-button ng-click="vm.collapseAll()" title="Collapse All" class="inline-action-button no-margin-no-padding" style="font-size: 16px;">
+        <md-button style="margin-right: 180px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}"
+                   ng-click="vm.openKatsnifferLogger('katcpmsgs.log');" title="View KATCP Messages Logs in a new tab">
+            <span>View KATCP Messages Log</span>
+        </md-button>
+        <md-button ng-click="vm.disableAllKATCPMessageLogging()" title="Turn off all KATCP Message logging" class="inline-action-button no-margin-no-padding"
+                   style="font-size: 16px; position: absolute; top: 0; right: 0; margin-right: 64px;">
+            <i class="fa fa-power-off"></i>
+        </md-button>
+        <md-button ng-click="vm.collapseAll()" title="Collapse All" class="inline-action-button no-margin-no-padding"
+                   style="font-size: 16px; position: absolute; top: 0; right: 0; margin-right: 32px;">
             <i class="fa fa-minus-square-o"></i>
         </md-button>
-        <md-button ng-click="vm.expandAll()" title="Expand All" class="inline-action-button no-margin-no-padding" style="font-size: 16px;">
+        <md-button ng-click="vm.expandAll()" title="Expand All" class="inline-action-button no-margin-no-padding"
+                   style="font-size: 16px; position: absolute; top: 0; right: 0;">
             <i class="fa fa-plus-square-o"></i>
         </md-button>
         <div flex class="unselectable list-subheader-title" layout="row" layout-align="center center"
-            style="position: absolute; left: 0; bottom: 0; padding-left: 6px;">
+             style="position: absolute; left: 0; bottom: 0; padding-left: 6px;">
             <span style="width: 160px;" class="subheader-text">
                 Component
             </span>
@@ -36,59 +49,81 @@
             <span flex style="margin-left: 16px;" class="subheader-text">
                 Build State
             </span>
-            <span style="margin-right: 6px;" class="subheader-text">
-                Actions
-            </span>
         </div>
+        <span style="position: absolute; right: 0; bottom: 0; margin-right: 44px;" class="subheader-text">
+                KATCP Logging</br>
+            Devices | Proxy
+            </span>
     </md-toolbar>
 
     <div class="md-whiteframe-z1" md-theme="{{themePrimaryButtons}}">
         <div ng-repeat="key in objectKeys(vm.resourcesNames) | orderBy:key track by key"
              class="process-control-container">
             <div flex ng-click="vm.resourcesNames[key].showDetails = !vm.resourcesNames[key].showDetails" role="heading"
-                 ng-init="vm.resourcesNames[key].showDetails = false" class="process-control-bg-transition md-whiteframe-z1"
-                 style="padding: 6px;" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.resourcesNames[key].showDetails}">
-                <span ng-show="!vm.resourcesNames[key].connected" class="red-color" style="width: 160px; margin: 0;"><b>{{::key | uppercase}}</b></span>
-                <span ng-show="vm.resourcesNames[key].connected" class="green-color" style="width: 160px; margin: 0;"><b>{{::key | uppercase}}</b></span>
+                 ng-init="vm.resourcesNames[key].showDetails = false"
+                 class="process-control-bg-transition md-whiteframe-z1"
+                 style="padding: 6px;" layout="row" layout-align="start center"
+                 ng-class="{'bg-light-grey-0-3': vm.resourcesNames[key].showDetails}">
+                <span ng-show="!vm.resourcesNames[key].connected" class="red-color" style="width: 160px; margin: 0;"><b>{{::key
+                    | uppercase}}</b></span>
+                <span ng-show="vm.resourcesNames[key].connected" class="green-color"
+                      style="width: 160px; margin: 0;"><b>{{::key | uppercase}}</b></span>
                 <span>{{::vm.resourcesNames[key].address[0]}}</span>
                 <span style="width: 38px; margin: 0">:{{::vm.resourcesNames[key].address[1]}}</span>
                 <span style="width: 180px;"><i>{{::vm.resourcesNames[key].sensors.api_version.value}}</i></span>
                 <span flex><i>{{::vm.resourcesNames[key].sensors.build_state.value}}</i></span>
-                <div layout="row" style="position: absolute; right: 0; top: 0">
 
-            		    <md-switch ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled" ng-click="$event.stopPropagation()"
-                        ng-change="vm.toggleKATCPMessageProxy(key, vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled.value);"
-                        ng-model="vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled.value" style="margin: 0">
-                                    p
-            		    </md-switch>
-            		    <md-switch ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled" ng-click="$event.stopPropagation()"
-                        ng-change="vm.toggleKATCPMessageDevices(key, vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled.value)"
-                        ng-model="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled.value" style="margin: 0">
-                                    d
-            		    </md-switch>
-                    <md-button  ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled || vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled" 
-		    ng-show="vm.resourcesNames[key].connected" ng-click="vm.openKatsnifferLogger('katcpmsgs.log'); $event.stopPropagation()" title="View Logs">
-                        <i class="fa fa-info"></i>
-                    </md-button>
-                    <md-button ng-show="!vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'start'); $event.stopPropagation()" title="Start Process">
-                        <i class="fa fa-play"></i>
-                    </md-button>
-                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'restart_process'); $event.stopPropagation()" title="Restart Process">
-                        <i class="fa fa-refresh"></i>
-                    </md-button>
-                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'kill'); $event.stopPropagation()" title="Kill Process">
-                        <i class="fa fa-remove"></i>
-                    </md-button>
-                    <md-button ng-show="vm.resourcesNames[key].connected" ng-click="vm.processCommand(key, 'stop'); $event.stopPropagation()" title="Stop Process">
-                        <i class="fa fa-stop"></i>
-                    </md-button>
+                <div layout="row" style="position: absolute; right: 0; top: 0">
+                    <md-switch ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled"
+                               ng-click="$event.stopPropagation()"
+                               ng-change="vm.toggleKATCPMessageDevices(key, vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled.value)"
+                               ng-model="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled.value"
+                               style="margin: 0 10px 0 0">
+                    </md-switch>
+                    <md-switch ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled"
+                               ng-click="$event.stopPropagation()"
+                               ng-change="vm.toggleKATCPMessageProxy(key, vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled.value);"
+                               ng-model="vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled.value"
+                               style="margin: 0">
+                    </md-switch>
+                    <md-menu style="padding: 0">
+                        <md-button class="md-icon-button" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                            style="height: 32px; width: 32px; line-height: 42px; margin: 0">
+                            <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                        </md-button>
+                        <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;">
+                            <md-menu-item ng-if="!vm.resourcesNames[key].connected">
+                                <md-button ng-click="vm.processCommand(key, 'start'); $event.stopPropagation()"
+                                           title="Start Process">
+                                    Start Process
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="vm.resourcesNames[key].connected">
+                                <md-button ng-click="vm.processCommand(key, 'restart_process'); $event.stopPropagation()"
+                                           title="Restart Process">
+                                    Restart Process
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="vm.resourcesNames[key].connected">
+                                <md-button ng-click="vm.processCommand(key, 'kill'); $event.stopPropagation()" title="Kill Process">
+                                    Kill Process
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="vm.resourcesNames[key].connected">
+                                <md-button ng-click="vm.processCommand(key, 'stop'); $event.stopPropagation()" title="Stop Process">
+                                    Stop Process
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
                 </div>
 
             </div>
             <div ng-if="vm.resourcesNames[key].showDetails" class="grow-height-animation" style="cursor: auto;">
                 <div ng-repeat="(key, sensor) in vm.resourcesNames[key].sensors | orderBy:'name' track by key"
                      style="margin: 4px;">
-                    <div style="text-align: end; width: 230px; display: inline-block"><span>{{sensor.name}}:</span></div>
+                    <div style="text-align: end; width: 230px; display: inline-block"><span>{{sensor.name}}:</span>
+                    </div>
                     <div style="display: inline-block; margin-left: 4px;"><span><b>{{sensor.value}}</b></span></div>
                 </div>
             </div>

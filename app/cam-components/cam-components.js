@@ -85,7 +85,7 @@
         vm.sendControlCommand = function (resource, command, params) {
             ControlService.sendControlCommand(resource, command, params);
         };
-        
+
         vm.toggleKATCPMessageDevices = function (resource, newValue) {
             vm.sendControlCommand(resource, 'enable_katcpmsgs_devices_logging', newValue? '1' : '0');
         };
@@ -142,6 +142,19 @@
         vm.expandAll = function () {
             for (var key in vm.resourcesNames) {
                 vm.resourcesNames[key].showDetails = true;
+            }
+        };
+
+        vm.disableAllKATCPMessageLogging = function () {
+            for (var name in vm.resourcesNames) {
+                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled
+                    && vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled.value) {
+                    vm.sendControlCommand(name, 'enable_katcpmsgs_devices_logging', '0');
+                }
+                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled
+                    && vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled.value) {
+                    vm.sendControlCommand(name, 'enable_katcpmsgs_proxy_logging', '0');
+                }
             }
         };
 
