@@ -70,6 +70,15 @@
         vm.connectListeners();
 
         vm.initSensors = function () {
+            if (vm.resourcesNames.length === 0) {
+                SensorsService.listResources()
+                    .then(function () {
+                        for (var key in vm.resources) {
+                            vm.resourcesNames.push({name: key});
+                        }
+                    });
+            }
+
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 SensorsService.connectResourceSensorListeners(vm.resourceSensorsBeingDisplayed, vm.guid);
             }
@@ -99,13 +108,6 @@
         };
 
         vm.setSensorsOrderBy('name');
-
-        SensorsService.listResources()
-            .then(function () {
-                for (var key in vm.resources) {
-                    vm.resourcesNames.push({name: key});
-                }
-            });
 
         vm.listResourceSensors = function (resourceName) {
             if (vm.resourceSensorsBeingDisplayed === resourceName) {
