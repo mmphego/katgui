@@ -102,6 +102,14 @@
             }
         };
 
+        vm.openSystemLogger = function () {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" ).focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
+        };
+
         vm.processCommand = function (key, command) {
             if (vm.resourcesNames[key].nodeman) {
                 ControlService.sendControlCommand(vm.resourcesNames[key].nodeman, command, key);
