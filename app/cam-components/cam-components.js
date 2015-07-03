@@ -106,10 +106,9 @@
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/logfile/" ).focus();
             } else {
-                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+                $rootScope.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
-
 
         vm.processCommand = function (key, command) {
             if (vm.resourcesNames[key].nodeman) {
