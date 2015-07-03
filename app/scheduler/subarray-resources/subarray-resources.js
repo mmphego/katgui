@@ -54,7 +54,10 @@
 
         vm.activateSubarray = function (subarray) {
             ObservationScheduleService.activateSubarray(subarray.id)
-                .then($rootScope.displayPromiseResult);
+                .then(function (result) {
+                    vm.refreshResources();
+                    $rootScope.displayPromiseResult(result);
+                });
         };
 
         vm.setSubarrayInMaintenance = function (subarray) {

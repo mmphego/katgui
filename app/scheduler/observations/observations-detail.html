@@ -1,7 +1,10 @@
 <div flex layout="column"  style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
     <div layout="row" flex style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 16px;">
-        <span title="Config Label" style="position: absolute; top: 0; left: 16px; font-size: 14px">
-                        Config Label:{{vm.subarray.config_label}}</span>
+        <div layout="row" layout-padding="8px" style="position: absolute; top: 0; left: 16px; padding: 0; font-size: 14px">
+            <span title="Selected Band" style="margin-right: 8px;">Band: {{vm.subarray.band}}</span>
+            <span title="Selected Product" style="margin-right: 8px;">Product: {{vm.subarray.product}}</span>
+            <span ng-show="vm.subarray.state === 'active'" title="Config Label">Config Label:{{vm.subarray.config_label}}</span>
+        </div>
         <div flex layout="column" style="margin: 0;" ng-click="vm.closeEditMenu();">
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"
