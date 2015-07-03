@@ -68,7 +68,7 @@
         };
 
         api.onSockJSClose = function () {
-            $log.info('Disconnecting Sensors Connection.');
+            $log.info('Disconnected Sensors Connection.');
             api.connection = null;
             api.lastHeartBeat = null;
         };
@@ -158,26 +158,36 @@
             }
         };
 
-        api.connectListener = function () {
-            api.deferredMap['connectDefer'] = $q.defer();
-            $log.info('Sensors Connecting...');
-            api.connection = new SockJS(urlBase + '/sensors');
-            api.connection.onopen = api.onSockJSOpen;
-            api.connection.onmessage = api.onSockJSMessage;
-            api.connection.onclose = api.onSockJSClose;
-            api.connection.onheartbeat = api.onSockJSHeartbeat;
-            api.lastHeartBeat = new Date();
-            if (!api.checkAliveInterval) {
-                api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+        api.connectListener = function (skipDeferObject) {
+            if (api.connection) {
+                $timeout(function () {
+                    api.connectListener(true);
+                }, 500);
             } else {
-                $interval.cancel(api.checkAliveInterval);
-                api.checkAliveInterval = null;
+                $log.info('Sensors Connecting...');
+                api.connection = new SockJS(urlBase + '/sensors');
+                api.connection.onopen = api.onSockJSOpen;
+                api.connection.onmessage = api.onSockJSMessage;
+                api.connection.onclose = api.onSockJSClose;
+                api.connection.onheartbeat = api.onSockJSHeartbeat;
+                api.lastHeartBeat = new Date();
+                if (!api.checkAliveInterval) {
+                    api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+                } else {
+                    $interval.cancel(api.checkAliveInterval);
+                    api.checkAliveInterval = null;
+                }
             }
-            return api.deferredMap['connectDefer'].promise;
+
+            if (!skipDeferObject) {
+                api.deferredMap['connectDefer'] = $q.defer();
+                return api.deferredMap['connectDefer'].promise;
+            }
         };
 
         api.disconnectListener = function () {
             if (api.connection) {
+                $log.info('Disconnecting Sensors Connection.');
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
