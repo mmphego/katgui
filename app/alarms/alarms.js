@@ -169,9 +169,9 @@
         vm.viewAlarmSystemConfig = function ($event) {
             ConfigService.getSystemConfig()
                 .then(function () {
-                    ConfigService.getAlarmConfig('static/alarms/common.conf')
+                    ConfigService.getConfigFileContents('static/alarms/common.conf')
                         .success(function (commonResult) {
-                            ConfigService.getAlarmConfig(ConfigService.systemConfig.kataware.alarms)
+                            ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
                                 .success(function (alarmsResult) {
                                     var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
                                     $rootScope.showPreDialog('System Config for Alarms', displayResult, $event);

@@ -539,6 +539,14 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
+        $stateProvider.state('instrumental-config', {
+            url: '/instrumental-config',
+            templateUrl: 'app/instrumental-config/instrumental-config.html',
+            title: 'Instrumental Configuration',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
 
         var schedulerHome = {
             name: 'scheduler',

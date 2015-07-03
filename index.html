@@ -117,6 +117,7 @@
 <script src="app/scheduler/observations/observations-overview.js"></script>
 <script src="app/process-control/process-control.js"></script>
 <script src="app/cam-components/cam-components.js"></script>
+<script src="app/instrumental-config/instrumental-config.js"></script>
 <!-- Add New Component JS Above -->
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
@@ -228,6 +229,13 @@
                                      style="border-bottom: 1px solid #e5e5e5;">
                         <span class="fa fa-th-list"></span>
                         <button>Sensor List</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('instrumental-config')"
+                                     style="border-bottom: 1px solid #e5e5e5;">
+                        <span class="fa fa-question-circle"></span>
+                        <button>Instrumental Config</button>
                     </md-item-content>
                 </md-item>
                 <md-item>

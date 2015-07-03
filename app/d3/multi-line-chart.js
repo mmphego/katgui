@@ -314,7 +314,7 @@ angular.module('katGui.d3')
 
                         if (scope.limitOverlayValue) {
                             limitOverlayElement = focus.append("line")
-                                .style("stroke", "#333")
+                                .style("stroke", "#F44336")
                                 .style("stroke-dasharray", "10, 5")
                                 .attr("class", "limit-overlay-path");
                         }
