@@ -1,5 +1,7 @@
 <div flex layout="column"  style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
-    <div layout="row" flex style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;">
+    <div layout="row" flex style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 16px;">
+        <span title="Config Label" style="position: absolute; top: 0; left: 16px; font-size: 14px">
+                        Config Label:{{vm.subarray.config_label}}</span>
         <div flex layout="column" style="margin: 0;" ng-click="vm.closeEditMenu();">
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"

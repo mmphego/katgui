@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail(ObservationScheduleService, $stateParams, $scope, $rootScope) {
+    function SubArrayObservationsDetail(ObservationScheduleService, $stateParams, $rootScope) {
 
         var vm = this;
         vm.subarray_id = parseInt($stateParams.subarray_id);
@@ -11,6 +11,7 @@
         vm.scheduleListProcessingServerCall = false;
         vm.selectedSchedule = null;
         vm.showEditMenu = false;
+        vm.subarray = {};
         vm.modeTypes = ['queue', 'manual'];
 
         vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
