@@ -1,0 +1,55 @@
+<div flex layout="row" ng-controller="InstrumentalConfigCtrl as vm"
+     style="margin: 16px; min-width: 1065px; max-height: 100%; min-height: 100%;">
+    <div flex layout="column" style="margin-left: 16px;">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center">
+            <span flex>Pointing Models</span>
+        </md-toolbar>
+
+        <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
+            <div flex ng-repeat="pointingModel in vm.pointingModels | orderBy:'fileName' track by $index"
+                 ng-click="vm.getFileContents(pointingModel.filePath)">
+                <span>{{::pointingModel.fileName}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div flex layout="column" style="margin-left: 16px;">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center">
+            <span flex>Catalogues</span>
+        </md-toolbar>
+
+        <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
+            <div flex ng-repeat="sourceCatalogue in vm.sourceCatalogues | orderBy:'fileName' track by $index"
+                 ng-click="vm.getFileContents(sourceCatalogue.filePath)">
+                <span>{{::sourceCatalogue.fileName}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div flex layout="column" style="margin-left: 16px;">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center">
+            <span flex>Noise Diode Models</span>
+        </md-toolbar>
+
+        <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
+            <div flex ng-repeat="noiseDiodeModel in vm.noiseDiodeModels | orderBy:'fileName' track by $index"
+                 ng-click="vm.getFileContents(noiseDiodeModel.filePath)">
+                <span>{{::noiseDiodeModel.fileName}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div flex layout="column" style="margin-left: 16px;">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center">
+            <span flex>Delay Models</span>
+        </md-toolbar>
+
+        <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
+            <div flex ng-repeat="delayModel in vm.delayModels | orderBy:'fileName' track by $index"
+                ng-click="vm.getFileContents(delayModel.filePath)">
+                <span>{{::delayModel.fileName}}</span>
+            </div>
+        </div>
+    </div>
+
+</div>

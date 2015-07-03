@@ -93,8 +93,24 @@
             return $http(createRequest('get', urlBase + '/horizon-mask/' + receptorId));
         };
 
-        api.getAlarmConfig = function (filePath) {
+        api.getConfigFileContents = function (filePath) {
             return $http(createRequest('get', urlBase + '/config-file/' + filePath));
+        };
+
+        api.getSourceCataloguesList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/catalogues'));
+        };
+
+        api.getNoiseDiodeModelsList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/noise-diode-models'));
+        };
+
+        api.getDelayModelsList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/delay-models'));
+        };
+
+        api.getPointingModelsList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/pointing-models'));
         };
 
         function createRequest(method, url) {
