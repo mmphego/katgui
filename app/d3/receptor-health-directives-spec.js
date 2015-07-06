@@ -1,6 +1,6 @@
 describe('Directive: d3-chart', function () {
 
-    var $compile, $window, mockd3Service, mockd3Util, $q, html, element, data, scope, StatusService, timeout;
+    var $compile, $window, $q, html, element, data, scope, StatusService, timeout;
 
     data = {
         name: "Test Sensors OK",
@@ -13,11 +13,9 @@ describe('Directive: d3-chart', function () {
 
     //setup test
     beforeEach(function () {
-        mockd3Service = {};
         module('katGui.d3');
 
         module(function ($provide) {
-            $provide.value('d3Service', mockd3Service);
             $provide.service('StatusService', function () {
                 return {
                     statusData: {
@@ -61,12 +59,6 @@ describe('Directive: d3-chart', function () {
                 return deferred.promise;
             };
         });
-
-        mockd3Service.d3 = function () {
-            var deferred = $q.defer();
-            deferred.resolve($window.d3);
-            return deferred.promise;
-        };
     });
 
     it('should create a d3 receptor status icicle map', function () {

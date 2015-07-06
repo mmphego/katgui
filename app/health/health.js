@@ -81,11 +81,9 @@
                     }
                     parent.children.push({name: sub, sensor: sub});
                     vm.subscriptions[sub] = true;
-                    MonitorService.subscribe(sub);
                 });
             }
             if (parent.sensor) {
-                MonitorService.subscribe(parent.sensor);
                 vm.subscriptions[parent.sensor] = true;
             }
         };
@@ -105,10 +103,6 @@
             vm.unbindUpdate();
             if (vm.stopUpdating) {
                 $interval.cancel(vm.stopUpdating);
-            }
-
-            for (var sub in vm.subscriptions) {
-                MonitorService.unsubscribe(sub);
             }
         });
     }

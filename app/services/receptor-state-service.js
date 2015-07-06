@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ReceptorStateService', ReceptorStateService);
 
-    function ReceptorStateService($rootScope, MonitorService, ConfigService, $log) {
+    function ReceptorStateService($rootScope, ConfigService, $log) {
 
         var api = {receptorsData: []};
 
@@ -13,7 +13,6 @@
                 .then(function (receptors) {
                     receptors.forEach(function (receptor) {
                         api.receptorsData.push({name: receptor, inhibited: false});
-                        MonitorService.subscribeToReceptorUpdates();
                     });
                 }, function (result) {
                     $rootScope.showSimpleDialog('Error', 'Error retrieving receptor list, please contact CAM support.');
