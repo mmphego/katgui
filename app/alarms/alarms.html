@@ -120,22 +120,22 @@
                     </div>
                     <md-button title="Know Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.knowAlarm(item); $event.stopPropagation();">
-                        <span class="fa fa-check"></span>
+                        <span style="display: inherit" class="fa fa-check"></span>
                     </md-button>
                     <md-button title="Acknowledge Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.acknowledgeAlarm(item); $event.stopPropagation();">
-                        <span class="fa fa-check-circle-o"></span>
+                        <span style="display: inherit" class="fa fa-check-circle-o"></span>
                     </md-button>
                     <md-button title="Clear Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.clearAlarm(item); $event.stopPropagation();">
-                        <span class="fa fa-ban"></span>
+                        <span style="display: inherit" class="fa fa-ban"></span>
                     </md-button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="md-whiteframe-z2" layout="column" style="margin-top: 16px;" ng-init="vm.showKnownAlarmsList = false;">
+    <div class="md-whiteframe-z2" layout="column" style="margin-top: 16px; margin-bottom: 8px;" ng-init="vm.showKnownAlarmsList = false;">
         <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showKnownAlarmTools = true;"
                     ng-mouseleave="showKnownAlarmTools = false;">
             <div class="md-toolbar-tools" layout="row">
@@ -173,6 +173,7 @@
                              md-font-icon="fa-chevron-up"></md-icon>
                     <md-icon md-theme="white" class="fa md-primary" ng-show="vm.showKnownAlarmsList"
                              md-font-icon="fa-chevron-down"></md-icon>
+                </md-button>
             </div>
 
             <div ng-show="vm.showKnownAlarmsList" flex class="unselectable list-subheader-title"
@@ -252,9 +253,9 @@
                               style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                               title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Cancel Known" style="width: 24px; height: 38px;" class=""
-                               ng-click="vm.cancelKnowAlarm(item); $event.stopPropagation();">
-                        <span class="fa fa-remove"></span>
+                    <md-button title="Clear Alarm" class="inline-action-button" style="margin: 0"
+                               ng-click="vm.cancelKnownAlarm(item); $event.stopPropagation();">
+                        <span style="display: inherit" class="fa fa-remove"></span>
                     </md-button>
                 </div>
             </div>
