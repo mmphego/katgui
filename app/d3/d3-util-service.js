@@ -101,7 +101,7 @@ angular.module('katGui.d3')
             var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
             var sensorValue;
             if (StatusService.sensorValues && StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor]) {
-                sensorValue = StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor].sensorValue;
+                sensorValue = StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor];
             } else  {
                 sensorValue = d.sensorValue;
             }

@@ -67,12 +67,13 @@ angular.module('katGui.d3')
                         .data(nodes)
                         .enter().append("svg:circle")
                         .attr("class", function (d) {
-                            var classString = StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive';
+                            var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                            classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive');
                             if (d.depth === 0) {
-                                return classString + '-child parent';
+                                return classStr + '-child parent';
                             } else {
-                                return classString + '-child child';
+                                return classStr + '-child child';
                             }
                         })
                         .attr("cx", function (d) {
@@ -99,12 +100,13 @@ angular.module('katGui.d3')
                         .data(nodes)
                         .enter().append("svg:text")
                         .attr("class", function (d) {
-                            var classString = StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive';
+                            var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                            classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive');
                             if (d.depth === 0) {
-                                return classString + '-child-text parent';
+                                return classStr + '-child-text parent';
                             } else {
-                                return classString + '-child-text child';
+                                return classStr + '-child-text child';
                             }
                         })
                         .attr("x", function (d) {

@@ -75,6 +75,10 @@ angular.module('katGui.d3')
                             return Math.max(0, y(d.y + d.dy));
                         });
 
+                    if (!StatusService.statusData[scope.dataMapName]) {
+                        return;
+                    }
+
                     //create each child node svg:g element
                     var g = svg.selectAll("g")
                         .data(mapLayout.nodes(StatusService.statusData[scope.dataMapName]))
@@ -83,12 +87,11 @@ angular.module('katGui.d3')
                     //add the arc math as a svg:path element
                     var path = g.append("path")
                         .attr("d", arc)
-                        .attr("id", function (d) {
-                            return d3Util.createSensorId(d, scope.dataMapName);
-                        })
                         .attr("class", function (d) {
-                            return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
+                            var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                            classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive') + '-child child';
+                            return classStr;
                         })
                         .call(function (d) {
                             d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
@@ -111,7 +114,7 @@ angular.module('katGui.d3')
                         .attr("dy", ".35em") // vertical-align
                         .attr("class", function (d) {
                             var classString = StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive';
+                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive';
                             if (d.depth === 0) {
                                 return classString + '-child-text parent';
                             } else {

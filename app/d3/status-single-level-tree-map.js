@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('statusSingleLevelTreeMap', function (d3Util, $window) {
+    .directive('statusSingleLevelTreeMap', function (StatusService, d3Util, $window) {
         return {
             restrict: 'EA',
             scope: {
@@ -119,16 +119,18 @@ angular.module('katGui.d3')
                                         classString += d.objectValue.status + '-child';
                                     } else if (d.sensorValue) {
                                         classString += d.sensorValue.status + '-child';
+                                    } else if (StatusService.sensorValues[d.sensor.replace('.', '_')]) {
+                                        classString += StatusService.sensorValues[d.sensor.replace('.', '_')].status + '-child';
                                     } else {
                                         classString += 'inactive-child';
                                     }
                                     classString += d.dx > 300 ? " child-big-text" : " child ";
                                     if (angular.isDefined(d.objectValue)) {
                                         classString += " " + d.objectValue.parent_name;
-                                        classString += "-" + d.sensor.replace(/\./g, "_");
+                                        classString += "_" + d.sensor.replace(/\./g, "_");
                                     } else {
                                         classString += " " + d.sensor.split('.')[0];
-                                        classString += "-" + d.sensor.split('.')[1];
+                                        classString += "_" + d.sensor.split('.')[1];
                                     }
                                     return classString;
                                 })

@@ -93,7 +93,6 @@
         };
 
         api.onSockJSMessage = function (e) {
-            console.log(e);
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {

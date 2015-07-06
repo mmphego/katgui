@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('ReceptorHealthCtrl', ReceptorHealthCtrl);
 
-    function ReceptorHealthCtrl(ConfigService, StatusService, MonitorService, $localStorage) {
+    function ReceptorHealthCtrl(ConfigService, StatusService, $localStorage) {
 
         var vm = this;
         vm.receptorHealthTree = ConfigService.receptorHealthTree;
@@ -24,10 +24,10 @@
             vm.mapType = 'Partition';
         }
 
-        vm.subscribeToChildSensors = function (parent, receptor) {
+        vm.populateTree = function (parent, receptor) {
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function (child) {
-                    vm.subscribeToChildSensors(child, receptor);
+                    vm.populateTree(child, receptor);
                 });
             } else if (parent.subs && parent.subs.length > 0) {
                 parent.subs.forEach(function (sub) {
@@ -57,8 +57,8 @@
                     .then(function (receptors) {
                         StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);
                         for (var receptor in StatusService.statusData) {
-                            //recursively subscribe to all child sensors
-                            vm.subscribeToChildSensors(StatusService.statusData[receptor], receptor);
+                            //recursively populate children
+                            vm.populateTree(StatusService.statusData[receptor], receptor);
                         }
                         vm.redrawCharts();
                     });

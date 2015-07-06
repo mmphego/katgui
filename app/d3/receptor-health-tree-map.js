@@ -173,8 +173,10 @@ angular.module('katGui.d3')
                                 return d3Util.createSensorId(d, scope.dataMapName);
                             })
                             .attr("class", function (d) {
-                                return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                        StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
+                                var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                                classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive') + '-child child';
+                                return classStr;
                             })
                             .on("click", function (d) {
                                 transition(d.parent);
@@ -205,8 +207,10 @@ angular.module('katGui.d3')
                                 return d3Util.createSensorId(d, scope.dataMapName);
                             })
                             .attr("class", function (d) {
-                                return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                        StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
+                                var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                                classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive') + '-child child';
+                                return classStr;
                             })
                             .call(rect)
                             .call(function (d) {
@@ -216,8 +220,10 @@ angular.module('katGui.d3')
                         g.append("text")
                             .attr("dy", ".75em")
                             .attr("class", function (d) {
-                                return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                        StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
+                                var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                                classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive') + '-child child';
+                                return classStr;
                             })
                             .text(function (d) {
                                 return d.name;
