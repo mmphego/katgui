@@ -60,8 +60,7 @@
         };
 
         vm.removeDraft = function (item) {
-            ObservationScheduleService.deleteScheduleDraft(item.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObservationScheduleService.deleteScheduleDraft(item.id_code);
         };
 
         vm.refreshScheduleBlocks = function () {

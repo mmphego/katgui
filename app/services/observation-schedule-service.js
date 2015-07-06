@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObservationScheduleService', ObservationScheduleService);
 
-    function ObservationScheduleService($q, $timeout, SERVER_URL, $rootScope, KatGuiUtil, ConfigService, $log, $interval) {
+    function ObservationScheduleService($q, $timeout, $http, SERVER_URL, $rootScope, KatGuiUtil, ConfigService, $log, $interval) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
@@ -374,8 +374,22 @@
             }
         };
 
-        api.deleteScheduleDraft = function (idCode) {
-            return createCommandPromise(api.sendObsSchedCommand('delete_schedule_block', [idCode]));
+        api.handleRequestResponse = function (request) {
+            request
+                .success(function (result) {
+                    $rootScope.showSimpleToast(result.result);
+                })
+                .error(function (error) {
+                    $rootScope.showSimpleDialog('Error sending request', error);
+                });
+        };
+
+        api.deleteScheduleDraft = function (id) {
+            api.handleRequestResponse($http.get(urlBase + '/obs-sched/sb/' + id + '/delete'));
+        };
+
+        api.scheduleDraft = function (sub_num, id) {
+            api.handleRequestResponse($http.get(urlBase + '/obs-sched/sb/' + sub_num + '/' + id + '/schedule'));
         };
 
         api.updateScheduleDraft = function (scheduleBlockDraft) {
@@ -404,10 +418,6 @@
 
         api.unassignScheduleBlock = function (subarray_number, id_code) {
             return createCommandPromise(api.sendObsSchedCommand('unassign_schedule_to_subarray', [subarray_number, id_code]));
-        };
-
-        api.scheduleDraft = function (subarray_number, id_code) {
-            return createCommandPromise(api.sendObsSchedCommand('schedule_draft', [subarray_number, id_code]));
         };
 
         api.scheduleToDraft = function (subarray_number, id_code) {
