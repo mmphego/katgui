@@ -64,7 +64,14 @@
         vm.initSensors = function () {
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
-                    vm.connectLiveFeed(sensor.name);
+                    var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+                    sensorName = sensorName.replace(/\./g, '_');
+                    SensorsService.setSensorStrategy(
+                        sensor.component,
+                        sensorName,
+                        $rootScope.sensorListStrategyType,
+                        $rootScope.sensorListStrategyInterval,
+                        $rootScope.sensorListStrategyInterval);
                 });
             }
         };
@@ -370,7 +377,14 @@
         };
 
         vm.connectLiveFeed = function (sensor) {
-            SensorsService.connectLiveFeed(sensor, vm.guid);
+            var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+            sensorName = sensorName.replace(/\./g, '_');
+            SensorsService.setSensorStrategy(
+                sensor.component,
+                sensorName,
+                $rootScope.sensorListStrategyType,
+                $rootScope.sensorListStrategyInterval,
+                $rootScope.sensorListStrategyInterval);
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {

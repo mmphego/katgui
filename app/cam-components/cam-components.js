@@ -64,20 +64,20 @@
                             connected: false
                         };
                         vm.resourcesNames[key].nodeman = vm.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
-                        SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                            key, sensorNameList[0], vm.guid, 'event', 0, 0);
-                        SensorsService.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard(
-                            key, sensorNameList[1], vm.guid, 'event', 0, 0);
-                        SensorsService.connectResourceSensorNameLiveFeed(
-                            key, 'logging_katcpmsgs_devices_enabled', vm.guid, 'event-rate', 1, 10);
-                        SensorsService.connectResourceSensorNameLiveFeed(
-                            key, 'logging_katcpmsgs_proxy_enabled', vm.guid, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy(
+                            key, sensorNameList[0], 'event', 0, 0);
+                        SensorsService.setSensorStrategy(
+                            key, sensorNameList[1], 'event', 0, 0);
+                        SensorsService.setSensorStrategy(
+                            key, 'logging_katcpmsgs_devices_enabled', 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy(
+                            key, 'logging_katcpmsgs_proxy_enabled', 'event-rate', 1, 10);
                     }
 
-                    SensorsService.connectResourceSensorNameLiveFeed(
-                        'sys', 'monitor_*', vm.guid, 'event', 0, 0);
-                    SensorsService.connectResourceSensorNameLiveFeed(
-                        'sys', 'config_label', vm.guid, 'event', 0, 0);
+                    SensorsService.setSensorStrategy(
+                        'sys', 'monitor_*', 'event', 0, 0);
+                    SensorsService.setSensorStrategy(
+                        'sys', 'config_label', 'event', 0, 0);
                 });
 
         };
@@ -169,11 +169,7 @@
         };
 
         $scope.$on('$destroy', function () {
-            //todo check katportal if this is neccesary
             for (var key in SensorsService.resources) {
-                for (var i in sensorNameList) {
-                    SensorsService.unsubscribe(key + '.*' + sensorNameList[i] + '*', vm.guid);
-                }
                 SensorsService.removeResourceListeners(key);
             }
             SensorsService.unsubscribe('sys.config_label', vm.guid);

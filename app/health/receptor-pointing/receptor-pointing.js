@@ -69,7 +69,7 @@
                 .then(function (result) {
                     result.forEach(function (item) {
                         vm.receptorsData.push({name: item, showHorizonMask: false});
-                        SensorsService.connectResourceSensorNamesLiveFeedWithList(item, vm.sensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 10);
                     });
                 });
         };

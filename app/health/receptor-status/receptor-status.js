@@ -68,12 +68,12 @@
                 .then(function (result) {
                     result.forEach(function (item) {
                         vm.receptorsData.push({name: item, subarray: 'free'});
-                        SensorsService.connectResourceSensorNamesLiveFeedWithList(item, vm.receptorSensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy(item, vm.receptorSensorsToConnect, 'event-rate', 1, 10);
                     });
                     for (var i = 1; i <= 4; i++) {
-                        SensorsService.connectResourceSensorNamesLiveFeedWithList('subarray_' + i, vm.subarraySensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy('subarray_' + i, vm.subarraySensorsToConnect, 'event-rate', 1, 10);
                     }
-                    SensorsService.connectResourceSensorNameLiveFeed('katpool', 'resources_in_maintenance', vm.guid, 'event-rate', 1, 10);
+                    SensorsService.setSensorStrategy('katpool', 'resources_in_maintenance', 'event-rate', 1, 10);
                 });
         };
         vm.connectListeners();
