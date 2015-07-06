@@ -4,12 +4,14 @@
     angular.module('katGui.services')
         .service('StatusService', StatusService);
 
-    function StatusService($rootScope) {
+    function StatusService($rootScope, $interval) {
 
         var api = {};
         api.statusData = {};
         api.receptors = [];
         api.topStatusTrees = [];
+        api.itemsToUpdate = {};
+        api.sensorValues = {};
 
         api.setReceptorsAndStatusTree = function (statusTree, receptors) {
             api.receptors.splice(0, api.receptors.length);
@@ -53,7 +55,52 @@
                     }
                 }
             }
+            api.sensorValues[messageName.replace('.', '_')] = message;
+            api.itemsToUpdate[messageName.replace('.', '_')] = message;
+            if (!api.stopUpdating) {
+                api.stopUpdating = $interval(api.applyPendingUpdates, 500);
+            }
             $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
+        };
+
+        api.applyPendingUpdates = function () {
+            var attributes = Object.keys(api.itemsToUpdate);
+            if (attributes.length > 0) {
+                for (var i = 0; i < attributes.length; i++) {
+                    var sensorName = api.sensorValues[attributes[i]].name;
+                    sensorName = sensorName.replace(/\./g, '_');
+                    var queryString = '.' + sensorName;
+                    var resultList = d3.selectAll(queryString);
+                    resultList[0].forEach(function (element) {
+                        d3.select(element).attr('class', function (d) {
+                            return api.setClassesOfSensor(d, attributes[i]);
+                        });
+                    });
+                    delete api.itemsToUpdate[attributes[i]];
+                }
+            } else {
+                if (angular.isDefined(api.stopUpdating)) {
+                    $interval.cancel(api.stopUpdating);
+                    api.stopUpdating = undefined;
+                }
+            }
+        };
+
+        api.setClassesOfSensor = function (d, sensorToUpdateName) {
+            if (d.depth > 0) {
+                if (!d.sensorValue) {
+                    d.sensorValue = {};
+                }
+                var statusClassResult = sensorToUpdateName;
+                d.sensorValue = api.itemsToUpdate[sensorToUpdateName];
+                if (d.sensorValue) {
+                    statusClassResult += ' ' + d.sensorValue.status + '-child';
+                }
+                statusClassResult += d.dx > 300 ? " child-big-text" : " child";
+                return statusClassResult;
+            } else if (d.sensorValue) {
+                return sensorToUpdateName + ' ' + d.sensorValue.status + '-child parent';
+            }
         };
 
         function applyValueToSensor(node, sensorName, value, rootName) {

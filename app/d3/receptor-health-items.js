@@ -13,37 +13,9 @@ angular.module('katGui.d3')
             '</div>',
             link: function (scope) {
 
-                scope.itemsToUpdate = {};
-                StatusService.sensorValues = {};
                 scope.vm.redrawCharts = function () {
                     $rootScope.$emit('redrawChartMessage', {size: scope.vm.treeChartSize});
                 };
-
-                //everytime we get a sensor update from the StatusService, we need to go update the class of each element,
-                var unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
-                    var sensorName = sensor.name.replace('.', '_');
-                    StatusService.sensorValues[sensorName] = sensor;
-                    var queryString = '#' + sensorName;
-                    var resultList = d3.selectAll(queryString);
-                    resultList.attr('class', function(d) {
-                        var classString = '';
-                        if (StatusService.sensorValues[d.sensorValue.name.replace('.', '_')]) {
-                            classString += StatusService.sensorValues[d.sensorValue.name.replace('.', '_')].sensorValue.status;
-                            if (d.depth > 0) {
-                                classString += '-child child';
-                            } else {
-                                classString += '-child parent';
-                            }
-                            return classString;
-                        } else {
-                            return 'inactive-child'
-                        }
-                    });
-                });
-
-                scope.$on('$destroy', function () {
-                    unbindUpdate();
-                });
             }
         };
     });

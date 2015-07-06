@@ -92,8 +92,10 @@ angular.module('katGui.d3')
                             d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
                         })
                         .attr("class", function (d) {
-                            return (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                    StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive') + '-child child';
+                            var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                            classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive') + '-child child';
+                            return classStr;
                         });
 
                     //add the text overlay for each node
@@ -104,12 +106,13 @@ angular.module('katGui.d3')
                             return d.dx * ky > 12 ? 1 : 0;
                         })
                         .attr("class", function (d) {
-                            var classString = StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].sensorValue.status : 'inactive';
+                            var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
+                            classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
+                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive');
                             if (d.depth === 0) {
-                                return classString + '-child-text parent';
+                                return classStr + '-child-text parent';
                             } else {
-                                return classString + '-child-text child';
+                                return classStr + '-child-text child';
                             }
                         })
                         .text(function (d) {
