@@ -80,7 +80,12 @@
             }
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                SensorsService.connectResourceSensorListeners(vm.resourceSensorsBeingDisplayed, vm.guid);
+                SensorsService.setSensorStrategy(
+                    vm.resourceSensorsBeingDisplayed,
+                    '',
+                    $rootScope.sensorListStrategyType,
+                    $rootScope.sensorListStrategyInterval,
+                    $rootScope.sensorListStrategyInterval);
             }
         };
 
@@ -129,7 +134,12 @@
                         if (!$scope.$$phase) {
                             $scope.$digest();
                         }
-                        SensorsService.connectResourceSensorListeners(resourceName, vm.guid);
+                        SensorsService.setSensorStrategy(
+                            resourceName,
+                            '',
+                            $rootScope.sensorListStrategyType,
+                            $rootScope.sensorListStrategyInterval,
+                            $rootScope.sensorListStrategyInterval);
                     });
             } else {
                 vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;

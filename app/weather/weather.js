@@ -82,10 +82,9 @@
 
             if (!skipConnectSensorListeners) {
                 deferred.promise.then(function () {
-                    SensorsService.connectResourceSensorNamesLiveFeedWithList(
+                    SensorsService.setSensorStrategy(
                         'anc',
                         sensorNameList,
-                        vm.guid,
                         $rootScope.sensorListStrategyType,
                         $rootScope.sensorListStrategyInterval,
                         $rootScope.sensorListStrategyInterval);

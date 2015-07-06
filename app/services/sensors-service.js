@@ -137,6 +137,7 @@
                         api.connection.authorized = true;
                         $log.info('Sensors Connection Authenticated.');
                         api.deferredMap['connectDefer'].resolve();
+                        api.subscribe('*', api.guid);
                     } else if (messages.result.length > 0) {
                         //subscribe response
                         //$log.info('Subscribed to: ');
@@ -164,6 +165,7 @@
                     api.connectListener(true);
                 }, 500);
             } else {
+                api.guid = KatGuiUtil.generateUUID();
                 $log.info('Sensors Connecting...');
                 api.connection = new SockJS(urlBase + '/sensors');
                 api.connection.onopen = api.onSockJSOpen;
@@ -187,6 +189,7 @@
 
         api.disconnectListener = function () {
             if (api.connection) {
+                api.unsubscribe('*', api.guid);
                 $log.info('Disconnecting Sensors Connection.');
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
@@ -210,81 +213,16 @@
             }
         };
 
-        api.connectResourceSensorNameLiveFeed = function (resource, sensorName, guid, strategyType, strategyIntervalMin, strategyIntervalMax, skipSubscribe) {
+        api.setSensorStrategy = function (resource, sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
             api.sendSensorsCommand('set_sensor_strategy',
                 [
-                    guid,
+                    api.guid,
                     resource,
                     sensorName,
                     strategyType,
                     strategyIntervalMin,
                     strategyIntervalMax
                 ]);
-            if (!skipSubscribe) {
-                api.subscribe(resource + '.' + sensorName, guid);
-            }
-        };
-
-        api.connectResourceSensorNamesLiveFeedWithList = function (resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
-            api.sendSensorsCommand('set_sensor_strategy',
-                [
-                    guid,
-                    resource,
-                    sensorNames,
-                    strategyType,
-                    strategyIntervalMin,
-                    strategyIntervalMax
-                ]);
-
-            for (var i in sensorNames) {
-                api.subscribe(resource + '.' + sensorNames[i], guid);
-            }
-        };
-
-        api.connectResourceSensorNamesLiveFeedWithListSurroundSubscribeWithWildCard = function (
-            resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
-
-            api.sendSensorsCommand('set_sensor_strategy',
-                [
-                    guid,
-                    resource,
-                    sensorNames,
-                    strategyType,
-                    strategyIntervalMin,
-                    strategyIntervalMax
-                ]);
-
-            for (var i in sensorNames) {
-                api.subscribe(resource + '.*' + sensorNames[i] + '*', guid);
-            }
-        };
-
-        api.connectLiveFeed = function (sensor, guid) {
-            var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
-            sensorName = sensorName.replace(/\./g, '_');
-            api.sendSensorsCommand('set_sensor_strategy',
-                [
-                    guid,
-                    sensor.component,
-                    sensorName,
-                    $rootScope.sensorListStrategyType,
-                    $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval
-                ]);
-            api.subscribe(sensor.component + '.' + sensorName, guid);
-        };
-
-        api.connectResourceSensorListeners = function (resource_name, guid) {
-            api.sendSensorsCommand('set_sensor_strategy',
-                [
-                    guid,
-                    resource_name,
-                    '',
-                    $rootScope.sensorListStrategyType,
-                    $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval
-                ]);
-            api.subscribe(resource_name + ".*", guid);
         };
 
         api.listResources = function () {

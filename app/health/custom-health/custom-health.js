@@ -153,14 +153,12 @@
             var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
             if (!existingItem) {
                 vm.regexStrings.push(sensorRegex);
-                SensorsService.connectResourceSensorNameLiveFeed(
+                SensorsService.setSensorStrategy(
                     resource,
                     regex,
-                    vm.guid,
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval,
-                    true
+                    $rootScope.sensorListStrategyInterval
                 );
             }
         };

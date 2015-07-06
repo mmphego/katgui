@@ -106,11 +106,11 @@
                             vm.sensorsToDisplay[item.python_identifier] = item;
                             vm.detailedProcesses[result.resource][processName].sensors[item.python_identifier] = item;
                             if (item.python_identifier.indexOf('running') !== -1) {
-                                SensorsService.connectResourceSensorNameLiveFeed(
-                                    result.resource, item.python_identifier, vm.guid, 'event-rate', 1, 3);
+                                SensorsService.setSensorStrategy(
+                                    result.resource, item.python_identifier, 'event-rate', 1, 3);
                             } else {
-                                SensorsService.connectResourceSensorNameLiveFeed(
-                                    result.resource, item.python_identifier, vm.guid, 'event-rate', 3, 120);
+                                SensorsService.setSensorStrategy(
+                                    result.resource, item.python_identifier, 'event-rate', 3, 120);
                             }
                         }
                     });
