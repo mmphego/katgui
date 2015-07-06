@@ -11,7 +11,7 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
-        vm.floodLightSensor = false;
+        vm.floodLightSensor = {value: false};
 
         vm.connectListeners = function () {
             ControlService.connectListener()
@@ -53,6 +53,7 @@
 
         vm.initReceptors = function () {
             ReceptorStateService.getReceptorList();
+            vm.floodLightSensor = ReceptorStateService.floodLightSensor;
         };
 
         vm.stowAll = function () {
@@ -72,27 +73,15 @@
         };
 
         vm.toggleFloodLights = function () {
-            if (vm.floodLightSensor.value){
+            if (ReceptorStateService.floodLightSensor.value){
                 ControlService.floodlightsOn("off");
             } else{
                 ControlService.floodlightsOn("on");
             }
         };
 
-        //vm.shutdownComputing = function () {
-        //    ControlService.shutdownComputing();
-        //};
-
         var stopInterval = $interval(function () {
-            vm.receptorsData.forEach(function (item) {
-                if (item.lastUpdate) {
-                    item.since = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').format('HH:mm:ss DD-MM-YYYY');
-                    item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
-                } else {
-                    item.since = "error";
-                    item.fromNow = "Connection Error!";
-                }
-            });
+            ReceptorStateService.updateReceptorDates();
         }, 1000);
 
         $scope.$on('$destroy', function () {

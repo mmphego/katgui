@@ -63,6 +63,18 @@
             }
         };
 
+        api.updateReceptorDates = function () {
+            api.receptorsData.forEach(function (item) {
+                if (item.lastUpdate) {
+                    item.since = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').format('HH:mm:ss DD-MM-YYYY');
+                    item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
+                } else {
+                    item.since = "error";
+                    item.fromNow = "Connection Error!";
+                }
+            });
+        };
+
         return api;
     }
 })();
