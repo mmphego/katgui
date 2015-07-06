@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService,
-                            AlarmsService, ObservationScheduleService, $interval, $q, $log) {
+                            AlarmsService, ObservationScheduleService, $interval, $q, $log, ReceptorStateService) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
@@ -120,7 +120,7 @@
                                 } else if (channelNameSplit.length > 1 &&
                                     (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
                                      channelNameSplit[1] === 'vds_flood_lights_on')) {
-                                    $rootScope.$emit('operatorControlStatusMessage', {
+                                    ReceptorStateService.receptorMessageReceived({
                                         name: messageObj.msg_channel,
                                         value: messageObj.msg_data
                                     });

@@ -95,34 +95,11 @@
             });
         }, 1000);
 
-        vm.receptorMessageReceived = function (event, message) {
-            var sensorNameList = message.name.split(':')[1].split('.');
-            var receptor = sensorNameList[0];
-            var sensorName = sensorNameList[1];
-            if (sensorName === 'vds_flood_lights_on') {
-                vm.floodLightSensor = message.value;
-            } else {
-                ReceptorStateService.receptorsData.forEach(function (item) {
-                    if (item.name === receptor && message.value) {
-                        if (sensorName === 'mode' && item.status !== message.value.value) {
-                            item.state = message.value.value;
-                        } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
-                            item.inhibited = message.value.value;
-                        }
-                        item.lastUpdate = moment(message.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
-                    }
-                });
-            }
-        };
-
-        vm.cancelListeningToReceptorMessages = $rootScope.$on('operatorControlStatusMessage', vm.receptorMessageReceived);
-
         $scope.$on('$destroy', function () {
             if (!vm.connectInterval) {
                 $interval.cancel(vm.connectInterval);
             }
             $interval.cancel(stopInterval);
-            vm.cancelListeningToReceptorMessages();
             ControlService.disconnectListener();
             vm.disconnectIssued = true;
         });
