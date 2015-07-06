@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('statusSingleLevelTreeMap', function (d3Service, d3Util, $window) {
+    .directive('statusSingleLevelTreeMap', function (d3Util, $window) {
         return {
             restrict: 'EA',
             scope: {
@@ -11,8 +11,6 @@ angular.module('katGui.d3')
                 layoutMode: '@'
             },
             link: function (scope, element) {
-
-                d3Service.d3().then(function (d3) {
 
                     var width = 220,
                         height = element.parent()[0].clientHeight - 40,
@@ -211,9 +209,6 @@ angular.module('katGui.d3')
                                 .html('<i style="position: fixed" class="fa fa-eye-slash"></i>');
                         }
                     }
-                });
             }
         };
     });
-
-

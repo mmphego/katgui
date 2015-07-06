@@ -101,21 +101,6 @@ describe('MonitorService', function () {
         $templateCache.put('app/login-form/login-form.html', '');
     }));
 
-    it('should subscribe to all receptor updates', inject(function () {
-        ConfigService.receptorList = ['test1', 'test2', 'test3'];
-        var subscribeSpy = spyOn(MonitorService, 'subscribe');
-        MonitorService.subscribeToReceptorUpdates();
-        expect(subscribeSpy.calls.argsFor(0)).toEqual([['mon:test1.mode', 'mon:test1.inhibited']]);
-        expect(subscribeSpy.calls.argsFor(1)).toEqual([['mon:test2.mode', 'mon:test2.inhibited']]);
-        expect(subscribeSpy.calls.argsFor(2)).toEqual([['mon:test3.mode', 'mon:test3.inhibited']]);
-    }));
-
-    it('should subscribe to alarms', inject(function () {
-        var subscribeSpy = spyOn(MonitorService, 'subscribe');
-        MonitorService.subscribeToAlarms();
-        expect(subscribeSpy.calls.mostRecent().args[0]).toEqual('kataware.alarm_*');
-    }));
-
     it('should create a SockJS class and set the functions when connecting the listener', function () {
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();

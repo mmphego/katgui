@@ -10,10 +10,8 @@ var ngHtml2js = require("gulp-ng-html2js");
 var ngannotate = require('gulp-ng-annotate');
 var htmlmin = require('gulp-htmlmin');
 var cssmin = require('gulp-cssmin');
-var packagejson = require('./package.json');
 var streamqueue = require('streamqueue');
 var rimraf = require('rimraf');
-var rename = require('gulp-rename');
 var jshint = require('gulp-jshint');
 var jasmine = require('gulp-jasmine');
 var stylish = require('jshint-stylish');
@@ -105,11 +103,6 @@ gulp.task('images', ['clean'], function () {
         .pipe(gulp.dest('dist/images/'));
 });
 
-gulp.task('d3', ['clean'], function () {
-    return gulp.src('bower_components/d3/d3.min.js')
-        .pipe(gulp.dest('dist/bower_components/d3/'));
-});
-
 gulp.task('jshint', function () {
     gulp.src(['app/**/*.js'])
         .pipe(jshint())
@@ -144,4 +137,4 @@ gulp.task('webserver', function() {
         }));
 });
 
-gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'fonts', 'images', 'd3']);
+gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'fonts', 'images']);

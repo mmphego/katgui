@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService,
-                            ConfigService, AlarmsService, ObservationScheduleService, $interval, $q, $log) {
+                            AlarmsService, ObservationScheduleService, $interval, $q, $log) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
@@ -21,18 +21,6 @@
                 api.deferredMap['timeoutDefer'] = $q.defer();
             }
             return api.deferredMap['timeoutDefer'].promise;
-        };
-
-        api.subscribeToReceptorUpdates = function () {
-            ConfigService.receptorList.forEach(function (receptor) {
-                var connectionParams = ['mon:' + receptor + '.mode', 'mon:' + receptor + '.inhibited'];
-                api.subscribe(connectionParams);
-            });
-            api.subscribe('anc.vds_flood_lights_on');
-        };
-
-        api.subscribeToAlarms = function () {
-            api.subscribe('kataware.alarm_*');
         };
 
         api.subscribe = function (pattern) {
@@ -105,6 +93,7 @@
         };
 
         api.onSockJSMessage = function (e) {
+            console.log(e);
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {
@@ -154,7 +143,7 @@
                         api.connection.authorized = true;
                         $log.info('Monitor Connection Authenticated.');
                         api.deferredMap['connectDefer'].resolve();
-                        api.subscribeToAlarms();
+                        api.subscribe('*');
                     } else if (messages.result.length > 0) {
                         //subscribe response
                         //$log.info('Subscribed to: ');
@@ -196,6 +185,7 @@
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
+                api.unsubscribe('*');
             } else {
                 $log.error('Attempting to disconnect an already disconnected connection!');
             }
