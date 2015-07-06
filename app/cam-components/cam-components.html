@@ -98,24 +98,24 @@
                         </md-button>
                         <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;">
                             <md-menu-item ng-if="!vm.resourcesNames[key].connected">
-                                <md-button ng-click="vm.processCommand(key, 'start');"
+                                <md-button ng-click="vm.startProcess(key);"
                                            title="Start Process">
                                     Start Process
                                 </md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="vm.resourcesNames[key].connected">
-                                <md-button ng-click="vm.processCommand(key, 'restart_process');"
+                                <md-button ng-click="vm.restartProcess(key);"
                                            title="Restart Process">
                                     Restart Process
                                 </md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="vm.resourcesNames[key].connected">
-                                <md-button ng-click="vm.processCommand(key, 'kill');" title="Kill Process">
+                                <md-button ng-click="vm.killProcess(key);" title="Kill Process">
                                     Kill Process
                                 </md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="vm.resourcesNames[key].connected">
-                                <md-button ng-click="vm.processCommand(key, 'stop');" title="Stop Process">
+                                <md-button ng-click="vm.stopProcess(key);" title="Stop Process">
                                     Stop Process
                                 </md-button>
                             </md-menu-item>

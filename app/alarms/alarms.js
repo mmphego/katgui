@@ -30,10 +30,9 @@
             };
         });
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $timeout, $log) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $log) {
 
         var vm = this;
-        var WAITIMEFORREQ = 250;
 
         ConfigService.loadAggregateSensorDetail();
 
@@ -91,13 +90,9 @@
         };
 
         vm.clearSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.clearAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.clearAlarm(item.name);
                 }
             });
         };
@@ -107,13 +102,9 @@
         };
 
         vm.acknowledgeSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.acknowledgeAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.acknowledgeAlarm(item.name);
                 }
             });
         };
@@ -123,13 +114,9 @@
         };
 
         vm.knowSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.addKnownAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.addKnownAlarm(item.name);
                 }
             });
         };
@@ -139,13 +126,9 @@
         };
 
         vm.cancelKnowSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.cancelKnowAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.cancelKnowAlarm(item.name);
                 }
             });
         };

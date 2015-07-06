@@ -4,170 +4,83 @@
         .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
-    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout, $log, $interval, $q) {
+    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout, $log) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
-        api.connection = null;
-        api.deferredMap = {};
-        //websocket default heartbeat is every 30 seconds
-        //so allow for 35 seconds before alerting about timeout
-        api.heartbeatTimeOutLimit = 35000;
-        api.checkAliveConnectionInterval = 10000;
-
-        api.getTimeoutPromise = function () {
-            if (!api.deferredMap['timeoutDefer']) {
-                api.deferredMap['timeoutDefer'] = $q.defer();
-            }
-            return api.deferredMap['timeoutDefer'].promise;
-        };
-
-        api.onSockJSOpen = function () {
-            if (api.connection && api.connection.readyState) {
-                $log.info('Control Connection Established. Authenticating...');
-                api.authenticateSocketConnection();
-            }
-        };
-
-        api.onSockJSClose = function () {
-            $log.info('Disconnecting Control Connection');
-            api.connection = null;
-        };
-
-        api.onSockJSMessage = function (e) {
-            var result = JSON.parse(e.data);
-            if (result.error) {
-                $rootScope.showSimpleDialog('Error sending request', result.error.message);
-            } else if (result.result.reply) {
-                $rootScope.showSimpleToast(result.result.reply.replace(new RegExp('\\\\_', 'g'), ' '));
-            }
-            else if (result && result.result.session_id) {
-                api.connection.authorized = true;
-                $log.info('Control Connection Established. Authenticated.');
-                api.deferredMap['connectDefer'].resolve();
-            } else {
-                //bad auth response
-                api.connection.authorized = false;
-                $log.info('Control Connection Established. Authentication failed.');
-                api.deferredMap['connectDefer'].reject();
-            }
-        };
-
-        api.checkAlive = function () {
-            if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
-                $log.warn('Control Connection Heartbeat timeout!');
-                if (!api.deferredMap['timeoutDefer']) {
-                    api.connectListener();
-                } else {
-                    api.deferredMap['timeoutDefer'].resolve();
-                    api.deferredMap['timeoutDefer'] = null;
-                }
-            }
-        };
-
-        api.onSockJSHeartbeat = function () {
-            api.lastHeartBeat = new Date();
-        };
-
-        api.connectListener = function () {
-            api.deferredMap['connectDefer'] = $q.defer();
-            $log.info('Control Connecting...');
-            api.connection = new SockJS(urlBase + '/control');
-            api.connection.onopen = api.onSockJSOpen;
-            api.connection.onmessage = api.onSockJSMessage;
-            api.connection.onclose = api.onSockJSClose;
-            api.connection.onheartbeat = api.onSockJSHeartbeat;
-            api.lastHeartBeat = new Date();
-            if (!api.checkAliveInterval) {
-                api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
-            } else {
-                $interval.cancel(api.checkAliveInterval);
-                api.checkAliveInterval = null;
-            }
-            return api.deferredMap['connectDefer'].promise;
-        };
-
-        api.disconnectListener = function () {
-            if (api.connection) {
-                api.connection.close();
-                $interval.cancel(api.checkAliveInterval);
-                api.checkAliveInterval = null;
-            } else {
-                $log.error('Attempting to disconnect an already disconnected connection!');
-            }
-        };
-
-        api.authenticateSocketConnection = function () {
-
-            if (api.connection) {
-                var jsonRPC = {
-                    'jsonrpc': '2.0',
-                    'method': 'authorise',
-                    'params': [$rootScope.session_id],
-                    'id': 'authorise' + KatGuiUtil.generateUUID()
-                };
-                api.connection.authorized = false;
-                return api.connection.send(JSON.stringify(jsonRPC));
-            }
-        };
 
         api.stowAll = function () {
-            api.sendControlCommand('sys', 'operator_stow_antennas', '');
+            api.handleRequestResponse($http.get(urlBase + '/stow-all'));
         };
 
         api.inhibitAll = function () {
-            api.sendControlCommand('sys', 'operator_inhibit_antennas', '');
+            api.handleRequestResponse($http.get(urlBase + '/inhibit-all'));
         };
 
         api.stopAll = function () {
-            api.sendControlCommand('sys', 'operator_stop_observations', '');
+            api.handleRequestResponse($http.get(urlBase + '/stop-all'));
         };
 
         api.resumeOperations = function () {
-            api.sendControlCommand('sys', 'operator_resume_operations', '');
+            api.handleRequestResponse($http.get(urlBase + '/resume-all'));
         };
 
         api.floodlightsOn = function (onOff) {
-            api.sendControlCommand('anc', 'vds_floodlight_on', onOff);
+            api.handleRequestResponse($http.get(urlBase + '/floodlights/' + onOff));
         };
 
         api.shutdownComputing = function () {
-            api.sendControlCommand('sys', 'operator_shutdown_computing', '');
+            api.handleRequestResponse($http.get(urlBase + '/shutdown-computing'));
         };
 
         api.acknowledgeAlarm = function (alarmName) {
-            api.sendControlCommand('kataware', 'alarm_ack', alarmName);
+            api.handleRequestResponse($http.get(urlBase + '/acknowledge-alarm/' + alarmName));
         };
 
         api.addKnownAlarm = function (alarmName) {
-            api.sendControlCommand('kataware', 'alarm_know', alarmName);
+            api.handleRequestResponse($http.get(urlBase + '/know-alarm/' + alarmName));
         };
 
         api.cancelKnowAlarm = function (alarmName) {
-            api.sendControlCommand('kataware', 'alarm_cancel_know', alarmName);
+            api.handleRequestResponse($http.get(urlBase + '/cancel-know-alarm/' + alarmName));
         };
 
         api.clearAlarm = function (alarmName) {
-            api.sendControlCommand('kataware', 'alarm_clear', alarmName);
+            api.handleRequestResponse($http.get(urlBase + '/clear-alarm/' + alarmName));
         };
 
-        api.sendControlCommand = function (module, funcName, funcParams) {
+        api.startProcess = function (nodeMan, processName) {
+            api.handleRequestResponse($http.get(urlBase + '/start-process/' + nodeMan + '/' + processName));
+        };
 
-            if (api.connection && api.connection.authorized) {
-                var jsonRPC = {
-                    'id': KatGuiUtil.generateUUID(),
-                    'jsonrpc': '2.0',
-                    'method': 'katcp_request',
-                    'params': [module, funcName, funcParams]
-                };
+        api.restartProcess = function (nodeMan, processName) {
+            api.handleRequestResponse($http.get(urlBase + '/restart-process/' + nodeMan + '/' + processName));
+        };
 
-                api.connection.send(JSON.stringify(jsonRPC));
-            } else {
-                $log.error('Cannot send katcp_request, the connection is not established yet.')
-                $timeout(function () {
-                    api.sendControlCommand(module, funcName, funcParams);
-                }, 500);
-            }
+        api.killProcess = function (nodeMan, processName) {
+            api.handleRequestResponse($http.get(urlBase + '/kill-process/' + nodeMan + '/' + processName));
+        };
+
+        api.stopProcess = function (nodeMan, processName) {
+            api.handleRequestResponse($http.get(urlBase + '/stop-process/' + nodeMan + '/' + processName));
+        };
+
+        api.toggleKATCPMessageDevices = function (resource, newValue) {
+            api.handleRequestResponse($http.get(urlBase + '/enable-katcpmsgs-devices-logging/' + resource + '/' + newValue));
+        };
+
+        api.toggleKATCPMessageProxy = function (resource, newValue) {
+            api.handleRequestResponse($http.get(urlBase + '/enable-katcpmsgs-proxy-logging/' + resource + '/' + newValue));
+        };
+
+        api.handleRequestResponse = function (request) {
+            request
+                .success(function (result) {
+                    $rootScope.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                })
+                .error(function (error) {
+                    $rootScope.showSimpleDialog('Error sending request', error);
+                });
         };
 
         api.getCurrentServerTime = function () {

@@ -11,7 +11,6 @@
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
-        ControlService.connectListener();
 
         ConfigService.getSystemConfig().then(function (systemConfig) {
             vm.systemConfig = systemConfig;
@@ -82,16 +81,28 @@
 
         };
 
-        vm.sendControlCommand = function (resource, command, params) {
-            ControlService.sendControlCommand(resource, command, params);
+        vm.stopProcess = function (resource) {
+            ControlService.stopProcess('nm_monctl', resource);
+        };
+
+        vm.startProcess = function (resource) {
+            ControlService.startProcess('nm_monctl', resource);
+        };
+
+        vm.restartProcess = function (resource) {
+            ControlService.restartProcess('nm_monctl', resource);
+        };
+
+        vm.killProcess = function (resource) {
+            ControlService.killProcess('nm_monctl', resource);
         };
 
         vm.toggleKATCPMessageDevices = function (resource, newValue) {
-            vm.sendControlCommand(resource, 'enable_katcpmsgs_devices_logging', newValue? '1' : '0');
+            ControlService.toggleKATCPMessageDevices(resource, newValue? '1' : '0');
         };
 
         vm.toggleKATCPMessageProxy = function (resource, newValue) {
-            vm.sendControlCommand(resource, 'enable_katcpmsgs_proxy_logging', newValue? '1' : '0');
+            ControlService.toggleKATCPMessageProxy(resource, newValue? '1' : '0');
         };
 
         vm.openKatsnifferLogger = function (logFileName) {
@@ -110,18 +121,7 @@
             }
         };
 
-        vm.processCommand = function (key, command) {
-            if (vm.resourcesNames[key].nodeman) {
-                ControlService.sendControlCommand(vm.resourcesNames[key].nodeman, command, key);
-            } else {
-                $rootScope.showSimpleDialog(
-                    'Error Sending Request',
-                    'Could not send process request because KATGUI does not know which node manager to use for ' + key + '.');
-            }
-        };
-
         vm.connectListeners();
-
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
@@ -159,11 +159,11 @@
             for (var name in vm.resourcesNames) {
                 if (vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled
                     && vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled.value) {
-                    vm.sendControlCommand(name, 'enable_katcpmsgs_devices_logging', '0');
+                    ControlService.toggleKATCPMessageDevices(name, '0');
                 }
                 if (vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled
                     && vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled.value) {
-                    vm.sendControlCommand(name, 'enable_katcpmsgs_proxy_logging', '0');
+                    ControlService.toggleKATCPMessageProxy(name, '0');
                 }
             }
         };

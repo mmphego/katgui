@@ -146,19 +146,6 @@ describe('ControlService', function () {
         expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","test_command","testarg"\]\}/);
     });
 
-    it('should not send the control command on the connection, but should create a timeout for a retry', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = false;
-        ControlService.sendControlCommand('kataware', 'test_command', 'testarg');
-        expect(sendSpy).not.toHaveBeenCalled();
-        var sendControlCommandSpy = spyOn(ControlService, 'sendControlCommand');
-        timeout.flush(500);
-        expect(sendControlCommandSpy).toHaveBeenCalledWith('kataware', 'test_command', 'testarg');
-    });
-
     it('should get the current server time', function () {
         httpBackend.when('GET', 'http://localhost:9876/katcontrol/api/v1/time').respond(200, {});
         var resultPromise = ControlService.getCurrentServerTime();
@@ -167,129 +154,129 @@ describe('ControlService', function () {
         expect(resultPromise.error).toBeDefined();
     });
 
-    it('should send the stow all command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.stowAll();
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_stow_antennas",""\]\}/);
-    });
-
-    it('should send the inhibit all command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.inhibitAll();
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_inhibit_antennas",""\]\}/);
-    });
-
-    it('should send the stop all command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.stopAll();
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_stop_observations",""\]\}/);
-    });
-
-    it('should send the resume operations command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.resumeOperations();
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_resume_operations",""\]\}/);
-    });
-
-    it('should send the shutdown computing command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.shutdownComputing();
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_shutdown_computing",""\]\}/);
-    });
-
-    it('should send the acknowledge alarm command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.acknowledgeAlarm('test_alarm_name');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_ack","test_alarm_name"\]\}/);
-    });
-
-    it('should send the add known alarm command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.addKnownAlarm('test_alarm_name');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_know","test_alarm_name"\]\}/);
-    });
-
-    it('should send the cancel known alarm command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.cancelKnowAlarm('test_alarm_name');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_cancel_know","test_alarm_name"\]\}/);
-    });
-
-    it('should send the clear alarm command', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(ControlService.connection, 'send');
-        ControlService.connection.authorized = true;
-        ControlService.clearAlarm('test_alarm_name');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_clear","test_alarm_name"\]\}/);
-    });
-
-    it('should set the connection as authorized when a session_id is received', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        ControlService.onSockJSMessage(authMessage);
-        expect(ControlService.connection.authorized).toBeTruthy();
-    });
-
-    it('should NOT set the connection as authorized when a session_id is NOT received', function () {
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        ControlService.onSockJSMessage(badAuthMessage);
-        expect(ControlService.connection.authorized).toBeFalsy();
-    });
-
-    it('should display an error dialog when receiving an error message', function () {
-        var showSimpleDialogSpy = spyOn(scope.$root, 'showSimpleDialog');
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        ControlService.onSockJSMessage(errorMessage);
-        expect(showSimpleDialogSpy).toHaveBeenCalledWith('Error sending request', 'test error');
-    });
-
-    it('should display a toast message when receiving an command response', function () {
-        var showSimpleToastSpy = spyOn(scope.$root, 'showSimpleToast');
-        var result = ControlService.connectListener();
-        expect(ControlService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        ControlService.onSockJSMessage(goodMessage);
-        expect(showSimpleToastSpy).toHaveBeenCalledWith('test message');
-    });
+    //it('should send the stow all command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.stowAll();
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_stow_antennas",""\]\}/);
+    //});
+    //
+    //it('should send the inhibit all command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.inhibitAll();
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_inhibit_antennas",""\]\}/);
+    //});
+    //
+    //it('should send the stop all command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.stopAll();
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_stop_observations",""\]\}/);
+    //});
+    //
+    //it('should send the resume operations command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.resumeOperations();
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_resume_operations",""\]\}/);
+    //});
+    //
+    //it('should send the shutdown computing command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.shutdownComputing();
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["sys","operator_shutdown_computing",""\]\}/);
+    //});
+    //
+    //it('should send the acknowledge alarm command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.acknowledgeAlarm('test_alarm_name');
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_ack","test_alarm_name"\]\}/);
+    //});
+    //
+    //it('should send the add known alarm command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.addKnownAlarm('test_alarm_name');
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_know","test_alarm_name"\]\}/);
+    //});
+    //
+    //it('should send the cancel known alarm command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.cancelKnowAlarm('test_alarm_name');
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_cancel_know","test_alarm_name"\]\}/);
+    //});
+    //
+    //it('should send the clear alarm command', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    var sendSpy = spyOn(ControlService.connection, 'send');
+    //    ControlService.connection.authorized = true;
+    //    ControlService.clearAlarm('test_alarm_name');
+    //    expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"id":".*","jsonrpc":"2.0","method":"katcp_request","params":\["kataware","alarm_clear","test_alarm_name"\]\}/);
+    //});
+    //
+    //it('should set the connection as authorized when a session_id is received', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    ControlService.onSockJSMessage(authMessage);
+    //    expect(ControlService.connection.authorized).toBeTruthy();
+    //});
+    //
+    //it('should NOT set the connection as authorized when a session_id is NOT received', function () {
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    ControlService.onSockJSMessage(badAuthMessage);
+    //    expect(ControlService.connection.authorized).toBeFalsy();
+    //});
+    //
+    //it('should display an error dialog when receiving an error message', function () {
+    //    var showSimpleDialogSpy = spyOn(scope.$root, 'showSimpleDialog');
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    ControlService.onSockJSMessage(errorMessage);
+    //    expect(showSimpleDialogSpy).toHaveBeenCalledWith('Error sending request', 'test error');
+    //});
+    //
+    //it('should display a toast message when receiving an command response', function () {
+    //    var showSimpleToastSpy = spyOn(scope.$root, 'showSimpleToast');
+    //    var result = ControlService.connectListener();
+    //    expect(ControlService.connection).toBeDefined();
+    //    expect(result).toBeTruthy();
+    //    ControlService.onSockJSMessage(goodMessage);
+    //    expect(showSimpleToastSpy).toHaveBeenCalledWith('test message');
+    //});
 
     //wrap the spy promises so that it looks like the $http promise that our service is returning
     function wrapPromise(promise) {

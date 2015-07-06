@@ -15,8 +15,6 @@
         vm.sensorsToDisplay = {};
         vm.nodemans = [];
 
-        ControlService.connectListener();
-
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
@@ -117,8 +115,20 @@
                 });
         };
 
-        vm.processNMCommand = function (nm, key, command) {
-            ControlService.sendControlCommand(nm, command, key);
+        vm.stopProcess = function (nm, resource) {
+            ControlService.stopProcess(nm, resource);
+        };
+
+        vm.startProcess = function (nm, resource) {
+            ControlService.startProcess(nm, resource);
+        };
+
+        vm.restartProcess = function (nm, resource) {
+            ControlService.restartProcess(nm, resource);
+        };
+
+        vm.killProcess = function (nm, resource) {
+            ControlService.killProcess(nm, resource);
         };
 
         $timeout(vm.connectListeners, 500);
