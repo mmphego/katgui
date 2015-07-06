@@ -98,11 +98,11 @@
         };
 
         vm.toggleKATCPMessageDevices = function (resource, newValue) {
-            ControlService.toggleKATCPMessageDevices(resource, newValue? '1' : '0');
+            ControlService.toggleKATCPMessageDevices(resource, newValue? 'enable' : 'disable');
         };
 
         vm.toggleKATCPMessageProxy = function (resource, newValue) {
-            ControlService.toggleKATCPMessageProxy(resource, newValue? '1' : '0');
+            ControlService.toggleKATCPMessageProxy(resource, newValue? 'enable' : 'disable');
         };
 
         vm.openKatsnifferLogger = function (logFileName) {
@@ -159,11 +159,11 @@
             for (var name in vm.resourcesNames) {
                 if (vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled
                     && vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled.value) {
-                    ControlService.toggleKATCPMessageDevices(name, '0');
+                    ControlService.toggleKATCPMessageDevices(name, 'disable');
                 }
                 if (vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled
                     && vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled.value) {
-                    ControlService.toggleKATCPMessageProxy(name, '0');
+                    ControlService.toggleKATCPMessageProxy(name, 'disable');
                 }
             }
         };
@@ -172,8 +172,7 @@
             for (var key in SensorsService.resources) {
                 SensorsService.removeResourceListeners(key);
             }
-            SensorsService.unsubscribe('sys.config_label', vm.guid);
-            SensorsService.unsubscribe('sys.monitor*', vm.guid);
+            SensorsService.unsubscribe('*', vm.guid);
             unbindUpdate();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();

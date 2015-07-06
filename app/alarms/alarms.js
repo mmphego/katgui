@@ -128,13 +128,13 @@
         vm.cancelKnowSelectedAlarms = function () {
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    ControlService.cancelKnowAlarm(item.name);
+                    ControlService.cancelKnownAlarm(item.name);
                 }
             });
         };
 
-        vm.cancelKnowAlarm = function (alarm) {
-            ControlService.cancelKnowAlarm(alarm.name);
+        vm.cancelKnownAlarm = function (alarm) {
+            ControlService.cancelKnownAlarm(alarm.name);
         };
 
         vm.keydown = function (e, key) {

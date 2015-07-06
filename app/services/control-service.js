@@ -4,73 +4,73 @@
         .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
-    function ControlService($http, SERVER_URL, KatGuiUtil, $rootScope, $timeout, $log) {
+    function ControlService($http, SERVER_URL, $rootScope) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
 
         api.stowAll = function () {
-            api.handleRequestResponse($http.get(urlBase + '/stow-all'));
+            api.handleRequestResponse($http.post(urlBase + '/receptors/stow-all'));
         };
 
         api.inhibitAll = function () {
-            api.handleRequestResponse($http.get(urlBase + '/inhibit-all'));
+            api.handleRequestResponse($http.post(urlBase + '/receptors/inhibit-all'));
         };
 
         api.stopAll = function () {
-            api.handleRequestResponse($http.get(urlBase + '/stop-all'));
+            api.handleRequestResponse($http.post(urlBase + '/receptors/stop-all'));
         };
 
         api.resumeOperations = function () {
-            api.handleRequestResponse($http.get(urlBase + '/resume-all'));
+            api.handleRequestResponse($http.post(urlBase + '/receptors/resume-all'));
         };
 
         api.floodlightsOn = function (onOff) {
-            api.handleRequestResponse($http.get(urlBase + '/floodlights/' + onOff));
+            api.handleRequestResponse($http.post(urlBase + '/vds/floodlights/' + onOff));
         };
 
         api.shutdownComputing = function () {
-            api.handleRequestResponse($http.get(urlBase + '/shutdown-computing'));
+            api.handleRequestResponse($http.post(urlBase + '/system/shutdown-computing'));
         };
 
         api.acknowledgeAlarm = function (alarmName) {
-            api.handleRequestResponse($http.get(urlBase + '/acknowledge-alarm/' + alarmName));
+            api.handleRequestResponse($http.post(urlBase + '/alarms/' + alarmName + '/acknowledge'));
         };
 
         api.addKnownAlarm = function (alarmName) {
-            api.handleRequestResponse($http.get(urlBase + '/know-alarm/' + alarmName));
+            api.handleRequestResponse($http.post(urlBase + '/alarms/' + alarmName + '/known'));
         };
 
-        api.cancelKnowAlarm = function (alarmName) {
-            api.handleRequestResponse($http.get(urlBase + '/cancel-know-alarm/' + alarmName));
+        api.cancelKnownAlarm = function (alarmName) {
+            api.handleRequestResponse($http.post(urlBase + '/alarms/' + alarmName + '/cancel-known'));
         };
 
         api.clearAlarm = function (alarmName) {
-            api.handleRequestResponse($http.get(urlBase + '/clear-alarm/' + alarmName));
+            api.handleRequestResponse($http.post(urlBase + '/alarms/' + alarmName + '/clear'));
         };
 
         api.startProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http.get(urlBase + '/start-process/' + nodeMan + '/' + processName));
+            api.handleRequestResponse($http.post(urlBase + '/process/' + nodeMan + '/' + processName + '/start'));
         };
 
         api.restartProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http.get(urlBase + '/restart-process/' + nodeMan + '/' + processName));
+            api.handleRequestResponse($http.post(urlBase + '/process/' + nodeMan + '/' + processName + '/restart'));
         };
 
         api.killProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http.get(urlBase + '/kill-process/' + nodeMan + '/' + processName));
+            api.handleRequestResponse($http.post(urlBase + '/process/' + nodeMan + '/' + processName + '/kill'));
         };
 
         api.stopProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http.get(urlBase + '/stop-process/' + nodeMan + '/' + processName));
+            api.handleRequestResponse($http.post(urlBase + '/process/' + nodeMan + '/' + processName + '/stop'));
         };
 
         api.toggleKATCPMessageDevices = function (resource, newValue) {
-            api.handleRequestResponse($http.get(urlBase + '/enable-katcpmsgs-devices-logging/' + resource + '/' + newValue));
+            api.handleRequestResponse($http.post(urlBase + '/logging/' + resource + '/katcpmsgs-devices/' + newValue));
         };
 
         api.toggleKATCPMessageProxy = function (resource, newValue) {
-            api.handleRequestResponse($http.get(urlBase + '/enable-katcpmsgs-proxy-logging/' + resource + '/' + newValue));
+            api.handleRequestResponse($http.post(urlBase + '/logging/' + resource + '/katcpmsgs-proxy/' + newValue));
         };
 
         api.handleRequestResponse = function (request) {
