@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService,
-                            AlarmsService, ObservationScheduleService, $interval, $q, $log, ReceptorStateService) {
+                            AlarmsService, ObsSchedService, $interval, $q, $log, ReceptorStateService) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
@@ -125,7 +125,7 @@
                                         value: messageObj.msg_data
                                     });
                                 } else if (channelNameSplit[0] === 'sched') {
-                                    ObservationScheduleService.receivedSchedMessage(messageObj.msg_channel, messageObj.msg_data);
+                                    ObsSchedService.receivedSchedMessage(messageObj.msg_channel, messageObj.msg_data);
                                 } else if (channelNameSplit.length > 1) {
                                     StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                 }

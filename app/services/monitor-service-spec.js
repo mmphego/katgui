@@ -66,16 +66,16 @@ describe('MonitorService', function () {
         data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"1"}]}'
     };
 
-    var httpBackend, MonitorService, AlarmsService, ConfigService, ObservationScheduleService, StatusService,  scope, timeout, $log;
+    var httpBackend, MonitorService, AlarmsService, ConfigService, ObsSchedService, StatusService,  scope, timeout, $log;
 
-    beforeEach(inject(function ($rootScope, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _AlarmsService_, _ObservationScheduleService_, _StatusService_, $templateCache, _$log_) {
+    beforeEach(inject(function ($rootScope, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _AlarmsService_, _ObsSchedService_, _StatusService_, $templateCache, _$log_) {
         $log = _$log_;
         timeout = _$timeout_;
         httpBackend = _$injector_.get('$httpBackend');
         MonitorService = _MonitorService_;
         ConfigService = _ConfigService_;
         AlarmsService = _AlarmsService_;
-        ObservationScheduleService = _ObservationScheduleService_;
+        ObsSchedService = _ObsSchedService_;
         StatusService = _StatusService_;
         scope = $rootScope.$new();
         $rootScope.showSimpleDialog = function () {
@@ -274,8 +274,8 @@ describe('MonitorService', function () {
         expect(emitSpy).toHaveBeenCalledWith('operatorControlStatusMessage', { name: 'mon:test.mode', value: Object({ value: 'test_value' }) });
     });
 
-    it('should call the ObservationScheduleService function when receiving the appropriate sched message', function () {
-        var receivedSchedMessageSpy = spyOn(ObservationScheduleService, 'receivedSchedMessage');
+    it('should call the ObsSchedService function when receiving the appropriate sched message', function () {
+        var receivedSchedMessageSpy = spyOn(ObsSchedService, 'receivedSchedMessage');
         MonitorService.onSockJSMessage(goodMessageSched);
         expect(receivedSchedMessageSpy).toHaveBeenCalledWith('mon:sched.test', { value: 'test_value' });
     });

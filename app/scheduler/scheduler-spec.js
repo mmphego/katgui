@@ -4,27 +4,27 @@ describe('SchedulerHomeCtrl', function () {
     beforeEach(module('ui.router'));
     beforeEach(module('ngStorage'));
 
-    var scope, ctrl, state, httpBackend, ObservationScheduleService, MonitorService, ConfigService, connectListenerSpy, subscribeSpy;
+    var scope, ctrl, state, httpBackend, ObsSchedService, MonitorService, ConfigService, connectListenerSpy, subscribeSpy;
 
-    beforeEach(inject(function ($rootScope, $controller, $state, _ObservationScheduleService_, _ConfigService_, _MonitorService_, $injector, _$q_) {
+    beforeEach(inject(function ($rootScope, $controller, $state, _ObsSchedService_, _ConfigService_, _MonitorService_, $injector, _$q_) {
         scope = $rootScope.$new();
         state = $state;
         httpBackend = $injector.get('$httpBackend');
-        ObservationScheduleService = _ObservationScheduleService_;
+        ObsSchedService = _ObsSchedService_;
         MonitorService = _MonitorService_;
         ConfigService = _ConfigService_;
-        ObservationScheduleService.connectListener = function () {
+        ObsSchedService.connectListener = function () {
         };
-        ObservationScheduleService.disconnectListener = function () {
+        ObsSchedService.disconnectListener = function () {
         };
         MonitorService.subscribe = function () {
         };
-        connectListenerSpy = spyOn(ObservationScheduleService, "connectListener").and.returnValue(_$q_.defer().promise);
+        connectListenerSpy = spyOn(ObsSchedService, "connectListener").and.returnValue(_$q_.defer().promise);
 
         subscribeSpy = spyOn(MonitorService, "subscribe");
         ctrl = $controller('SchedulerHomeCtrl', {
             $rootScope: $rootScope, $scope: scope, $state: state,
-            ObservationScheduleService: ObservationScheduleService, ConfigService: ConfigService, MonitorService: MonitorService
+            ObsSchedService: ObsSchedService, ConfigService: ConfigService, MonitorService: MonitorService
         });
     }));
 
@@ -44,7 +44,7 @@ describe('SchedulerHomeCtrl', function () {
         //the get happens because we call $digest
         httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
         var unbindStateChangeStartSpy = spyOn(ctrl, "unbindStateChangeStart");
-        var disconnectListenerSpy = spyOn(ObservationScheduleService, "disconnectListener");
+        var disconnectListenerSpy = spyOn(ObsSchedService, "disconnectListener");
         scope.$emit("$destroy");
         scope.$digest();
         expect(unbindStateChangeStartSpy).toHaveBeenCalled();

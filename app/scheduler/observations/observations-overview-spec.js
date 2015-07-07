@@ -3,27 +3,27 @@ describe('SubArrayExecutorOverview', function () {
     beforeEach(module('katGui.scheduler'));
     beforeEach(module('ui.router'));
 
-    var scope, ctrl, state, ObservationScheduleService, q, timeout;
+    var scope, ctrl, state, ObsSchedService, q, timeout;
 
-    beforeEach(inject(function ($rootScope, $controller, _ObservationScheduleService_, _SCHEDULE_BLOCK_TYPES_, $q, $timeout, $state) {
+    beforeEach(inject(function ($rootScope, $controller, _ObsSchedService_, _SCHEDULE_BLOCK_TYPES_, $q, $timeout, $state) {
         q = $q;
         timeout = $timeout;
         scope = $rootScope.$new();
         state = $state;
-        ObservationScheduleService = _ObservationScheduleService_;
-        ObservationScheduleService.connectListener = function () {
+        ObsSchedService = _ObsSchedService_;
+        ObsSchedService.connectListener = function () {
         };
-        ObservationScheduleService.disconnectListener = function () {
+        ObsSchedService.disconnectListener = function () {
         };
         ctrl = $controller('SubArrayExecutorOverview', {
             $rootScope: $rootScope, $scope: scope, $state: state,
-            ObservationScheduleService: ObservationScheduleService
+            ObsSchedService: ObsSchedService
         });
 
         $rootScope.displayPromiseResult = function () {
         };
 
-        ObservationScheduleService.scheduleDraftData = [{
+        ObsSchedService.scheduleDraftData = [{
             actual_end_time: null,
             description: "test1",
             desired_start_time: "2015-02-11 01:05:00.000Z",
@@ -82,8 +82,8 @@ describe('SubArrayExecutorOverview', function () {
 
     it('should list the schedule blocks and subarrays', function() {
         var deferred = q.defer();
-        var listSubarraysSpy = spyOn(ObservationScheduleService, "listSubarrays").and.returnValue(deferred.promise);
-        var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks");
+        var listSubarraysSpy = spyOn(ObsSchedService, "listSubarrays").and.returnValue(deferred.promise);
+        var getScheduleBlocksSpy = spyOn(ObsSchedService, "getScheduleBlocks");
         ctrl.refreshScheduleBlocks();
         expect(listSubarraysSpy).toHaveBeenCalled();
         deferred.resolve();

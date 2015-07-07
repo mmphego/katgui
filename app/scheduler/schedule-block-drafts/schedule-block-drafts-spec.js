@@ -2,19 +2,19 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
 
     beforeEach(module('katGui.scheduler'));
 
-    var scope, ctrl, state, ObservationScheduleService, q;
+    var scope, ctrl, state, ObsSchedService, q;
 
-    beforeEach(inject(function ($rootScope, $controller, _ObservationScheduleService_, _SCHEDULE_BLOCK_TYPES_, $q) {
+    beforeEach(inject(function ($rootScope, $controller, _ObsSchedService_, _SCHEDULE_BLOCK_TYPES_, $q) {
         q = $q;
         scope = $rootScope.$new();
-        ObservationScheduleService = _ObservationScheduleService_;
-        ObservationScheduleService.connectListener = function () {
+        ObsSchedService = _ObsSchedService_;
+        ObsSchedService.connectListener = function () {
         };
-        ObservationScheduleService.disconnectListener = function () {
+        ObsSchedService.disconnectListener = function () {
         };
         ctrl = $controller('SbDraftsCtrl', {
             $rootScope: $rootScope, $scope: scope, $state: state,
-            ObservationScheduleService: ObservationScheduleService
+            ObsSchedService: ObsSchedService
         });
 
         $rootScope.showSimpleDialog = function () {
@@ -93,15 +93,15 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
         expect(ctrl.draftsOrderBy.reverse).toBeFalsy();
     });
 
-    it('should call the update function in the ObservationScheduleService when saving', function () {
-        var updateScheduleDraftSpy = spyOn(ObservationScheduleService, "updateScheduleDraft").and.returnValue(q.defer().promise);
+    it('should call the update function in the ObsSchedService when saving', function () {
+        var updateScheduleDraftSpy = spyOn(ObsSchedService, "updateScheduleDraft").and.returnValue(q.defer().promise);
         scope.filteredDraftItems[0].isDirty = true;
         ctrl.saveDraft(scope.filteredDraftItems[0]);
         expect(updateScheduleDraftSpy).toHaveBeenCalledWith(scope.filteredDraftItems[0]);
     });
 
     it('should call update for all dirty drafts', function () {
-        var updateScheduleDraftSpy = spyOn(ObservationScheduleService, "updateScheduleDraft");
+        var updateScheduleDraftSpy = spyOn(ObsSchedService, "updateScheduleDraft");
         scope.filteredDraftItems[0].isDirty = false;
         scope.filteredDraftItems[1].isDirty = true;
         scope.filteredDraftItems[2].isDirty = true;
@@ -112,8 +112,8 @@ describe('Schedule Block Drafts Ctrl (SbDraftsCtrl)', function () {
         expect(updateScheduleDraftSpy).toHaveBeenCalledWith(ctrl.scheduleDraftData[2]);
     });
 
-    it('should call the getScheduleBlocks function in the ObservationScheduleService', function () {
-        var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks");
+    it('should call the getScheduleBlocks function in the ObsSchedService', function () {
+        var getScheduleBlocksSpy = spyOn(ObsSchedService, "getScheduleBlocks");
         ctrl.refreshScheduleBlocks(scope.filteredDraftItems[0]);
         expect(getScheduleBlocksSpy).toHaveBeenCalled();
     });
