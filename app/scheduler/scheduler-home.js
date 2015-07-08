@@ -67,12 +67,14 @@
                 SensorsService.setSensorStrategy('katpool', 'resources_faulty', 'event', 0, 0);
                 SensorsService.setSensorStrategy('katpool', 'resources_in_maintenance', 'event', 0, 0);
 
+                ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
                 var subarrays = sensor.value.value.split(',');
                 for (var i = 0; i < subarrays.length; i++) {
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'allocations', 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'product', 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'state', 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'band', 'event', 0, 0);
+                    SensorsService.setSensorStrategy('sched', 'mode_' + subarrays[i], 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'config_label', 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'maintenance', 'event', 0, 0);
                     ObsSchedService.subarrays.push({id: subarrays[i]});
@@ -107,6 +109,12 @@
                         ObsSchedService.poolResourcesFree.push({name: resourcesList[i]});
                     }
                 }
+            } else if (sensorNameList[1].indexOf('mode_') === 0) {
+                var subarrayId = sensorNameList[1].split('_')[1];
+                var subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
+                if (subarray) {
+                    subarray.mode = sensor.value.value;
+                }
             } else {
                 ObsSchedService[sensorNameList[1]] = sensor.value.value;
             }
@@ -132,6 +140,8 @@
                 vm.childStateShowing = false;
             }
         });
+
+        ObsSchedService.getScheduleBlocks();
 
         $scope.$on('$destroy', function () {
             vm.unbindStateChangeStart();

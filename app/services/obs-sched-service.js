@@ -9,6 +9,7 @@
         var api = {};
         api.scheduleData = [];
         api.scheduleDraftData = [];
+        api.scheduleCompletedData = [];
 
         api.subarrays = [];
         api.poolResourcesFree = [];
@@ -16,7 +17,12 @@
         api.handleRequestResponse = function (request) {
             request
                 .success(function (result) {
-                    $rootScope.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                    var message = result.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
+                    if (message.split(' ')[1] === 'ok') {
+                        $rootScope.showSimpleToast(message);
+                    } else {
+                        $rootScope.showPreDialog('Error Processing Request', message);
+                    }
                 })
                 .error(function (error) {
                     $rootScope.showSimpleDialog('Error sending request', error);
@@ -32,7 +38,7 @@
         };
 
         api.deleteScheduleDraft = function (id) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + id + '/delete'));
+            return $http.post(urlBase + '/sb/' + id + '/delete');
         };
 
         api.scheduleDraft = function (sub_nr, id) {
@@ -100,8 +106,10 @@
                     for (var i in jsonResult) {
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
-                        } else {
+                        } else if (jsonResult[i].state === 'ACTIVE' || jsonResult[i].state === 'SCHEDULED') {
                             api.scheduleData.push(jsonResult[i]);
+                        } else {
+                            api.scheduleCompletedData.push(jsonResult[i]);
                         }
                     }
                 })
@@ -115,13 +123,73 @@
         };
 
         api.updateScheduleDraft = function (scheduleBlockDraft) {
-            return $http.post(
-                urlBase + '/sb/' +
-                scheduleBlockDraft.id_code + '/' +
-                scheduleBlockDraft.type + '/' +
-                scheduleBlockDraft.instruction_set + '/' +
-                scheduleBlockDraft.description + '/' +
-                scheduleBlockDraft.desired_start_time + '/update');
+            return $http.post(urlBase + '/sb/' + scheduleBlockDraft.id_code, {
+                id_code: scheduleBlockDraft.id_code,
+                type: scheduleBlockDraft.type,
+                instruction_set: scheduleBlockDraft.instruction_set,
+                description: scheduleBlockDraft.description,
+                desired_start_time: scheduleBlockDraft.desired_start_time
+            });
+        };
+
+        api.receivedScheduleMessage = function (action, sb) {
+            if (action === 'remove') {
+                //only drafts can be deleted in the db
+                for (var i in api.scheduleDraftData) {
+                    if (api.scheduleDraftData[i].id_code === sb.id_code) {
+                        api.scheduleDraftData.splice(i, 1);
+                        break;
+                    }
+                }
+                $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been removed');
+            } else if (action === 'update') {
+                var index = -1;
+                for (var i in api.scheduleDraftData) {
+                    if (api.scheduleDraftData[i].id_code === sb.id_code) {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index > -1) {
+                    api.scheduleDraftData[index] = sb;
+                } else {
+                    for (var i in api.scheduleData) {
+                        if (api.scheduleData[i].id_code === sb.id_code) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index > -1) {
+                        api.scheduleData[index] = sb;
+                    } else {
+                        for (var i in api.scheduleCompletedData) {
+                            if (api.scheduleCompletedData[i].id_code === sb.id_code) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index > -1) {
+                            api.scheduleCompletedData[index] = sb;
+                        }
+                    }
+                }
+                //if (index !== -1) {
+                //    $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been updated.');
+                //}
+
+            } else if (action === 'add') {
+                if (sb.state === 'DRAFT') {
+                    api.scheduleDraftData.push(sb);
+                } else if (sb.state === 'ACTIVE' || sb.state === 'SCHEDULED') {
+                    api.scheduleData.push(sb);
+                } else {
+                    api.scheduleCompletedData.push(sb);
+                }
+                $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been added.');
+            } else {
+                $log.error('Dangling ObsSchedService ' + action + ' message for:');
+                $log.error(sb)
+            }
         };
 
         api.viewTaskLogForSBIdCode = function (id_code) {

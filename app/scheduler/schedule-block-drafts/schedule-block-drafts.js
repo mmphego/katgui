@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log) {
+    function SbDraftsCtrl($rootScope, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;
@@ -40,12 +40,13 @@
         vm.saveDraft = function (item) {
             item.editing = false;
             ObsSchedService.updateScheduleDraft(item)
-                .success(function () {
+                .success(function (result) {
+                    $log.info(result);
                     item.isDirty = false;
                     item.editing = false;
                 })
                 .error(function (result) {
-                    $log.error(result);
+                    $rootScope.showSimpleDialog('Error Saving SB ' + item.id_code + '.', result);
                 });
         };
 
@@ -64,11 +65,13 @@
         };
 
         vm.removeDraft = function (item) {
-            ObsSchedService.deleteScheduleDraft(item.id_code);
-        };
-
-        vm.refreshScheduleBlocks = function () {
-            ObsSchedService.getScheduleBlocks();
+            ObsSchedService.deleteScheduleDraft(item.id_code)
+                .success(function (result) {
+                    $log.info(result);
+                })
+                .error(function (result) {
+                    $rootScope.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
+                });
         };
 
         vm.setSelectedScheduleDraft = function (selectedDraft, dontDeselectOnSame) {
@@ -131,8 +134,6 @@
                 $scope.$apply();
             }
         };
-
-        vm.refreshScheduleBlocks();
     }
 
 })();
