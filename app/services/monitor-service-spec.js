@@ -180,7 +180,7 @@ describe('MonitorService', function () {
         MonitorService.connection.readyState = true;
         MonitorService.connection.authorized = true;
         MonitorService.subscribe('test_subsribe');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["mon:test_subsribe",true\],"id":"monitor.*"\}/);
+        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["test_subsribe",true\],"id":"monitor.*"\}/);
     });
 
     it('should not send the subscribe command, but should create a timeout for a retry when the connection is not in readyState', function () {
@@ -193,7 +193,7 @@ describe('MonitorService', function () {
         expect(sendSpy).not.toHaveBeenCalled();
         var sendControlCommandSpy = spyOn(MonitorService, 'subscribe');
         timeout.flush(500);
-        expect(sendControlCommandSpy).toHaveBeenCalledWith('mon:test_subscribe');
+        expect(sendControlCommandSpy).toHaveBeenCalledWith('test_subscribe');
     });
 
     it('should set the connection as authorized when a session_id is received', function () {
@@ -266,18 +266,6 @@ describe('MonitorService', function () {
         var receivedAlarmMessageSpy = spyOn(AlarmsService, 'receivedAlarmMessage');
         MonitorService.onSockJSMessage(goodMessageKataware2);
         expect(receivedAlarmMessageSpy).toHaveBeenCalledWith('mon:kataware.test', { value: 'test_value' });
-    });
-
-    it('should emit a message on the rootScope when an operatorControlStatusMessage type is received', function () {
-        var emitSpy = spyOn(scope.$root, '$emit');
-        MonitorService.onSockJSMessage(goodMessageMode);
-        expect(emitSpy).toHaveBeenCalledWith('operatorControlStatusMessage', { name: 'mon:test.mode', value: Object({ value: 'test_value' }) });
-    });
-
-    it('should call the ObsSchedService function when receiving the appropriate sched message', function () {
-        var receivedSchedMessageSpy = spyOn(ObsSchedService, 'receivedSchedMessage');
-        MonitorService.onSockJSMessage(goodMessageSched);
-        expect(receivedSchedMessageSpy).toHaveBeenCalledWith('mon:sched.test', { value: 'test_value' });
     });
 
     it('should call the StatusService function when receiving the appropriate status message', function () {
