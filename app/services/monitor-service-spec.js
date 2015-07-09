@@ -66,16 +66,16 @@ describe('MonitorService', function () {
         data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"1"}]}'
     };
 
-    var httpBackend, MonitorService, AlarmsService, ConfigService, ObservationScheduleService, StatusService,  scope, timeout, $log;
+    var httpBackend, MonitorService, AlarmsService, ConfigService, ObsSchedService, StatusService,  scope, timeout, $log;
 
-    beforeEach(inject(function ($rootScope, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _AlarmsService_, _ObservationScheduleService_, _StatusService_, $templateCache, _$log_) {
+    beforeEach(inject(function ($rootScope, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _AlarmsService_, _ObsSchedService_, _StatusService_, $templateCache, _$log_) {
         $log = _$log_;
         timeout = _$timeout_;
         httpBackend = _$injector_.get('$httpBackend');
         MonitorService = _MonitorService_;
         ConfigService = _ConfigService_;
         AlarmsService = _AlarmsService_;
-        ObservationScheduleService = _ObservationScheduleService_;
+        ObsSchedService = _ObsSchedService_;
         StatusService = _StatusService_;
         scope = $rootScope.$new();
         $rootScope.showSimpleDialog = function () {
@@ -180,7 +180,7 @@ describe('MonitorService', function () {
         MonitorService.connection.readyState = true;
         MonitorService.connection.authorized = true;
         MonitorService.subscribe('test_subsribe');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["mon:test_subsribe",true\],"id":"monitor.*"\}/);
+        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["test_subsribe",true\],"id":"monitor.*"\}/);
     });
 
     it('should not send the subscribe command, but should create a timeout for a retry when the connection is not in readyState', function () {
@@ -193,7 +193,7 @@ describe('MonitorService', function () {
         expect(sendSpy).not.toHaveBeenCalled();
         var sendControlCommandSpy = spyOn(MonitorService, 'subscribe');
         timeout.flush(500);
-        expect(sendControlCommandSpy).toHaveBeenCalledWith('mon:test_subscribe');
+        expect(sendControlCommandSpy).toHaveBeenCalledWith('test_subscribe');
     });
 
     it('should set the connection as authorized when a session_id is received', function () {
@@ -266,18 +266,6 @@ describe('MonitorService', function () {
         var receivedAlarmMessageSpy = spyOn(AlarmsService, 'receivedAlarmMessage');
         MonitorService.onSockJSMessage(goodMessageKataware2);
         expect(receivedAlarmMessageSpy).toHaveBeenCalledWith('mon:kataware.test', { value: 'test_value' });
-    });
-
-    it('should emit a message on the rootScope when an operatorControlStatusMessage type is received', function () {
-        var emitSpy = spyOn(scope.$root, '$emit');
-        MonitorService.onSockJSMessage(goodMessageMode);
-        expect(emitSpy).toHaveBeenCalledWith('operatorControlStatusMessage', { name: 'mon:test.mode', value: Object({ value: 'test_value' }) });
-    });
-
-    it('should call the ObservationScheduleService function when receiving the appropriate sched message', function () {
-        var receivedSchedMessageSpy = spyOn(ObservationScheduleService, 'receivedSchedMessage');
-        MonitorService.onSockJSMessage(goodMessageSched);
-        expect(receivedSchedMessageSpy).toHaveBeenCalledWith('mon:sched.test', { value: 'test_value' });
     });
 
     it('should call the StatusService function when receiving the appropriate status message', function () {

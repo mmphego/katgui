@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService,
-                            AlarmsService, ObservationScheduleService, $interval, $q, $log, ReceptorStateService) {
+                            AlarmsService, ObsSchedService, $interval, $q, $log, ReceptorStateService) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
@@ -24,9 +24,6 @@
         };
 
         api.subscribe = function (pattern) {
-            if (typeof(pattern) !== 'object' && pattern.indexOf('mon:') === -1) {
-                pattern = 'mon:' + pattern;
-            }
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
@@ -104,30 +101,37 @@
                             var arrayResult = [];
                             arrayResult.push({
                                 msg_data: messages.result.msg_data,
-                                msg_channel: messages.result.msg_channel
+                                msg_channel: messages.result.msg_channel,
+                                msg_pattern: messages.result.msg_pattern
                             });
                             messages.result = arrayResult;
                         }
+
                         messages.result.forEach(function (message) {
                             var messageObj = message;
                             if (_.isString(message)) {
                                 messageObj = JSON.parse(message);
                             }
                             if (messageObj.msg_channel) {
-                                var channelNameSplit = messageObj.msg_channel.split(":")[1].split('.');
-                                if (channelNameSplit[0] === 'kataware') {
-                                    AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
-                                } else if (channelNameSplit.length > 1 &&
-                                    (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
-                                     channelNameSplit[1] === 'vds_flood_lights_on')) {
-                                    ReceptorStateService.receptorMessageReceived({
-                                        name: messageObj.msg_channel,
-                                        value: messageObj.msg_data
-                                    });
-                                } else if (channelNameSplit[0] === 'sched') {
-                                    ObservationScheduleService.receivedSchedMessage(messageObj.msg_channel, messageObj.msg_data);
-                                } else if (channelNameSplit.length > 1) {
-                                    StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
+                                var messageChannel = messageObj.msg_channel.split(":");
+                                if (messageChannel[0] === 'sched') {
+                                    ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
+                                } else if (messageChannel[0] === 'mon') {
+                                    var channelNameSplit = messageChannel[1].split('.');
+                                    if (channelNameSplit[0] === 'kataware') {
+                                        AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
+                                    } else if (channelNameSplit.length > 1 &&
+                                        (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
+                                        channelNameSplit[1] === 'vds_flood_lights_on')) {
+                                        ReceptorStateService.receptorMessageReceived({
+                                            name: messageObj.msg_channel,
+                                            value: messageObj.msg_data
+                                        });
+                                    } else if (channelNameSplit[0] === 'sched') {
+                                        ObsSchedService.receivedSchedMessage(messageObj.msg_channel, messageObj.msg_data);
+                                    } else if (channelNameSplit.length > 1) {
+                                        StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
+                                    }
                                 }
                             } else {
                                 $log.error('Dangling monitor message...');
@@ -142,7 +146,8 @@
                         api.connection.authorized = true;
                         $log.info('Monitor Connection Authenticated.');
                         api.deferredMap['connectDefer'].resolve();
-                        api.subscribe('*');
+                        api.subscribe('mon:*');
+                        api.subscribe('sched:*');
                     } else if (messages.result.length > 0) {
                         //subscribe response
                         //$log.info('Subscribed to: ');

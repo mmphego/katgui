@@ -5,30 +5,37 @@
             <span title="Selected Product" style="margin-right: 8px;">Product: {{vm.subarray.product}}</span>
             <span ng-show="vm.subarray.state === 'active'" title="Config Label">Config Label:{{vm.subarray.config_label}}</span>
         </div>
-        <div flex layout="column" style="margin: 0;" ng-click="vm.closeEditMenu();">
+        <div flex layout="column" style="margin: 0;">
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
                 <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" ng-mouseenter="showTools = true;" ng-mouseleave="showTools = false;"
                     layout="row" layout-align="start center">
                         <span style="margin-left: 8px;">SUB-ARRAY {{vm.subarray_id}}</span>
-                        <span ng-show="vm.subarrayState" style="margin-left: 4px;"> - {{vm.subarrayState}}</span>
+                        <span ng-show="vm.subarray.state" style="margin-left: 4px;"> - {{vm.subarray.state}}</span>
                         <span flex></span>
                         <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()" title="Free Subarray">
                             <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                         </md-button>
-                        <md-button ng-show="vm.subarrayState === 'INACTIVE'" class="md-icon-button inline-action-button" ng-click="vm.activateSubarray()"
+                        <md-button ng-show="vm.subarray.state === 'inactive'" class="md-icon-button inline-action-button" ng-click="vm.activateSubarray()"
                                    title="Activate Sub-Array">
                             <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                         </md-button>
-                        <span>Mode:</span>
-                        <md-select ng-model="vm.selectedMode" style="margin-left: 4px; margin-right:8px; margin-top: -10px; padding: 0" ng-change="vm.schedulerModeChanged()"
-                                   class="md-primary" md-theme="{{themePrimaryButtons}}">
-                            <md-option ng-value="type" ng-repeat="type in vm.modeTypes">{{type}}</md-option>
-                        </md-select>
+                        <span>Mode: {{vm.subarray.mode}}</span>
+                        <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}" style="padding: 0; margin: 0">
+                            <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu();"
+                                       style="margin: 0">
+                                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                            </md-button>
+                            <md-menu-content style="padding: 8px;">
+                                <md-menu-item ng-repeat="type in vm.modeTypes">
+                                    <md-button ng-click="vm.setSchedulerMode(type)">Set Mode to: {{type}}</md-button>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
                 </md-toolbar>
 
-                <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.in_maintenance}">
+                <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
                     <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id})" ng-click="vm.setSelectedSchedule(item);"
                          ng-class="{'selected-schedule-row': item.state !== 'ACTIVE' && item === vm.selectedSchedule,
                                 'schedule-row-executing': item.state === 'ACTIVE' && item !== vm.selectedSchedule,
@@ -128,7 +135,7 @@
                     </div>
                 </md-toolbar>
 
-                <div flex class="schedule-draft-data-list slide-in-vertically-panel-content" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
+                <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
                     <div
                         ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedOrderByFields:vm.q3 | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
                         class="schedule-draft-item" layout="column">
@@ -158,7 +165,8 @@
 
         <div layout="column" id="schedulerScriptView" class="script-window-without-box-shadow"
              ng-class="{'highlight-script-window-with-box-shadow': vm.selectedSchedule !== null}">
-            <div layout="column" id="resource-allocation-div">
+            <div layout="column" id="resource-allocation-div" ng-class="{'highlight-script-border-bottom': vm.selectedSchedule !== null}"
+                style="margin-bottom: 16px;">
                 <md-toolbar style="margin-left: 0px;  width: 650px; max-height: 48px; min-height: 48px;" class="md-whiteframe-z1" layout="column" layout-align="center center">
                     <div flex style="margin-left: 8px;" layout="row" layout-align="center center">
                         <span flex>Resources</span>
@@ -170,22 +178,29 @@
                 </md-toolbar>
                 <div flex style="padding: 0" layout="row">
                     <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;">
-                        <div ng-repeat="resource in vm.allocations | filter:{sub_nr:vm.subarray_id} | filter:{sb_id_code:vm.selectedSchedule.id_code}" layout-align="center center"
-                             class="resource-pool-item animate-repeat" layout="row">
-                            <span flex style="font-size:18px; margin-left: 4px;">{{resource.name}}</span>
+                        <div ng-repeat="resource in vm.subarray.allocations" layout-align="center center"
+                             class="resource-pool-item animate-repeat" layout="row" ng-if="!vm.selectedSchedule || resource.allocation === vm.selectedSchedule.id_code">
+                            <span style="min-width: 22px; margin-left: 4px;">
+                                <span class="fa fa-wrench maintenance-text" ng-if="resource.maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
+                            </span>
+                            <span style="min-width: 22px; margin-left: 4px;">
+                                <span class="fa fa-warning error-text" style="font-size: 18px; min-width: 18px;" ng-if="resource.faulty" title="Resource Marked Faulty"></span>
+                            </span>
+                            <span flex style="font-size:18px; margin-left: 4px;"
+                                  ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
                         </div>
                     </div>
                     <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;" layout="column">
-                        <div ng-repeat="resource in vm.poolResources | filter:{sub_nr:vm.subarray_id}" layout-align="center center"
+                        <div ng-repeat="resource in vm.subarray.allocations" layout-align="center center"
                              class="resource-pool-item animate-repeat" layout="row">
                             <span style="min-width: 22px; margin-left: 4px;">
-                                <span class="fa fa-wrench maintenance-text" ng-if="resource.in_maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
+                                <span class="fa fa-wrench maintenance-text" ng-if="vm.isResourceInMaintenance(resource)" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
                             </span>
                             <span style="min-width: 22px; margin-left: 4px;">
-                                <span class="fa" style="font-size: 18px; min-width: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
+                                <span class="fa fa-warning error-text" style="font-size: 18px; min-width: 18px;" ng-if="vm.isResourceFaulty(resource)" title="Resource Marked Faulty"></span>
                             </span>
                             <span flex style="font-size:18px; margin-left: 4px;"
-                                  ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>
+                                  ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
                             <md-button class="md-icon-button inline-action-button" ng-show="!item.pendingVerify"
                                        ng-click="vm.markResourceFaulty(resource)" title="Mark Resource As Faulty">
                                 <md-icon class="fa" md-font-icon="fa-exclamation-circle"></md-icon>
@@ -195,7 +210,7 @@
                 </div>
             </div>
             <div flex layout="column">
-                <md-toolbar style="margin-left: 0px; margin-top: 16px; width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
+                <md-toolbar style="margin-left: 0px; width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
                     <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
                         <span>Schedule Block Details</span>
                     </div>
@@ -203,11 +218,7 @@
                 <div flex style="padding: 0" layout="column">
                     <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
                          ng-class="{'highlight-script-window': vm.selectedSchedule !== null, 'md-whiteframe-z2': vm.selectedSchedule === null}">
-
-                        <span flex ng-if="vm.selectedSchedule !== null" style="max-width: 650px;">
-                            <!--todo change the textarea into a div that resizes better-->
-                            <textarea readonly auto-grow>{{vm.selectedSchedule | json:4}}</textarea>
-                        </span>
+                        <pre flex ng-if="vm.selectedSchedule !== null" style="margin: 0">{{vm.selectedSchedule | json:4}}</pre>
                     </div>
                 </div>
             </div>

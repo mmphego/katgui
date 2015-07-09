@@ -19,7 +19,7 @@ describe('OperatorControlCtrl', function () {
 
         controlService.inhibitAll = function () {
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m011.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -29,7 +29,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m022.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -39,7 +39,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m033.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -49,7 +49,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m044.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -59,7 +59,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m055.inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -72,7 +72,7 @@ describe('OperatorControlCtrl', function () {
 
         controlService.stowAll = function () {
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m011.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -82,7 +82,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m022.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -92,7 +92,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m033.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -102,7 +102,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m044.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -112,7 +112,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m055.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -124,7 +124,7 @@ describe('OperatorControlCtrl', function () {
         };
 
         controlService.stopAll = function () {
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m011.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -134,7 +134,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m022.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -144,7 +144,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m033.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -154,7 +154,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m044.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -164,7 +164,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m055.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -174,7 +174,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m011:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -184,7 +184,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m022:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -194,7 +194,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m033:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -204,7 +204,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m044:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -214,7 +214,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m055:inhibited',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -227,7 +227,7 @@ describe('OperatorControlCtrl', function () {
 
         controlService.resumeOperations = function () {
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m011.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -237,7 +237,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m022.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -247,7 +247,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m033.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -257,7 +257,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m044.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -267,7 +267,7 @@ describe('OperatorControlCtrl', function () {
                 }
             });
 
-            ctrl.receptorMessageReceived({}, {
+            receptorStateService.receptorMessageReceived({
                 name: 'mon:m055.mode',
                 value: {
                     received_timestamp: 1425975097.022549,
@@ -305,7 +305,7 @@ describe('OperatorControlCtrl', function () {
         scope.$digest();
         expect(ctrl.receptorsData.length).toBe(5);
 
-        ctrl.receptorMessageReceived({}, {
+        receptorStateService.receptorMessageReceived({
             name: 'mon:m011.mode',
             value: {
                 received_timestamp: 1425975097.022549,
@@ -342,7 +342,7 @@ describe('OperatorControlCtrl', function () {
         ctrl.receptorsData.forEach(function (receptor) {
             expect(receptor.inhibited).toBeTruthy();
         });
-        ctrl.receptorMessageReceived({}, {
+        receptorStateService.receptorMessageReceived({
             name: 'mon:m055.inhibited',
             value: {
                 received_timestamp: 1425975097.022549,
@@ -353,7 +353,7 @@ describe('OperatorControlCtrl', function () {
         });
         expect(ctrl.receptorsData[4].inhibited).toBeFalsy();
         ctrl.receptorsData[4].inhibited = true;
-        ctrl.receptorMessageReceived({}, {
+        receptorStateService.receptorMessageReceived({
             name: 'mon:m055.inhibited',
             value: {
                 received_timestamp: 1425975097.022549,
@@ -363,17 +363,6 @@ describe('OperatorControlCtrl', function () {
             }
         });
         expect(ctrl.receptorsData[4].inhibited).toBeTruthy();
-    }));
-
-    it('should unbind the watchers', inject(function () {
-
-        //the GET happens in this test because we run a $digest loop, the other tests doesnt need it
-        //because the service is never created completely
-        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
-        var cancelListeningToReceptorMessagesSpy = spyOn(ctrl, "cancelListeningToReceptorMessages");
-        scope.$emit("$destroy");
-        scope.$digest();
-        expect(cancelListeningToReceptorMessagesSpy).toHaveBeenCalled();
     }));
 
     describe('Receptor Controls', function () {
