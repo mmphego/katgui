@@ -569,6 +569,14 @@
                 authorizedRoles: [USER_ROLES.all]
             }
         });
+        $stateProvider.state('userlogs', {
+            url: '/userlogs',
+            templateUrl: 'app/userlogs/userlogs.html',
+            title: 'User Logging',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
         /* Add New States Above */
         $urlRouterProvider.otherwise('/login');
     }
