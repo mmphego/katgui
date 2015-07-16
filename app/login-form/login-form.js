@@ -8,13 +8,14 @@
         var vm = this;
         vm.loginResult = "";
         vm.loginDetails = "";
+        vm.loginAs = "";
         vm.credentials = {
             username: '',
             password: ''
         };
 
-        vm.login = function () {
-            SessionService.login(vm.credentials.username, vm.credentials.password);
+        vm.verify = function () {
+            SessionService.verify(vm.credentials.username, vm.credentials.password, vm.loginAs);
         };
     }
 })();

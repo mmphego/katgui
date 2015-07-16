@@ -12,11 +12,11 @@
         </md-input-container>
         <md-select placeholder="Login As..." ng-model="vm.loginAs" style="width: 155px">
             <md-option value="operator">Operator</md-option>
-            <md-option value="lead-operator">Lead Operator</md-option>
-            <md-option value="control-authority">Control Authority</md-option>
-            <md-option value="read-only">Monitor Only</md-option>
+            <md-option value="lead_operator">Lead Operator</md-option>
+            <md-option value="control_authority">Control Authority</md-option>
+            <md-option value="read_only">Monitor Only</md-option>
         </md-select>
-        <md-button style="margin: 8px;" ng-click="vm.login(vm.credentials)"
+        <md-button style="margin: 8px;" ng-click="vm.verify(vm.credentials, vm.loginAs)"
                    class="md-raised md-primary">Login
         </md-button>
     </form>
