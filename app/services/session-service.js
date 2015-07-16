@@ -3,11 +3,7 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-<<<<<<< HEAD
-    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL) {
-=======
-    function SessionService($http, $state, $rootScope, $localStorage, SERVER_URL, $log) {
->>>>>>> master
+    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, $log) {
 
         var urlBase = SERVER_URL + '/katauth/api/v1';
         var api = {};
