@@ -66,16 +66,16 @@ describe('MonitorService', function () {
         data: '{"id":"redis-pubsub-init", "result": [{"msg_channel":"1"}]}'
     };
 
-    var httpBackend, MonitorService, AlarmsService, ConfigService, ObservationScheduleService, StatusService,  scope, timeout;
+    var httpBackend, MonitorService, AlarmsService, ConfigService, ObsSchedService, StatusService,  scope, timeout, $log;
 
-    beforeEach(inject(function ($rootScope, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _AlarmsService_, _ObservationScheduleService_, _StatusService_, $templateCache) {
-        spyOn(console, 'log');
+    beforeEach(inject(function ($rootScope, _$injector_, _MonitorService_, _ConfigService_, _$timeout_, _AlarmsService_, _ObsSchedService_, _StatusService_, $templateCache, _$log_) {
+        $log = _$log_;
         timeout = _$timeout_;
         httpBackend = _$injector_.get('$httpBackend');
         MonitorService = _MonitorService_;
         ConfigService = _ConfigService_;
         AlarmsService = _AlarmsService_;
-        ObservationScheduleService = _ObservationScheduleService_;
+        ObsSchedService = _ObsSchedService_;
         StatusService = _StatusService_;
         scope = $rootScope.$new();
         $rootScope.showSimpleDialog = function () {
@@ -101,21 +101,6 @@ describe('MonitorService', function () {
         $templateCache.put('app/login-form/login-form.html', '');
     }));
 
-    it('should subscribe to all receptor updates', inject(function () {
-        ConfigService.receptorList = ['test1', 'test2', 'test3'];
-        var subscribeSpy = spyOn(MonitorService, 'subscribe');
-        MonitorService.subscribeToReceptorUpdates();
-        expect(subscribeSpy.calls.argsFor(0)).toEqual([['mon:test1.mode', 'mon:test1.inhibited']]);
-        expect(subscribeSpy.calls.argsFor(1)).toEqual([['mon:test2.mode', 'mon:test2.inhibited']]);
-        expect(subscribeSpy.calls.argsFor(2)).toEqual([['mon:test3.mode', 'mon:test3.inhibited']]);
-    }));
-
-    it('should subscribe to alarms', inject(function () {
-        var subscribeSpy = spyOn(MonitorService, 'subscribe');
-        MonitorService.subscribeToAlarms();
-        expect(subscribeSpy.calls.mostRecent().args[0]).toEqual('kataware.alarm_*');
-    }));
-
     it('should create a SockJS class and set the functions when connecting the listener', function () {
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();
@@ -129,12 +114,6 @@ describe('MonitorService', function () {
         var closeSpy = spyOn(MonitorService.connection, 'close');
         MonitorService.disconnectListener();
         expect(closeSpy).toHaveBeenCalled();
-    });
-
-    it('should not disconnect the connection when there is no connection', function () {
-        spyOn(console, 'error');
-        MonitorService.disconnectListener();
-        expect(console.error).toHaveBeenCalledWith('Attempting to disconnect an already disconnected connection!');
     });
 
     it('should authenticate the socket connection on socket open when connection is in readyState', function () {
@@ -201,7 +180,7 @@ describe('MonitorService', function () {
         MonitorService.connection.readyState = true;
         MonitorService.connection.authorized = true;
         MonitorService.subscribe('test_subsribe');
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["mon:test_subsribe"\],"id":"monitor.*"\}/);
+        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["test_subsribe",true\],"id":"monitor.*"\}/);
     });
 
     it('should not send the subscribe command, but should create a timeout for a retry when the connection is not in readyState', function () {
@@ -214,7 +193,7 @@ describe('MonitorService', function () {
         expect(sendSpy).not.toHaveBeenCalled();
         var sendControlCommandSpy = spyOn(MonitorService, 'subscribe');
         timeout.flush(500);
-        expect(sendControlCommandSpy).toHaveBeenCalledWith('mon:test_subscribe');
+        expect(sendControlCommandSpy).toHaveBeenCalledWith('test_subscribe');
     });
 
     it('should set the connection as authorized when a session_id is received', function () {
@@ -242,7 +221,7 @@ describe('MonitorService', function () {
     });
 
     it('should log an error when receiving an error message', function () {
-        var errorSpy = spyOn(console, 'error');
+        var errorSpy = spyOn($log, 'error');
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();
         expect(result).toBeTruthy();
@@ -251,7 +230,7 @@ describe('MonitorService', function () {
     });
 
     it('should log an error message when receiving an unknown message type', function () {
-        var errorSpy = spyOn(console, 'error');
+        var errorSpy = spyOn($log, 'error');
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();
         expect(result).toBeTruthy();
@@ -260,7 +239,7 @@ describe('MonitorService', function () {
     });
 
     it('should add the message in an array if it was not received in an array', function () {
-        var errorSpy = spyOn(console, 'error');
+        var errorSpy = spyOn($log, 'error');
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();
         expect(result).toBeTruthy();
@@ -269,13 +248,13 @@ describe('MonitorService', function () {
     });
 
     it('should do nothing when there is no data in the message', function () {
-        var errorSpy = spyOn(console, 'error');
+        var errorSpy = spyOn($log, 'error');
         MonitorService.onSockJSMessage(badMessage);
         expect(errorSpy).not.toHaveBeenCalled();
     });
 
     it('should not push the data into an array when the id is redis-pubsub-init', function () {
-        var errorSpy = spyOn(console, 'error');
+        var errorSpy = spyOn($log, 'error');
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();
         expect(result).toBeTruthy();
@@ -289,18 +268,6 @@ describe('MonitorService', function () {
         expect(receivedAlarmMessageSpy).toHaveBeenCalledWith('mon:kataware.test', { value: 'test_value' });
     });
 
-    it('should emit a message on the rootScope when an operatorControlStatusMessage type is received', function () {
-        var emitSpy = spyOn(scope.$root, '$emit');
-        MonitorService.onSockJSMessage(goodMessageMode);
-        expect(emitSpy).toHaveBeenCalledWith('operatorControlStatusMessage', { name: 'mon:test.mode', value: Object({ value: 'test_value' }) });
-    });
-
-    it('should call the ObservationScheduleService function when receiving the appropriate sched message', function () {
-        var receivedSchedMessageSpy = spyOn(ObservationScheduleService, 'receivedSchedMessage');
-        MonitorService.onSockJSMessage(goodMessageSched);
-        expect(receivedSchedMessageSpy).toHaveBeenCalledWith('mon:sched.test', { value: 'test_value' });
-    });
-
     it('should call the StatusService function when receiving the appropriate status message', function () {
         var messageReceivedSensorsSpy = spyOn(StatusService, 'messageReceivedSensors');
         MonitorService.onSockJSMessage(goodMessageStatus);
@@ -308,7 +275,7 @@ describe('MonitorService', function () {
     });
 
     it('should not parse an invalid message (the JSON string has no data attribute)', function() {
-        var errorSpy = spyOn(console, 'error');
+        var errorSpy = spyOn($log, 'error');
         MonitorService.onSockJSMessage();
         expect(errorSpy).toHaveBeenCalledWith('Dangling monitor message...');
     });

@@ -1,5 +1,5 @@
 <div flex ng-controller="ReceptorStatusCtrl as vm" layout="column" layout-align="start"
-     style="margin: 16px;">
+     style="padding: 16px;" ng-class="{'connection-lost-bg':vm.connectionLost}">
 
     <div flex layout="column">
         <md-toolbar md-theme="{{themePrimary}}" layout="row" layout-align="start center"

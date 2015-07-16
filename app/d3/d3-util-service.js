@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .factory('d3Util', function ($q, $timeout, $rootScope) {
+    .factory('d3Util', function ($q, $timeout, $rootScope, $log, StatusService, ConfigService) {
 
         var api = {};
 
@@ -68,48 +68,51 @@ angular.module('katGui.d3')
         };
 
         //convenience function to populate every item's tooltip
-        api.applyTooltipValues = function (node, tooltip) {
+        api.applyTooltipValues = function (node, tooltip, rootName) {
             //d.on is not defined while transitioning
             if (node.on) {
                 node.on("mouseover", function (d) {
-                    updateTooltipValues(d, tooltip);
+                    api.updateTooltipValues(d, tooltip, rootName);
                     tooltip.style("visibility", "visible");
                 }).on("mousemove", function (d) {
-                    updateTooltipValues(d, tooltip);
-                    var x = d3.event.layerX;
-                    var y = d3.event.layerY;
-                    //move the tooltip to 36,36 when we hover over the hide button
-                    //TODO: fix the logic flow of this if statement
-                    if (d3.event.layerX - d.x < 24 && d3.event.layerY - d.y < 32) {
-                        //todo rework this case for clarity, nothing should happen in this case
-                        //x = d3.x + 26;
-                        //y = d3.y + 32;
-                    } else {
-                        if (window.innerWidth - x < 320) {
-                            x = window.innerWidth - 320;
-                        }
-                        if (window.innerHeight - y < 225) {
-                            y = window.innerHeight - 225;
-                        }
-                        tooltip
-                            .style("top", (y + 5 + angular.element(document.querySelector('#ui-view-container-div')).scrollTop()) + "px")
-                            .style("left", (x + 5 + angular.element(document.querySelector('#ui-view-container-div')).scrollLeft()) + "px");
+                    api.updateTooltipValues(d, tooltip, rootName);
+                    var uiViewDiv = document.querySelector('#ui-view-container-div');
+                    var offset = d3.mouse(uiViewDiv);
+                    var x = offset[0];
+                    var y = offset[1];
+
+                    if (window.innerWidth - x < 320) {
+                        x = window.innerWidth - 320;
                     }
+                    if (window.innerHeight - y < 225) {
+                        y = window.innerHeight - 225;
+                    }
+                    tooltip
+                        .style("top", (y + 15 + angular.element(uiViewDiv).scrollTop()) + "px")
+                        .style("left", (x + 5 + angular.element(uiViewDiv).scrollLeft()) + "px");
+
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
                 });
             }
         };
 
-        function updateTooltipValues(d, tooltip) {
+        api.updateTooltipValues = function (d, tooltip, rootName) {
             var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
-            if (d.sensorValue) {
+            var sensorValue;
+            if (StatusService.sensorValues && StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor]) {
+                sensorValue = StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor];
+            } else  {
+                sensorValue = d.sensorValue;
+            }
+            if (sensorValue) {
                 //to display readable tooltips, no matter the zoom level
                 tooltip.html(
-                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'><i>sensor:</i> " + (d.depth === 0? d.name + "." + d.sensor : d.sensor) +
-                    "<br/><i>value:</i> " + d.sensorValue.value +
-                    "<br/><i>status:</i> " + d.sensorValue.status +
-                    "<br/><i>timestamp:</i> " + moment.utc(d.sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
+                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'>" +
+                    "<div><b>" + sensorValue.name + "</b></div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') + "</div>" +
                     "</div>"
                 );
             } else {
@@ -117,7 +120,16 @@ angular.module('katGui.d3')
                     "<div style='font-size: +"+ fontSizeAfterZoom +"px'>Error Reading Sensor Value</div>"
                 );
             }
-        }
+        };
+
+        api.updateGraphTooltipValues = function (d, tooltip) {
+            tooltip.html(
+                "<div class='chart-tooltip'>" +
+                "<b>" + d.TooltipValue + "</b>" +
+                "<br/>"+ moment.utc(d.Timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
+                "</div>"
+            );
+        };
 
         //convenience function to create the tooltip div on the given element
         api.createTooltip = function (element) {
@@ -158,7 +170,15 @@ angular.module('katGui.d3')
 
         api.displayInitErrorMessage = function (dataMapName) {
             $rootScope.showSimpleDialog('Error displaying data', 'Could not display the Receptor Status data, contact the katGUI support team.');
-            console.error('Error binding to StatusService data for receptor ' + dataMapName);
+            $log.error('Error binding to StatusService data for receptor ' + dataMapName);
+        };
+
+        api.showDialogForAggregateSensorInfo = function (sensorName) {
+            if (ConfigService.aggregateSensorDetail[sensorName]) {
+                $rootScope.showPreDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+            } else {
+                $log.error('No such aggregate sensor in ConfigService ' + sensorName);
+            }
         };
 
         return api;

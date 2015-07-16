@@ -2,9 +2,10 @@ describe('ConfigService', function() {
 
     beforeEach(module('katGui.services'));
 
-    var scope, ConfigService, httpBackend, q;
+    var scope, ConfigService, httpBackend, q, $log;
 
-    beforeEach(inject(function ($rootScope, _ConfigService_, _$injector_, _$q_) {
+    beforeEach(inject(function ($rootScope, _ConfigService_, _$injector_, _$q_, _$log_) {
+        $log = _$log_;
         q = _$q_;
         ConfigService = _ConfigService_;
         ConfigService.createRequest = function(){};
@@ -25,13 +26,13 @@ describe('ConfigService', function() {
         expect(ConfigService.KATObsPortalURL).toBe('http://www.fakeaddress.com');
     }));
 
-    it('should log to console when katobsportal url could not be retrieved', inject(function() {
-        spyOn(console, 'error');
+    it('should log to $log when katobsportal url could not be retrieved', inject(function() {
+        spyOn($log, 'error');
         httpBackend.when('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond(500, 'error message');
         ConfigService.loadKATObsPortalURL();
         scope.$digest();
         httpBackend.flush();
-        expect(console.error).toHaveBeenCalledWith('error message');
+        expect($log.error).toHaveBeenCalledWith('error message');
     }));
 
     it('should get the status tree for the receptors', function() {
@@ -60,14 +61,14 @@ describe('ConfigService', function() {
     });
 
     it('should get the receptor list log an error and to return a promise', function() {
-        spyOn(console, 'error');
+        spyOn($log, 'error');
         httpBackend.when('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(500, 'error message');
         var resultPromise = ConfigService.getReceptorList();
         scope.$digest();
         httpBackend.flush();
         expect(resultPromise.then).toBeDefined();
         expect(ConfigService.receptorList.length).toBe(0);
-        expect(console.error).toHaveBeenCalledWith('error message');
+        expect($log.error).toHaveBeenCalledWith('error message');
     });
 
     it('should get the site location', function() {

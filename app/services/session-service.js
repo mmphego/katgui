@@ -3,7 +3,11 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
+<<<<<<< HEAD
     function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL) {
+=======
+    function SessionService($http, $state, $rootScope, $localStorage, SERVER_URL, $log) {
+>>>>>>> master
 
         var urlBase = SERVER_URL + '/katauth/api/v1';
         var api = {};
@@ -75,8 +79,8 @@
             $localStorage['currentUserToken'] = null;
             $rootScope.jwt = null;
             $state.go('login');
-            console.error('Error logging out, server returned with: ');
-            console.error(result);
+            $log.error('Error logging out, server returned with: ');
+            $log.error(result);
         }
 
         function verifySuccess(result) {
@@ -190,8 +194,8 @@
                 $rootScope.showSimpleToast('Invalid username or password.');
                 $state.go('login');
             } else {
-                console.error('Error logging return, server returned with:');
-                console.error(result);
+                $log.error('Error logging return, server returned with:');
+                $log.error(result);
                 $rootScope.showSimpleToast('Error connecting to KATPortal.');
                 $state.go('login');
             }

@@ -1,15 +1,16 @@
 angular.module('katGui.d3')
 
-    .directive('statusSingleLevelTreeMap', function (d3Service, d3Util, $window) {
+    .directive('statusSingleLevelTreeMap', function (StatusService, d3Util, $window) {
         return {
             restrict: 'EA',
             scope: {
                 data: '=',
+                height: '=',
+                width: '=',
+                autoResize: '@',
                 layoutMode: '@'
             },
             link: function (scope, element) {
-
-                d3Service.d3().then(function (d3) {
 
                     var width = 220,
                         height = element.parent()[0].clientHeight - 40,
@@ -22,25 +23,35 @@ angular.module('katGui.d3')
                         width = element.parent()[0].clientWidth - 40;
                     }
 
+                    if (scope.height) {
+                        height = +scope.height;
+                    }
+
+                    if (scope.width) {
+                        width = +scope.width;
+                    }
+
                     scope.ignoreList = [];
 
                     var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]);
 
-                    var win = angular.element($window);
-                    var unbindResize = win.bind("resize", function () {
-                        if (scope.layoutMode === 'dice') {
-                            height = element.parent()[0].clientHeight - 40;
-                        } else if (scope.layoutMode === 'slice') {
-                            width = element.parent()[0].clientWidth - 40;
-                        }
+                    if (scope.autoResize) {
+                        var win = angular.element($window);
+                        var unbindResize = win.bind("resize", function () {
+                            if (scope.layoutMode === 'dice') {
+                                height = element.parent()[0].clientHeight - 40;
+                            } else if (scope.layoutMode === 'slice') {
+                                width = element.parent()[0].clientWidth - 40;
+                            }
 
-                        d3.select(element[0]).selectAll('div').remove();
-                        drawTreemap(width, height);
-                    });
+                            d3.select(element[0]).selectAll('div').remove();
+                            drawTreemap(width, height);
+                        });
 
-                    scope.$on('$destroy', function () {
-                        unbindResize.unbind();
-                    });
+                        scope.$on('$destroy', function () {
+                            unbindResize.unbind();
+                        });
+                    }
 
                     drawTreemap(width, height);
 
@@ -85,13 +96,13 @@ angular.module('katGui.d3')
                                 .style("height", h + "px");
 
                             var svg = dataDiv.append("svg:svg")
-                                .attr("width", "100%")
+                                .attr("width", scope.autoResize ? "100%" : w)
                                 .attr("height", h)
                                 .append("svg:g");
 
                             if (root.children) {
                                 root.children = _.filter(root.children, function(item) {
-                                    return _.findWhere(scope.ignoreList, item.name) === undefined;
+                                    return scope.ignoreList.indexOf(item.name) === -1;
                                 });
                             }
                             var nodes = treemap.nodes(root)
@@ -104,19 +115,27 @@ angular.module('katGui.d3')
                                 .enter().append("svg:g")
                                 .attr("class", function (d) {
                                     var classString = "";
-                                    if (d.sensorValue) {
+                                    if (angular.isDefined(d.objectValue)) {
+                                        classString += d.objectValue.status + '-child';
+                                    } else if (d.sensorValue) {
                                         classString += d.sensorValue.status + '-child';
+                                    } else if (StatusService.sensorValues[d.sensor.replace('.', '_')]) {
+                                        classString += StatusService.sensorValues[d.sensor.replace('.', '_')].status + '-child';
                                     } else {
                                         classString += 'inactive-child';
                                     }
-                                    classString += d.dx > 300 ? " child-big-text" : " child";
+                                    classString += d.dx > 300 ? " child-big-text" : " child ";
+                                    if (angular.isDefined(d.objectValue)) {
+                                        classString += " " + d.objectValue.parent_name;
+                                        classString += "_" + d.sensor.replace(/\./g, "_");
+                                    } else {
+                                        classString += " " + d.sensor.split('.')[0];
+                                        classString += "_" + d.sensor.split('.')[1];
+                                    }
                                     return classString;
                                 })
                                 .attr("transform", function (d) {
                                     return "translate(" + d.x + "," + d.y + ")";
-                                })
-                                .attr("id", function (d) {
-                                    return d.sensor.replace(".", "_");
                                 })
                                 .call(function (d) {
                                     d3Util.applyTooltipValues(d, tooltip);
@@ -126,9 +145,12 @@ angular.module('katGui.d3')
                                 })
                                 .on("mouseleave", function(d) {
                                     angular.element(document.querySelector("#" + d.sensor.replace(".", "_") + "hideButton")).css("display", "none");
+                                })
+                                .on("click", function(d) {
+                                    if (d.sensor.indexOf('agg_') !== 0) {
+                                        d3Util.showDialogForAggregateSensorInfo(d.sensor.split('.')[1]);
+                                    }
                                 });
-
-                            //todo handle width/height when tree is spliced horizontally
 
                             cell.append("svg:rect")
                                 .attr("width", function (d) {
@@ -167,10 +189,8 @@ angular.module('katGui.d3')
                                 .attr("id", function (d) {
                                     return d.sensor.replace(".", "_") + "hideButton";
                                 })
-                                //.attr("x", 3)
-                                //.attr("y", 3)
-                                .style("width", 26)
-                                .style("height", 26)
+                                //.style("width", 26)
+                                //.style("height", 26)
                                 .style("display", "none")
                                 .on("click", function (d) {
                                     scope.ignoreList.push(d.name);
@@ -179,24 +199,18 @@ angular.module('katGui.d3')
                                     drawTreemap(w, h);
                                 })
                                 .append("xhtml:div")
-                                .attr("class", function (d) {
-                                    return angular.element(document.querySelector("#btnPrimaryTheme")).prop("class");
-                                })
                                 .style("cursor", "pointer")
                                 .style("border", 0)
                                 .style("min-width", "26px")
                                 .style("min-height", "26px")
                                 .style("margin", "0px")
-                                .style("line-height", "1.5")
+                                .style("line-height", "1.8")
                                 .attr("title", "Hide Sensor")
-                                .style("transform", "inherit")
                                 .style("position", "inherit")
-                                .html('<span class="fa fa-eye-slash"></span>');
+                                .style("color", "white")
+                                .html('<i style="position: fixed" class="fa fa-eye-slash"></i>');
                         }
                     }
-                });
             }
         };
     });
-
-

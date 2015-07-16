@@ -3,13 +3,15 @@
     angular.module('katGui.services')
         .service('ConfigService', ConfigService);
 
-    function ConfigService($q, $http, SERVER_URL, $rootScope) {
+    function ConfigService($q, $http, SERVER_URL, $rootScope, $log, $timeout) {
 
         var urlBase = SERVER_URL + '/katconf/api/v1';
         var api = {};
         api.receptorHealthTree = {};
         api.receptorList = [];
         api.KATObsPortalURL = null;
+        api.systemConfig = {};
+        api.aggregateSensorDetail = null;
 
         api.loadKATObsPortalURL = function () {
             $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
@@ -17,8 +19,43 @@
                     api.KATObsPortalURL = "http://" + JSON.parse(result);
                 })
                 .error(function (message) {
-                    console.error(message);
+                    $log.error(message);
                 });
+        };
+
+        api.loadAggregateSensorDetail = function () {
+            var deferred = $q.defer();
+            if (!api.aggregateSensorDetail) {
+                $http(createRequest('get', urlBase + '/aggregates'))
+                    .success(function (result) {
+                        api.aggregateSensorDetail = result;
+                        deferred.resolve(api.aggregateSensorDetail);
+                    })
+                    .error(function (message) {
+                        $log.error(message);
+                        deferred.reject(message);
+                    });
+            } else {
+                $timeout(function () {
+                    deferred.resolve(api.aggregateSensorDetail);
+                }, 1);
+            }
+
+            return deferred.promise;
+        };
+
+        api.getSystemConfig = function () {
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase + '/system-config'))
+                .success(function (result) {
+                    api.systemConfig = result;
+                    deferred.resolve(api.systemConfig);
+                })
+                .error(function (message) {
+                    $log.error(message);
+                    deferred.reject(message);
+                });
+            return deferred.promise;
         };
 
         api.getStatusTreeForReceptor = function () {
@@ -41,7 +78,7 @@
                     deferred.resolve(api.receptorList);
                 })
                 .error(function (result) {
-                    console.error(result);
+                    $log.error(result);
                     deferred.reject();
                 });
 
@@ -54,6 +91,26 @@
 
         api.getHorizonMask = function (receptorId) {
             return $http(createRequest('get', urlBase + '/horizon-mask/' + receptorId));
+        };
+
+        api.getConfigFileContents = function (filePath) {
+            return $http(createRequest('get', urlBase + '/config-file/' + filePath));
+        };
+
+        api.getSourceCataloguesList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/catalogues'));
+        };
+
+        api.getNoiseDiodeModelsList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/noise-diode-models'));
+        };
+
+        api.getDelayModelsList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/delay-models'));
+        };
+
+        api.getPointingModelsList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/pointing-models'));
         };
 
         function createRequest(method, url) {

@@ -8,7 +8,7 @@ describe('ApplicationCtrl', function () {
     var scope, ctrl, location, state, mdSidenav, SessionService, ControlService, MonitorService, ConfigService, mdToast, interval, recoverLoginSpy, q, httpBackend, localStorage, controller;
 
     beforeEach(inject(function ($rootScope, $location, $state, $templateCache, _SessionService_, _ControlService_, _MonitorService_, _$mdToast_,
-                                _ConfigService_, _$interval_, _$q_, _$injector_, _$localStorage_, _$controller_) {
+                                _ConfigService_, _$interval_, _$q_, _$injector_, _$localStorage_, _$controller_, _ConfigService_) {
         httpBackend = _$injector_.get('$httpBackend');
         q = _$q_;
         controller = _$controller_;
@@ -29,6 +29,8 @@ describe('ApplicationCtrl', function () {
         SessionService.recoverLogin = function () {
         };
         SessionService.logout = function () {
+        };
+        _ConfigService_.loadKATObsPortalURL = function () {
         };
 
         mdSidenav = function () {
@@ -151,10 +153,10 @@ describe('ApplicationCtrl', function () {
         expect(ctrl.currentState()).toEqual('Home');
         ctrl.stateGo('scheduler.observations.detail');
         scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler.Observations');
+        expect(ctrl.currentState()).toEqual('Scheduler.Observations Schedules');
         ctrl.navigateToParentState();
         scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler.Observations Schedules');
+        expect(ctrl.currentState()).toEqual('Scheduler');
     });
 
     it('should display the promise result as a toast when result is ok or a dialog when there\'s an error', function () {

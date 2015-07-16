@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval, $log) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
@@ -31,7 +31,7 @@
             };
 
             if (api.connection === null) {
-                console.error('No Sensors Connection Present for subscribing, ignoring command for pattern ' + pattern);
+                $log.error('No Sensors Connection Present for subscribing, ignoring command for pattern ' + pattern);
             } else if (api.connection.readyState && api.connection.authorized) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
@@ -50,7 +50,7 @@
             };
 
             if (api.connection === null) {
-                console.error('No Sensors Connection Present for unsubscribing, ignoring command for pattern ' + pattern);
+                $log.error('No Sensors Connection Present for unsubscribing, ignoring command for pattern ' + pattern);
             } else if (api.connection.readyState && api.connection.authorized) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
@@ -62,20 +62,20 @@
 
         api.onSockJSOpen = function () {
             if (api.connection && api.connection.readyState) {
-                console.log('Sensors Connection Established. Authenticating...');
+                $log.info('Sensors Connection Established. Authenticating...');
                 api.authenticateSocketConnection();
             }
         };
 
         api.onSockJSClose = function () {
-            console.log('Disconnecting Sensors Connection.');
+            $log.info('Disconnected Sensors Connection.');
             api.connection = null;
             api.lastHeartBeat = null;
         };
 
         api.checkAlive = function () {
             if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
-                console.warn('Sensors Connection Heartbeat timeout!');
+                $log.warn('Sensors Connection Heartbeat timeout!');
                 api.deferredMap['timeoutDefer'].resolve();
                 api.deferredMap['timeoutDefer'] = null;
             }
@@ -89,8 +89,8 @@
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {
-                    console.error('There was an error sending a jsonrpc request:');
-                    console.error(messages);
+                    $log.error('There was an error sending a jsonrpc request:');
+                    $log.error(messages);
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.id === 'redis-pubsub') {
                         var arrayResult = [];
@@ -111,10 +111,12 @@
                                 value: messageObj.msg_data
                             });
                         } else {
-                            console.error('Dangling Sensors message...');
-                            console.error(messageObj);
+                            $log.error('Dangling Sensors message...');
+                            $log.error(messageObj);
                         }
                     });
+                } else if (messages.result.id === 'set_sensor_strategy') {
+                    $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else if (messages.result) {
 
                     if (messages.result.list_resources) {
@@ -124,59 +126,76 @@
                         api.deferredMap[messages.id].resolve('Fetched resources.');
                     } else if (messages.result.list_resource_sensors) {
                         api.resources[messages.result.list_resource_sensors.resource_name].sensorsList = messages.result.list_resource_sensors.result;
-                        api.deferredMap[messages.id].resolve('Fetched ' + messages.result.list_resource_sensors.result.length + ' sensors.');
+                        api.deferredMap[messages.id].resolve({
+                            resource: messages.result.list_resource_sensors.resource_name,
+                            result: messages.result.list_resource_sensors.result,
+                            message: 'Fetched ' + messages.result.list_resource_sensors.result.length + ' sensors.'
+                        });
                     } else if (messages.result.email && messages.result.session_id) {
                         //auth response
                         $localStorage['currentUserToken'] = $rootScope.jwt;
                         api.connection.authorized = true;
-                        console.log('Sensors Connection Authenticated.');
+                        $log.info('Sensors Connection Authenticated.');
                         api.deferredMap['connectDefer'].resolve();
+                        api.subscribe('*', api.guid);
                     } else if (messages.result.length > 0) {
                         //subscribe response
-                        //console.log('Subscribed to: ');
-                        //console.log(messages.result);
+                        //$log.info('Subscribed to: ');
+                        //$log.info(messages.result);
                     } else {
                         //bad auth response
                         api.connection.authorized = false;
-                        console.error('Sensors Connection Authentication failed!');
-                        console.error(messages);
+                        $log.error('Sensors Connection Authentication failed!');
+                        $log.error(messages);
                         api.deferredMap['connectDefer'].reject();
                     }
                 } else {
-                    console.error('Dangling sensors message...');
-                    console.error(e);
+                    $log.error('Dangling sensors message...');
+                    $log.error(e);
                 }
             } else {
-                console.error('Dangling sensors message...');
-                console.error(e);
+                $log.error('Dangling sensors message...');
+                $log.error(e);
             }
         };
 
-        api.connectListener = function () {
-            api.deferredMap['connectDefer'] = $q.defer();
-            console.log('Sensors Connecting...');
-            api.connection = new SockJS(urlBase + '/sensors');
-            api.connection.onopen = api.onSockJSOpen;
-            api.connection.onmessage = api.onSockJSMessage;
-            api.connection.onclose = api.onSockJSClose;
-            api.connection.onheartbeat = api.onSockJSHeartbeat;
-            api.lastHeartBeat = new Date();
-            if (!api.checkAliveInterval) {
-                api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+        api.connectListener = function (skipDeferObject) {
+            if (api.connection) {
+                $timeout(function () {
+                    api.connectListener(true);
+                }, 500);
             } else {
-                $interval.cancel(api.checkAliveInterval);
-                api.checkAliveInterval = null;
+                api.guid = KatGuiUtil.generateUUID();
+                $log.info('Sensors Connecting...');
+                api.connection = new SockJS(urlBase + '/sensors');
+                api.connection.onopen = api.onSockJSOpen;
+                api.connection.onmessage = api.onSockJSMessage;
+                api.connection.onclose = api.onSockJSClose;
+                api.connection.onheartbeat = api.onSockJSHeartbeat;
+                api.lastHeartBeat = new Date();
+                if (!api.checkAliveInterval) {
+                    api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
+                } else {
+                    $interval.cancel(api.checkAliveInterval);
+                    api.checkAliveInterval = null;
+                }
             }
-            return api.deferredMap['connectDefer'].promise;
+
+            if (!skipDeferObject) {
+                api.deferredMap['connectDefer'] = $q.defer();
+                return api.deferredMap['connectDefer'].promise;
+            }
         };
 
         api.disconnectListener = function () {
             if (api.connection) {
+                api.unsubscribe('*', api.guid);
+                $log.info('Disconnecting Sensors Connection.');
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
             } else {
-                console.error('Attempting to disconnect an already disconnected connection!');
+                $log.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 
@@ -194,62 +213,16 @@
             }
         };
 
-        api.connectResourceSensorNameLiveFeed = function (resource, sensorName, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
+        api.setSensorStrategy = function (resource, sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
             api.sendSensorsCommand('set_sensor_strategy',
                 [
-                    guid,
+                    api.guid,
                     resource,
                     sensorName,
                     strategyType,
                     strategyIntervalMin,
                     strategyIntervalMax
                 ]);
-
-            api.subscribe(resource + '.' + sensorName, guid);
-        };
-
-        api.connectResourceSensorNamesLiveFeedWithList = function (resource, sensorNames, guid, strategyType, strategyIntervalMin, strategyIntervalMax) {
-            api.sendSensorsCommand('set_sensor_strategy',
-                [
-                    guid,
-                    resource,
-                    sensorNames,
-                    strategyType,
-                    strategyIntervalMin,
-                    strategyIntervalMax
-                ]);
-
-            for (var i in sensorNames) {
-                api.subscribe(resource + '.' + sensorNames[i], guid);
-            }
-        };
-
-        api.connectLiveFeed = function (sensor, guid) {
-            var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
-            sensorName = sensorName.replace(/\./g, '_');
-            api.sendSensorsCommand('set_sensor_strategy',
-                [
-                    guid,
-                    sensor.component,
-                    sensorName,
-                    $rootScope.sensorListStrategyType,
-                    $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval
-                ]);
-            api.subscribe(sensor.component + '.' + sensorName, guid);
-        };
-
-        api.connectResourceSensorListeners = function (resource_name, guid) {
-            api.sendSensorsCommand('set_sensor_strategy',
-                [
-                    guid,
-                    resource_name,
-                    '',
-                    $rootScope.sensorListStrategyType,
-                    $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval
-                ]);
-            api.subscribe(resource_name + ".*", guid);
         };
 
         api.listResources = function () {
@@ -267,7 +240,7 @@
         };
 
         api.removeResourceListeners = function (resourceName) {
-            api.sendSensorsCommand('remove_resource_listeners', [resourceName]);
+            api.sendSensorsCommand('remove_sensor_listeners_from_resource', [resourceName]);
         };
 
         api.sendSensorsCommand = function (method, params, desired_jsonRPCId) {

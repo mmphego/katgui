@@ -3,27 +3,27 @@ describe('SubArraysCtrl - draft assignments', function () {
     beforeEach(module('katGui.scheduler'));
     beforeEach(module('ui.router'));
 
-    var scope, ctrl, state, ObservationScheduleService, q, timeout;
+    var scope, ctrl, state, ObsSchedService, q, timeout;
 
-    beforeEach(inject(function ($rootScope, $controller, _ObservationScheduleService_, _SCHEDULE_BLOCK_TYPES_, $q, $timeout, $state) {
+    beforeEach(inject(function ($rootScope, $controller, _ObsSchedService_, _SCHEDULE_BLOCK_TYPES_, $q, $timeout, $state) {
         q = $q;
         timeout = $timeout;
         scope = $rootScope.$new();
         state = $state;
-        ObservationScheduleService = _ObservationScheduleService_;
-        ObservationScheduleService.connectListener = function () {
+        ObsSchedService = _ObsSchedService_;
+        ObsSchedService.connectListener = function () {
         };
-        ObservationScheduleService.disconnectListener = function () {
+        ObsSchedService.disconnectListener = function () {
         };
         ctrl = $controller('SubArraysCtrl', {
             $rootScope: $rootScope, $scope: scope, $state: state,
-            ObservationScheduleService: ObservationScheduleService
+            ObsSchedService: ObsSchedService
         });
 
         $rootScope.displayPromiseResult = function () {
         };
 
-        ObservationScheduleService.scheduleDraftData = [{
+        ObsSchedService.scheduleDraftData = [{
             actual_end_time: null,
             description: "test1",
             desired_start_time: "2015-02-11 01:05:00.000Z",
@@ -80,39 +80,24 @@ describe('SubArraysCtrl - draft assignments', function () {
         expect(ctrl.subarrays).toBeDefined();
     }));
 
-    it('should list the schedule blocks and subarrays', function() {
-        var deferred = q.defer();
-        var listSubarraysSpy = spyOn(ObservationScheduleService, "listSubarrays").and.returnValue(deferred.promise);
-        var getScheduleBlocksSpy = spyOn(ObservationScheduleService, "getScheduleBlocks");
-        ctrl.refreshScheduleBlocks();
-        expect(listSubarraysSpy).toHaveBeenCalled();
-        deferred.resolve();
-        scope.$digest();
-        expect(getScheduleBlocksSpy).toHaveBeenCalled();
-    });
-
     it('should call the service function to assign selected schedule blocks', function() {
         var deferred = q.defer();
-        var assignScheduleBlockSpy = spyOn(ObservationScheduleService, "assignScheduleBlock").and.returnValue(deferred.promise);
-        var displayPromiseResultSpy = spyOn(scope.$root, "displayPromiseResult");
-        ObservationScheduleService.scheduleDraftData[1].selected = true;
+        var assignScheduleBlockSpy = spyOn(ObsSchedService, "assignScheduleBlock").and.returnValue(deferred.promise);
+        ObsSchedService.scheduleDraftData[1].selected = true;
         ctrl.assignSelectedScheduleBlocks({id: 1});
         timeout.flush();
         expect(assignScheduleBlockSpy).toHaveBeenCalledWith(1, '20150211-0002');
         deferred.resolve();
         scope.$digest();
-        expect(displayPromiseResultSpy).toHaveBeenCalled();
     });
 
     it('should call the service function to unassign a schedule block', function() {
         var deferred = q.defer();
-        var unassignScheduleBlockSpy = spyOn(ObservationScheduleService, "unassignScheduleBlock").and.returnValue(deferred.promise);
-        var displayPromiseResultSpy = spyOn(scope.$root, "displayPromiseResult");
+        var unassignScheduleBlockSpy = spyOn(ObsSchedService, "unassignScheduleBlock").and.returnValue(deferred.promise);
         ctrl.freeScheduleBlock({id: 1}, {id_code: '20150211-0002'});
         expect(unassignScheduleBlockSpy).toHaveBeenCalled();
         deferred.resolve();
         scope.$digest();
-        expect(displayPromiseResultSpy).toHaveBeenCalled();
     });
 
     it('should navigate to scheduler details', function() {

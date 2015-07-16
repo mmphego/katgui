@@ -26,6 +26,7 @@
         "gulp-watch": "^4.2.4",
         "gulp-webserver": "^0.9.1",
         "gulp-util": "^3.0.4",
+        "gulp-insert": "^0.4.0",
         "jasmine-core": "^2.3.4",
         "jshint-stylish": "^2.0.0",
         "karma": "^0.12.32",

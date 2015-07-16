@@ -3,11 +3,14 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService) {
+    function OperatorControlCtrl($scope, $interval, ReceptorStateService, ControlService) {
 
         var vm = this;
         vm.receptorsData = ReceptorStateService.receptorsData;
+        vm.floodLightSensor = {value: false};
+
         ReceptorStateService.getReceptorList();
+        vm.floodLightSensor = ReceptorStateService.floodLightSensor;
 
         vm.stowAll = function () {
             ControlService.stowAll();
@@ -25,43 +28,19 @@
             ControlService.resumeOperations();
         };
 
-        //vm.shutdownComputing = function () {
-        //    ControlService.shutdownComputing();
-        //};
-
-        var stopInterval = $interval(function () {
-            vm.receptorsData.forEach(function (item) {
-                if (item.lastUpdate) {
-                    item.since = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').format('HH:mm:ss DD-MM-YYYY');
-                    item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
-                } else {
-                    item.since = "error";
-                    item.fromNow = "Connection Error!";
-                }
-            });
-        }, 1000);
-
-        vm.receptorMessageReceived = function (event, message) {
-            var sensorNameList = message.name.split(':')[1].split('.');
-            var receptor = sensorNameList[0];
-            var sensorName = sensorNameList[1];
-            ReceptorStateService.receptorsData.forEach(function (item) {
-                if (item.name === receptor && message.value) {
-                    if (sensorName === 'mode' && item.status !== message.value.value) {
-                        item.state = message.value.value;
-                    } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
-                        item.inhibited = message.value.value;
-                    }
-                    item.lastUpdate = moment(message.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
-                }
-            });
+        vm.toggleFloodLights = function () {
+            ControlService.floodlightsOn(ReceptorStateService.floodLightSensor.value ? 'off' : 'on');
         };
 
-        vm.cancelListeningToReceptorMessages = $rootScope.$on('operatorControlStatusMessage', vm.receptorMessageReceived);
+        var stopInterval = $interval(function () {
+            ReceptorStateService.updateReceptorDates();
+        }, 1000);
 
         $scope.$on('$destroy', function () {
+            if (!vm.connectInterval) {
+                $interval.cancel(vm.connectInterval);
+            }
             $interval.cancel(stopInterval);
-            vm.cancelListeningToReceptorMessages();
         });
     }
 })();

@@ -1,4 +1,4 @@
-<div flex layout="row" style="min-width: 1220px; min-height: 500px; margin: 8px;" ng-controller="SbDraftsCtrl as vm">
+<div flex layout="row" style="min-width: 1220px; min-height: 500px; max-height: 100%; margin: 8px;" ng-controller="SbDraftsCtrl as vm">
 
     <div class="md-whiteframe-z2" layout="column" flex>
         <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
@@ -14,7 +14,7 @@
             </div>
 
             <div flex class="unselectable list-subheader-title" layout="row" layout-align="center center">
-                <span style="max-width: 135px;min-width: 135px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
+                <span style="max-width: 115px;min-width: 115px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
                     <span style="padding-left: 8px;">ID</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
@@ -40,7 +40,7 @@
                 </span>
             </div>
         </md-toolbar>
-        <div class="schedule-draft-data-list" style="direction: rtl" flex>
+        <div class="schedule-draft-data-list" style="direction: rtl; overflow: auto" flex>
             <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by item.id_code"
                  ng-click="vm.setSelectedScheduleDraft(item)"
                  ng-class="{'selected-draft-schedule-row': item.id_code === vm.selectedScheduleDraft.id_code}" class="schedule-draft-item animate-repeat-opacity" layout="column" post-ng-repeat-load-more>
@@ -60,7 +60,7 @@
                            ng-model="item.description" placeholder="Description"/>
                     <span ng-if="!item.editing" flex style="overflow: hidden; text-overflow: ellipsis;" title="{{item.description}}">{{item.description}}</span>
 
-                    <md-select ng-if="item.editing" ng-model="item.type"  style="width: 126px; margin-left: 4px; margin-right:4px; margin-top: -1px;"
+                    <md-select ng-if="item.editing" ng-model="item.type"  style="width: 126px; margin-left: 4px; margin-right:4px;"
                                ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                class="md-primary" ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
                         <md-option ng-value="type" ng-repeat="type in vm.types">{{type}}</md-option>

@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail(ObservationScheduleService, $stateParams, $scope, $rootScope) {
+    function SubArrayObservationsDetail($scope, ObsSchedService, $stateParams) {
 
         var vm = this;
         vm.subarray_id = parseInt($stateParams.subarray_id);
@@ -13,11 +13,17 @@
         vm.showEditMenu = false;
         vm.modeTypes = ['queue', 'manual'];
 
-        vm.scheduleCompletedData = ObservationScheduleService.scheduleCompletedData;
-        vm.scheduleData = ObservationScheduleService.scheduleData;
-        vm.poolResources = ObservationScheduleService.poolResources;
-        vm.allocations = ObservationScheduleService.allocations;
-        vm.schedulerModes = ObservationScheduleService.schedulerModes;
+        vm.scheduleData = ObsSchedService.scheduleData;
+        vm.scheduleCompletedData = ObsSchedService.scheduleCompletedData;
+        vm.subarrays = ObsSchedService.subarrays;
+        vm.subarray = {};
+
+        var unbindWatch = $scope.$watchCollection('vm.subarrays', function (newVal, oldVal) {
+            vm.subarray = _.findWhere(vm.subarrays, {id: '' + vm.subarray_id});
+            if (vm.subarray) {
+                unbindWatch();
+            }
+        });
 
         vm.completedOrderByFields = [
             {label: 'ID', value: 'id_code'},
@@ -27,54 +33,28 @@
             {label: 'Type', value: 'type'}
         ];
 
-        vm.refreshScheduleBlocks = function () {
-            ObservationScheduleService.getScheduleBlocks()
-                .then(ObservationScheduleService.getScheduleBlocksFinished)
-                .then(ObservationScheduleService.listPoolResources)
-                .then(function () {
-                    ObservationScheduleService.listAllocationsForSubarray(vm.subarray_id)
-                        .then(function () {
-                            ObservationScheduleService.getSchedulerModeForSubarray(vm.subarray_id)
-                                .then(function () {
-                                    vm.selectedMode = ObservationScheduleService.schedulerModes[vm.subarray_id];
-                                    if (ObservationScheduleService.subarrays.length === 0) {
-                                        ObservationScheduleService.listSubarrays()
-                                            .then(function () {
-                                                vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
-                                                vm.subarrayState = vm.subarray.state.toUpperCase();
-                                            });
-                                    } else {
-                                        vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
-                                        vm.subarrayState = vm.subarray.state.toUpperCase();
-                                    }
-                                });
-                        });
-                });
-        };
-
         vm.executeSchedule = function (item) {
-            ObservationScheduleService.executeSchedule(vm.subarray_id, item.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.executeSchedule(vm.subarray_id, item.id_code);
         };
 
         vm.stopExecuteSchedule = function (item) {
-            ObservationScheduleService.cancelExecuteSchedule(vm.subarray_id, item.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.stopSchedule(vm.subarray_id, item.id_code);
+        };
+
+        vm.cancelExecuteSchedule = function (item) {
+            ObsSchedService.cancelExecuteSchedule(vm.subarray_id, item.id_code);
         };
 
         vm.cloneSchedule = function (item) {
-            ObservationScheduleService.cloneSchedule(item.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.cloneSchedule(item.id_code);
         };
 
         vm.moveScheduleRowToFinished = function (item) {
-            ObservationScheduleService.scheduleToComplete(vm.subarray_id, item.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.scheduleToComplete(vm.subarray_id, item.id_code);
         };
 
         vm.moveScheduleRowToDraft = function (item) {
-            ObservationScheduleService.scheduleToDraft(vm.subarray_id, item.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.scheduleToDraft(vm.subarray_id, item.id_code);
         };
 
         vm.setCompletedOrderBy = function (column, reverse) {
@@ -101,48 +81,37 @@
         };
 
         vm.markResourceFaulty = function (resource) {
-            ObservationScheduleService.markResourceFaulty(vm.subarray_id, resource.name, resource.state === 'faulty' ? 0 : 1)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.markResourceFaulty(resource.name, resource.faulty ? 'clear' : 'set');
         };
 
-        vm.schedulerModeChanged = function () {
-            ObservationScheduleService.setSchedulerModeForSubarray(vm.subarray_id, vm.selectedMode)
-                .then($rootScope.displayPromiseResult);
+        vm.setSchedulerMode = function (mode) {
+            ObsSchedService.setSchedulerModeForSubarray(vm.subarray_id, mode);
         };
 
         vm.viewSBTaskLog = function (sb) {
-            ObservationScheduleService.viewTaskLogForSBIdCode(sb.id_code);
+            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code);
         };
 
         vm.verifySB = function (sb) {
-            ObservationScheduleService.verifyScheduleBlock(vm.subarray_id, sb.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.verifyScheduleBlock(vm.subarray_id, sb.id_code);
         };
 
         vm.freeSubarray = function () {
-            ObservationScheduleService.freeSubarray(vm.subarray_id)
-                .then(function (result) {
-                    $rootScope.displayPromiseResult(result);
-                    ObservationScheduleService.listSubarrays()
-                        .then(function () {
-                            vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
-                            vm.subarrayState = vm.subarray.state.toUpperCase();
-                        });
-                });
+            ObsSchedService.freeSubarray(vm.subarray_id);
         };
 
         vm.activateSubarray = function () {
-            ObservationScheduleService.activateSubarray(vm.subarray_id)
-                .then(function (result) {
-                    $rootScope.displayPromiseResult(result);
-                    ObservationScheduleService.listSubarrays()
-                        .then(function () {
-                            vm.subarray = _.findWhere(ObservationScheduleService.subarrays, {id: vm.subarray_id.toString()});
-                            vm.subarrayState = vm.subarray.state.toUpperCase();
-                        });
-                });
+            ObsSchedService.activateSubarray(vm.subarray_id);
         };
 
-        vm.refreshScheduleBlocks();
+        vm.isResourceInMaintenance = function (resource) {
+            resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
+            return resource.maintenance;
+        };
+
+        vm.isResourceFaulty = function (resource) {
+            resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
+            return resource.faulty;
+        };
     }
 })();

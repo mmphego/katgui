@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval) {
+    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval, $log) {
 
         var vm = this;
         vm.receptorsData = [];
@@ -12,6 +12,7 @@
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
+        vm.connectionLost = false;
 
         vm.receptorSensorsToConnect = [
             'mode',
@@ -34,11 +35,13 @@
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
+                        vm.connectionLost = false;
                         $rootScope.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
-                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
+                        vm.connectionLost = true;
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }
                 });
@@ -51,6 +54,7 @@
                     if (!vm.disconnectIssued) {
                         $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
+                            vm.connectionLost = true;
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
                             vm.connectListeners();
                         }
@@ -64,12 +68,12 @@
                 .then(function (result) {
                     result.forEach(function (item) {
                         vm.receptorsData.push({name: item, subarray: 'free'});
-                        SensorsService.connectResourceSensorNamesLiveFeedWithList(item, vm.receptorSensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy(item, vm.receptorSensorsToConnect, 'event-rate', 1, 10);
                     });
                     for (var i = 1; i <= 4; i++) {
-                        SensorsService.connectResourceSensorNamesLiveFeedWithList('subarray_' + i, vm.subarraySensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy('subarray_' + i, vm.subarraySensorsToConnect, 'event-rate', 1, 10);
                     }
-                    SensorsService.connectResourceSensorNameLiveFeed('katpool', 'resources_in_maintenance', vm.guid, 'event-rate', 1, 10);
+                    SensorsService.setSensorStrategy('katpool', 'resources_in_maintenance', 'event-rate', 1, 10);
                 });
         };
         vm.connectListeners();
