@@ -45,15 +45,15 @@
         };
 
         vm.setSubarrayInMaintenance = function (subarray) {
-            ObsSchedService.setSubarrayMaintenance(subarray.id, subarray.maintenance ? 0 : 1);
+            ObsSchedService.setSubarrayMaintenance(subarray.id, subarray.maintenance ? 'clear' : 'set');
         };
 
         vm.markResourceFaulty = function (resource) {
-            ObsSchedService.markResourceFaulty(resource.name, resource.faulty? 0 : 1);
+            ObsSchedService.markResourceFaulty(resource.name, resource.faulty? 'clear' : 'set');
         };
 
         vm.markResourceInMaintenance = function (resource) {
-            ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 0 : 1);
+            ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
         };
 
         vm.isResourceInMaintenance = function (resource) {
