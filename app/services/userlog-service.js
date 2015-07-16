@@ -6,7 +6,7 @@
     function UserLogService($http, $q, SERVER_URL, $rootScope, $window) {
 
         var api = {};
-        api.urlBase = 'http://monctl.devw.camlab.kat.ac.za:8888'; //SERVER_URL + '/katauth/api/v1';
+        api.urlBase = SERVER_URL + '/katauth/api/v1';
         api.userlogs = [];
         api.report_userlogs = [];
         api.focus_ulog = {};
@@ -23,7 +23,6 @@
 
                     if (result && result.data) {
                         api.focus_ulog = result.data;
-                        //console.log('Updated focus log: ' + JSON.stringify(api.focus_ulog));
                         def.resolve();
                     } else {
                         console.error('Could not retrieve requested userlog.');
@@ -107,10 +106,8 @@
         api.queryUserLogs = function (query) {
 
             var defer = $q.defer();
-            console.log('Query received by service: ' + JSON.stringify(query));
             $http(createRequest('post', api.urlBase + '/log/query', query))
                 .success(function (result) {
-                    console.log('Result returned by service: ' + JSON.stringify(result));
                     api.report_userlogs.splice(0, api.report_userlogs.length);
                     result.forEach(function (userlog) {
                         api.report_userlogs.push(userlog);
@@ -146,7 +143,6 @@
         api.getFileFromUrl = function(file_name, file_alias) {
             var fd = {file_name: file_name,
                       file_alias: file_alias};
-            console.log('File name sent: ' + file_name);
             $http.post(api.urlBase + '/log/get/attach', fd, {
                 headers: {'Content-Type': 'application/json',
                           'Authorization': 'CustomJWT ' + $rootScope.jwt
@@ -155,7 +151,7 @@
             })
             .success(function(result){
                 console.log('Filedata returned: ' + result);
-                var blob = result; //new Blob(result, {type:'image/png'});
+                var blob = result;
                 var url = $window.URL || $window.webkitURL;
                 var file_url = url.createObjectURL(blob);
                 var downloadLink = angular.element('<a></a>');
@@ -163,7 +159,6 @@
                 downloadLink.attr('download', file_alias);
                 downloadLink[0].click();
                 url.revokeObjectURL(file_url);
-                console.log('File url: ' + file_url);
             })
             .error(function(){
                 console.error(api.urlBase + '/log/get/attach');
@@ -186,7 +181,6 @@
                 }))
                 .success(function (result) {
                     ulog.id = result.id
-                    console.log('Id returned by handler: ' + result.id);
                     $rootScope.showSimpleToast("New " + result.userlog_type + " added! ");
                     defer.resolve();
                 })
@@ -211,7 +205,6 @@
                 }))
                 .success(function (result) {
                     ulog.id = result.id
-                    console.log('Id returned by handler: ' + result.id);
                     $rootScope.showSimpleToast("Edited userlog " + result.id);
                     defer.resolve();
                 })

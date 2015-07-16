@@ -21,16 +21,6 @@
     function UserlogCtrl($scope, UserLogService, $mdDialog, $rootScope, $filter) {
 
         var vm = this;
-        $scope.users = [{
-            firstName: 'Obi-Wan',
-            lastName: 'Kenobi'
-        }, {
-            firstName: 'Boba',
-            lastName: 'Fett'
-        }, {
-            firstName: 'Han',
-            lastName: 'Solo'
-        }];
         
         var blank_tags = [];
         $scope.blank_ulog = {
@@ -91,7 +81,7 @@
         $scope.report_userlogs = UserLogService.report_userlogs;
         $scope.queryUserlogs = function (event, b_query) {
             var query = {};
-            var log_type = false; //b_query.userlog_type;
+            var log_type = false;
             var start_time = $filter('date')(b_query.start_time, 'yyyy-MM-dd HH:mm');
             var end_time = $filter('date')(b_query.end_time, 'yyyy-MM-dd HH:mm');
             if (log_type) {query.log_type = log_type;}
@@ -137,22 +127,22 @@
                             ulog = userlog_entry;
                             if (ulog.id) {
                                 console.log('Tag list sent to server: ' + $scope.chosen_tags);
-                                //UserLogService.modifyUserLog(ulog).then(function () {
-                                //    if (file) {
-                                //        console.log('File is: ' + JSON.stringify(file));
-                                //        UserLogService.uploadFileToUrl(file, ulog.id);
-                                //    }
-                                //    UserLogService.listUserLogs();
-                                //});
+                                UserLogService.modifyUserLog(ulog).then(function () {
+                                    if (file) {
+                                        console.log('File is: ' + JSON.stringify(file));
+                                        UserLogService.uploadFileToUrl(file, ulog.id);
+                                    }
+                                    UserLogService.listUserLogs();
+                                });
                             } else {
                                 console.log('Tag list sent to server: ' + $scope.chosen_tags);
-                                //UserLogService.addUserLog(ulog).then(function () {
-                                //    if (file) {
-                                //        console.log('File is: ' + JSON.stringify(file));
-                                //        UserLogService.uploadFileToUrl(file, ulog.id);
-                                //    }
-                                //    UserLogService.listUserLogs();
-                                //});
+                                UserLogService.addUserLog(ulog).then(function () {
+                                    if (file) {
+                                        console.log('File is: ' + JSON.stringify(file));
+                                        UserLogService.uploadFileToUrl(file, ulog.id);
+                                    }
+                                    UserLogService.listUserLogs();
+                                });
                             }
                             console.log('Posted log: ' + JSON.stringify(ulog));
                         };
