@@ -61,6 +61,10 @@
             api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/execute'));
         };
 
+        api.stopSchedule = function (sub_nr, id_code) {
+            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/stop'));
+        };
+
         api.cancelExecuteSchedule = function (sub_nr, id_code) {
             api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute'));
         };
@@ -119,7 +123,7 @@
         };
 
         api.setSchedulerModeForSubarray = function (sub_nr, mode) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/mode/' + mode));
+            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/sched-mode/' + mode));
         };
 
         api.updateScheduleDraft = function (scheduleBlockDraft) {
@@ -133,7 +137,7 @@
         };
 
         api.receivedScheduleMessage = function (action, sb) {
-            if (action === 'remove') {
+            if (action === 'sb_remove') {
                 //only drafts can be deleted in the db
                 for (var i in api.scheduleDraftData) {
                     if (api.scheduleDraftData[i].id_code === sb.id_code) {
@@ -142,7 +146,7 @@
                     }
                 }
                 $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been removed');
-            } else if (action === 'update') {
+            } else if (action === 'sb_update') {
                 var index = -1;
                 for (var i in api.scheduleDraftData) {
                     if (api.scheduleDraftData[i].id_code === sb.id_code) {
@@ -177,7 +181,7 @@
                 //    $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been updated.');
                 //}
 
-            } else if (action === 'add') {
+            } else if (action === 'sb_add') {
                 if (sb.state === 'DRAFT') {
                     api.scheduleDraftData.push(sb);
                 } else if (sb.state === 'ACTIVE' || sb.state === 'SCHEDULED') {

@@ -38,6 +38,10 @@
         };
 
         vm.stopExecuteSchedule = function (item) {
+            ObsSchedService.stopSchedule(vm.subarray_id, item.id_code);
+        };
+
+        vm.cancelExecuteSchedule = function (item) {
             ObsSchedService.cancelExecuteSchedule(vm.subarray_id, item.id_code);
         };
 
@@ -77,7 +81,7 @@
         };
 
         vm.markResourceFaulty = function (resource) {
-            ObsSchedService.markResourceFaulty(resource.name, resource.faulty ? 0 : 1);
+            ObsSchedService.markResourceFaulty(resource.name, resource.faulty ? 'clear' : 'set');
         };
 
         vm.setSchedulerMode = function (mode) {

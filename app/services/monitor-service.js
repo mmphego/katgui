@@ -127,8 +127,6 @@
                                             name: messageObj.msg_channel,
                                             value: messageObj.msg_data
                                         });
-                                    } else if (channelNameSplit[0] === 'sched') {
-                                        ObsSchedService.receivedSchedMessage(messageObj.msg_channel, messageObj.msg_data);
                                     } else if (channelNameSplit.length > 1) {
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
