@@ -117,7 +117,6 @@
                     controller: function ($rootScope, $scope, $mdDialog) {
                         $scope.themePrimary = $rootScope.themePrimary;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
-                        var readonly_session_id = session_id;
                         var b = confirmation_token.split(".");
                         var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
                         var readonly_session_id = session_id;
