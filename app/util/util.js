@@ -1,11 +1,12 @@
 angular.module('katGui.util')
     .constant('CENTRAL_LOGGER_PORT', 9021)
+    .constant('DATETIME_FORMAT', 'HH:mm:ss YYYY-MM-DD')
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
-    .filter('utcDateFromUnix', function() {
+    .filter('utcDateFromUnix', function(DATETIME_FORMAT) {
         return function (input) {
-            return moment.utc(input, 'X').format('HH:mm:ss DD-MM-YYYY');
+            return moment.utc(input, 'X').format(DATETIME_FORMAT);
         };
     })
     .directive('postNgRepeatLoadMore', function($timeout) {

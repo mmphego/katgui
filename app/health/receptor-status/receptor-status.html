@@ -14,7 +14,7 @@
                 <md-menu-content width="4" style="padding-left: 16px;">
                     <md-menu-item>
                         <md-checkbox class="md-primary" ng-model="vm.sortBySubarrays" ng-click="">
-                            Sort By Sub-Arrays
+                            Sort By Subarrays
                         </md-checkbox>
                     </md-menu-item>
                 </md-menu-content>
@@ -69,7 +69,7 @@
                                  class="receptor-status-column-heading"
                                  layout="column" layout-align="center center"
                                  ng-class="{'in-maintenance-item':receptor.in_maintenance && !(receptor.assignedSubarray || receptor.allocatedSubarray), 'in-assigned-subarray-item': receptor.assignedSubarray, 'in-allocated-subarray-item': receptor.allocatedSubarray}">
-                                <span ng-show="receptor.subarray" title="{{'Sub-Array ' + receptor.subarray}}">SA {{receptor.subarray}}</span>
+                                <span ng-show="receptor.subarray" title="{{'Subarray ' + receptor.subarray}}">SA {{receptor.subarray}}</span>
                                 <span ng-show="!receptor.subarray">Free</span>
                             </div>
                         </div>
@@ -88,11 +88,11 @@
                         style="max-height: 50px; min-height: 50px;">
                         <div flex style="position: relative">
                             <span ng-show="subarray.id === 'free'" style="position: absolute; left: 8px; top: -20px;">FREE</span>
-                            <span ng-show="subarray.id !== 'free'" style="position: absolute; left: 8px; top: 8px;">SUB-ARRAY {{subarray.id}}</span>
+                            <span ng-show="subarray.id !== 'free'" style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>
                             <md-button ng-show="subarray.id !== 'free'" layout="row" style="min-height: 42px; width: calc(100% - 16px)"
                                        class="unselectable"
                                        ng-click="vm.navigateToSchedulerDetails(subarray.id)"
-                                       title="Click to Manage Observations for Sub-Array {{subarray.id}}">
+                                       title="Click to Manage Observations for Subarray {{subarray.id}}">
                                 <span>{{subarray.state}}</span>
                                 <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
                             </md-button>
@@ -179,13 +179,13 @@
                     <span>In Error</span></div>
                 <div layout="row" layout-align="start center">
                     <div class="color-patch amber-item" title="Amber"></div>
-                    <span>Sub-Array Active</span></div>
+                    <span>Subarray Active</span></div>
                 <div layout="row" layout-align="start center">
                     <div class="color-patch in-maintenance-item" title="Purple"></div>
-                    <span>Sub-Array In Maintenance</span></div>
+                    <span>Subarray In Maintenance</span></div>
                 <div layout="row" layout-align="start center">
                     <div class="color-patch nominal-item" title="Green"></div>
-                    <span>Sub-Array Inactive</span></div>
+                    <span>Subarray Inactive</span></div>
                 <div layout="row" layout-align="start center">
                     <div style="border: 1px solid #d3d3d3" class="color-patch" title="White"></div>
                     <span>Nothing to Report</span></div>

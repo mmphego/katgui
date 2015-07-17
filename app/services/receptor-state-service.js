@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ReceptorStateService', ReceptorStateService);
 
-    function ReceptorStateService($rootScope, ConfigService, $log) {
+    function ReceptorStateService($rootScope, ConfigService, $log, DATETIME_FORMAT) {
 
         var api = {receptorsData: []};
         api.sensorValues = {};
@@ -26,7 +26,7 @@
                         }
                         var lastUpdateValue;
                         if (lastUpdate) {
-                            lastUpdateValue = moment(lastUpdate, 'X').format('HH:mm:ss DD-MM-YYYY')
+                            lastUpdateValue = moment(lastUpdate, 'X').format(DATETIME_FORMAT)
                         }
 
                         api.receptorsData.push({
@@ -57,7 +57,7 @@
                         } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
                             item.inhibited = message.value.value;
                         }
-                        item.lastUpdate = moment(message.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                        item.lastUpdate = moment(message.value.timestamp, 'X').format(DATETIME_FORMAT);
                     }
                 });
             }
@@ -66,8 +66,8 @@
         api.updateReceptorDates = function () {
             api.receptorsData.forEach(function (item) {
                 if (item.lastUpdate) {
-                    item.since = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').format('HH:mm:ss DD-MM-YYYY');
-                    item.fromNow = moment(item.lastUpdate, 'HH:mm:ss DD-MM-YYYY').fromNow();
+                    item.since = moment(item.lastUpdate, DATETIME_FORMAT).format(DATETIME_FORMAT);
+                    item.fromNow = moment(item.lastUpdate, DATETIME_FORMAT).fromNow();
                 } else {
                     item.since = "error";
                     item.fromNow = "Connection Error!";
