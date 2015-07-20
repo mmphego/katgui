@@ -5,12 +5,12 @@
             <span flex style="text-align: center; font-size: 16px; cursor: pointer;"
                   ng-click="vm.showDetailedCamBuildInfo = !vm.showDetailedCamBuildInfo"
                   ng-init="vm.showDetailedCamBuildInfo = false">
-                Current Build: <b>{{::vm.systemConfig.version.description}}</b>
+                Current Build: <b>{{::$root.systemConfig.version.description}}</b>
             </span>
 
             <div ng-show="vm.showDetailedCamBuildInfo" layout="column" class="grow-height-animation"
                  style="margin-top: 8px;">
-                <div layout="row" ng-repeat="(key, value) in vm.systemConfig.version">
+                <div layout="row" ng-repeat="(key, value) in $root.systemConfig.version">
                     <span style="width: 140px;">{{::key}}:</span>
                     <span style="margin-left: 8px;">{{::value}}</span>
                 </div>

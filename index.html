@@ -307,8 +307,7 @@
     <div layout="column" flex>
         <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" class="md-whiteframe-z1" md-theme-watch="true"
                     ng-class="{'slide-in-vertically-navbar': loggedIn, 'connection-lost-bg-bright': vm.connectionToMonitorLost}" >
-            <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden; margin-bottom: 16px;">
-
+            <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden;">
                 <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-navicon"></md-icon>
                 </md-button>
@@ -361,10 +360,15 @@
     </div>
 
 </md-content>
-<div ng-if="loggedIn" class="unselectable toolbar-collapse-button" ng-class="{'toolbar-collapse-button-grey': !vm.showNavbar}"
-        ng-click="vm.toggleNavbar()" title="Expand or Collapse Toolbar">
-    <span class="fa"
-       ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
+<div ng-if="loggedIn" class="unselectable toolbar-collapse-button"
+        ng-click="vm.toggleNavbar()" title="Expand or Collapse Toolbar" layout="row">
+
+    <div flex layout="row" layout-align="center center">
+        <span class="fa" ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
+        <span style="margin: 0px 4px;">{{::$root.systemConfig.version.description}}</span>
+        <span style="margin: 0px 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
+        <span class="fa" ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
+    </div>
 </div>
 
 <alarms-notifier ng-if="loggedIn"></alarms-notifier>
