@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
-    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService, $timeout) {
+    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService, $timeout, DATETIME_FORMAT) {
 
         var vm = this;
 
@@ -136,7 +136,7 @@
                 if (vm.sensorsToDisplay[sensorNameList[1]]) {
                     vm.sensorsToDisplay[sensorNameList[1]].value = sensor.value.value;
                     vm.sensorsToDisplay[sensorNameList[1]].timestamp = sensor.value.timestamp;
-                    vm.sensorsToDisplay[sensorNameList[1]].date = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                    vm.sensorsToDisplay[sensorNameList[1]].date = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
                     vm.sensorsToDisplay[sensorNameList[1]].received_timestamp = sensor.value.received_timestamp;
                     vm.sensorsToDisplay[sensorNameList[1]].status = sensor.value.status;
                     vm.sensorsToDisplay[sensorNameList[1]].name = sensorNameList[1];

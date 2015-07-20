@@ -87,7 +87,7 @@
         };
 
         vm.onTimeSet = function (newDate) {
-            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY-MM-DD HH:mm:ss');
+            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format(DATETIME_FORMAT);
             $scope.filteredDraftItems[vm.currentRowDatePickerIndex].isDirty = true;
             vm.showDatePicker = false;
             vm.currentSelectedDate = moment.utc(newDate);
@@ -120,7 +120,7 @@
         };
 
         vm.validateInputDate = function (item) {
-            var d = moment(item.desired_start_time, 'YYYY-MM-DD HH:mm:ss');
+            var d = moment(item.desired_start_time, DATETIME_FORMAT);
             item.hasValidInput = d.isValid();
             return d.isValid();
         };

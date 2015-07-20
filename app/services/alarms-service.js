@@ -24,7 +24,7 @@
             messageObj.severity = alarmValues[0];
             messageObj.priority = alarmValues[1];
             messageObj.name = messageName.replace('mon:kataware.alarm_', '');
-            messageObj.date = moment.utc(messageObj.timestamp, 'X').format('HH:mm:ss DD-MM-\'YY');
+            messageObj.date = moment.utc(messageObj.timestamp, 'X').format('DD-MM-\'YY HH:mm:ss');
 
             var foundAlarm = _.findWhere(api.alarmsData, {name: messageObj.name});
             if (foundAlarm) {

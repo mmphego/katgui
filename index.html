@@ -69,6 +69,7 @@
 <script src="app/services/user-service.js"></script>
 <script src="app/services/session-service.js"></script>
 <script src="app/services/status-service.js"></script>
+<script src="app/services/userlog-service.js"></script>
 
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/util.js"></script>
@@ -115,6 +116,7 @@
 <script src="app/scheduler/subarray-resources/subarray-resources.js"></script>
 <script src="app/scheduler/observations/observations-detail.js"></script>
 <script src="app/scheduler/observations/observations-overview.js"></script>
+<script src="app/userlogs/userlogs.js"></script>
 <script src="app/process-control/process-control.js"></script>
 <script src="app/cam-components/cam-components.js"></script>
 <script src="app/instrumental-config/instrumental-config.js"></script>
@@ -206,11 +208,11 @@
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
                             <span class="fa fa-asterisk"></span>
-                            <button>Sub-Arrays</button>
+                            <button>Subarrays</button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.resources')">
                             <span class="fa fa-sitemap"></span>
-                            <button>Sub-Array Resources</button>
+                            <button>Subarrays Resources</button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.observations')">
                             <span class="fa fa-binoculars"></span>
@@ -236,6 +238,12 @@
                                      style="border-bottom: 1px solid #e5e5e5;">
                         <span class="fa fa-question-circle"></span>
                         <button>Instrumental Config</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlogs')">
+                        <span class="fa fa-pencil-square-o"></span>
+                        <button>User Logging</button>
                     </md-item-content>
                 </md-item>
                 <md-item>

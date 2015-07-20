@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorListCtrl', SensorListCtrl);
 
-    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval, $log) {
+    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval, $log, DATETIME_FORMAT) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -213,8 +213,8 @@
                 if (sensorNameList[0] + '.' + oldSensor.python_identifier === strList[1]) {
                     oldSensor.sensorValue = sensor.value;
                     oldSensor.status = sensor.value.status;
-                    oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
-                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                    oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
                     oldSensor.value = sensor.value.value;
                 }
             });

@@ -1,0 +1,95 @@
+<md-dialog md-theme="{{themePrimary}}" flex-sm="100" flex-gt-sm="150" flex-gt-md="150" flex-gt-lg="150" class="md-whiteframe-z1" style ="overflow:visible; height: 800px">
+    <md-toolbar><div style="padding-left: 20px; padding-top: 10px;"><p>User Log Editor</p></div></md-toolbar>
+    <md-dialog-content class="md-padding" style ="overflow:visible" layout="column">
+        <div layout="row">
+            <div class="dropdown" flex="30">
+                <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="#">
+                    <label>Start time: </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" data-ng-model="ulog.start_time"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    <datetimepicker style="color:slategray;" data-ng-model="ulog.start_time" data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"/>
+                </ul>
+            </div>
+            <div flex="15"></div>
+            <div class="dropdown" flex="30">
+                <a class="dropdown-toggle" id="dropdown4" role="button" data-toggle="dropdown" data-target="#" href="#">
+                    <label>End time: </label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" data-ng-model="ulog.end_time"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    <datetimepicker  style="color:slategray;" data-ng-model="ulog.end_time" data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"/>
+                </ul>
+            </div>
+        </div>
+        <div flex style="height:30px;"><span></span></div>
+        <div layout="row">
+            <md-input-container flex="25">   
+                <md-select placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px">
+                    <md-option value="shift_log">Shift Log</md-option>
+                    <md-option value="time_loss">Time-loss Log</md-option>
+                    <md-option value="observation">Observation Log</md-option>
+                    <md-option value="status_log">Status Log</md-option>
+                    <md-option value="maintenance">Maintenance</md-option>
+                    <md-option value="alarm_log">Alarm Log</md-option>
+            </md-input-container>
+            <div flex="5"></div>
+            <div layout="column" flex>
+                <label>Log Message</label>
+                <md-input-container flex>
+                    <textarea rows="5" columns="1" md-maxlength="150" ng-model="ulog.userlog_content"></textarea>
+                </md-input-container>
+            </div>
+        </div>
+        <div flex style="height:30px;"><span></span></div>
+        <div layout="row">
+            <md-input-container flex="25"> 
+                Attachments: <input file-model="myFile" type="file" name="files[]" multiple />
+            </md-input-container>
+            <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match>
+                <md-autocomplete
+                    md-selected-item="selectedItem" 
+                    md-selected-item-change = "" 
+                    md-search-text="searchText" 
+                    md-search-text-change="" 
+                    md-items="item in querySearch(searchText)" 
+                    md-item-text="item.name" 
+                    ng-blur=clear()
+                    placeholder="Select tags">
+                    <md-item-template>
+                        <span md-highlight-text="searchText">{{item.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found
+                    </md-not-found>
+                </md-autocomplete>
+                <md-chip-template>
+                    <span>
+                        <strong>{{$chip.name}}</strong>
+                    </span>
+                </md-chip-template>
+                <md-button class="md-fab" aria-label="Eat cake">
+                    <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
+                </md-button>
+            </md-chips>
+        </div>      
+        <md-list>
+            <md-list-item ng-repeat="attach in ulog.metadata">
+                <div flex="20">{{attach.m_name}}</div>
+                <i class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name)"></i>
+            </md-list-item>
+        </md-list>                  
+    </md-dialog-content>
+    <div class="md-actions">
+        <md-button ng-click="add()" class="md-primary">
+            Submit Log
+        </md-button>
+        <md-button ng-click="hide()" class="md-primary">
+            Cancel
+        </md-button>
+    </div>
+</md-dialog>
