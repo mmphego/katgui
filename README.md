@@ -18,4 +18,9 @@ Navigate to the project folder
 To use gulp to host the project do:
 >gulp webserver
 
+To build the production version do:
+>gulp build
+
+Which will minify and concat to the dist/ folder.
+
 This hosts the project on http://localhost:8000, open in a Chrome browser
