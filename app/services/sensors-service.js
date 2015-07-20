@@ -6,7 +6,6 @@
     function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval, $log, $http) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
-        var katControlUrlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
         api.connection = null;
         api.deferredMap = {};
@@ -216,7 +215,7 @@
 
         api.listResources = function () {
             var deferred = $q.defer();
-            $http.get(katControlUrlBase + '/resources')
+            $http.get(urlBase + '/resource')
                 .success(function (result) {
                     for (var i in result) {
                         api.resources[result[i]] = {};
@@ -231,12 +230,12 @@
 
         api.listResourceSensors = function (resourceName) {
             var deferred = $q.defer();
-            $http.get(katControlUrlBase + '/resource/' + resourceName + '/sensors')
+            $http.get(urlBase + '/resource/' + resourceName + '/sensors')
                 .success(function (result) {
                     api.resources[resourceName].sensorsList = [];
                     for (var i in result) {
                         api.resources[resourceName].sensorsList.push(
-                            {name: result[i].name, python_identifier: result[i].name, description: result[i].description});
+                            {name: result[i].name, python_identifier: result[i].python_identifier, description: result[i].description});
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);
                 })
