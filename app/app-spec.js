@@ -32,6 +32,9 @@ describe('ApplicationCtrl', function () {
         };
         _ConfigService_.loadKATObsPortalURL = function () {
         };
+        _ConfigService_.getSystemConfig = function () {
+            return _$q_.defer().promise;
+        };
 
         mdSidenav = function () {
             return {
