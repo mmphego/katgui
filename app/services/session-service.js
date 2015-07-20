@@ -49,7 +49,7 @@
             if ($rootScope.jwt) {
                 $http(createRequest('get', urlBase + '/user/login'))
                     .success(function(result){
-                        console.log('login successfully returned');
+                        $log.info('login successfully returned');
                         loginSuccess(result, $rootScope.jwt); 
                     })
                     .error(loginError);
@@ -79,10 +79,10 @@
         function verifySuccess(result) {
             if (result.session_id) {
                 if (result.confirmation_token) {
-                    console.log('Found confirmation token');
+                    $log.info('Found confirmation token');
                     confirmRole(result.session_id, result.confirmation_token);
                 } else {
-                    console.log('No token, off to login');
+                    $log.info('No token, off to login');
                     api.login(result.session_id);
                 }
             } else {
@@ -147,13 +147,13 @@
                         })
                 .then(function() {
                     api.login(session_id);
-                    console.log('Confirmation complete!');   
+                    $log.info('Confirmation complete!');   
                 });
         };
 
         function loginSuccess(result, session_id) {
             if (session_id) {
-                console.log('Found session id');
+                $log.info('Found session id');
                 var a = session_id.split(".");
                 $rootScope.session_id = session_id;
                 var payload = JSON.parse(CryptoJS.enc.Base64.parse(a[1]).toString(CryptoJS.enc.Utf8));
@@ -171,7 +171,7 @@
                 }
             } else {
                 //User's session expired, we got a message
-                console.log('No session id');
+                $log.info('No session id');
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
                 $rootScope.showSimpleToast(result.message);
