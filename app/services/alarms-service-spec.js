@@ -4,7 +4,10 @@ describe('AlarmsService', function() {
 
     var scope, AlarmsService;
 
-    beforeEach(inject(function ($rootScope, _AlarmsService_) {
+    beforeEach(inject(function ($rootScope, _AlarmsService_, _SoundService_) {
+        _SoundService_.playAlarm = function () {};
+        _SoundService_.playCriticalAlarm = function () {};
+        _SoundService_.playBeep = function () {};
         AlarmsService = _AlarmsService_;
         scope = $rootScope.$new();
     }));

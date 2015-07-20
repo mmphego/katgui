@@ -10,16 +10,15 @@ var ngHtml2js = require("gulp-ng-html2js");
 var ngannotate = require('gulp-ng-annotate');
 var htmlmin = require('gulp-htmlmin');
 var cssmin = require('gulp-cssmin');
-var packagejson = require('./package.json');
 var streamqueue = require('streamqueue');
 var rimraf = require('rimraf');
-var rename = require('gulp-rename');
 var jshint = require('gulp-jshint');
 var jasmine = require('gulp-jasmine');
 var stylish = require('jshint-stylish');
 var domSrc = require('gulp-dom-src');
 var karma = require('gulp-karma');
 var util = require('gulp-util');
+var insert = require('gulp-insert');
 
 var htmlminOptions = {
     collapseBooleanAttributes: true,
@@ -45,6 +44,7 @@ gulp.task('css', ['clean'], function () {
         'bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
         'bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
         'app/app.less'])
+        .pipe(insert.prepend('@fa-font-path: "fonts";'))
         .pipe(less().on('error', util.log))
         .pipe(concat('app.full.min.css'))
         .pipe(cssmin({
@@ -103,11 +103,6 @@ gulp.task('images', ['clean'], function () {
         .pipe(gulp.dest('dist/images/'));
 });
 
-gulp.task('d3', ['clean'], function () {
-    return gulp.src('bower_components/d3/d3.min.js')
-        .pipe(gulp.dest('dist/bower_components/d3/'));
-});
-
 gulp.task('jshint', function () {
     gulp.src(['app/**/*.js'])
         .pipe(jshint())
@@ -137,8 +132,9 @@ gulp.task('webserver', function() {
         .pipe(webserver({
             livereload: true,
             //directoryListing: true,
-            open: true
+            open: true,
+            fallback: 'index.html'
         }));
 });
 
-gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'fonts', 'images', 'd3']);
+gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'fonts', 'images']);

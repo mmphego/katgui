@@ -30,10 +30,11 @@
             };
         });
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, $timeout) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $log) {
 
         var vm = this;
-        var WAITIMEFORREQ = 250;
+
+        ConfigService.loadAggregateSensorDetail();
 
         vm.alarmsOrderByFields = [
             {label: 'Severity', value: 'severity'},
@@ -89,13 +90,9 @@
         };
 
         vm.clearSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.clearAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.clearAlarm(item.name);
                 }
             });
         };
@@ -105,13 +102,9 @@
         };
 
         vm.acknowledgeSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.acknowledgeAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.acknowledgeAlarm(item.name);
                 }
             });
         };
@@ -121,13 +114,9 @@
         };
 
         vm.knowSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.addKnownAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.addKnownAlarm(item.name);
                 }
             });
         };
@@ -137,19 +126,15 @@
         };
 
         vm.cancelKnowSelectedAlarms = function () {
-            var timeout = 0;
             AlarmsService.alarmsData.forEach(function (item) {
                 if (item.selected) {
-                    $timeout(function () {
-                        ControlService.cancelKnowAlarm(item.name);
-                    }, timeout);
-                    timeout += WAITIMEFORREQ;
+                    ControlService.cancelKnownAlarm(item.name);
                 }
             });
         };
 
-        vm.cancelKnowAlarm = function (alarm) {
-            ControlService.cancelKnowAlarm(alarm.name);
+        vm.cancelKnownAlarm = function (alarm) {
+            ControlService.cancelKnownAlarm(alarm.name);
         };
 
         vm.keydown = function (e, key) {
@@ -162,6 +147,41 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
+        };
+
+        vm.viewAlarmSystemConfig = function ($event) {
+            ConfigService.getSystemConfig()
+                .then(function () {
+                    ConfigService.getConfigFileContents('static/alarms/common.conf')
+                        .success(function (commonResult) {
+                            ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
+                                .success(function (alarmsResult) {
+                                    var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
+                                    $rootScope.showPreDialog('System Config for Alarms', displayResult, $event);
+                                })
+                                .error(function (result) {
+                                    $log.error(result);
+                                })
+                        })
+                        .error(function (result) {
+                            $log.error(result);
+                        });
+                });
+        };
+
+        vm.showAggregateSensorDetail = function (item) {
+            if (item.value.indexOf('agg_') > -1) {
+                var sensorName = item.value.split(',')[2].split(' ')[0];
+                if (ConfigService.aggregateSensorDetail[sensorName]) {
+                    $rootScope.showPreDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+                } else {
+                    $rootScope.showSimpleToast('Cannot find aggregate sensor details in ConfigService ' + sensorName);
+                }
+            }
+        };
+
+        vm.viewAlarmsHistory = function () {
+            AlarmsService.tailAlarmsHistory();
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);

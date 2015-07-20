@@ -12,7 +12,7 @@
                         <md-button layout="row" style="min-height: 42px; width: 100%" class="unselectable" ng-click="vm.navigateToSchedulerDetails(subarray.id)"
                                    title="Click to Manage Observations for Sub-Array {{subarray.id}}">
                             <span>{{subarray.state}}</span>
-                            <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
+                            <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
                         </md-button>
                         <div style="left: 0; bottom: 0; position: absolute">
                             <span style="font-size: 10px; margin-right: 2px;" title="Resources in Maintenance">Maint.</span>
@@ -21,40 +21,47 @@
                     </div>
 
                     <span ng-show="subarray.state === 'active'"></span>
-                    <md-select placeholder="Product" ng-model="subarray.product">
-                        <md-option value="c856M4k">c856M4k</md-option>
-                        <md-option value="c856M32k">c856M32k</md-option>
-                    </md-select>
-                    <md-select placeholder="Band" ng-model="subarray.band">
-                        <md-option value="l">l</md-option>
-                        <md-option value="s">s</md-option>
-                        <md-option value="u">u</md-option>
-                        <md-option value="x">x</md-option>
-                    </md-select>
+                    <!--<md-select placeholder="Product" ng-model="subarray.product">-->
+                        <!--<md-option value="c856M4k">c856M4k</md-option>-->
+                        <!--<md-option value="c856M32k">c856M32k</md-option>-->
+                    <!--</md-select>-->
+                    <!--<md-select placeholder="Band" ng-model="subarray.band">-->
+                        <!--<md-option value="l">l</md-option>-->
+                        <!--<md-option value="s">s</md-option>-->
+                        <!--<md-option value="u">u</md-option>-->
+                        <!--<md-option value="x">x</md-option>-->
+                    <!--</md-select>-->
+                    <div layout="row" style="position: absolute; padding: 0; top: 0; right: 0; font-size: 14px">
+                        <span title="Selected Band" style="margin-right: 8px;">Band: {{subarray.band}}</span>
+                        <span title="Selected Product" style="margin-right: 8px;">Product: {{subarray.product}}</span>
+                        <span ng-show="subarray.state === 'active'" title="Config Label">Config Label:{{subarray.config_label}}</span>
+                    </div>
                     <md-button class="md-icon-button inline-action-button" ng-click="vm.setSubarrayInMaintenance(subarray)"
-                               title="Set Sub-Array in Maintenance">
+                               title="Set Sub-Array in Maintenance" style="margin-top: 16px;">
                         <md-icon class="fa" md-font-icon="fa-wrench"></md-icon>
                     </md-button>
-                    <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray(subarray)" title="Free Subarray">
+                    <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray(subarray)"
+                               title="Free Subarray" style="margin-top: 16px;">
                         <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                     </md-button>
                     <md-button ng-show="subarray.state === 'inactive'" class="md-icon-button inline-action-button" ng-click="vm.activateSubarray(subarray)"
-                               title="Activate Sub-Array">
+                               title="Activate Sub-Array" style="margin-top: 16px;">
                         <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                     </md-button>
                 </md-toolbar>
 
-                <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.in_maintenance}">
+                <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <div flex class="resource-item animate-repeat-opacity" layout="row" layout-align="start center"
-                         ng-repeat="resource in vm.poolResources | filter:{sub_nr:subarray.id} | orderBy:'name'" ng-class="{'transparent-background':subarray.in_maintenance}">
+                         ng-repeat="resource in subarray.allocations | orderBy:'name'" ng-class="{'transparent-background':subarray.maintenance}"
+                         ng-if="resource.allocation === 'None'">
                         <span style="min-width: 34px;">
-                            <span class="fa" style="font-size: 18px;" ng-class="{'fa-wrench maintenance-text':resource.in_maintenance}" title="Resource Marked In Maintenance"></span>
+                            <span class="fa fa-wrench maintenance-text" style="font-size: 18px;" ng-if="vm.isResourceInMaintenance(resource)" title="Resource Marked In Maintenance"></span>
                         </span>
                         <span style="min-width: 26px;">
-                            <span class="fa" style="font-size: 18px; margin-right: 4px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
+                            <span class="fa fa-warning error-text" style="font-size: 18px; margin-right: 4px;" ng-if="vm.isResourceFaulty(resource)" title="Resource Marked Faulty"></span>
                         </span>
-                        <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>
-                        <md-button class="md-icon-button inline-action-button" ng-click="vm.markResourceFaulty(subarray, resource); $event.stopPropagation()"
+                        <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
+                        <md-button class="md-icon-button inline-action-button" ng-click="vm.markResourceFaulty(resource); $event.stopPropagation()"
                                    title="Mark Resource As Faulty">
                             <md-icon class="fa" md-font-icon="fa-exclamation-circle"></md-icon>
                         </md-button>
@@ -90,17 +97,17 @@
                      ng-class="{'selected-resource-item': resource.selected}"
                      ng-click="resource.selected = !resource.selected;">
                     <span style="min-width: 22px;">
-                        <span class="fa fa-wrench maintenance-text" ng-if="resource.in_maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
+                        <span class="fa fa-wrench maintenance-text" ng-if="vm.isResourceInMaintenance(resource)" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
                     </span>
                     <span style="min-width: 22px; margin-left: 4px;">
-                        <span class="fa" style="font-size: 18px; min-width: 18px;" ng-class="{'fa-warning error-text':resource.state === 'faulty'}" title="Resource Marked Faulty"></span>
+                        <span class="fa fa-warning error-text" style="font-size: 18px; min-width: 18px;" ng-if="vm.isResourceFaulty(resource)" title="Resource Marked Faulty"></span>
                     </span>
-                    <span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.in_maintenance}">{{resource.name}}</span>
-                    <md-button class="md-icon-button inline-action-button" ng-click="vm.markResourceFaulty(null, resource); $event.stopPropagation()"
+                    <span flex style="font-size:18px; margin-left: 4px;" ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
+                    <md-button class="md-icon-button inline-action-button" ng-click="vm.markResourceFaulty(resource); $event.stopPropagation()"
                                title="Mark Resource As Faulty">
                         <md-icon class="fa" md-font-icon="fa-exclamation-circle"></md-icon>
                     </md-button>
-                    <md-button class="md-icon-button inline-action-button" ng-click="vm.markResourceInMaintenance(null, resource); $event.stopPropagation()"
+                    <md-button class="md-icon-button inline-action-button" ng-click="vm.markResourceInMaintenance(resource); $event.stopPropagation()"
                                title="Mark Resource in Maintenance">
                         <md-icon class="fa" md-font-icon="fa-wrench"></md-icon>
                     </md-button>

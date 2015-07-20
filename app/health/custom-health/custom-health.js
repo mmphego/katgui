@@ -1,59 +1,121 @@
-/*jshint loopfunc: true */
 (function () {
 
     angular.module('katGui.health')
         .controller('CustomHealthCtrl', CustomHealthCtrl);
 
-    function CustomHealthCtrl(MonitorService, $scope, $rootScope, $interval, d3Util) {
+    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams, $timeout, $log) {
 
         var vm = this;
+        vm.resources = SensorsService.resources;
+        vm.resourcesNames = [];
         vm.customStatusTrees = [];
         vm.regexStrings = [];
-        $scope.itemsToUpdate = {};
+        vm.guid = KatGuiUtil.generateUUID();
+        vm.connectionLost = false;
 
-        vm.unbindUpdate = $rootScope.$on('sensorUpdateReceived', function (event, sensor) {
-            if (!$scope.itemsToUpdate[sensor.name.replace('.', '_')]) {
-                for (var i = 0; i < vm.regexStrings.length; i++) {
-
-                    if (!vm.customStatusTrees[i]) {
-                        vm.customStatusTrees[i] = {
-                            name: vm.regexStrings[i],
-                            sensor: '',
-                            children: []
-                        };
+        vm.connectListeners = function () {
+            SensorsService.connectListener()
+                .then(function () {
+                    if (vm.connectInterval) {
+                        $interval.cancel(vm.connectInterval);
+                        vm.connectionLost = false;
+                        vm.connectInterval = null;
+                        if (!vm.disconnectIssued) {
+                            $rootScope.showSimpleToast('Reconnected :)');
+                        }
                     }
-
-                    if (!_.findWhere(vm.customStatusTrees[i].children, {name: sensor.name})) {
-                        vm.customStatusTrees[i].children.push({
-                            name: sensor.name,
-                            sensor: sensor.name,
-                            sensorValue: sensor
-                        });
+                }, function () {
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    if (!vm.connectInterval) {
+                        vm.connectionLost = true;
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }
+                });
+            vm.handleSocketTimeout();
+        };
+
+        vm.handleSocketTimeout = function () {
+            SensorsService.getTimeoutPromise()
+                .then(function () {
+                    if (!vm.disconnectIssued) {
+                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        if (!vm.connectInterval) {
+                            vm.connectionLost = true;
+                            vm.connectInterval = $interval(vm.connectListeners, 10000);
+                            vm.connectListeners();
+                        }
+                    }
+                });
+        };
+
+        SensorsService.listResources()
+            .then(function () {
+                for (var key in vm.resources) {
+                    vm.resourcesNames.push({name: key});
                 }
-            }
-            $scope.itemsToUpdate[sensor.name.replace('.', '_')] = sensor;
-            if (!vm.stopUpdating) {
-                vm.stopUpdating = $interval(vm.applyPendingUpdates, 200);
+            });
+
+        vm.unbindSetSensorStrategy = $rootScope.$on('setSensorStrategyMessage', function (event, message) {
+
+            for (var i = 0; i < vm.regexStrings.length; i++) {
+
+                for (var k in message.sensors) {
+                    if (message.sensors[k][0].parent_name === vm.regexStrings[i].name.split('.')[0]
+                        && (message.sensors[k][2]).indexOf(vm.regexStrings[i].name.split('.')[1]) !== -1) {
+
+                        if (!vm.customStatusTrees[i]) {
+                            vm.customStatusTrees[i] = {
+                                name: vm.regexStrings[i].name,
+                                resource: vm.regexStrings[i].name.split('.')[0],
+                                size: vm.regexStrings[i].size,
+                                sensor: '',
+                                children: []
+                            };
+                        }
+
+                        if (!_.findWhere(vm.customStatusTrees[i].children, {name: message.sensors[k][2]})) {
+                            vm.customStatusTrees[i].children.push({
+                                name: message.sensors[k][2],
+                                sensor: message.sensors[k][2],
+                                sensorValue: {
+                                    timestamp: message.sensors[k][0].reading[0],
+                                    received_timestamp: message.sensors[k][0].reading[1],
+                                    status: message.sensors[k][0].reading[2],
+                                    value: message.sensors[k][0].reading[3]
+                                },
+                                objectValue: message.sensors[k][0]
+                            });
+                        }
+                    }
+                    SensorsService.subscribe(message.resource + '.' + message.sensors[k][2], vm.guid);
+                }
             }
         });
 
-        //todo move to util class
+        vm.unbindSensorsUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
+            var strList = sensor.name.split(':');
+            var sensorNameList = strList[1].split('.');
+
+            $scope.itemsToUpdate[sensorNameList[1]] = sensor;
+            if (!vm.stopUpdating) {
+                vm.stopUpdating = $interval(vm.applyPendingUpdates, $rootScope.sensorListStrategyInterval);
+            }
+        });
+
+        $scope.itemsToUpdate = {};
+
         vm.applyPendingUpdates = function () {
             var attributes = Object.keys($scope.itemsToUpdate);
             if (attributes.length > 0) {
                 for (var i = 0; i < attributes.length; i++) {
-                    var queryString = '#' + attributes[i];
+                    var sensorName = $scope.itemsToUpdate[attributes[i]].name.split(':')[1].replace(/\./g, '-');
+                    var queryString = '.' + sensorName;
                     var resultList = d3.selectAll(queryString);
-                    //difficult to test d3 classes here, so ignore it for now
-                    resultList.attr('class', function (d) {
-                        return vm.setClassesOfSensor(d, attributes[i]);
+                    resultList[0].forEach(function (element) {
+                        d3.select(element).attr('class', function (d) {
+                            return vm.setClassesOfSensor(d, attributes[i], sensorName);
+                        });
                     });
-                    //if (resultList[0].length === 0) {
-                    ////this just means that the status view is still in the process of being built and drawn in the DOM,
-                    ////the updates will be added in the next interval
-                    //    console.error('Sensor tried to update, but the visual element does not exist - ' + attributes[i]);
-                    //}
                 }
             } else {
                 if (angular.isDefined(vm.stopUpdating)) {
@@ -63,74 +125,105 @@
             }
         };
 
-        //todo move to util class
-        vm.setClassesOfSensor = function (d, sensorToUpdateName) {
+        vm.setClassesOfSensor = function (d, sensorToUpdateName, fixedClassName) {
             if (d.depth > 0) {
                 if (!d.sensorValue) {
                     d.sensorValue = {};
                 }
-                var statusClassResult = "inactive-child";
+                var statusClassResult = fixedClassName;
                 if ($scope.itemsToUpdate[sensorToUpdateName]) {
-                    d.sensorValue = $scope.itemsToUpdate[sensorToUpdateName].sensorValue;
+                    d.sensorValue = $scope.itemsToUpdate[sensorToUpdateName].value;
                     if (d.sensorValue) {
-                        statusClassResult = d.sensorValue.status + '-child';
-                        delete $scope.itemsToUpdate[sensorToUpdateName];
+                        statusClassResult += ' ' + d.sensorValue.status + '-child';
                     }
-                } else {
-                    //delete $scope.itemsToUpdate[sensorToUpdateName];
-                    //console.error('Trying to update sensor that does not exist or that does not have a sensorValue - this might be because the sensor was not subscribed to in kat-monitor-webserver');
-                    //console.error(d);
                 }
                 statusClassResult += d.dx > 300 ? " child-big-text" : " child";
                 return statusClassResult;
             } else if (d.sensorValue) {
-                delete $scope.itemsToUpdate[d.name + '_' + d.sensor];
-                return d.sensorValue.status + '-child parent';
-            } else {
-                delete $scope.itemsToUpdate[sensorToUpdateName];
-                console.error('deleting a sensor update because the sensorValue is null');
-                console.error(d);
+                return fixedClassName + ' ' + d.sensorValue.status + '-child parent';
             }
         };
 
-        //todo move to util class
-        vm.subscribeToChildSensors = function (parent) {
-            if (parent.children && parent.children.length > 0) {
-                parent.children.forEach(function (child) {
-                    vm.subscribeToChildSensors(child);
-                });
-            } else if (parent.subs && parent.subs.length > 0) {
-                parent.subs.forEach(function (sub) {
-                    if (!parent.children) {
-                        parent.children = [];
-                    }
-                    parent.children.push({name: sub, sensor: sub});
-                    MonitorService.subscribe(sub);
-                });
-            }
-            if (parent.sensor) {
-                MonitorService.subscribe(parent.sensor);
-            }
-        };
-
-        vm.buildView = function(regex) {
-            if (vm.regexStrings.indexOf(regex) === -1) {
-                vm.regexStrings.push(regex);
-                MonitorService.subscribe(regex);
+        vm.buildView = function (resource, regex) {
+            var sensorRegex = {
+                name: resource + '.' + regex,
+                size: {w: vm.selectedWidth, h: vm.selectedHeight},
+                sizeString: vm.selectedWidth + 'x' + vm.selectedHeight
+            };
+            var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
+            if (!existingItem) {
+                vm.regexStrings.push(sensorRegex);
+                SensorsService.setSensorStrategy(
+                    resource,
+                    regex,
+                    $rootScope.sensorListStrategyType,
+                    $rootScope.sensorListStrategyInterval,
+                    $rootScope.sensorListStrategyInterval
+                );
             }
         };
 
+        //note: we dont unsubscribe from sensors here because if we have duplicates on the view,
+        //the duplicate will be in black and unsubscribing from that sensor would mean the other sensors with the same name
+        //will not get the updates any longer
         vm.removeStatusTree = function (tree) {
-            MonitorService.unsubscribe(tree.name);
-            vm.regexStrings.splice(vm.regexStrings.indexOf(tree.name), 1);
-            vm.customStatusTrees.splice(vm.customStatusTrees.indexOf(tree));
+            var existingItem = _.findWhere(vm.regexStrings, {name: tree.name});
+            if (existingItem) {
+                vm.regexStrings.splice(vm.regexStrings.indexOf(existingItem), 1);
+                vm.customStatusTrees.splice(vm.customStatusTrees.indexOf(tree), 1);
+            }
         };
 
-        $scope.$on('$destroy', function() {
-            vm.unbindUpdate();
+        vm.exportToUrl = function () {
+            var url = $location.absUrl();
+            if (url.indexOf('?') !== -1) {
+                url = url.split('?')[0];
+            }
+            url += '?layout=';
+            vm.regexStrings.forEach(function (item) {
+                url += item.name + ',' + item.sizeString + ';';
+            });
+            $rootScope.showSimpleDialog('Exported URL', url);
+        };
+
+        $scope.$on('$destroy', function () {
+            vm.unbindSetSensorStrategy();
+            vm.unbindSensorsUpdate();
             if (vm.stopUpdating) {
                 $interval.cancel(vm.stopUpdating);
             }
+            if (vm.connectInterval) {
+                $interval.cancel(vm.connectInterval);
+            }
+            vm.disconnectIssued = true;
+            SensorsService.disconnectListener();
         });
+
+        if ($stateParams.layout) {
+            var lastTimeout = 200;
+            var layouts = $stateParams.layout.split(';');
+            layouts.forEach(function (layout) {
+                if (layout) {
+                    var regex = layout.split(',')[0];
+                    var size = layout.split(',')[1].split('x');
+                    var resource = regex.split('.')[0];
+                    var sensor = regex.split('.')[1];
+
+                    //todo possible timing issue between when we build the status trees
+                    //and when getting multiple setSensorStrategyMessage on rootScope
+                    $timeout(function () {
+                        vm.selectedWidth = parseInt(size[0]);
+                        vm.selectedHeight = parseInt(size[1]);
+                        vm.buildView(resource, sensor);
+                    }, lastTimeout);
+                    lastTimeout += 500;
+                }
+            });
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
+        }
+
+        $timeout(vm.connectListeners, 500);
     }
 })();

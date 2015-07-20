@@ -60,7 +60,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT) {
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, $log) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -88,8 +88,14 @@
         $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
         $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
         $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
+        $rootScope.logNumberOfLines = $localStorage['logNumberOfLines'];
+        $rootScope.disableAlarmSounds = $localStorage['disableAlarmSounds'];
+
         if (!$rootScope.sensorListStrategyType) {
             $rootScope.sensorListStrategyType = 'event-rate';
+        }
+        if (!$rootScope.logNumberOfLines) {
+            $rootScope.logNumberOfLines = 200;
         }
         if (!$rootScope.sensorListStrategyInterval) {
             $rootScope.sensorListStrategyInterval = 3;
@@ -107,13 +113,20 @@
         vm.userCanOperate = false;
         vm.userLoggedIn = false;
         vm.actionMenuOpen = false;
+        vm.connectionToMonitorLost = false;
         $rootScope.toastPosition = 'bottom right';
         $rootScope.alarmsData = AlarmsService.alarmsData;
+
+        ConfigService.loadKATObsPortalURL();
 
         $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
         if (!angular.isDefined($rootScope.showAlarms)) {
             $rootScope.showAlarms = true;
         }
+
+        $rootScope.isNavbarVisible = function () {
+            return vm.showNavbar;
+        };
 
         $rootScope.showSimpleToast = function (message) {
             $mdToast.show(
@@ -123,7 +136,7 @@
                     .hideDelay(TOAST_HIDE_DELAY)
             );
 
-            console.log('Showing toast-message: ' + message);
+            $log.info('Showing toast-message: ' + message);
         };
 
         $rootScope.connectEvents = function () {
@@ -139,12 +152,15 @@
                     if (vm.connectMonitorInterval) {
                         $interval.cancel(vm.connectMonitorInterval);
                         vm.connectMonitorInterval = null;
-                        console.log('Reconnected Monitor Connection.');
+                        vm.connectionToMonitorLost = false;
+                        $log.info('Reconnected Monitor Connection.');
+                        vm.syncTimeWithServer();
                     }
                 }, function () {
-                    console.error('Could not establish Monitor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish Monitor connection. Retrying every 10 seconds.');
                     if (!vm.connectMonitorInterval) {
                         vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
+                        vm.connectionToMonitorLost = true;
                     }
                 });
             vm.handleMonitorSocketTimeout();
@@ -170,9 +186,10 @@
             MonitorService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        console.log('Monitor connection timeout! Attempting to reconnect...');
+                        $log.info('Monitor connection timeout! Attempting to reconnect...');
                         if (!vm.connectMonitorInterval) {
                             vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
+                            vm.connectionToMonitorLost = true;
                             $rootScope.connectEvents();
                         }
                     }
@@ -253,7 +270,7 @@
                         };
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
-                    "<div style='padding: 0px; margin: 0px;' layout='column' layout-padding >" +
+                    "<div style='padding: 0px; margin: 0px; overflow: auto' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
                     "<div flex>{{content}}</div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
@@ -264,7 +281,34 @@
                     targetEvent: event
                 });
 
-            console.log('Showing dialog, title: ' + title + ', message: ' + content);
+            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
+        };
+
+        $rootScope.showPreDialog = function (title, content, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = title;
+                        $scope.content = content;
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                    },
+                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                    "<div style='padding: 0px; margin: 0px; overflow: auto' layout='column' layout-padding >" +
+                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                    "<div flex><pre>{{content}}</pre></div>" +
+                    "</div>" +
+                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
+                    "</div>" +
+                    "</md-dialog>",
+                    targetEvent: event
+                });
+
+            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
         };
 
         $rootScope.showSBDetails = function (sb, event) {
@@ -325,11 +369,11 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    console.log('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
+                    $log.info('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
                     moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
                 })
                 .error(function (error) {
-                    console.error("Error syncing time with KATPortal! " + error);
+                    $log.error("Error syncing time with KATPortal! " + error);
                     $rootScope.serverTimeOnLoad = 0;
                     vm.localSiderealTime = "Error syncing time!";
                 });
@@ -340,14 +384,25 @@
                     $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
                 })
                 .error(function (error) {
-                    console.error("Could not retrieve site location from config server, LST will not display correctly. ");
-                    console.error(error);
+                    $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
+                    $log.error(error);
                 });
         };
 
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
+        };
+
+        vm.openGangliaLink = function () {
+            window.open('ganglia/');
+        };
+
+        vm.openIRCDisplay = function ($event) {
+            $rootScope.showPreDialog(
+                'IRC Information',
+                'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
+                $event);
         };
 
         //so that all controllers and directives has access to which keys are pressed
@@ -362,9 +417,10 @@
         });
     }
 
-    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider, $httpProvider,
-                             USER_ROLES) {
+    function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider,
+                             $httpProvider, USER_ROLES, $locationProvider, $urlMatcherFactoryProvider) {
 
+        $urlMatcherFactoryProvider.strictMode(false);
         //disable this in production for performance boost
         //batarang uses this for scope inspection
         if (window.location.host !== 'localhost:8000') {
@@ -373,8 +429,11 @@
             $httpProvider.defaults.useXDomain = true;
             delete $httpProvider.defaults.headers.common['X-Requested-With'];
         }
-
+        //todo nginx needs the following config before we can switch on html5Mode
+        //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
+        //$locationProvider.html5Mode(true);
         configureThemes($mdThemingProvider);
+
 
         $stateProvider.state('login', {
             url: '/login',
@@ -441,7 +500,7 @@
             }
         });
         $stateProvider.state('customHealth', {
-            url: '/custom-health',
+            url: '/custom-health?layout',
             templateUrl: 'app/health/custom-health/custom-health.html',
             title: 'Custom Health',
             data: {
@@ -462,6 +521,30 @@
             title: 'Operator Control',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
+            }
+        });
+        $stateProvider.state('process-control', {
+            url: '/process-control',
+            templateUrl: 'app/process-control/process-control.html',
+            title: 'Process Control',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
+        $stateProvider.state('cam-components', {
+            url: '/cam-components',
+            templateUrl: 'app/cam-components/cam-components.html',
+            title: 'CAM Components',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
+        $stateProvider.state('instrumental-config', {
+            url: '/instrumental-config',
+            templateUrl: 'app/instrumental-config/instrumental-config.html',
+            title: 'Instrumental Configuration',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
             }
         });
 
@@ -581,23 +664,26 @@
         $urlRouterProvider.otherwise('/login');
     }
 
-    function runKatGui($rootScope, $state, $localStorage) {
+    function runKatGui($rootScope, $state, $localStorage, $log) {
 
-        $rootScope.$on('$locationChangeSuccess', function (event, toState) {
+        $rootScope.$on('$stateChangeStart', function (event, toState) {
             if (!$rootScope.loggedIn && toState.name !== 'login') {
                 if (!$localStorage['currentUserToken']) {
                     event.preventDefault();
+                    $rootScope.requestedStateBeforeLogin = toState.name;
                     $state.go('login');
                 }
-            } else if ($rootScope.loggedIn && toState.name === 'login') {
+            } else if ($rootScope.loggedIn && $rootScope.requestedStateBeforeLogin) {
+                var newStateName = $rootScope.requestedStateBeforeLogin ? $rootScope.requestedStateBeforeLogin : 'home';
+                $rootScope.requestedStateBeforeLogin = null;
                 event.preventDefault();
-                $state.go('home');
+                $state.go(newStateName);
             }
         });
 
         $rootScope.$on('$stateChangeError', function (event) {
-            console.error('$stateChangeError - debugging required. Event: ');
-            console.error(event);
+            $log.error('$stateChangeError - debugging required. Event: ');
+            $log.error(event);
         });
     }
 

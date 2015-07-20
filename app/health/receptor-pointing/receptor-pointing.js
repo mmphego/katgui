@@ -3,13 +3,14 @@
     angular.module('katGui.health')
         .controller('ReceptorPointingCtrl', ReceptorPointingCtrl);
 
-    function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $interval, $timeout) {
+    function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $interval, $log) {
 
         var vm = this;
         vm.receptorsData = [];
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
+        vm.connectionLost = false;
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -17,12 +18,14 @@
                     vm.initSensors();
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
+                        vm.connectionLost = false;
                         vm.connectInterval = null;
                         $rootScope.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
-                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
+                        vm.connectionLost = true;
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }
                 });
@@ -35,6 +38,7 @@
                     if (!vm.disconnectIssued) {
                         $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
+                            vm.connectionLost = true;
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
                             vm.connectListeners();
                         }
@@ -65,7 +69,7 @@
                 .then(function (result) {
                     result.forEach(function (item) {
                         vm.receptorsData.push({name: item, showHorizonMask: false});
-                        SensorsService.connectResourceSensorNamesLiveFeedWithList(item, vm.sensorsToConnect, vm.guid, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 10);
                     });
                 });
         };
@@ -102,12 +106,17 @@
             if (!receptor.horizonMask) {
                 ConfigService.getHorizonMask(receptor.name)
                     .success(function (result) {
-                        receptor.showHorizonMask = true;
-                        receptor.horizonMask = "az el\r" + result;
-                        vm.redraw(true);
+                        if (!result.error) {
+                            receptor.showHorizonMask = true;
+                            receptor.horizonMask = "az el\r" + JSON.parse(result);
+                            vm.redraw(true);
+                        } else {
+                            $rootScope.showSimpleDialog('Error Retrieving Horizon Mask', result.error);
+                        }
+
                     })
-                    .error(function (result) {
-                        console.log(result);
+                    .error(function () {
+                        $rootScope.showSimpleDialog('Error Retrieving Horizon Mask', 'Could not retrieve a horizon mask for ' + receptor.name);
                     });
             } else {
                 receptor.showHorizonMask = !receptor.showHorizonMask;

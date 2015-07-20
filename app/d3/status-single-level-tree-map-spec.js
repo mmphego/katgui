@@ -1,6 +1,6 @@
 describe('Directive: d3-chart', function () {
 
-    var $compile, $window, mockd3Service, $q, html, element, data, scope;
+    var $compile, $window, $q, html, element, data, scope;
 
     data = {name: "Test Sensors OK",
         children: [{name: "m011", sensor: "mon_proxy:agg_test_sensor1"}, {
@@ -12,12 +12,7 @@ describe('Directive: d3-chart', function () {
 
     //setup test
     beforeEach(function () {
-        mockd3Service = {};
         module('katGui.d3');
-
-        module(function ($provide) {
-            $provide.value('d3Service', mockd3Service);
-        });
 
         inject(function (_$compile_, _$rootScope_, _$window_, _$q_) {
             $window = _$window_;
@@ -25,12 +20,6 @@ describe('Directive: d3-chart', function () {
             scope = _$rootScope_.$new();
             $q = _$q_;
         });
-
-        mockd3Service.d3 = function () {
-            var deferred = $q.defer();
-            deferred.resolve($window.d3);
-            return deferred.promise;
-        };
     });
 
     //it('should create a d3 status single level tree map', function () {

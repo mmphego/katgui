@@ -106,11 +106,32 @@
             <div layout="row" layout-align="center center" style="margin-left: 16px; margin-right:16px; width: 130px;">
                 <!--<span style="margin-right: 8px;">Sensor Type:</span>-->
                 <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'"
-                           ng-model="vm.sensorType"
+                           ng-model="vm.sensorType" style="padding: 8px"
                            title="Sensor Type" ng-change="vm.sensorTypeChanged()">
                     <md-option value="numeric">Numeric</md-option>
                     <!--<md-option value="text">Text</md-option>-->
                     <md-option value="discrete">Discrete</md-option>
+                </md-select>
+            </div>
+            <div layout="row" layout-align="center center" ng-show="vm.sensorType === 'numeric'">
+                <span style="margin-right: 8px;">Interval:</span>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalNum = 1" ng-model="vm.intervalNum"
+                           style="margin: 0; padding: 8px">
+                    <md-option value="1">1</md-option>
+                    <md-option value="2">2</md-option>
+                    <md-option value="5">5</md-option>
+                    <md-option value="10">10</md-option>
+                    <md-option value="15">15</md-option>
+                    <md-option value="30">30</md-option>
+                    <md-option value="60">60</md-option>
+                    <md-option value="100">100</md-option>
+                </md-select>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalType = 'm'" ng-model="vm.intervalType"
+                           style="margin: 0; padding: 8px">
+                    <md-option value="s">Second(s)</md-option>
+                    <md-option value="m">Minute(s)</md-option>
+                    <md-option value="h">Hour(s)</md-option>
+                    <md-option value="d">Day(s)</md-option>
                 </md-select>
             </div>
 
@@ -177,7 +198,7 @@
         </md-toolbar>
         <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart" clear-function="vm.clearChart"
                           remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
-                          y-min="vm.yAxisMinValue"></multi-line-chart>
+                          y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
             <!--<md-button class="md-icon-button"-->
             <!--ng-click="vm.showHelp($event)">-->
@@ -196,12 +217,6 @@
                         <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()"
                                      ng-click="$event.stopPropagation()">
                             Show Grid Lines
-                        </md-checkbox>
-                    </md-menu-item>
-                    <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showDots" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
-                            Show Data Dots
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>

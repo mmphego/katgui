@@ -1,29 +1,35 @@
-<div flex layout-padding ng-controller="OperatorControlCtrl as vm" style="min-width: 1000px; margin-left: 24px; margin-right: 24px;">
+<div flex layout-padding ng-controller="OperatorControlCtrl as vm"
+     style="min-width: 1000px; margin-left: 16px; margin-right: 16px; margin-bottom: 16px;"
+     ng-class="{'connection-lost-bg':vm.connectionLost}">
 
     <div class="md-whiteframe-z1">
         <md-toolbar class="panel-toolbar md-whiteframe-z1">
             <div class="md-toolbar-tools">
-                <span>Operator Controls</span>
+                <span ng-show="!vm.connectionLost">Operator Controls</span>
+                <span ng-show="vm.connectionLost">Operator Controls (Connection Lost!)</span>
             </div>
         </md-toolbar>
         <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="operator-controls">
-            <md-button ng-click="vm.inhibitAll()"  class="md-raised md-primary">Inhibit All</md-button>
-            <md-button ng-click="vm.stowAll()"  class="md-raised md-primary">Stow All</md-button>
-            <md-button ng-click="vm.stopAll()"  class="md-raised md-primary">Stop All</md-button>
-            <md-button ng-click="vm.resumeOperations()"  class="md-raised md-primary">Resume Operations</md-button>
-            <md-button disabled ng-click="shutdownComputing()"  class="md-raised md-primary">Shutdown Computing</md-button>
+            <md-button ng-click="vm.inhibitAll()" class="md-raised md-primary">Inhibit All</md-button>
+            <md-button ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
+            <md-button ng-click="vm.stopAll()" class="md-raised md-primary">Stop All</md-button>
+            <md-button ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
+            <!--<md-button disabled ng-click="shutdownComputing()" class="md-raised md-primary">Shutdown Computing</md-button>-->
+            <md-button ng-click="vm.toggleFloodLights()" class="md-raised md-primary">Switch Floodlights {{!vm.floodLightSensor.value? 'on' : 'off'}}</md-button>
         </section>
 
         <md-list class="receptor-state-list">
             <md-item ng-repeat="rec in vm.receptorsData">
                 <md-item-content ng-class="{'receptor-state-div-error': rec.since === 'error'}"
-                                 class="receptor-state-div md-whiteframe-z1" layout="column" layout-align="start center">
+                                 class="receptor-state-div md-whiteframe-z1" layout="column"
+                                 layout-align="start center">
                     <span style="min-height: 25px; max-width: 140px;" title="Last Changed; Since: {{rec.since}}">{{rec.fromNow}}</span>
                     <span style="font-size: 26px;" flex><b>{{::rec.name}}</b></span>
                     <span class="flash-receptor-state"
                           ng-class="{'receptor-stop-state': rec.state==='STOP', 'receptor-stow-state': rec.state==='STOW'}">
                         <b>{{rec.state}}</b>
                     </span>
+
                     <div style="max-height: 20px; min-height: 20px; min-width: 100%">
                         <p ng-show="rec.inhibited" class="inhibited">INHIBIT</p>
                     </div>

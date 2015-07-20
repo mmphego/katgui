@@ -6,6 +6,9 @@
     <meta charset="utf-8">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
     <!-- endbuild -->
+    <!--todo: using this base tag breaks relative paths for includes like css, js and images-->
+    <!--figure that out before using the base element-->
+    <!--<base href="/">-->
 </head>
 
 <!-- Place this asynchronous JavaScript just before your </body> tag -->
@@ -49,17 +52,19 @@
 <script src="bower_components/jsjws/jws-3.0.js"></script>
 <script src="bower_components/jsjws/ext/json-sans-eval-min.js"></script>
 <script src="bower_components/jsrsasign/jsrsasign-4.7.0-all-min.js"></script>
+<script src="bower_components/d3/d3.min.js"></script>
 <!--<script src="bower_components/angular-gantt/assets/angular-gantt.js"></script>-->
 <!-- Add New Bower Component JS Above -->
 
 <!-- Main App JS -->
 <script src="app/services/alarms-service.js"></script>
+<script src="app/services/sound-service.js"></script>
 <script src="app/services/control-service.js"></script>
 <script src="app/services/config-service.js"></script>
 <script src="app/services/data-service.js"></script>
 <script src="app/services/monitor-service.js"></script>
 <script src="app/services/sensors-service.js"></script>
-<script src="app/services/observation-schedule-service.js"></script>
+<script src="app/services/obs-sched-service.js"></script>
 <script src="app/services/receptor-state-service.js"></script>
 <script src="app/services/user-service.js"></script>
 <script src="app/services/session-service.js"></script>
@@ -69,9 +74,10 @@
 <script src="app/util/focus-directive.js"></script>
 <script src="app/util/util.js"></script>
 
+<script src="app/d3/compass-chart.js"></script>
 <script src="app/d3/d3-gantt-chart.js"></script>
 <script src="app/d3/multi-line-chart.js"></script>
-<script src="app/d3/d3-service.js"></script>
+<script src="app/d3/multi-line-two-y-axis-chart.js"></script>
 <script src="app/d3/d3-util-service.js"></script>
 <script src="app/d3/receptor-pointing-equatorial.js"></script>
 <script src="app/d3/receptor-pointing-horizontal.js"></script>
@@ -111,6 +117,9 @@
 <script src="app/scheduler/observations/observations-detail.js"></script>
 <script src="app/scheduler/observations/observations-overview.js"></script>
 <script src="app/userlogs/userlogs.js"></script>
+<script src="app/process-control/process-control.js"></script>
+<script src="app/cam-components/cam-components.js"></script>
+<script src="app/instrumental-config/instrumental-config.js"></script>
 <!-- Add New Component JS Above -->
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
@@ -128,7 +137,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
                         <span class="fa fa-warning"></span>
                         <button>Alarms</button>
                     </md-item-content>
@@ -151,14 +160,40 @@
                             <span class="fa fa-th-large"></span>
                             <button>Receptor Health</button>
                         </div>
+                        <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('customHealth')">
+                            <span class="fa fa-heartbeat"></span>
+                            <button>Custom Health & State</button>
+                        </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content style="border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operator-control')">
+                    <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operator-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
                             <span class="fa fa-cogs"></span>
                             <button>Operator Control</button>
                         </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('cam-components')">
+                        <div class="menu-item" layout="row" layout-align="start center">
+                            <span class="fa fa-cubes"></span>
+                            <button>CAM Components</button>
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('process-control')">
+                        <div class="menu-item" layout="row" layout-align="start center">
+                            <span class="fa fa-wrench"></span>
+                            <button>Process Control</button>
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.openCentralLogger()">
+                        <span class="fa fa-file-text-o"></span>
+                        <button>Central Logger</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -199,10 +234,10 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openCentralLogger()"
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('instrumental-config')"
                                      style="border-bottom: 1px solid #e5e5e5;">
-                        <span class="fa fa-file-text-o"></span>
-                        <button>Central Logger</button>
+                        <span class="fa fa-question-circle"></span>
+                        <button>Instrumental Config</button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -218,9 +253,27 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('weather')">
+                        <span class="fa fa-cloud"></span>
+                        <button>Weather</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('about')">
                         <span class="fa fa-info"></span>
                         <button>About katGUI</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openGangliaLink()">
+                        <span class="fa fa-area-chart"></span>
+                        <button>Cluster Monitoring (Ganglia)</button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openIRCDisplay($event)">
+                        <span class="fa"></span>
+                        <button>#IRC</button>
                     </md-item-content>
                 </md-item>
             </md-list>
@@ -260,7 +313,8 @@
     </md-sidenav>
 
     <div layout="column" flex>
-        <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" ng-class="{'slide-in-vertically-navbar': loggedIn}" class="md-whiteframe-z1" md-theme-watch="true">
+        <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" class="md-whiteframe-z1" md-theme-watch="true"
+                    ng-class="{'slide-in-vertically-navbar': loggedIn, 'connection-lost-bg-bright': vm.connectionToMonitorLost}" >
             <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden; margin-bottom: 16px;">
 
                 <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">

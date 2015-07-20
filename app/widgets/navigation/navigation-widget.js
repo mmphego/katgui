@@ -15,7 +15,7 @@
             });
     }
 
-    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil, CENTRAL_LOGGER_PORT) {
+    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil, CENTRAL_LOGGER_PORT, ConfigService) {
 
         var vm = this;
 

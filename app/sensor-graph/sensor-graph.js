@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval) {
+    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval, $log) {
 
         var vm = this;
         vm.showGridLines = false;
@@ -18,7 +18,6 @@
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
         vm.showTips = false;
-        vm.showDots = false;
         vm.showContextZoom = true;
         vm.showRelativeTime = false;
         vm.liveData = false;
@@ -39,7 +38,7 @@
                         $rootScope.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
-                    console.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
                     }
@@ -65,7 +64,14 @@
         vm.initSensors = function () {
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
-                    vm.connectLiveFeed(sensor.name);
+                    var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+                    sensorName = sensorName.replace(/\./g, '_');
+                    SensorsService.setSensorStrategy(
+                        sensor.component,
+                        sensorName,
+                        $rootScope.sensorListStrategyType,
+                        $rootScope.sensorListStrategyInterval,
+                        $rootScope.sensorListStrategyInterval);
                 });
             }
         };
@@ -104,7 +110,7 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
-            vm.redrawChart(null, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis);
+            vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
         };
 
         vm.showHelp = function ($event) {
@@ -124,6 +130,21 @@
                     return time - (1000 * 60 * 60 * 24 * count * multiplySign);
                 default:
                     return time - (count * multiplySign);
+            }
+        };
+
+        vm.relativeTimeToSeconds = function (count, type) {
+            switch (type) {
+                case 's':
+                    return (count);
+                case 'm':
+                    return (60 * count);
+                case 'h':
+                    return (60 * 60 * count);
+                case 'd':
+                    return (60 * 60 * 24 * count);
+                default:
+                    return (count);
             }
         };
 
@@ -166,7 +187,7 @@
                     })
                     .error(function (result) {
                         $rootScope.showSimpleDialog('Error Finding Sensors', 'There was an error finding sensors, is the server running?');
-                        console.error(result);
+                        $log.error(result);
                         vm.waitingForSearchResult = false;
                     });
             }
@@ -197,7 +218,7 @@
                         vm.findSensorData(result, startDate, endDate, result.params);
                     })
                     .error(function (error) {
-                        console.error(error);
+                        $log.error(error);
                         $rootScope.showSimpleDialog('Error Finding Sensor Info', 'There was an error plotting the discrete sensor data, is the server running?');
                     });
             } else {
@@ -209,7 +230,7 @@
                         }
                     })
                     .error(function (error) {
-                        console.error(error);
+                        $log.error(error);
                         $rootScope.showSimpleDialog('Error Finding Sensor Info', 'There was an error plotting the discrete sensor data, is the server running?');
                     });
             }
@@ -224,7 +245,12 @@
             if (vm.liveData && !angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.sensor}))) {
                 vm.sensorNames.push({name: sensor.sensor, liveData: vm.liveData, sensor: sensor});
             }
-            DataService.findSensor(sensor.sensor, startDate, endDate, 1000, 'ms', 'json', vm.sensorType)
+            var interval = null;
+            if (vm.sensorType === 'numeric') {
+                interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
+            }
+
+            DataService.findSensor(sensor.sensor, startDate, endDate, 5000, 'ms', 'json', interval)
                 .success(function (result) {
                     vm.waitingForSearchResult = false;
                     var newData = [];
@@ -246,7 +272,7 @@
                         if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.sensor}))) {
                             vm.sensorNames.push({name: sensor.sensor, liveData: vm.liveData, sensor: sensor});
                         }
-                        vm.redrawChart(newData, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis, yAxisValues);
+                        vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, yAxisValues);
                     } else {
                         $rootScope.showSimpleToast('No sensor data found for ' + sensor.sensor + '.');
                     }
@@ -254,7 +280,7 @@
                 })
                 .error(function (error) {
                     vm.waitingForSearchResult = false;
-                    console.error(error);
+                    $log.error(error);
                     $rootScope.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
                 });
         };
@@ -299,13 +325,13 @@
 
                     if (newData.length !== 0) {
                         $rootScope.showSimpleToast(newData.length + ' sensor data points found for ' + sensorName + '.');
-                        vm.redrawChart(newData, vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis);
+                        vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
                     } else {
                         $rootScope.showSimpleToast('No sensor data found for ' + sensorName + '.');
                     }
                 })
                 .error(function (error) {
-                    console.error(error);
+                    $log.error(error);
                     $rootScope.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
                 });
         };
@@ -351,7 +377,14 @@
         };
 
         vm.connectLiveFeed = function (sensor) {
-            SensorsService.connectLiveFeed(sensor, vm.guid);
+            var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+            sensorName = sensorName.replace(/\./g, '_');
+            SensorsService.setSensorStrategy(
+                sensor.component,
+                sensorName,
+                $rootScope.sensorListStrategyType,
+                $rootScope.sensorListStrategyInterval,
+                $rootScope.sensorListStrategyInterval);
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
@@ -363,9 +396,9 @@
                         ValueTimestamp: sensor.value.timestamp,
                         Timestamp: sensor.value.received_timestamp,
                         Value: sensor.value.value
-                    }], vm.showGridLines, vm.showDots, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                    }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 } else {
-                    console.warn('Dangling sensor update after unsubscribe: ' + sensor.name);
+                    $log.warn('Dangling sensor update after unsubscribe: ' + sensor.name);
                 }
             }
         });

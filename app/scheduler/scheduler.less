@@ -45,12 +45,11 @@
 }
 
 .schedule-draft-data-list {
-    //    direction: rtl;
     z-index: 0;
     position: relative;
     padding: 0;
     overflow: auto !important;
-    //    background: white;
+    min-height: 100%;
 
     input {
         width: 100%;
@@ -259,13 +258,18 @@
     box-shadow: 0px 2px 40px 0 #000;
 }
 
+.highlight-script-border-bottom {
+    border-bottom: 16px solid #B3E5FC !important;
+    margin-bottom: 0 !important;
+}
+
 .script-window-without-box-shadow {
     border: 16px solid transparent;
     box-shadow: none;
 }
 
 .schedule-block-script-window {
-    padding: 0px;
+    padding: 0;
     //    background-color: #ECEFF1;
 //    height: 600px;
     overflow: auto;
@@ -285,7 +289,7 @@
 
 .schedule-block-resource-window {
     height: 400px;
-    padding: 0px;
+    padding: 0;
     //    background-color: white;
 }
 
@@ -445,9 +449,9 @@
 }
 
 .subarray-container {
-    //    min-width: 1000px;
     margin-bottom: 8px;
     min-height: 200px;
+    max-height: 550px;
 }
 
 .subarray-state-toolbar {
@@ -532,6 +536,14 @@
 }
 
 .inline-action-button {
+    line-height: 42px !important;
+    min-width: 32px;
     max-width: 32px;
     max-height: 32px;
+    min-height: 32px;
+}
+
+.no-margin-no-padding {
+    margin: 0;
+    padding: 0;
 }

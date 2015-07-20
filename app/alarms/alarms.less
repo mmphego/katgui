@@ -1,11 +1,10 @@
-@alarm-error-bg: #ff9800;
+@alarm-error-bg: #e51c23;
 @alarm-warning-bg: #ffeb3b;
 @alarm-info-bg: #03a9f4;
 @alarm-maintenance-bg: #9c27b0;
-@alarm-critical-bg: #e51c23;
+@alarm-critical-bg: #C51162;
 @alarm-unknown-bg: #757575;
 @alarm-nominal-bg: #259b24;
-
 
 .alarms-notify-list {
     position: absolute;
@@ -34,7 +33,7 @@
     min-width: 480px;
     max-width: 480px;
     overflow: hidden;
-    margin-left:20px;
+    margin-left: 20px;
 
     span {
         overflow: hidden;
@@ -69,7 +68,7 @@
     max-width: 280px;
     min-height: 68px;
     max-height: 68px;
-    margin-left:20px;
+    margin-left: 20px;
 
     .datestamp {
         display: none;
@@ -101,6 +100,10 @@
 .alarm-styles(@color, @textColor) {
     background-color: @color;
     color: @textColor;
+}
+
+.alarm-critical {
+    .alarm-styles(@alarm-critical-bg, white);
 }
 
 .alarm-info {
@@ -177,9 +180,9 @@ ul {
 }
 
 .alarms-list-large {
-//    min-height: 480px;
-//    min-width: 940px;
-//    height: 100%;
+    //    min-height: 480px;
+    //    min-width: 940px;
+    //    height: 100%;
 }
 
 .alarms-list-small {
@@ -201,46 +204,59 @@ ul {
     overflow: auto;
 
     .alarms-list-item-content {
+        margin-top: 2px;
         padding: 2px;
         cursor: pointer;
+        z-index: 10;
     }
 
     .alarm-list-item-badge-warn {
-        background: rgb(255, 235, 59);
+        background: @alarm-warning-bg;
         color: black;
     }
 
     .alarm-list-item-badge-error {
-        background: rgb(255, 152, 0);
-        color: black;
+        background: @alarm-error-bg;
+        color: white;
     }
 
     .alarm-list-item-badge-critical {
-        background: rgb(229, 28, 35);
+        background: @alarm-critical-bg;
         color: white;
     }
 
     .alarm-list-item-badge-maintenance {
-        background: rgb(156, 39, 176);
+        background: @alarm-maintenance-bg;
         color: white;
     }
 
     .alarm-list-item-badge-nominal {
-        background: rgb(37, 155, 36);
+        background: @alarm-nominal-bg;
         color: white;
     }
 
     .alarm-list-item-badge-unknown {
-        background: #757575;
+        background: @alarm-unknown-bg;
         color: white;
     }
 
     .selected-alarm-list-item {
-        background-color: #B3E5FC;
-        color: black;
+        background-color: rgba(179, 229, 252, 0.5);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .selected-alarm-list-item-color {
+        color: #000;
+        opacity: 1.0;
+        font-style: italic;
     }
 
     .alarms-list-item-icon {
+        cursor: pointer;
         width: 26px;
         font-size: 20px;
         z-index: 1;
@@ -270,12 +286,13 @@ ul {
 
 .alarm-badge-error {
     top: 20px;
-    background-color: #ffc107;
+    color: white;
+    background-color: @alarm-error-bg;
 }
 
 .alarm-badge-crit {
     top: 38px;
-    background-color: #e51c23;
+    background: @alarm-critical-bg;
     color: white;
 }
 
@@ -285,9 +302,9 @@ ul {
 }
 
 .alarm-row-item {
-    border-bottom: 1px solid #424242;
+    border-bottom: 1px solid #d7d7d7;
     padding-left: 4px;
     padding-right: 4px;
-    height: 29px;
+    height: 32px;
     position: relative;
 }

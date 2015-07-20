@@ -44,9 +44,12 @@
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.showLargeAlarms"
                              ng-change="vm.saveToLocalStorage('showLargeAlarms', $root.showLargeAlarms)">Show Detailed Alarm Notifications
                 </md-checkbox>
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.disableAlarmSounds"
+                             ng-change="vm.saveToLocalStorage('disableAlarmSounds', $root.disableAlarmSounds)">Disable Alarm Sounds
+                </md-checkbox>
             </div>
 
-            <div class="config-div-item" style="border: 0">
+            <div class="config-div-item">
                 <md-subheader>Sensor List</md-subheader>
                 <div layout="row" layout-align="start center" style="width: 400px;">
                     <label style="text-align: end; width: 155px; font-weight: normal">Sensor Strategy Type:</label>
@@ -70,6 +73,24 @@
                     <span style="margin-left: 4px;">seconds</span>
                 </div>
             </div>
+
+            <div class="config-div-item" style="border: 0">
+                <md-subheader>Loggers</md-subheader>
+                <div layout="row" layout-align="start center" style="width: 400px; height: 42px">
+                    <label style="text-align: end; width: 155px; font-weight: normal"> Tail :</label>
+                    <md-input-container md-no-float style="margin-left: 16px;text-align: start; padding: 0px;"
+                                        class="md-primary"
+                                        title="Between 10 and 500 lines">
+                        <input style="width: 80px;" placeholder="loglines" ng-model="$root.logNumberOfLines"
+                               ng-change="vm.saveToLocalStorage('logNumberOfLines', $root.logNumberOfLines)"
+                               type="number" maxlength="3"
+                               max="500" min="1">
+                    </md-input-container>
+                    <span style="margin-left: 4px;">lines</span>
+                </div>
+            </div>
+
+
         </md-content>
     </div>
 

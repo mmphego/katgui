@@ -3,12 +3,12 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObservationScheduleService, $timeout, SCHEDULE_BLOCK_TYPES, $rootScope) {
+    function SbDraftsCtrl($rootScope, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;
         vm.types = SCHEDULE_BLOCK_TYPES;
-        vm.scheduleDraftData = ObservationScheduleService.scheduleDraftData;
+        vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code'},
             {label: 'Description', value: 'description'},
@@ -38,10 +38,15 @@
         vm.setDraftsOrderBy('id_code', true);
 
         vm.saveDraft = function (item) {
-            ObservationScheduleService.updateScheduleDraft(item)
-                .then(function(result) {
+            item.editing = false;
+            ObsSchedService.updateScheduleDraft(item)
+                .success(function (result) {
+                    $log.info(result);
+                    item.isDirty = false;
                     item.editing = false;
-                    $rootScope.displayPromiseResult(result);
+                })
+                .error(function (result) {
+                    $rootScope.showSimpleDialog('Error Saving SB ' + item.id_code + '.', result);
                 });
         };
 
@@ -49,23 +54,24 @@
             vm.scheduleDraftData.forEach(function (item) {
                 item.editing = false;
                 if (item.isDirty) {
-                    ObservationScheduleService.updateScheduleDraft(item);
+                    ObsSchedService.updateScheduleDraft(item);
+                    item.isDirty = false;
                 }
             });
         };
 
         vm.verifyDraft = function (item) {
-            ObservationScheduleService.verifyScheduleBlock(item.sub_nr, item.id_code)
-                .then($rootScope.displayPromiseResult);
+            ObsSchedService.verifyScheduleBlock(item.sub_nr, item.id_code);
         };
 
         vm.removeDraft = function (item) {
-            ObservationScheduleService.deleteScheduleDraft(item.id_code)
-                .then($rootScope.displayPromiseResult);
-        };
-
-        vm.refreshScheduleBlocks = function () {
-            ObservationScheduleService.getScheduleBlocks();
+            ObsSchedService.deleteScheduleDraft(item.id_code)
+                .success(function (result) {
+                    $log.info(result);
+                })
+                .error(function (result) {
+                    $rootScope.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
+                });
         };
 
         vm.setSelectedScheduleDraft = function (selectedDraft, dontDeselectOnSame) {
@@ -77,7 +83,7 @@
         };
 
         vm.viewSBTasklog = function (item) {
-            ObservationScheduleService.viewTaskLogForSBIdCode(item.id_code);
+            ObsSchedService.viewTaskLogForSBIdCode(item.id_code);
         };
 
         vm.onTimeSet = function (newDate) {
@@ -128,8 +134,6 @@
                 $scope.$apply();
             }
         };
-
-        $timeout(vm.refreshScheduleBlocks, 100);
     }
 
 })();
