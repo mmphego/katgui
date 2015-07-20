@@ -11,14 +11,14 @@
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
                 <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" ng-mouseenter="showTools = true;" ng-mouseleave="showTools = false;"
                     layout="row" layout-align="start center">
-                        <span style="margin-left: 8px;">SUB-ARRAY {{vm.subarray_id}}</span>
+                        <span style="margin-left: 8px;">SUBARRAY {{vm.subarray_id}}</span>
                         <span ng-show="vm.subarray.state" style="margin-left: 4px;"> - {{vm.subarray.state}}</span>
                         <span flex></span>
                         <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()" title="Free Subarray">
                             <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                         </md-button>
                         <md-button ng-show="vm.subarray.state === 'inactive'" class="md-icon-button inline-action-button" ng-click="vm.activateSubarray()"
-                                   title="Activate Sub-Array">
+                                   title="Activate Subarray">
                             <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                         </md-button>
                         <span>Mode: {{vm.subarray.mode}}</span>

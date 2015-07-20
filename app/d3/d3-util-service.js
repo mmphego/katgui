@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .factory('d3Util', function ($q, $timeout, $rootScope, $log, StatusService, ConfigService) {
+    .factory('d3Util', function ($q, $timeout, $rootScope, $log, StatusService, ConfigService, DATETIME_FORMAT) {
 
         var api = {};
 
@@ -112,7 +112,7 @@ angular.module('katGui.d3')
                     "<div><b>" + sensorValue.name + "</b></div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
-                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') + "</div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format(DATETIME_FORMAT) + "</div>" +
                     "</div>"
                 );
             } else {
@@ -126,7 +126,7 @@ angular.module('katGui.d3')
             tooltip.html(
                 "<div class='chart-tooltip'>" +
                 "<b>" + d.TooltipValue + "</b>" +
-                "<br/>"+ moment.utc(d.Timestamp, 'X').format('HH:mm:ss DD-MM-YYYY') +
+                "<br/>"+ moment.utc(d.Timestamp, 'X').format(DATETIME_FORMAT) +
                 "</div>"
             );
         };

@@ -109,7 +109,7 @@
                                         Sensor: attr,
                                         Timestamp: result[attr][i][0],
                                         Value: result[attr][i][1],
-                                        timestamp: moment.utc(result[attr][i][0], 'X').format('HH:mm:ss DD-MM-YYYY')
+                                        timestamp: moment.utc(result[attr][i][0], 'X').format(DATETIME_FORMAT)
                                     };
                                     if (sensor.python_identifier.indexOf('pressure') !== -1) {
                                         newSensor.rightAxis = true;
@@ -159,7 +159,7 @@
                     oldSensor.sensorValue = sensor.value;
                     oldSensor.status = sensor.value.status;
                     oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss');
-                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format('HH:mm:ss DD-MM-YYYY');
+                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
                     oldSensor.value = sensor.value.value;
 
                     if (oldSensor.python_identifier.indexOf('wind_direction') !== -1) {

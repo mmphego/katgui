@@ -61,7 +61,7 @@
                 <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
                     <input type="text" ng-change="vm.startTimeChange()" class=""
                            ng-model="vm.sensorStartDateReadable" placeholder="Start Date"
-                           ng-class="{'input-error':vm.dateTimeError}" title="End Date 'yyyy-MM-dd HH:mm:ss'"
+                           ng-class="{'input-error':vm.dateTimeError}" title="End Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
                 <md-button class="md-icon-button" style="margin-left: 0px; margin-top: 3px; width: 40px; height: 40px;"
@@ -94,7 +94,7 @@
                 <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
                     <input type="text" ng-change="vm.endTimeChange()" class=""
                            ng-model="vm.sensorEndDateReadable" placeholder="End Date"
-                           ng-class="{'input-error':vm.endDateTimeError}" title="Start Date 'yyyy-MM-dd HH:mm:ss'"
+                           ng-class="{'input-error':vm.endDateTimeError}" title="Start Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
                 <md-button class="md-icon-button" style="margin-left: 0px; margin-top: 3px; width: 40px; height: 40px;"

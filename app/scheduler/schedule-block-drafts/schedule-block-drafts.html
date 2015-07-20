@@ -89,7 +89,7 @@
                                 <md-button ng-click="item.editing = true">Edit Draft</md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="item.loadMenuContents" ng-show="item.type == 'OBSERVATION'">
-                                <md-button ng-disabled="!item.sub_nr" title="{{!item.sub_nr ? 'Assign to a Sub-Array before verifying.' : ''}}"
+                                <md-button ng-disabled="!item.sub_nr" title="{{!item.sub_nr ? 'Assign to a Subarray before verifying.' : ''}}"
                                            ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="item.loadMenuContents">

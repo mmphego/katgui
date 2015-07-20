@@ -382,7 +382,7 @@ describe('OperatorControlCtrl', function () {
             });
         }));
 
-        it('should issue stop all', inject(function () {
+        it('should issue stop observations', inject(function () {
             ctrl.stopAll();
             ctrl.receptorsData.forEach(function (receptor) {
                 expect(receptor.state).toBe('STOW');

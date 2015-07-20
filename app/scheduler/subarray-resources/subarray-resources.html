@@ -8,9 +8,9 @@
                 <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}" class="md-whiteframe-z1 md-hue-2"
                             layout="row" layout-align="center center" title="{{subarray.description}}" style="max-height: 50px; min-height: 50px;">
                     <div flex style="position: relative">
-                        <span style="position: absolute; left: 8px; top: 8px;">SUB-ARRAY {{subarray.id}}</span>
+                        <span style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>
                         <md-button layout="row" style="min-height: 42px; width: 100%" class="unselectable" ng-click="vm.navigateToSchedulerDetails(subarray.id)"
-                                   title="Click to Manage Observations for Sub-Array {{subarray.id}}">
+                                   title="Click to Manage Observations for Subarray {{subarray.id}}">
                             <span>{{subarray.state}}</span>
                             <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
                         </md-button>
@@ -37,7 +37,7 @@
                         <span ng-show="subarray.state === 'active'" title="Config Label">Config Label:{{subarray.config_label}}</span>
                     </div>
                     <md-button class="md-icon-button inline-action-button" ng-click="vm.setSubarrayInMaintenance(subarray)"
-                               title="Set Sub-Array in Maintenance" style="margin-top: 16px;">
+                               title="Set Subarray in Maintenance" style="margin-top: 16px;">
                         <md-icon class="fa" md-font-icon="fa-wrench"></md-icon>
                     </md-button>
                     <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray(subarray)"
@@ -45,7 +45,7 @@
                         <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                     </md-button>
                     <md-button ng-show="subarray.state === 'inactive'" class="md-icon-button inline-action-button" ng-click="vm.activateSubarray(subarray)"
-                               title="Activate Sub-Array" style="margin-top: 16px;">
+                               title="Activate Subarray" style="margin-top: 16px;">
                         <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                     </md-button>
                 </md-toolbar>
@@ -75,7 +75,7 @@
 
             <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary"
                        style="min-height: 100%; max-width: 31px; min-width: 31px; margin-left: 4px;"
-                       ng-click="vm.assignSelectedResources(subarray);" title="Assign Resources to Sub-Array">
+                       ng-click="vm.assignSelectedResources(subarray);" title="Assign Resources to Subarray">
                 <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
             </md-button>
         </div>

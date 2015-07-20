@@ -60,7 +60,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, $log) {
+                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, $log, DATETIME_FORMAT) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -343,7 +343,7 @@
                 var localTime = moment($rootScope.serverTimeOnLoad, 'X');
                 vm.utcTime = utcTime.format('HH:mm:ss');
                 vm.localTime = localTime.format('HH:mm:ss');
-                vm.currentDate = utcTime.format('DD-MM-YYYY');
+                vm.currentDate = utcTime.format('YYYY-MM-DD');
                 vm.dayOfYear = utcTime.dayOfYear();
 
                 var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
@@ -369,8 +369,8 @@
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
                     $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
-                    $log.info('Syncing current time with KATPortal (utc HH:mm:ss DD-MM-YYYY): ' +
-                    moment.utc($rootScope.serverTimeOnLoad, 'X').format('HH:mm:ss DD-MM-YYYY'));
+                    $log.info('Syncing current time with KATPortal (utc ' + DATETIME_FORMAT + '): ' +
+                    moment.utc($rootScope.serverTimeOnLoad, 'X').format(DATETIME_FORMAT));
                 })
                 .error(function (error) {
                     $log.error("Error syncing time with KATPortal! " + error);

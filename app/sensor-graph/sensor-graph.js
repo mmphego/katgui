@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval, $log) {
+    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval, $log, DATETIME_FORMAT) {
 
         var vm = this;
         vm.showGridLines = false;
@@ -11,9 +11,9 @@
         vm.sensorNames = [];
         vm.sensorStartDatetime = new Date();
         vm.sensorStartDatetime = new Date(vm.sensorStartDatetime.getTime() - 60000 * 60); //one hour earlier
-        vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, 'yyyy-MM-dd HH:mm:ss');
+        vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, DATETIME_FORMAT);
         vm.sensorEndDatetime = new Date();
-        vm.sensorEndDateReadable = $filter('date')(vm.sensorEndDatetime, 'yyyy-MM-dd HH:mm:ss');
+        vm.sensorEndDateReadable = $filter('date')(vm.sensorEndDatetime, DATETIME_FORMAT);
         vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
@@ -77,12 +77,12 @@
         };
 
         vm.onTimeSet = function () {
-            vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, 'yyyy-MM-dd HH:mm:ss');
+            vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, DATETIME_FORMAT);
             vm.dateTimeError = false;
         };
 
         vm.onEndTimeSet = function () {
-            vm.sensorEndDateReadable = $filter('date')(vm.sensorEndDatetime, 'yyyy-MM-dd HH:mm:ss');
+            vm.sensorEndDateReadable = $filter('date')(vm.sensorEndDatetime, DATETIME_FORMAT);
             vm.endDateTimeError = false;
         };
 
