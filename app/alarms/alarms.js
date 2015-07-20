@@ -150,22 +150,19 @@
         };
 
         vm.viewAlarmSystemConfig = function ($event) {
-            ConfigService.getSystemConfig()
-                .then(function () {
-                    ConfigService.getConfigFileContents('static/alarms/common.conf')
-                        .success(function (commonResult) {
-                            ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
-                                .success(function (alarmsResult) {
-                                    var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
-                                    $rootScope.showPreDialog('System Config for Alarms', displayResult, $event);
-                                })
-                                .error(function (result) {
-                                    $log.error(result);
-                                })
+            ConfigService.getConfigFileContents('static/alarms/common.conf')
+                .success(function (commonResult) {
+                    ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
+                        .success(function (alarmsResult) {
+                            var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
+                            $rootScope.showPreDialog('System Config for Alarms', displayResult, $event);
                         })
                         .error(function (result) {
                             $log.error(result);
-                        });
+                        })
+                })
+                .error(function (result) {
+                    $log.error(result);
                 });
         };
 
