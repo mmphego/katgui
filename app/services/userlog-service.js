@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, SERVER_URL, $rootScope, $window) {
+    function UserLogService($http, $q, SERVER_URL, $rootScope, $window, $log) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katauth/api/v1';
@@ -25,7 +25,7 @@
                         api.focus_ulog = result.data;
                         def.resolve();
                     } else {
-                        console.error('Could not retrieve requested userlog.');
+                        $log.error('Could not retrieve requested userlog.');
                         def.reject();
                     }
                 });
@@ -48,7 +48,7 @@
                         });
                         def.resolve();
                     } else {
-                        console.error('Could not retrieve any users.');
+                        $log.error('Could not retrieve any users.');
                         def.reject();
                     }
                 });
@@ -71,7 +71,7 @@
                         });
                         def.resolve();
                     } else {
-                        console.error('Could not retrieve any tags.');
+                        $log.error('Could not retrieve any tags.');
                         def.reject();
                     }
                 });
@@ -94,7 +94,7 @@
                         });
                         def.resolve();
                     } else {
-                        console.error('Could not retrieve any taxonomies.');
+                        $log.error('Could not retrieve any taxonomies.');
                         def.reject();
                     }
                 });
@@ -133,9 +133,10 @@
                           'Authorization': 'CustomJWT ' + $rootScope.jwt}
             })
             .success(function(){
+                $log.info("Attachments uploaded!");
             })
             .error(function(){
-                console.error(api.urlBase + '/log/attach/' + ulog_id);
+                $log.error(api.urlBase + '/log/attach/' + ulog_id);
             });
         };
 
@@ -150,7 +151,7 @@
                 responseType:'blob'
             })
             .success(function(result){
-                console.log('Filedata returned: ' + result);
+                $log.info('Filedata returned: ' + result);
                 var blob = result;
                 var url = $window.URL || $window.webkitURL;
                 var file_url = url.createObjectURL(blob);
@@ -161,7 +162,7 @@
                 url.revokeObjectURL(file_url);
             })
             .error(function(){
-                console.error(api.urlBase + '/log/get/attach');
+                $log.error(api.urlBase + '/log/get/attach');
             });
         };
 
