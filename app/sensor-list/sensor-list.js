@@ -20,6 +20,7 @@
         vm.useFixedYAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
+        vm.hideNominalSensors = false;
 
         vm.limitTo = 50;
         $scope.loadMore = function () {
