@@ -30,7 +30,10 @@
         api.login = function (session_id) {
 
             $rootScope.jwt = session_id;
-            $http(createRequest('get', urlBase + '/user/login'))
+            $http(createRequest('post', urlBase + '/user/login',
+                {
+                    role: ""
+                }))
                 .success(function(result){
                     loginSuccess(result, session_id); 
                 })
@@ -41,7 +44,7 @@
             if ($rootScope.loggedIn) {
                 $http(createRequest('post', urlBase + '/user/logout',
                     {
-                        email: $rootScope.currentUser.email                    
+                        email: ""                    
                     }))
                     .success(logoutResultSuccess)
                     .error(logoutResultError);
