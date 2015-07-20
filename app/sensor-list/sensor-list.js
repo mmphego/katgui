@@ -86,7 +86,7 @@
                     '',
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval);
+                    120);
             }
         };
 
