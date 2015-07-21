@@ -3,12 +3,10 @@
     angular.module('katGui.services')
         .service('SoundService', SoundService);
 
-    function SoundService ($log, $localStorage) {
+    function SoundService ($rootScope, $log, $localStorage) {
 
         var api = {};
         var myAudioContext, myBuffers = {}, bufferLoader;
-
-        api.disableAlarmSounds = $localStorage['disableAlarmSounds'];
 
         api.init = function () {
             if ('AudioContext' in window) {
@@ -50,7 +48,7 @@
         };
 
         api.playSound = function (key) {
-            if (!api.disableAlarmSounds && myBuffers[key] && myAudioContext) {
+            if (!$rootScope.disableAlarmSounds && myBuffers[key] && myAudioContext) {
                 var source = myAudioContext.createBufferSource();
                 source.buffer = myBuffers[key];
                 source.loop = false;
