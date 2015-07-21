@@ -89,7 +89,7 @@
                             vm.detailedProcesses[resource][processName].sensors[item.python_identifier] = item;
                             if (item.python_identifier.indexOf('running') !== -1) {
                                 SensorsService.setSensorStrategy(
-                                    resource, item.python_identifier, 'event-rate', 1, 10);
+                                    resource, item.python_identifier, 'event-rate', 1, 120);
                             } else {
                                 SensorsService.setSensorStrategy(
                                     resource, item.python_identifier, 'event-rate', 3, 120);

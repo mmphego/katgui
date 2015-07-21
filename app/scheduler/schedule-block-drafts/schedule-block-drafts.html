@@ -52,8 +52,8 @@
                     <div layout="row" class="schedule-block-name-div">
                         <span class="schedule-block-id-text"
                               ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
-                            {{::item.id_code}}</span>
-                        <i>{{::item.owner}}</i>
+                            {{item.id_code}}</span>
+                        <i>{{item.owner}}</i>
                     </div>
                     <input ng-if="item.editing" ng-change="item.isDirty = true;" type="text" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
                             class="schedule-item-description-input" style="height: 27px;"

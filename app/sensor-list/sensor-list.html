@@ -74,13 +74,11 @@
                     ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
                     ng-class="{'selected-for-chart-row': sensor.selectedForChart}"
                     ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal'">
-                    <span class="resource-sensor-name">{{::sensor.name}}</span>
-                    <span class="resource-sensor-status-item" ng-show="sensor.sensorValue"
-                          ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
-                    <span class="resource-sensor-time-item" ng-show="sensor.sensorValue">{{sensor.timestamp}}</span>
-                    <span class="resource-sensor-time-item"
-                          ng-show="sensor.sensorValue">{{sensor.received_timestamp}}</span>
-                    <span flex class="resource-sensor-value-item" ng-show="sensor.sensorValue">{{sensor.value}}</span>
+                    <span class="resource-sensor-name">{{sensor.name}}</span>
+                    <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
+                    <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
+                    <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
+                    <span flex class="resource-sensor-value-item">{{sensor.value}}</span>
                 </div>
             </div>
         </div>

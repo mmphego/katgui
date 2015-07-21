@@ -218,7 +218,7 @@
             $http.get(urlBase + '/resource')
                 .success(function (result) {
                     for (var i in result) {
-                        api.resources[result[i]] = {};
+                        api.resources[result[i].name] = result[i];
                     }
                     deferred.resolve(api.resources);
                 })
@@ -234,8 +234,15 @@
                 .success(function (result) {
                     api.resources[resourceName].sensorsList = [];
                     for (var i in result) {
-                        api.resources[resourceName].sensorsList.push(
-                            {name: result[i].name, python_identifier: result[i].python_identifier, description: result[i].description});
+                        api.resources[resourceName].sensorsList.push({
+                            name: result[i].name,
+                            python_identifier: result[i].python_identifier,
+                            description: result[i].description,
+                            value: result[i].value,
+                            timestamp: result[i].timestamp,
+                            received_timestamp: result[i].received_timestamp,
+                            status: result[i].status
+                        });
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);
                 })
