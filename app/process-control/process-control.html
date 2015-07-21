@@ -42,8 +42,8 @@
                 <div ng-if="vm.detailedProcesses[nm_key][key].showDetail" class="grow-height-animation" style="cursor: auto;">
                     <div ng-repeat="(key, sensor) in vm.detailedProcesses[nm_key][key].sensors | orderBy:'name' track by key"
                          style="margin: 4px;" ng-if="key !== 'showDetail'" title="{{'Timestamp: ' + vm.sensorsToDisplay[key].date}}">
-                        <div style="text-align: end; width: 230px; display: inline-block"><span>{{::key}}:</span></div>
-                        <div style="display: inline-block; margin-left: 4px;"><span><b>{{vm.sensorsToDisplay[key].value}}</b></span></div>
+                        <span>{{::key}}:</span>
+                        <span style="margin-left: 4px"><b>{{vm.sensorsToDisplay[key].value}}</b></span>
                     </div>
                 </div>
             </div>

@@ -78,21 +78,21 @@
 
         vm.listResourceSensors = function (resource) {
             SensorsService.listResourceSensors(resource)
-                .then(function (result) {
-                    SensorsService.resources[result.resource].sensorsList.forEach(function (item) {
+                .then(function () {
+                    SensorsService.resources[resource].sensorsList.forEach(function (item) {
                         if (item.name.indexOf('.') > -1) {
                             var processName = item.name.split('.')[0];
-                            if (!vm.detailedProcesses[result.resource][processName]) {
-                                vm.detailedProcesses[result.resource][processName] = {sensors: {}};
+                            if (!vm.detailedProcesses[resource][processName]) {
+                                vm.detailedProcesses[resource][processName] = {sensors: {}};
                             }
                             vm.sensorsToDisplay[item.python_identifier] = item;
-                            vm.detailedProcesses[result.resource][processName].sensors[item.python_identifier] = item;
+                            vm.detailedProcesses[resource][processName].sensors[item.python_identifier] = item;
                             if (item.python_identifier.indexOf('running') !== -1) {
                                 SensorsService.setSensorStrategy(
-                                    result.resource, item.python_identifier, 'event-rate', 1, 3);
+                                    resource, item.python_identifier, 'event-rate', 1, 10);
                             } else {
                                 SensorsService.setSensorStrategy(
-                                    result.resource, item.python_identifier, 'event-rate', 3, 120);
+                                    resource, item.python_identifier, 'event-rate', 3, 120);
                             }
                         }
                     });

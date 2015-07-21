@@ -28,7 +28,7 @@
         </div>
         <div flex style="height:30px;"><span></span></div>
         <div layout="row">
-            <md-input-container flex="25">   
+            <md-input-container flex="25">
                 <md-select placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px">
                     <md-option value="shift_log">Shift Log</md-option>
                     <md-option value="time_loss">Time-loss Log</md-option>
@@ -47,17 +47,17 @@
         </div>
         <div flex style="height:30px;"><span></span></div>
         <div layout="row">
-            <md-input-container flex="25"> 
+            <md-input-container flex="25">
                 Attachments: <input file-model="myFile" type="file" name="files[]" multiple />
             </md-input-container>
             <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match>
                 <md-autocomplete
-                    md-selected-item="selectedItem" 
-                    md-selected-item-change = "" 
-                    md-search-text="searchText" 
-                    md-search-text-change="" 
-                    md-items="item in querySearch(searchText)" 
-                    md-item-text="item.name" 
+                    md-selected-item="selectedItem"
+                    md-selected-item-change = ""
+                    md-search-text="searchText"
+                    md-search-text-change=""
+                    md-items="item in querySearch(searchText)"
+                    md-item-text="item.name"
                     ng-blur=clear()
                     placeholder="Select tags">
                     <md-item-template>
@@ -76,13 +76,13 @@
                     <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
                 </md-button>
             </md-chips>
-        </div>      
+        </div>
         <md-list>
             <md-list-item ng-repeat="attach in ulog.metadata">
                 <div flex="20">{{attach.m_name}}</div>
                 <i class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name)"></i>
             </md-list-item>
-        </md-list>                  
+        </md-list>
     </md-dialog-content>
     <div class="md-actions">
         <md-button ng-click="add()" class="md-primary">
