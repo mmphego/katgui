@@ -25,14 +25,14 @@
                 .success(verifySuccess)
                 .error(verifyError);
         };
- 
+
 
         api.login = function (session_id) {
 
             $rootScope.jwt = session_id;
             $http(createRequest('post', urlBase + '/user/login', {}))
                 .success(function(result){
-                    loginSuccess(result, session_id); 
+                    loginSuccess(result, session_id);
                 })
                 .error(loginError);
         };
@@ -47,10 +47,9 @@
 
         api.recoverLogin = function () {
             if ($rootScope.jwt) {
-                $http(createRequest('get', urlBase + '/user/login'))
+                $http(createRequest('post', urlBase + '/user/login'))
                     .success(function(result){
-                        $log.info('login successfully returned');
-                        loginSuccess(result, $rootScope.jwt); 
+                        loginSuccess(result, $rootScope.jwt);
                     })
                     .error(loginError);
             }
@@ -133,7 +132,7 @@
                         '<md-toolbar><div style="padding-left: 20px; padding-top: 10px;"><h3>Confirm login as {{requested_role}}</h3></div></md-toolbar>' +
                         '  <md-dialog-content class="md-padding" layout="column">' +
                         '   <p><strong>{{current_lo}}</strong> is the current Lead Operator?</p>' +
-                        '   <p>If you decline you will be logged in as a read-only user.</p>' +        
+                        '   <p>If you decline you will be logged in as a read-only user.</p>' +
                         '  </md-dialog-content>' +
                         '  <div class="md-actions">' +
                         '    <md-button ng-click="proceed()" class="md-primary">' +
@@ -147,7 +146,7 @@
                         })
                 .then(function() {
                     api.login(session_id);
-                    $log.info('Confirmation complete!');   
+                    $log.info('Confirmation complete!');
                 });
         };
 

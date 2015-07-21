@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval, $log) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval, $log, $http) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
@@ -119,19 +119,7 @@
                     $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else if (messages.result) {
 
-                    if (messages.result.list_resources) {
-                        for (var key in messages.result.list_resources.result) {
-                            api.resources[key] = messages.result.list_resources.result[key];
-                        }
-                        api.deferredMap[messages.id].resolve('Fetched resources.');
-                    } else if (messages.result.list_resource_sensors) {
-                        api.resources[messages.result.list_resource_sensors.resource_name].sensorsList = messages.result.list_resource_sensors.result;
-                        api.deferredMap[messages.id].resolve({
-                            resource: messages.result.list_resource_sensors.resource_name,
-                            result: messages.result.list_resource_sensors.result,
-                            message: 'Fetched ' + messages.result.list_resource_sensors.result.length + ' sensors.'
-                        });
-                    } else if (messages.result.email && messages.result.session_id) {
+                    if (messages.result.email && messages.result.session_id) {
                         //auth response
                         $localStorage['currentUserToken'] = $rootScope.jwt;
                         api.connection.authorized = true;
@@ -226,17 +214,42 @@
         };
 
         api.listResources = function () {
-            var desired_id = KatGuiUtil.generateUUID();
-            api.sendSensorsCommand('list_resources', [], desired_id);
-            api.deferredMap[desired_id] = $q.defer();
-            return api.deferredMap[desired_id].promise;
+            var deferred = $q.defer();
+            $http.get(urlBase + '/resource')
+                .success(function (result) {
+                    for (var i in result) {
+                        api.resources[result[i].name] = result[i];
+                    }
+                    deferred.resolve(api.resources);
+                })
+                .error(function (result) {
+                    deferred.reject(result);
+                });
+            return deferred.promise;
         };
 
         api.listResourceSensors = function (resourceName) {
-            var desired_id = KatGuiUtil.generateUUID();
-            api.sendSensorsCommand('list_resource_sensors', [resourceName], desired_id);
-            api.deferredMap[desired_id] = $q.defer();
-            return api.deferredMap[desired_id].promise;
+            var deferred = $q.defer();
+            $http.get(urlBase + '/resource/' + resourceName + '/sensors')
+                .success(function (result) {
+                    api.resources[resourceName].sensorsList = [];
+                    for (var i in result) {
+                        api.resources[resourceName].sensorsList.push({
+                            name: result[i].name,
+                            python_identifier: result[i].python_identifier,
+                            description: result[i].description,
+                            value: result[i].value,
+                            timestamp: result[i].timestamp,
+                            received_timestamp: result[i].received_timestamp,
+                            status: result[i].status
+                        });
+                    }
+                    deferred.resolve(api.resources[resourceName].sensorsList);
+                })
+                .error(function (result) {
+                    deferred.reject(result);
+                });
+            return deferred.promise;
         };
 
         api.removeResourceListeners = function (resourceName) {

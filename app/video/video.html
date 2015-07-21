@@ -1,58 +1,55 @@
-<div style="position: relative;" class="view-container-full" ng-controller="VideoCtrl as vm" ng-mouseenter="vm.showVideoControls = true" ng-mouseleave="vm.showVideoControls = false">
-    <img width="100%" alt="Could not load video image..." src="http://192.168.10.68:8081/"/>
+<div style="position: relative;" flex ng-controller="VideoCtrl as vm" ng-mouseenter="vm.showVideoControls = true" ng-mouseleave="vm.showVideoControls = false">
+    <img style="width: 100%" alt="Could not load video image..." ng-src="{{vm.imageSource}}"/>
 
     <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="row" md-theme-watch="true">
-        <div layout="row" layout-align="center end">
-            <md-slider style="background: transparent; width: 250px;" flex min="0" max="100" ng-model="vm.zoom" >
-            </md-slider>
-            <md-button ng-click="vm.rememberPos()"  class="md-fab md-button-fab-small md-primary">
+        <div layout="column" layout-align="end center">
+            <md-button ng-click="vm.rememberPos()" class="md-icon-button md-raised md-primary" title="Set Preset">
                 <span class="fa fa-save md-fab-fa-icon-small"></span>
-                <md-tooltip>Remember Current Position</md-tooltip>
             </md-button>
-            <md-button ng-click="vm.clearPos()"  class="md-fab md-button-fab-small md-primary">
-                <span class="fa fa-trash-o md-fab-fa-icon-small"></span>
-                <md-tooltip>Clear Current Position</md-tooltip>
-            </md-button>
-            <md-button ng-click="vm.cyclePos()"  class="md-fab md-button-fab-small md-primary">
-                <span class="fa fa-refresh md-fab-fa-icon-small"></span>
-                <md-tooltip>Cycle Through Positions</md-tooltip>
-            </md-button>
+            <div layout="row" layout-align="start center">
+                <span style="mix-blend-mode: difference; margin-right: 6px; color: white">Focus:</span>
+                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)"
+                           ng-model-options="{ debounce: 1000 }">
+                </md-slider>
+            </div>
+            <div layout="row" layout-align="start center" style="margin-top: 8px;">
+                <span style="mix-blend-mode: difference; margin-right: 6px; color: white">Zoom:</span>
+                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)"
+                           ng-model-options="{ debounce: 1000 }">
+                </md-slider>
+            </div>
         </div>
 
-        <div layout="column" layout-align="center center">
-            <md-button ng-click="vm.tiltFarUp()"  class="md-fab md-button-fab-small md-primary">
+        <div layout="column" layout-align="center center" class="video-position-controls">
+            <md-button ng-click="vm.tiltFarUp()" class="md-icon-button md-raised md-primary" title="Tilt Far Up">
                 <span style="transform:rotate(90deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
-                <md-tooltip>Tilt Far Up</md-tooltip>
             </md-button>
-            <md-button ng-click="vm.tiltUp()"  class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.tiltUp()" class="md-icon-button md-raised md-primary" title="Tilt Up 5 Degrees">
                 <span class="fa fa-caret-up md-fab-fa-icon-small"></span>
             </md-button>
-            <div layout="row" style="width: 180px;">
-                <md-button ng-click="vm.panFarLeft()"  class="md-fab md-button-fab-small md-primary">
+            <div layout="row" style="">
+                <md-button ng-click="vm.panFarLeft()" class="md-icon-button md-raised md-primary" title="Pan Far Left">
                     <span class="fa fa-step-backward md-fab-fa-icon-small"></span>
-                    <md-tooltip>Pan Far Left</md-tooltip>
                 </md-button>
-                <md-button ng-click="vm.panLeft()"  class="md-fab md-button-fab-small md-primary">
+                <md-button ng-click="vm.panLeft()" class="md-icon-button md-raised md-primary" title="Pan Left 5 Degrees">
                     <span class="fa fa-caret-left md-fab-fa-icon-small"></span>
                 </md-button>
                 <span flex></span>
-                <md-button ng-click="vm.panRight()"  class="md-fab md-button-fab-small md-primary">
+                <md-button ng-click="vm.panRight()" class="md-icon-button md-raised md-primary" title="Pan Right 5 Degrees">
                     <span class="fa fa-caret-right md-fab-fa-icon-small"></span>
                 </md-button>
-                <md-button ng-click="vm.panFarRight()"  class="md-fab md-button-fab-small md-primary">
+                <md-button ng-click="vm.panFarRight()" class="md-icon-button md-raised md-primary" title="Pan Far Right">
                     <span class="fa fa-step-forward md-fab-fa-icon-small"></span>
-                    <md-tooltip>Pan Far Right</md-tooltip>
                 </md-button>
             </div>
-            <md-button ng-click="vm.tiltDown()"  class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.tiltDown()" class="md-icon-button md-raised md-primary" title="Tilt Down 5 Degrees">
                 <span class="fa fa-caret-down md-fab-fa-icon-small"></span>
             </md-button>
-            <md-button ng-click="vm.tiltFarDown()"  class="md-fab md-button-fab-small md-primary">
+            <md-button ng-click="vm.tiltFarDown()" class="md-icon-button md-raised md-primary" title="Tilt Far Down">
                 <span style="transform:rotate(270deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
-                <md-tooltip>Tilt Far Down</md-tooltip>
             </md-button>
         </div>
 
-        <!--floodlights button-->
+        <!--floodlights button?-->
     </div>
 </div>

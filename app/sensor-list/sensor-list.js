@@ -20,6 +20,7 @@
         vm.useFixedYAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
+        vm.hideNominalSensors = false;
 
         vm.limitTo = 50;
         $scope.loadMore = function () {
@@ -72,8 +73,8 @@
         vm.initSensors = function () {
             if (vm.resourcesNames.length === 0) {
                 SensorsService.listResources()
-                    .then(function () {
-                        for (var key in vm.resources) {
+                    .then(function (result) {
+                        for (var key in result) {
                             vm.resourcesNames.push({name: key});
                         }
                     });
@@ -85,7 +86,7 @@
                     '',
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval);
+                    120);
             }
         };
 
@@ -107,7 +108,7 @@
 
         vm.sensorLoaded = function ($index) {
             if ($index >= vm.limitTo - 1) {
-                $timeout($scope.loadMore, 100);
+                $timeout($scope.loadMore, 50);
             }
             return true;
         };
@@ -125,11 +126,10 @@
                 vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
                 vm.clearChart();
             }
-            if (!SensorsService.resources[resourceName].sensorsList) {
+            if (!vm.resources[resourceName].sensorsList) {
                 SensorsService.listResourceSensors(resourceName)
                     .then(function (result) {
-                        $rootScope.showSimpleToast(result.message);
-                        vm.limitTo = 30;
+                        vm.limitTo = 50;
                         vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
                         if (!$scope.$$phase) {
                             $scope.$digest();
@@ -139,7 +139,7 @@
                             '',
                             $rootScope.sensorListStrategyType,
                             $rootScope.sensorListStrategyInterval,
-                            $rootScope.sensorListStrategyInterval);
+                            120);
                     });
             } else {
                 vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;

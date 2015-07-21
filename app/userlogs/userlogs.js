@@ -7,7 +7,7 @@
                 link: function(scope, element, attrs) {
                     var model = $parse(attrs.fileModel);
                     var modelSetter = model.assign;
-            
+
                     element.bind('change', function(){
                         scope.$apply(function(){
                             modelSetter(scope, element[0].files);
@@ -21,7 +21,7 @@
     function UserlogCtrl($scope, UserLogService, $mdDialog, $rootScope, $filter, $log) {
 
         var vm = this;
-        
+
         var blank_tags = [];
         $scope.blank_ulog = {
             id: "",
@@ -32,14 +32,14 @@
             userlog_content: "",
             tags: blank_tags,
         };
-        
+
         $scope.blank_query = {
             userlog_type: "",
             start_time: "",
             end_time: "",
         };
-        
-        
+
+
         $scope.getCompleteUserLog = function (ulog, userlogs, event) {
             $scope.fetchUserlogProcessingServerCall = true;
             UserLogService.getUserLog(ulog.id).then(function () {
@@ -123,7 +123,7 @@
                                 tags: $scope.chosen_tags,
                             };
                             $scope.tagFix();
-                            var file = $scope.myFile;                                
+                            var file = $scope.myFile;
                             ulog = userlog_entry;
                             if (ulog.id) {
                                 $log.info('Tag list sent to server: ' + $scope.chosen_tags);
@@ -173,7 +173,7 @@
                     targetEvent: event
                 })
                 .then(function(userlog_entry) {
-                    $log.info('Controller start time: ' + ulog.start_time + ', Controller end time: ' + ulog.end_time);   
+                    $log.info('Controller start time: ' + ulog.start_time + ', Controller end time: ' + ulog.end_time);
                 });
         };
     }

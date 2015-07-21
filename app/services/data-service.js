@@ -23,7 +23,7 @@
         };
 
         api.findSensorName = function (searchStr, sensor_type) {
-            return $http.get(urlBase + 'findsensor?sensor=' + searchStr + '&sensor_type=' + sensor_type);
+            return $http.get(urlBase + 'findsensor?sensor=' + searchStr + '&sensor_type=' + sensor_type + '&limit=1000');
         };
 
         api.sensorInfo = function (sensorName) {

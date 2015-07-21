@@ -9,7 +9,9 @@
                       style="margin-left: 16px; font-size:22px; cursor: pointer; font-weight: bold;">
                         Current Alarms
                 </span>
-                <input class="fade-in search-input-box" ng-show="showAlarmTools || vm.q" type="search"
+                <md-checkbox style="font-size: 12px;" class="md-primary" ng-model="vm.showClearedAlarms">Show Cleared Alarms
+                </md-checkbox>
+                <input class="fade-in search-input-box" type="search"
                        style="min-width: 200px;"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
                 <md-menu style="padding: 0">
@@ -25,10 +27,6 @@
                         </md-menu-item>
                         <md-menu-item>
                             <md-button ng-click="vm.clearSelectedAlarms()">Clear Selected Alarms</md-button>
-                        </md-menu-item>
-                        <md-menu-item>
-                            <md-checkbox class="md-primary" ng-model="vm.showClearedAlarms">Show Cleared Alarms
-                            </md-checkbox>
                         </md-menu-item>
                         <md-menu-item>
                             <md-button ng-click="vm.viewAlarmSystemConfig($event)">View System Config for Alarms</md-button>
@@ -148,7 +146,7 @@
 
                 <div ng-show="vm.showKnownAlarmsList" md-theme="{{themePrimaryButtons}}" layout="row"
                      layout-align="end center" class="alarms-buttons" md-theme-watch="true" style="min-width: 680px;">
-                    <input flex class="fade-in search-input-box" ng-show="showKnownAlarmTools || vm.q2" type="search"
+                    <input flex class="fade-in search-input-box" type="search"
                            style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Search Known Alarms..."/>
                     <md-button ng-click="vm.cancelKnowSelectedAlarms()" class="md-primary md-raised"
