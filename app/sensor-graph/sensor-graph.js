@@ -171,6 +171,7 @@
         };
 
         vm.findSensorNames = function (searchStr, $event) {
+            //13 == enter
             if ($event.keyCode !== 13) {
                 return;
             }

@@ -173,6 +173,10 @@ angular.module('katGui.d3')
                         height = 0;
                     }
 
+                    if (width < 0) {
+                        width = 0;
+                    }
+
                     if (scope.yAxisValues) {
                         margin.left = 120;
                         margin2 = {top: height, right: 10, bottom: 20, left: 120};
