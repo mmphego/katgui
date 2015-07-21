@@ -53,27 +53,15 @@
             SensorsService.resources = {};
             vm.detailedProcesses = {};
             vm.nodemans.splice(0, vm.nodemans.length);
-            var lastTimeout = 0;
 
-                for (var node in ConfigService.systemConfig.nodes) {
-                    var nodeName = 'nm_' + node;
-                    vm.detailedProcesses[nodeName] = {};
-                    vm.nodemans.push(nodeName);
-                    SensorsService.resources[nodeName] = {};
-                    SensorsService.resources[nodeName].subscribed = false;
-                    /*todo - fix, we cant send lots of messages quickly after each other via sockjs
-                    sockjs on katportal throws an error, so we need to give it some breathing space*/
-                    lastTimeout += 500;
-                    $timeout(function () {
-                        for (var node in vm.detailedProcesses) {
-                            if (!SensorsService.resources[node].subscribed) {
-                                vm.listResourceSensors(node);
-                                SensorsService.resources[node].subscribed = true;
-                                return;
-                            }
-                        }
-                    }, lastTimeout);
-                }
+            for (var node in ConfigService.systemConfig.nodes) {
+                var nodeName = 'nm_' + node;
+                vm.detailedProcesses[nodeName] = {};
+                vm.nodemans.push(nodeName);
+                SensorsService.resources[nodeName] = {};
+                SensorsService.resources[nodeName].subscribed = false;
+                vm.listResourceSensors(nodeName);
+            }
         };
 
         vm.collapseAll = function (nm_name) {
