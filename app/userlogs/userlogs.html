@@ -1,30 +1,33 @@
 <div flex style="padding: 24px;" ng-controller="UserlogCtrl as vm">
-    <md-tabs md-border-bottom>
+    <md-tabs md-border-bottom md-dynamic-height>
         <md-tab label="My User Logs">
             <md-toolbar>
                 <div class="logging-options" layout="row">
-                    <md-button ng-click="editUserLog(blank_ulog, userlogs, tags, event)">New User Log</md-button>
-                    <md-button ng-click="getUserLogs(event)">List My Latest</md-button>
+                    <md-button ng-click="editUserLog(blank_ulog, my_userlogs, tags, event)">New User Log</md-button>
+                    <md-button ng-click="getMyUserLogs(event)">List My Latest</md-button>
                     <md-button>Rolling List</md-button>
                 </div>
             </md-toolbar>
 
-            <md-list ng-show="userlogs.length > 0">
+            <md-list ng-show="my_userlogs.length > 0">
                 <md-list-item>
                     <div class="md-list-item-text" style="padding-left: 24px;" layout="row" flex>
-                        <h4 flex="30">Userlog Type </h4>
-                        <div flex="10"></div>
+                        <h4 flex="15">Userlog Type </h4>
+                        <h4 flex="15">Event started: </h4>
+                        <h4 flex="15">Event ended: </h4>
+                        <div flex="5"></div>
                         <h4 flex>Userlog Content <h4>
                     </div>
                 </md-list-item>
-                <md-list-item ng-repeat="ulog in userlogs">
+                <md-list-item ng-repeat="e_ulog in my_userlogs | orderBy:'+':true"">
                     <md-divider> </md-divider>
-                    <div class="md-list-item-text" style="padding-left: 24px;" flex layout="row" ng-click="getCompleteUserLog(ulog, userlogs, tags, event)">
+                    <div class="md-list-item-text" style="padding-left: 24px; font-size:small;" flex layout="row" ng-click="getCompleteUserLog(e_ulog, my_userlogs, tags, event)">
                     <i class="fa fa-angle-right" flex="5"></i>
-                    <div flex="20">{{ulog.userlog_type}}</div>
-                    <div flex="20" ng-style="{'background': ulog.scolor}">{{ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
-                    <div flex="20" ng-style="{'background': ulog.ecolor}">{{ulog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
-                    <div flex>{{ulog.userlog_content}}</div>
+                    <div flex="10">{{e_ulog.userlog_type}}</div>
+                    <div flex="15" ng-style="{'background': ulog.scolor}">{{e_ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
+                    <div flex="15" ng-style="{'background': ulog.ecolor}">{{e_ulog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
+                    <div flex="5"></div>
+                    <div flex>{{e_ulog.userlog_content}}</div>
                     </div>
                 </md-list-item>
             </md-list>
