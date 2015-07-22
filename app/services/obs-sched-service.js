@@ -13,6 +13,7 @@
 
         api.subarrays = [];
         api.poolResourcesFree = [];
+        api.configLabels = [];
 
         api.handleRequestResponse = function (request) {
             request
@@ -70,7 +71,7 @@
         };
 
         api.cloneSchedule = function (id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + id_code + '/clone'));
+            return $http.post(urlBase + '/sb/' + id_code + '/clone');
         };
 
         api.assignScheduleBlock = function (sub_nr, id_code) {
@@ -110,11 +111,22 @@
                     for (var i in jsonResult) {
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
-                        } else if (jsonResult[i].state === 'ACTIVE' || jsonResult[i].state === 'SCHEDULED') {
-                            api.scheduleData.push(jsonResult[i]);
-                        } else {
+                        } else if (jsonResult[i].state !== 'ACTIVE' && jsonResult[i].state !== 'SCHEDULED') {
                             api.scheduleCompletedData.push(jsonResult[i]);
                         }
+                    }
+                })
+                .error(function (error) {
+                    $log.error(error);
+                });
+        };
+
+        api.getScheduledScheduleBlocks = function () {
+            $http.get(urlBase + '/sb/scheduled')
+                .success(function (result) {
+                    var jsonResult = JSON.parse(result.result);
+                    for (var i in jsonResult) {
+                        api.scheduleData.push(jsonResult[i]);
                     }
                 })
                 .error(function (error) {
@@ -147,40 +159,30 @@
                 }
                 $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been removed');
             } else if (action === 'sb_update') {
-                var index = -1;
-                for (var i in api.scheduleDraftData) {
-                    if (api.scheduleDraftData[i].id_code === sb.id_code) {
-                        index = i;
-                        break;
-                    }
-                }
-                if (index > -1) {
-                    api.scheduleDraftData[index] = sb;
-                } else {
-                    for (var i in api.scheduleData) {
-                        if (api.scheduleData[i].id_code === sb.id_code) {
-                            index = i;
-                            break;
-                        }
-                    }
-                    if (index > -1) {
-                        api.scheduleData[index] = sb;
-                    } else {
-                        for (var i in api.scheduleCompletedData) {
-                            if (api.scheduleCompletedData[i].id_code === sb.id_code) {
-                                index = i;
-                                break;
-                            }
-                        }
-                        if (index > -1) {
-                            api.scheduleCompletedData[index] = sb;
-                        }
-                    }
-                }
-                //if (index !== -1) {
-                //    $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been updated.');
-                //}
 
+                var draftIndex = _.findLastIndex(api.scheduleDraftData, {id_code: sb.id_code});
+                var scheduledIndex = _.findLastIndex(api.scheduleData, {id_code: sb.id_code});
+                var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id_code: sb.id_code});
+
+                if (draftIndex > -1 && sb.state !== 'DRAFT') {
+                    api.scheduleDraftData.splice(draftIndex, 1);
+                } else if (draftIndex > -1 && sb.state === 'DRAFT') {
+                    api.scheduleDraftData[draftIndex] = sb;
+                } else if (draftIndex === -1 && sb.state === 'DRAFT'){
+                    api.scheduleDraftData.push(sb);
+                }
+                if (scheduledIndex > -1 && (sb.state !== 'SCHEDULED' && sb.state !== 'ACTIVE')) {
+                    api.scheduleData.splice(scheduledIndex, 1);
+                } else if (scheduledIndex > -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
+                    api.scheduleData[scheduledIndex] = sb;
+                } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
+                    api.scheduleData.push(sb);
+                }
+                if (completedIndex === -1 && (sb.state !== 'SCHEDULED' && sb.state !== 'ACTIVE' && sb.state !== 'DRAFT')) {
+                    api.scheduleCompletedData.push(sb);
+                } else if (completedIndex > -1) {
+                    api.scheduleCompletedData[completedIndex] = sb;
+                }
             } else if (action === 'sb_add') {
                 if (sb.state === 'DRAFT') {
                     api.scheduleDraftData.push(sb);
@@ -194,6 +196,33 @@
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
                 $log.error(sb)
             }
+        };
+
+        api.listConfigLabels = function () {
+            api.configLabels.splice(0, api.configLabels.length);
+            $http.get(urlBase + '/config-labels')
+                .success(function (result) {
+                    result.forEach(function (item) {
+                        var configLabel = JSON.parse(item);
+                        configLabel.date = moment.utc(configLabel.date).format('YYYY-DD-MM hh:mm:ss');
+                        api.configLabels.push(configLabel);
+                    });
+                })
+                .error(function (error) {
+                    $log.error(error);
+                });
+        };
+
+        api.setConfigLabel = function (sub_nr, config_label) {
+            api.handleRequestResponse($http.post(urlBase + '/config-labels/' + sub_nr + '/' + config_label));
+        };
+
+        api.setBand = function (sub_nr, band) {
+            api.handleRequestResponse($http.post(urlBase + '/bands/' + sub_nr + '/' + band));
+        };
+
+        api.setProduct = function (sub_nr, product) {
+            api.handleRequestResponse($http.post(urlBase + '/products/' + sub_nr + '/' + product));
         };
 
         api.viewTaskLogForSBIdCode = function (id_code) {

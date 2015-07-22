@@ -4,7 +4,7 @@
         .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
-    function ControlService($http, SERVER_URL, $rootScope) {
+    function ControlService($http, SERVER_URL, $rootScope, $log) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};

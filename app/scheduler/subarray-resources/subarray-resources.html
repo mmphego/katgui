@@ -32,9 +32,9 @@
                         <!--<md-option value="x">x</md-option>-->
                     <!--</md-select>-->
                     <div layout="row" style="position: absolute; padding: 0; top: 0; right: 0; font-size: 14px">
-                        <span title="Selected Band" style="margin-right: 8px;">Band: {{subarray.band}}</span>
-                        <span title="Selected Product" style="margin-right: 8px;">Product: {{subarray.product}}</span>
-                        <span ng-show="subarray.state === 'active'" title="Config Label">Config Label:{{subarray.config_label}}</span>
+                        <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band}}</b></span>
+                        <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product}}</b></span>
+                        <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{subarray.config_label}}</b></span>
                     </div>
                     <md-button class="md-icon-button inline-action-button" ng-click="vm.setSubarrayInMaintenance(subarray)"
                                title="Set Subarray in Maintenance" style="margin-top: 16px;">
@@ -48,12 +48,37 @@
                                title="Activate Subarray" style="margin-top: 16px;">
                         <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                     </md-button>
+
+                    <md-menu ng-if="subarray.state !== 'active'" style="margin-top: 16px; margin-bottom: 0; padding: 0;">
+                        <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu();">
+                            <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                        </md-button>
+                        <md-menu-content style="padding: 8px;">
+                            <md-menu-item >
+                                <md-button ng-click="vm.openConfigLabelDialog(subarray.id, $event)"
+                                           title="Select a Config Label">
+                                    <span>Select Config Label</span>
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-click="vm.openBandsDialog(subarray.id, $event)"
+                                           title="Select a Band">
+                                    <span>Select Band</span>
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item>
+                                <md-button ng-click="vm.openProductsDialog(subarray.id, $event)"
+                                           title="Select a Product">
+                                    <span>Select Product</span>
+                                </md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
                 </md-toolbar>
 
                 <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <div flex class="resource-item animate-repeat-opacity" layout="row" layout-align="start center"
-                         ng-repeat="resource in subarray.allocations | orderBy:'name'" ng-class="{'transparent-background':subarray.maintenance}"
-                         ng-if="resource.allocation === 'None'">
+                         ng-repeat="resource in subarray.allocations | orderBy:'name'" ng-class="{'transparent-background':subarray.maintenance}">
                         <span style="min-width: 34px;">
                             <span class="fa fa-wrench maintenance-text" style="font-size: 18px;" ng-if="vm.isResourceInMaintenance(resource)" title="Resource Marked In Maintenance"></span>
                         </span>
