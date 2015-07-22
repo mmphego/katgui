@@ -2,25 +2,6 @@ describe('MonitorService', function () {
 
     beforeEach(module('katGui.services'));
 
-    var authMessage = {
-        type: "message",
-        data: '{"jsonrpc": "2.0",' +
-        '"result": {' +
-        '"email": "fjoubert@ska.ac.za",' +
-        '"session_id": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0MjYxNDk5OTcsIm5hbWUiOiJGcmFuY29pcyBKb3ViZXJ0IiwiaWQiOjEsInJvbGVzIjpbImNvbnRyb2xfYXV0aG9yaXR5IiwidXNlcl9hZG1pbiIsImxlYWRfb3BlcmF0b3IiLCJvcGVyYXRvciIsInJlYWRfb25seSJdLCJlbWFpbCI6ImZqb3ViZXJ0QHNrYS5hYy56YSJ9.F0f9i3b-ns8p4igqdhGiRCRI6N5S3B2dRSzgCt0Czqo"' +
-        '},' +
-        '"id": "authorise190d6c08-af9b-4432-a5d1-15ab9be24bdc"' +
-        '}'
-    };
-
-    var badAuthMessage = {
-        type: "message",
-        data: '{"jsonrpc": "2.0",' +
-        '"result": "error",' +
-        '"id": "authorise190d6c08-af9b-4432-a5d1-15ab9be24bdc"' +
-        '}'
-    };
-
     var errorMessage = {
         type: "message",
         data: '{"error": {"message":"test error"}}'
@@ -116,25 +97,6 @@ describe('MonitorService', function () {
         expect(closeSpy).toHaveBeenCalled();
     });
 
-    it('should authenticate the socket connection on socket open when connection is in readyState', function () {
-        var authSpy = spyOn(MonitorService, 'authenticateSocketConnection');
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        MonitorService.connection.readyState = true;
-        MonitorService.onSockJSOpen();
-        expect(authSpy).toHaveBeenCalled();
-    });
-
-    it('should NOT authenticate the socket connection on socket open when connection is not in readyState', function () {
-        var authSpy = spyOn(MonitorService, 'authenticateSocketConnection');
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        MonitorService.onSockJSOpen();
-        expect(authSpy).not.toHaveBeenCalled();
-    });
-
     it('should set the connection to null on disconnect', function () {
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();
@@ -146,39 +108,12 @@ describe('MonitorService', function () {
         expect(MonitorService.connection).toBeNull();
     });
 
-    it('should send the authentication message', function () {
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(MonitorService.connection, 'send');
-        scope.$root.session_id = "test_session_id";
-        MonitorService.authenticateSocketConnection();
-        expect(MonitorService.connection.authorized).toBeFalsy();
-        scope.$root.session_id = "test_session_id";
-        expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"authorise","params":\["test_session_id"\],"id":"authorise.*\}/);
-    });
-
-    it('should NOT send the authentication message when there is no connection', function () {
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        var sendSpy = spyOn(MonitorService.connection, 'send');
-        var closeSpy = spyOn(MonitorService.connection, 'close');
-        MonitorService.disconnectListener();
-        MonitorService.onSockJSClose();
-        expect(MonitorService.connection).toBeNull();
-        MonitorService.authenticateSocketConnection();
-        expect(closeSpy).toHaveBeenCalled();
-        expect(sendSpy).not.toHaveBeenCalled();
-    });
-
     it('should send the subscribe command', function () {
         var result = MonitorService.connectListener();
         expect(MonitorService.connection).toBeDefined();
         expect(result).toBeTruthy();
         var sendSpy = spyOn(MonitorService.connection, 'send');
         MonitorService.connection.readyState = true;
-        MonitorService.connection.authorized = true;
         MonitorService.subscribe('test_subsribe');
         expect(sendSpy.calls.mostRecent().args[0]).toMatch(/\{"jsonrpc":"2.0","method":"subscribe","params":\["test_subsribe",true\],"id":"monitor.*"\}/);
     });
@@ -188,36 +123,11 @@ describe('MonitorService', function () {
         expect(MonitorService.connection).toBeDefined();
         expect(result).toBeTruthy();
         var sendSpy = spyOn(MonitorService.connection, 'send');
-        MonitorService.connection.authorized = false;
         MonitorService.subscribe('test_subscribe');
         expect(sendSpy).not.toHaveBeenCalled();
         var sendControlCommandSpy = spyOn(MonitorService, 'subscribe');
         timeout.flush(500);
         expect(sendControlCommandSpy).toHaveBeenCalledWith('test_subscribe');
-    });
-
-    it('should set the connection as authorized when a session_id is received', function () {
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        MonitorService.onSockJSMessage(authMessage);
-        expect(MonitorService.connection.authorized).toBeTruthy();
-    });
-
-    it('should set the connection as authorized when a session_id is received', function () {
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        MonitorService.onSockJSMessage(authMessage);
-        expect(MonitorService.connection.authorized).toBeTruthy();
-    });
-
-    it('should NOT set the connection as authorized when a session_id is NOT received', function () {
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        MonitorService.onSockJSMessage(badAuthMessage);
-        expect(MonitorService.connection.authorized).toBeFalsy();
     });
 
     it('should log an error when receiving an error message', function () {
