@@ -12,9 +12,11 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
 
-        ConfigService.getSystemConfig().then(function (systemConfig) {
-            vm.systemConfig = systemConfig;
-        });
+        if (!$rootScope.systemConfig) {
+            ConfigService.getSystemConfig().then(function (systemConfig) {
+                $rootScope.systemConfig = systemConfig;
+            });
+        }
 
         var sensorNameList = ['version*', 'build*'];
 
@@ -59,10 +61,13 @@
                         vm.resourcesNames[key] = {
                             name: key,
                             sensors: {},
-                            address: SensorsService.resources[key].address,
-                            connected: false
+                            host: SensorsService.resources[key].host,
+                            port: SensorsService.resources[key].port,
+                            build_state: SensorsService.resources[key].build_state,
+                            api_version: SensorsService.resources[key].api_version,
+                            connected: SensorsService.resources[key].synced
                         };
-                        vm.resourcesNames[key].nodeman = vm.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
+                        vm.resourcesNames[key].nodeman = $rootScope.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
                         SensorsService.setSensorStrategy(
                             key, sensorNameList[0], 'event', 0, 0);
                         SensorsService.setSensorStrategy(

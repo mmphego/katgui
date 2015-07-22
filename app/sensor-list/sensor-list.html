@@ -19,6 +19,10 @@
             <md-toolbar class="md-whiteframe-z1" style="position: relative">
                 <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
                     <span flex>Sensors</span>
+                    <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-click="$event.stopPropagation()"
+                                 md-theme="{{themePrimaryButtons}}" style="font-size: 16px;">
+                        Hide Nominal Sensors
+                    </md-checkbox>
                     <input class="fade-in search-input-box" type="search"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Sensors..."/>
                 </div>
@@ -68,14 +72,13 @@
                     ng-show="vm.sensorLoaded($index)" title="{{sensor.description}}" class="resource-sensor-item"
                     layout="row" class="unselectable"
                     ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
-                    ng-class="{'selected-for-chart-row': sensor.selectedForChart}">
+                    ng-class="{'selected-for-chart-row': sensor.selectedForChart}"
+                    ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal'">
                     <span class="resource-sensor-name">{{sensor.name}}</span>
-                    <span class="resource-sensor-status-item" ng-show="sensor.sensorValue"
-                          ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
-                    <span class="resource-sensor-time-item" ng-show="sensor.sensorValue">{{sensor.timestamp}}</span>
-                    <span class="resource-sensor-time-item"
-                          ng-show="sensor.sensorValue">{{sensor.received_timestamp}}</span>
-                    <span flex class="resource-sensor-value-item" ng-show="sensor.sensorValue">{{sensor.value}}</span>
+                    <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
+                    <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
+                    <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
+                    <span flex class="resource-sensor-value-item">{{sensor.value}}</span>
                 </div>
             </div>
         </div>

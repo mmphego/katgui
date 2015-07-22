@@ -91,25 +91,20 @@ div[role="button"] {
 
 .toolbar-collapse-button {
     position: absolute;
-    top: 0px;
-    left: 50%;
-    width: 46px;
-    height: 32px;
-    margin-left: auto;
-    margin-right: auto;
-    color: rgba(255, 255, 255, 0.5);
-    cursor: pointer;
+    top: 0;
+    left: 0;
+    width: 100%;
+    cursor: pointer !important;
     border: 0;
     background: none;
     z-index: 1000;
-    font-size: 16px;
     text-align: center;
+    color: white;
+    font-size: 12px;
 
     &:hover {
-        color: rgba(227, 227, 227, 0.8);
-        background-color: rgba(255, 255, 255, 0.2);
-        font-size: 24px;
-        margin-top: -5px;
+        color: white;
+        background: rgba(80, 80, 80, 0.3);
     }
 
     &:focus {
@@ -196,51 +191,18 @@ md-list.md-dark-secondary-theme {
 }
 
 .menu-item {
-    font-family: Roboto, 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-    cursor: pointer;
-    //    color: #757575;
-    height: 48px;
-    width: 100%;
-    padding-left: 24px;
-
-    button {
-        margin-left: 24px;
-        background-color: transparent;
-        border-width: 0;
-        display: block;
-        font-size: 13px;
-        font-weight: bold;
+    .md-button {
+        text-align: start;
+        margin: 0;
     }
 
-    span {
-        width: 27px;
-        font-size: 20px;
-        text-align: center;
-    }
-
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-
-        span {
-            //            font-size: 32px;
-        }
-
-        button {
-            //            background-color: #F5F5F5;
-        }
-    }
-
-    &:active {
-        //        background-color: #E0E0E0;
-
-        button {
-            //            background-color: #E0E0E0;
-        }
+    .fa {
+        margin: 0 8px;
     }
 }
 
 .menu-item-indented {
-    padding-left: 42px;
+    padding-left: 24px;
 }
 
 .menu-item-divider {

@@ -10,7 +10,7 @@
         <md-input-container  md-no-float required class="long-input">
             <input type="password" ng-model="vm.credentials.password" placeholder="Password">
         </md-input-container>
-        <md-select placeholder="Login As..." ng-model="vm.loginAs" style="width: 155px">
+        <md-select placeholder="Login As..." ng-model="vm.loginAs" style="width: 155px" ng-init="vm.loginAs = 'read_only'">
             <md-option value="operator">Operator</md-option>
             <md-option value="lead_operator">Lead Operator</md-option>
             <md-option value="control_authority">Control Authority</md-option>

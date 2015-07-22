@@ -3,7 +3,7 @@
         <div layout="row" layout-padding="8px" style="position: absolute; top: 0; left: 16px; padding: 0; font-size: 14px">
             <span title="Selected Band" style="margin-right: 8px;">Band: {{vm.subarray.band}}</span>
             <span title="Selected Product" style="margin-right: 8px;">Product: {{vm.subarray.product}}</span>
-            <span ng-show="vm.subarray.state === 'active'" title="Config Label">Config Label:{{vm.subarray.config_label}}</span>
+            <span ng-show="vm.subarray.state === 'active' || subarray.config_label" title="Config Label">Config Label:{{vm.subarray.config_label}}</span>
         </div>
         <div flex layout="column" style="margin: 0;">
 

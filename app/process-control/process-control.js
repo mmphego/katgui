@@ -53,31 +53,15 @@
             SensorsService.resources = {};
             vm.detailedProcesses = {};
             vm.nodemans.splice(0, vm.nodemans.length);
-            var lastTimeout = 0;
-            ConfigService.getSystemConfig()
-                .then(function (result) {
-                    if (result.nodes) {
-                        for (var node in result.nodes) {
-                            var nodeName = 'nm_' + node;
-                            vm.detailedProcesses[nodeName] = {};
-                            vm.nodemans.push(nodeName);
-                            SensorsService.resources[nodeName] = {};
-                            SensorsService.resources[nodeName].subscribed = false;
-                            /*todo - fix, we cant send lots of messages quickly after each other via sockjs
-                            sockjs on katportal throws an error, so we need to give it some breathing space*/
-                            lastTimeout += 500;
-                            $timeout(function () {
-                                for (var node in vm.detailedProcesses) {
-                                    if (!SensorsService.resources[node].subscribed) {
-                                        vm.listResourceSensors(node);
-                                        SensorsService.resources[node].subscribed = true;
-                                        return;
-                                    }
-                                }
-                            }, lastTimeout);
-                        }
-                    }
-                });
+
+            for (var node in ConfigService.systemConfig.nodes) {
+                var nodeName = 'nm_' + node;
+                vm.detailedProcesses[nodeName] = {};
+                vm.nodemans.push(nodeName);
+                SensorsService.resources[nodeName] = {};
+                SensorsService.resources[nodeName].subscribed = false;
+                vm.listResourceSensors(nodeName);
+            }
         };
 
         vm.collapseAll = function (nm_name) {
@@ -94,21 +78,21 @@
 
         vm.listResourceSensors = function (resource) {
             SensorsService.listResourceSensors(resource)
-                .then(function (result) {
-                    SensorsService.resources[result.resource].sensorsList.forEach(function (item) {
+                .then(function () {
+                    SensorsService.resources[resource].sensorsList.forEach(function (item) {
                         if (item.name.indexOf('.') > -1) {
                             var processName = item.name.split('.')[0];
-                            if (!vm.detailedProcesses[result.resource][processName]) {
-                                vm.detailedProcesses[result.resource][processName] = {sensors: {}};
+                            if (!vm.detailedProcesses[resource][processName]) {
+                                vm.detailedProcesses[resource][processName] = {sensors: {}};
                             }
                             vm.sensorsToDisplay[item.python_identifier] = item;
-                            vm.detailedProcesses[result.resource][processName].sensors[item.python_identifier] = item;
+                            vm.detailedProcesses[resource][processName].sensors[item.python_identifier] = item;
                             if (item.python_identifier.indexOf('running') !== -1) {
                                 SensorsService.setSensorStrategy(
-                                    result.resource, item.python_identifier, 'event-rate', 1, 3);
+                                    resource, item.python_identifier, 'event-rate', 1, 120);
                             } else {
                                 SensorsService.setSensorStrategy(
-                                    result.resource, item.python_identifier, 'event-rate', 3, 120);
+                                    resource, item.python_identifier, 'event-rate', 3, 120);
                             }
                         }
                     });

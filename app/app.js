@@ -118,6 +118,9 @@
         $rootScope.alarmsData = AlarmsService.alarmsData;
 
         ConfigService.loadKATObsPortalURL();
+        ConfigService.getSystemConfig().then(function (systemConfig) {
+            $rootScope.systemConfig = systemConfig;
+        });
 
         $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
         if (!angular.isDefined($rootScope.showAlarms)) {
@@ -168,14 +171,6 @@
 
         vm.toggleNavbar = function () {
             vm.showNavbar = !vm.showNavbar;
-            if (vm.showNavbar) {
-                $rootScope.connectEvents();
-            } else {
-                $interval.cancel(vm.updateTimeDisplayInterval);
-                $interval.cancel(vm.syncTimeWithServerInterval);
-                vm.updateTimeDisplayInterval = null;
-                vm.syncTimeWithServerInterval = null;
-            }
         };
 
         vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {

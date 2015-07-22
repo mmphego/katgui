@@ -152,7 +152,7 @@
             <div class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames track by $index"
                      ng-click="vm.searchSensorClicked(sensor);">
-                    <span>{{::sensor.name}}</span>
+                    <span>{{sensor.name}}</span>
                 </div>
                 <div layout="row" layout-align="center center" class="search-loading-overlay unselectable"
                      ng-if="vm.waitingForSearchResult">

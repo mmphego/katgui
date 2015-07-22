@@ -18,7 +18,7 @@
                     <div layout="row" layout-padding="8px" style="position: absolute; top: 0px; right: 0px; font-size: 14px">
                         <span title="Selected Band" style="margin-right: 8px;">Band: {{subarray.band}}</span>
                         <span title="Selected Product" style="margin-right: 8px;">Product: {{subarray.product}}</span>
-                        <span ng-show="subarray.state === 'active'" title="Config Label">Config Label:{{subarray.config_label}}</span>
+                        <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label">Config Label:{{subarray.config_label}}</span>
                     </div>
                     <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
                         style="padding: 0; margin:0; bottom:0; left: 0; position: absolute">
