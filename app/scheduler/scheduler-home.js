@@ -142,6 +142,7 @@
         });
 
         ObsSchedService.getScheduleBlocks();
+        ObsSchedService.getScheduledScheduleBlocks();
 
         $scope.$on('$destroy', function () {
             vm.unbindStateChangeStart();
