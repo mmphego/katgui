@@ -33,7 +33,7 @@
 
             if (api.connection === null) {
                 $log.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
-            } else if (api.connection.readyState && api.connection.authorized) {
+            } else if (api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
@@ -55,7 +55,7 @@
 
             if (api.connection === null) {
                 $log.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
-            } else if (api.connection.readyState && api.connection.authorized) {
+            } else if (api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
@@ -66,8 +66,10 @@
 
         api.onSockJSOpen = function () {
             if (api.connection && api.connection.readyState) {
-                $log.info('Monitor Connection Established. Authenticating...');
-                api.authenticateSocketConnection();
+                $log.info('Monitor Connection Established.');
+                api.deferredMap['connectDefer'].resolve();
+                api.subscribe('mon:*');
+                api.subscribe('sched:*');
             }
         };
 
@@ -138,25 +140,8 @@
                         });
                     }
                 } else if (messages.result) {
-                    //auth response
-                    if (messages.result.email && messages.result.session_id) {
-                        $localStorage['currentUserToken'] = $rootScope.jwt;
-                        api.connection.authorized = true;
-                        $log.info('Monitor Connection Authenticated.');
-                        api.deferredMap['connectDefer'].resolve();
-                        api.subscribe('mon:*');
-                        api.subscribe('sched:*');
-                    } else if (messages.result.length > 0) {
-                        //subscribe response
-                        //$log.info('Subscribed to: ');
-                        //$log.info(messages.result);
-                    } else {
-                        //bad auth response
-                        api.connection.authorized = false;
-                        $log.info('Monitor Connection Authentication failed.');
-                        $log.error(messages);
-                        api.deferredMap['connectDefer'].reject();
-                    }
+                    //subscribe response
+                    $log.info(messages.result);
                 } else {
                     $log.error('Dangling monitor message...');
                     $log.error(e);
@@ -193,23 +178,9 @@
             }
         };
 
-        api.authenticateSocketConnection = function () {
-
-            if (api.connection) {
-                var jsonRPC = {
-                    'jsonrpc': '2.0',
-                    'method': 'authorise',
-                    'params': [$rootScope.session_id],
-                    'id': 'authorise' + KatGuiUtil.generateUUID()
-                };
-
-                api.connection.send(JSON.stringify(jsonRPC));
-            }
-        };
-
         api.sendMonitorCommand = function (method, params) {
 
-            if (api.connection && api.connection.authorized) {
+            if (api.connection) {
                 var jsonRPC = {
                     'id': KatGuiUtil.generateUUID(),
                     'jsonrpc': '2.0',
