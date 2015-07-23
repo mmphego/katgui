@@ -1,7 +1,7 @@
 <div style="position: relative;" flex ng-controller="VideoCtrl as vm" ng-mouseenter="vm.showVideoControls = true" ng-mouseleave="vm.showVideoControls = false">
     <img style="width: 100%" alt="Could not load video image..." ng-src="{{vm.imageSource}}"/>
 
-    <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="row" md-theme-watch="true">
+    <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="row">
         <div layout="column" layout-align="end center">
             <div layout="row">
                 <md-button ng-click="vm.rememberPos()" class="md-icon-button md-raised md-primary" title="Set Preset">
