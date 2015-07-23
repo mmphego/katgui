@@ -80,7 +80,7 @@
         <md-list>
             <md-list-item ng-repeat="attach in ulog.metadata">
                 <div flex="20">{{attach.m_name}}</div>
-                <i class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name)"></i>
+                <i class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name, ulog.id)"></i>
             </md-list-item>
         </md-list>
     </md-dialog-content>
