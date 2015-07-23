@@ -92,7 +92,7 @@
 
         $scope.report_userlogs = UserLogService.report_userlogs;
         $scope.queryUserlogs = function (event, b_query) {
-            var query = "/?";
+            var query = "?";
             var log_type = b_query.userlog_type;
             var start_time = $filter('date')(b_query.start_time, 'yyyy-MM-dd HH:mm');
             var end_time = $filter('date')(b_query.end_time, 'yyyy-MM-dd HH:mm');

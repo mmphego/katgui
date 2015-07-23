@@ -60,7 +60,7 @@
 
         api.listMyUserLogs = function (user) {
             var defer = $q.defer();
-            $http(createRequest('get', api.urlBase + '/logs/query/?user=' + user))
+            $http(createRequest('get', api.urlBase + '/logs/query?user=' + user))
                 .success(function (result) {
                     api.my_userlogs.splice(0, api.my_userlogs.length);
                     result.forEach(function (userlog) {
@@ -162,7 +162,7 @@
 
 
         api.getFileFromUrl = function(file_name, file_alias, ulog_id) {
-            $http.get(api.urlBase + '/logs/' + ulog_id + '/attachments/?file_name=' + file_name, {
+            $http.get(api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
                 headers: {'Content-Type': 'application/json',
                           'Authorization': 'CustomJWT ' + $rootScope.jwt
                 },
