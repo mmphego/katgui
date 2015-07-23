@@ -121,7 +121,7 @@
     //    background-color: @item-bg;
     &:hover {
         //        background-color: darken(@item-bg, 5%);
-        background-color: rgba(158, 158, 158, 0.1)
+        background-color: rgba(158, 158, 158, 0.1);
     }
 }
 
@@ -137,7 +137,7 @@
     border-bottom: 1px solid #9E9E9E;
     overflow: hidden;
     &:hover {
-        background-color: rgba(158, 158, 158, 0.1)
+        background-color: rgba(158, 158, 158, 0.1);
     }
 }
 
@@ -198,10 +198,13 @@
 }
 
 .selected-schedule-row {
-    background: #B3E5FC !important;
+    background: rgba(179, 229, 252, 0.8) !important;
     box-shadow: 1px 2px 10px 0 #393939;
     border-bottom: 1px solid transparent;
     color: #333333;
+    &:hover {
+        background-color: rgba(179, 229, 252, 1.0) !important;
+    }
 }
 
 .schedule-row-executing {
@@ -209,6 +212,9 @@
     color: #333333;
     .manual-color {
         color: #1565C0;
+    }
+    &:hover {
+        background-color: rgba(78, 175, 80, 0.7) !important;
     }
 }
 
@@ -219,6 +225,9 @@
     color: #333333;
     .manual-color {
         color: #1565C0;
+    }
+    &:hover {
+        background-color: rgba(78, 175, 80, 0.7) !important;
     }
 }
 
