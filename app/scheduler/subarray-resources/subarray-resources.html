@@ -5,7 +5,8 @@
              style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false" flex>
 
             <div layout="column" layout-align="start" flex>
-                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}" class="md-whiteframe-z1 md-hue-2"
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                            ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                             layout="row" layout-align="center center" title="{{subarray.description}}" style="max-height: 50px; min-height: 50px;">
                     <div flex style="position: relative">
                         <span style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>

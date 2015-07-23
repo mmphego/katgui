@@ -704,6 +704,10 @@
             .primaryPalette('blue-grey')
             .accentPalette('blue');
 
+        $mdThemingProvider.theme('grey')
+            .primaryPalette('grey')
+            .accentPalette('blue');
+
         $mdThemingProvider.theme('deep-purple')
             .primaryPalette('deep-purple')
             .accentPalette('purple');
