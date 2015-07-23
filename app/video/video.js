@@ -5,7 +5,7 @@
     angular.module('katGui.video', ['katGui.services'])
         .controller('VideoCtrl', VideoCtrl);
 
-    function VideoCtrl($scope, $rootScope, $http, $log, $interval, $timeout, SensorsService, SERVER_URL) {
+    function VideoCtrl($scope, $rootScope, $http, $log, $interval, SensorsService, SERVER_URL) {
 
         var vm = this;
         var urlBase = SERVER_URL + '/katvds/api/v1';
@@ -114,7 +114,6 @@
             $rootScope.showSimpleDialog('Error sending VDS command.', result);
         }
 
-
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
@@ -158,7 +157,6 @@
             var strList = sensor.name.split(':');
             var sensorName = strList[1].split('.')[1];
             vm.sensorValues[sensorName] = sensor.value;
-            $log.info(sensor.value);
         });
 
         $scope.$on('$destroy', function () {
