@@ -73,6 +73,9 @@
                                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
+                                    </md-menu-item>
                                     <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION'">
                                         <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify Schedule</md-button>
                                     </md-menu-item>
@@ -80,13 +83,13 @@
                                         <md-button ng-click="vm.moveScheduleRowToDraft(item)" title="Move Schedule Block to Draft">Move to Draft</md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-click="vm.cancelExecuteSchedule(item)" title="Cancel Schedule Block Execution">Cancel Execution</md-button>
+                                        <md-button ng-click="vm.setPriority(item, $event)" title="Set Schedule Block's Priority">Set Priority</md-button>
                                     </md-menu-item>
                                     <md-menu-item>
                                         <md-button ng-click="vm.moveScheduleRowToFinished(item)" title="Move Schedule Block to Complete">Move To Completed</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.cancelExecuteSchedule(item)" title="Cancel Schedule Block Execution">Cancel Execution</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
