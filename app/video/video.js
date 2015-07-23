@@ -65,14 +65,39 @@
         };
 
         vm.zoomChanged = function (zoomValue) {
-            vm.vdsCommand('zoom/to', zoomValue);
+            vm.zoom = zoomValue;
+            if (vm.zoomInterval) {
+                $interval.cancel(vm.zoomInterval);
+            }
+            vm.zoomInterval = $interval(vm.sendCurrentZoomCommand, 1000);
+        };
+
+        vm.sendCurrentZoomCommand = function () {
+            vm.vdsCommand('zoom/to', vm.zoom);
+            if (vm.zoomInterval) {
+                $interval.cancel(vm.zoomInterval);
+            }
         };
 
         vm.focusChanged = function (focusValue) {
-            vm.vdsCommand('focus/to', focusValue);
+            vm.focus = focusValue;
+            if (vm.focusInterval) {
+                $interval.cancel(vm.focusInterval);
+            }
+            vm.focusInterval = $interval(vm.sendCurrentFocusCommand, 1000);
         };
 
-        vm.cyclePos = function () {
+        vm.sendCurrentFocusCommand = function () {
+            vm.vdsCommand('focus/to', vm.focus);
+            if (vm.focusInterval) {
+                $interval.cancel(vm.focusInterval);
+            }
+        };
+
+        vm.stopVDS = function () {
+            $http.get(urlBase + '/stop')
+                .success(requestSuccess)
+                .error(requestError);
         };
 
         vm.vdsCommand = function (endpoint, args) {

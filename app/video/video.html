@@ -3,19 +3,22 @@
 
     <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="row" md-theme-watch="true">
         <div layout="column" layout-align="end center">
-            <md-button ng-click="vm.rememberPos()" class="md-icon-button md-raised md-primary" title="Set Preset">
-                <span class="fa fa-save md-fab-fa-icon-small"></span>
-            </md-button>
+            <div layout="row">
+                <md-button ng-click="vm.rememberPos()" class="md-icon-button md-raised md-primary" title="Set Preset">
+                    <span class="fa fa-save md-fab-fa-icon-small"></span>
+                </md-button>
+                <md-button ng-click="vm.stopVDS()" class="md-icon-button md-raised md-primary" title="Stop VDS">
+                    <span class="fa fa-stop md-fab-fa-icon-small"></span>
+                </md-button>
+            </div>
             <div layout="row" layout-align="start center">
                 <span style="mix-blend-mode: difference; margin-right: 6px; color: white">Focus:</span>
-                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)"
-                           ng-model-options="{ debounce: 1000 }">
+                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)">
                 </md-slider>
             </div>
             <div layout="row" layout-align="start center" style="margin-top: 8px;">
                 <span style="mix-blend-mode: difference; margin-right: 6px; color: white">Zoom:</span>
-                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)"
-                           ng-model-options="{ debounce: 1000 }">
+                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)">
                 </md-slider>
             </div>
         </div>
