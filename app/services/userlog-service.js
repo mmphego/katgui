@@ -6,8 +6,9 @@
     function UserLogService($http, $q, SERVER_URL, $rootScope, $window, $log) {
 
         var api = {};
-        api.urlBase = SERVER_URL + '/katauth/api/v1';
+        api.urlBase = SERVER_URL + '/katuserlog/api/v1';
         api.userlogs = [];
+        api.my_userlogs = [];
         api.report_userlogs = [];
         api.focus_ulog = {};
         api.tags = [];
@@ -18,7 +19,7 @@
 
             var def = $q.defer();
 
-            $http(createRequest('get', api.urlBase + '/log/get/' + ulog_id)).then(
+            $http(createRequest('get', api.urlBase + '/logs/' + ulog_id)).then(
                 function (result) {
 
                     if (result && result.data) {
@@ -38,7 +39,7 @@
 
             var def = $q.defer();
 
-            $http(createRequest('get', api.urlBase + '/log/list')).then(
+            $http(createRequest('get', api.urlBase + '/logs')).then(
                 function (result) {
 
                     if (result && result.data) {
@@ -57,11 +58,29 @@
         };
 
 
+        api.listMyUserLogs = function (user) {
+            var defer = $q.defer();
+            $http(createRequest('get', api.urlBase + '/logs/query?user=' + user))
+                .success(function (result) {
+                    api.my_userlogs.splice(0, api.my_userlogs.length);
+                    result.forEach(function (userlog) {
+                        api.my_userlogs.push(userlog);
+                    });
+                    defer.resolve();
+                })
+                .error(function (result) {
+                    $rootScope.showSimpleDialog("Could not retrieve any userlogs", result);
+                    defer.reject();
+                });
+            return defer.promise;
+        };
+
+
         api.listTags = function () {
 
             var def = $q.defer();
 
-            $http(createRequest('get', api.urlBase + '/tag/list')).then(
+            $http(createRequest('get', api.urlBase + '/tags')).then(
                 function (result) {
 
                     if (result && result.data) {
@@ -84,7 +103,7 @@
 
             var def = $q.defer();
 
-            $http(createRequest('get', api.urlBase + '/taxonomy/list')).then(
+            $http(createRequest('get', api.urlBase + '/taxonomies')).then(
                 function (result) {
 
                     if (result && result.data) {
@@ -104,9 +123,10 @@
 
 
         api.queryUserLogs = function (query) {
-
+            var query_uri = encodeURI(query);
+            $log.info("Query uri: " + query_uri);
             var defer = $q.defer();
-            $http(createRequest('post', api.urlBase + '/log/query', query))
+            $http(createRequest('get', api.urlBase + '/logs/query' + query_uri))
                 .success(function (result) {
                     api.report_userlogs.splice(0, api.report_userlogs.length);
                     result.forEach(function (userlog) {
@@ -127,7 +147,7 @@
             for (var i = 0; i < file.length; i++) {
                 fd.append('filedata[]', file[i]);
             }
-            $http.post(api.urlBase + '/log/attach/' + ulog_id, fd, {
+            $http.post(api.urlBase + '/logs/' + ulog_id + '/attachments', fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined,
                           'Authorization': 'CustomJWT ' + $rootScope.jwt}
@@ -141,17 +161,14 @@
         };
 
 
-        api.getFileFromUrl = function(file_name, file_alias) {
-            var fd = {file_name: file_name,
-                      file_alias: file_alias};
-            $http.post(api.urlBase + '/log/get/attach', fd, {
+        api.getFileFromUrl = function(file_name, file_alias, ulog_id) {
+            $http.get(api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
                 headers: {'Content-Type': 'application/json',
                           'Authorization': 'CustomJWT ' + $rootScope.jwt
                 },
                 responseType:'blob'
             })
             .success(function(result){
-                $log.info('Filedata returned: ' + result);
                 var blob = result;
                 var url = $window.URL || $window.webkitURL;
                 var file_url = url.createObjectURL(blob);
@@ -162,7 +179,7 @@
                 url.revokeObjectURL(file_url);
             })
             .error(function(){
-                $log.error(api.urlBase + '/log/get/attach');
+                $log.error(api.urlBase + '/logs/get/attach');
             });
         };
 
@@ -171,7 +188,7 @@
 
             var defer = $q.defer();
             $http(createRequest('post',
-                api.urlBase + '/log/add',
+                api.urlBase + '/logs',
                 {
                     user: ulog.user,
                     log_type: ulog.userlog_type,
@@ -195,8 +212,8 @@
         api.modifyUserLog = function (ulog) {
 
             var defer = $q.defer();
-            $http(createRequest('post',
-                api.urlBase + '/log/edit/' + ulog.id,
+            $http(createRequest('put',
+                api.urlBase + '/logs/' + ulog.id,
                 {
                     log_type: ulog.userlog_type,
                     start_time: ulog.start_time,
@@ -225,7 +242,7 @@
                 }
             };
 
-            if (data && method === 'post') {
+            if ((data && method === 'post') || (data && method === 'put')) {
                 req.headers['Content-Type'] = 'application/json';
                 req.data = data;
             }
