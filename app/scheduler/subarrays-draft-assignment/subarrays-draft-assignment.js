@@ -3,9 +3,14 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl(ObsSchedService, $scope, $state) {
+    function SubArraysCtrl(ObsSchedService, $scope, $state, $stateParams) {
 
         var vm = this;
+        if ($stateParams.subarray_id) {
+            vm.subarray_id = parseInt($stateParams.subarray_id);
+        } else {
+            vm.subarray_id = null;
+        }
         vm.currentActionsMenuIndex = -1;
         vm.showVerifyMenuItem = false;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;

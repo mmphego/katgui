@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail($scope, ObsSchedService, $stateParams) {
+    function SubArrayObservationsDetail($scope, ObsSchedService, $stateParams, $mdDialog) {
 
         var vm = this;
         vm.subarray_id = parseInt($stateParams.subarray_id);
@@ -112,6 +112,43 @@
         vm.isResourceFaulty = function (resource) {
             resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
             return resource.faulty;
+        };
+
+        vm.setPriority = function (sb, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = 'Set Priority - ' + sb.id_code + ' (current: ' + sb.priority + ')';
+                        $scope.priorities = ["LOW", "HIGH"];
+                        $scope.currentPriority = sb.priority;
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setPriority = function (priority) {
+                            ObsSchedService.setSchedulePriority(sb.id_code, priority);
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin: 8px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="column">' +
+                    '           <div layout="row" layout-align="center center" ng-repeat="priority in priorities track by $index" ng-click="setPriority(priority); hide()" class="config-label-list-item">' +
+                    '               <b>{{priority}}</b>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
         };
     }
 })();

@@ -54,6 +54,17 @@
             api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/complete'));
         };
 
+        api.setSchedulePriority = function (id_code, priority) {
+            $http.post(urlBase + '/sb/' + id_code + '/priority/' + priority)
+                .success(function (result) {
+                    $rootScope.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
+                    $log.info(result);
+                })
+                .error(function (error) {
+                    $log.error(error);
+                });
+        };
+
         api.verifyScheduleBlock = function (sub_nr, id_code) {
             api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/verify'));
         };
@@ -103,7 +114,6 @@
         };
 
         api.getScheduleBlocks = function () {
-            api.scheduleData.splice(0, api.scheduleData.length);
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
             $http.get(urlBase + '/sb')
                 .success(function (result) {
@@ -122,6 +132,7 @@
         };
 
         api.getScheduledScheduleBlocks = function () {
+            api.scheduleData.splice(0, api.scheduleData.length);
             $http.get(urlBase + '/sb/scheduled')
                 .success(function (result) {
                     var jsonResult = JSON.parse(result.result);
@@ -192,6 +203,9 @@
                     api.scheduleCompletedData.push(sb);
                 }
                 $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been added.');
+            } else if (action === 'sb_order_change') {
+                $rootScope.showSimpleToast('Reloading sb order from KATPortal.');
+                api.getScheduledScheduleBlocks();
             } else {
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
                 $log.error(sb)

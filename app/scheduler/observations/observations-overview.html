@@ -2,23 +2,22 @@
 
     <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 8px;">
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start" flex
-             style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false"
-             md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'deep-purple'}}">
+             style="min-width: 650px;">
 
             <div class="" style="margin-left: 0px;" layout="column" layout-align="start" flex>
 
-                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}"
-                            class="md-whiteframe-z1 md-hue-2">
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                            class="md-whiteframe-z1" ng-class="{'md-hue-2': subarray.state !== 'inactive'}">
                     <span style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>
                     <md-button flex layout="row" style="min-height: 42px; max-height: 42px;" class="unselectable" ng-click="vm.navigateToSchedulerDetails(subarray.id)"
                                title="Click to Manage Observations for Subarray {{subarray.id}}">
                         <span>{{subarray.state}}</span>
-                        <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
+                        <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
                     </md-button>
-                    <div layout="row" layout-padding="8px" style="position: absolute; top: 0px; right: 0px; font-size: 14px">
-                        <span title="Selected Band" style="margin-right: 8px;">Band: {{subarray.band}}</span>
-                        <span title="Selected Product" style="margin-right: 8px;">Product: {{subarray.product}}</span>
-                        <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label">Config Label:{{subarray.config_label}}</span>
+                    <div layout="row" style="position: absolute; top: 0; right: 0; font-size: 14px; padding: 0">
+                        <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band}}</b></span>
+                        <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product}}</b></span>
+                        <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{subarray.config_label}}</b></span>
                     </div>
                     <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
                         style="padding: 0; margin:0; bottom:0; left: 0; position: absolute">
@@ -56,7 +55,7 @@
                     </div>
 
                 </md-toolbar>
-                <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.in_maintenance}">
+                <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <div style="min-width: 650px !important;"
                          ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id}"
                          class="schedule-draft-item animate-repeat" layout="column">

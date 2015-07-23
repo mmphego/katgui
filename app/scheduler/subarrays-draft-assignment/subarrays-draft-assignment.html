@@ -1,22 +1,23 @@
 <div flex layout="row" layout-align="start" style="min-width: 1220px; min-height: 500px; margin-top: 8px;" ng-controller="SubArraysCtrl as vm">
 
     <div flex layout="column" style="overflow: auto; padding-left: 8px; margin-right: 392px;">
-        <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
-             md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'deep-purple'}}" flex>
+        <div ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id'" class="md-whiteframe-z2 subarray-container animate-repeat" layout="row" layout-align="start"
+             md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}" flex>
 
             <div layout="column" flex>
-                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}"
-                            class="md-whiteframe-z1 md-hue-2" style="max-height: 64px;min-height: 64px; position: relative">
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                            class="md-whiteframe-z1" style="max-height: 64px;min-height: 64px; position: relative"
+                            ng-class="{'md-hue-2': subarray.state !== 'inactive'}">
                     <span style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>
                     <md-button flex layout="row" style="min-height: 42px; max-height: 42px;" class="unselectable" ng-click="vm.navigateToSchedulerDetails(subarray.id)"
                                title="Click to Manage Observations for Subarray {{subarray.id}}">
                         <span>{{subarray.state}}</span>
-                        <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
+                        <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
                     </md-button>
-                    <div layout="row" layout-padding="8px" style="position: absolute; top: 0px; right: 0px; font-size: 14px">
-                        <span title="Selected Band" style="margin-right: 8px;">Band: {{subarray.band}}</span>
-                        <span title="Selected Product" style="margin-right: 8px;">Product: {{subarray.product}}</span>
-                        <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label">Config Label:{{subarray.config_label}}</span>
+                    <div layout="row" style="position: absolute; top: 0; right: 0; font-size: 14px; padding: 0">
+                        <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band}}</b></span>
+                        <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product}}</b></span>
+                        <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{subarray.config_label}}</b></span>
                     </div>
 
                     <div flex style="padding: 0; margin:0; bottom:0; left: 0; position: absolute"
@@ -48,7 +49,7 @@
                         <span style="min-width: 38px;"></span>
                     </div>
                 </md-toolbar>
-                <div md-theme="{{themePrimary}}" flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.in_maintenance}">
+                <div md-theme="{{themePrimary}}" flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id_code"
                          style="min-width: 650px !important;" flex layout="row" layout-align="start center"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"

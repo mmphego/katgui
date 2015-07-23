@@ -1,11 +1,12 @@
 <div flex layout="row" style="min-width: 1050px; min-height: 920px; margin-top: 4px;" ng-controller="SubArrayResourcesCtrl as vm">
 
     <div flex layout="column" style="overflow: auto; padding-left: 16px; padding-right: 16px; padding-bottom: 4px;">
-        <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
+        <div ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id' track by $index" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
              style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false" flex>
 
             <div layout="column" layout-align="start" flex>
-                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}" class="md-whiteframe-z1 md-hue-2"
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                            ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                             layout="row" layout-align="center center" title="{{subarray.description}}" style="max-height: 50px; min-height: 50px;">
                     <div flex style="position: relative">
                         <span style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>
@@ -110,15 +111,17 @@
 
         <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
             <md-toolbar ng-init="vm.selectAll = false" class="md-whiteframe-z1" layout="row" layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">
-                <span style="font-size: 10px; margin-top: 22px; margin-right: 2px;" title="Resources in Maintenance">Maint.</span>
-                <span style="font-size: 10px; margin-top: 22px;" title="Resources Marked as Faulty">Faulty</span>
+                <span style="font-size: 10px; position: absolute; left: 1px; bottom: -2px;" title="Resources in Maintenance">Maint.</span>
+                <span style="font-size: 10px; position: absolute; left: 32px; bottom: -2px;" title="Resources Marked as Faulty">Faulty</span>
                 <span flex class="md-toolbar-tools unselectable" style="cursor: pointer; max-height: 32px;"
                       ng-click="vm.selectAllUnassignedResources(vm.selectAll = !vm.selectAll)">Resources</span>
+                <input class="search-input-box" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Resources..."/>
             </md-toolbar>
 
             <div flex style="overflow: auto">
                 <div class="resource-item animate-repeat-opacity" layout="row" layout-align="start center"
-                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | orderBy:'name')"
+                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
                      ng-class="{'selected-resource-item': resource.selected}"
                      ng-click="resource.selected = !resource.selected;">
                     <span style="min-width: 22px;">

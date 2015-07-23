@@ -1,16 +1,17 @@
 <div flex layout="column"  style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
     <div layout="row" flex style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 16px;">
-        <div layout="row" layout-padding="8px" style="position: absolute; top: 0; left: 16px; padding: 0; font-size: 14px">
-            <span title="Selected Band" style="margin-right: 8px;">Band: {{vm.subarray.band}}</span>
-            <span title="Selected Product" style="margin-right: 8px;">Product: {{vm.subarray.product}}</span>
-            <span ng-show="vm.subarray.state === 'active' || subarray.config_label" title="Config Label">Config Label:{{vm.subarray.config_label}}</span>
+        <div layout="row" style="position: absolute; top: 0; left: 14px; font-size: 14px; padding: 0">
+            <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{vm.subarray.band}}</b></span>
+            <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{vm.subarray.product}}</b></span>
+            <span ng-show="subarray.state === 'active' || vm.subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{vm.subarray.config_label}}</b></span>
         </div>
         <div flex layout="column" style="margin: 0;">
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
-                <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" ng-mouseenter="showTools = true;" ng-mouseleave="showTools = false;"
-                    layout="row" layout-align="start center">
+                <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" layout="row" layout-align="start center"
+                            md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                            ng-class="{'md-hue-2': subarray.state !== 'inactive'}">
                         <span style="margin-left: 8px;">SUBARRAY {{vm.subarray_id}}</span>
                         <span ng-show="vm.subarray.state" style="margin-left: 4px;"> - {{vm.subarray.state}}</span>
                         <span flex></span>
@@ -73,6 +74,9 @@
                                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
+                                    </md-menu-item>
                                     <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION'">
                                         <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify Schedule</md-button>
                                     </md-menu-item>
@@ -80,13 +84,13 @@
                                         <md-button ng-click="vm.moveScheduleRowToDraft(item)" title="Move Schedule Block to Draft">Move to Draft</md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
-                                    </md-menu-item>
-                                    <md-menu-item>
-                                        <md-button ng-click="vm.cancelExecuteSchedule(item)" title="Cancel Schedule Block Execution">Cancel Execution</md-button>
+                                        <md-button ng-click="vm.setPriority(item, $event)" title="Set Schedule Block's Priority">Set Priority</md-button>
                                     </md-menu-item>
                                     <md-menu-item>
                                         <md-button ng-click="vm.moveScheduleRowToFinished(item)" title="Move Schedule Block to Complete">Move To Completed</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.cancelExecuteSchedule(item)" title="Cancel Schedule Block Execution">Cancel Execution</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>

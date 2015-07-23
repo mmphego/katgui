@@ -121,7 +121,7 @@
     //    background-color: @item-bg;
     &:hover {
         //        background-color: darken(@item-bg, 5%);
-        background-color: rgba(158, 158, 158, 0.1)
+        background-color: rgba(158, 158, 158, 0.1);
     }
 }
 
@@ -137,7 +137,7 @@
     border-bottom: 1px solid #9E9E9E;
     overflow: hidden;
     &:hover {
-        background-color: rgba(158, 158, 158, 0.1)
+        background-color: rgba(158, 158, 158, 0.1);
     }
 }
 
@@ -198,27 +198,36 @@
 }
 
 .selected-schedule-row {
-    background: #B3E5FC !important;
+    background: rgba(179, 229, 252, 0.8) !important;
     box-shadow: 1px 2px 10px 0 #393939;
     border-bottom: 1px solid transparent;
     color: #333333;
+    &:hover {
+        background-color: rgba(179, 229, 252, 1.0) !important;
+    }
 }
 
 .schedule-row-executing {
-    background: #4CAF50 !important;
+    background: rgba(78, 175, 80, 0.6) !important;
     color: #333333;
     .manual-color {
         color: #1565C0;
     }
+    &:hover {
+        background-color: rgba(78, 175, 80, 0.7) !important;
+    }
 }
 
 .schedule-row-executing-and-selected {
-    background: linear-gradient(to right, rgba(78, 175, 80, 1) 0%, rgba(78, 175, 80, 1) 50%, rgba(179, 229, 252, 0.8) 50%, rgba(179, 229, 252, 1) 100%);
+    background:  rgba(78, 175, 80, 0.6);
     box-shadow: 1px 2px 10px 0 #393939;
     border-bottom: 1px solid transparent;
     color: #333333;
     .manual-color {
         color: #1565C0;
+    }
+    &:hover {
+        background-color: rgba(78, 175, 80, 0.7) !important;
     }
 }
 
@@ -320,10 +329,9 @@
 .scheduler-nav-home-item {
     margin: 32px !important;
     cursor: pointer;
-    height: 320px;
-    min-width: 320px;
-    max-width: 320px;
-    width: 320px;
+    height: 100px;
+    min-width: 100px;
+    max-width: 100px;
 }
 
 .whiteframe-z1-left {
@@ -451,7 +459,6 @@
 .subarray-container {
     margin-bottom: 8px;
     min-height: 200px;
-    max-height: 550px;
 }
 
 .subarray-state-toolbar {
@@ -474,12 +481,16 @@
 }
 
 .inline-svg-icon {
-    position: absolute;
-    top: -5px;
-    left: 0px;
-    path {
-        stroke-width: 5 !important;
+    svg {
+        position: absolute;
+        top: 0;
+        left: 0;
     }
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(0.3);
+    stroke-width: 4;
 }
 
 .svg-subarray, .svg-receptor, {
@@ -557,5 +568,15 @@
 
     &:hover {
         background-color: rgba(215, 215, 215, 0.3);
+    }
+}
+
+.left-arrow-transform {
+    transform: scale(0.25) rotate(180deg);
+    width: 115px;
+    height: 40px;
+    stroke-width: 5;
+    svg {
+        transform: translate(-150px, -90px);
     }
 }

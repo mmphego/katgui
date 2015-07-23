@@ -82,7 +82,7 @@
                  style="min-width: 650px;" flex>
                 <div layout="column" layout-align="start" flex>
                     <md-toolbar
-                        md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : white}}"
+                        md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'white'}}"
                         class="md-whiteframe-z1 md-hue-2"
                         layout="row" layout-align="center center"
                         style="max-height: 50px; min-height: 50px;">
@@ -94,12 +94,12 @@
                                        ng-click="vm.navigateToSchedulerDetails(subarray.id)"
                                        title="Click to Manage Observations for Subarray {{subarray.id}}">
                                 <span>{{subarray.state}}</span>
-                                <span ng-if="subarray.in_maintenance">{{", in maintenance"}}</span>
+                                <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
                             </md-button>
                         </div>
                     </md-toolbar>
 
-                    <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.in_maintenance}">
+                    <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div layout="row">
                             <span class="receptor-status-row-span"></span>
 
