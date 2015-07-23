@@ -1,7 +1,7 @@
 <div flex layout="row" style="min-width: 1050px; min-height: 920px; margin-top: 4px;" ng-controller="SubArrayResourcesCtrl as vm">
 
     <div flex layout="column" style="overflow: auto; padding-left: 16px; padding-right: 16px; padding-bottom: 4px;">
-        <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
+        <div ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id' track by $index" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
              style="min-width: 650px;" ng-mouseenter="subarray.mousehover = true" ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false" flex>
 
             <div layout="column" layout-align="start" flex>

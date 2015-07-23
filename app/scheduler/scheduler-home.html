@@ -1,48 +1,71 @@
-<div ng-controller="SchedulerHomeCtrl as vm" flex layout="column" layout-fill ng-class="{'connection-lost-bg':vm.connectionLost}">
-    <div ng-if="!vm.childStateShowing" layout="column" layout-align="center" md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z4"
-         style="margin-left:auto; margin-right: auto; margin-top: 8px; max-width: 1150px; min-width: 1150px;min-height: 800px;">
-        <div layout="row" layout-align="center center">
-            <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.drafts')">
-                <div layout="column">
-                    <div style="height: 250px;" ng-include="'images/sbdrafts.svg'" onload="vm.svgLoadedThatContainsOpacity('#subarrays-img-target-color')"></div>
-                    <span>Schedule Block Drafts</span></div>
-            </md-button>
-            <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.resources')">
-                <div layout="column">
-                    <div style="height: 250px;" ng-include="'images/subarrays-resources.svg'"></div>
-                    <span id="subarrays-img-target-color">Manage Subarrays & Resources</span></div>
-            </md-button>
-            <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.subarrays')">
-                <div layout="column">
-                    <div style="height: 250px;" ng-include="'images/subarrays.svg'"></div>
-                    <span>Manage Subarray Schedule Blocks</span></div>
+<div ng-controller="SchedulerHomeCtrl as vm" flex layout-fill layout="column"
+     ng-class="{'connection-lost-bg':vm.connectionLost}" md-theme="{{themePrimary}}" style="min-width: 1220px; min-height: 1040px;">
+
+    <div ng-show="!vm.childStateShowing" layout="column" layout-align="center center" class="md-whiteframe-z4"
+         style="margin: 32px;">
+        <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
+            <span>Subarray Workflow</span>
+        </md-toolbar>
+        <div style="padding: 24px">
+            <div ng-repeat="subarray in vm.subarrays track by $index" layout="column" layout-align="start center"
+                 class="md-whiteframe-z1" style="margin: 12px 0;" md-theme="{{themePrimaryButtons}}">
+                <md-toolbar md-theme="{{subarray.state === 'inactive'? 'green' : subarray.state === 'active'? 'amber' : 'purple'}}"
+                            class="md-whiteframe-z2 md-hue-2 md-toolbar-tools-medium" layout="row" layout-align="center center">
+                    <span>SUBARRAY {{subarray.id}} - {{subarray.state}}</span>
+                    <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
+                </md-toolbar>
+                <div layout="row" layout-align="center center">
+                    <md-button class="md-primary md-raised" ng-click="vm.stateGoWithSubId('scheduler.resources', subarray.id)"
+                               style="height: 79px; width: 225px;">
+                        <div ng-include="'images/subarrays-resources.svg'" class="inline-svg-icon" style="top: 6px; left: 2px;"></div>
+                        <span style="position: absolute; left: 74px; top: 22px;">Manage Subarray</span>
+                    </md-button>
+                    <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>
+                    <md-button class="md-primary md-raised inline-svg-button" ng-click="vm.stateGoWithSubId('scheduler.subarrays', subarray.id)"
+                               style="height: 79px; width: 290px;" ng-disabled="subarray.state !== 'active'">
+                        <div ng-include="'images/scheduleblocks.svg'" class="inline-svg-icon" style="top: 2px; left: 2px;"></div>
+                        <span style="position: absolute; left: 86px; top: 22px;">Manage Schedule Blocks</span>
+                    </md-button>
+                    <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>
+                    <md-button class="md-primary md-raised" ng-click="vm.stateGoWithSubId('scheduler.observations.detail', subarray.id)"
+                               style="height: 79px; width: 255px;" ng-disabled="subarray.state !== 'active'">
+                        <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="top: 10px; left: 8px;"></div>
+                        <span style="position: absolute; left: 74px; top: 22px;">Manage Observations</span>
+                    </md-button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div layout="column" layout-align="start center">
+        <div ng-show="!vm.childStateShowing" layout="row" layout-align="center center" style="margin-top: 16px; padding: 12px; margin-bottom: 12px;" class="md-whiteframe-z3"
+             md-theme="{{themePrimaryButtons}}">
+            <md-button class="md-primary md-raised inline-svg-button" ng-click="vm.stateGo('scheduler.drafts')"
+                       style="height: 65px; width: 280px;">
+                <div ng-include="'images/sbdrafts.svg'" class="inline-svg-icon" style="top: -4px; left: 4px;"></div>
+                <span style="position: absolute; left: 82px; top: 15px;">Schedule Block Drafts</span>
             </md-button>
         </div>
-        <div layout="row" layout-align="center center">
 
-            <md-button class="scheduler-nav-home-item md-primary md-raised" flex ng-click="vm.stateGo('scheduler.observations')">
-                <div layout="column">
-                    <div flex style="font-size: 148px" ><span flex class="fa fa-binoculars"></span></div>
-                    <span>Observation Schedules</span></div>
+        <div ng-show="!vm.childStateShowing" layout="row" layout-align="center center" style="margin-top: 12px; padding: 12px" class="md-whiteframe-z3"
+             md-theme="{{themePrimaryButtons}}">
+            <md-button class="md-primary md-raised" ng-click="vm.stateGo('scheduler.resources')"
+                       style="height: 79px; width: 200px;">
+                <div ng-include="'images/subarrays-resources.svg'" class="inline-svg-icon" style="top: 6px; left: 2px;"></div>
+                <span style="position: absolute; left: 74px; top: 22px;">All Subarrays</span>
             </md-button>
-            <div layout="column" class="scheduler-nav-home-item" style="min-width: 400px; max-width: 400px;">
-                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(1)">
-                    <span style="margin-left: 35px;">Subarray 1 Observation Schedules</span>
-                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
-                </md-button>
-                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(2)">
-                    <span style="margin-left: 35px;">Subarray 2 Observation Schedules</span>
-                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
-                </md-button>
-                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(3)">
-                    <span style="margin-left: 35px;">Subarray 3 Observation Schedules</span>
-                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
-                </md-button>
-                <md-button class="md-primary md-raised" flex style="margin-bottom: 4px;" ng-click="vm.stateGoObservationSchedules(4)">
-                    <span style="margin-left: 35px;">Subarray 4 Observation Schedules</span>
-                    <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="transform: translate(-48px, -62px) scale(0.3, 0.3);"></div>
-                </md-button>
-            </div>
+            <!--<div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>-->
+            <md-button class="md-primary md-raised inline-svg-button" ng-click="vm.stateGo('scheduler.subarrays')"
+                       style="height: 79px; width: 260px;">
+                <div ng-include="'images/scheduleblocks.svg'" class="inline-svg-icon" style="top: 2px; left: 2px;"></div>
+                <span style="position: absolute; left: 86px; top: 22px;">All Schedule Blocks</span>
+            </md-button>
+            <!--<div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>-->
+            <md-button class="md-primary md-raised inline-svg-button" ng-click="vm.stateGo('scheduler.observations')"
+                       style="height: 79px; width: 240px;">
+                <div ng-include="'images/subarrays.svg'" class="inline-svg-icon" style="top: 2px; left: 6px;"></div>
+                <span style="position: absolute; left: 92px; top: 22px;">All Observations</span>
+            </md-button>
         </div>
     </div>
 

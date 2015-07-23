@@ -3,10 +3,15 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog) {
+    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog, $stateParams) {
 
         var vm = this;
 
+        if ($stateParams.subarray_id) {
+            vm.subarray_id = parseInt($stateParams.subarray_id);
+        } else {
+            vm.subarray_id = null;
+        }
         vm.subarrays = ObsSchedService.subarrays;
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;

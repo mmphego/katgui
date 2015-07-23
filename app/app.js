@@ -227,11 +227,7 @@
 
         vm.navigateToParentState = function () {
             if ($state.current.parent) {
-                if ($state.current.name === 'scheduler.observations.detail') {
-                    $state.go('scheduler.observations');
-                } else {
-                    $state.go($state.current.parent.name);
-                }
+                $state.go($state.current.parent.name);
             } else {
                 $state.go('home');
             }
@@ -565,7 +561,7 @@
         var subArrays = {
             name: 'scheduler.subarrays',
             parent: schedulerHome,
-            url: '/subarrays',
+            url: '/subarrays/:subarray_id',
             templateUrl: 'app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.html',
             title: 'Scheduler.Schedule Blocks',
             data: {
@@ -575,7 +571,7 @@
         var subArrayResources = {
             name: 'scheduler.resources',
             parent: schedulerHome,
-            url: '/resources',
+            url: '/resources/:subarray_id',
             templateUrl: 'app/scheduler/subarray-resources/subarray-resources.html',
             title: 'Scheduler.Resources',
             data: {
@@ -591,6 +587,7 @@
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
+
         };
         var observationsDetail = {
             name: 'scheduler.observations.detail',

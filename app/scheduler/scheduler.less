@@ -320,10 +320,9 @@
 .scheduler-nav-home-item {
     margin: 32px !important;
     cursor: pointer;
-    height: 320px;
-    min-width: 320px;
-    max-width: 320px;
-    width: 320px;
+    height: 100px;
+    min-width: 100px;
+    max-width: 100px;
 }
 
 .whiteframe-z1-left {
@@ -451,7 +450,6 @@
 .subarray-container {
     margin-bottom: 8px;
     min-height: 200px;
-    max-height: 550px;
 }
 
 .subarray-state-toolbar {
@@ -474,12 +472,16 @@
 }
 
 .inline-svg-icon {
-    position: absolute;
-    top: -5px;
-    left: 0px;
-    path {
-        stroke-width: 5 !important;
+    svg {
+        position: absolute;
+        top: 0;
+        left: 0;
     }
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(0.3);
+    stroke-width: 4;
 }
 
 .svg-subarray, .svg-receptor, {
@@ -557,5 +559,15 @@
 
     &:hover {
         background-color: rgba(215, 215, 215, 0.3);
+    }
+}
+
+.left-arrow-transform {
+    transform: scale(0.25) rotate(180deg);
+    width: 115px;
+    height: 40px;
+    stroke-width: 5;
+    svg {
+        transform: translate(-150px, -90px);
     }
 }

@@ -14,6 +14,7 @@
 
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
+        vm.subarrays = ObsSchedService.subarrays;
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
@@ -124,21 +125,17 @@
             $state.go(newState);
         };
 
-        vm.stateGoObservationSchedules = function (subarray_id) {
-            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
+        vm.stateGoWithSubId = function (newState, subarray_id) {
+            $state.go(newState, {subarray_id: subarray_id});
         };
 
         vm.unbindStateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState) {
-            if (toState.name === 'scheduler.drafts' ||
+            vm.childStateShowing = (toState.name === 'scheduler.drafts' ||
                 toState.name === 'scheduler.resources' ||
                 toState.name === 'scheduler.execute' ||
                 toState.name === 'scheduler.subarrays' ||
                 toState.name === 'scheduler.observations' ||
-                toState.name === 'scheduler.observations.detail') {
-                vm.childStateShowing = true;
-            } else {
-                vm.childStateShowing = false;
-            }
+                toState.name === 'scheduler.observations.detail');
         });
 
         ObsSchedService.getScheduleBlocks();
