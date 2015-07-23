@@ -110,15 +110,17 @@
 
         <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
             <md-toolbar ng-init="vm.selectAll = false" class="md-whiteframe-z1" layout="row" layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">
-                <span style="font-size: 10px; margin-top: 22px; margin-right: 2px;" title="Resources in Maintenance">Maint.</span>
-                <span style="font-size: 10px; margin-top: 22px;" title="Resources Marked as Faulty">Faulty</span>
+                <span style="font-size: 10px; position: absolute; left: 1px; bottom: -2px;" title="Resources in Maintenance">Maint.</span>
+                <span style="font-size: 10px; position: absolute; left: 32px; bottom: -2px;" title="Resources Marked as Faulty">Faulty</span>
                 <span flex class="md-toolbar-tools unselectable" style="cursor: pointer; max-height: 32px;"
                       ng-click="vm.selectAllUnassignedResources(vm.selectAll = !vm.selectAll)">Resources</span>
+                <input class="search-input-box" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Resources..."/>
             </md-toolbar>
 
             <div flex style="overflow: auto">
                 <div class="resource-item animate-repeat-opacity" layout="row" layout-align="start center"
-                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | orderBy:'name')"
+                     ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
                      ng-class="{'selected-resource-item': resource.selected}"
                      ng-click="resource.selected = !resource.selected;">
                     <span style="min-width: 22px;">
