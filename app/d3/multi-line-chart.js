@@ -39,7 +39,7 @@ angular.module('katGui.d3')
                 scope.showGridLines = false;
                 scope.currentBrush = {};
                 scope.nestedData = [];
-                scope.redrawFunction = function (newData, showGridLines, hideContextZoom, useFixedYAxis, yAxisValues, dataLimit, limitOverlayValue) {
+                scope.redrawFunction = function (newData, showGridLines, hideContextZoom, useFixedYAxis, yAxisValues, dataLimit, limitOverlayValues, forceRedraw) {
 
                     if (yAxisValues) {
                         yAxisValues = yAxisValues.replace(/\'/g, '"');
@@ -82,7 +82,7 @@ angular.module('katGui.d3')
                                 }
                                 existingDataLine.values.push(d);
                             } else {
-                                scope.nestedData.push({key: d.Sensor, values: [d]});
+                                scope.nestedData.push({key: d.Sensor, values: [d], color: d.color});
                             }
                         });
                     }
@@ -97,12 +97,12 @@ angular.module('katGui.d3')
                         drawSvg();
                     }
 
-                    if (limitOverlayValue !== scope.limitOverlayValue) {
-                        scope.limitOverlayValue = limitOverlayValue;
+                    scope.limitOverlayValues = limitOverlayValues;
+                    scope.useFixedYAxis = useFixedYAxis;
+
+                    if (forceRedraw) {
                         drawSvg();
                     }
-
-                    scope.useFixedYAxis = useFixedYAxis;
 
                     drawValues();
                     if (!hideContextZoom) {
@@ -136,16 +136,7 @@ angular.module('katGui.d3')
                     xAxisElement, yAxisElement, xAxisElement2, context, focus;
 
                 var formatTwoDecimals = d3.format(",.2f");
-                var limitOverlayElement;
-
-                var overlayLine = d3.svg.line()
-                    .interpolate("cubic")
-                    .x(function (d) {
-                        return x(d.date);
-                    })
-                    .y(function (d) {
-                        return y(d.value);
-                    });
+                var limitOverlayElements = [];
 
                 drawSvg();
                 drawValues();
@@ -316,11 +307,14 @@ angular.module('katGui.d3')
                             .attr("height", height2 + 7);
                     }
 
-                    if (scope.limitOverlayValue) {
-                        limitOverlayElement = focus.append("line")
-                            .style("stroke", "#F44336")
-                            .style("stroke-dasharray", "10, 5")
-                            .attr("class", "limit-overlay-path");
+                    if (scope.limitOverlayValues) {
+                        limitOverlayElements.splice(0, limitOverlayElements.length);
+                        scope.limitOverlayValues.forEach(function (limit) {
+                            limitOverlayElements.push(focus.append("line")
+                                .style("stroke", "#F44336")
+                                .style("stroke-dasharray", "10, 5")
+                                .attr("class", "limit-overlay-path"));
+                        });
                     }
                 }
 
@@ -369,7 +363,10 @@ angular.module('katGui.d3')
 
                     var focuslines = focuslineGroups.append("path")
                         .attr("id", function (d) {
-                            var c = color(d.key);
+                            var c = d.color;
+                            if (!c) {
+                                c = color(d.key);
+                            }
                             var style = document.getElementById(d.key + '_style_tag');
                             if (style && style.parentNode) {
                                 style.parentNode.removeChild(style);
@@ -400,7 +397,7 @@ angular.module('katGui.d3')
                                 focusTooltip.append('foreignObject')
                                     .attr("x", 0)
                                     .attr("width", "185")
-                                    .attr("height", "65");
+                                    .attr("height", "110");
                             }
                         });
                         mousemove(true);
@@ -441,7 +438,11 @@ angular.module('katGui.d3')
                                 return line2(d.values);
                             })
                             .style("stroke", function (d) {
-                                return color(d.key);
+                                var c = d.color;
+                                if (!c) {
+                                    c = color(d.key);
+                                }
+                                return c;
                             })
                             .attr("clip-path", "url(#clip)");
 
@@ -450,11 +451,14 @@ angular.module('katGui.d3')
                     }
                     //context zoom element stop
 
-                    if (scope.limitOverlayValue) {
-                        limitOverlayElement.attr("x1", "0")
-                            .attr("x2", width)
-                            .attr("y1", y(scope.limitOverlayValue))
-                            .attr("y2", y(scope.limitOverlayValue));
+                    if (limitOverlayElements) {
+                        limitOverlayElements.forEach(function (limitElement, index) {
+                            limitElement.attr("x1", "0")
+                                .attr("x2", width)
+                                .attr("y1", y(scope.limitOverlayValues[index]))
+                                .attr("y2", y(scope.limitOverlayValues[index]));
+                        });
+
                     }
                 }
 
@@ -476,6 +480,7 @@ angular.module('katGui.d3')
                 }
 
                 function mousemove(calledWithoutEvent) {
+                    //todo layout overlapping tooltips
                     if (calledWithoutEvent !== true) {
                         d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
                     }
@@ -507,18 +512,19 @@ angular.module('katGui.d3')
 
                             var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                             focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                            if (xTranslate + 185 > width) {
-                                xTranslate = -194;
+                            if (xTranslate + 159 > width) {
+                                xTranslate = -159;
                             } else {
                                 xTranslate = 9;
                             }
-                            if (yTranslate + 65 > height) {
-                                yTranslate = -65;
+                            if (yTranslate + 80 > height) {
+                                yTranslate = -80;
                             } else {
                                 yTranslate = 0;
                             }
+
                             var focusToolTipDiv = d3.select(focusToolTip[0][0].children[1]);
-                            focusToolTipDiv.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
+                            focusToolTipDiv.attr("transform", "translate(" + xTranslate + "," + (yTranslate) + ")");
                             d.TooltipValue = formatTwoDecimals(d.value);
                             d3Util.updateGraphTooltipValues(d, focusToolTipDiv);
                         }

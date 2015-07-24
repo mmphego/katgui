@@ -89,6 +89,10 @@
             return $http(createRequest('get', urlBase + '/array/position'));
         };
 
+        api.getWindstowLimits = function () {
+            return $http(createRequest('get', urlBase + '/array/windstow'));
+        };
+
         api.getHorizonMask = function (receptorId) {
             return $http(createRequest('get', urlBase + '/horizon-mask/' + receptorId));
         };
