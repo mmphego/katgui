@@ -55,7 +55,7 @@ angular.module('katGui.d3')
                                 }
                                 existingDataLine.values.push(d);
                             } else {
-                                scope.nestedData.push({key: d.Sensor, values: [d], rightAxis: d.rightAxis});
+                                scope.nestedData.push({key: d.Sensor, values: [d], rightAxis: d.rightAxis, color: d.color});
                             }
                         });
                     }
@@ -203,7 +203,10 @@ angular.module('katGui.d3')
 
                     var focuslines = focuslineGroups.append("path")
                         .attr("id", function (d) {
-                            var c = color(d.key);
+                            var c = d.color;
+                            if (!c) {
+                                c = color(d.key);
+                            }
                             var style = document.getElementById(d.key + '_style_tag');
                             if (style && style.parentNode) {
                                 style.parentNode.removeChild(style);
@@ -250,7 +253,7 @@ angular.module('katGui.d3')
                                 focusTooltip.append('foreignObject')
                                     .attr("x", 0)
                                     .attr("width", "185")
-                                    .attr("height", "65");
+                                    .attr("height", "110");
                             }
                         });
                         mousemove(true);
@@ -288,6 +291,7 @@ angular.module('katGui.d3')
                         d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
                     }
                     var mouse = null;
+                    //todo layout overlapping tooltips
                     scope.nestedData.forEach(function (data) {
                         if (!calledWithoutEvent) {
                             mouse = d3.mouse(scope.overlay[0][0]);
@@ -320,13 +324,13 @@ angular.module('katGui.d3')
 
                             var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                             focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                            if (xTranslate + 185 > width) {
-                                xTranslate = -194;
+                            if (xTranslate + 159 > width) {
+                                xTranslate = -159;
                             } else {
                                 xTranslate = 9;
                             }
-                            if (yTranslate + 65 > height) {
-                                yTranslate = -65;
+                            if (yTranslate + 80 > height) {
+                                yTranslate = -80;
                             } else {
                                 yTranslate = 0;
                             }
