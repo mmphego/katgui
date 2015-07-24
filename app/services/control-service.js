@@ -4,33 +4,33 @@
         .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
-    function ControlService($http, SERVER_URL, $rootScope, $log) {
+    function ControlService($http, SERVER_URL, $rootScope) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
 
         api.stowAll = function () {
-            api.handleRequestResponse($http.post(urlBase + '/receptors/stow-all'));
+            return $http.post(urlBase + '/receptors/stow-all');
         };
 
         api.inhibitAll = function () {
-            api.handleRequestResponse($http.post(urlBase + '/receptors/inhibit-all'));
+            return $http.post(urlBase + '/receptors/inhibit-all');
         };
 
         api.stopAll = function () {
-            api.handleRequestResponse($http.post(urlBase + '/receptors/stop-all'));
+            return $http.post(urlBase + '/receptors/stop-all');
         };
 
         api.resumeOperations = function () {
-            api.handleRequestResponse($http.post(urlBase + '/receptors/resume-all'));
+            return $http.post(urlBase + '/receptors/resume-all');
         };
 
         api.floodlightsOn = function (onOff) {
-            api.handleRequestResponse($http.post(urlBase + '/vds/floodlights/' + onOff));
+            return $http.post(urlBase + '/vds/floodlights/' + onOff);
         };
 
         api.shutdownComputing = function () {
-            api.handleRequestResponse($http.post(urlBase + '/system/shutdown-computing'));
+            return $http.post(urlBase + '/system/shutdown-computing');
         };
 
         api.acknowledgeAlarm = function (alarmName) {

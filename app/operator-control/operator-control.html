@@ -10,18 +10,20 @@
             </div>
         </md-toolbar>
         <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="operator-controls">
-            <md-button ng-click="vm.inhibitAll()" class="md-raised md-primary">Inhibit All</md-button>
-            <md-button ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
-            <md-button ng-click="vm.stopAll()" class="md-raised md-primary">Stop Observations</md-button>
-            <md-button ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
-            <!--<md-button disabled ng-click="shutdownComputing()" class="md-raised md-primary">Shutdown Computing</md-button>-->
-            <md-button ng-click="vm.toggleFloodLights()" class="md-raised md-primary">Switch Floodlights {{!vm.floodLightSensor.value? 'on' : 'off'}}</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.inhibitAll()" class="md-raised md-primary">Inhibit All</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.stopAll()" class="md-raised md-primary">Stop Observations</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.shutdownComputing()" class="md-raised md-primary">Shutdown Computing</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.toggleFloodLights()" class="md-raised md-primary">
+                Switch Floodlights {{!vm.floodLightSensor.sensor.value? 'on' : 'off'}}
+            </md-button>
         </section>
 
         <md-list class="receptor-state-list">
             <md-item ng-repeat="rec in vm.receptorsData">
                 <md-item-content ng-class="{'receptor-state-div-error': rec.since === 'error'}"
-                                 class="receptor-state-div md-whiteframe-z1" layout="column"
+                                 class="receptor-state-div md-whiteframe-z2" layout="column"
                                  layout-align="start center">
                     <span style="min-height: 25px; max-width: 140px;" title="Last Changed; Since: {{rec.since}}">{{rec.fromNow}}</span>
                     <span style="font-size: 26px;" flex><b>{{::rec.name}}</b></span>
