@@ -144,10 +144,6 @@
             });
         });
 
-        $scope.objectKeys = function (obj) {
-            return Object.keys(obj);
-        };
-
         vm.collapseAll = function () {
             for (var key in vm.resourcesNames) {
                 vm.resourcesNames[key].showDetails = false;
