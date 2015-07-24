@@ -28,6 +28,10 @@
             ControlService.resumeOperations();
         };
 
+        vm.shutdownComputing = function () {
+            ControlService.shutdownComputing();
+        };
+
         vm.toggleFloodLights = function () {
             ControlService.floodlightsOn(ReceptorStateService.floodLightSensor.value ? 'off' : 'on');
         };
