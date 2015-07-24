@@ -7,6 +7,7 @@
 
         var api = {receptorsData: []};
         api.sensorValues = {};
+        api.floodLightSensor = {sensor: {}};
 
         api.getReceptorList = function() {
             api.receptorsData.splice(0, api.receptorsData.length);
@@ -48,7 +49,7 @@
             var sensorName = sensorNameList[1];
             api.sensorValues[receptor + '_' + sensorName] = message.value;
             if (sensorName === 'vds_flood_lights_on') {
-                api.floodLightSensor = message.value;
+                api.floodLightSensor.sensor = message.value;
             } else {
                 api.receptorsData.forEach(function (item) {
                     if (item.name === receptor && message.value) {

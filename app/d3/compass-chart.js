@@ -9,16 +9,13 @@ angular.module('katGui.d3', ['katGui.util'])
             link: function (scope, element) {
 
                 scope.data = [];
-                scope.redrawFunction = function (windDirection, windSpeed) {
+                scope.redrawFunction = function (windDirection) {
 
                     if (!svg) {
                         drawSvg();
                     }
                     if (windDirection) {
                         scope.data.windDirection = windDirection;
-                    }
-                    if (windSpeed) {
-                        scope.data.windSpeed = windSpeed;
                     }
 
                     drawValues();

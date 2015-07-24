@@ -90,7 +90,7 @@
                             $mdDialog.hide();
                         };
                         $scope.setConfigLabel = function (configLabel) {
-                            ObsSchedService.setConfigLabel(sub_nr, configLabel.name);
+                            ObsSchedService.setConfigLabel(sub_nr, configLabel);
                         };
                     },
                     template:
@@ -101,7 +101,8 @@
                         '           <input type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="q" placeholder="Search Labels..."/>' +
                         '       </md-toolbar>' +
                         '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
-                        '           <div layout="row" ng-repeat="configLabel in configLabels | regexSearch:configLabelsFields:q track by $index" ng-click="setConfigLabel(configLabel); hide()" class="config-label-list-item">' +
+                        '           <div style="text-align: center" class="config-label-list-item" ng-click="setConfigLabel(\'\');  hide()">Clear Config Label</div>' +
+                        '           <div layout="row" ng-repeat="configLabel in configLabels | regexSearch:configLabelsFields:q track by $index" ng-click="setConfigLabel(configLabel.name); hide()" class="config-label-list-item">' +
                         '               <div style="min-width: 178px;">{{configLabel.date}}</div>' +
                         '               <div>{{configLabel.name}}</div>' +
                         '           </div>' +
