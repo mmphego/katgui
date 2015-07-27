@@ -1,5 +1,5 @@
 <div flex layout="column" ng-controller="WeatherCtrl as vm" style="padding: 16px; min-width: 800px; min-height: 900px">
-    <div layout="column">
+    <div layout="column" style="min-height: 180px;">
         <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
             <span style="margin-top: -10px" flex>Sensor Values</span>
             <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" style="font-size: 14px">
@@ -40,7 +40,7 @@
             </div>
         </md-toolbar>
         <div class="md-whiteframe-z1" flex style="padding: 8px;" layout="row">
-            <compass-chart redraw-function="vm.redrawCompass" style="min-width: 150px; min-height: 150px;">
+            <compass-chart redraw-function="vm.redrawCompass" style="min-width: 100px; min-height: 100px;">
             </compass-chart>
             <div layout="column" style="margin-left: 24px;">
                 <div ng-repeat="sensor in vm.ancResource.sensorList track by $index" title="{{sensor.description}}"
