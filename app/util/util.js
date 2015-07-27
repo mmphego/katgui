@@ -93,9 +93,9 @@ angular.module('katGui.util')
                     offsetX, offsetY;
                 var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
 
-                targetElement.css({
-                    position: 'fixed'
-                });
+                //targetElement.css({
+                //    position: 'fixed'
+                //});
 
                 element.on('mousedown', function(event) {
                     // Prevent default dragging of selected content
@@ -110,7 +110,7 @@ angular.module('katGui.util')
                 });
 
                 function mousemove(event) {
-                    if (targetElement.innerHeight() > 100) {
+                    if (targetElement.innerHeight() > 10) {
                         y = event.pageY - startY;
                         x = event.pageX - startX;
                         var innerWidth = targetElement.innerWidth(),

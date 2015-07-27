@@ -5,10 +5,12 @@
     angular.module('katGui.video', ['katGui.services'])
         .controller('VideoCtrl', VideoCtrl);
 
-    function VideoCtrl($scope, $rootScope, $http, $log, $interval, SensorsService, SERVER_URL) {
+    function VideoCtrl($scope, $rootScope, $http, $log, $interval, SensorsService, SERVER_URL, $mdDialog) {
 
         var vm = this;
         var urlBase = SERVER_URL + '/katvds/api/v1';
+        //todo set the image source from katconfig
+        //not implemented in katconfig yet
         vm.imageSource = 'http://monctl.devo.camlab.kat.ac.za:8083';
         vm.sensorValues = {};
 
@@ -60,8 +62,89 @@
             vm.vdsCommand('tilt', 'down');
         };
 
-        vm.rememberPos = function () {
-            vm.vdsCommand('presetset', 120);
+        vm.setPreset = function (event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = 'Set VDS Preset';
+                        $scope.presetIDs = [];
+                        for (var i = 0; i < 64; i++) {
+                            $scope.presetIDs.push(i);
+                        }
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setPreset = function (preset) {
+                            $http.get(urlBase + '/presetset/' + preset)
+                                .success(requestSuccess)
+                                .error(requestError);
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin: 8px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="row" layout-align="center center">' +
+                    '           <md-select ng-model="selectedPreset" style="margin:8px;"' +
+                    '               class="md-primary" placeholder="Select A Preset ID">' +
+                    '               <md-option ng-value="preset" ng-repeat="preset in presetIDs">{{preset}}</md-option>' +
+                    '           </md-select>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="hide()">Cancel</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="setPreset(selectedPreset); hide()">Set Selected Preset</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.goToPreset = function (event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = 'Go To VDS Preset';
+                        $scope.presetIDs = [];
+                        for (var i = 0; i < 64; i++) {
+                            $scope.presetIDs.push(i);
+                        }
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.gotoPreset = function (preset) {
+                            vm.lastPreset = preset;
+                            $http.get(urlBase + '/presetgoto/' + preset)
+                                .success(requestSuccess)
+                                .error(requestError);
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin: 8px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="row" layout-align="center center">' +
+                    '           <md-select ng-model="selectedPreset" style="margin:8px;"' +
+                    '               class="md-primary" placeholder="Select A Preset ID">' +
+                    '               <md-option ng-value="preset" ng-repeat="preset in presetIDs">{{preset}}</md-option>' +
+                    '           </md-select>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="hide()">Cancel</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="gotoPreset(selectedPreset); hide()">Go To Selected Preset</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
         };
 
         vm.zoomChanged = function (zoomValue) {
@@ -157,6 +240,7 @@
             var strList = sensor.name.split(':');
             var sensorName = strList[1].split('.')[1];
             vm.sensorValues[sensorName] = sensor.value;
+            $log.info(sensor.value);
         });
 
         $scope.$on('$destroy', function () {
