@@ -4,6 +4,11 @@ angular.module('katGui.util')
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
+    .filter('prettifyJSON', function() {
+        return function (input) {
+            return JSON.prettify.prettyPrint(input);
+        }
+    })
     .filter('utcDateFromUnix', function(DATETIME_FORMAT) {
         return function (input) {
             return moment.utc(input, 'X').format(DATETIME_FORMAT);
@@ -241,7 +246,7 @@ function autoGrow() {
 /* istanbul ignore next */
 //be very sure you know what you are doing when you alter the below functions
 //they are not tested
-function katGuiUtil(SERVER_URL) {
+function katGuiUtil(SERVER_URL, $sce) {
 
     this.generateUUID = function () {
         var d = new Date().getTime();
@@ -331,6 +336,27 @@ function katGuiUtil(SERVER_URL) {
             result *= -1;
         }
         return result;
+    };
+
+    JSON.prettify = {
+        replacer: function(match, pIndent, pKey, pVal, pEnd) {
+            var key = '<span class=json-key>';
+            var val = '<span class=json-value>';
+            var str = '<span class=json-string>';
+            var r = pIndent || '';
+            if (pKey)
+                r = r + key + pKey.replace(/[": ]/g, '') + '</span>: ';
+            if (pVal)
+                r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
+            return r + (pEnd || '');
+        },
+        prettyPrint: function(obj) {
+            var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+            return $sce.trustAsHtml(JSON.stringify(obj, null, 3)
+                .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(jsonLine, JSON.prettify.replacer));
+        }
     };
 
     return this;
