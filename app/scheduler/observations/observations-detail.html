@@ -43,8 +43,10 @@
                                 'schedule-row-executing-and-selected': item.state === 'ACTIVE' && item === vm.selectedSchedule}"
                          class="schedule-draft-item animate-repeat" layout="row"  layout-align="center center">
 
-                            <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
-                            </md-progress-circular>
+                            <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary"
+                                                md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
+                                                style="position: absolute; left: 0; right: 0; margin-top: -5px;">
+                            </md-progress-linear>
                             <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
                             <div layout="row" class="schedule-block-name-div">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
