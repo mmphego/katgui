@@ -44,7 +44,7 @@
                          class="schedule-draft-item animate-repeat" layout="row"  layout-align="center center">
 
                             <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary"
-                                                md-mode="{{item.expected_duration_seconds? 'query' : 'indeterminate'}}" value="{{item.progress}}"
+                                                md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; margin-top: -5px;">
                             </md-progress-linear>
                             <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>

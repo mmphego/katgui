@@ -145,7 +145,7 @@
             vm.unbindStateChangeStart();
             vm.unbindUpdate();
 
-            if (!vm.connectInterval) {
+            if (vm.connectInterval) {
                 $interval.cancel(vm.connectInterval);
             }
             SensorsService.disconnectListener();
