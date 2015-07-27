@@ -117,7 +117,7 @@
                  ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 
                 <div flex ng-if="vm.selectedScheduleDraft !== null" >
-                    <textarea readonly auto-grow>{{vm.selectedScheduleDraft | json:4}}</textarea>
+                    <pre flex ng-bind-html='vm.selectedScheduleDraft | prettifyJSON'></pre>
                 </div>
             </div>
         </div>
