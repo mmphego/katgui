@@ -283,62 +283,6 @@ angular.module('katGui.d3')
                 }
 
                 function mousemove(calledWithoutEvent) {
-                    //if (calledWithoutEvent !== true) {
-                    //    d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
-                    //}
-                    //var mouse = null;
-                    ////todo layout overlapping tooltips
-                    //scope.nestedData.forEach(function (data) {
-                    //    if (!calledWithoutEvent) {
-                    //        mouse = d3.mouse(scope.overlay[0][0]);
-                    //    } else {
-                    //        //this method was called from somewhere else
-                    //        //not by an actual mouse move event
-                    //        //to update the tooltip position for moving data
-                    //        mouse = scope.lastMouse;
-                    //    }
-                    //    if (!mouse) {
-                    //        return;
-                    //    }
-                    //
-                    //    var x0 = x.invert(mouse[0]),
-                    //        i = bisectDate(data.values, x0, 1);
-                    //    var d0 = data.values[i - 1],
-                    //        d1 = data.values[i];
-                    //
-                    //    var d;
-                    //    if (d0 && d0.date && d1 && d1.date) {
-                    //        d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-                    //
-                    //        var xTranslate = (x(d.date) + margin.left);
-                    //        var yTranslate;
-                    //        if (d.rightAxis) {
-                    //            yTranslate = (yRight(d.value) + margin.top);
-                    //        } else {
-                    //            yTranslate = (y(d.value) + margin.top);
-                    //        }
-                    //
-                    //        var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
-                    //        focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                    //        if (xTranslate + 159 > width) {
-                    //            xTranslate = -159;
-                    //        } else {
-                    //            xTranslate = 9;
-                    //        }
-                    //        if (yTranslate + 80 > height) {
-                    //            yTranslate = -80;
-                    //        } else {
-                    //            yTranslate = 0;
-                    //        }
-                    //        var focusToolTipDiv = d3.select(focusToolTip[0][0].children[1]);
-                    //        focusToolTipDiv.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                    //        d.TooltipValue = formatTwoDecimals(d.value);
-                    //        d3Util.updateGraphTooltipValues(d, focusToolTipDiv);
-                    //    }
-                    //});
-                    //if (!calledWithoutEvent) {
-                    //    scope.lastMouse = mouse;
-                    //}
                     if (calledWithoutEvent !== true) {
                         d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
                     }
