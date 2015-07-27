@@ -184,11 +184,28 @@ function regexSearchFilter() {
                 return input;
             }
 
+            var inputArray = [];
+            if (angular.isObject(input) === "object") {
+                for (var key in input) {
+                    input[key]._key = key;
+                    inputArray.push(input[key]);
+                }
+            } else {
+                inputArray = input;
+            }
+
             var out = [];
-            for (var i = 0; i < input.length; i++) {
+            if (angular.isObject(input) == "object") {
+                out = {};
+            }
+            for (var i = 0; i < inputArray.length; i++) {
                 for (var idx in fields) {
-                    if (pattern.test(input[i][fields[idx].value])) {
-                        out.push(input[i]);
+                    if (pattern.test(inputArray[i][fields[idx].value])) {
+                        if (angular.isObject(out) === "object") {
+                            out[inputArray[i]._key] = inputArray[i];
+                        } else {
+                            out.push(inputArray[i]);
+                        }
                         break;
                     }
                 }

@@ -119,6 +119,7 @@
 <script src="app/userlogs/userlogs.js"></script>
 <script src="app/process-control/process-control.js"></script>
 <script src="app/cam-components/cam-components.js"></script>
+<script src="app/device-status/device-status.js"></script>
 <script src="app/instrumental-config/instrumental-config.js"></script>
 <!-- Add New Component JS Above -->
 
@@ -210,9 +211,14 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-list')"
-                                     style="border-bottom: 1px solid #e5e5e5;">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-list')">
                         <md-button flex><span class="fa fa-th-list"></span><span>Sensor List</span></md-button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('device-status')"
+                                     style="border-bottom: 1px solid #e5e5e5;">
+                        <md-button flex><span class="fa fa-th-list"></span><span>Device Status</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -343,7 +349,7 @@
 <div ng-if="loggedIn" class="unselectable toolbar-collapse-button"
         ng-click="vm.toggleNavbar()" title="Expand or Collapse Toolbar" layout="row">
 
-    <div flex layout="row" layout-align="center center">
+    <div ng-show="vm.showNavbar" flex layout="row" layout-align="center center">
         <span class="fa" ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
         <span style="margin: 0px 4px;">{{::$root.systemConfig.version.description}}</span>
         <span style="margin: 0px 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
