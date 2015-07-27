@@ -1,55 +1,80 @@
-<div style="position: relative;" flex ng-controller="VideoCtrl as vm" ng-mouseenter="vm.showVideoControls = true" ng-mouseleave="vm.showVideoControls = false">
-    <img style="width: 100%" alt="Could not load video image..." ng-src="{{vm.imageSource}}"/>
+<div layout="row" style="position: relative;" flex ng-controller="VideoCtrl as vm">
 
-    <div md-theme="{{themePrimaryButtons}}" ng-show="vm.showVideoControls" class="video-pan-controls" layout="row" md-theme-watch="true">
-        <div layout="column" layout-align="end center">
-            <md-button ng-click="vm.rememberPos()" class="md-icon-button md-raised md-primary" title="Set Preset">
-                <span class="fa fa-save md-fab-fa-icon-small"></span>
-            </md-button>
-            <div layout="row" layout-align="start center">
-                <span style="mix-blend-mode: difference; margin-right: 6px; color: white">Focus:</span>
-                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)"
-                           ng-model-options="{ debounce: 1000 }">
-                </md-slider>
-            </div>
-            <div layout="row" layout-align="start center" style="margin-top: 8px;">
-                <span style="mix-blend-mode: difference; margin-right: 6px; color: white">Zoom:</span>
-                <md-slider style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)"
-                           ng-model-options="{ debounce: 1000 }">
-                </md-slider>
+    <div class="videoimg" style="position:relative; border: 1px solid rgba(127, 127, 127, 0.2); height: 600px; width: 800px">
+        <img style="height: 100%;" alt="Could not load video image..." ng-src="{{vm.imageSource}}"/>
+        <div resizeable=".videoimg" class="resize-grip">
+            <span flex class="fa fa-arrows-v"></span>
+        </div>
+    </div>
+
+    <div class="legend-popup" style="background: transparent;" layout="row" ng-init="transparentButton = true"
+         ng-class="{'transparent-legend':transparentButton && !showControls}">
+        <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showControls = true" ng-click="showControls = !showControls"
+                   ng-mouseenter="transparentButton = false" ng-mouseleave="transparentButton = true" class="md-fab md-mini md-primary">
+            <md-icon class="fa center-md-icon" ng-if="!showControls" md-font-icon="fa-caret-up"></md-icon>
+            <md-icon class="fa center-md-icon" ng-if="showControls" md-font-icon="fa-caret-down"></md-icon>
+        </md-button>
+        <div class="md-whiteframe-z3" layout="column" ng-show="showControls" style="padding: 8px; background: rgba(255,255,255,0.5)">
+            <div md-theme="{{themePrimaryButtons}}" class="video-pan-controls" layout="row">
+                <div layout="column" layout-align="end center">
+                    <div flex layout="column" style="width: 100%">
+                        <div layout="row"><span flex>Pan: </span><span>{{vm.sensorValues.vds_pan_position.value}}</span></div>
+                        <div layout="row"><span flex>Tilt: </span><span>{{vm.sensorValues.vds_tilt_position.value}}</span></div>
+                        <div layout="row"><span flex>Last Go To Preset: </span><span>{{vm.lastPreset ? vm.lastPreset : 'None'}}</span></div>
+                    </div>
+                    <div layout="row">
+                        <md-button ng-click="vm.setPreset($event)" class="md-icon-button md-raised md-primary" title="Set Preset">
+                            <span class="fa fa-save md-fab-fa-icon-small"></span>
+                        </md-button>
+                        <md-button ng-click="vm.goToPreset($event)" class="md-icon-button md-raised md-primary" title="Go To Preset">
+                            <span class="fa fa-location-arrow md-fab-fa-icon-small"></span>
+                        </md-button>
+                        <md-button ng-click="vm.stopVDS()" class="md-icon-button md-raised md-primary" title="Stop VDS">
+                            <span class="fa fa-stop md-fab-fa-icon-small"></span>
+                        </md-button>
+                    </div>
+                    <div layout="row" layout-align="start center">
+                        <span style="margin-right: 6px;">Focus:</span>
+                        <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)">
+                        </md-slider>
+                    </div>
+                    <div layout="row" layout-align="start center" style="margin-top: 8px;">
+                        <span style="margin-right: 6px;">Zoom:</span>
+                        <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)">
+                        </md-slider>
+                    </div>
+                </div>
+
+                <div layout="column" layout-align="center center" class="video-position-controls">
+                    <md-button ng-click="vm.tiltFarUp()" class="md-icon-button md-raised md-primary" title="Tilt Far Up">
+                        <span style="transform:rotate(90deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
+                    </md-button>
+                    <md-button ng-click="vm.tiltUp()" class="md-icon-button md-raised md-primary" title="Tilt Up 5 Degrees">
+                        <span class="fa fa-caret-up md-fab-fa-icon-small"></span>
+                    </md-button>
+                    <div layout="row" style="">
+                        <md-button ng-click="vm.panFarLeft()" class="md-icon-button md-raised md-primary" title="Pan Far Left">
+                            <span class="fa fa-step-backward md-fab-fa-icon-small"></span>
+                        </md-button>
+                        <md-button ng-click="vm.panLeft()" class="md-icon-button md-raised md-primary" title="Pan Left 5 Degrees">
+                            <span class="fa fa-caret-left md-fab-fa-icon-small"></span>
+                        </md-button>
+                        <span flex></span>
+                        <md-button ng-click="vm.panRight()" class="md-icon-button md-raised md-primary" title="Pan Right 5 Degrees">
+                            <span class="fa fa-caret-right md-fab-fa-icon-small"></span>
+                        </md-button>
+                        <md-button ng-click="vm.panFarRight()" class="md-icon-button md-raised md-primary" title="Pan Far Right">
+                            <span class="fa fa-step-forward md-fab-fa-icon-small"></span>
+                        </md-button>
+                    </div>
+                    <md-button ng-click="vm.tiltDown()" class="md-icon-button md-raised md-primary" title="Tilt Down 5 Degrees">
+                        <span class="fa fa-caret-down md-fab-fa-icon-small"></span>
+                    </md-button>
+                    <md-button ng-click="vm.tiltFarDown()" class="md-icon-button md-raised md-primary" title="Tilt Far Down">
+                        <span style="transform:rotate(270deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
+                    </md-button>
+                </div>
             </div>
         </div>
-
-        <div layout="column" layout-align="center center" class="video-position-controls">
-            <md-button ng-click="vm.tiltFarUp()" class="md-icon-button md-raised md-primary" title="Tilt Far Up">
-                <span style="transform:rotate(90deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
-            </md-button>
-            <md-button ng-click="vm.tiltUp()" class="md-icon-button md-raised md-primary" title="Tilt Up 5 Degrees">
-                <span class="fa fa-caret-up md-fab-fa-icon-small"></span>
-            </md-button>
-            <div layout="row" style="">
-                <md-button ng-click="vm.panFarLeft()" class="md-icon-button md-raised md-primary" title="Pan Far Left">
-                    <span class="fa fa-step-backward md-fab-fa-icon-small"></span>
-                </md-button>
-                <md-button ng-click="vm.panLeft()" class="md-icon-button md-raised md-primary" title="Pan Left 5 Degrees">
-                    <span class="fa fa-caret-left md-fab-fa-icon-small"></span>
-                </md-button>
-                <span flex></span>
-                <md-button ng-click="vm.panRight()" class="md-icon-button md-raised md-primary" title="Pan Right 5 Degrees">
-                    <span class="fa fa-caret-right md-fab-fa-icon-small"></span>
-                </md-button>
-                <md-button ng-click="vm.panFarRight()" class="md-icon-button md-raised md-primary" title="Pan Far Right">
-                    <span class="fa fa-step-forward md-fab-fa-icon-small"></span>
-                </md-button>
-            </div>
-            <md-button ng-click="vm.tiltDown()" class="md-icon-button md-raised md-primary" title="Tilt Down 5 Degrees">
-                <span class="fa fa-caret-down md-fab-fa-icon-small"></span>
-            </md-button>
-            <md-button ng-click="vm.tiltFarDown()" class="md-icon-button md-raised md-primary" title="Tilt Far Down">
-                <span style="transform:rotate(270deg);" class="fa fa-step-backward md-fab-fa-icon-small"></span>
-            </md-button>
-        </div>
-
-        <!--floodlights button?-->
     </div>
 </div>
