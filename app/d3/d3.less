@@ -8,7 +8,7 @@ text {
 
 rect {
     fill: none;
-//    stroke: #fff;
+    //    stroke: #fff;
     stroke-width: 2px;
 }
 
@@ -67,7 +67,7 @@ text.parent {
 }
 
 circle {
-//    stroke: #fff;
+    //    stroke: #fff;
     pointer-events: all;
 }
 
@@ -183,12 +183,25 @@ actions-button {
 }
 
 .chart-tooltip {
-    background: rgba(255,255,255,0.8);
-//    color: #333;
+    background: rgba(255, 255, 255, 0.8);
+    //    color: #333;
     border: 1px solid #333;
     box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);
     padding: 8px;
     width: 150px;
+}
+
+.multi-line-tooltip {
+    background: rgba(255, 255, 255, 0.8);
+    color: #333333;
+    font-size: 14px;
+    pointer-events: none;
+    position: absolute;
+    padding: 8px;
+    max-width: 300px;
+    word-wrap: break-word;
+    border: 1px solid #333;
+    box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);
 }
 
 .wind-direction-path {
