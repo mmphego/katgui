@@ -48,7 +48,11 @@
         };
 
         vm.activateSubarray = function (subarray) {
-            ObsSchedService.activateSubarray(subarray.id);
+            subarray.showProgress = true;
+            ObsSchedService.activateSubarray(subarray.id)
+                .then(function() {
+                    subarray.showProgress = false;
+                });
         };
 
         vm.setSubarrayInMaintenance = function (subarray) {
