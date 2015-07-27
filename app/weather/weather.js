@@ -3,16 +3,17 @@
     angular.module('katGui')
         .controller('WeatherCtrl', WeatherCtrl);
 
-    function WeatherCtrl($rootScope, $scope, DataService, SensorsService, KatGuiUtil, $interval, $log, $q) {
+    function WeatherCtrl($rootScope, $scope, DataService, SensorsService, KatGuiUtil, $interval, $log, $q, DATETIME_FORMAT, ConfigService) {
 
         var vm = this;
         vm.ancResource = {
             sensorList: [
-                {python_identifier: 'anc.weather_pressure'},
-                {python_identifier: 'anc.weather_temperature'},
-                {python_identifier: 'anc.weather_relative_humidity'},
+                {python_identifier: 'anc.weather_pressure', color: '#1f77b4'},
+                {python_identifier: 'anc.weather_temperature', color: '#ff7f0e'},
+                {python_identifier: 'anc.weather_relative_humidity', color: '#2ca02c'},
                 {python_identifier: 'anc.weather_rainfall', skipHistory: true},
-                {python_identifier: 'anc.weather_wind_speed'},
+                {python_identifier: 'anc.gust_wind_speed', color: '#ff7f0e'},
+                {python_identifier: 'anc.weather_wind_speed', color: '#1f77b4'},
                 {python_identifier: 'anc.weather_wind_direction', skipHistory: true}]
         };
         vm.resourcesHistoriesCount = 4;
@@ -32,11 +33,22 @@
         vm.yAxisRightMaxValue = 1000;
         vm.yAxisWindMinValue = 0;
         vm.yAxisWindMaxValue = 20;
-        vm.windSpeedLimitLine = 15;
+        vm.windSpeedLimitLine = 0;
+        vm.windGustLimitLine = 0;
         vm.maxSensorValue = {};
         vm.historicalRange = '2h';
         vm.sensorGroupingInterval = 30;
         vm.dataTimeWindow = new Date().getTime();
+
+        ConfigService.getWindstowLimits()
+            .success(function (result) {
+                vm.windSpeedLimitLine = parseFloat(result.stow_speed_m_s);
+                vm.windGustLimitLine = parseFloat(result.stow_gust_speed_m_s);
+                vm.redrawWindChart([], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine], true);
+            })
+            .error(function(error) {
+                $rootScope.showSimpleDialog('Could not retrieve windstow limits from katconf_ws', error);
+            });
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -102,14 +114,15 @@
                             //pack the result in the way our chart needs it
                             //because the json we receive is not good enough for d3
                             for (var attr in result) {
-                                var name = attr.replace('anc_', '').replace('weather_', '').replace('_', ' ');
+                                var name = attr.replace('anc_', '').replace('weather_', '').replace(/_/g, ' ');
                                 for (var i = 0; i < result[attr].length; i++) {
                                     var newSensor = {
                                         name: name,
                                         Sensor: attr,
                                         Timestamp: result[attr][i][0],
                                         Value: result[attr][i][1],
-                                        timestamp: moment.utc(result[attr][i][0], 'X').format(DATETIME_FORMAT)
+                                        timestamp: moment.utc(result[attr][i][0], 'X').format(DATETIME_FORMAT),
+                                        color: sensor.color
                                     };
                                     if (sensor.python_identifier.indexOf('pressure') !== -1) {
                                         newSensor.rightAxis = true;
@@ -129,8 +142,9 @@
                                     }
                                 }
                             }
-                            if (sensor.python_identifier.indexOf('wind_speed') > -1) {
-                                vm.redrawWindChart(newData, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, vm.windSpeedLimitLine);
+                            if (sensor.python_identifier.indexOf('wind_speed') > -1 ||
+                                sensor.python_identifier.indexOf('gust_speed') > -1) {
+                                vm.redrawWindChart(newData, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
                             } else {
                                 vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
                             }
@@ -152,15 +166,18 @@
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
-            var windDirection, windSpeed;
+            var windDirection = null,
+                windSpeed = null,
+                gustSpeed = null;
             vm.ancResource.sensorList.forEach(function (oldSensor) {
                 if (oldSensor.python_identifier === strList[1]) {
-                    oldSensor.name = oldSensor.python_identifier.replace('anc.', '').replace('weather_', '').replace('_', ' ');
+                    oldSensor.name = oldSensor.python_identifier.replace('anc.', '').replace('weather_', '').replace(/_/g, ' ');
                     oldSensor.sensorValue = sensor.value;
                     oldSensor.status = sensor.value.status;
                     oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss');
                     oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
                     oldSensor.value = sensor.value.value;
+                    sensor.color = oldSensor.color;
 
                     if (oldSensor.python_identifier.indexOf('wind_direction') !== -1) {
                         windDirection = oldSensor.value;
@@ -168,6 +185,9 @@
                     }
                     if (oldSensor.python_identifier.indexOf('wind_speed') !== -1) {
                         windSpeed = oldSensor.value;
+                    }
+                    if (oldSensor.python_identifier.indexOf('gust_speed') !== -1) {
+                        gustSpeed = oldSensor.value;
                     }
 
                     if (!vm.maxSensorValue[oldSensor.name]) {
@@ -178,18 +198,19 @@
                 }
             });
 
-            if (windDirection || windSpeed) {
-                vm.redrawCompass(windDirection, windSpeed);
+            if (windDirection) {
+                vm.redrawCompass(windDirection);
             }
 
-            if (windSpeed) {
+            if (windSpeed || gustSpeed) {
                 var newSensor = {
                     Sensor: strList[1].replace(/\./g, '_'),
                     ValueTimestamp: sensor.value.timestamp,
                     Timestamp: sensor.value.received_timestamp,
-                    Value: sensor.value.value
+                    Value: sensor.value.value,
+                    color: sensor.color
                 };
-                vm.redrawWindChart([newSensor], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, vm.windSpeedLimitLine);
+                vm.redrawWindChart([newSensor], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
             } else if (strList[1].indexOf('temperature') > -1
                 || strList[1].indexOf('humidity') > -1
                 || strList[1].indexOf('pressure') > -1) {
@@ -198,7 +219,8 @@
                     Sensor: strList[1].replace(/\./g, '_'),
                     ValueTimestamp: sensor.value.timestamp,
                     Timestamp: sensor.value.received_timestamp,
-                    Value: sensor.value.value
+                    Value: sensor.value.value,
+                    color: sensor.color
                 };
 
                 if (strList[1].indexOf('pressure') !== -1) {
@@ -213,7 +235,7 @@
         };
 
         vm.showWindOptionsChanged = function () {
-            vm.redrawWindChart(null, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, vm.windSpeedLimitLine);
+            vm.redrawWindChart(null, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
         };
 
         vm.sensorClass = function (status) {

@@ -63,7 +63,7 @@
     </md-toolbar>
 
     <div class="md-whiteframe-z1" md-theme="{{themePrimaryButtons}}" style="overflow: auto; margin-bottom: 8px;">
-        <div ng-repeat="key in objectKeys(vm.resourcesNames) | orderBy:key track by key"
+        <div ng-repeat="key in $root.objectKeys(vm.resourcesNames) | orderBy:key track by key"
              class="process-control-container">
             <div flex ng-click="vm.resourcesNames[key].showDetails = !vm.resourcesNames[key].showDetails" role="heading"
                  ng-init="vm.resourcesNames[key].showDetails = false"

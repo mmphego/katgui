@@ -37,14 +37,16 @@
                 </md-toolbar>
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
-                    <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id})" ng-click="vm.setSelectedSchedule(item);"
+                    <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by $index" ng-click="vm.setSelectedSchedule(item);"
                          ng-class="{'selected-schedule-row': item.state !== 'ACTIVE' && item === vm.selectedSchedule,
                                 'schedule-row-executing': item.state === 'ACTIVE' && item !== vm.selectedSchedule,
                                 'schedule-row-executing-and-selected': item.state === 'ACTIVE' && item === vm.selectedSchedule}"
                          class="schedule-draft-item animate-repeat" layout="row"  layout-align="center center">
 
-                            <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
-                            </md-progress-circular>
+                            <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary"
+                                                md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
+                                                style="position: absolute; left: 0; right: 0; margin-top: -5px;">
+                            </md-progress-linear>
                             <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
                             <div layout="row" class="schedule-block-name-div">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
@@ -225,7 +227,7 @@
                 <div flex style="padding: 0" layout="column">
                     <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
                          ng-class="{'highlight-script-window': vm.selectedSchedule !== null, 'md-whiteframe-z2': vm.selectedSchedule === null}">
-                        <pre flex ng-if="vm.selectedSchedule !== null" style="margin: 0">{{vm.selectedSchedule | json:4}}</pre>
+                        <pre flex style="margin: 0" ng-if="vm.selectedSchedule !== null" ng-bind-html='vm.selectedSchedule | prettifyJSON'></pre>
                     </div>
                 </div>
             </div>

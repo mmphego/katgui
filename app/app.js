@@ -98,7 +98,7 @@
             $rootScope.logNumberOfLines = 200;
         }
         if (!$rootScope.sensorListStrategyInterval) {
-            $rootScope.sensorListStrategyInterval = 3;
+            $rootScope.sensorListStrategyInterval = 10;
         }
         if (!angular.isDefined($rootScope.showLST)) {
             $rootScope.showLST = true;
@@ -380,6 +380,10 @@
                 });
         };
 
+        $rootScope.objectKeys = function (obj) {
+            return Object.keys(obj);
+        };
+
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
@@ -526,6 +530,14 @@
             url: '/cam-components',
             templateUrl: 'app/cam-components/cam-components.html',
             title: 'CAM Components',
+            data: {
+                authorizedRoles: [USER_ROLES.all]
+            }
+        });
+        $stateProvider.state('device-status', {
+            url: '/device-status',
+            templateUrl: 'app/device-status/device-status.html',
+            title: 'Device Status',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

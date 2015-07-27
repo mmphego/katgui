@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('multiLineTwoYAxisChart', function ($window, d3Util) {
+    .directive('multiLineTwoYAxisChart', function (DATETIME_FORMAT) {
         return {
             restrict: 'EA',
             scope: {
@@ -55,7 +55,7 @@ angular.module('katGui.d3')
                                 }
                                 existingDataLine.values.push(d);
                             } else {
-                                scope.nestedData.push({key: d.Sensor, values: [d], rightAxis: d.rightAxis});
+                                scope.nestedData.push({key: d.Sensor, values: [d], rightAxis: d.rightAxis, color: d.color});
                             }
                         });
                     }
@@ -84,7 +84,7 @@ angular.module('katGui.d3')
 
                 var tooltip = d3.select(element[0]).append("div")
                     .attr("class", "multi-line-tooltip")
-                    .style("opacity", 0);
+                    .style('display', 'none');
 
                 var margin = {top: 10, right: 60, bottom: 35, left: 60},
                     width, height;
@@ -123,6 +123,7 @@ angular.module('katGui.d3')
                             .on("mouseout", function () {
                                 if (!scope.lockShowTooltip) {
                                     d3.select(element[0]).selectAll(".focus-tooltip").style("display", "none");
+                                    tooltip.style('display', 'none');
                                 }
                             })
                             .on("mousemove", function () {
@@ -203,7 +204,10 @@ angular.module('katGui.d3')
 
                     var focuslines = focuslineGroups.append("path")
                         .attr("id", function (d) {
-                            var c = color(d.key);
+                            var c = d.color;
+                            if (!c) {
+                                c = color(d.key);
+                            }
                             var style = document.getElementById(d.key + '_style_tag');
                             if (style && style.parentNode) {
                                 style.parentNode.removeChild(style);
@@ -242,15 +246,10 @@ angular.module('katGui.d3')
                             if (!d3.select("." + data.key + "-tooltip")[0][0]) {
                                 var focusTooltip = svg.append("g")
                                     .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
-                                    .style("display", "none");
                                 focusTooltip.append("circle")
-                                    .attr("class", "focus-tooltip-circle " + data.key)
+                                    .attr("class", "focus-tooltip-circle" + data.key)
                                     .style("fill", "none")
                                     .attr("r", 4.5);
-                                focusTooltip.append('foreignObject')
-                                    .attr("x", 0)
-                                    .attr("width", "185")
-                                    .attr("height", "65");
                             }
                         });
                         mousemove(true);
@@ -288,6 +287,7 @@ angular.module('katGui.d3')
                         d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
                     }
                     var mouse = null;
+                    var tooltipValues = [];
                     scope.nestedData.forEach(function (data) {
                         if (!calledWithoutEvent) {
                             mouse = d3.mouse(scope.overlay[0][0]);
@@ -307,11 +307,12 @@ angular.module('katGui.d3')
                             d1 = data.values[i];
 
                         var d;
+
                         if (d0 && d0.date && d1 && d1.date) {
                             d = x0 - d0.date > d1.date - x0 ? d1 : d0;
 
                             var xTranslate = (x(d.date) + margin.left);
-                            var yTranslate;
+                            var yTranslate = 0;
                             if (d.rightAxis) {
                                 yTranslate = (yRight(d.value) + margin.top);
                             } else {
@@ -320,22 +321,29 @@ angular.module('katGui.d3')
 
                             var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                             focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                            if (xTranslate + 185 > width) {
-                                xTranslate = -194;
-                            } else {
-                                xTranslate = 9;
-                            }
-                            if (yTranslate + 65 > height) {
-                                yTranslate = -65;
-                            } else {
-                                yTranslate = 0;
-                            }
-                            var focusToolTipDiv = d3.select(focusToolTip[0][0].children[1]);
-                            focusToolTipDiv.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
                             d.TooltipValue = formatTwoDecimals(d.value);
-                            d3Util.updateGraphTooltipValues(d, focusToolTipDiv);
+                            tooltipValues.push(d);
                         }
                     });
+                    if (tooltipValues.length > 0) {
+                        var html = "";
+                        for (var i in tooltipValues) {
+                            html += "<div class='" + tooltipValues[i].Sensor + "' layout='column'>";
+                            html += "<span layout='row'><i flex>" + (tooltipValues[i].Sensor ? tooltipValues[i].Sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 12px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
+                            html += "<span>" + moment.utc(tooltipValues[i].Timestamp, 'X').format(DATETIME_FORMAT) + "</span>";
+                            html += "</div>";
+                        }
+                        html += "";
+                        tooltip.html(html);
+                        var xTranslate = (x(tooltipValues[0].date) + margin.left + 15);
+
+                        if (xTranslate + 180 > width) {
+                            xTranslate -= 180;
+                        }
+
+                        tooltip.attr("style", "transform: translate(" + (xTranslate ) + "px,  0)");
+                    }
+
                     if (!calledWithoutEvent) {
                         scope.lastMouse = mouse;
                     }

@@ -123,12 +123,14 @@ angular.module('katGui.d3')
         };
 
         api.updateGraphTooltipValues = function (d, tooltip) {
-            tooltip.html(
-                "<div class='chart-tooltip'>" +
-                "<b>" + d.TooltipValue + "</b>" +
-                "<br/>"+ moment.utc(d.Timestamp, 'X').format(DATETIME_FORMAT) +
-                "</div>"
-            );
+            var html = "<div class='chart-tooltip'>";
+            if (d.name) {
+                html += "<i>" + d.name + "</i>";
+            }
+            html += "<br/><b>" + d.TooltipValue + "</b>" +
+            "<br/>"+ moment.utc(d.Timestamp, 'X').format(DATETIME_FORMAT) +
+            "</div>";
+            tooltip.html(html);
         };
 
         //convenience function to create the tooltip div on the given element

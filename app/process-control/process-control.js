@@ -135,10 +135,6 @@
             });
         });
 
-        $scope.objectKeys = function (obj) {
-            return Object.keys(obj);
-        };
-
         $scope.$on('$destroy', function () {
             unbindUpdate();
             vm.disconnectIssued = true;

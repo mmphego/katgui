@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($http, SERVER_URL, $rootScope, ConfigService, $log) {
+    function ObsSchedService($http, SERVER_URL, $rootScope, ConfigService, $log, $q) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
@@ -15,7 +15,11 @@
         api.poolResourcesFree = [];
         api.configLabels = [];
 
-        api.handleRequestResponse = function (request) {
+        api.handleRequestResponse = function (request, defer) {
+            var deferred;
+            if (defer) {
+                deferred = $q.defer();
+            }
             request
                 .success(function (result) {
                     var message = result.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
@@ -24,10 +28,19 @@
                     } else {
                         $rootScope.showPreDialog('Error Processing Request', message);
                     }
+                    if (deferred) {
+                        deferred.resolve();
+                    }
                 })
                 .error(function (error) {
                     $rootScope.showSimpleDialog('Error sending request', error);
+                    if (deferred) {
+                        deferred.resolve();
+                    }
                 });
+            if (deferred) {
+                return deferred.promise;
+            }
         };
 
         api.markResourceFaulty = function (resource, faulty) {
@@ -102,7 +115,7 @@
         };
 
         api.activateSubarray = function (sub_nr) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/activate'));
+            return api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/activate'), true);
         };
 
         api.setSubarrayMaintenance = function (sub_nr, maintenance) {

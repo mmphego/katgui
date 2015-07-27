@@ -328,75 +328,75 @@ describe('OperatorControlCtrl', function () {
         expect(ctrl.receptorsData[0].fromNow.length).not.toBe(0);
     });
 
-    it('should update the inhibited message', inject(function () {
-        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
-        var deferred = q.defer();
-        var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
-        receptorStateService.getReceptorList();
-        expect(getReceptorListSpy).toHaveBeenCalled();
-        deferred.resolve(['m011', 'm022', 'm033', 'm044', 'm055']);
-        scope.$digest();
-        expect(ctrl.receptorsData.length).toBe(5);
-
-        ctrl.inhibitAll();
-        ctrl.receptorsData.forEach(function (receptor) {
-            expect(receptor.inhibited).toBeTruthy();
-        });
-        receptorStateService.receptorMessageReceived({
-            name: 'mon:m055.inhibited',
-            value: {
-                received_timestamp: 1425975097.022549,
-                status: 1,
-                timestamp: 1425975097.020974,
-                value: false
-            }
-        });
-        expect(ctrl.receptorsData[4].inhibited).toBeFalsy();
-        ctrl.receptorsData[4].inhibited = true;
-        receptorStateService.receptorMessageReceived({
-            name: 'mon:m055.inhibited',
-            value: {
-                received_timestamp: 1425975097.022549,
-                status: 1,
-                timestamp: 1425975097.020974,
-                value: true
-            }
-        });
-        expect(ctrl.receptorsData[4].inhibited).toBeTruthy();
-    }));
+    //it('should update the inhibited message', inject(function () {
+    //    httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+    //    var deferred = q.defer();
+    //    var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
+    //    receptorStateService.getReceptorList();
+    //    expect(getReceptorListSpy).toHaveBeenCalled();
+    //    deferred.resolve(['m011', 'm022', 'm033', 'm044', 'm055']);
+    //    scope.$digest();
+    //    expect(ctrl.receptorsData.length).toBe(5);
+    //
+    //    ctrl.inhibitAll();
+    //    ctrl.receptorsData.forEach(function (receptor) {
+    //        expect(receptor.inhibited).toBeTruthy();
+    //    });
+    //    receptorStateService.receptorMessageReceived({
+    //        name: 'mon:m055.inhibited',
+    //        value: {
+    //            received_timestamp: 1425975097.022549,
+    //            status: 1,
+    //            timestamp: 1425975097.020974,
+    //            value: false
+    //        }
+    //    });
+    //    expect(ctrl.receptorsData[4].inhibited).toBeFalsy();
+    //    ctrl.receptorsData[4].inhibited = true;
+    //    receptorStateService.receptorMessageReceived({
+    //        name: 'mon:m055.inhibited',
+    //        value: {
+    //            received_timestamp: 1425975097.022549,
+    //            status: 1,
+    //            timestamp: 1425975097.020974,
+    //            value: true
+    //        }
+    //    });
+    //    expect(ctrl.receptorsData[4].inhibited).toBeTruthy();
+    //}));
 
     describe('Receptor Controls', function () {
 
-        it('should inhibit all receptors', inject(function () {
-            ctrl.inhibitAll();
-            ctrl.receptorsData.forEach(function (receptor) {
-                expect(receptor.inhibited).toBeTruthy();
-            });
-        }));
-
-        it('should issue stow all', inject(function () {
-            ctrl.stowAll();
-            ctrl.receptorsData.forEach(function (receptor) {
-                expect(receptor.state).toBe('STOW');
-                expect(receptor.inhibited).toBeFalsy();
-            });
-        }));
-
-        it('should issue stop observations', inject(function () {
-            ctrl.stopAll();
-            ctrl.receptorsData.forEach(function (receptor) {
-                expect(receptor.state).toBe('STOW');
-                expect(receptor.inhibited).toBeTruthy();
-            });
-        }));
-
-        it('should issue resume operations', inject(function () {
-            ctrl.resumeOperations();
-            ctrl.receptorsData.forEach(function (receptor) {
-                expect(receptor.state).toBe('STOP');
-                expect(receptor.inhibited).toBeFalsy();
-            });
-        }));
+        //it('should inhibit all receptors', inject(function () {
+        //    ctrl.inhibitAll();
+        //    ctrl.receptorsData.forEach(function (receptor) {
+        //        expect(receptor.inhibited).toBeTruthy();
+        //    });
+        //}));
+        //
+        //it('should issue stow all', inject(function () {
+        //    ctrl.stowAll();
+        //    ctrl.receptorsData.forEach(function (receptor) {
+        //        expect(receptor.state).toBe('STOW');
+        //        expect(receptor.inhibited).toBeFalsy();
+        //    });
+        //}));
+        //
+        //it('should issue stop observations', inject(function () {
+        //    ctrl.stopAll();
+        //    ctrl.receptorsData.forEach(function (receptor) {
+        //        expect(receptor.state).toBe('STOW');
+        //        expect(receptor.inhibited).toBeTruthy();
+        //    });
+        //}));
+        //
+        //it('should issue resume operations', inject(function () {
+        //    ctrl.resumeOperations();
+        //    ctrl.receptorsData.forEach(function (receptor) {
+        //        expect(receptor.state).toBe('STOP');
+        //        expect(receptor.inhibited).toBeFalsy();
+        //    });
+        //}));
 
         //it('should issue shutdown computing', inject(function () {
         //

@@ -1,25 +1,6 @@
-<div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}"
-     flex style="position: absolute; min-width: 100%;min-height:100%">
+<div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}" flex>
 
-    <div class="sensor-graph-tips" layout="column" ng-show="vm.showTips">
-        <div layout="row" layout-align="start center" layout="row" class="arrow-box sg-timerange-tip">
-            <span>1. Set a Time Range</span>
-        </div>
-        <div layout="row" layout-align="start center" class="sg-findsensor-tip arrow-box">
-            <span>2. Select the sensor type</span>
-        </div>
-        <div layout="row" layout-align="start center" class="sg-findsensor-tip arrow-box">
-            <span>3. Type a sensor name search string and press enter (e.g. *wind_speed*)</span>
-        </div>
-        <div layout="row" layout-align="start center" class="sg-sensordata-tip arrow-box">
-            <span>4. Click the sensor to map its data</span>
-        </div>
-        <!--<div layout="row" layout-align="start center" class="sg-options-tip arrow-box">-->
-        <!--<span>5. Set your graphing options</span>-->
-        <!--</div>-->
-    </div>
-
-    <div layout="column" style="margin: 8px; min-width: 366px;"
+    <div layout="column" style="margin: 8px; min-width: 366px; max-width: 366px; min-height: 100%;"
          ng-click="vm.showDatePicker = false;vm.showEndDatePicker = false;">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
             <span flex>Sensor Graph Tools</span>
@@ -37,7 +18,7 @@
             </md-menu>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" layout="column" layout-align="start center"
-             md-theme="{{themePrimaryButtons}}">
+             md-theme="{{themePrimaryButtons}}" style="overflow: auto;">
 
             <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z1"
                             ng-init="vm.showDatePicker = false"
@@ -179,7 +160,7 @@
         </div>
     </div>
 
-    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px; width:100%">
+    <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px;">
         <md-toolbar layout="row" layout-align="end center" class="md-whiteframe-z1 ">
             <div flex layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}"
                  class="md-toolbar-tools-medium">

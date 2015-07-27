@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($rootScope, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log) {
+    function SbDraftsCtrl($rootScope, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, DATETIME_FORMAT) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;

@@ -3,35 +3,56 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($scope, $interval, ReceptorStateService, ControlService) {
+    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService) {
 
         var vm = this;
         vm.receptorsData = ReceptorStateService.receptorsData;
-        vm.floodLightSensor = {value: false};
+        vm.waitingForRequestResult = false;
 
         ReceptorStateService.getReceptorList();
         vm.floodLightSensor = ReceptorStateService.floodLightSensor;
 
         vm.stowAll = function () {
-            ControlService.stowAll();
+            vm.waitingForRequestResult = true;
+            vm.handleRequestResponse(ControlService.stowAll());
         };
 
         vm.inhibitAll = function () {
-            ControlService.inhibitAll();
+            vm.waitingForRequestResult = true;
+            vm.handleRequestResponse(ControlService.inhibitAll());
         };
 
         vm.stopAll = function () {
-            ControlService.stopAll();
+            vm.waitingForRequestResult = true;
+            vm.handleRequestResponse(ControlService.stopAll());
         };
 
         vm.resumeOperations = function () {
-            ControlService.resumeOperations();
+            vm.waitingForRequestResult = true;
+            vm.handleRequestResponse(ControlService.resumeOperations());
+        };
+
+        vm.shutdownComputing = function () {
+            vm.waitingForRequestResult = true;
+            vm.handleRequestResponse(ControlService.shutdownComputing());
         };
 
         vm.toggleFloodLights = function () {
-            ControlService.floodlightsOn(ReceptorStateService.floodLightSensor.value ? 'off' : 'on');
+            vm.waitingForRequestResult = true;
+            vm.handleRequestResponse(ControlService.floodlightsOn(ReceptorStateService.floodLightSensor.sensor.value ? 'off' : 'on'));
         };
 
+        vm.handleRequestResponse = function (request) {
+            request
+                .success(function (result) {
+                    vm.waitingForRequestResult = false;
+                    $rootScope.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                })
+                .error(function (error) {
+                    vm.waitingForRequestResult = false;
+                    $rootScope.showSimpleDialog('Error sending request', error);
+                });
+        };
         var stopInterval = $interval(function () {
             ReceptorStateService.updateReceptorDates();
         }, 1000);
