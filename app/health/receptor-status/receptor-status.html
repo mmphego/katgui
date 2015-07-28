@@ -20,7 +20,7 @@
                 </md-menu-content>
             </md-menu>
         </md-toolbar>
-        <div flex class="md-whiteframe-z1" style="padding: 16px;">
+        <div flex class="md-whiteframe-z1" style="padding: 16px; overflow: auto">
 
             <div layout="column" layout-align="start" ng-show="!vm.sortBySubarrays">
                 <div class="md-whiteframe-z1">
@@ -83,7 +83,8 @@
                 <div layout="column" layout-align="start" flex>
                     <md-toolbar
                         md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'white'}}"
-                        class="md-whiteframe-z1 md-hue-2"
+                        class="md-whiteframe-z1"
+                        ng-class="{'md-hue-2': subarray.state !== 'inactive'}"
                         layout="row" layout-align="center center"
                         style="max-height: 50px; min-height: 50px;">
                         <div flex style="position: relative">
