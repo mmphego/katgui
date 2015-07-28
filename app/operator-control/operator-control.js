@@ -10,7 +10,6 @@
         vm.waitingForRequestResult = false;
 
         ReceptorStateService.getReceptorList();
-        vm.floodLightSensor = ReceptorStateService.floodLightSensor;
 
         vm.stowAll = function () {
             vm.waitingForRequestResult = true;
@@ -35,11 +34,6 @@
         vm.shutdownComputing = function () {
             vm.waitingForRequestResult = true;
             vm.handleRequestResponse(ControlService.shutdownComputing());
-        };
-
-        vm.toggleFloodLights = function () {
-            vm.waitingForRequestResult = true;
-            vm.handleRequestResponse(ControlService.floodlightsOn(ReceptorStateService.floodLightSensor.sensor.value ? 'off' : 'on'));
         };
 
         vm.handleRequestResponse = function (request) {

@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $localStorage, $q, $interval, $log, $http) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};

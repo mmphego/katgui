@@ -7,7 +7,6 @@
 
         var api = {receptorsData: []};
         api.sensorValues = {};
-        api.floodLightSensor = {sensor: {}};
 
         api.getReceptorList = function() {
             api.receptorsData.splice(0, api.receptorsData.length);
@@ -48,20 +47,17 @@
             var receptor = sensorNameList[0];
             var sensorName = sensorNameList[1];
             api.sensorValues[receptor + '_' + sensorName] = message.value;
-            if (sensorName === 'vds_flood_lights_on') {
-                api.floodLightSensor.sensor = message.value;
-            } else {
-                api.receptorsData.forEach(function (item) {
-                    if (item.name === receptor && message.value) {
-                        if (sensorName === 'mode' && item.status !== message.value.value) {
-                            item.state = message.value.value;
-                        } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
-                            item.inhibited = message.value.value;
-                        }
-                        item.lastUpdate = moment(message.value.timestamp, 'X').format(DATETIME_FORMAT);
+
+            api.receptorsData.forEach(function (item) {
+                if (item.name === receptor && message.value) {
+                    if (sensorName === 'mode' && item.status !== message.value.value) {
+                        item.state = message.value.value;
+                    } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
+                        item.inhibited = message.value.value;
                     }
-                });
-            }
+                    item.lastUpdate = moment(message.value.timestamp, 'X').format(DATETIME_FORMAT);
+                }
+            });
         };
 
         api.updateReceptorDates = function () {

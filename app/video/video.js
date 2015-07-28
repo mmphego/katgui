@@ -5,7 +5,8 @@
     angular.module('katGui.video', ['katGui.services'])
         .controller('VideoCtrl', VideoCtrl);
 
-    function VideoCtrl($scope, $rootScope, $http, $log, $interval, SensorsService, SERVER_URL, $mdDialog) {
+    function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog,
+                       ControlService, SensorsService, SERVER_URL) {
 
         var vm = this;
         var urlBase = SERVER_URL + '/katcontrol/api/v1/vds';
@@ -13,6 +14,16 @@
         //not implemented in katconfig yet
         vm.imageSource = 'http://monctl.devo.camlab.kat.ac.za:8083';
         vm.sensorValues = {};
+
+        vm.toggleFloodLights = function () {
+            ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
+                .success(function (result) {
+                    $rootScope.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                })
+                .error(function (error) {
+                    $rootScope.showSimpleDialog('Error sending request', error);
+                });
+        };
 
         vm.panLeft = function () {
             var newPanValue = vm.sensorValues.vds_pan_position.value - 5;
@@ -82,8 +93,7 @@
                                 .error(requestError);
                         };
                     },
-                    template:
-                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    template: '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 8px;">{{::title}}</span>' +
@@ -125,8 +135,7 @@
                                 .error(requestError);
                         };
                     },
-                    template:
-                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    template: '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 8px;">{{::title}}</span>' +
@@ -189,11 +198,11 @@
                 .error(requestError);
         };
 
-        function requestSuccess (result) {
+        function requestSuccess(result) {
             $rootScope.showSimpleToast(result);
         }
 
-        function requestError (result) {
+        function requestError(result) {
             $rootScope.showSimpleDialog('Error sending VDS command.', result);
         }
 
@@ -240,7 +249,6 @@
             var strList = sensor.name.split(':');
             var sensorName = strList[1].split('.')[1];
             vm.sensorValues[sensorName] = sensor.value;
-            $log.info(sensor.value);
         });
 
         $scope.$on('$destroy', function () {
