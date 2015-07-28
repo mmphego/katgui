@@ -8,7 +8,7 @@
     function VideoCtrl($scope, $rootScope, $http, $log, $interval, SensorsService, SERVER_URL, $mdDialog) {
 
         var vm = this;
-        var urlBase = SERVER_URL + '/katvds/api/v1';
+        var urlBase = SERVER_URL + '/katcontrol/api/v1/vds';
         //todo set the image source from katconfig
         //not implemented in katconfig yet
         vm.imageSource = 'http://monctl.devo.camlab.kat.ac.za:8083';
