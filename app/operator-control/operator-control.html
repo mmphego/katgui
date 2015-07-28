@@ -9,14 +9,14 @@
                 <span ng-show="vm.connectionLost">Operator Controls (Connection Lost!)</span>
             </div>
         </md-toolbar>
-        <section md-theme="{{themePrimaryButtons}}" layout="row" layout-align="center center" class="operator-controls">
+        <div md-theme="{{themePrimaryButtons}}" class="operator-controls">
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.inhibitAll()" class="md-raised md-primary">Inhibit All</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.stopAll()" class="md-raised md-primary">Stop Observations</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.shutdownSPCorr()" class="md-raised md-primary">Shutdown SP & CORR</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.shutdownComputing()" class="md-raised md-primary">Shutdown Computing</md-button>
-        </section>
+        </div>
 
         <md-list class="receptor-state-list">
             <md-item ng-repeat="rec in vm.receptorsData">
