@@ -211,7 +211,7 @@
                             </span>
                             <span flex style="font-size:18px; margin-left: 4px;"
                                   ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
-                            <md-button ng-show="vm.subarray.maintenance && resource.maintenance" class="md-icon-button inline-action-button" ng-click="vm.restartMaintenanceDevice(vm.subarray, resource); $event.stopPropagation()"
+                            <md-button ng-show="vm.subarray.maintenance && resource.maintenance" class="md-icon-button inline-action-button" ng-click="vm.listResourceMaintenanceDevicesDialog(vm.subarray, resource, $event); $event.stopPropagation()"
                                        title="Restart Maintenance Device" style="margin: 0">
                                 <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
                             </md-button>

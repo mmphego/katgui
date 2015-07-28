@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($http, SERVER_URL, $rootScope, ConfigService, $log, $q) {
+    function ObsSchedService($http, SERVER_URL, $rootScope, ConfigService, $log, $q, $mdDialog) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
@@ -51,8 +51,12 @@
             api.handleRequestResponse($http.post(urlBase + '/resource/' + resource + '/maintenance/' + maintenance));
         };
 
-        api.restartMaintenanceDevice = function (sub_nr, resource) {
-            api.handleRequestResponse($http.post(urlBase + '/resource/' + sub_nr + '/' + resource + '/maintenance/restart'));
+        api.restartMaintenanceDevice = function (sub_nr, resource, device) {
+            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/resource/' + resource + '/device/' + device + '/restart'));
+        };
+
+        api.listResourceMaintenanceDevices = function (resource) {
+            return $http.get(urlBase + '/resource/' + resource + '/maintenance-device-list');
         };
 
         api.deleteScheduleDraft = function (id) {
@@ -262,6 +266,56 @@
             } else {
                 $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
+        };
+
+        api.listResourceMaintenanceDevicesDialog = function (sub_nr, resource, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = 'Select a Device in ' + resource + ' to Restart';
+                        $scope.devices = [];
+                        api.listResourceMaintenanceDevices(resource)
+                            .success(function (result) {
+                                var resultList = JSON.parse(result.result.replace(/\"/g, '').replace(/\'/g, '"'));
+                                for (var i in resultList) {
+                                    $scope.devices.push(resultList[i]);
+                                }
+                            })
+                            .error(function (error) {
+                                $log.error(error);
+                            });
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.restartMaintenanceDevice = function (device) {
+                            api.restartMaintenanceDevice(sub_nr, resource, device);
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin: 16px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="column">' +
+                    '           <div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">' +
+                    '               <md-button style="margin: 0" flex title="Restart {{device}} Device"' +
+                    '                   ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">' +
+                    '                   <span style="margin-right: 8px;" class="fa fa-refresh"></span>' +
+                    '                   <span>{{device}}</span>' +
+                    '               </md-button>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
         };
 
         return api;

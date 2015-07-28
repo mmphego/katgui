@@ -88,7 +88,7 @@
                             <span class="fa fa-warning error-text" style="font-size: 18px; margin-right: 4px;" ng-if="vm.isResourceFaulty(resource)" title="Resource Marked Faulty"></span>
                         </span>
                         <span flex style="margin-left: 4px; font-size:14px" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
-                        <md-button ng-show="subarray.maintenance && resource.maintenance" class="md-icon-button inline-action-button" ng-click="vm.restartMaintenanceDevice(subarray, resource); $event.stopPropagation()"
+                        <md-button ng-show="subarray.maintenance && resource.maintenance" class="md-icon-button inline-action-button" ng-click="vm.listResourceMaintenanceDevicesDialog(subarray, resource, $event); $event.stopPropagation()"
                                    title="Restart Maintenance Device" style="margin: 0">
                             <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
                         </md-button>
