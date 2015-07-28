@@ -33,6 +33,10 @@
             return $http.post(urlBase + '/system/shutdown-computing');
         };
 
+        api.shutdownSPCorr = function () {
+            return $http.post(urlBase + '/system/shutdown-sp-corr');
+        };
+
         api.acknowledgeAlarm = function (alarmName) {
             api.handleRequestResponse($http.post(urlBase + '/alarms/' + alarmName + '/acknowledge'));
         };
