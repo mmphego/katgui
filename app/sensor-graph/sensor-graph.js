@@ -3,9 +3,10 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval, $log, DATETIME_FORMAT) {
+    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval, $log) {
 
         var vm = this;
+        var DATETIME_FORMAT = 'HH:mm:ss yyyy-MM-dd';
         vm.showGridLines = false;
         vm.dateTimeError = false;
         vm.sensorNames = [];
