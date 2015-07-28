@@ -15,9 +15,6 @@
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.stopAll()" class="md-raised md-primary">Stop Observations</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.shutdownComputing()" class="md-raised md-primary">Shutdown Computing</md-button>
-            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.toggleFloodLights()" class="md-raised md-primary">
-                Switch Floodlights {{!vm.floodLightSensor.sensor.value? 'on' : 'off'}}
-            </md-button>
         </section>
 
         <md-list class="receptor-state-list">
