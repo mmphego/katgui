@@ -67,6 +67,10 @@
             ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
         };
 
+        vm.listResourceMaintenanceDevicesDialog = function (subarray, resource, event) {
+            ObsSchedService.listResourceMaintenanceDevicesDialog(subarray.id, resource.name, event);
+        };
+
         vm.isResourceInMaintenance = function (resource) {
             resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
             return resource.maintenance;

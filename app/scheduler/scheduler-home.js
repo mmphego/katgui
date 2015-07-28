@@ -10,7 +10,7 @@
             'MANUAL'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, SensorsService, ObsSchedService, $interval, $log) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService) {
 
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';

@@ -84,6 +84,10 @@
             ObsSchedService.markResourceFaulty(resource.name, resource.faulty ? 'clear' : 'set');
         };
 
+        vm.listResourceMaintenanceDevicesDialog = function (subarray, resource, event) {
+            ObsSchedService.listResourceMaintenanceDevicesDialog(subarray.id, resource.name, event);
+        };
+
         vm.setSchedulerMode = function (mode) {
             ObsSchedService.setSchedulerModeForSubarray(vm.subarray_id, mode);
         };
