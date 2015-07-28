@@ -51,6 +51,10 @@
             api.handleRequestResponse($http.post(urlBase + '/resource/' + resource + '/maintenance/' + maintenance));
         };
 
+        api.restartMaintenanceDevice = function (sub_nr, resource) {
+            api.handleRequestResponse($http.post(urlBase + '/resource/' + sub_nr + '/' + resource + '/maintenance/restart'));
+        };
+
         api.deleteScheduleDraft = function (id) {
             return $http.post(urlBase + '/sb/' + id + '/delete');
         };

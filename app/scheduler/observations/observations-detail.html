@@ -11,9 +11,10 @@
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
                 <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" layout="row" layout-align="start center"
                             md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
-                            ng-class="{'md-hue-2': subarray.state !== 'inactive'}">
+                            ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}">
                         <span style="margin-left: 8px;">SUBARRAY {{vm.subarray_id}}</span>
                         <span ng-show="vm.subarray.state" style="margin-left: 4px;"> - {{vm.subarray.state}}</span>
+                        <span ng-if="vm.subarray.maintenance">{{", in maintenance"}}</span>
                         <span flex></span>
                         <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()" title="Free Subarray">
                             <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
@@ -210,7 +211,11 @@
                             </span>
                             <span flex style="font-size:18px; margin-left: 4px;"
                                   ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
-                            <md-button class="md-icon-button inline-action-button" ng-show="!item.pendingVerify"
+                            <md-button ng-show="vm.subarray.maintenance && resource.maintenance" class="md-icon-button inline-action-button" ng-click="vm.restartMaintenanceDevice(vm.subarray, resource); $event.stopPropagation()"
+                                       title="Restart Maintenance Device" style="margin: 0">
+                                <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
+                            </md-button>
+                            <md-button class="md-icon-button inline-action-button" ng-show="!item.pendingVerify" style="margin: 0"
                                        ng-click="vm.markResourceFaulty(resource)" title="Mark Resource As Faulty">
                                 <md-icon class="fa" md-font-icon="fa-exclamation-circle"></md-icon>
                             </md-button>
