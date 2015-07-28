@@ -36,6 +36,11 @@
             vm.handleRequestResponse(ControlService.shutdownComputing());
         };
 
+        vm.shutdownSPCorr = function () {
+            vm.waitingForRequestResult = true;
+            vm.handleRequestResponse(ControlService.shutdownSPCorr());
+        };
+
         vm.handleRequestResponse = function (request) {
             request
                 .success(function (result) {
