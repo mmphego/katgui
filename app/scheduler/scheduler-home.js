@@ -78,6 +78,7 @@
                     SensorsService.setSensorStrategy('sched', 'mode_' + subarrays[i], 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'config_label', 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'maintenance', 'event', 0, 0);
+                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'delegated_ca', 'event', 0, 0);
                     ObsSchedService.subarrays.push({id: subarrays[i]});
                 }
             } else if (sensorNameList[0].indexOf('subarray_') === 0) {

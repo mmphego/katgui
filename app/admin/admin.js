@@ -2,11 +2,12 @@
     angular.module('katGui.admin', ['katGui.services', 'katGui.util'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl($scope, UserService, KatGuiUtil, $mdDialog, $rootScope, $log) {
+    function AdminCtrl($scope,  $mdDialog, $rootScope, $log, UserService, KatGuiUtil, ObsSchedService, ConfigService) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
         vm.isUserAdmin = false;
+        vm.isCurrentUserLO = false;
         vm.orderByFields = [
             {label: 'Id', value: 'id'},
             {label: 'Name', value: 'name'},
@@ -113,12 +114,42 @@
             vm.saveUser(user);
         };
 
+        vm.delegateControlDialog = function (user, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.subarrays = ConfigService.systemConfig.system.subarray_nrs.split(',');
+                        $scope.user = user;
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.delegateControl = function (sub_nr) {
+                            ObsSchedService.delegateControl(sub_nr, user.email);
+                        };
+                    },
+                    template: "<md-dialog style='padding: 0;'><md-content style='padding: 0; margin: 0; width: 396px; ' layout='column'>" +
+                    "<md-toolbar md-theme='{{themePrimary}}' class='md-primary long-input' layout='row' layout-align='center center'><span style='font-weight: bold;'>Delegate Control to {{::user.name}}</span></md-toolbar>" +
+                    "<div flex layout='row' layout-align='center center'><md-select md-theme='{{themePrimaryButtons}}' placeholder='Select a Subarray' ng-model='sub_nr' style='width: 180px'>" +
+                    "<md-option ng-repeat='subarray in subarrays' value='{{::subarray}}'>Subarray {{::subarray}}</md-option>" +
+                    "</md-select></div>" +
+                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='hide()'>Cancel</md-button>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='delegateControl(sub_nr); hide()'><span>Set Control Delegate</span></md-button>" +
+                    "</div>" +
+                    "</md-content></md-dialog>",
+                    targetEvent: event
+                });
+        };
+
         vm.resetPassword = function (event, user) {
             var passwordHash = null;
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimaryButtons;
+                        $scope.themePrimary = $rootScope.themePrimary;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.hide = function () {
                             $mdDialog.hide();
@@ -130,15 +161,14 @@
                             $mdDialog.hide(answer);
                         };
                     },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label='Password Reset'><md-content style='padding: 0px; margin: 0px; width: 396px; ' layout='column' layout-padding >" +
+                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}'><md-content style='padding: 0; margin: 0; width: 396px;' layout='column' layout-padding>" +
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span style='font-weight: bold;'>Password Reset</span></md-toolbar>" +
-                    "<md-input-container id='resetPasswordInput' type='password' class='long-input' style='margin: 16px;'>" +
-                    "<label>New Password</label>" +
-                    "<input type='password' focus ng-model='password'>" +
+                    "<md-input-container md-no-float md-theme='{{themePrimaryButtons}}' id='resetPasswordInput' type='password' class='long-input' style='padding: 16px'>" +
+                    "<input placeholder='New Password' type='password' focus ng-model='password'>" +
                     "</md-input-container>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Cancel Reset' ng-click='cancel()'>Cancel</md-button>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' aria-label='Reset Password' ng-click='answer(password)'><span>Reset</span></md-button>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='cancel()'>Cancel</md-button>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='answer(password)'><span>Reset</span></md-button>" +
                     "</div>" +
                     "</md-content></md-dialog>",
                     targetEvent: event
@@ -152,12 +182,12 @@
                         $log.error(result);
                     });
                 }, function () {
-                    $rootScope.showSimpleToast('Cancelled Password reset.');
+                    $log.info('Cancelled Password reset.');
                 });
         };
 
         vm.keydown = function (e, key) {
-            if (key === 27) {
+            if (key === 27 && vm.sortedUserData) {
                 //escape
                 for (var i = vm.sortedUserData.length - 1; i > -1; i--) {
                     if (vm.sortedUserData[i].temp || vm.sortedUserData[i].originalUser) {
@@ -165,23 +195,18 @@
                         break;
                     }
                 }
-            }
-            if (!$scope.$$phase) {
-                $scope.$apply();
+                if (!$scope.$$phase) {
+                    $scope.$apply();
+                }
             }
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
-        $scope.$on('$destroy', function () {
-            vm.unbindShortcuts('keydown');
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess('loginSuccess');
-            }
-        });
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1;
+                vm.isCurrentUserLO = $rootScope.currentUser.req_role === 'lead_operator';
+                vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1 || vm.isCurrentUserLO;
                 if (vm.isUserAdmin) {
                     vm.listUsers();
                 }
@@ -191,5 +216,12 @@
         };
 
         vm.afterInit();
+
+        $scope.$on('$destroy', function () {
+            vm.unbindShortcuts('keydown');
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess('loginSuccess');
+            }
+        });
     }
 })();

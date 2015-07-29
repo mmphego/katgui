@@ -260,6 +260,10 @@
             api.handleRequestResponse($http.post(urlBase + '/products/' + sub_nr + '/' + product));
         };
 
+        api.delegateControl = function (sub_nr, userName) {
+            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/delegate-control/' + userName.split('@')[0]));
+        };
+
         api.viewTaskLogForSBIdCode = function (id_code) {
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/tailtask/" + id_code + "/progress").focus();

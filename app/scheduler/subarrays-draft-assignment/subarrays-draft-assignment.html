@@ -15,6 +15,7 @@
                         <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
                     </md-button>
                     <div layout="row" style="position: absolute; top: 0; right: 0; font-size: 14px; padding: 0">
+                        <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
                         <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band}}</b></span>
                         <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product}}</b></span>
                         <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{subarray.config_label}}</b></span>

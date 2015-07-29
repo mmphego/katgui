@@ -119,7 +119,7 @@
                         var requested_session_id = payload.session_id;
                         $scope.current_lo = payload.current_lo;
                         $scope.requested_role = payload.req_role;
-                        $scope.hide = function () {
+                        $scope.readOnlyLogin = function () {
                             session_id = readonly_session_id;
                             $mdDialog.hide();
                         };
@@ -127,28 +127,37 @@
                             session_id = requested_session_id;
                             $mdDialog.hide();
                         };
+
+                        $scope.cancel = function () {
+                            session_id = null;
+                            $mdDialog.hide();
+                        };
                     },
                     template: '<md-dialog md-theme="{{themePrimary}}" class="md-whiteframe-z1">' +
-                        '<md-toolbar><div style="padding-left: 20px; padding-top: 10px;"><h3>Confirm login as {{requested_role}}</h3></div></md-toolbar>' +
+                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{requested_role}}</md-toolbar>' +
                         '  <md-dialog-content class="md-padding" layout="column">' +
-                        '   <p><strong>{{current_lo}}</strong> is the current Lead Operator?</p>' +
-                        '   <p>If you decline you will be logged in as a read-only user.</p>' +
+                        '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
+                        '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be logged out.</p>' +
                         '  </md-dialog-content>' +
-                        '  <div class="md-actions">' +
+                        '  <div class="md-actions" md-theme="{{themePrimaryButtons}}">' +
+                        '    <md-button ng-click="cancel()" class="md-primary">' +
+                        '      Cancel' +
+                        '    </md-button>' +
+                        '    <md-button ng-click="readOnlyLogin()" class="md-primary">' +
+                        '      Read Only Login' +
+                        '    </md-button>' +
                         '    <md-button ng-click="proceed()" class="md-primary">' +
                         '      Proceed' +
-                        '    </md-button>' +
-                        '    <md-button ng-click="hide()" class="md-primary">' +
-                        '      Cancel' +
                         '    </md-button>' +
                         '  </div>' +
                         '</md-dialog>'
                         })
                 .then(function() {
-                    api.login(session_id);
-                    $log.info('Confirmation complete!');
+                    if (session_id) {
+                        api.login(session_id);
+                    }
                 });
-        };
+        }
 
         function loginSuccess(result, session_id) {
             if (session_id) {
