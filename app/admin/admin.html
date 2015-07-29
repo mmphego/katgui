@@ -24,15 +24,14 @@
     </div>
 
     <div ng-if="vm.isUserAdmin" class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative; min-height: 452px;">
-        <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showUserTools = true;" ng-mouseleave="showUserTools = false;">
+        <md-toolbar class="panel-toolbar md-whiteframe-z1">
             <div class="unselectable md-toolbar-tools" layout="row">
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
+                <input class="fade-in search-input-box" style="min-width: 250px;" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="q" placeholder="Search Users..."/>
                 <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">
                     Show Only Deactivated Users
                 </md-checkbox>
-
-                <input class="fade-in search-input-box" style="min-width: 250px;" ng-show="showUserTools || q || vm.showDeactivatedUsers" type="search"
-                       ng-model-options="{ debounce: 300 }" ng-model="q" placeholder="Search Users..."/>
                 <md-button  style="margin-right: 8px;" ng-click="vm.createUser()" class="md-icon-button" md-theme="{{themePrimaryButtons}}">
                     <md-icon class="fa" md-font-icon="fa-plus" style="margin-top: 8px;"></md-icon>
                     <md-tooltip>Create A User</md-tooltip>
@@ -66,7 +65,10 @@
                        label="Name" ng-disabled="!user.editing" ng-model="user.name" style="max-width: 265px; min-width: 265px;"/>
                 <input flex type="text" class="user-admin-input" style="max-width: 265px; min-width: 265px;" placeholder="Name" md-theme="{{themePrimary}}"
                        label="Email" ng-disabled="!user.editing" ng-model="user.email" title="Email"/>
-                <md-select flex ng-disabled="!user.editing" ng-model="user.roles" multiple style="margin-left: 4px; margin-right:8px;"
+                <div flex ng-show="!user.editing">
+                    <span ng-repeat="role in user.roles">{{role}},</span>
+                </div>
+                <md-select flex ng-show="user.editing" ng-model="user.roles" class="opaque-disabled-select" multiple style="margin: 0"
                             class="md-primary"  placeholder="No Roles Assigned">
                     <md-option ng-value="role.value" ng-repeat="role in vm.userRoles">{{role.name}}</md-option>
                 </md-select>
