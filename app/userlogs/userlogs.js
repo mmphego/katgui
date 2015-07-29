@@ -18,7 +18,7 @@
         }])
         .controller('UserlogCtrl', UserlogCtrl);
 
-    function UserlogCtrl($scope, $mdDialog, $rootScope, $filter, $log, $timeout, UserLogService) {
+    function UserlogCtrl($mdDialog, $rootScope, $filter, $log, $timeout, UserLogService) {
 
         var vm = this;
 
@@ -30,17 +30,16 @@
         ];
 
         vm.setOrderBy = function (column) {
-            $scope.$apply(function () {
-                var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
-                if ((vm.orderBy || {}).value === column) {
-                    if (newOrderBy.reverse === undefined) {
-                        newOrderBy.reverse = true;
-                    } else if (newOrderBy.reverse) {
-                        newOrderBy.reverse = undefined;
-                        newOrderBy = null;
-                    }
+            var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
+            if ((vm.orderBy || {}).value === column) {
+                if (newOrderBy.reverse === undefined) {
+                    newOrderBy.reverse = true;
+                } else if (newOrderBy.reverse) {
+                    newOrderBy.reverse = undefined;
+                    newOrderBy = null;
                 }
-            });
+            }
+            vm.orderBy = newOrderBy;
         };
 
         vm.setOrderBy('start_time');

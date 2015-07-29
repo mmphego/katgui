@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, SERVER_URL, $rootScope, $window, $log) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katcontrol/api/v1';
@@ -117,6 +117,8 @@
                 .success(function (result) {
                     api.report_userlogs.splice(0, api.report_userlogs.length);
                     result.forEach(function (userlog) {
+                        userlog.start_time = $filter('date')(new Date(userlog.start_time), 'yyyy-MM-dd HH:mm');
+                        userlog.end_time = $filter('date')(new Date(userlog.end_time), 'yyyy-MM-dd HH:mm');
                         api.report_userlogs.push(userlog);
                     });
                     defer.resolve();
