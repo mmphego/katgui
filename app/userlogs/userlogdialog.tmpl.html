@@ -1,16 +1,18 @@
-<md-dialog md-theme="{{themePrimary}}" class="md-whiteframe-z1" style="min-width: 600px; overflow: visible">
-    <md-toolbar class="md-toolbar-tools">
+<md-dialog md-theme="{{themePrimary}}" class="md-whiteframe-z1" style="min-width: 600px; overflow: visible"
+           ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false;">
+    <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
         <span>User Log Editor</span>
     </md-toolbar>
     <md-dialog-content style="padding: 12px;" layout="column" md-theme="{{themePrimaryButtons}}">
         <div layout="row">
             <div layout="row" layout-align="center center" style="min-width: 220px;">
                 <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
-                    <input flex type="text" ng-change="vm.startTimeChange()" class=""
+                    <input flex type="text"
                            data-ng-model="ulog.start_time" placeholder="Start Date"
                            title="Start Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()"/>
                 </md-input-container>
+                <span>UTC</span>
                 <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
                            ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
@@ -19,25 +21,26 @@
                                 class="datepickerMenu md-whiteframe-z1"
                                 data-ng-model="ulog.start_time" style="position: absolute; left: 16px; top: 122px"
                                 data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
-                                data-on-set-time="vm.showDatePicker = false;"></datetimepicker>
+                                data-on-set-time="vm.showDatePicker = false; onTimeSet(ulog.start_time, ulog, 'start_time')"></datetimepicker>
             </div>
-            <span flex></span>
+            <div flex layout="row" layout-align="center center">TO</div>
             <div layout="row" layout-align="center center" style="min-width: 220px;">
                 <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
-                    <input flex type="text" ng-change="vm.startTimeChange()" class=""
+                    <input flex type="text"
                            data-ng-model="ulog.end_time" placeholder="End Date"
                            title="End Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()"/>
                 </md-input-container>
+                <span>UTC</span>
                 <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
                            ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
                 <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
-                                data-ng-model="ulog.end_time" style="position: absolute; left: 16px; top: 122px"
+                                data-ng-model="ulog.end_time" style="position: absolute; right: 16px; top: 122px"
                                 class="datepickerMenu md-whiteframe-z1"
                                 data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
-                                data-on-set-time="vm.showEndDatePicker = false;"></datetimepicker>
+                                data-on-set-time="vm.showEndDatePicker = false; onTimeSet(ulog.end_time, ulog, 'end_time')"></datetimepicker>
             </div>
         </div>
         <md-select style="margin: 16px 0" placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px">
