@@ -6,10 +6,10 @@
         </md-toolbar>
         <div style="width: 100%; height: auto;">
             <div class="md-whiteframe-z3" flex layout="row" layout-align="start center" style="margin: 32px; height: 80px; overflow: auto;">
-                <div flex style="min-width: 265px; text-align: center; display: inline-block;" layout="row">
+                <div flex style="max-width: 265px; min-width: 265px; text-align: center; display: inline-block;" layout="row">
                     <span class="cell-span">{{::currentUser.name}}<md-tooltip>My Name</md-tooltip></span>
                 </div>
-                <div flex style="min-width: 335px; text-align: center; display: inline-block;" layout="row">
+                <div flex style="max-width: 335px; min-width: 335px; text-align: center; display: inline-block;" layout="row">
                     <span class="cell-span">{{::currentUser.email}}<md-tooltip>My Email Address</md-tooltip></span>
                 </div>
                 <div flex layout-align="start center" style="text-align: center; display: inline-block;" layout="row">
@@ -27,9 +27,8 @@
         <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showUserTools = true;" ng-mouseleave="showUserTools = false;">
             <div class="unselectable md-toolbar-tools" layout="row">
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
-                <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary"  ng-show="showUserTools || vm.showDeactivatedUsers"
-                             style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">
-                    Show Deactivated Users
+                <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">
+                    Show Only Deactivated Users
                 </md-checkbox>
 
                 <input class="fade-in search-input-box" style="min-width: 250px;" ng-show="showUserTools || q || vm.showDeactivatedUsers" type="search"
@@ -52,7 +51,7 @@
                           style="margin-right: 4px;"></span>
                 </span>
                 <span flex ng-click="vm.setOrderBy('roles')" class="subheader-text">
-                    <span style="padding: 8px">Roles</span>
+                    <span style="padding: 8px">Allowed Roles</span>
                     <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'roles' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'roles' && vm.orderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
@@ -72,8 +71,7 @@
                     <md-option ng-value="role.value" ng-repeat="role in vm.userRoles">{{role.name}}</md-option>
                 </md-select>
 
-                <div ng-show="user.editing" class="user-editing-buttons" layout="row">
-                    <span flex></span>
+                <div ng-show="user.editing" class="user-editing-buttons" layout="row" layout-align="end center">
                     <button title="Deactivate User" ng-show="!user.temp && user.activated" class="user-row-button" ng-click="vm.deactivateUser(user)">
                         <span class="fa fa-ban"></span>
                     </button>
@@ -87,6 +85,10 @@
                         <span class="fa fa-check"></span>
                     </button>
                 </div>
+                <button ng-if="vm.isCurrentUserLO && user.roles.indexOf('control_authority') > -1" ng-show="!user.temp && user.activated && !user.editing"
+                        title="Assign To Subarray" class="user-row-button" ng-click="vm.delegateControlDialog(user, $event)">
+                    <span class="fa fa-cube"></span>
+                </button>
                 <button title="Reset Password" ng-show="!user.temp && !user.editing" class="user-row-button" ng-click="vm.resetPassword($event, user)">
                     <span class="fa fa-key"></span>
                 </button>
