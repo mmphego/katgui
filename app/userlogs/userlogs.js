@@ -30,36 +30,32 @@
         ];
 
         vm.setOrderBy = function (column) {
-            var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
-            if ((vm.orderBy || {}).value === column) {
-                if (newOrderBy.reverse === undefined) {
-                    newOrderBy.reverse = true;
-                } else if (newOrderBy.reverse) {
-                    newOrderBy.reverse = undefined;
-                    newOrderBy = null;
+            $scope.$apply(function () {
+                var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
+                if ((vm.orderBy || {}).value === column) {
+                    if (newOrderBy.reverse === undefined) {
+                        newOrderBy.reverse = true;
+                    } else if (newOrderBy.reverse) {
+                        newOrderBy.reverse = undefined;
+                        newOrderBy = null;
+                    }
                 }
-            }
-            vm.orderBy = newOrderBy;
-            if (!$scope.$$phase) {
-                $scope.$apply();
-            }
+            });
         };
 
         vm.setOrderBy('start_time');
 
-        var blank_tags = [];
-
-        $scope.blank_ulog = {
+        vm.blank_ulog = {
             id: "",
             user: "",
             userlog_type: "",
             start_time: "",
             end_time: "",
             userlog_content: "",
-            tags: blank_tags
+            tags: []
         };
 
-        $scope.blank_query = {
+        vm.blank_query = {
             userlog_type: "",
             start_time: "",
             end_time: ""
@@ -69,61 +65,36 @@
             target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm');
         };
 
-        $scope.getCompleteUserLog = function (ulog, userlogs, tags, event) {
-            $scope.fetchUserlogProcessingServerCall = true;
+        vm.getCompleteUserLog = function (ulog, userlogs, tags, event) {
             UserLogService.getUserLog(ulog.id).then(function () {
-                $scope.focused_ulog = UserLogService.focus_ulog;
-                $scope.editUserLog($scope.focused_ulog, userlogs, tags, event);
-                $scope.fetchUserlogProcessingServerCall = false;
+                vm.focused_ulog = UserLogService.focus_ulog;
+                vm.editUserLog(vm.focused_ulog, userlogs, tags, event);
             });
         };
 
-
-        $scope.userlogs = UserLogService.userlogs;
-        $scope.getUserLogs = function (event) {
-            $scope.userListProcessingServerCall = true;
-            UserLogService.listUserLogs().then(function () {
-                $scope.userListProcessingServerCall = false;
-            });
-        };
-
-
-        $scope.my_userlogs = UserLogService.my_userlogs;
-        $scope.getMyUserLogs = function () {
+        vm.my_userlogs = UserLogService.my_userlogs;
+        vm.getMyUserLogs = function () {
             if ($rootScope.currentUser) {
-                var user = $rootScope.currentUser.id;
-                $log.info('Fetching logs for user: ' + user);
-                $scope.myLogsProcessingServerCall = true;
-                UserLogService.listMyUserLogs(user).then(function () {
-                    $scope.myLogsProcessingServerCall = false;
-                });
+                UserLogService.listMyUserLogs($rootScope.currentUser.id);
             } else {
-                $timeout($scope.getMyUserLogs, 1000);
+                $timeout(vm.getMyUserLogs, 1000);
             }
         };
+        vm.getMyUserLogs();
 
-
-        $scope.tags = UserLogService.tags;
-        $scope.getTags = function () {
-            $scope.tagListProcessingServerCall = true;
-            UserLogService.listTags().then(function () {
-                $scope.tagListProcessingServerCall = false;
-            });
+        vm.tags = UserLogService.tags;
+        vm.getTags = function () {
+            UserLogService.listTags();
         };
-        $scope.getTags();
+        vm.getTags();
 
-
-        $scope.taxonomies = UserLogService.taxonomies;
-        $scope.getTaxonomies = function (event) {
-            $scope.taxonomyListProcessingServerCall = true;
-            UserLogService.listTaxonomies().then(function () {
-                $scope.taxonomyListProcessingServerCall = false;
-            });
+        vm.taxonomies = UserLogService.taxonomies;
+        vm.getTaxonomies = function () {
+            UserLogService.listTaxonomies();
         };
 
-
-        $scope.report_userlogs = UserLogService.report_userlogs;
-        $scope.queryUserlogs = function (event, b_query) {
+        vm.report_userlogs = UserLogService.report_userlogs;
+        vm.queryUserlogs = function (event, b_query) {
             var query = "?";
             var log_type = b_query.userlog_type;
             var start_time = $filter('date')(b_query.start_time, 'yyyy-MM-dd HH:mm');
@@ -131,13 +102,12 @@
             if (log_type) {query += "log_type=" + log_type + "&"}
             if (start_time) {query += "start_time=" + start_time + "&"}
             if (end_time) {query += "end_time=" + end_time + "&"}
-            UserLogService.queryUserLogs(query).then(function () {
-                $scope.userlogs = $scope.report_userlogs;
+            UserLogService.queryUserLogs(query).then(function (result) {
+                $log.info(result);
             });
         };
 
-
-        $scope.editUserLog = function (ulog, userlogs, tags, event) {
+        vm.editUserLog = function (ulog, userlogs, tags, event) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog, $filter) {
@@ -153,7 +123,6 @@
                             $scope.ulog.end_time = $filter('date')(now, 'yyyy-MM-dd HH:mm');
                         }
                         $log.info('Updated focus log: ' + JSON.stringify(ulog));
-                        $scope.userlogs = userlogs;
                         $scope.tags = tags;
                         $scope.selectedItem = null;
                         $scope.searchText = null;
@@ -228,20 +197,18 @@
                     templateUrl: 'app/userlogs/userlogdialog.tmpl.html',
                     targetEvent: event
                 })
-                .then(function(userlog_entry) {
-                    $scope.blank_ulog = {
+                .then(function() {
+                    vm.blank_ulog = {
                         id: "",
                         user: "",
                         userlog_type: "",
                         start_time: "",
                         end_time: "",
                         userlog_content: "",
-                        tags: blank_tags
+                        tags: []
                     };
                     $log.info('Closing userlog editing dialog');
                 });
         };
-
-        $scope.getMyUserLogs();
     }
 })();
