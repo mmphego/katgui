@@ -1,6 +1,7 @@
 <div flex layout="column"  style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
     <div layout="row" flex style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 16px;">
         <div layout="row" style="position: absolute; top: 0; left: 14px; font-size: 14px; padding: 0">
+            <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{vm.subarray.delegated_ca}}</b></span>
             <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{vm.subarray.band}}</b></span>
             <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{vm.subarray.product}}</b></span>
             <span ng-show="subarray.state === 'active' || vm.subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{vm.subarray.config_label}}</b></span>
