@@ -2,6 +2,7 @@ describe('SubArraysCtrl - draft assignments', function () {
 
     beforeEach(module('katGui.scheduler'));
     beforeEach(module('ui.router'));
+    beforeEach(module('ngMaterial'));
 
     var scope, ctrl, state, ObsSchedService, q, timeout;
 

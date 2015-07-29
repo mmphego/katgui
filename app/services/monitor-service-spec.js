@@ -1,6 +1,7 @@
 describe('MonitorService', function () {
 
     beforeEach(module('katGui.services'));
+    beforeEach(module('ngMaterial'));
 
     var errorMessage = {
         type: "message",
