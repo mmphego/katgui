@@ -1,6 +1,7 @@
 describe('VideoCtrl', function() {
 
     beforeEach(module('katGui.video'));
+    beforeEach(module('ngMaterial'));
 
     var scope,ctrl;
 

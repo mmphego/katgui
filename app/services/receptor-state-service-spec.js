@@ -1,6 +1,7 @@
 describe('ReceptorStateService', function () {
 
     beforeEach(module('katGui.services'));
+    beforeEach(module('ngMaterial'));
 
     var MonitorService, ConfigService, ReceptorStateService, scope, timeout, q, $log;
 
