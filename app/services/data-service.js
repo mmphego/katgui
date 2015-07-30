@@ -5,7 +5,7 @@
 
     function DataService($http, SERVER_URL) {
 
-        var urlBase = SERVER_URL + '/katstore/api/v1/katstore';
+        var urlBase = SERVER_URL + '/katstore/api/v1/katstore/';
         var api = {};
 
         api.findSensor = function (sensorName, startDate, endDate, limit, time_type, format, interval) {
@@ -23,7 +23,7 @@
         };
 
         api.findSensorName = function (searchStr, sensor_type) {
-            return $http.get(urlBase + '/findsensor?sensor=' + searchStr + '&sensor_type=' + sensor_type + '&limit=1000');
+            return $http.get(urlBase + 'findsensor?sensor=' + searchStr + '&sensor_type=' + sensor_type + '&limit=1000');
         };
 
         api.sensorInfo = function (sensorName) {
