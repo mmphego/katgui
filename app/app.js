@@ -116,6 +116,8 @@
         vm.connectionToMonitorLost = false;
         $rootScope.toastPosition = 'bottom right';
         $rootScope.alarmsData = AlarmsService.alarmsData;
+        $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
+        $rootScope.interlockState = MonitorService.interlockState;
 
         ConfigService.loadKATObsPortalURL();
         ConfigService.getSystemConfig().then(function (systemConfig) {
@@ -398,6 +400,22 @@
                 'IRC Information',
                 'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
                 $event);
+        };
+
+        $rootScope.openSystemLogger = function () {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" ).focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
+        };
+
+        $rootScope.openKatsnifferLogger = function (logFileName) {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
         };
 
         //so that all controllers and directives has access to which keys are pressed

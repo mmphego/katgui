@@ -21,11 +21,11 @@
     <md-toolbar class="md-whiteframe-z1 md-toolbar-tools" layout="row" layout-align="start center" style="padding-right: 0">
         <span flex style="margin-top: -5px;">CAM Components - Versions and Build State</span>
         <md-button style="margin-right: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}"
-                   ng-click="vm.openSystemLogger();" title="View System Logs in a new tab">
+                   ng-click="$root.openSystemLogger();" title="View System Logs in a new tab">
             <span>View System Logs</span>
         </md-button>
         <md-button style="margin-right: 180px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}"
-                   ng-click="vm.openKatsnifferLogger('katcpmsgs.log');" title="View KATCP Messages Logs in a new tab">
+                   ng-click="$root.openKatsnifferLogger('katcpmsgs.log');" title="View KATCP Messages Logs in a new tab">
             <span>View KATCP Messages Log</span>
         </md-button>
 

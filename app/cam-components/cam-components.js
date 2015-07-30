@@ -110,22 +110,6 @@
             ControlService.toggleKATCPMessageProxy(resource, newValue? 'enable' : 'disable');
         };
 
-        vm.openKatsnifferLogger = function (logFileName) {
-            if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
-            } else {
-                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
-            }
-        };
-
-        vm.openSystemLogger = function () {
-            if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/logfile/" ).focus();
-            } else {
-                $rootScope.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
-            }
-        };
-
         vm.connectListeners();
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
