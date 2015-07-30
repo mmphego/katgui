@@ -74,6 +74,10 @@
                 });
         };
 
+        vm.skyPlotDialog = function (event) {
+            var sourcesList = ConfigService.getSources();
+        };
+
         vm.statusMessageReceived = function (event, message) {
 
             if (message.value) {

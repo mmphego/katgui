@@ -1,11 +1,14 @@
 <div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative;"
      ng-class="{'connection-lost-bg':vm.connectionLost}">
 
+    <md-button title="Open Sky Plot Dialog" class="md-icon-button inline-action-button" ng-click="vm.skyPlotDialog($event)">
+        <md-icon class="fa" md-font-icon="fa-space-shuttle"></md-icon>
+    </md-button>
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 8px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()">
             <md-icon md-menu-origin class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
         </md-button>
-        <md-menu-content width="4" style="padding-left: 16px;">
+        <md-menu-content width="4" style="padding-left: 16px;" ng-click="$event.stopPropagation()">
             <md-menu-item>
                 <md-checkbox class="md-primary" ng-model="vm.useEquatorial" ng-init="vm.useEquatorial = true"
                     ng-click="$event.stopPropagation()" md-menu-align-target>
