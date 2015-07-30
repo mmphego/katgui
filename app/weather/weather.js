@@ -13,7 +13,7 @@
                 {python_identifier: 'anc.weather_relative_humidity', color: '#2ca02c'},
                 {python_identifier: 'anc.weather_rainfall', skipHistory: true},
                 {python_identifier: 'anc.gust_wind_speed', color: '#ff7f0e'},
-                {python_identifier: 'anc.weather_wind_speed', color: '#1f77b4'},
+                {python_identifier: 'anc.mean_wind_speed', color: '#1f77b4'},
                 {python_identifier: 'anc.weather_wind_direction', skipHistory: true}]
         };
         vm.resourcesHistoriesCount = 4;
