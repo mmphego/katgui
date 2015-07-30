@@ -79,7 +79,15 @@
             if (result.session_id) {
                 if (result.confirmation_token) {
                     $log.info('Found confirmation token');
-                    confirmRole(result.session_id, result.confirmation_token);
+                    var b = result.confirmation_token.split(".");
+                    var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
+                    if (payload.current_lo &&
+                        payload.current_lo.length > 0 &&
+                        payload.current_lo !== payload.requester) {
+                        confirmRole(result.session_id, payload);
+                    } else {
+                        api.login(payload.session_id);
+                    }
                 } else {
                     $log.info('No token, off to login');
                     api.login(result.session_id);
@@ -107,14 +115,12 @@
             }
         }
 
-        function confirmRole(session_id, confirmation_token) {
+        function confirmRole(session_id, payload) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
                         $scope.themePrimary = $rootScope.themePrimary;
                         $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
-                        var b = confirmation_token.split(".");
-                        var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
                         var readonly_session_id = session_id;
                         var requested_session_id = payload.session_id;
                         $scope.current_lo = payload.current_lo;

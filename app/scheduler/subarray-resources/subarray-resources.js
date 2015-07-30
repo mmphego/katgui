@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog, $stateParams) {
+    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog, $stateParams, UserService) {
 
         var vm = this;
 
@@ -185,6 +185,49 @@
                     '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
                     '           <div layout="row" layout-align="center center" ng-repeat="product in products track by $index" ng-click="setProduct(product); hide()" class="config-label-list-item">' +
                     '               <b>{{product}}</b>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.openCADialog = function (sub_nr, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.themePrimary = $rootScope.themePrimary;
+                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
+                        $scope.title = 'Select a Control Authority';
+                        UserService.listUsers();
+                        $scope.users = UserService.users;
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setCA = function (userName) {
+                            ObsSchedService.delegateControl(sub_nr, userName);
+                        };
+                        $scope.hasCARole = function (user) {
+                            return user.roles.indexOf('control_authority') > -1;
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
+                    '           <div layout="row" layout-align="center center" ng-click="setCA(\'lo\'); hide()" class="config-label-list-item">' +
+                    '               <b>Lead Operator</b>' +
+                    '           </div>' +
+                    '           <div ng-if="hasCARole(user)" layout="row" layout-align="center center" ng-repeat="user in users track by $index" ng-click="setCA(user.email); hide()" class="config-label-list-item">' +
+                    '               <b>{{user.email}}</b>' +
                     '           </div>' +
                     '       </div>' +
                     '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
