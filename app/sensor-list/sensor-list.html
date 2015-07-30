@@ -84,7 +84,7 @@
         </div>
     </div>
 
-    <div class="md-whiteframe-z5 sensor-list-chart-container" layout="column" ng-init="vm.showChart = true"
+    <div class="md-whiteframe-z5 sensor-list-chart-container" layout="column" ng-init="vm.showChart = false"
          inherit-body-bg target-color-inherit="md-content"
          ng-class="{'small-hidden-sensor-graph-container': !vm.showChart}">
         <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="center center">
@@ -107,13 +107,13 @@
             </md-button>
             <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button inline-action-button"
                        ng-click="vm.showChart = !vm.showChart;"
-                       title="Minimise Chart" style="margin: 0px">
+                       title="Minimise Chart" style="margin: 0">
                 <md-icon ng-show="vm.showChart" class="fa" md-font-icon="fa-chevron-down"></md-icon>
                 <md-icon ng-show="!vm.showChart" class="fa" md-font-icon="fa-chevron-up"></md-icon>
             </md-button>
             <md-menu md-theme="{{themePrimaryButtons}}">
                 <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
-                           style="margin-left: 0px; margin-right: 8px;">
+                           style="margin-left: 0; margin-right: 8px;">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
                 <md-menu-content width="4" style="padding-left: 16px;">
@@ -139,7 +139,7 @@
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
                                                 class="md-primary" title="Set the desired Y-Axis Minimum Value">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
@@ -151,7 +151,7 @@
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
                                                 class="md-primary" title="Set the desired Y-Axis Maximum Value">
                                 <input flex style="" placeholder="Maximum" ng-model="vm.yAxisMaxValue"
                                        ng-change="vm.showOptionsChanged()" type="number"

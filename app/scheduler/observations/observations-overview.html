@@ -4,7 +4,7 @@
         <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2" layout="row" layout-align="start" flex
              style="min-width: 650px;">
 
-            <div class="" style="margin-left: 0px;" layout="column" layout-align="start" flex>
+            <div class="" style="margin-left: 0;" layout="column" layout-align="start" flex>
 
                 <md-toolbar md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                             class="md-whiteframe-z1" ng-class="{'md-hue-2': subarray.state !== 'inactive'}">

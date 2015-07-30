@@ -103,7 +103,7 @@
                     },
                     template:
                         '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
-                        '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                        '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                         '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                         '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
                         '           <input type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="q" placeholder="Search Labels..."/>' +
@@ -142,7 +142,7 @@
                     },
                     template:
                         '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
-                        '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                        '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                         '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                         '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
                         '       </md-toolbar>' +
@@ -178,7 +178,7 @@
                     },
                     template:
                     '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
-                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
                     '       </md-toolbar>' +
@@ -218,7 +218,7 @@
                     },
                     template:
                     '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
-                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
                     '       </md-toolbar>' +

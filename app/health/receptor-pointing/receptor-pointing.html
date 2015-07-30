@@ -34,7 +34,7 @@
                 <div layout="row" layout-align="start center"
                      style="margin-left: 24px; margin-right: 8px; margin-bottom: 8px;" ng-click="$event.stopPropagation()">
                     <label style="width: 65px; font-weight: normal; margin-top: 4px;">Trail Dots:</label>
-                    <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                    <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
                                         class="md-primary" title="Set the desired trail dots">
                         <input flex style="" placeholder="Minimum" ng-model="vm.trailDots" ng-init="vm.trailDots = 30"
                                ng-change="vm.redraw(false)" type="number" ng-model-options="{ debounce: 300 }"

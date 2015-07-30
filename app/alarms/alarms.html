@@ -1,7 +1,7 @@
 <div flex ng-controller="AlarmsCtrl as vm" layout="column" style="padding: 8px; min-width: 948px;">
 
     <div flex class="md-whiteframe-z2" layout="column" style="min-height: 600px;">
-        <md-toolbar class="md-whiteframe-z1" style="padding: 0px;" ng-mouseenter="showAlarmTools = true;"
+        <md-toolbar class="md-whiteframe-z1" style="padding:0;" ng-mouseenter="showAlarmTools = true;"
                     ng-mouseleave="showAlarmTools = false;">
             <div style="align-items: center;" layout="row" md-theme="{{themePrimaryButtons}}">
                 <span flex ng-init="vm.selectAllAlarms = false" ng-click="vm.toggleSelectAllAlarms()"

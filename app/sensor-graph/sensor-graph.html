@@ -45,7 +45,7 @@
                            ng-class="{'input-error':vm.dateTimeError}" title="End Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
-                <md-button class="md-icon-button" style="margin-left: 0px; margin-top: 3px; width: 40px; height: 40px;"
+                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
                            ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
@@ -78,7 +78,7 @@
                            ng-class="{'input-error':vm.endDateTimeError}" title="Start Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
-                <md-button class="md-icon-button" style="margin-left: 0px; margin-top: 3px; width: 40px; height: 40px;"
+                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
                            ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
@@ -216,7 +216,7 @@
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
                                                 class="md-primary" title="Set the desired Y-Axis Minimum Value">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
@@ -228,7 +228,7 @@
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0px;"
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
                                                 class="md-primary" title="Set the desired Y-Axis Maximum Value">
                                 <input flex style="" placeholder="Maximum" ng-model="vm.yAxisMaxValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
