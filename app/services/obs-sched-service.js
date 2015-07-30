@@ -261,7 +261,7 @@
         };
 
         api.delegateControl = function (sub_nr, userName) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/delegate-control/' + userName.split('@')[0]));
+            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/delegate-control/' + userName));
         };
 
         api.viewTaskLogForSBIdCode = function (id_code) {

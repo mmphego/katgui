@@ -23,16 +23,6 @@
                     </div>
 
                     <span ng-show="subarray.state === 'active'"></span>
-                    <!--<md-select placeholder="Product" ng-model="subarray.product">-->
-                        <!--<md-option value="c856M4k">c856M4k</md-option>-->
-                        <!--<md-option value="c856M32k">c856M32k</md-option>-->
-                    <!--</md-select>-->
-                    <!--<md-select placeholder="Band" ng-model="subarray.band">-->
-                        <!--<md-option value="l">l</md-option>-->
-                        <!--<md-option value="s">s</md-option>-->
-                        <!--<md-option value="u">u</md-option>-->
-                        <!--<md-option value="x">x</md-option>-->
-                    <!--</md-select>-->
                     <div layout="row" style="position: absolute; padding: 0; top: 0; right: 0; font-size: 14px">
                         <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
                         <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band}}</b></span>
@@ -73,6 +63,12 @@
                                 <md-button ng-click="vm.openProductsDialog(subarray.id, $event)"
                                            title="Select a Product">
                                     <span>Select Product</span>
+                                </md-button>
+                            </md-menu-item>
+                            <md-menu-item ng-if="$root.currentUser.req_role === 'lead_operator'">
+                                <md-button ng-click="vm.openCADialog(subarray.id, $event)"
+                                           title="Select a Control Authority">
+                                    <span>Select Control Authority</span>
                                 </md-button>
                             </md-menu-item>
                         </md-menu-content>
