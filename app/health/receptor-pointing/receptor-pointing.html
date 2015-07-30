@@ -1,9 +1,6 @@
 <div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative;"
      ng-class="{'connection-lost-bg':vm.connectionLost}">
 
-    <md-button title="Open Sky Plot Dialog" class="md-icon-button inline-action-button" ng-click="vm.skyPlotDialog($event)">
-        <md-icon class="fa" md-font-icon="fa-space-shuttle"></md-icon>
-    </md-button>
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 8px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()">
             <md-icon md-menu-origin class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
@@ -57,7 +54,7 @@
     <div flex layout="column">
         <div layout="row" layout-align="center center" style="overflow: auto; height: 90px;"
              ng-show="vm.showReceptorStates">
-            <div ng-repeat="receptor in vm.receptorsData"
+            <div ng-repeat="receptor in vm.receptorsData | filter:{'skyPlot':false} track by $index"
                  class="{{receptor.name + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
                  layout="column" layout-align="center center" ng-click="vm.toggleHorizonMask(receptor)"
                  title="{{'Click to toggle the horizon mask for ' + receptor.name}}">
@@ -78,5 +75,35 @@
                                       redraw-function="vm.redrawChart"></receptor-pointing-equatorial>
         <receptor-pointing-horizontal ng-if="!vm.useEquatorial" flex
                                       redraw-function="vm.redrawChart"></receptor-pointing-horizontal>
+    </div>
+
+    <div ng-init="vm.showSkyPlotOptions = false" class="md-whiteframe-z3 sky-plot-options-containter" layout="column"
+         style="margin-bottom: 8px; position: absolute; left: 8px; top: 8px;">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium">
+            <span flex>Sky Plot Options</span>
+            <md-button title="Clear Sky Plot" class="md-icon-button inline-action-button" style="margin: 0"
+                       ng-click="vm.showSkyPlotOptions = !vm.showSkyPlotOptions; vm.showSkyPlotOptions? vm.getSources() : 0">
+                <md-icon ng-show="vm.showSkyPlotOptions" class="fa" md-font-icon="fa-eye-slash"></md-icon>
+                <md-icon ng-show="!vm.showSkyPlotOptions" class="fa" md-font-icon="fa-eye"></md-icon>
+            </md-button>
+        </md-toolbar>
+        <div ng-show="vm.showSkyPlotOptions" layout="column" layout-padding md-theme='{{themePrimaryButtons}}' style="padding: 8px;">
+            <md-select ng-disabled="vm.targets.length === 0" placeholder="Select A Filter" ng-model="vm.selectedFilter" style="width: 180px" ng-change="vm.filterChanged(vm.selectedFilter)">
+                <md-option value="''">None</md-option>
+                <md-option ng-repeat="filter in $root.objectKeys(vm.filters) track by $index">{{filter}}</md-option>
+            </md-select>
+            <md-select ng-disabled="vm.targets.length === 0" placeholder="Select A Target" ng-model="vm.selectedTarget" style="width: 180px">
+                <md-option ng-repeat="target in vm.targetsToDisplay | orderBy:target track by $index">{{target}}</md-option>
+            </md-select>
+            <md-button ng-disabled="!vm.selectedTarget || vm.targets.length === 0" class="md-primary md-raised" style="margin: 2px" ng-click="vm.drawSkyPlot(false)">
+                Draw Selection
+            </md-button>
+            <md-button ng-disabled="vm.targets.length === 0" class="md-primary md-raised" style="margin: 2px" ng-click="vm.drawSkyPlot(true)">
+                Draw All
+            </md-button>
+            <md-button ng-disabled="vm.targets.length === 0" class="md-primary md-raised" style="margin: 2px" ng-click="vm.clearSkyPlot()">
+                Clear Sky Plot
+            </md-button>
+        </div>
     </div>
 </div>
