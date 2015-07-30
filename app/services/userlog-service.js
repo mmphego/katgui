@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, SERVER_URL, $rootScope, $window, $log) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katcontrol/api/v1';
@@ -18,7 +18,6 @@
         api.getUserLog = function (ulog_id) {
 
             var def = $q.defer();
-
             $http(createRequest('get', api.urlBase + '/logs/' + ulog_id)).then(
                 function (result) {
 
@@ -30,15 +29,12 @@
                         def.reject();
                     }
                 });
-
             return def.promise;
         };
-
 
         api.listUserLogs = function () {
 
             var def = $q.defer();
-
             $http(createRequest('get', api.urlBase + '/logs')).then(
                 function (result) {
 
@@ -53,10 +49,8 @@
                         def.reject();
                     }
                 });
-
             return def.promise;
         };
-
 
         api.listMyUserLogs = function (user) {
             var defer = $q.defer();
@@ -75,11 +69,9 @@
             return defer.promise;
         };
 
-
         api.listTags = function () {
 
             var def = $q.defer();
-
             $http(createRequest('get', api.urlBase + '/tags')).then(
                 function (result) {
 
@@ -94,15 +86,12 @@
                         def.reject();
                     }
                 });
-
             return def.promise;
         };
-
 
         api.listTaxonomies = function () {
 
             var def = $q.defer();
-
             $http(createRequest('get', api.urlBase + '/taxonomies')).then(
                 function (result) {
 
@@ -117,10 +106,8 @@
                         def.reject();
                     }
                 });
-
             return def.promise;
         };
-
 
         api.queryUserLogs = function (query) {
             var query_uri = encodeURI(query);
@@ -130,6 +117,8 @@
                 .success(function (result) {
                     api.report_userlogs.splice(0, api.report_userlogs.length);
                     result.forEach(function (userlog) {
+                        userlog.start_time = $filter('date')(new Date(userlog.start_time), 'yyyy-MM-dd HH:mm');
+                        userlog.end_time = $filter('date')(new Date(userlog.end_time), 'yyyy-MM-dd HH:mm');
                         api.report_userlogs.push(userlog);
                     });
                     defer.resolve();
@@ -140,7 +129,6 @@
                 });
             return defer.promise;
         };
-
 
         api.uploadFileToUrl = function(file, ulog_id){
             var fd = new FormData();
@@ -159,7 +147,6 @@
                 $log.error(api.urlBase + '/log/attach/' + ulog_id);
             });
         };
-
 
         api.getFileFromUrl = function(file_name, file_alias, ulog_id) {
             $http.get(api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
@@ -182,7 +169,6 @@
                 $log.error(api.urlBase + '/logs/get/attach');
             });
         };
-
 
         api.addUserLog = function (ulog) {
 
@@ -241,12 +227,10 @@
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
             };
-
             if ((data && method === 'post') || (data && method === 'put')) {
                 req.headers['Content-Type'] = 'application/json';
                 req.data = data;
             }
-
             return req;
         }
 

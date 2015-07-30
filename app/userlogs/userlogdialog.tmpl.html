@@ -1,95 +1,110 @@
-<md-dialog md-theme="{{themePrimary}}" flex-sm="100" flex-gt-sm="150" flex-gt-md="150" flex-gt-lg="150" class="md-whiteframe-z1" style ="overflow:visible; height: 800px">
-    <md-toolbar><div style="padding-left: 20px; padding-top: 10px;"><p>User Log Editor</p></div></md-toolbar>
-    <md-dialog-content class="md-padding" style ="overflow:visible" layout="column">
+<md-dialog md-theme="{{themePrimary}}" class="md-whiteframe-z1" style="min-width: 600px; overflow: visible"
+           ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false;">
+    <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
+        <span>User Log Editor</span>
+    </md-toolbar>
+    <md-dialog-content style="padding: 12px;" layout="column" md-theme="{{themePrimaryButtons}}">
         <div layout="row">
-            <div class="dropdown" flex="30">
-                <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="#">
-                    <label>Start time: </label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" data-ng-model="ulog.start_time"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                    </div>
-                </a>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    <datetimepicker style="color:slategray;" data-ng-model="ulog.start_time" data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"/>
-                </ul>
+            <div layout="row" layout-align="center center" style="min-width: 220px;">
+                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
+                    <input flex type="text"
+                           data-ng-model="ulog.start_time" placeholder="Start Date"
+                           title="Start Date 'HH:mm:ss yyyy-MM-dd'"
+                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()"/>
+                </md-input-container>
+                <span>UTC</span>
+                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
+                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                </md-button>
+                <datetimepicker ng-show="vm.showDatePicker" ng-init="vm.showDatePicker = false"
+                                class="datepickerMenu md-whiteframe-z1"
+                                data-ng-model="ulog.start_time" style="position: absolute; left: 16px; top: 122px"
+                                data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
+                                data-on-set-time="vm.showDatePicker = false; onTimeSet(ulog.start_time, ulog, 'start_time')"></datetimepicker>
             </div>
-            <div flex="15"></div>
-            <div class="dropdown" flex="30">
-                <a class="dropdown-toggle" id="dropdown4" role="button" data-toggle="dropdown" data-target="#" href="#">
-                    <label>End time: </label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" data-ng-model="ulog.end_time"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                    </div>
-                </a>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    <datetimepicker  style="color:slategray;" data-ng-model="ulog.end_time" data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"/>
-                </ul>
+            <div flex layout="row" layout-align="center center">TO</div>
+            <div layout="row" layout-align="center center" style="min-width: 220px;">
+                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
+                    <input flex type="text"
+                           data-ng-model="ulog.end_time" placeholder="End Date"
+                           title="End Date 'HH:mm:ss yyyy-MM-dd'"
+                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()"/>
+                </md-input-container>
+                <span>UTC</span>
+                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
+                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                </md-button>
+                <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
+                                data-ng-model="ulog.end_time" style="position: absolute; right: 16px; top: 122px"
+                                class="datepickerMenu md-whiteframe-z1"
+                                data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
+                                data-on-set-time="vm.showEndDatePicker = false; onTimeSet(ulog.end_time, ulog, 'end_time')"></datetimepicker>
             </div>
         </div>
-        <div flex style="height:30px;"><span></span></div>
+        <md-select style="margin: 16px 0" placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px">
+            <md-option value="shift_log">Shift Log</md-option>
+            <md-option value="time_loss">Time-loss Log</md-option>
+            <md-option value="observation">Observation Log</md-option>
+            <md-option value="status_log">Status Log</md-option>
+            <md-option value="maintenance">Maintenance</md-option>
+            <md-option value="alarm_log">Alarm Log</md-option>
+        </md-select>
+
         <div layout="row">
-            <md-input-container flex="25">
-                <md-select placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px">
-                    <md-option value="shift_log">Shift Log</md-option>
-                    <md-option value="time_loss">Time-loss Log</md-option>
-                    <md-option value="observation">Observation Log</md-option>
-                    <md-option value="status_log">Status Log</md-option>
-                    <md-option value="maintenance">Maintenance</md-option>
-                    <md-option value="alarm_log">Alarm Log</md-option>
-            </md-input-container>
-            <div flex="5"></div>
             <div layout="column" flex>
-                <label>Log Message</label>
                 <md-input-container flex>
+                    <label>Log Message</label>
                     <textarea rows="5" columns="1" md-maxlength="150" ng-model="ulog.userlog_content"></textarea>
                 </md-input-container>
             </div>
         </div>
-        <div flex style="height:30px;"><span></span></div>
-        <div layout="row">
-            <md-input-container flex="25">
-                Attachments: <input file-model="myFile" type="file" name="files[]" multiple />
-            </md-input-container>
-            <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match>
-                <md-autocomplete
-                    md-selected-item="selectedItem"
-                    md-selected-item-change = ""
-                    md-search-text="searchText"
-                    md-search-text-change=""
-                    md-items="item in querySearch(searchText)"
-                    md-item-text="item.name"
-                    ng-blur=clear()
-                    placeholder="Select tags">
-                    <md-item-template>
-                        <span md-highlight-text="searchText">{{item.name}}</span>
-                    </md-item-template>
-                    <md-not-found>
-                        No matches found
-                    </md-not-found>
-                </md-autocomplete>
-                <md-chip-template>
+
+        <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match>
+            <md-autocomplete
+                md-selected-item="selectedItem"
+                md-selected-item-change=""
+                md-search-text="searchText"
+                md-search-text-change=""
+                md-items="item in querySearch(searchText)"
+                md-item-text="item.name"
+                ng-blur=clear()
+                placeholder="Select tags">
+                <md-item-template>
+                    <span md-highlight-text="searchText">{{item.name}}</span>
+                </md-item-template>
+                <md-not-found>
+                    No matches found
+                </md-not-found>
+            </md-autocomplete>
+            <md-chip-template>
                     <span>
                         <strong>{{$chip.name}}</strong>
                     </span>
-                </md-chip-template>
-                <md-button class="md-fab" aria-label="Eat cake">
-                    <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
-                </md-button>
-            </md-chips>
+            </md-chip-template>
+            <md-button class="md-fab" aria-label="Eat cake">
+                <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
+            </md-button>
+        </md-chips>
+
+        <div layout="row" layout-align="start center" style="margin: 16px 0">
+            <span style="margin-right: 8px">Attachments:</span>
+            <input file-model="myFile" type="file" name="files[]" multiple/>
         </div>
-        <md-list>
-            <md-list-item ng-repeat="attach in ulog.metadata">
-                <div flex="20">{{attach.m_name}}</div>
-                <i class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name, ulog.id)"></i>
-            </md-list-item>
-        </md-list>
+        <div layout="column">
+            <div ng-repeat="attach in ulog.metadata" style="height: 26px">
+                <span flex>{{attach.m_name}}</span>
+                <span style="margin-left: 4px;" class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name, ulog.id)"></span>
+            </div>
+        </div>
     </md-dialog-content>
-    <div class="md-actions">
-        <md-button ng-click="add()" class="md-primary">
-            Submit Log
-        </md-button>
+    <div class="md-actions" md-theme="{{themePrimaryButtons}}">
         <md-button ng-click="hide()" class="md-primary">
             Cancel
+        </md-button>
+        <md-button ng-click="add()" class="md-primary">
+            Submit Log
         </md-button>
     </div>
 </md-dialog>
