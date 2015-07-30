@@ -300,7 +300,7 @@
                     },
                     template:
                     '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
-                    '   <div style="padding: 0; margin: 0px; overflow: auto" layout="column">' +
+                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 16px;">{{::title}}</span>' +
                     '       </md-toolbar>' +

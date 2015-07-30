@@ -88,6 +88,7 @@
 <script src="app/d3/receptor-health-icicle-map.js"></script>
 <script src="app/d3/receptor-health-sunburst-map.js"></script>
 <script src="app/d3/status-single-level-tree-map.js"></script>
+<script src="app/d3/navigation-pie.js"></script>
 
 <script src="app/app.js"></script>
 <script src="app/about/about.js"></script>
@@ -125,7 +126,7 @@
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
 <md-content layout="row" layout-fill>
-    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">katGUI</h1>
         </md-toolbar>
@@ -261,7 +262,7 @@
         </md-content>
     </md-sidenav>
 
-    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0px 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">User Navigation</h1>
         </md-toolbar>
@@ -298,20 +299,11 @@
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-navicon"></md-icon>
                 </md-button>
 
-                <span style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
-                <span flex></span>
-                <div ng-show="showDayOfYear && vm.dayOfYear">
-                    <span style="font-size: 32px;">{{vm.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
-                    <md-tooltip>Current UTC Day Of Year</md-tooltip>
-                </div>
-                <div ng-show="showDate && vm.currentDate">
-                    <span style="font-size: 32px;">{{vm.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
-                    <md-tooltip>Current UTC Date</md-tooltip>
-                </div>
-                <div ng-if="vm.julianDay" ng-show="showJulianDate">
-                    <span style="font-size: 32px;">{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
-                    <md-tooltip>Julian Day</md-tooltip>
-                </div>
+                <span flex style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
+                <span style="margin-right: 8px">
+                    LO: {{$root.currentLeadOperator.name}}
+                    <md-tooltip>Current Lead Operator</md-tooltip>
+                </span>
                 <div ng-if="vm.localSiderealTime" ng-show="showLST">
                     <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
                     <md-tooltip>Local Sidereal Time</md-tooltip>
@@ -341,8 +333,35 @@
             </div>
 
         </md-toolbar>
-        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column">
+        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" style="margin-bottom: 25px">
         </md-content>
+        <div class="main-footer-toolbar" layout="column">
+            <md-toolbar md-theme="{{themePrimary}}" class="md-toolbar-tools-small md-whiteframe-z1" layout="row">
+                <span>
+                    Interlock State: {{$root.interlockState.value}}
+                    <md-tooltip>Current Interlock State</md-tooltip>
+                </span>
+                <div flex style="text-align: center">
+                    <span style="margin: 0 4px;">{{::$root.systemConfig.version.description}}</span>
+                    <span style="margin: 0 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
+                    <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
+                </div>
+                <div layout="row">
+                    <div ng-show="showDayOfYear && vm.dayOfYear">
+                        <span>{{vm.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
+                        <md-tooltip>Current UTC Day Of Year</md-tooltip>
+                    </div>
+                    <div ng-show="showDate && vm.currentDate">
+                        <span>{{vm.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
+                        <md-tooltip>Current UTC Date</md-tooltip>
+                    </div>
+                    <div ng-if="vm.julianDay" ng-show="showJulianDate">
+                        <span>{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
+                        <md-tooltip>Julian Day</md-tooltip>
+                    </div>
+                </div>
+            </md-toolbar>
+        </div>
     </div>
 
 </md-content>
@@ -350,9 +369,6 @@
         ng-click="vm.toggleNavbar()" title="Expand or Collapse Toolbar" layout="row">
 
     <div ng-show="vm.showNavbar" flex layout="row" layout-align="center center">
-        <span class="fa" ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
-        <span style="margin: 0px 4px;">{{::$root.systemConfig.version.description}}</span>
-        <span style="margin: 0px 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
         <span class="fa" ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
     </div>
 </div>

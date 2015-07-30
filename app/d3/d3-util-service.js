@@ -100,7 +100,11 @@ angular.module('katGui.d3')
         api.updateTooltipValues = function (d, tooltip, rootName) {
             var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
             var sensorValue;
-            if (StatusService.sensorValues && StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor]) {
+            var pythonIdentifier = d.sensor.replace(/\./g, '_');
+            if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
+                sensorValue = StatusService.sensorValues[pythonIdentifier];
+            }
+            else if (StatusService.sensorValues && StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor]) {
                 sensorValue = StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor];
             } else  {
                 sensorValue = d.sensorValue;

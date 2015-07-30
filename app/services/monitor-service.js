@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, SERVER_URL, $localStorage, KatGuiUtil, $timeout, StatusService,
+    function MonitorService($rootScope, SERVER_URL, KatGuiUtil, $timeout, StatusService,
                             AlarmsService, ObsSchedService, $interval, $q, $log, ReceptorStateService) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
@@ -15,6 +15,8 @@
         //so allow for 35 seconds before alerting about timeout
         api.heartbeatTimeOutLimit = 35000;
         api.checkAliveConnectionInterval = 10000;
+        api.currentLeadOperator = {name: ''};
+        api.interlockState = {value: ''};
 
         api.getTimeoutPromise = function () {
             if (!api.deferredMap['timeoutDefer']) {
@@ -120,7 +122,11 @@
                                     ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
                                     var channelNameSplit = messageChannel[1].split('.');
-                                    if (channelNameSplit[0] === 'kataware') {
+                                    if (channelNameSplit[1] === 'lo_id') {
+                                        api.currentLeadOperator.name = messageObj.msg_data.value !== '' ? messageObj.msg_data.value : 'None';
+                                    } else if (channelNameSplit[1] === 'interlock_state') {
+                                        api.interlockState.value = messageObj.msg_data.value;
+                                    } else if (channelNameSplit[0] === 'kataware') {
                                         AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                                     } else if (channelNameSplit.length > 1 &&
                                         (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||

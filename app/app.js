@@ -116,6 +116,8 @@
         vm.connectionToMonitorLost = false;
         $rootScope.toastPosition = 'bottom right';
         $rootScope.alarmsData = AlarmsService.alarmsData;
+        $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
+        $rootScope.interlockState = MonitorService.interlockState;
 
         ConfigService.loadKATObsPortalURL();
         ConfigService.getSystemConfig().then(function (systemConfig) {
@@ -261,7 +263,7 @@
                         };
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
-                    "<div style='padding: 0px; margin: 0px; overflow: auto' layout='column' layout-padding >" +
+                    "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
                     "<div flex>{{content}}</div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
@@ -288,7 +290,7 @@
                         };
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
-                    "<div style='padding: 0px; margin: 0px; overflow: auto' layout='column' layout-padding >" +
+                    "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
                     "<div flex><pre>{{content}}</pre></div>" +
                     "</div>" +
@@ -317,7 +319,7 @@
                         };
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label='Schedule Block Details'>" +
-                    "<md-content style='padding: 0px; margin: 0px; width: 500px;height:800px' layout='column' layout-padding >" +
+                    "<md-content style='padding: 0; margin: 0; width: 500px;height:800px' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
                     "<textarea style='resize: none; overflow: auto; border: 0; background: transparent' auto-grow readonly>{{sb | json:4}}</textarea>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
@@ -398,6 +400,22 @@
                 'IRC Information',
                 'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
                 $event);
+        };
+
+        $rootScope.openSystemLogger = function () {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" ).focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
+        };
+
+        $rootScope.openKatsnifferLogger = function (logFileName) {
+            if (ConfigService.KATObsPortalURL) {
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
+            } else {
+                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+            }
         };
 
         //so that all controllers and directives has access to which keys are pressed
