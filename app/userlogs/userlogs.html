@@ -1,48 +1,72 @@
-<div flex style="padding: 24px;" ng-controller="UserlogCtrl as vm">
-    <md-tabs md-border-bottom md-dynamic-height>
-        <md-tab label="My User Logs">
-            <md-toolbar>
-                <div class="logging-options" layout="row">
-                    <md-button ng-click="editUserLog(blank_ulog, my_userlogs, tags, event)">New User Log</md-button>
-                    <md-button ng-click="getMyUserLogs(event)">List My Latest</md-button>
-                    <md-button>Rolling List</md-button>
+<div flex style="padding: 16px;" ng-controller="UserlogCtrl as vm" layout="column">
+    <md-tabs flex class="md-whiteframe-z1" style="overflow: auto">
+        <md-tab flex label="My User Logs">
+            <md-toolbar layout="row" class="md-toolbar-tools-medium md-whiteframe-z1">
+                <span flex></span>
+                <input class="fade-in search-input-box" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Userlogs..."/>
+                <md-button class="md-icon-button inline-action-button"
+                           ng-click="vm.editUserLog(vm.blank_ulog, vm.my_userlogs, vm.tags, $event)"
+                           style="margin: 0 8px">
+                    <md-icon class="fa" md-font-icon="fa-plus"></md-icon>
+                </md-button>
+                <md-button class="md-icon-button inline-action-button" ng-click="vm.getMyUserLogs()" style="margin: 0">
+                    <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
+                </md-button>
+                <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
+                     style="position: absolute; left: 0; bottom: 0; padding: 0 8px">
+                    <span class="subheader-text" style="width: 120px" ng-click="vm.setOrderBy('userlog_type')">
+                        <span>Log Type</span>
+                        <span class="fa"
+                              ng-class="{'fa-caret-up': vm.orderBy.value === 'userlog_type' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'userlog_type' && vm.orderBy.reverse}"
+                              style="margin-right: 4px;"></span>
+                    </span>
+                    <span class="subheader-text" style="width: 185px" ng-click="vm.setOrderBy('start_time')">
+                        <span>Start Time (UTC)</span>
+                        <span class="fa"
+                              ng-class="{'fa-caret-up': vm.orderBy.value === 'start_time' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'start_time' && vm.orderBy.reverse}"
+                              style="margin-right: 4px;"></span>
+                    </span>
+                    <span class="subheader-text" style="width: 185px" ng-click="vm.setOrderBy('end_time')">
+                        <span>End Time (UTC)</span>
+                        <span class="fa"
+                              ng-class="{'fa-caret-up': vm.orderBy.value === 'end_time' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'end_time' && vm.orderBy.reverse}"
+                              style="margin-right: 4px;"></span>
+                    </span>
+                    <span flex class="subheader-text" ng-click="vm.setOrderBy('userlog_content')">
+                        <span>Log Content</span>
+                        <span class="fa"
+                              ng-class="{'fa-caret-up': vm.orderBy.value === 'userlog_content' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'userlog_content' && vm.orderBy.reverse}"
+                              style="margin-right: 4px;"></span>
+                    </span>
                 </div>
             </md-toolbar>
 
-            <md-list ng-show="my_userlogs.length > 0">
-                <md-list-item>
-                    <div class="md-list-item-text" style="padding-left: 24px;" layout="row" flex>
-                        <h4 flex="15">Userlog Type </h4>
-                        <h4 flex="15">Event started: </h4>
-                        <h4 flex="15">Event ended: </h4>
-                        <div flex="5"></div>
-                        <h4 flex>Userlog Content <h4>
-                    </div>
-                </md-list-item>
-                <md-list-item ng-repeat="e_ulog in my_userlogs | orderBy:'+':true"">
-                    <md-divider> </md-divider>
-                    <div class="md-list-item-text" style="padding-left: 24px; font-size:small;" flex layout="row" ng-click="getCompleteUserLog(e_ulog, my_userlogs, tags, event)">
-                    <i class="fa fa-angle-right" flex="5"></i>
-                    <div flex="10">{{e_ulog.userlog_type}}</div>
-                    <div flex="15" ng-style="{'background': ulog.scolor}">{{e_ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
-                    <div flex="15" ng-style="{'background': ulog.ecolor}">{{e_ulog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
-                    <div flex="5"></div>
-                    <div flex>{{e_ulog.userlog_content}}</div>
-                    </div>
-                </md-list-item>
-            </md-list>
+            <div ng-repeat="e_ulog in vm.my_userlogs | regexSearch:vm.orderByFields:vm.q | orderBy:vm.orderBy.value:vm.orderBy.reverse"
+                          flex layout="row" layout-align="start center" class="user-log-row">
+                <span style="width: 120px">{{e_ulog.userlog_type}}</span>
+                <span style="width: 185px" ng-style="{'background': ulog.scolor}">
+                    {{e_ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                </span>
+                <span style="width: 185px" ng-style="{'background': ulog.ecolor}">
+                    {{e_ulog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                </span>
+                <span flex>{{e_ulog.userlog_content}}</span>
+                <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
+                           ng-click="vm.getCompleteUserLog(e_ulog, vm.my_userlogs, vm.tags, $event); $event.stopPropagation();">
+                    <span style="display: inherit" class="fa fa-edit"></span>
+                </md-button>
+            </div>
         </md-tab>
-        <md-tab>
-        <md-tab-label>Userlog Reports</md-tab-label>
-        <md-tab-body>
-            <md-content class="md-padding" layout="row"">
-                <div class="query-options" flex="20">
-                    <form layout="column" class="md-padding" style="padding-top: 0;">
-                            <div flex style="position: relative;">
-                                <h2 class="md-subhead">Query Parameters</h2>
-                            </div>
-                        <md-input-container>
-                            <md-select placeholder="Select User Log Type" ng-model="blank_query.userlog_type" style="width: 200px">
+        <md-tab flex label="Userlog Reports" class="md-whiteframe-z1" style="overflow: auto">
+            <div layout="column" layout-align="start center" ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false;"
+                style="cursor: inherit">
+                <div layout="row" style="width: 100%">
+                    <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="start center">
+                        <span style="margin-left: 16px" flex>Report Parameters:</span>
+                        <div layout="row" layout-align="start center" md-theme="{{themePrimaryButtons}}" style="margin: 0 16px; font-size: 14px;">
+                            <md-select placeholder="Select User Log Type" ng-model="vm.blank_query.userlog_type"
+                                       style="width: 150px; margin: 0 8px">
                                 <md-option value="">All</md-option>
                                 <md-option value="shift_log">Shift Log</md-option>
                                 <md-option value="time_loss">Time-loss Log</md-option>
@@ -50,57 +74,73 @@
                                 <md-option value="status_log">Status Log</md-option>
                                 <md-option value="maintenance">Maintenance</md-option>
                                 <md-option value="alarm_log">Alarm Log</md-option>
-                        </md-input-container>
-                        <md-input-container>
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="#">
-                                    <label>Start time: </label><div class="input-group"><input type="text" class="form-control" data-ng-model="blank_query.start_time"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <datetimepicker style="color:slategray;width:210px;font-size:x-small;line-height:10px;" data-ng-model="blank_query.start_time" data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"/>
-                                </ul>
+                            </md-select>
+                            <div layout="row" layout-align="center center" style="min-width: 220px; position: relative">
+                                <md-input-container flex md-no-float style="padding: 0;">
+                                    <input flex type="text"
+                                           data-ng-model="vm.blank_query.start_time" placeholder="Start Date"
+                                           title="Start Date 'HH:mm:ss yyyy-MM-dd'"
+                                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()"/>
+                                </md-input-container>
+                                <span></span>
+                                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
+                                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                                </md-button>
+                                <datetimepicker ng-show="vm.showDatePicker" ng-init="vm.showDatePicker = false"
+                                                class="datepickerMenu md-whiteframe-z1"
+                                                data-ng-model="vm.blank_query.start_time" style="position: absolute; left: 0; top: 34px"
+                                                data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
+                                                data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(vm.blank_query.start_time, ulog, 'start_time')"></datetimepicker>
                             </div>
-                        </md-input-container>
-                        <md-input-container>
-                            <div class="dropdown mydatetimepicker">
-                                <a class="dropdown-toggle" id="dropdown4" role="button" data-toggle="dropdown" data-target="#" href="#">
-                                    <label>End time: </label><div class="input-group"><input type="text" class="form-control" data-ng-model="blank_query.end_time"><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <datetimepicker style="color:slategray;width:210px;font-size:x-small;line-height:10px;" data-ng-model="blank_query.end_time" data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"/>
-                                </ul>
+                            <!--<span style="margin: 0 8px"></span>-->
+                            <div layout="row" layout-align="center center" style="min-width: 220px;  position: relative">
+                                <md-input-container flex md-no-float style="padding: 0;">
+                                    <input flex type="text"
+                                           data-ng-model="vm.blank_query.end_time" placeholder="End Date"
+                                           title="End Date 'HH:mm:ss yyyy-MM-dd'"
+                                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()"/>
+                                </md-input-container>
+                                <span></span>
+                                <md-button class="md-icon-button" style="margin-left: 0;width: 40px; height: 40px;"
+                                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                                </md-button>
+                                <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
+                                                data-ng-model="vm.blank_query.end_time" style="position: absolute; left: 0; top: 34px"
+                                                class="datepickerMenu md-whiteframe-z1"
+                                                data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
+                                                data-on-set-time="vm.showEndDatePicker = false; vm.onTimeSet(vm.blank_query.end_time, ulog, 'end_time')"></datetimepicker>
                             </div>
-                        </md-input-container>
-                        <md-button class="add-tab md-primary md-raised" ng-click="queryUserlogs(event, blank_query)" style="margin-right: 0;">Generate Report</md-button>
-                    </form>
+                            <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event, vm.blank_query)"
+                                       style="margin-right: 0;">Generate Report
+                            </md-button>
+                        </div>
+                    </md-toolbar>
                 </div>
-                <div flex>
-                    <md-list ng-show="report_userlogs.length > 0">
+                <div flex layout="column" style="width:100%" ng-show="vm.report_userlogs.length > 0">
+                    <md-list>
                         <md-list-item>
-                            <div class="md-list-item-text" style="padding-left: 24px;" layout="row" flex>
-                                <h4 flex="15">Userlog Type </h4>
-                                <h4 flex="15">Event started: </h4>
-                                <h4 flex="15">Event ended: </h4>
-                                <div flex="5"></div>
-                                <h4 flex>Userlog Content <h4>
+                            <div class="md-list-item-text" style="font-size: 18px; font-weight: bold" layout="row" flex>
+                                <span style="width: 130px">Userlog Type</span>
+                                <span style="width: 150px">Event Started</span>
+                                <span style="width: 150px">Event Ended</span>
+                                <span style="width: 150px">Userlog Content</span>
                             </div>
                         </md-list-item>
-                        <md-list-item ng-repeat="rlog in report_userlogs | filter:blank_query.userlog_type">
-                            <md-divider> </md-divider>
-                            <div class="md-list-item-text" style="padding-left:24px; font-size:small" flex layout="row">
-                                <div flex="15" style="text-align:center">{{rlog.userlog_type}}</div>
-                                <div flex="15">{{rlog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
-                                <div flex="15"">{{rlog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</div>
-                                <div flex="5"></div>
-                                <div flex>{{rlog.userlog_content}}</div>
+                        <md-list-item ng-repeat="rlog in vm.report_userlogs | filter:vm.blank_query.userlog_type">
+                            <md-divider></md-divider>
+                            <div class="md-list-item-text" style="font-size:small" flex
+                                 layout="row">
+                                <span style="width: 130px">{{rlog.userlog_type}}</span>
+                                <span style="width: 150px">{{rlog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+                                <span style="width: 150px">{{rlog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
+                                <span flex>{{rlog.userlog_content}}</span>
                             </div>
                         </md-list-item>
                     </md-list>
                 </div>
-            </md-content>
-        </md-tab-body>
+            </div>
         </md-tab>
     </md-tabs>
 </div>

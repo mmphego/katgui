@@ -25,7 +25,6 @@
                             style="position: absolute; left:23px; top: 46px; color: #333333;"
                             ng-show="vm.showDatePicker" data-ng-model="vm.sensorStartDatetime"
                             ng-keypress="vm.showDatePicker = false"
-                            vm.showDatePicker=false;"
                             ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(newDate)"></datetimepicker>
 
@@ -34,7 +33,6 @@
                             style="position: absolute; left:23px; top: 80px; color: #333333;"
                             ng-show="vm.showEndDatePicker" data-ng-model="vm.sensorEndDatetime"
                             ng-keypress="vm.showEndDatePicker = false"
-                            vm.showDatePicker=false;"
                             ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(newDate)"></datetimepicker>
 
