@@ -5,8 +5,8 @@
     angular.module('katGui.video', ['katGui.services'])
         .controller('VideoCtrl', VideoCtrl);
 
-    function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog,
-                       ControlService, SensorsService, SERVER_URL) {
+    function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog, ControlService, SensorsService,
+                       SERVER_URL, NotifyService) {
 
         var vm = this;
         var urlBase = SERVER_URL + '/katcontrol/api/v1/vds';
@@ -18,10 +18,10 @@
         vm.toggleFloodLights = function () {
             ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
                 .success(function (result) {
-                    $rootScope.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                    NotifyService.showSimpleToast(result.result.replace(/\\_/g, ' '));
                 })
                 .error(function (error) {
-                    $rootScope.showSimpleDialog('Error sending request', error);
+                    NotifyService.showSimpleDialog('Error sending request', error);
                 });
         };
 
@@ -199,11 +199,11 @@
         };
 
         function requestSuccess(result) {
-            $rootScope.showSimpleToast(result);
+            NotifyService.showSimpleToast(result);
         }
 
         function requestError(result) {
-            $rootScope.showSimpleDialog('Error sending VDS command.', result);
+            NotifyService.showSimpleDialog('Error sending VDS command.', result);
         }
 
         vm.connectListeners = function () {
@@ -214,7 +214,7 @@
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
                         if (!vm.disconnectIssued) {
-                            $rootScope.showSimpleToast('Reconnected :)');
+                            NotifyService.showSimpleToast('Reconnected :)');
                         }
                     }
                 }, function () {
@@ -230,7 +230,7 @@
             SensorsService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
                             vm.connectListeners();

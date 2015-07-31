@@ -1,6 +1,7 @@
 describe('AlarmsService', function() {
 
     beforeEach(module('katGui.services'));
+    beforeEach(module('ngMaterial'));
 
     var scope, AlarmsService;
 

@@ -3,7 +3,7 @@
     angular.module('katGui.health', ['katGui', 'katGui.d3'])
         .controller('HealthCtrl', HealthCtrl);
 
-    function HealthCtrl(ConfigService, StatusService, $rootScope) {
+    function HealthCtrl(ConfigService, StatusService, NotifyService) {
 
         var vm = this;
         ConfigService.loadAggregateSensorDetail();
@@ -15,7 +15,7 @@
                 StatusService.setTopStatusTrees(statusTreeResult);
             })
             .error(function () {
-                $rootScope.showSimpleDialog("Error retrieving status tree structure from katconf-webserver, is the server running?");
+                NotifyService.showSimpleDialog("Error retrieving status tree structure from katconf-webserver, is the server running?");
             });
     }
 })

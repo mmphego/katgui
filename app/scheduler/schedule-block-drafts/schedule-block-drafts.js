@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($rootScope, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, DATETIME_FORMAT) {
+    function SbDraftsCtrl($scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, DATETIME_FORMAT, NotifyService) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;
@@ -46,7 +46,7 @@
                     item.editing = false;
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog('Error Saving SB ' + item.id_code + '.', result);
+                    NotifyService.showSimpleDialog('Error Saving SB ' + item.id_code + '.', result);
                 });
         };
 
@@ -70,7 +70,7 @@
                     $log.info(result);
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
+                    NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
                 });
         };
 

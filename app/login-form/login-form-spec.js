@@ -12,7 +12,7 @@
 //        ctrl = $controller('LoginFormCtrl');
 //        location = $location;
 //        httpBackend = $injector.get('$httpBackend');
-//        $rootScope.showSimpleToast = function () {
+//        NotifyService.showSimpleToast = function () {
 //        };
 //        $rootScope.connectEvents = function () {
 //        };

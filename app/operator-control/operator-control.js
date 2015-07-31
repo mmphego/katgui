@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService) {
+    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService, NotifyService) {
 
         var vm = this;
         vm.receptorsData = ReceptorStateService.receptorsData;
@@ -45,11 +45,11 @@
             request
                 .success(function (result) {
                     vm.waitingForRequestResult = false;
-                    $rootScope.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                    NotifyService.showSimpleToast(result.result.replace(/\\_/g, ' '));
                 })
                 .error(function (error) {
                     vm.waitingForRequestResult = false;
-                    $rootScope.showSimpleDialog('Error sending request', error);
+                    NotifyService.showSimpleDialog('Error sending request', error);
                 });
         };
         var stopInterval = $interval(function () {

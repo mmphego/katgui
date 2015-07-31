@@ -94,15 +94,6 @@ describe('ApplicationCtrl', function () {
         ctrl.toggleRightSidenav();
     }));
 
-    it('should call the $mdToast show function', function () {
-        var mdToastShow = spyOn(mdToast, 'show');
-        scope.$root.showSimpleToast('message');
-        expect(mdToastShow).toHaveBeenCalledWith(mdToast.simple()
-            .content('message')
-            .position(scope.$root.toastPosition)
-            .hideDelay(3500));
-    });
-
     it('should connect events and start the time sync with the web server', function () {
         var updateTimeDisplaySpy = spyOn(ctrl, 'updateTimeDisplay');
         var syncTimeWithServerSpy = spyOn(ctrl, 'syncTimeWithServer');
@@ -160,15 +151,6 @@ describe('ApplicationCtrl', function () {
         ctrl.navigateToParentState();
         scope.$root.$digest();
         expect(ctrl.currentState()).toEqual('Scheduler');
-    });
-
-    it('should display the promise result as a toast when result is ok or a dialog when there\'s an error', function () {
-        var showSimpleToastSpy = spyOn(scope.$root, 'showSimpleToast');
-        var showSimpleDialogSpy = spyOn(scope.$root, 'showSimpleDialog');
-        scope.$root.displayPromiseResult({result: 'ok', message: 'test message'});
-        expect(showSimpleToastSpy).toHaveBeenCalledWith('test message');
-        scope.$root.displayPromiseResult({result: 'error doing something', message: 'test message'});
-        expect(showSimpleDialogSpy).toHaveBeenCalledWith('error doing something', 'test message');
     });
 
     it('should update the time display with utc, sast, julian date and lst', function () {

@@ -2,7 +2,8 @@
     angular.module('katGui.admin', ['katGui.services', 'katGui.util'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl($scope,  $mdDialog, $rootScope, $log, UserService, KatGuiUtil, ObsSchedService, ConfigService) {
+    function AdminCtrl($scope, $mdDialog, $rootScope, $log, UserService, KatGuiUtil, ObsSchedService, ConfigService,
+                       NotifyService) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
@@ -176,9 +177,9 @@
                 .then(function (answer) {
                     passwordHash = CryptoJS.SHA256(answer).toString();
                     UserService.resetPassword(user, passwordHash).then(function (result) {
-                        $rootScope.showSimpleToast('Password successfully reset.');
+                        NotifyService.showSimpleToast('Password successfully reset.');
                     }, function (result) {
-                        $rootScope.showSimpleToast('There was an error resetting the password.');
+                        NotifyService.showSimpleToast('There was an error resetting the password.');
                         $log.error(result);
                     });
                 }, function () {
