@@ -170,7 +170,7 @@
             if (item.value.indexOf('agg_') > -1) {
                 var sensorName = item.value.split(',')[2].split(' ')[0];
                 if (ConfigService.aggregateSensorDetail[sensorName]) {
-                    $rootScope.showPreDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+                    $rootScope.showAggregateSensorsDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
                 } else {
                     $rootScope.showSimpleToast('Cannot find aggregate sensor details in ConfigService ' + sensorName);
                 }

@@ -181,7 +181,7 @@ angular.module('katGui.d3')
 
         api.showDialogForAggregateSensorInfo = function (sensorName) {
             if (ConfigService.aggregateSensorDetail[sensorName]) {
-                $rootScope.showPreDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+                $rootScope.showAggregateSensorsDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
             } else {
                 $log.error('No such aggregate sensor in ConfigService ' + sensorName);
             }
