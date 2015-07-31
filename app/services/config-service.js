@@ -89,6 +89,10 @@
             return $http(createRequest('get', urlBase + '/array/position'));
         };
 
+        api.getSources = function () {
+            return $http(createRequest('get', urlBase + '/sources'));
+        };
+
         api.getWindstowLimits = function () {
             return $http(createRequest('get', urlBase + '/array/windstow'));
         };

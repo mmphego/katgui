@@ -238,6 +238,9 @@ angular.module('katGui.d3')
                         .enter().append("circle")
                         .attr("class", function (d) {
                             var c = color(d.name + '_actual');
+                            if (d.skyPlot) {
+                                c = 'black';
+                            }
                             var style = document.getElementById(d.name + '_actual_style_tag');
                             if (style && style.parentNode) {
                                 style.parentNode.removeChild(style);

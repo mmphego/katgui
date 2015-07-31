@@ -11,6 +11,9 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
+        vm.targets = [];
+        vm.targetsToDisplay = [];
+        vm.filters = [];
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -68,10 +71,73 @@
             ConfigService.getReceptorList()
                 .then(function (result) {
                     result.forEach(function (item) {
-                        vm.receptorsData.push({name: item, showHorizonMask: false});
+                        vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false});
                         SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 10);
                     });
                 });
+        };
+
+        vm.getSources = function () {
+            if (vm.targets.length === 0) {
+                ConfigService.getSources()
+                    .success(function (result) {
+                        vm.targets = result;
+                        vm.filterChanged();
+
+                        for (var i in result) {
+                            for (var j in result[i].tags) {
+                                vm.filters[result[i].tags[j]] = {name: result[i].tags[j]};
+                            }
+                        }
+                    })
+                    .error(function (error) {
+                        $log.error(error);
+                    });
+            }
+        };
+
+        vm.filterChanged = function (filter) {
+            vm.selectedTarget = null;
+            vm.targetsToDisplay.splice(0, vm.targetsToDisplay.length);
+            var namesAdded = [];
+            for (var i in vm.targets) {
+                if (namesAdded.indexOf(vm.targets[i].name) === -1 && (filter === '' || vm.targets[i].tags.indexOf(filter) > -1)) {
+                    namesAdded.push(vm.targets[i].name);
+                    vm.targetsToDisplay.push(vm.targets[i].name);
+                }
+            }
+        };
+
+        vm.drawSkyPlot = function (drawAll) {
+            vm.clearSkyPlot();
+            if (vm.selectedTarget || drawAll) {
+                for (var i in vm.targets) {
+                    if ((vm.selectedFilter === '' || vm.targets[i].tags.indexOf(vm.selectedFilter) > -1) &&
+                        drawAll || vm.selectedTarget === vm.targets[i].name) {
+                        var azel = vm.targets[i].azel;
+                        vm.receptorsData.push({
+                            name: vm.targets[i].name,
+                            skyPlot: true,
+                            ap_actual_elev: {value: azel[1] * (180/Math.PI)},
+                            ap_actual_azim: {value: azel[0] * (180/Math.PI)}
+                        });
+                    }
+                }
+                vm.redraw(false);
+            }
+        };
+
+        vm.clearSkyPlot = function () {
+            var indexesToRemove = [];
+            for (var i = 0; i < vm.receptorsData.length; i++) {
+                if (vm.receptorsData[i].skyPlot) {
+                    indexesToRemove.push(i);
+                }
+            }
+            for (var idx = indexesToRemove.length - 1; idx >= 0; idx--) {
+                vm.receptorsData.splice(indexesToRemove[idx], 1);
+            }
+            vm.redraw(false);
         };
 
         vm.statusMessageReceived = function (event, message) {
@@ -89,6 +155,7 @@
                     if (!angular.isDefined(vm.stopUpdating)) {
                         vm.stopUpdating = $interval(function () {
                             vm.redraw(false);
+                            $interval.cancel(vm.stopUpdating);
                         }, 1000);
                     }
                 });
