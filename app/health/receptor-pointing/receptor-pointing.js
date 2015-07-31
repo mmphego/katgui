@@ -72,7 +72,7 @@
                 .then(function (result) {
                     result.forEach(function (item) {
                         vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false});
-                        SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 10);
+                        SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 360);
                     });
                 });
         };
@@ -115,15 +115,23 @@
                     if ((vm.selectedFilter === '' || vm.targets[i].tags.indexOf(vm.selectedFilter) > -1) &&
                         drawAll || vm.selectedTarget === vm.targets[i].name) {
                         var azel = vm.targets[i].azel;
+                        var radec = vm.targets[i].radec;
+                        var az = azel[0] * (180/Math.PI);
+                        if (az > 180) {
+                            az = az - 360;
+                        }
+                        var el = azel[1] * (180/Math.PI);
                         vm.receptorsData.push({
                             name: vm.targets[i].name,
                             skyPlot: true,
-                            ap_actual_elev: {value: azel[1] * (180/Math.PI)},
-                            ap_actual_azim: {value: azel[0] * (180/Math.PI)}
+                            ap_actual_azim: {value: az},
+                            ap_actual_elev: {value: el}
+                            //pos_request_base_dec: {value: radec[1]},
+                            //pos_request_base_ra: {value: radec[0]}
                         });
                     }
                 }
-                vm.redraw(false);
+                vm.redraw(true);
             }
         };
 
@@ -137,7 +145,7 @@
             for (var idx = indexesToRemove.length - 1; idx >= 0; idx--) {
                 vm.receptorsData.splice(indexesToRemove[idx], 1);
             }
-            vm.redraw(false);
+            vm.redraw(true);
         };
 
         vm.statusMessageReceived = function (event, message) {
@@ -152,16 +160,14 @@
                     if (receptor.name === resource) {
                         receptor[sensorName] = message.value;
                     }
-                    if (!angular.isDefined(vm.stopUpdating)) {
-                        vm.stopUpdating = $interval(function () {
-                            vm.redraw(false);
-                            $interval.cancel(vm.stopUpdating);
-                        }, 1000);
-                    }
                 });
-                if (!$scope.$$phase) {
-                    $scope.$digest();
-                }
+            }
+            if (!vm.stopUpdating) {
+                vm.stopUpdating = $interval(function () {
+                    vm.redraw(false);
+                    $interval.cancel(vm.stopUpdating);
+                    vm.stopUpdating = null;
+                }, 1000);
             }
         };
 
@@ -190,6 +196,9 @@
                 vm.redraw(true);
             }
         };
+
+        var bgColor = angular.element(document.querySelector("md-content")).css('background-color');
+        angular.element(document.querySelector(".sky-plot-options-containter")).css({'background-color': bgColor});
 
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
 

@@ -1,4 +1,4 @@
-<div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative;"
+<div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative; overflow: hidden"
      ng-class="{'connection-lost-bg':vm.connectionLost}">
 
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 8px;">
@@ -51,7 +51,7 @@
         </md-menu-content>
     </md-menu>
 
-    <div flex layout="column">
+    <div flex layout="column" style="overflow: hidden">
         <div layout="row" layout-align="center center" style="overflow: auto; height: 90px;"
              ng-show="vm.showReceptorStates">
             <div ng-repeat="receptor in vm.receptorsData | filter:{'skyPlot':false} track by $index"
@@ -71,9 +71,9 @@
                       title="Showing Horizon Mask"></span>
             </div>
         </div>
-        <receptor-pointing-equatorial ng-if="vm.useEquatorial" flex
+        <receptor-pointing-equatorial ng-if="vm.useEquatorial" flex style="overflow: hidden"
                                       redraw-function="vm.redrawChart"></receptor-pointing-equatorial>
-        <receptor-pointing-horizontal ng-if="!vm.useEquatorial" flex
+        <receptor-pointing-horizontal ng-if="!vm.useEquatorial" flex style="overflow: hidden"
                                       redraw-function="vm.redrawChart"></receptor-pointing-horizontal>
     </div>
 
