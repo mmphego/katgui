@@ -118,11 +118,12 @@
                         vm.receptorsData.push({
                             name: vm.targets[i].name,
                             skyPlot: true,
-                            ap_actual_elev: {value: azel[0] * (180/Math.PI)},
-                            ap_actual_azim: {value: azel[1] * (180/Math.PI)}
+                            ap_actual_elev: {value: azel[1] * (180/Math.PI)},
+                            ap_actual_azim: {value: azel[0] * (180/Math.PI)}
                         });
                     }
                 }
+                vm.redraw(false);
             }
         };
 
@@ -154,6 +155,7 @@
                     if (!angular.isDefined(vm.stopUpdating)) {
                         vm.stopUpdating = $interval(function () {
                             vm.redraw(false);
+                            $interval.cancel(vm.stopUpdating);
                         }, 1000);
                     }
                 });
