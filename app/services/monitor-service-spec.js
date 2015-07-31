@@ -60,10 +60,10 @@ describe('MonitorService', function () {
         ObsSchedService = _ObsSchedService_;
         StatusService = _StatusService_;
         scope = $rootScope.$new();
-        $rootScope.showSimpleDialog = function () {
-        };
-        $rootScope.showSimpleToast = function () {
-        };
+        //$rootScope.showSimpleDialog = function () {
+        //};
+        //NotifyService.showSimpleToast = function () {
+        //};
         AlarmsService.receivedAlarmMessage = function () {
         };
 

@@ -16,10 +16,10 @@ describe('ReceptorStateService', function () {
             return _$q_.defer().promise;
         };
         scope = $rootScope.$new();
-        $rootScope.showSimpleDialog = function () {
-        };
-        $rootScope.showSimpleToast = function () {
-        };
+        //$rootScope.showSimpleDialog = function () {
+        //};
+        //NotifyService.showSimpleToast = function () {
+        //};
     }));
 
     it('should get the receptor list and log an error if the service rejected the promise', function () {
@@ -28,11 +28,9 @@ describe('ReceptorStateService', function () {
         ReceptorStateService.getReceptorList();
         expect(getReceptorListSpy).toHaveBeenCalled();
         var errorSpy = spyOn($log, 'error');
-        var showSimpleDialogSpy = spyOn(scope.$root, 'showSimpleDialog');
         deferred.reject('test error message');
         scope.$digest();
         expect(ReceptorStateService.receptorsData.length).toBe(0);
         expect(errorSpy).toHaveBeenCalledWith('test error message');
-        expect(showSimpleDialogSpy).toHaveBeenCalledWith('Error', 'Error retrieving receptor list, please contact CAM support.');
     });
 });

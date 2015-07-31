@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserService', UserService);
 
-    function UserService($http, $q, SERVER_URL, $rootScope, $log) {
+    function UserService($http, $q, SERVER_URL, $rootScope, $log, NotifyService) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katauth/api/v1';
@@ -46,11 +46,11 @@
                     }
                     oldUser.temp = false;
                     oldUser.editing = false;
-                    $rootScope.showSimpleToast("Created user");
+                    NotifyService.showSimpleToast("Created user");
                 })
                 .error(function (result) {
                     _.findWhere(api.users, {id: user.id}).editing = true;
-                    $rootScope.showSimpleDialog("Error creating user", result);
+                    NotifyService.showSimpleDialog("Error creating user", result);
                 });
         };
 
@@ -67,10 +67,10 @@
                     for (var attr in result) {
                         oldUser[attr] = result[attr];
                     }
-                    $rootScope.showSimpleToast("Updated user " + result.name);
+                    NotifyService.showSimpleToast("Updated user " + result.name);
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog("Error sending request", "Error updating user " + result.name);
+                    NotifyService.showSimpleDialog("Error sending request", "Error updating user " + result.name);
                 });
         };
 

@@ -3,7 +3,8 @@
     angular.module('katGui')
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
-    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService, ControlService, $timeout, DATETIME_FORMAT) {
+    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
+                                ControlService, $timeout, DATETIME_FORMAT, NotifyService) {
 
         var vm = this;
 
@@ -24,7 +25,7 @@
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
                         if (!vm.disconnectIssued) {
-                            $rootScope.showSimpleToast('Reconnected :)');
+                            NotifyService.showSimpleToast('Reconnected :)');
                         }
                     }
                 }, function () {
@@ -40,7 +41,7 @@
             SensorsService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
                             vm.connectListeners();

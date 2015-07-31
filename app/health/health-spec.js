@@ -34,8 +34,8 @@ describe('HealthCtrl', function () {
         };
         MonitorService = _MonitorService_;
         deferred = q.defer();
-        $rootScope.showSimpleDialog = function () {
-        };
+        //$rootScope.showSimpleDialog = function () {
+        //};
         ConfigService.getStatusTreesForTop = function () {
             return wrapPromise(deferred.promise);
         };

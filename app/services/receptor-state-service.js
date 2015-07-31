@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ReceptorStateService', ReceptorStateService);
 
-    function ReceptorStateService($rootScope, ConfigService, $log, DATETIME_FORMAT) {
+    function ReceptorStateService(NotifyService, ConfigService, $log, DATETIME_FORMAT) {
 
         var api = {receptorsData: []};
         api.sensorValues = {};
@@ -37,7 +37,7 @@
                         });
                     });
                 }, function (result) {
-                    $rootScope.showSimpleDialog('Error', 'Error retrieving receptor list, please contact CAM support.');
+                    NotifyService.showSimpleDialog('Error', 'Error retrieving receptor list, please contact CAM support.');
                     $log.error(result);
                 });
         };

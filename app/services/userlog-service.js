@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katcontrol/api/v1';
@@ -63,7 +63,7 @@
                     defer.resolve();
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog("Could not retrieve any userlogs", result);
+                    NotifyService.showSimpleDialog("Could not retrieve any userlogs", result);
                     defer.reject();
                 });
             return defer.promise;
@@ -124,7 +124,7 @@
                     defer.resolve();
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog("Could not retrieve any userlogs", result);
+                    NotifyService.showSimpleDialog("Could not retrieve any userlogs", result);
                     defer.reject();
                 });
             return defer.promise;
@@ -185,11 +185,11 @@
                 }))
                 .success(function (result) {
                     ulog.id = result.id
-                    $rootScope.showSimpleToast("New " + result.userlog_type + " added! ");
+                    NotifyService.showSimpleToast("New " + result.userlog_type + " added! ");
                     defer.resolve();
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog("Error creating userlog", result);
+                    NotifyService.showSimpleDialog("Error creating userlog", result);
                     defer.reject();
                 });
             return defer.promise;
@@ -209,11 +209,11 @@
                 }))
                 .success(function (result) {
                     ulog.id = result.id
-                    $rootScope.showSimpleToast("Edited userlog " + result.id);
+                    NotifyService.showSimpleToast("Edited userlog " + result.id);
                     defer.resolve();
                 })
                 .error(function (result) {
-                    $rootScope.showSimpleDialog("Error creating userlog", result);
+                    NotifyService.showSimpleDialog("Error creating userlog", result);
                     defer.reject();
                 });
             return defer.promise;

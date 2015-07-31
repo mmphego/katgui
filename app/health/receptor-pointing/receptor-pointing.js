@@ -3,7 +3,8 @@
     angular.module('katGui.health')
         .controller('ReceptorPointingCtrl', ReceptorPointingCtrl);
 
-    function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $interval, $log) {
+    function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $interval, $log,
+                                  NotifyService) {
 
         var vm = this;
         vm.receptorsData = [];
@@ -23,7 +24,7 @@
                         $interval.cancel(vm.connectInterval);
                         vm.connectionLost = false;
                         vm.connectInterval = null;
-                        $rootScope.showSimpleToast('Reconnected :)');
+                        NotifyService.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
                     $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
@@ -39,7 +40,7 @@
             SensorsService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
                             vm.connectionLost = true;
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
@@ -184,12 +185,12 @@
                             receptor.horizonMask = "az el\r" + JSON.parse(result);
                             vm.redraw(true);
                         } else {
-                            $rootScope.showSimpleDialog('Error Retrieving Horizon Mask', result.error);
+                            NotifyService.showSimpleDialog('Error Retrieving Horizon Mask', result.error);
                         }
 
                     })
                     .error(function () {
-                        $rootScope.showSimpleDialog('Error Retrieving Horizon Mask', 'Could not retrieve a horizon mask for ' + receptor.name);
+                        NotifyService.showSimpleDialog('Error Retrieving Horizon Mask', 'Could not retrieve a horizon mask for ' + receptor.name);
                     });
             } else {
                 receptor.showHorizonMask = !receptor.showHorizonMask;

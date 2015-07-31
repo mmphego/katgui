@@ -14,6 +14,7 @@ describe('Directive: d3-chart', function () {
     //setup test
     beforeEach(function () {
         module('katGui.d3');
+        module('ngMaterial');
 
         module(function ($provide) {
             $provide.service('StatusService', function () {

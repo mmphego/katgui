@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('InstrumentalConfigCtrl', InstrumentalConfigCtrl);
 
-    function InstrumentalConfigCtrl(ConfigService, $rootScope) {
+    function InstrumentalConfigCtrl(ConfigService, NotifyService) {
 
         var vm = this;
         vm.sourceCatalogues = [];
@@ -56,7 +56,7 @@
         vm.getFileContents = function (filePath) {
             ConfigService.getConfigFileContents(filePath)
                 .then(function (result) {
-                   $rootScope.showPreDialog(filePath, JSON.parse(result.data));
+                    NotifyService.showPreDialog(filePath, JSON.parse(result.data));
                 });
         };
 
