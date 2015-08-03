@@ -65,7 +65,7 @@
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
                     "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
-                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span style='margin:8px'>{{title}}</span></md-toolbar>" +
                     "<div flex><pre>{{content}}</pre></div>" +
                     "</div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
