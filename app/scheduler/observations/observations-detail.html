@@ -1,5 +1,5 @@
-<div flex layout="column"  style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
-    <div layout="row" flex style="min-width: 1215px; min-height: 850px; margin-bottom: 8px; margin-top: 16px;">
+<div flex layout="column"  style="min-width: 1250px; min-height: 850px; margin-bottom: 8px; margin-top: 8px;" ng-controller="SubArrayObservationsDetail as vm">
+    <div layout="row" flex style="min-width: 1250px; min-height: 850px; margin-bottom: 8px; margin-top: 16px;">
         <div layout="row" style="position: absolute; top: 0; left: 14px; font-size: 14px; padding: 0">
             <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{vm.subarray.delegated_ca}}</b></span>
             <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{vm.subarray.band}}</b></span>
@@ -40,7 +40,7 @@
                         </md-menu>
                         <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
                              style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0">
-                            <span style="width: 120px" class="subheader-text">
+                            <span style="width: 125px" class="subheader-text">
                                 <span>ID</span>
                             </span>
                             <span flex class="subheader-text">
@@ -52,7 +52,7 @@
                             <span style="width: 75px" class="subheader-text">
                                 <span>Ready</span>
                             </span>
-                            <span style="width: 100px" class="subheader-text">
+                            <span style="width: 105px" class="subheader-text">
                                 <span>Type</span>
                             </span>
                             <span style="width: 230px" class="subheader-text">
@@ -63,7 +63,7 @@
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
                     <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by $index"
-                         ng-click="vm.setSelectedSchedule(item);"  style="padding: 0 4px"
+                         ng-click="vm.setSelectedSchedule(item);" style="padding: 0 4px"
                          ng-class="{'selected-schedule-row': item.state !== 'ACTIVE' && item === vm.selectedSchedule,
                                 'schedule-row-executing': item.state === 'ACTIVE' && item !== vm.selectedSchedule,
                                 'schedule-row-executing-and-selected': item.state === 'ACTIVE' && item === vm.selectedSchedule}"
@@ -73,7 +73,7 @@
                                                 md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; margin-top: -5px;">
                             </md-progress-linear>
-                            <div layout="column" layout-align="start" style="padding-top: 4px;">
+                            <div layout="column" layout-align="start" style="padding-top: 4px; width: 120px">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                       style="font-size: 14px; font-weight: bold"
                                       ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
@@ -149,7 +149,7 @@
 
                     <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
                          style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0">
-                            <span style="width: 120px" class="subheader-text">
+                            <span style="width: 125px" class="subheader-text">
                                 <span>ID</span>
                             </span>
                             <span flex class="subheader-text">
@@ -175,7 +175,7 @@
                         class="schedule-draft-item" layout="column" style="height: 38px">
 
                         <div layout="row" layout-align="start center" style="padding: 0 4px">
-                            <div layout="column" layout-align="start">
+                            <div layout="column" layout-align="start" style="width: 120px">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                       style="font-size: 14px; font-weight: bold"
                                       ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
@@ -187,7 +187,7 @@
                             <span style="width: 130px">{{item.outcome}}</span>
 
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                  style="text-transform: uppercase; width: 105px">{{item.type}}</span>
+                                  style="text-transform: uppercase; width: 100px">{{item.type}}</span>
                             <span style="width: 150px">{{item.desired_start_time}}</span>
                             <md-button class="md-icon-button inline-action-button"
                                        ng-click="vm.cloneSchedule(item)" title="Clone To Draft">
@@ -203,7 +203,7 @@
              ng-class="{'highlight-script-window-with-box-shadow': vm.selectedSchedule !== null}">
             <div layout="column" id="resource-allocation-div" ng-class="{'highlight-script-border-bottom': vm.selectedSchedule !== null}"
                 style="margin-bottom: 16px;">
-                <md-toolbar style="margin-left: 0;  width: 650px; max-height: 48px; min-height: 48px;" class="md-whiteframe-z1" layout="column" layout-align="center center">
+                <md-toolbar style="margin-left: 0;  width: 450px; max-height: 48px; min-height: 48px;" class="md-whiteframe-z1" layout="column" layout-align="center center">
                     <div flex style="margin-left: 8px;" layout="row" layout-align="center center">
                         <span flex>Resources</span>
                     </div>
@@ -250,7 +250,7 @@
                 </div>
             </div>
             <div flex layout="column">
-                <md-toolbar style="margin-left: 0; width: 650px;" class="panel-toolbar-small md-whiteframe-z1">
+                <md-toolbar style="margin-left: 0; width: 450px;" class="panel-toolbar-small md-whiteframe-z1">
                     <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
                         <span>Schedule Block Details</span>
                     </div>

@@ -1,4 +1,4 @@
-<div flex layout="row" style="min-width: 1220px; min-height: 500px; max-height: 100%; margin: 8px;" ng-controller="SbDraftsCtrl as vm">
+<div flex layout="row" style="min-width: 1260px; min-height: 500px; max-height: 100%; margin: 8px;" ng-controller="SbDraftsCtrl as vm">
 
     <div class="md-whiteframe-z2" layout="column" flex>
         <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
@@ -13,39 +13,40 @@
                 </md-button>
             </div>
 
-            <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center">
+            <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
+                 style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0">
                 <span style="width: 115px" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
-                    <span style="padding-left: 8px;">ID</span>
+                    <span>ID</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
                 <span flex style="width: 180px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('description')">
-                    <span style="padding: 8px">Description</span>
+                    <span>Description</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'description' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'description' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
                 <span style="width: 142px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('expected_duration')">
-                    <span style="padding: 8px">Expected Duration</span>
+                    <span>Expected Duration</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'expected_duration' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'expected_duration' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
                 <span style="width: 142px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('verification_state')">
-                    <span style="padding: 8px">Verification State</span>
+                    <span>Verification State</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'verification_state' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'verification_state' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
                 <span style="width: 142px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('type')">
-                    <span style="padding: 8px">Type</span>
+                    <span>Type</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
                 <span style="width: 215px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
-                    <span style="padding: 8px">Desired Time</span>
+                    <span>Desired Time</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
