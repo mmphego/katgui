@@ -52,4 +52,30 @@
         </div>
     </div>
 
+    <div flex layout="column" style="margin-left: 16px;">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center">
+            <span flex>Correlators</span>
+        </md-toolbar>
+
+        <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
+            <div flex ng-repeat="corr in vm.correlators | orderBy:'fileName' track by $index"
+                 ng-click="vm.getFileContents(corr.filePath)">
+                <span>{{::corr.fileName}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div flex layout="column" style="margin-left: 16px;">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center">
+            <span flex>CAM 2 SPEAD</span>
+        </md-toolbar>
+
+        <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
+            <div flex ng-repeat="cam2spead in vm.cam2speadList | orderBy:'fileName' track by $index"
+                 ng-click="vm.getFileContents(cam2spead.filePath)">
+                <span>{{::cam2spead.fileName}}</span>
+            </div>
+        </div>
+    </div>
+
 </div>
