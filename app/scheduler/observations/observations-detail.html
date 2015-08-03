@@ -62,11 +62,12 @@
                 </md-toolbar>
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
-                    <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by $index" ng-click="vm.setSelectedSchedule(item);"
+                    <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by $index"
+                         ng-click="vm.setSelectedSchedule(item);"  style="padding: 0 4px"
                          ng-class="{'selected-schedule-row': item.state !== 'ACTIVE' && item === vm.selectedSchedule,
                                 'schedule-row-executing': item.state === 'ACTIVE' && item !== vm.selectedSchedule,
                                 'schedule-row-executing-and-selected': item.state === 'ACTIVE' && item === vm.selectedSchedule}"
-                         class="schedule-draft-item animate-repeat" layout="row"  layout-align="start center">
+                         class="schedule-draft-item animate-repeat" layout="row" layout-align="start center">
 
                             <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary"
                                                 md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
@@ -170,10 +171,10 @@
                 </md-toolbar>
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
-                    <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedOrderByFields:vm.q3 | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
+                    <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedFields:vm.q3"
                         class="schedule-draft-item" layout="column" style="height: 38px">
 
-                        <div layout="row" layout-align="start center">
+                        <div layout="row" layout-align="start center" style="padding: 0 4px">
                             <div layout="column" layout-align="start">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                       style="font-size: 14px; font-weight: bold"

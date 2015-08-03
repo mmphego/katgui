@@ -18,16 +18,18 @@
         vm.subarrays = ObsSchedService.subarrays;
         vm.subarray = {};
 
-        var unbindWatch = $scope.$watchCollection('vm.subarrays', function (newVal, oldVal) {
+        var unbindWatch = $scope.$watchCollection('vm.subarrays', function () {
             vm.subarray = _.findWhere(vm.subarrays, {id: '' + vm.subarray_id});
             if (vm.subarray) {
                 unbindWatch();
             }
         });
 
-        vm.completedOrderByFields = [
+        vm.completedFields = [
             {label: 'ID', value: 'id_code'},
             {label: 'Description', value: 'description'},
+            {label: 'State', value: 'state'},
+            {label: 'Outcome', value: 'outcome'},
             {label: 'Date', value: 'desired_start_time'},
             {label: 'State', value: 'state'},
             {label: 'Type', value: 'type'}
@@ -56,21 +58,6 @@
         vm.moveScheduleRowToDraft = function (item) {
             ObsSchedService.scheduleToDraft(vm.subarray_id, item.id_code);
         };
-
-        vm.setCompletedOrderBy = function (column, reverse) {
-            var newOrderBy = _.findWhere(vm.completedOrderByFields, {value: column});
-            if ((vm.completedOrderBy || {}).value === column) {
-                if (newOrderBy.reverse === undefined) {
-                    newOrderBy.reverse = true;
-                } else if (newOrderBy.reverse) {
-                    newOrderBy.reverse = undefined;
-                    newOrderBy = null;
-                }
-            }
-            vm.completedOrderBy = newOrderBy;
-        };
-
-        vm.setCompletedOrderBy('id_code', true);
 
         vm.setSelectedSchedule = function (selectedSchedule, dontDeselectOnSame) {
             if (vm.selectedSchedule === selectedSchedule && !dontDeselectOnSame) {
