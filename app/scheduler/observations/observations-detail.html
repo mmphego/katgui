@@ -74,10 +74,10 @@
                                                 style="position: absolute; left: 0; right: 0; margin-top: -5px;">
                             </md-progress-linear>
                             <div layout="column" layout-align="start" style="padding-top: 4px;">
-                                    <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                          style="font-size: 14px; font-weight: bold"
-                                          ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
-                                    </span>
+                                <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
+                                      style="font-size: 14px; font-weight: bold"
+                                      ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
+                                </span>
                                 <span><i>{{item.owner}}</i></span>
                             </div>
                             <span flex style="overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>

@@ -12,6 +12,8 @@
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code'},
             {label: 'Description', value: 'description'},
+            {label: 'Expected Duration', value: 'expected_duration'},
+            {label: 'Verification State', value: 'verification_state'},
             {label: 'Date', value: 'desired_start_time'},
             {label: 'State', value: 'state'},
             {label: 'Type', value: 'type'}
@@ -19,7 +21,7 @@
 
         vm.limitTo = 5;
         $scope.loadMore = function() {
-            vm.limitTo += 10;
+            vm.limitTo += 30;
         };
 
         vm.setDraftsOrderBy = function (column) {
