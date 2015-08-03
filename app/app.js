@@ -135,7 +135,7 @@
 
             if (!vm.updateTimeDisplayInterval) {
                 vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000); //update local clock every second
-                vm.syncTimeWithServerInterval = $interval(vm.syncTimeWithServer, 60000); //sync time every minute
+                vm.syncTimeWithServerInterval = $interval(vm.syncTimeWithServer, 10000); //sync time every 10 seconds
                 vm.syncTimeWithServer();
             }
 
@@ -237,10 +237,10 @@
             if ($rootScope.serverTimeOnLoad > 0) {
                 var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
                 var localTime = moment($rootScope.serverTimeOnLoad, 'X');
-                vm.utcTime = utcTime.format('HH:mm:ss');
-                vm.localTime = localTime.format('HH:mm:ss');
-                vm.currentDate = utcTime.format('YYYY-MM-DD');
-                vm.dayOfYear = utcTime.dayOfYear();
+                $rootScope.utcTime = utcTime.format('HH:mm:ss');
+                $rootScope.localTime = localTime.format('HH:mm:ss');
+                $rootScope.currentDate = utcTime.format('YYYY-MM-DD');
+                $rootScope.dayOfYear = utcTime.dayOfYear();
 
                 var fractionalHours = utcTime.hours() + utcTime.minutes() / 60 + (utcTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(
@@ -248,16 +248,11 @@
                     utcTime.month() + 1,
                     utcTime.year(),
                     fractionalHours);
-                vm.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
-                //todo bind to the dates on the rootscope
-                $rootScope.julianDay = vm.julianDay;
+                $rootScope.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
                 if ($rootScope.longitude) {
-                    vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
+                    $rootScope.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
                 }
                 $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
-                if (!$scope.$$phase) {
-                    $scope.$digest();
-                }
             }
         };
 

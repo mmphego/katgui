@@ -305,13 +305,13 @@
                     LO: {{$root.currentLeadOperator.name}}
                     <md-tooltip>Current Lead Operator</md-tooltip>
                 </span>
-                <div ng-if="vm.localSiderealTime" ng-show="showLST">
-                    <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
+                <div ng-if="$root.localSiderealTime" ng-show="showLST">
+                    <span style="font-size: 32px;">{{$root.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
                     <md-tooltip>Local Sidereal Time</md-tooltip>
                 </div>
-                <div ng-if="vm.utcTime && showLocalAndSAST">
-                    <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
-                    <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
+                <div ng-if="$root.utcTime && showLocalAndSAST">
+                    <span class="toolbar-time-span">{{$root.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
+                    <span class="toolbar-time-span">{{$root.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
                 </div>
 
                 <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.stateGo('home')">
@@ -348,16 +348,16 @@
                     <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
                 </div>
                 <div layout="row">
-                    <div ng-show="showDayOfYear && vm.dayOfYear">
-                        <span>{{vm.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
+                    <div ng-show="showDayOfYear && $root.dayOfYear">
+                        <span>{{$root.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
                         <md-tooltip>Current UTC Day Of Year</md-tooltip>
                     </div>
-                    <div ng-show="showDate && vm.currentDate">
-                        <span>{{vm.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
+                    <div ng-show="showDate && $root.currentDate">
+                        <span>{{$root.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
                         <md-tooltip>Current UTC Date</md-tooltip>
                     </div>
-                    <div ng-if="vm.julianDay" ng-show="showJulianDate">
-                        <span>{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
+                    <div ng-if="$root.julianDay" ng-show="showJulianDate">
+                        <span>{{$root.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
                         <md-tooltip>Julian Day</md-tooltip>
                     </div>
                 </div>
