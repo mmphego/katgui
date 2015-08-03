@@ -10,22 +10,24 @@
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
-                <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" layout="row" layout-align="start center"
+                <md-toolbar class="md-toolbar-tools md-whiteframe-z1" layout="row" layout-align="start center"
+                            style="padding-bottom: 8px; padding-right: 8px;"
                             md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                             ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}">
                         <span style="margin-left: 8px;">SUBARRAY {{vm.subarray_id}}</span>
                         <span ng-show="vm.subarray.state" style="margin-left: 4px;"> - {{vm.subarray.state}}</span>
                         <span ng-if="vm.subarray.maintenance">{{", in maintenance"}}</span>
                         <span flex></span>
-                        <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()" title="Free Subarray">
+                        <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()"
+                                   title="Free Subarray">
                             <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                         </md-button>
-                        <md-button ng-show="vm.subarray.state === 'inactive'" class="md-icon-button inline-action-button" ng-click="vm.activateSubarray()"
-                                   title="Activate Subarray">
+                        <md-button ng-show="vm.subarray.state === 'inactive'" ng-click="vm.activateSubarray()"
+                                   class="md-icon-button inline-action-button" title="Activate Subarray">
                             <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                         </md-button>
                         <span>Mode: {{vm.subarray.mode}}</span>
-                        <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}" style="padding: 0; margin: 0">
+                        <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}" style="padding: 0 4px; margin: 0">
                             <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu();"
                                        style="margin: 0">
                                 <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
@@ -36,6 +38,27 @@
                                 </md-menu-item>
                             </md-menu-content>
                         </md-menu>
+                        <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
+                             style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0">
+                            <span style="width: 120px" class="subheader-text">
+                                <span>ID</span>
+                            </span>
+                            <span flex class="subheader-text">
+                                <span>Description</span>
+                            </span>
+                            <span style="width: 160px" class="subheader-text">
+                                <span>Verification State</span>
+                            </span>
+                            <span style="width: 70px" class="subheader-text">
+                                <span>Ready</span>
+                            </span>
+                            <span style="width: 110px" class="subheader-text">
+                                <span>Type</span>
+                            </span>
+                            <span style="width: 230px" class="subheader-text">
+                                <span>Desired Time</span>
+                            </span>
+                        </div>
                 </md-toolbar>
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
@@ -55,8 +78,11 @@
                                       class="schedule-block-id-text">{{item.id_code}}</span>
                                 <i>{{item.owner}}</i>
                             </div>
-                            <span flex title="" style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
+                            <span flex style="margin-left: 5px; margin-top: 4px; width: 180px; overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
 
+                            <span style="margin-left: 5px; margin-top: 4px; width: 150px; margin-right: 3px;">{{item.verification_state}}</span>
+                            <span style="margin-left: 5px; margin-top: 4px; width: 70px; margin-right: 3px;"
+                                ng-class="{'green-color': item.ready, 'red-color': !item.ready}">{{item.ready? 'READY' : 'NOT READY'}}</span>
                             <div style="min-width: 105px; margin-top: 4px; text-align: start;">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                       style="text-transform: uppercase;">{{item.type}}</span>
