@@ -48,7 +48,7 @@
                 </md-toolbar>
                 <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <div style="padding: 0 4px"
-                         ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id}"
+                         ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id} track by item.id"
                          class="schedule-draft-item animate-repeat" layout="column">
                         <div flex layout="row" layout-align="start center">
                             <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary"

@@ -62,7 +62,7 @@
                     </div>
                 </md-toolbar>
                 <div md-theme="{{themePrimary}}" flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
-                    <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id_code"
+                    <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id"
                          style="min-width: 650px !important;" flex layout="row" layout-align="start center"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                          ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
