@@ -131,12 +131,14 @@
         };
 
         vm.progressInterval = $interval(function () {
-
             ObsSchedService.scheduleData.forEach(function (sb) {
                 sb.progress = vm.sbProgress(sb);
             });
-
         }, 1500);
+
+        vm.listCompleted = function () {
+            ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
+        };
 
         vm.setPriority = function (sb, event) {
             $mdDialog
@@ -174,6 +176,8 @@
                     targetEvent: event
                 });
         };
+
+        vm.listCompleted();
 
         $scope.$on('$destroy', function () {
             if (vm.progressInterval) {

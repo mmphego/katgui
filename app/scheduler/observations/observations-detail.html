@@ -106,7 +106,7 @@
 
             <div style="margin-top: 8px; overflow: hidden" layout="column" class="md-whiteframe-z1 schedule-block-completed-list"
                  ng-class="{'schedule-block-complete-list-min-height': completedScheduleBlockListVisible}">
-                <md-toolbar class="panel-toolbar md-whiteframe-z1" ng-mouseenter="showCompletedTools = true;" ng-mouseleave="showCompletedTools = false;">
+                <md-toolbar class="panel-toolbar md-whiteframe-z1" style="max-height: 64px">
                     <div layout="row" layout-align="start center" layout-padding flex>
 
                         <span style="margin-left: 8px; cursor: pointer;"
@@ -114,8 +114,12 @@
                               ng-click="completedScheduleBlockListVisible = !completedScheduleBlockListVisible;">
                             Completed Schedule Blocks</span>
                         <span flex></span>
-                        <input ng-show="showCompletedTools" class="fade-in" type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="vm.q3"
+                        <input class="fade-in" type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="vm.q3"
                                placeholder="Search Schedules..."/>
+                        <md-button class="md-icon-button inline-action-button" ng-click="vm.listCompleted(); completedScheduleBlockListVisible = true"
+                                   title="Refresh Completed List">
+                            <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
+                        </md-button>
                     </div>
 
                     <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="center center">
@@ -147,8 +151,7 @@
                 </md-toolbar>
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
-                    <div
-                        ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedOrderByFields:vm.q3 | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
+                    <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedOrderByFields:vm.q3 | orderBy:vm.completedOrderBy.value:vm.completedOrderBy.reverse"
                         class="schedule-draft-item" layout="column">
 
                         <div style="" layout="row" layout-align="center center">
