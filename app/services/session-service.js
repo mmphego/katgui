@@ -3,10 +3,12 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, $log) {
+    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log) {
 
         var urlBase = SERVER_URL + '/katauth/api/v1';
         var api = {};
+        api.connection = null;
+        api.deferredMap = {};
         $rootScope.jwt = $localStorage['currentUserToken'];
 
         var jwtHeader = {
@@ -55,8 +57,50 @@
             }
         };
 
+        api.onSockJSOpen = function () {
+            if (api.connection && api.connection.readyState) {
+                $log.info('Lead Operator Connection Established.');
+                api.deferredMap['connectDefer'].resolve();
+            }
+        };
+
+        api.onSockJSClose = function () {
+            $log.info('Disconnected Lead Operator Connection.');
+            api.connection = null;
+        };
+
+        api.onSockJSMessage = function (e) {
+            api.connection.send($rootScope.currentUser.email);
+            $log.info('Received: ' + e.data);
+        };
+
+        api.connectListener = function (skipDeferObject) {
+            $log.info('Lead Operator Connecting...');
+            api.connection = new SockJS(urlBase + '/alive');
+            api.connection.onopen = api.onSockJSOpen;
+            api.connection.onmessage = api.onSockJSMessage;
+            api.connection.onclose = api.onSockJSClose;
+
+            if (!skipDeferObject) {
+                api.deferredMap['connectDefer'] = $q.defer();
+                return api.deferredMap['connectDefer'].promise;
+            }
+        };
+
+        api.disconnectListener = function () {
+            if (api.connection) {
+                $log.info('Disconnecting Lead Operator.');
+                api.connection.close();
+            } else {
+                $log.error('Attempting to disconnect an already disconnected connection!');
+            }
+        };
+
         function logoutResultSuccess() {
             $rootScope.showSimpleToast('Logout successful.');
+            if (api.connection) {
+                api.disconnectListener();
+            }
             $rootScope.currentUser = null;
             $rootScope.loggedIn = false;
             $localStorage['currentUserToken'] = null;
@@ -66,6 +110,9 @@
 
         function logoutResultError(result) {
             $rootScope.showSimpleToast('Error Logging out, resetting local user session.');
+            if (api.connection) {
+                api.disconnectListener();
+            }
             $rootScope.currentUser = null;
             $rootScope.loggedIn = false;
             $localStorage['currentUserToken'] = null;
@@ -182,6 +229,9 @@
                     $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
                     $rootScope.$emit('loginSuccess', true);
                     $rootScope.connectEvents();
+                    if (payload.req_role === 'lead_operator') {
+                        api.connectListener(false);
+                    }
                 }
             } else {
                 //User's session expired, we got a message
