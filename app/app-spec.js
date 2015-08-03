@@ -161,7 +161,7 @@ describe('ApplicationCtrl', function () {
         ctrl.updateTimeDisplay();
         expect(ctrl.utcTime).toEqual('00:23:20');
         expect(ctrl.localTime).toEqual('02:23:20');
-        expect(ctrl.julianDay).toEqual(2440585.6);
+        expect(ctrl.julianDay).toEqual(2440585.516);
         expect(ctrl.localSiderealTime).not.toBeDefined();
         expect(scope.$root.serverTimeOnLoad).toBe(1401);
 
@@ -169,16 +169,16 @@ describe('ApplicationCtrl', function () {
         ctrl.updateTimeDisplay();
         expect(ctrl.utcTime).toEqual('00:23:21');
         expect(ctrl.localTime).toEqual('02:23:21');
-        expect(ctrl.julianDay).toEqual(2440585.6);
-        expect(ctrl.localSiderealTime).toBe('10:22:25');
+        expect(ctrl.julianDay).toEqual(2440585.516);
+        expect(ctrl.localSiderealTime).toBe('8:22:05');
         expect(scope.$root.serverTimeOnLoad).toBe(1402);
 
         scope.$root.serverTimeOnLoad = 14000;
         ctrl.updateTimeDisplay();
         expect(ctrl.utcTime).toEqual('03:53:20');
         expect(ctrl.localTime).toEqual('05:53:20');
-        expect(ctrl.julianDay).toEqual(2440585.745);
-        expect(ctrl.localSiderealTime).toBe('13:52:59');
+        expect(ctrl.julianDay).toEqual(2440585.662);
+        expect(ctrl.localSiderealTime).toBe('11:52:39');
         expect(scope.$root.serverTimeOnLoad).toBe(14001);
     });
 
