@@ -142,8 +142,6 @@
                     for (var i in jsonResult) {
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
-                        } else if (jsonResult[i].state !== 'ACTIVE' && jsonResult[i].state !== 'SCHEDULED') {
-                            api.scheduleCompletedData.push(jsonResult[i]);
                         }
                     }
                 })
@@ -159,6 +157,20 @@
                     var jsonResult = JSON.parse(result.result);
                     for (var i in jsonResult) {
                         api.scheduleData.push(jsonResult[i]);
+                    }
+                })
+                .error(function (error) {
+                    $log.error(error);
+                });
+        };
+
+        api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
+            api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
+            $http.get(urlBase + '/sb/completed/' + sub_nr + '/' + max_nr)
+                .success(function (result) {
+                    var jsonResult = JSON.parse(result.result);
+                    for (var i in jsonResult) {
+                        api.scheduleCompletedData.push(jsonResult[i]);
                     }
                 })
                 .error(function (error) {
