@@ -81,7 +81,8 @@
                     $log.info('Found confirmation token');
                     var b = result.confirmation_token.split(".");
                     var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
-                    if (payload.current_lo &&
+                    if (payload.req_role === 'lead_operator' &&
+                        payload.current_lo &&
                         payload.current_lo.length > 0 &&
                         payload.current_lo !== payload.requester) {
                         confirmRole(result.session_id, payload);

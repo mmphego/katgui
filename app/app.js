@@ -195,6 +195,7 @@
             SessionService.logout();
             vm.showNavbar = false;
         };
+        $rootScope.logout = vm.logout;
 
         $rootScope.stateGo = function (newState) {
             $state.go(newState);

@@ -57,6 +57,9 @@
                     SoundService.playBeep();
                 }
             }
+            if (!$rootScope.$$phase) {
+                $rootScope.$digest();
+            }
         };
         return api;
     }

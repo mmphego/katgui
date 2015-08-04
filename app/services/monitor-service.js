@@ -124,6 +124,9 @@
                                     var channelNameSplit = messageChannel[1].split('.');
                                     if (channelNameSplit[1] === 'lo_id') {
                                         api.currentLeadOperator.name = messageObj.msg_data.value !== '' ? messageObj.msg_data.value : 'None';
+                                        if (api.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                                            $rootScope.logout();
+                                        }
                                     } else if (channelNameSplit[1] === 'interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
                                     } else if (channelNameSplit[0] === 'kataware') {

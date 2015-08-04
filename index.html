@@ -336,16 +336,17 @@
         </md-toolbar>
         <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" style="margin-bottom: 25px">
         </md-content>
-        <div class="main-footer-toolbar" layout="column">
+        <div class="main-footer-toolbar" layout="column" ng-if="loggedIn">
             <md-toolbar md-theme="{{themePrimary}}" class="md-toolbar-tools-small md-whiteframe-z1" layout="row">
                 <span>
                     Interlock State: {{$root.interlockState.value}}
                     <md-tooltip>Current Interlock State</md-tooltip>
                 </span>
                 <div flex style="text-align: center">
+                    <span style="margin: 0 4px;">{{$root.currentUser.email}}</span>
                     <span style="margin: 0 4px;">{{::$root.systemConfig.version.description}}</span>
                     <span style="margin: 0 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
-                    <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
+                    <!--<md-tooltip>CAM System Description and Deployment Date</md-tooltip>-->
                 </div>
                 <div layout="row">
                     <div ng-show="showDayOfYear && $root.dayOfYear">
