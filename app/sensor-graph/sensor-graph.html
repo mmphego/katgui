@@ -129,7 +129,7 @@
                        title="Type a sensor name expression and press enter. E.g. *wind*"/>
             </md-input-container>
             <div class="sensor-search-name-list unselectable md-whiteframe-z1">
-                <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames track by $index"
+                <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames | orderBy:'name' track by $index"
                      ng-click="vm.searchSensorClicked(sensor);">
                     <span>{{sensor.name}}</span>
                 </div>

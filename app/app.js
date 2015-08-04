@@ -473,7 +473,7 @@
             name: 'scheduler',
             url: '/scheduler',
             templateUrl: 'app/scheduler/scheduler-home.html',
-            title: 'Scheduler',
+            title: 'Subarrays',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }

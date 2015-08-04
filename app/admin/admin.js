@@ -138,7 +138,7 @@
                     "</md-select></div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
                     "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='hide()'>Cancel</md-button>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='delegateControl(sub_nr); hide()'><span>Set Control Delegate</span></md-button>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='delegateControl(sub_nr); hide()'><span>Set Control Authority</span></md-button>" +
                     "</div>" +
                     "</md-content></md-dialog>",
                     targetEvent: event
