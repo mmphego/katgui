@@ -127,7 +127,7 @@
             $state.go(newState);
         };
 
-        vm.stateGoWithSubId = function (newState, subarray_id) {
+        $rootScope.stateGoWithSubId = function (newState, subarray_id) {
             $state.go(newState, {subarray_id: subarray_id});
         };
 

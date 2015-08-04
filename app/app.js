@@ -196,9 +196,10 @@
             vm.showNavbar = false;
         };
 
-        vm.stateGo = function (newState) {
+        $rootScope.stateGo = function (newState) {
             $state.go(newState);
         };
+        vm.stateGo = $rootScope.stateGo;
 
         vm.sideNavStateGo = function (newState) {
             vm.stateGo(newState);

@@ -17,19 +17,19 @@
                     <span ng-if="subarray.maintenance" title="Subarray is in Maintenance" class="fa fa-wrench" style="position: absolute; right: 8px; top: 12px;"></span>
                 </md-toolbar>
                 <div layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}">
-                    <md-button class="md-primary md-raised" ng-click="vm.stateGoWithSubId('scheduler.resources', subarray.id)"
+                    <md-button class="md-primary md-raised" ng-click="$root.stateGoWithSubId('scheduler.resources', subarray.id)"
                                style="height: 79px; width: 225px;">
                         <div ng-include="'images/subarrays-resources.svg'" class="inline-svg-icon" style="top: 6px; left: 2px;"></div>
                         <span style="position: absolute; left: 74px; top: 22px;">Manage Subarray</span>
                     </md-button>
                     <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>
-                    <md-button class="md-primary md-raised inline-svg-button" ng-click="vm.stateGoWithSubId('scheduler.subarrays', subarray.id)"
+                    <md-button class="md-primary md-raised inline-svg-button" ng-click="$root.stateGoWithSubId('scheduler.subarrays', subarray.id)"
                                style="height: 79px; width: 290px;" ng-disabled="subarray.state !== 'active'">
                         <div ng-include="'images/scheduleblocks.svg'" class="inline-svg-icon" style="top: 2px; left: 2px;"></div>
                         <span style="position: absolute; left: 86px; top: 22px;">Manage Schedule Blocks</span>
                     </md-button>
                     <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>
-                    <md-button class="md-primary md-raised" ng-click="vm.stateGoWithSubId('scheduler.observations.detail', subarray.id)"
+                    <md-button class="md-primary md-raised" ng-click="$root.stateGoWithSubId('scheduler.observations.detail', subarray.id)"
                                style="height: 79px; width: 255px;" ng-disabled="subarray.state !== 'active'">
                         <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="top: 10px; left: 8px;"></div>
                         <span style="position: absolute; left: 74px; top: 22px;">Manage Observations</span>
