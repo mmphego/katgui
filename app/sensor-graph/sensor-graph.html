@@ -123,7 +123,7 @@
 
             <md-input-container md-no-float class="sensor-search-input">
                 <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
-                       placeholder="Search for sensors..." ng-model="vm.sensorSearchStr"
+                       placeholder="Search for sensors... e.g. *wind*" ng-model="vm.sensorSearchStr"
                        ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
                        ng-class="{'input-error':vm.sensorSearchFieldLengthError}"
                        title="Type a sensor name expression and press enter. E.g. *wind*"/>
