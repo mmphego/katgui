@@ -121,6 +121,14 @@
             return $http(createRequest('get', urlBase + '/config-file/user/pointing-models'));
         };
 
+        api.getCam2SpeadList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/cam2spead'));
+        };
+
+        api.getCorrelatorsList = function () {
+            return $http(createRequest('get', urlBase + '/config-file/user/correlators'));
+        };
+
         function createRequest(method, url) {
             return {
                 method: method,
