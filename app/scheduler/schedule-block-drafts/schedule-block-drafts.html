@@ -15,7 +15,7 @@
 
             <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
                  style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0">
-                <span style="width: 115px" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
+                <span style="width: 119px" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
                     <span>ID</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
@@ -33,7 +33,7 @@
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'expected_duration' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'expected_duration' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
-                <span style="width: 142px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('verification_state')">
+                <span style="width: 146px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('verification_state')">
                     <span>Verification State</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'verification_state' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'verification_state' && vm.draftsOrderBy.reverse}"
@@ -57,7 +57,7 @@
             <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by item.id"
                  ng-click="vm.setSelectedScheduleDraft(item)"
                  ng-class="{'selected-draft-schedule-row': item.id_code === vm.selectedScheduleDraft.id_code}" class="schedule-draft-item animate-repeat-opacity" layout="column" post-ng-repeat-load-more>
-                <div layout="row" layout-align="center center" style="max-height: 38px;">
+                <div layout="row" layout-align="start center" style="max-height: 38px; padding: 0 4px">
                     <md-progress-linear ng-if="item.verification_state === 'VERIFYING'" class="md-primary" md-mode="indeterminate"
                                         style="position: absolute; left: 0; right: 0; margin-top: -5px;">
                     </md-progress-linear>
@@ -72,14 +72,13 @@
                             class="schedule-item-description-input" style="height: 27px;"
                            ng-model="item.description" placeholder="Description"/>
                     <span ng-if="!item.editing" flex style="overflow: hidden; text-overflow: ellipsis;" title="{{item.description}}">{{item.description}}</span>
-
+                    <span style="width: 134px; margin: 0 4px">{{item.expected_duration}}</span>
+                    <span style="width: 134px; margin: 0 4px">{{item.verification_state}}</span>
                     <md-select ng-if="item.editing" ng-model="item.type"  style="width: 126px; margin: 0 4px"
                                ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                class="md-primary" ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
                         <md-option ng-value="type" ng-repeat="type in vm.types">{{type}}</md-option>
                     </md-select>
-                    <span style="width: 134px; margin: 0 4px">{{item.expected_duration}}</span>
-                    <span style="width: 134px; margin: 0 4px">{{item.verification_state}}</span>
                     <span ng-if="!item.editing" style="width: 134px; margin: 0 4px"
                           ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
                         {{item.type}}</span>
@@ -87,13 +86,15 @@
                            class="schedule-item-input schedule-item-date-input" ng-class="{'invalid-date-error': item.hasInvalidInput}"
                            ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder=""/>
                     <span ng-if="!item.editing" style="width: 140px;">{{item.desired_start_time}}</span>
-                    <span class="sb-row-button" ng-show="!item.editing"></span>
-                    <span ng-if="item.pendingVerify" class="sb-row-button"></span>
-                    <button ng-if="!item.pendingVerify" title="Save the draft" ng-show="item.isDirty || item.editing" style="transition: 0s;"  class="sb-row-button"
-                               ng-click="vm.saveDraft(item); $event.stopPropagation();">
-                        <span class="fa fa-check"></span>
-                    </button>
-                    <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}">
+                    <md-button ng-show="item.editing" class="inline-action-button" ng-click="vm.saveDraft(item); $event.stopPropagation()"
+                        style="margin: 0">
+                        <span style="display: inherit" class="fa fa-check"></span>
+                    </md-button>
+                    <md-button ng-if="!item.editing" class="inline-action-button" ng-click="vm.removeDraft(item); $event.stopPropagation()" style="margin: 0"
+                        title="Delete Draft">
+                        <span style="display: inherit" class="fa fa-remove"></span>
+                    </md-button>
+                    <md-menu md-theme="{{themePrimaryButtons}}">
                         <md-button class="md-icon-button inline-action-button" ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
                                    style="margin: 0">
                             <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
@@ -103,14 +104,11 @@
                                 <md-button ng-click="item.editing = true">Edit Draft</md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="item.loadMenuContents" ng-show="item.type == 'OBSERVATION'">
-                                <md-button ng-disabled="!item.sub_nr" title="{{!item.sub_nr ? 'Assign to a Subarray before verifying.' : ''}}"
+                                <md-button ng-disabled="!item.sub_nr" title="{{!item.sub_nr ? 'Assign to a Subarray before verifying' : ''}}"
                                            ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="item.loadMenuContents">
                                 <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
-                            </md-menu-item>
-                            <md-menu-item ng-if="item.loadMenuContents">
-                                <md-button ng-click="vm.removeDraft(item)">Delete Draft</md-button>
                             </md-menu-item>
                         </md-menu-content>
                     </md-menu>

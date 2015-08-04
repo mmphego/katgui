@@ -26,7 +26,7 @@
 
         vm.limitTo = 5;
         $scope.loadMore = function() {
-            vm.limitTo += 10;
+            vm.limitTo += 30;
         };
 
         vm.assignSelectedScheduleBlocks = function (subarray) {
@@ -52,6 +52,16 @@
 
         vm.viewSBTasklog = function (sb) {
             ObsSchedService.viewTaskLogForSBIdCode(sb.id_code);
+        };
+
+        vm.removeDraft = function (item) {
+            ObsSchedService.deleteScheduleDraft(item.id_code)
+                .success(function (result) {
+                    $log.info(result);
+                })
+                .error(function (result) {
+                    NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
+                });
         };
 
         vm.navigateToSchedulerDetails = function (subarray_id) {

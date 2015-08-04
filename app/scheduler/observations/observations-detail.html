@@ -36,6 +36,12 @@
                                 <md-menu-item ng-repeat="type in vm.modeTypes">
                                     <md-button ng-click="vm.setSchedulerMode(type)">Set Mode to: {{type}}</md-button>
                                 </md-menu-item>
+                                <md-menu-item ng-if="vm.subarray.maintenance">
+                                    <md-button ng-click="vm.setSubarrayMaintenance(false)">Clear Subarray In Maintenance</md-button>
+                                </md-menu-item>
+                                <md-menu-item ng-if="!vm.subarray.maintenance">
+                                    <md-button ng-click="vm.setSubarrayMaintenance(true)">Set Subarray In Maintenance</md-button>
+                                </md-menu-item>
                             </md-menu-content>
                         </md-menu>
                         <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
@@ -214,8 +220,8 @@
                 </md-toolbar>
                 <div flex style="padding: 0" layout="row">
                     <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;">
-                        <div ng-repeat="resource in vm.subarray.allocations" layout-align="center center"
-                             class="resource-pool-item animate-repeat" layout="row" ng-if="!vm.selectedSchedule || resource.allocation === vm.selectedSchedule.id_code">
+                        <div ng-repeat="resource in vm.subarray.allocations track by $index" layout-align="center center"
+                             class="resource-pool-item animate-repeat" layout="row" ng-if="resource.allocation !== 'None'">
                             <span style="min-width: 22px; margin-left: 4px;">
                                 <span class="fa fa-wrench maintenance-text" ng-if="resource.maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
                             </span>
@@ -226,8 +232,8 @@
                                   ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
                         </div>
                     </div>
-                    <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;" layout="column">
-                        <div ng-repeat="resource in vm.subarray.allocations" layout-align="center center"
+                    <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; max-width: 450px;" layout="column">
+                        <div ng-repeat="resource in vm.subarray.allocations track by $index" layout-align="center center"
                              class="resource-pool-item animate-repeat" layout="row">
                             <span style="min-width: 22px; margin-left: 4px;">
                                 <span class="fa fa-wrench maintenance-text" ng-if="vm.isResourceInMaintenance(resource)" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
@@ -256,7 +262,7 @@
                     </div>
                 </md-toolbar>
                 <div flex style="padding: 0" layout="column">
-                    <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
+                    <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column" style="max-width: 450px;"
                          ng-class="{'highlight-script-window': vm.selectedSchedule !== null, 'md-whiteframe-z2': vm.selectedSchedule === null}">
                         <pre flex style="margin: 0" ng-if="vm.selectedSchedule !== null" ng-bind-html='vm.selectedSchedule | prettifyJSON'></pre>
                     </div>

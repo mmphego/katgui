@@ -206,7 +206,6 @@
 
                 var draftIndex = _.findLastIndex(api.scheduleDraftData, {id_code: sb.id_code});
                 var scheduledIndex = _.findLastIndex(api.scheduleData, {id_code: sb.id_code});
-                var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id_code: sb.id_code});
 
                 if (draftIndex > -1 && sb.state !== 'DRAFT') {
                     api.scheduleDraftData.splice(draftIndex, 1);
@@ -222,11 +221,6 @@
                 } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
                     api.scheduleData.push(sb);
                 }
-                if (completedIndex === -1 && (sb.state !== 'SCHEDULED' && sb.state !== 'ACTIVE' && sb.state !== 'DRAFT')) {
-                    api.scheduleCompletedData.push(sb);
-                } else if (completedIndex > -1) {
-                    api.scheduleCompletedData[completedIndex] = sb;
-                }
             } else if (action === 'sb_add') {
                 if (sb.state === 'DRAFT') {
                     api.scheduleDraftData.push(sb);
@@ -239,6 +233,12 @@
             } else if (action === 'sb_order_change') {
                 NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
                 api.getScheduledScheduleBlocks();
+            } else if (action === 'sb_add_completed') {
+                api.scheduleCompletedData.unshift(sb);
+            } else if (action === 'sb_remove_completed') {
+                //only a limited number of completed sbs are shown
+                var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id_code: sb.id_code});
+                api.scheduleCompletedData.splice(completedIndex, 1);
             } else {
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
                 $log.error(sb)

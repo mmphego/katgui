@@ -493,7 +493,7 @@
             parent: schedulerHome,
             url: '/subarrays/:subarray_id',
             templateUrl: 'app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.html',
-            title: 'Scheduler.Schedule Blocks',
+            title: 'Subarrays.Schedule Blocks',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -503,7 +503,7 @@
             parent: schedulerHome,
             url: '/resources/:subarray_id',
             templateUrl: 'app/scheduler/subarray-resources/subarray-resources.html',
-            title: 'Scheduler.Resources',
+            title: 'Subarrays.Resource Assignment',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -513,7 +513,7 @@
             parent: schedulerHome,
             url: '/observations',
             templateUrl: 'app/scheduler/observations/observations-overview.html',
-            title: 'Scheduler.Observations Schedules',
+            title: 'Subarrays.Observations Overview',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -524,7 +524,7 @@
             parent: schedulerHome,
             url: '/observations/:subarray_id',
             templateUrl: 'app/scheduler/observations/observations-detail.html',
-            title: 'Scheduler.Observations',
+            title: 'Subarrays.Observations',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

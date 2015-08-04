@@ -127,6 +127,10 @@
             ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
         };
 
+        vm.setSubarrayMaintenance = function (maintenance) {
+            ObsSchedService.setSubarrayMaintenance(vm.subarray_id, maintenance ? 'set' : 'clear');
+        };
+
         vm.setPriority = function (sb, event) {
             $mdDialog
                 .show({

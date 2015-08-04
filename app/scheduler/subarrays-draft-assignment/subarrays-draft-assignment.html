@@ -53,7 +53,7 @@
                                   ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
                                   style="margin-right: 4px;"></span>
                         </span>
-                        <span style="width: 215px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
+                        <span style="width: 255px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
                             <span>Desired Time</span>
                             <span class="fa"
                                   ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
@@ -63,7 +63,7 @@
                 </md-toolbar>
                 <div md-theme="{{themePrimary}}" flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id"
-                         style="min-width: 650px !important;" flex layout="row" layout-align="start center"
+                         style="padding: 0 4px" flex layout="row" layout-align="start center"
                          ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                          ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}" class="schedule-draft-item animate-repeat" layout="column">
                         <md-progress-linear ng-if="item.verification_state === 'VERIFYING'" class="md-primary" md-mode="indeterminate"
@@ -83,15 +83,16 @@
                         <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                               style="width: 105px; text-transform: uppercase;">{{item.type}}</span>
                         <span style="min-width: 186px;">{{item.desired_start_time}}</span>
-                        <span class="inline-sb-button" ng-if="item.pendingVerify"></span>
-                        <span class="inline-sb-button" ng-if="item.pendingVerify"></span>
 
-                        <md-button class="md-icon-button inline-sb-button" ng-if="!item.pendingVerify"
-                                   ng-click="vm.freeScheduleBlock(subarray, item); $event.stopPropagation()"
-                                   title="Free Schedule Blocks">
-                            <md-icon class="fa" md-font-icon="fa-minus"></md-icon>
+                        <md-button class="inline-action-button" title="Free Schedule Blocks" style="margin:0"
+                                   ng-click="vm.freeScheduleBlock(subarray, item); $event.stopPropagation()">
+                            <span style="display: inherit" class="fa fa-minus"></span>
                         </md-button>
-                        <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}">
+                        <md-button class="inline-action-button" title="Schedule Draft Schedule Block" style="margin:0"
+                                   ng-click="vm.scheduleDraft(item); $event.stopPropagation()">
+                            <span style="display: inherit" class="fa fa-check"></span>
+                        </md-button>
+                        <md-menu>
                             <md-button class="md-icon-button inline-action-button" ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
                                        style="margin: 0">
                                 <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
@@ -102,9 +103,6 @@
                                 </md-menu-item>
                                 <md-menu-item ng-if="item.loadMenuContents">
                                     <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
-                                </md-menu-item>
-                                <md-menu-item ng-if="item.loadMenuContents">
-                                    <md-button ng-click="vm.scheduleDraft(item)">Schedule Draft</md-button>
                                 </md-menu-item>
                             </md-menu-content>
                         </md-menu>
@@ -130,20 +128,22 @@
                 </div>
             </md-toolbar>
             <div class="schedule-draft-data-list" flex>
-                <!--ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"-->
                 <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} | regexSearch:vm.draftsOrderByFields:vm.q | limitTo:vm.limitTo track by item.id_code" title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
                      style="cursor: pointer !important;"
                      ng-class="{'selected-resource-item': item.selected}"
                      ng-click="item.selected = !item.selected;"
                      class="schedule-draft-item animate-repeat" layout="column" layout-align="center start" post-ng-repeat-load-more>
-                    <div layout="row" layout-align="center center">
-                        <span class="fa fa-question-circle" style="pointer: cursor; font-size: 19px; width: 17px" title="Show Schedule Block Details"
-                              ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();"></span>
-
-                        <div layout="row" class="schedule-block-name-div">
+                    <div layout="row" layout-align="start center" style="padding: 0 2px">
+                        <md-button class="inline-action-button" ng-click="vm.removeDraft(item); $event.stopPropagation()"
+                                   style="margin: 0; max-width: 24px; min-width: 24px;" title="Delete Draft">
+                            <span style="display: inherit" class="fa fa-remove"></span>
+                        </md-button>
+                        <div layout="column" layout-align="start" style="padding-top: 4px; width: 125px">
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                  class="schedule-block-id-text">{{item.id_code}}</span>
-                            <i style="margin-left: 18px !important;">{{item.owner}}</i>
+                                  style="font-size: 14px; font-weight: bold"
+                                  ng-click="$root.showSBDetails(item, $event)">{{item.id_code}}
+                            </span>
+                            <span><i>{{item.owner}}</i></span>
                         </div>
 
                         <div flex style="min-width: 150px; max-width: 150px; overflow: hidden; margin-left: -14px; margin-right: 4px; text-overflow: ellipsis;">

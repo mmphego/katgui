@@ -153,35 +153,6 @@ describe('ApplicationCtrl', function () {
         expect(ctrl.currentState()).toEqual('Scheduler');
     });
 
-    it('should update the time display with utc, sast, julian date and lst', function () {
-        scope.$root.serverTimeOnLoad = 0;
-        ctrl.updateTimeDisplay();
-        expect(scope.$root.serverTimeOnLoad).toBe(0);
-        scope.$root.serverTimeOnLoad = 1400;
-        ctrl.updateTimeDisplay();
-        expect(ctrl.utcTime).toEqual('00:23:20');
-        expect(ctrl.localTime).toEqual('02:23:20');
-        expect(ctrl.julianDay).toEqual(2440585.516);
-        expect(ctrl.localSiderealTime).not.toBeDefined();
-        expect(scope.$root.serverTimeOnLoad).toBe(1401);
-
-        scope.$root.longitude = 21.410555555555554;
-        ctrl.updateTimeDisplay();
-        expect(ctrl.utcTime).toEqual('00:23:21');
-        expect(ctrl.localTime).toEqual('02:23:21');
-        expect(ctrl.julianDay).toEqual(2440585.516);
-        expect(ctrl.localSiderealTime).toBe('8:22:05');
-        expect(scope.$root.serverTimeOnLoad).toBe(1402);
-
-        scope.$root.serverTimeOnLoad = 14000;
-        ctrl.updateTimeDisplay();
-        expect(ctrl.utcTime).toEqual('03:53:20');
-        expect(ctrl.localTime).toEqual('05:53:20');
-        expect(ctrl.julianDay).toEqual(2440585.662);
-        expect(ctrl.localSiderealTime).toBe('11:52:39');
-        expect(scope.$root.serverTimeOnLoad).toBe(14001);
-    });
-
     it('should call the service functions to sync time with the server and set the serverTimeOnLoad on success', function () {
         httpBackend.expect('GET', 'http://localhost:9876:8840/array/position').respond(21.410555555555554);
         var deferred = q.defer();

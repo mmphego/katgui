@@ -3,8 +3,8 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, SERVER_URL, KatGuiUtil, $timeout, StatusService,
-                            AlarmsService, ObsSchedService, $interval, $q, $log, ReceptorStateService) {
+    function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
+                            $rootScope, $q, $log, ReceptorStateService) {
 
         var urlBase = SERVER_URL + '/katmonitor/api/v1';
         var api = {};
