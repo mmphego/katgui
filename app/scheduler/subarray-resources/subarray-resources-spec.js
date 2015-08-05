@@ -20,7 +20,7 @@
 //        });
 //
 //        $rootScope.showSimpleDialog = function () {};
-//        $rootScope.showSimpleToast = function() {};
+//        NotifyService.showSimpleToast = function() {};
 //        $rootScope.displayPromiseResult = function() {};
 //        ctrl.poolResourcesFree = [{name:'anc', state:'ok', sub_nr:'free'}, {name:'m011', state:'ok', sub_nr:'free'}, {name:'m022', state:'ok', sub_nr:'free'}, {name:'m033', state:'ok', sub_nr:'free'}];
 //    }));

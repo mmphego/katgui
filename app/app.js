@@ -28,7 +28,6 @@
             control: 'control',
             expert: 'expert'
         })
-        .constant('TOAST_HIDE_DELAY', 3500)
         .constant('THEMES', [
             {
                 name: 'Blue-Grey',
@@ -59,8 +58,8 @@
         .controller('ApplicationCtrl', ApplicationCtrl);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
-                             ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, $mdToast,
-                             TOAST_HIDE_DELAY, SessionService, $mdDialog, CENTRAL_LOGGER_PORT, $log, DATETIME_FORMAT) {
+                             ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, SessionService,
+                             CENTRAL_LOGGER_PORT, $log, DATETIME_FORMAT, NotifyService) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -114,7 +113,6 @@
         vm.userLoggedIn = false;
         vm.actionMenuOpen = false;
         vm.connectionToMonitorLost = false;
-        $rootScope.toastPosition = 'bottom right';
         $rootScope.alarmsData = AlarmsService.alarmsData;
         $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
         $rootScope.interlockState = MonitorService.interlockState;
@@ -131,17 +129,6 @@
 
         $rootScope.isNavbarVisible = function () {
             return vm.showNavbar;
-        };
-
-        $rootScope.showSimpleToast = function (message) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content(message)
-                    .position($rootScope.toastPosition)
-                    .hideDelay(TOAST_HIDE_DELAY)
-            );
-
-            $log.info('Showing toast-message: ' + message);
         };
 
         $rootScope.connectEvents = function () {
@@ -240,94 +227,10 @@
 
         $rootScope.displayPromiseResult = function (result) {
             if (result.result === 'ok') {
-                $rootScope.showSimpleToast(result.message);
+                NotifyService.showSimpleToast(result.message);
             } else {
-                $rootScope.showSimpleDialog(result.result, result.message);
+                NotifyService.showSimpleDialog(result.result, result.message);
             }
-        };
-
-        $rootScope.showSimpleDialog = function (title, message) {
-            $rootScope.showDialog(title, message);
-        };
-
-        $rootScope.showDialog = function (title, content, event) {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
-                        $scope.title = title;
-                        $scope.content = content;
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                    },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
-                    "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
-                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
-                    "<div flex>{{content}}</div>" +
-                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
-                    "</div>" +
-                    "</div>" +
-                    "</md-dialog>",
-                    targetEvent: event
-                });
-
-            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
-        };
-
-        $rootScope.showPreDialog = function (title, content, event) {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
-                        $scope.title = title;
-                        $scope.content = content;
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                    },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
-                    "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
-                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
-                    "<div flex><pre>{{content}}</pre></div>" +
-                    "</div>" +
-                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
-                    "</div>" +
-                    "</md-dialog>",
-                    targetEvent: event
-                });
-
-            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
-        };
-
-        $rootScope.showSBDetails = function (sb, event) {
-            $rootScope.mdDialogSb = sb;
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
-
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
-                        $scope.sb = $rootScope.mdDialogSb;
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                            $rootScope.mdDialogSb = undefined;
-                        };
-                    },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label='Schedule Block Details'>" +
-                    "<md-content style='padding: 0; margin: 0; width: 500px;height:800px' layout='column' layout-padding >" +
-                    "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
-                    "<textarea style='resize: none; overflow: auto; border: 0; background: transparent' auto-grow readonly>{{sb | json:4}}</textarea>" +
-                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button class='md-primary' style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
-                    "</div>" +
-                    "</md-content></md-dialog>",
-                    targetEvent: event
-                });
         };
 
         vm.updateTimeDisplay = function () {
@@ -339,7 +242,7 @@
                 vm.currentDate = utcTime.format('YYYY-MM-DD');
                 vm.dayOfYear = utcTime.dayOfYear();
 
-                var fractionalHours = localTime.hours() + localTime.minutes() / 60 + (localTime.seconds() / 60) / 60;
+                var fractionalHours = utcTime.hours() + utcTime.minutes() / 60 + (utcTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(
                     utcTime.date(),
                     utcTime.month() + 1,
@@ -386,6 +289,8 @@
             return Object.keys(obj);
         };
 
+        $rootScope.showSBDetails = NotifyService.showSBDetails;
+
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
             KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
@@ -396,7 +301,7 @@
         };
 
         vm.openIRCDisplay = function ($event) {
-            $rootScope.showPreDialog(
+            NotifyService.showPreDialog(
                 'IRC Information',
                 'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
                 $event);
@@ -406,7 +311,7 @@
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/logfile/" ).focus();
             } else {
-                $rootScope.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+                NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
 
@@ -414,7 +319,7 @@
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
             } else {
-                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
 

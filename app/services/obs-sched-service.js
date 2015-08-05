@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($http, SERVER_URL, $rootScope, ConfigService, $log, $q, $mdDialog) {
+    function ObsSchedService($http, SERVER_URL, ConfigService, $log, $q, $mdDialog, NotifyService) {
 
         var urlBase = SERVER_URL + '/katcontrol/api/v1';
         var api = {};
@@ -24,16 +24,16 @@
                 .success(function (result) {
                     var message = result.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
                     if (message.split(' ')[1] === 'ok') {
-                        $rootScope.showSimpleToast(message);
+                        NotifyService.showSimpleToast(message);
                     } else {
-                        $rootScope.showPreDialog('Error Processing Request', message);
+                        NotifyService.showPreDialog('Error Processing Request', message);
                     }
                     if (deferred) {
                         deferred.resolve();
                     }
                 })
                 .error(function (error) {
-                    $rootScope.showSimpleDialog('Error sending request', error);
+                    NotifyService.showSimpleDialog('Error sending request', error);
                     if (deferred) {
                         deferred.resolve();
                     }
@@ -78,7 +78,7 @@
         api.setSchedulePriority = function (id_code, priority) {
             $http.post(urlBase + '/sb/' + id_code + '/priority/' + priority)
                 .success(function (result) {
-                    $rootScope.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
+                    NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
                     $log.info(result);
                 })
                 .error(function (error) {
@@ -142,8 +142,6 @@
                     for (var i in jsonResult) {
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
-                        } else if (jsonResult[i].state !== 'ACTIVE' && jsonResult[i].state !== 'SCHEDULED') {
-                            api.scheduleCompletedData.push(jsonResult[i]);
                         }
                     }
                 })
@@ -159,6 +157,20 @@
                     var jsonResult = JSON.parse(result.result);
                     for (var i in jsonResult) {
                         api.scheduleData.push(jsonResult[i]);
+                    }
+                })
+                .error(function (error) {
+                    $log.error(error);
+                });
+        };
+
+        api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
+            api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
+            $http.get(urlBase + '/sb/completed/' + sub_nr + '/' + max_nr)
+                .success(function (result) {
+                    var jsonResult = JSON.parse(result.result);
+                    for (var i in jsonResult) {
+                        api.scheduleCompletedData.push(jsonResult[i]);
                     }
                 })
                 .error(function (error) {
@@ -189,7 +201,7 @@
                         break;
                     }
                 }
-                $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been removed');
+                NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been removed');
             } else if (action === 'sb_update') {
 
                 var draftIndex = _.findLastIndex(api.scheduleDraftData, {id_code: sb.id_code});
@@ -223,9 +235,9 @@
                 } else {
                     api.scheduleCompletedData.push(sb);
                 }
-                $rootScope.showSimpleToast('SB ' + sb.id_code + ' has been added.');
+                NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
             } else if (action === 'sb_order_change') {
-                $rootScope.showSimpleToast('Reloading sb order from KATPortal.');
+                NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
                 api.getScheduledScheduleBlocks();
             } else {
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
@@ -268,7 +280,7 @@
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/tailtask/" + id_code + "/progress").focus();
             } else {
-                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
 

@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorPointingHorizontal', function () {
+    .directive('receptorPointingHorizontal', function ($log) {
         return {
             restrict: 'EA',
             scope: {
@@ -32,16 +32,20 @@ angular.module('katGui.d3')
                 var svg, x, y, xAxis, yAxis, xAxisElement, yAxisElement;
 
                 scope.data = [];
+                scope.skyPlotData = [];
+                scope.receptorData = [];
+
                 scope.redrawFunction = function (receptors,
                                                  showNames,
                                                  showTrails,
                                                  showGridLines,
                                                  trailDots,
                                                  horizonMaskToggled) {
-
                     scope.trailDots = trailDots;
-                    scope.showNames = showNames;
                     scope.showTrails = showTrails;
+                    scope.data = receptors;
+                    scope.skyPlotData = [];
+                    scope.receptorData = [];
 
                     //parse the horizon mask data and sort it
                     var newHorizonData = false;
@@ -56,15 +60,20 @@ angular.module('katGui.d3')
                             });
                             newHorizonData = true;
                         }
+                        if (receptor.skyPlot) {
+                            scope.skyPlotData.push(receptor);
+                        } else {
+                            scope.receptorData.push(receptor);
+                        }
                     });
-
-                    scope.data = receptors;
 
                     if (!svg
                         || scope.showGridLines !== showGridLines
                         || newHorizonData
-                        || horizonMaskToggled) {
+                        || horizonMaskToggled
+                        || scope.showNames !== showNames) {
                         scope.showGridLines = showGridLines;
+                        scope.showNames = showNames;
                         drawSvg();
                     }
 
@@ -72,6 +81,8 @@ angular.module('katGui.d3')
                 };
 
                 function drawSvg() {
+
+                    scope.redrawSkyPlot = true;
                     scope.drawingSvg = true;
 
                     width = element[0].clientWidth - margin.left - margin.right;
@@ -111,7 +122,7 @@ angular.module('katGui.d3')
                         .attr("class", "y axis y-axis");
 
                     x.domain([-180, 180]);
-                    y.domain([0, 92]);
+                    y.domain([-5, 100]);
 
                     //create the axis
                     xAxisElement.call(xAxis);
@@ -132,7 +143,7 @@ angular.module('katGui.d3')
 
                     //draw the horizon masks
                     chart.selectAll(".horizon-mask")
-                        .data(scope.data)
+                        .data(scope.receptorData)
                         .enter().append("path")
                         .attr("class", function (d) {
                             return d.name + "-horizon-mask horizon-mask " + d.name + "_actual";
@@ -153,12 +164,30 @@ angular.module('katGui.d3')
 
                 function drawValues() {
 
+                    svg.selectAll(".name-pos-text").remove();
+                    if (!scope.showTrails) {
+                        svg.selectAll(".receptor-circle").remove();
+                        svg.selectAll("g.requested-pos").remove();
+                    } else {
+                        svg.selectAll("g.requested-pos").remove();
+                    }
                     scope.positions = {};
                     scope.positions_requested = {};
 
+                    var dataToDraw = [];
+                    scope.receptorData.forEach(function (receptor) {
+                        dataToDraw.push(receptor);
+                    });
+                    if (scope.redrawSkyPlot) {
+                        scope.skyPlotData.forEach(function (receptor) {
+                            dataToDraw.push(receptor);
+                        });
+                        scope.redrawSkyPlot = false;
+                    }
+
                     //calculate and save the projection data to display points in the same position as bigger circles
                     //and to group tooltip values for points in the same position
-                    scope.data.forEach(function (d) {
+                    dataToDraw.forEach(function (d) {
                         if (d.ap_actual_azim && d.ap_actual_elev) {
                             d.proj_requested_az_x = Math.floor(x(d.ap_actual_azim.value) * pm) / pm;
                             d.proj_requested_el_y = Math.floor(y(d.ap_actual_elev.value) * pm) / pm;
@@ -180,7 +209,7 @@ angular.module('katGui.d3')
                     });
 
                     //compute tooltip values for points in the same position
-                    scope.data.forEach(function (d) {
+                    dataToDraw.forEach(function (d) {
                         if (!d.tooltipHtml) {
                             var items = scope.positions[d.proj_actual];
                             d.tooltipHtml = "<div>";
@@ -205,15 +234,10 @@ angular.module('katGui.d3')
                         }
                     });
 
-                    if (!scope.showTrails) {
-                        focus.selectAll("circle").remove();
-                    }
-                    focus.selectAll("text").remove();
-                    focus.selectAll("g.requested-pos").remove();
 
                     //draw a crosshair where the requested position is
                     focus.selectAll("g.requested-pos")
-                        .data(scope.data)
+                        .data(dataToDraw)
                         .enter().append('g')
                         .attr("class", "requested-pos")
                         .attr("transform", function (d) {
@@ -234,7 +258,7 @@ angular.module('katGui.d3')
                     //draw a color circle where the actual position is
                     //and setup tooltip behaviour
                     focus.selectAll("g.actual-pos")
-                        .data(scope.data)
+                        .data(dataToDraw)
                         .enter().append("circle")
                         .attr("class", function (d) {
                             var c = color(d.name + '_actual');
@@ -254,6 +278,9 @@ angular.module('katGui.d3')
                             var classStr = "actual-pos " + d.name + "_actual";
                             if (d.proj_actual && scope.positions[d.proj_actual].length > 1) {
                                 classStr += " actual-pos-border";
+                            }
+                            if (!d.skyPlot) {
+                                classStr += " receptor-circle";
                             }
                             return classStr;
                         })
@@ -287,7 +314,7 @@ angular.module('katGui.d3')
 
                     //reduce the radius of the trail circles
                     if (scope.showTrails) {
-                        scope.data.forEach(function (d) {
+                        scope.receptorData.forEach(function (d) {
                             var itemsList = svg.selectAll("." + d.name + "_actual")[0];
 
                             for (var i = itemsList.length - 1; i >= 0; i--) {
@@ -302,9 +329,16 @@ angular.module('katGui.d3')
 
                     //draw the names of the receptor name
                     if (scope.showNames) {
-                        focus.selectAll("g.actual-pos-text")
-                            .data(scope.data)
-                            .enter().append("text")
+                        focus.selectAll("g.name-pos-text")
+                            .data(dataToDraw)
+                            .enter().append("g")
+                            .attr("class", function (d) {
+                                if (d.skyPlot) {
+                                    return "";
+                                }
+                                return "name-pos-text";
+                            })
+                            .append("text")
                             .attr("transform", function (d) {
                                 if (d.proj_actual) {
                                     var proj = d.proj_actual.split(',');
@@ -329,23 +363,30 @@ angular.module('katGui.d3')
                     }
 
                     function mouseOver(d) {
-                        tooltip.style("opacity", 0.9);
+                        var mouse = d3.mouse(element[0]);
+                        var elementBR = element[0].getBoundingClientRect();
                         tooltip.html(d.tooltipHtml);
-
                         var tooltipWidth = tooltip[0][0].offsetWidth;
                         var tooltipHeight = tooltip[0][0].offsetHeight;
 
-                        var x = d3.event.layerX;
-                        var y = d3.event.layerY;
-                        if (window.innerWidth - x < tooltipWidth + 50) {
-                            x = window.innerWidth - tooltipWidth - 50;
+                        var x = mouse[0];
+                        var y = mouse[1];
+                        if (y + tooltipHeight > elementBR.bottom) {
+                            y = elementBR.bottom - tooltipHeight - 80;
+                        } else if (y < elementBR.top) {
+                            y = elementBR.top + 80;
                         }
-                        if (window.innerHeight - y < tooltipHeight + 50) {
-                            y = window.innerHeight - tooltipHeight - 50;
+
+                        if (x + tooltipWidth > elementBR.right) {
+                            x = elementBR.right - tooltipWidth - 80;
+                        } else if (x < elementBR.left) {
+                            x = elementBR.left + 80;
                         }
+
                         tooltip
-                            .style("top", (y + 15) + "px")
-                            .style("left", (x + 15) + "px");
+                            .style("top", y + "px")
+                            .style("left", x + "px");
+                        tooltip.style("opacity", 0.9);
                     }
 
                     function mouseOut(d) {

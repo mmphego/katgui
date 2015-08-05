@@ -1,6 +1,7 @@
 angular.module('katGui.d3')
 
-    .factory('d3Util', function ($q, $timeout, $rootScope, $log, StatusService, ConfigService, DATETIME_FORMAT) {
+    .factory('d3Util', function ($q, $timeout, $rootScope, $log, StatusService, ConfigService, DATETIME_FORMAT,
+                                 NotifyService) {
 
         var api = {};
 
@@ -175,13 +176,13 @@ angular.module('katGui.d3')
         };
 
         api.displayInitErrorMessage = function (dataMapName) {
-            $rootScope.showSimpleDialog('Error displaying data', 'Could not display the Receptor Status data, contact the katGUI support team.');
+            NotifyService.showSimpleDialog('Error displaying data', 'Could not display the Receptor Status data, contact the katGUI support team.');
             $log.error('Error binding to StatusService data for receptor ' + dataMapName);
         };
 
         api.showDialogForAggregateSensorInfo = function (sensorName) {
             if (ConfigService.aggregateSensorDetail[sensorName]) {
-                $rootScope.showPreDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+                NotifyService.showAggregateSensorsDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
             } else {
                 $log.error('No such aggregate sensor in ConfigService ' + sensorName);
             }

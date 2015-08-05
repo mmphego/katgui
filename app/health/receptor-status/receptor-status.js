@@ -3,7 +3,8 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval, $log) {
+    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval, $log,
+                                NotifyService) {
 
         var vm = this;
         vm.receptorsData = [];
@@ -36,7 +37,7 @@
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
                         vm.connectionLost = false;
-                        $rootScope.showSimpleToast('Reconnected :)');
+                        NotifyService.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
                     $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
@@ -52,7 +53,7 @@
             SensorsService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
                             vm.connectionLost = true;
                             vm.connectInterval = $interval(vm.connectListeners, 10000);

@@ -3,7 +3,8 @@
     angular.module('katGui')
         .controller('WeatherCtrl', WeatherCtrl);
 
-    function WeatherCtrl($rootScope, $scope, DataService, SensorsService, KatGuiUtil, $interval, $log, $q, DATETIME_FORMAT, ConfigService) {
+    function WeatherCtrl($rootScope, $scope, DataService, SensorsService, KatGuiUtil, $interval, $log, $q,
+                         DATETIME_FORMAT, ConfigService, NotifyService) {
 
         var vm = this;
         vm.ancResource = {
@@ -47,7 +48,7 @@
                 vm.redrawWindChart([], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine], true);
             })
             .error(function(error) {
-                $rootScope.showSimpleDialog('Could not retrieve windstow limits from katconf_ws', error);
+                NotifyService.showSimpleDialog('Could not retrieve windstow limits from katconf_ws', error);
             });
 
         vm.connectListeners = function () {
@@ -58,7 +59,7 @@
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
                         if (!vm.disconnectIssued) {
-                            $rootScope.showSimpleToast('Reconnected :)');
+                            NotifyService.showSimpleToast('Reconnected :)');
                         }
                     }
                 }, function () {
@@ -74,7 +75,7 @@
             SensorsService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
                             vm.connectListeners();

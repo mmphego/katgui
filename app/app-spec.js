@@ -94,15 +94,6 @@ describe('ApplicationCtrl', function () {
         ctrl.toggleRightSidenav();
     }));
 
-    it('should call the $mdToast show function', function () {
-        var mdToastShow = spyOn(mdToast, 'show');
-        scope.$root.showSimpleToast('message');
-        expect(mdToastShow).toHaveBeenCalledWith(mdToast.simple()
-            .content('message')
-            .position(scope.$root.toastPosition)
-            .hideDelay(3500));
-    });
-
     it('should connect events and start the time sync with the web server', function () {
         var updateTimeDisplaySpy = spyOn(ctrl, 'updateTimeDisplay');
         var syncTimeWithServerSpy = spyOn(ctrl, 'syncTimeWithServer');
@@ -162,15 +153,6 @@ describe('ApplicationCtrl', function () {
         expect(ctrl.currentState()).toEqual('Scheduler');
     });
 
-    it('should display the promise result as a toast when result is ok or a dialog when there\'s an error', function () {
-        var showSimpleToastSpy = spyOn(scope.$root, 'showSimpleToast');
-        var showSimpleDialogSpy = spyOn(scope.$root, 'showSimpleDialog');
-        scope.$root.displayPromiseResult({result: 'ok', message: 'test message'});
-        expect(showSimpleToastSpy).toHaveBeenCalledWith('test message');
-        scope.$root.displayPromiseResult({result: 'error doing something', message: 'test message'});
-        expect(showSimpleDialogSpy).toHaveBeenCalledWith('error doing something', 'test message');
-    });
-
     it('should update the time display with utc, sast, julian date and lst', function () {
         scope.$root.serverTimeOnLoad = 0;
         ctrl.updateTimeDisplay();
@@ -179,7 +161,7 @@ describe('ApplicationCtrl', function () {
         ctrl.updateTimeDisplay();
         expect(ctrl.utcTime).toEqual('00:23:20');
         expect(ctrl.localTime).toEqual('02:23:20');
-        expect(ctrl.julianDay).toEqual(2440585.6);
+        expect(ctrl.julianDay).toEqual(2440585.516);
         expect(ctrl.localSiderealTime).not.toBeDefined();
         expect(scope.$root.serverTimeOnLoad).toBe(1401);
 
@@ -187,16 +169,16 @@ describe('ApplicationCtrl', function () {
         ctrl.updateTimeDisplay();
         expect(ctrl.utcTime).toEqual('00:23:21');
         expect(ctrl.localTime).toEqual('02:23:21');
-        expect(ctrl.julianDay).toEqual(2440585.6);
-        expect(ctrl.localSiderealTime).toBe('10:22:25');
+        expect(ctrl.julianDay).toEqual(2440585.516);
+        expect(ctrl.localSiderealTime).toBe('8:22:05');
         expect(scope.$root.serverTimeOnLoad).toBe(1402);
 
         scope.$root.serverTimeOnLoad = 14000;
         ctrl.updateTimeDisplay();
         expect(ctrl.utcTime).toEqual('03:53:20');
         expect(ctrl.localTime).toEqual('05:53:20');
-        expect(ctrl.julianDay).toEqual(2440585.745);
-        expect(ctrl.localSiderealTime).toBe('13:52:59');
+        expect(ctrl.julianDay).toEqual(2440585.662);
+        expect(ctrl.localSiderealTime).toBe('11:52:39');
         expect(scope.$root.serverTimeOnLoad).toBe(14001);
     });
 

@@ -3,13 +3,15 @@
     angular.module('katGui')
         .controller('InstrumentalConfigCtrl', InstrumentalConfigCtrl);
 
-    function InstrumentalConfigCtrl(ConfigService, $rootScope) {
+    function InstrumentalConfigCtrl(ConfigService, NotifyService) {
 
         var vm = this;
         vm.sourceCatalogues = [];
         vm.noiseDiodeModels = [];
         vm.delayModels = [];
         vm.pointingModels = [];
+        vm.correlators = [];
+        vm.cam2speadList = [];
 
         ConfigService.getSourceCataloguesList()
             .then(function(result) {
@@ -53,10 +55,30 @@
                 });
             });
 
+        ConfigService.getCorrelatorsList()
+            .then(function(result) {
+                result.data.forEach(function (correlator) {
+                    vm.correlators.push({
+                        fileName: correlator.replace('user/correlators/', ''),
+                        filePath: correlator
+                    });
+                });
+            });
+
+        ConfigService.getCam2SpeadList()
+            .then(function(result) {
+                result.data.forEach(function (cam2spead) {
+                    vm.cam2speadList.push({
+                        fileName: cam2spead.replace('user/cam2spead/', ''),
+                        filePath: cam2spead
+                    });
+                });
+            });
+
         vm.getFileContents = function (filePath) {
             ConfigService.getConfigFileContents(filePath)
                 .then(function (result) {
-                   $rootScope.showPreDialog(filePath, JSON.parse(result.data));
+                    NotifyService.showPreDialog(filePath, JSON.parse(result.data));
                 });
         };
 

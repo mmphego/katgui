@@ -3,9 +3,9 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log) {
+    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, NotifyService) {
 
-        var urlBase = "http://monctl.devw.camlab:8810"; //SERVER_URL + '/katauth/api/v1';
+        var urlBase = SERVER_URL + '/katauth/api/v1';
         var api = {};
         api.connection = null;
         api.deferredMap = {};
@@ -97,7 +97,7 @@
         };
 
         function logoutResultSuccess() {
-            $rootScope.showSimpleToast('Logout successful.');
+            NotifyService.showSimpleToast('Logout successful.');
             if (api.connection) {
                 api.disconnectListener();
             }
@@ -109,7 +109,7 @@
         }
 
         function logoutResultError(result) {
-            $rootScope.showSimpleToast('Error Logging out, resetting local user session.');
+            NotifyService.showSimpleToast('Error Logging out, resetting local user session.');
             if (api.connection) {
                 api.disconnectListener();
             }
@@ -143,7 +143,7 @@
                 //User's session expired, we got a message
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                $rootScope.showSimpleToast(result.message);
+                NotifyService.showSimpleToast(result.message);
             }
         }
 
@@ -152,12 +152,12 @@
                 api.currentUser = null;
                 api.loggedIn = false;
                 $localStorage['currentUserToken'] = undefined;
-                $rootScope.showSimpleToast('Invalid username or password.');
+                NotifyService.showSimpleToast('Invalid username or password.');
                 $state.go('login');
             } else {
                 console.error('Error logging return, server returned with:');
                 console.error(result);
-                $rootScope.showSimpleToast('Error connecting to KATPortal.');
+                NotifyService.showSimpleToast('Error connecting to KATPortal.');
                 $state.go('login');
             }
         }
@@ -226,7 +226,7 @@
                         $state.go('home');
                     }
                     $localStorage['currentUserToken'] = $rootScope.jwt;
-                    $rootScope.showSimpleToast('Login successful, welcome ' + payload.name + '.');
+                    NotifyService.showSimpleToast('Login successful, welcome ' + payload.name + '.');
                     $rootScope.$emit('loginSuccess', true);
                     $rootScope.connectEvents();
                     if (payload.req_role === 'lead_operator') {
@@ -238,7 +238,7 @@
                 $log.info('No session id');
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                $rootScope.showSimpleToast(result.message);
+                NotifyService.showSimpleToast(result.message);
             }
         }
 
@@ -247,12 +247,12 @@
                 api.currentUser = null;
                 api.loggedIn = false;
                 $localStorage['currentUserToken'] = undefined;
-                $rootScope.showSimpleToast('Invalid username or password.');
+                NotifyService.showSimpleToast('Invalid username or password.');
                 $state.go('login');
             } else {
                 $log.error('Error logging return, server returned with:');
                 $log.error(result);
-                $rootScope.showSimpleToast('Error connecting to KATPortal.');
+                NotifyService.showSimpleToast('Error connecting to KATPortal.');
                 $state.go('login');
             }
         }

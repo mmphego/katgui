@@ -3,7 +3,8 @@
     angular.module('katGui.health')
         .controller('CustomHealthCtrl', CustomHealthCtrl);
 
-    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams, $timeout, $log) {
+    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams,
+                              $timeout, $log, NotifyService) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -21,7 +22,7 @@
                         vm.connectionLost = false;
                         vm.connectInterval = null;
                         if (!vm.disconnectIssued) {
-                            $rootScope.showSimpleToast('Reconnected :)');
+                            NotifyService.showSimpleToast('Reconnected :)');
                         }
                     }
                 }, function () {
@@ -38,7 +39,7 @@
             SensorsService.getTimeoutPromise()
                 .then(function () {
                     if (!vm.disconnectIssued) {
-                        $rootScope.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
                         if (!vm.connectInterval) {
                             vm.connectionLost = true;
                             vm.connectInterval = $interval(vm.connectListeners, 10000);
@@ -183,7 +184,7 @@
             vm.regexStrings.forEach(function (item) {
                 url += item.name + ',' + item.sizeString + ';';
             });
-            $rootScope.showSimpleDialog('Exported URL', url);
+            NotifyService.showSimpleDialog('Exported URL', url);
         };
 
         $scope.$on('$destroy', function () {

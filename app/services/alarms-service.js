@@ -3,7 +3,7 @@
     angular.module('katGui.services', ['katGui.util', 'ngStorage'])
         .service('AlarmsService', AlarmsService);
 
-    function AlarmsService($rootScope, ConfigService, SoundService) {
+    function AlarmsService($rootScope, ConfigService, SoundService, NotifyService) {
 
         var api = {};
         api.alarmsData = [];
@@ -14,7 +14,7 @@
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/logfile/alarms.log").focus();
             } else {
-                $rootScope.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
 
