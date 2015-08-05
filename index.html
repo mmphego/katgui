@@ -306,7 +306,6 @@
                         <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdOpenMenu()">
                             <span>{{$root.currentUser.email}}</span>
                             <span style="font-size: 14px" class="fa fa-caret-down"></span>
-                            <md-tooltip>Logged in As</md-tooltip>
                         </md-button>
                         <md-menu-content width="3" style="padding: 8px">
                             <md-menu-item>
@@ -331,11 +330,12 @@
                     </div>
                 </div>
 
-                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.stateGo('home')">
+                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.stateGo('home')" title="Home">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-home"></md-icon>
                 </md-button>
 
-                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="vm.stateGo('alarms')">
+                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="vm.stateGo('alarms')"
+                    title="Alarms">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-warning"></md-icon>
                     <span title="Warning Alarms" ng-show="newAlarms"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
@@ -345,7 +345,7 @@
                           class="badge alarm-badge alarm-badge-crit">{{critAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span>
                 </md-button>
 
-                <md-button class="mainbar-navbar-button md-icon-button"  ng-click="vm.toggleRightSidenav()">
+                <md-button class="mainbar-navbar-button md-icon-button" ng-click="vm.toggleRightSidenav()">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-user"></md-icon>
                 </md-button>
             </div>
