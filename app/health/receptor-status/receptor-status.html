@@ -6,19 +6,9 @@
                     class="md-whiteframe-z1">
             <span flex style="margin-left: 16px;" ng-show="!vm.sortBySubarrays">All Receptors</span>
             <span flex style="margin-left: 16px;" ng-show="vm.sortBySubarrays">Receptors by Subarray</span>
-            <md-menu md-theme="{{themePrimaryButtons}}">
-                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
-                           style="margin-left: 0; margin-right: 8px;">
-                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
-                </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
-                    <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.sortBySubarrays" ng-click="">
-                            Sort By Subarrays
-                        </md-checkbox>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
+            <md-checkbox md-theme="{{themePrimaryButtons}}" class="md-primary" ng-model="vm.sortBySubarrays" ng-click="">
+                Sort By Subarrays
+            </md-checkbox>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" style="padding: 16px; overflow: auto">
 
@@ -69,7 +59,7 @@
                                  class="receptor-status-column-heading"
                                  layout="column" layout-align="center center"
                                  ng-class="{'in-maintenance-item':receptor.in_maintenance && !(receptor.assignedSubarray || receptor.allocatedSubarray), 'in-assigned-subarray-item': receptor.assignedSubarray, 'in-allocated-subarray-item': receptor.allocatedSubarray}">
-                                <span ng-show="receptor.subarray" title="{{'Subarray ' + receptor.subarray}}">SA {{receptor.subarray}}</span>
+                                <span ng-show="receptor.subarray" title="{{'Subarray ' + receptor.subarray}}">Sub {{receptor.subarray}}</span>
                                 <span ng-show="!receptor.subarray">Free</span>
                             </div>
                         </div>
