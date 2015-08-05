@@ -78,7 +78,7 @@
                             <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                         </md-button>
 
-                        <md-menu ng-if="$root.iAmLO" ng-if="subarray.state !== 'active'"
+                        <md-menu ng-if="$root.iAmLO" ng-if="subarray.state !== 'active'" md-theme="{{themePrimary}}"
                                  style="margin-top: 16px; margin-bottom: 0; padding: 0;">
                             <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu(); $event.stopPropagation()">
                                 <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
