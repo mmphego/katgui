@@ -120,8 +120,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         var readonly_session_id = session_id;
                         var requested_session_id = payload.session_id;
                         $scope.current_lo = payload.current_lo;
@@ -140,13 +138,13 @@
                             $mdDialog.hide();
                         };
                     },
-                    template: '<md-dialog md-theme="{{themePrimary}}" class="md-whiteframe-z1">' +
+                    template: '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">' +
                         '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{requested_role}}</md-toolbar>' +
                         '  <md-dialog-content class="md-padding" layout="column">' +
                         '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
                         '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be logged out.</p>' +
                         '  </md-dialog-content>' +
-                        '  <div class="md-actions" md-theme="{{themePrimaryButtons}}">' +
+                        '  <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">' +
                         '    <md-button ng-click="cancel()" class="md-primary">' +
                         '      Cancel' +
                         '    </md-button>' +

@@ -77,8 +77,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Set VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
@@ -93,7 +91,7 @@
                                 .error(requestError);
                         };
                     },
-                    template: '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 8px;">{{::title}}</span>' +
@@ -105,8 +103,8 @@
                     '           </md-select>' +
                     '       </div>' +
                     '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="hide()">Cancel</md-button>' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="setPreset(selectedPreset); hide()">Set Selected Preset</md-button>' +
+                    '           <md-button class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" ng-click="hide()">Cancel</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" ng-click="setPreset(selectedPreset); hide()">Set Selected Preset</md-button>' +
                     '       </div>' +
                     '   </div>' +
                     '</md-dialog>',
@@ -118,8 +116,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Go To VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
@@ -135,7 +131,7 @@
                                 .error(requestError);
                         };
                     },
-                    template: '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 8px;">{{::title}}</span>' +
@@ -147,8 +143,8 @@
                     '           </md-select>' +
                     '       </div>' +
                     '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="hide()">Cancel</md-button>' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="gotoPreset(selectedPreset); hide()">Go To Selected Preset</md-button>' +
+                    '           <md-button class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" ng-click="hide()">Cancel</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" ng-click="gotoPreset(selectedPreset); hide()">Go To Selected Preset</md-button>' +
                     '       </div>' +
                     '   </div>' +
                     '</md-dialog>',
