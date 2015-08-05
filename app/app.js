@@ -132,13 +132,6 @@
         };
 
         $rootScope.connectEvents = function () {
-
-            if (!vm.updateTimeDisplayInterval) {
-                vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000); //update local clock every second
-                vm.syncTimeWithServerInterval = $interval(vm.syncTimeWithServer, 10000); //sync time every 10 seconds
-                vm.syncTimeWithServer();
-            }
-
             MonitorService.connectListener()
                 .then(function () {
                     if (vm.connectMonitorInterval) {
@@ -236,9 +229,9 @@
         };
 
         vm.updateTimeDisplay = function () {
-            if ($rootScope.serverTimeOnLoad > 0) {
-                var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
-                var localTime = moment($rootScope.serverTimeOnLoad, 'X');
+            if (MonitorService.lastSyncedTime) {
+                var utcTime = moment.utc(MonitorService.lastSyncedTime, 'X');
+                var localTime = moment(MonitorService.lastSyncedTime, 'X');
                 $rootScope.utcTime = utcTime.format('HH:mm:ss');
                 $rootScope.localTime = localTime.format('HH:mm:ss');
                 $rootScope.currentDate = utcTime.format('YYYY-MM-DD');
@@ -254,20 +247,19 @@
                 if ($rootScope.longitude) {
                     $rootScope.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
                 }
-                $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
             }
         };
 
         vm.syncTimeWithServer = function () {
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
-                    $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
                     $log.info('Syncing current time with KATPortal (utc ' + DATETIME_FORMAT + '): ' +
-                    moment.utc($rootScope.serverTimeOnLoad, 'X').format(DATETIME_FORMAT));
+                    moment.utc(MonitorService.lastSyncedTime, 'X').format(DATETIME_FORMAT));
+                    MonitorService.lastSyncedTime = serverTime.katcontrol_webserver_current_time;
                 })
                 .error(function (error) {
                     $log.error("Error syncing time with KATPortal! " + error);
-                    $rootScope.serverTimeOnLoad = 0;
+                    MonitorService.lastSyncedTime = null;
                     vm.localSiderealTime = "Error syncing time!";
                 });
             ConfigService.getSiteLocation()
@@ -281,6 +273,9 @@
                     $log.error(error);
                 });
         };
+
+        vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000);
+        vm.syncTimeWithServer();
 
         $rootScope.objectKeys = function (obj) {
             return Object.keys(obj);
@@ -329,6 +324,7 @@
         $scope.$on('$destroy', function () {
             MonitorService.disconnectListener();
             vm.undbindLoginSuccess();
+            vm.updateTimeDisplayInterval();
         });
     }
 

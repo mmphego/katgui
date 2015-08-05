@@ -10,6 +10,7 @@
         var api = {};
         api.deferredMap = {};
         api.connection = null;
+        api.lastSyncedTime = null;
 
         //websocket default heartbeat is every 30 seconds
         //so allow for 35 seconds before alerting about timeout
@@ -99,6 +100,10 @@
                 if (messages.error) {
                     $log.error('There was an error sending a jsonrpc request:');
                     $log.error(messages);
+                } else if (messages.result.msg_channel === 'mon:time') {
+                    //add one seconds because our display update interval
+                    //is only every second
+                    api.lastSyncedTime = messages.result.msg_data + 1;
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.result) {
                         if (messages.id === 'redis-pubsub') {
