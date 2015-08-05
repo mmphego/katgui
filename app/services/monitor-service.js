@@ -73,6 +73,9 @@
                 api.deferredMap['connectDefer'].resolve();
                 api.subscribe('mon:*');
                 api.subscribe('sched:*');
+                if ($rootScope.currentUser.req_role === 'lead_operator') {
+                    api.subscribe('auth:*');
+                }
             }
         };
 
@@ -129,6 +132,7 @@
                                     var channelNameSplit = messageChannel[1].split('.');
                                     if (channelNameSplit[1] === 'lo_id') {
                                         api.currentLeadOperator.name = messageObj.msg_data.value !== '' ? messageObj.msg_data.value : 'None';
+                                        $rootScope.iAmLO = api.currentLeadOperator.name === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'lead_operator';
                                         if (api.currentUser &&
                                             api.currentUser.req_role === 'lead_operator' &&
                                             api.currentLeadOperator.name !== $rootScope.currentUser.email) {

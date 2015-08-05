@@ -181,27 +181,25 @@
             $mdSidenav('right-sidenav').toggle();
         };
 
-        vm.logout = function () {
+        $rootScope.logout = function () {
             vm.disconnectIssued = true;
             MonitorService.disconnectListener();
             $mdSidenav('right-sidenav').close();
             SessionService.logout();
             vm.showNavbar = false;
         };
-        $rootScope.logout = vm.logout;
 
         $rootScope.stateGo = function (newState) {
             $state.go(newState);
         };
-        vm.stateGo = $rootScope.stateGo;
 
         vm.sideNavStateGo = function (newState) {
-            vm.stateGo(newState);
+            $rootScope.stateGo(newState);
             $mdSidenav('left-sidenav').close();
         };
 
         vm.sideNavRightStateGo = function (newState) {
-            vm.stateGo(newState);
+            $rootScope.stateGo(newState);
             $mdSidenav('right-sidenav').close();
         };
 

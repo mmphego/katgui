@@ -8,7 +8,7 @@
         <span flex></span>
         <md-button class="md-primary md-raised" style="margin: 0"
                    ng-click="$root.stateGoWithSubId('scheduler.resources', vm.subarray.id)">
-            <span>Manage Subarray</span>
+            <span>Set-up Subarray</span>
         </md-button>
         <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform-small"></div>
         <md-button class="md-primary md-raised inline-svg-button" style="margin: 0"
@@ -19,7 +19,7 @@
         <div style="border: 8px solid #4CAF50; border-radius: 4px;">
             <md-button class="md-primary md-raised" style="margin: -1px"
                        ng-click="$root.stateGoWithSubId('scheduler.observations.detail', vm.subarray.id)">
-                <span>Manage Observations</span>
+                <span>Observations</span>
             </md-button>
         </div>
         <span flex></span>
@@ -28,35 +28,37 @@
             <span>Obs Overview</span>
         </md-button>
     </div>
-    <div layout="row" layout-align="center center" style="font-size: 14px; padding: 8px 0; margin: 4px 8px" class="md-whiteframe-z4"
-        title="Subarray Configuration">
-        <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{vm.subarray.delegated_ca}}</b></span>
-        <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{vm.subarray.band}}</b></span>
-        <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{vm.subarray.product}}</b></span>
-        <span ng-show="subarray.state === 'active' || vm.subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{vm.subarray.config_label}}</b></span>
-    </div>
     <div layout="row" flex style="min-width: 1250px; min-height: 850px; margin: 8px 0">
-        <div flex layout="column" style="margin: 0;">
+        <div flex layout="column" style="margin-top: 8px;">
 
             <div flex style="min-height: 150px;" layout="column" class="md-whiteframe-z1 schedule-list"
                  ng-class="{'md-whiteframe-z1': !vm.selectedSchedule, 'whiteframe-z1-left': vm.selectedSchedule}">
-                <md-toolbar class="md-toolbar-tools md-whiteframe-z1" layout="row" layout-align="start center"
-                            style="padding-bottom: 8px; padding-right: 8px;"
-                            md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
-                            ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}">
-                        <span>SUBARRAY {{vm.subarray_id}}</span>
-                        <span ng-show="vm.subarray.state" style="margin-left: 4px;"> - {{vm.subarray.state}}</span>
-                        <span ng-if="vm.subarray.maintenance">{{", in maintenance"}}</span>
+                <md-toolbar
+                        md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                        ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z1"
+                        layout="row" layout-align="center center" title="{{vm.subarray.description}}"
+                        style="max-height: 64px; min-height: 64px; position: relative; margin-top: -7px">
+                        <span style="margin-left: 8px;">SUBARRAY {{vm.subarray.id}} -
+                            <span><b>{{vm.subarray.state}}</b></span>
+                            <span ng-if="vm.subarray.maintenance">{{"- in maintenance"}}</span>
+                        </span>
+                        <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 7px; left: 0; right: 0; font-size: 12px">
+                            <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{vm.subarray.delegated_ca}}</b></span>
+                            <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b></span>
+                            <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b></span>
+                                <span ng-show="subarray.state === 'active' || subarray.config_label"
+                                      title="Config Label"><i>Config Label: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b></span>
+                        </div>
                         <span flex></span>
                         <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()"
                                    title="Free Subarray">
                             <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                         </md-button>
-                        <md-button ng-show="vm.subarray.state === 'inactive'" ng-click="vm.activateSubarray()"
+                        <md-button ng-if="$root.iAmLO" ng-show="vm.subarray.state === 'inactive'" ng-click="vm.activateSubarray()"
                                    class="md-icon-button inline-action-button" title="Activate Subarray">
                             <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                         </md-button>
-                        <span>Mode: {{vm.subarray.mode}}</span>
+                        <span style="font-size: 18px; margin-right: 4px">MODE: </span><span><b>{{vm.subarray.mode}}</b></span>
                         <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}" style="padding: 0 4px; margin: 0">
                             <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu();"
                                        style="margin: 0">
@@ -75,7 +77,7 @@
                             </md-menu-content>
                         </md-menu>
                         <div class="unselectable list-subheader-title" layout="row" layout-align="start center"
-                             style="position: absolute; right: 0; bottom: 0; padding: 0">
+                             style="position: absolute; right: 0; bottom: 0; padding: 0; height: 12px">
                             <span style="width: 125px; padding-left: 8px" class="subheader-text">
                                 <span>ID</span>
                             </span>
@@ -103,16 +105,15 @@
                          ng-class="{'selected-schedule-row': item.state !== 'ACTIVE' && item === vm.selectedSchedule,
                                 'schedule-row-executing': item.state === 'ACTIVE' && item !== vm.selectedSchedule,
                                 'schedule-row-executing-and-selected': item.state === 'ACTIVE' && item === vm.selectedSchedule}"
-                         class="schedule-draft-item animate-repeat" layout="row" layout-align="start center">
+                         class="schedule-draft-item" layout="row" layout-align="start center">
 
-                            <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary"
+                            <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
                                                 md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
-                                                style="position: absolute; left: 0; right: 0; margin-top: -5px;">
+                                                style="position: absolute; left: 0; right: 0; opacity: 0.8;">
                             </md-progress-linear>
-                            <div layout="column" layout-align="start" style="padding-top: 4px; width: 120px">
+                            <div layout="column" layout-align="start" style="width: 120px">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                      style="font-size: 14px; font-weight: bold"
-                                      ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
+                                      style="font-size: 14px; font-weight: bold">{{item.id_code}}
                                 </span>
                                 <span><i>{{item.owner}}</i></span>
                             </div>
@@ -168,23 +169,15 @@
 
             <div style="margin-top: 8px; overflow: hidden" layout="column" class="md-whiteframe-z1 schedule-block-completed-list"
                  ng-class="{'schedule-block-complete-list-min-height': completedScheduleBlockListVisible}">
-                <md-toolbar class="panel-toolbar md-whiteframe-z1" style="max-height: 64px">
-                    <div layout="row" layout-align="start center" layout-padding flex style="margin-top: -8px">
-                        <span style="margin-left: 8px; cursor: pointer;"
-                              ng-init="completedScheduleBlockListVisible = false"
-                              ng-click="completedScheduleBlockListVisible = !completedScheduleBlockListVisible;">
-                            Completed Schedule Blocks</span>
-                        <span flex></span>
-                        <input class="fade-in" type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="vm.q3"
-                               placeholder="Search Schedules..."/>
-                        <md-button class="md-icon-button inline-action-button" ng-click="vm.listCompleted(); completedScheduleBlockListVisible = true"
-                                   title="Refresh Completed List">
-                            <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
-                        </md-button>
-                    </div>
-
+                <md-toolbar class="panel-toolbar md-whiteframe-z1" style="min-height: 64px; max-height: 64px" layout="row" layout-align="start center">
+                    <span flex ng-init="completedScheduleBlockListVisible = false" style="margin-left: 8px; margin-top: -7px;"
+                          ng-click="completedScheduleBlockListVisible = !completedScheduleBlockListVisible;">
+                        Completed Schedule Blocks
+                    </span>
+                    <input class="fade-in" type="search" style="font-size: 14px; margin-right: 8px; width: 140px; background: transparent; border: 0" ng-model="vm.q3"
+                       placeholder="Search Schedules..."/>
                     <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
-                         style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0">
+                         style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0; height: 12px">
                             <span style="width: 125px" class="subheader-text">
                                 <span>ID</span>
                             </span>
@@ -207,14 +200,15 @@
                 </md-toolbar>
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
-                    <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedFields:vm.q3"
-                        class="schedule-draft-item" layout="column" style="height: 38px">
+                    <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedFields:vm.q3 track by item.id"
+                        class="schedule-draft-item" layout="column" style="height: 38px"
+                        ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
+                        ng-click="vm.setSelectedSchedule(item);$event.stopPropagation();">
 
                         <div layout="row" layout-align="start center" style="padding: 0 4px">
                             <div layout="column" layout-align="start" style="width: 120px">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                      style="font-size: 14px; font-weight: bold"
-                                      ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
+                                      style="font-size: 14px; font-weight: bold">{{item.id_code}}
                                 </span>
                                 <span><i>{{item.owner}}</i></span>
                             </div>
@@ -226,7 +220,7 @@
                                   style="text-transform: uppercase; width: 100px">{{item.type}}</span>
                             <span style="width: 150px">{{item.desired_start_time}}</span>
                             <md-button class="md-icon-button inline-action-button"
-                                       ng-click="vm.cloneSchedule(item)" title="Clone To Draft">
+                                       ng-click="vm.cloneSchedule(item);$event.stopPropagation();" title="Clone To Draft">
                                 <md-icon class="fa" md-font-icon="fa-copy"></md-icon>
                             </md-button>
                         </div>
@@ -235,23 +229,22 @@
             </div>
         </div>
 
-        <div layout="column" id="schedulerScriptView" class="script-window-without-box-shadow"
+        <div layout="column" id="schedulerScriptView" class="script-window-without-box-shadow" style="margin-top: 8px;"
              ng-class="{'highlight-script-window-with-box-shadow': vm.selectedSchedule !== null}">
-            <div layout="column" id="resource-allocation-div" ng-class="{'highlight-script-border-bottom': vm.selectedSchedule !== null}"
-                style="margin-bottom: 16px;">
+            <div layout="column" id="resource-allocation-div">
                 <md-toolbar style="margin-left: 0;  width: 450px; max-height: 48px; min-height: 48px;" class="md-whiteframe-z1" layout="column" layout-align="center center">
                     <div flex style="margin-left: 8px;" layout="row" layout-align="center center">
                         <span flex>Resources</span>
                     </div>
                     <div style="font-size: 12px; width: 100%;" layout="row" layout-align="start center">
-                        <span style="margin-left: 8px;">Allocated</span>
-                        <span style="margin-left: 275px;">Assigned</span>
+                        <span style="margin-left: 8px;" flex>Allocated</span>
+                        <span style="margin-right: 8px;">Assigned</span>
                     </div>
                 </md-toolbar>
                 <div flex style="padding: 0" layout="row">
-                    <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1;">
+                    <div class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; width: 180px; overflow: hidden">
                         <div ng-repeat="resource in vm.subarray.allocations track by $index" layout-align="center center"
-                             class="resource-pool-item animate-repeat" layout="row" ng-if="resource.allocation !== 'None'">
+                             class="resource-pool-item" layout="row" ng-if="!vm.selectedSchedule || resource.allocation === vm.selectedSchedule.id_code">
                             <span style="min-width: 22px; margin-left: 4px;">
                                 <span class="fa fa-wrench maintenance-text" ng-if="resource.maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
                             </span>
@@ -262,9 +255,9 @@
                                   ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
                         </div>
                     </div>
-                    <div layout-fill flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; max-width: 450px;" layout="column">
+                    <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; max-width: 450px;" layout="column">
                         <div ng-repeat="resource in vm.subarray.allocations track by $index" layout-align="center center"
-                             class="resource-pool-item animate-repeat" layout="row">
+                             class="resource-pool-item" layout="row">
                             <span style="min-width: 22px; margin-left: 4px;">
                                 <span class="fa fa-wrench maintenance-text" ng-if="vm.isResourceInMaintenance(resource)" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
                             </span>
@@ -272,7 +265,7 @@
                                 <span class="fa fa-warning error-text" style="font-size: 18px; min-width: 18px;" ng-if="vm.isResourceFaulty(resource)" title="Resource Marked Faulty"></span>
                             </span>
                             <span flex style="font-size:18px; margin-left: 4px;"
-                                  ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
+                                  ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}<i style="font-size: 12px;"> - {{resource.allocation}}</i></span>
                             <md-button ng-show="vm.subarray.maintenance && resource.maintenance" class="md-icon-button inline-action-button" ng-click="vm.listResourceMaintenanceDevicesDialog(vm.subarray, resource, $event); $event.stopPropagation()"
                                        title="Restart Maintenance Device" style="margin: 0">
                                 <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
@@ -285,14 +278,14 @@
                     </div>
                 </div>
             </div>
-            <div flex layout="column">
+            <div flex layout="column" style="overflow: auto; margin-top: 4px" class="md-whiteframe-z1">
                 <md-toolbar style="margin-left: 0; width: 450px;" class="panel-toolbar-small md-whiteframe-z1">
                     <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
                         <span>Schedule Block Details</span>
                     </div>
                 </md-toolbar>
-                <div flex style="padding: 0" layout="column">
-                    <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column" style="max-width: 450px;"
+                <div flex style="padding: 0; overflow: auto" layout="column">
+                    <div flex class="schedule-block-script-window md-whiteframe-z1" layout="column" style="max-width: 450px;"
                          ng-class="{'highlight-script-window': vm.selectedSchedule !== null, 'md-whiteframe-z2': vm.selectedSchedule === null}">
                         <pre flex style="margin: 0" ng-if="vm.selectedSchedule !== null" ng-bind-html='vm.selectedSchedule | prettifyJSON'></pre>
                     </div>

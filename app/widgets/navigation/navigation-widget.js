@@ -41,7 +41,7 @@
             name: 'Resources',
             textOffset: 0,
             state: 'scheduler.resources',
-            title: 'Manage Subarray Resources'
+            title: 'Set-up Subarray'
         }, {
             name: 'Observations',
             textOffset: 10,
@@ -139,10 +139,6 @@
         vm.unbindThemePrimary = $rootScope.$watch('themePrimary', function (newVal) {
             vm.themePrimary = newVal;
         });
-
-        vm.stateGo = function (newState) {
-            $state.go(newState);
-        };
 
         $scope.$on('$destroy', function () {
             vm.unbindThemePrimary();

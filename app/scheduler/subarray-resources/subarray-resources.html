@@ -9,8 +9,8 @@
         <span flex></span>
         <div style="border: 8px solid #4CAF50; border-radius: 4px;">
             <md-button class="md-primary md-raised" style="margin: -1px"
-                       ng-click="$root.stateGoWithSubId('scheduler.resources', subarray.id)">
-                <span>Manage Subarray</span>
+                       ng-click="$root.stateGo('scheduler')">
+                <span>Set-up Subarray</span>
             </md-button>
         </div>
         <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform-small"></div>
@@ -21,7 +21,7 @@
         <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform-small"></div>
         <md-button class="md-primary md-raised" style="margin: 0"
                    ng-click="$root.stateGoWithSubId('scheduler.observations.detail', vm.subarray_id)">
-            <span>Manage Observations</span>
+            <span>Observations</span>
         </md-button>
         <span flex></span>
         <md-button style="margin: 0" title="All Subarrays Observations Overview"
@@ -32,7 +32,7 @@
     <div flex layout="row" style="margin-top: 16px">
         <div flex layout="column" style="overflow: auto; padding: 0 8px">
             <div
-                ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id' track by $index"
+                ng-repeat="subarray in vm.subarrays | filter: {id: vm.subarray_id} | orderBy:'id' track by $index"
                 class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
                 style="min-width: 650px; position: relative" ng-mouseenter="subarray.mousehover = true"
                 ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false" flex>
@@ -43,48 +43,44 @@
                         md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                         ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                         layout="row" layout-align="center center" title="{{subarray.description}}"
-                        style="max-height: 50px; min-height: 50px;">
-                        <div flex style="position: relative">
-                            <span style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>
-                            <md-button layout="row" style="min-height: 42px; width: 100%" class="unselectable"
-                                       ng-click="vm.navigateToSchedulerDetails(subarray.id)"
-                                       title="Click to Manage Observations for Subarray {{subarray.id}}">
-                                <span>{{subarray.state}}</span>
-                                <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
-                            </md-button>
-                            <div style="left: 0; bottom: 0; position: absolute">
-                                <span style="font-size: 10px; margin-right: 2px;" title="Resources in Maintenance">Maint.</span>
-                                <span style="font-size: 10px;" title="Resources Marked as Faulty">Faulty</span>
-                            </div>
+                        style="max-height: 50px; min-height: 50px; position: relative"
+                        ng-click="$root.stateGoWithSubId('scheduler.observations.detail', vm.subarray_id)">
+                        <span style="margin-left: 8px">SUBARRAY {{subarray.id}} -
+                            <span><b>{{subarray.state}}</b></span>
+                            <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
+                        </span>
+                        <div style="left: 0; bottom: 0; position: absolute; height: 12px" layout="row">
+                            <span style="font-size: 10px; margin-right: 2px;" title="Resources in Maintenance">Maint.</span>
+                            <span style="font-size: 10px;" title="Resources Marked as Faulty">Faulty</span>
                         </div>
 
-                        <span ng-show="subarray.state === 'active'"></span>
+                        <span flex></span>
 
-                        <div layout="row" style="position: absolute; padding: 0; top: 0; right: 0; font-size: 14px">
+                        <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 0; left: 0; right: 0; font-size: 12px">
                             <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
-                            <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band}}</b></span>
-                            <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product}}</b></span>
+                            <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ? subarray.band : 'None'}}</b></span>
+                            <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product ? subarray.product : 'None'}}</b></span>
                             <span ng-show="subarray.state === 'active' || subarray.config_label"
-                                  title="Config Label"><i>Config Label: </i><b>{{subarray.config_label}}</b></span>
+                                  title="Config Label"><i>Config Label: </i><b>{{subarray.config_label ? subarray.config_label : 'None'}}</b></span>
                         </div>
-                        <md-button class="md-icon-button inline-action-button"
-                                   ng-click="vm.setSubarrayInMaintenance(subarray)"
+                        <md-button ng-if="$root.iAmLO" class="md-icon-button inline-action-button"
+                                   ng-click="vm.setSubarrayInMaintenance(subarray); $event.stopPropagation()"
                                    title="Set Subarray in Maintenance" style="margin-top: 16px;">
                             <md-icon class="fa" md-font-icon="fa-wrench"></md-icon>
                         </md-button>
-                        <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray(subarray)"
+                        <md-button class="md-icon-button inline-action-button" ng-click="vm.freeSubarray(subarray); $event.stopPropagation()"
                                    title="Free Subarray" style="margin-top: 16px;">
                             <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                         </md-button>
-                        <md-button ng-show="subarray.state === 'inactive'" class="md-icon-button inline-action-button"
-                                   ng-click="vm.activateSubarray(subarray)"
+                        <md-button ng-if="$root.iAmLO" ng-show="subarray.state === 'inactive'" class="md-icon-button inline-action-button"
+                                   ng-click="vm.activateSubarray(subarray); $event.stopPropagation()"
                                    title="Activate Subarray" style="margin-top: 16px;">
                             <md-icon class="fa" md-font-icon="fa-power-off"></md-icon>
                         </md-button>
 
-                        <md-menu ng-if="subarray.state !== 'active'"
+                        <md-menu ng-if="$root.iAmLO" ng-if="subarray.state !== 'active'"
                                  style="margin-top: 16px; margin-bottom: 0; padding: 0;">
-                            <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu();">
+                            <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu(); $event.stopPropagation()">
                                 <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                             </md-button>
                             <md-menu-content style="padding: 8px;">
@@ -117,7 +113,7 @@
                     </md-toolbar>
 
                     <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.maintenance}">
-                        <div flex class="resource-item animate-repeat-opacity" layout="row" layout-align="start center"
+                        <div flex class="resource-item" layout="row" layout-align="start center"
                              ng-repeat="resource in subarray.allocations | orderBy:'name'"
                              ng-class="{'transparent-background':subarray.maintenance}">
                         <span style="min-width: 34px;">
@@ -131,7 +127,7 @@
                         </span>
                             <span flex style="margin-left: 4px; font-size:14px"
                                   ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
-                            <md-button ng-show="subarray.maintenance && resource.maintenance"
+                            <md-button ng-if="$root.iAmLO" ng-show="subarray.maintenance && resource.maintenance"
                                        class="md-icon-button inline-action-button"
                                        ng-click="vm.listResourceMaintenanceDevicesDialog(subarray, resource, $event); $event.stopPropagation()"
                                        title="Restart Maintenance Device" style="margin: 0">
@@ -142,7 +138,7 @@
                                        title="Mark Resource As Faulty">
                                 <md-icon class="fa" md-font-icon="fa-exclamation-circle"></md-icon>
                             </md-button>
-                            <md-button class="md-icon-button inline-action-button"
+                            <md-button ng-if="$root.iAmLO" class="md-icon-button inline-action-button"
                                        ng-click="vm.freeAssignedResource(subarray, resource); $event.stopPropagation()"
                                        title="Free Assigned Resource">
                                 <md-icon class="fa" md-font-icon="fa-minus"></md-icon>
@@ -183,7 +179,7 @@
                 </md-toolbar>
 
                 <div flex style="overflow: auto">
-                    <div class="resource-item animate-repeat-opacity" layout="row" layout-align="start center"
+                    <div class="resource-item" layout="row" layout-align="start center"
                          ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
                          ng-class="{'selected-resource-item': resource.selected}"
                          ng-click="resource.selected = !resource.selected;">

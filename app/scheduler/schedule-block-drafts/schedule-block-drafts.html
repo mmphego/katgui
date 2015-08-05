@@ -80,7 +80,7 @@
                     ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by item.id"
                     ng-click="vm.setSelectedScheduleDraft(item)"
                     ng-class="{'selected-draft-schedule-row': item.id_code === vm.selectedScheduleDraft.id_code}"
-                    class="schedule-draft-item animate-repeat-opacity" layout="column" post-ng-repeat-load-more>
+                    class="schedule-draft-item" layout="column" post-ng-repeat-load-more>
                     <div layout="row" layout-align="start center" style="max-height: 38px; padding: 0 4px">
                         <md-progress-linear ng-if="item.verification_state === 'VERIFYING'" class="md-primary"
                                             md-mode="indeterminate"

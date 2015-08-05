@@ -3,10 +3,10 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail($scope, ObsSchedService, $stateParams, $mdDialog, $interval) {
+    function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval) {
 
         var vm = this;
-        vm.subarray_id = parseInt($stateParams.subarray_id);
+
         vm.draftListProcessingServerCall = false;
         vm.scheduleListProcessingServerCall = false;
         vm.selectedSchedule = null;
@@ -18,11 +18,30 @@
         vm.subarrays = ObsSchedService.subarrays;
         vm.subarray = {};
 
-        var unbindWatch = $scope.$watchCollection('vm.subarrays', function () {
-            vm.subarray = _.findWhere(vm.subarrays, {id: '' + vm.subarray_id});
-            if (vm.subarray) {
-                unbindWatch();
+        vm.checkCASubarrays = function () {
+            for (var i = 0; i < ObsSchedService.subarrays.length; i++) {
+                if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email &&
+                    $stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
+                    vm.subarray_id = parseInt(ObsSchedService.subarrays[i].id);
+                }
             }
+            if (vm.subarray_id) {
+                vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
+            }
+        };
+
+        if ($stateParams.subarray_id !== '' && $rootScope.iAmLO) {
+            vm.subarray_id = parseInt($stateParams.subarray_id);
+        } else {
+            vm.checkCASubarrays();
+        }
+
+        if (!vm.subarray_id) {
+            $state.go('scheduler');
+        }
+
+        vm.unbindIAmCA = $rootScope.$watch('iAmCA', function () {
+            vm.checkCASubarrays();
         });
 
         vm.completedFields = [
@@ -106,20 +125,18 @@
         };
 
         vm.sbProgress = function (sb) {
-            var progress = 0;
-            if (sb.expected_duration_seconds && sb.actual_start_time) {
-                var startDate = moment.utc(sb.actual_start_time);
-                var startDateTime = startDate.toDate().getTime();
-                var endDate = moment.utc(startDate).add(sb.expected_duration_seconds, 'seconds');
-                var now = moment.utc(new Date());
-                progress = (now.toDate().getTime() - startDateTime) / (endDate.toDate().getTime() - startDateTime) * 100;
-            }
-            return progress;
+            var startDate = moment.utc(sb.actual_start_time);
+            var startDateTime = startDate.toDate().getTime();
+            var endDate = moment.utc(startDate).add(sb.expected_duration_seconds, 'seconds');
+            var now = moment.utc(new Date());
+            return (now.toDate().getTime() - startDateTime) / (endDate.toDate().getTime() - startDateTime) * 100;
         };
 
         vm.progressInterval = $interval(function () {
             ObsSchedService.scheduleData.forEach(function (sb) {
-                sb.progress = vm.sbProgress(sb);
+                if (sb.expected_duration_seconds && sb.actual_start_time) {
+                    sb.progress = vm.sbProgress(sb);
+                }
             });
         }, 1500);
 

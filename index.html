@@ -284,7 +284,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.logout()">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.logout()">
                         <md-button flex><span class="fa"></span><span>Logout</span></md-button>
                     </md-item-content>
                 </md-item>
@@ -304,7 +304,7 @@
                 <div layout="column" layout-align="start center" style="margin-right: 8px">
                     <md-menu style="padding: 0">
                         <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdOpenMenu()">
-                            <span>{{$root.currentUser.email}}</span>
+                            <span>{{$root.currentUser.email}}</span><i style="font-size: 12px"> ({{$root.currentUser.req_role}})</i>
                             <span style="font-size: 14px" class="fa fa-caret-down"></span>
                         </md-button>
                         <md-menu-content width="3" style="padding: 8px">
@@ -330,11 +330,11 @@
                     </div>
                 </div>
 
-                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.stateGo('home')" title="Home">
+                <md-button class="md-icon-button mainbar-navbar-button" ng-click="$root.stateGo('home')" title="Home">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-home"></md-icon>
                 </md-button>
 
-                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="vm.stateGo('alarms')"
+                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="$root.stateGo('alarms')"
                     title="Alarms">
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-warning"></md-icon>
                     <span title="Warning Alarms" ng-show="newAlarms"
