@@ -301,17 +301,34 @@
                 </md-button>
 
                 <span flex style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
-                <span style="margin-right: 8px">
-                    LO: {{$root.currentLeadOperator.name}}
-                    <md-tooltip>Current Lead Operator</md-tooltip>
-                </span>
-                <div ng-if="$root.localSiderealTime" ng-show="showLST">
-                    <span style="font-size: 32px;">{{$root.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
-                    <md-tooltip>Local Sidereal Time</md-tooltip>
+                <div layout="column" layout-align="start center" style="margin-right: 8px">
+                    <md-menu style="padding: 0">
+                        <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdOpenMenu()">
+                            <span>{{$root.currentUser.email}}</span>
+                            <span style="font-size: 14px" class="fa fa-caret-down"></span>
+                            <md-tooltip>Logged in As</md-tooltip>
+                        </md-button>
+                        <md-menu-content width="3" style="padding: 8px">
+                            <md-menu-item>
+                                <md-button ng-click="$root.logout()">Logout</md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+
+                    <span style="font-size: 14px;">
+                        LO: {{$root.currentLeadOperator.name}}
+                        <md-tooltip>Current Lead Operator</md-tooltip>
+                    </span>
                 </div>
-                <div ng-if="$root.utcTime && showLocalAndSAST">
-                    <span class="toolbar-time-span">{{$root.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
-                    <span class="toolbar-time-span">{{$root.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
+
+                <div style="position: absolute; top: 0; left: 0; right: 0; pointer-events: none" layout="row" layout-align="center center">
+                    <div ng-if="$root.localSiderealTime" ng-show="showLST" title="Local Sidereal Time">
+                        <span style="font-size: 32px;">{{$root.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
+                    </div>
+                    <div ng-if="$root.utcTime && showLocalAndSAST">
+                        <span class="toolbar-time-span">{{$root.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
+                        <span class="toolbar-time-span">{{$root.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
+                    </div>
                 </div>
 
                 <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.stateGo('home')">
@@ -342,12 +359,12 @@
                     Interlock State: {{$root.interlockState.value}}
                     <md-tooltip>Current Interlock State</md-tooltip>
                 </span>
-                <div flex style="text-align: center">
-                    <span style="margin: 0 4px;">{{$root.currentUser.email}}</span>
+                <div style="position: absolute; bottom: 0; left: 0; right: 0" layout="row" layout-align="center center">
                     <span style="margin: 0 4px;">{{::$root.systemConfig.version.description}}</span>
                     <span style="margin: 0 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
-                    <!--<md-tooltip>CAM System Description and Deployment Date</md-tooltip>-->
+                    <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
                 </div>
+                <span flex></span>
                 <div layout="row">
                     <div ng-show="showDayOfYear && $root.dayOfYear">
                         <span>{{$root.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>

@@ -229,7 +229,7 @@
         };
 
         vm.updateTimeDisplay = function () {
-            if (MonitorService.lastSyncedTime) {
+            if (MonitorService.lastSyncedTime && vm.showNavbar) {
                 var utcTime = moment.utc(MonitorService.lastSyncedTime, 'X');
                 var localTime = moment(MonitorService.lastSyncedTime, 'X');
                 $rootScope.utcTime = utcTime.format('HH:mm:ss');
