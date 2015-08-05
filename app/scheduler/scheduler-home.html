@@ -53,24 +53,24 @@
         </div>
     </div>
 
-    <div ng-if="(!$root.iAmLO && !$root.iAmCA) || vm.subarrays.length === 0" class="md-whiteframe-z5"
+    <div ng-if="vm.subarrays.length === 0" class="md-whiteframe-z5"
          style="padding: 32px; margin: 32px auto; font-size: 18px"
          layout="row" layout-align="center center">
         <md-progress-circular md-theme="{{themePrimaryButtons}}" md-mode="indeterminate"></md-progress-circular>
         <span style="margin-left: 16px">Loading Subarrays...</span>
     </div>
 
-    <div class="md-whiteframe-z5" ng-if="!$root.iAmLO && !$root.iAmCA && vm.subarrays.length > 0"
+    <div class="md-whiteframe-z5" ng-if="$root.currentStateName() !== 'scheduler.observations' && !$root.iAmLO && !$root.iAmCA && vm.subarrays.length > 0"
          style="padding: 32px; margin: 32px; font-size: 18px"
         layout="column" layout-align="center center" md-theme="{{themePrimaryButtons}}">
         <span>You do not have permission to view Subarrays.</span>
         <span>To get access to Subarrays, please contact the current Lead Operator and request Control Authority.</span>
-        <md-button class="md-primary md-raised" ng-click="$root.stateGoWithSubId('scheduler.observations.detail', subarray.id)"
+        <md-button class="md-primary md-raised" ng-click="$root.stateGo('scheduler.observations')"
                    style="height: 95px; width: 285px; margin-top: 32px">
             <div ng-include="'images/subarrays.svg'" class="inline-svg-icon" style="top: 10px; left: 8px;"></div>
             <span style="position: absolute; left: 94px; top: 32px;">Observations Overview</span>
         </md-button>
     </div>
 
-    <div ng-if="$root.iAmLO || $root.iAmCA" ng-show="vm.childStateShowing" ui-view flex layout="column" style="min-height: 100%"></div>
+    <div ng-if="$root.iAmLO || $root.iAmCA || $root.currentStateName() === 'scheduler.observations'" ng-show="vm.childStateShowing" ui-view flex layout="column" style="min-height: 100%"></div>
 </div>

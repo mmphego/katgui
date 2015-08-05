@@ -203,8 +203,12 @@
             $mdSidenav('right-sidenav').close();
         };
 
-        vm.currentState = function () {
+        $rootScope.currentStateTitle = function () {
             return $state.current.title;
+        };
+
+        $rootScope.currentStateName = function () {
+            return $state.current.name;
         };
 
         vm.navigateToParentState = function () {

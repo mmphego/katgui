@@ -300,7 +300,7 @@
                     <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-navicon"></md-icon>
                 </md-button>
 
-                <span flex style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
+                <span flex style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{$root.currentStateTitle()}}</span>
                 <div layout="column" layout-align="start center" style="margin-right: 8px">
                     <md-menu style="padding: 0">
                         <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdOpenMenu()">
