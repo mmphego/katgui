@@ -5,7 +5,7 @@
 
     function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log) {
 
-        var urlBase = SERVER_URL + '/katauth/api/v1';
+        var urlBase = "http://monctl.devw.camlab:8810"; //SERVER_URL + '/katauth/api/v1';
         var api = {};
         api.connection = null;
         api.deferredMap = {};
