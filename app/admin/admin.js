@@ -115,36 +115,6 @@
             vm.saveUser(user);
         };
 
-        vm.delegateControlDialog = function (user, event) {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
-                        $scope.subarrays = ConfigService.systemConfig.system.subarray_nrs.split(',');
-                        $scope.user = user;
-
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                        $scope.delegateControl = function (sub_nr) {
-                            ObsSchedService.delegateControl(sub_nr, user.email);
-                        };
-                    },
-                    template: "<md-dialog style='padding: 0;'><md-content style='padding: 0; margin: 0; width: 396px; ' layout='column'>" +
-                    "<md-toolbar md-theme='{{themePrimary}}' class='md-primary long-input' layout='row' layout-align='center center'><span style='font-weight: bold;'>Delegate Control to {{::user.name}}</span></md-toolbar>" +
-                    "<div flex layout='row' layout-align='center center'><md-select md-theme='{{themePrimaryButtons}}' placeholder='Select a Subarray' ng-model='sub_nr' style='width: 180px'>" +
-                    "<md-option ng-repeat='subarray in subarrays' value='{{::subarray}}'>Subarray {{::subarray}}</md-option>" +
-                    "</md-select></div>" +
-                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='hide()'>Cancel</md-button>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' class='md-primary' ng-click='delegateControl(sub_nr); hide()'><span>Set Control Authority</span></md-button>" +
-                    "</div>" +
-                    "</md-content></md-dialog>",
-                    targetEvent: event
-                });
-        };
-
         vm.resetPassword = function (event, user) {
             var passwordHash = null;
             $mdDialog

@@ -87,10 +87,6 @@
                         <span class="fa fa-check"></span>
                     </button>
                 </div>
-                <button ng-if="vm.isCurrentUserLO && user.roles.indexOf('control_authority') > -1" ng-show="!user.temp && user.activated && !user.editing"
-                        title="Assign To Subarray" class="user-row-button" ng-click="vm.delegateControlDialog(user, $event)">
-                    <span class="fa fa-cube"></span>
-                </button>
                 <button title="Reset Password" ng-show="!user.temp && !user.editing" class="user-row-button" ng-click="vm.resetPassword($event, user)">
                     <span class="fa fa-key"></span>
                 </button>
