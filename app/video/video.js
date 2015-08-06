@@ -9,7 +9,7 @@
                        SERVER_URL, NotifyService) {
 
         var vm = this;
-        var urlBase = SERVER_URL + '/katcontrol/api/v1/vds';
+        var urlBase = SERVER_URL + '/katcontrol/vds';
         //todo set the image source from katconfig
         //not implemented in katconfig yet
         vm.imageSource = 'http://monctl.devo.camlab.kat.ac.za:8083';

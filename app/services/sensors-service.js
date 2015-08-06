@@ -5,7 +5,7 @@
 
     function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http) {
 
-        var urlBase = SERVER_URL + '/katmonitor/api/v1';
+        var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
         api.connection = null;
         api.deferredMap = {};

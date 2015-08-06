@@ -36,8 +36,8 @@ describe('ApplicationCtrl', function () {
             return _$q_.defer().promise;
         };
 
-        httpBackend.when('GET', 'http://localhost:9876/katcontrol/api/v1/time').respond(200, {});
-        httpBackend.when('GET', 'http://localhost:9876/katconf/api/v1/array/position').respond(200, {});
+        httpBackend.when('GET', 'http://localhost:9876/katcontrol/time').respond(200, {});
+        httpBackend.when('GET', 'http://localhost:9876/katconf/array/position').respond(200, {});
 
         mdSidenav = function () {
             return {

@@ -6,7 +6,7 @@
     function UserService($http, $q, SERVER_URL, $rootScope, $log, NotifyService) {
 
         var api = {};
-        api.urlBase = SERVER_URL + '/katauth/api/v1';
+        api.urlBase = SERVER_URL + '/katauth';
         api.users = [];
 
         api.listUsers = function () {

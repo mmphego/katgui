@@ -5,7 +5,7 @@
 
     function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katauth/api/v1';
+        var urlBase = SERVER_URL + '/katauth';
         var api = {};
         api.connection = null;
         api.deferredMap = {};

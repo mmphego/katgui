@@ -5,7 +5,7 @@
 
     function ObsSchedService($http, SERVER_URL, ConfigService, $log, $q, $mdDialog, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katcontrol/api/v1';
+        var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
         api.scheduleData = [];
         api.scheduleDraftData = [];

@@ -26,7 +26,7 @@
 //    });
 //
 //    it('should create a jwt token and send a login request and redirect to home on success', function () {
-//        httpBackend.when('GET', 'http://localhost:9876/katauth/api/v1/user/login').respond(200, {session_id: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Mjc3OTI1NDUsIm5hbWUiOiJGcmFuY29pcyBKb3ViZXJ0IiwiaWQiOjEsInJvbGVzIjpbImNvbnRyb2xfYXV0aG9yaXR5IiwidXNlcl9hZG1pbiIsImxlYWRfb3BlcmF0b3IiXSwiZW1haWwiOiJmam91YmVydEBza2EuYWMuemEifQ.mW2sk9EVywSosakgSV8aa2R8QUKI4un7fWQVzNNMxNw'});
+//        httpBackend.when('GET', 'http://localhost:9876/katauth/user/login').respond(200, {session_id: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Mjc3OTI1NDUsIm5hbWUiOiJGcmFuY29pcyBKb3ViZXJ0IiwiaWQiOjEsInJvbGVzIjpbImNvbnRyb2xfYXV0aG9yaXR5IiwidXNlcl9hZG1pbiIsImxlYWRfb3BlcmF0b3IiXSwiZW1haWwiOiJmam91YmVydEBza2EuYWMuemEifQ.mW2sk9EVywSosakgSV8aa2R8QUKI4un7fWQVzNNMxNw'});
 //        state.current = {name: 'login'};
 //        var showSimpleToastSpy = spyOn(scope.$root, 'showSimpleToast');
 //        var connectEventsSpy = spyOn(scope.$root, 'connectEvents');
@@ -40,7 +40,7 @@
 //    });
 //
 //    it('should notify when there was an error logging in and redirect to login screen', function () {
-//        httpBackend.when('GET', 'http://localhost:9876/katauth/api/v1/user/login').respond(501, {session_id: null});
+//        httpBackend.when('GET', 'http://localhost:9876/katauth/user/login').respond(501, {session_id: null});
 //        var stateGoSpy = spyOn(state, 'go');
 //        SessionService.login('fjoubert@ska.ac.za', '1234');
 //        expect(scope.$root.jwt).toEqual('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZqb3ViZXJ0QHNrYS5hYy56YSJ9.iW4zGXNv8QET/gcwUM8parpTFSZUbeRmVF7l0N5MtdY=');
@@ -56,7 +56,7 @@
 //        SessionService.logout();
 //        expect(stateGoSpy).not.toHaveBeenCalled();
 //        scope.$root.loggedIn = true;
-//        httpBackend.when('GET', 'http://localhost:9876/katauth/api/v1/user/logout').respond(200, {});
+//        httpBackend.when('GET', 'http://localhost:9876/katauth/user/logout').respond(200, {});
 //        SessionService.logout();
 //        httpBackend.flush();
 //        expect(scope.$root.loggedIn).toBeFalsy();
@@ -70,7 +70,7 @@
 //        var showSimpleToastSpy = spyOn(scope.$root, 'showSimpleToast');
 //        var stateGoSpy = spyOn(state, 'go');
 //        scope.$root.loggedIn = true;
-//        httpBackend.when('GET', 'http://localhost:9876/katauth/api/v1/user/logout').respond(501, {error: 'error message'});
+//        httpBackend.when('GET', 'http://localhost:9876/katauth/user/logout').respond(501, {error: 'error message'});
 //        SessionService.logout();
 //        httpBackend.flush();
 //        expect(scope.$root.loggedIn).toBeFalsy();
@@ -82,7 +82,7 @@
 //
 //    it('should log in when there is an existing token on the rootscope', function() {
 //        scope.$root.jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZqb3ViZXJ0QHNrYS5hYy56YSJ9.iW4zGXNv8QET/gcwUM8parpTFSZUbeRmVF7l0N5MtdY=';
-//        httpBackend.when('GET', 'http://localhost:9876/katauth/api/v1/user/login').respond(200, {session_id: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Mjc3OTI1NDUsIm5hbWUiOiJGcmFuY29pcyBKb3ViZXJ0IiwiaWQiOjEsInJvbGVzIjpbImNvbnRyb2xfYXV0aG9yaXR5IiwidXNlcl9hZG1pbiIsImxlYWRfb3BlcmF0b3IiXSwiZW1haWwiOiJmam91YmVydEBza2EuYWMuemEifQ.mW2sk9EVywSosakgSV8aa2R8QUKI4un7fWQVzNNMxNw'});
+//        httpBackend.when('GET', 'http://localhost:9876/katauth/user/login').respond(200, {session_id: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE0Mjc3OTI1NDUsIm5hbWUiOiJGcmFuY29pcyBKb3ViZXJ0IiwiaWQiOjEsInJvbGVzIjpbImNvbnRyb2xfYXV0aG9yaXR5IiwidXNlcl9hZG1pbiIsImxlYWRfb3BlcmF0b3IiXSwiZW1haWwiOiJmam91YmVydEBza2EuYWMuemEifQ.mW2sk9EVywSosakgSV8aa2R8QUKI4un7fWQVzNNMxNw'});
 //        SessionService.recoverLogin();
 //        httpBackend.flush();
 //    });
