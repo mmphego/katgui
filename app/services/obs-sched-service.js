@@ -276,9 +276,9 @@
             api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/delegate-control/' + userName));
         };
 
-        api.viewTaskLogForSBIdCode = function (id_code) {
+        api.viewTaskLogForSBIdCode = function (id_code, mode) {
             if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/tailtask/" + id_code + "/progress").focus();
+                window.open(ConfigService.KATObsPortalURL + "/tailtask/" + id_code + "/" + mode).focus();
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }

@@ -99,7 +99,7 @@
         };
 
         vm.viewSBTaskLog = function (sb) {
-            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code);
+            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, 'progress');
         };
 
         vm.verifySB = function (sb) {

@@ -151,7 +151,7 @@
                                         <md-button ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
                                     </md-menu-item>
                                     <md-menu-item ng-if="item.loadMenuContents">
-                                        <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
+                                        <md-button ng-click="vm.viewSBTasklog(item, 'dryrun')">View Tasklog</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
@@ -198,7 +198,7 @@
                             </md-progress-linear>
                             <div layout="column" layout-align="start" style="width: 120px">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                      style="font-size: 14px; font-weight: bold">{{item.id_code}}
+                                      style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
                                 </span>
                                 <span><i>{{item.owner}}</i></span>
                             </div>
@@ -217,7 +217,7 @@
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
                                     <md-menu-item>
-                                        <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
+                                        <md-button ng-click="vm.viewSBTasklog(item, 'progress')" title="View Progress in a New Tab">View Progress</md-button>
                                     </md-menu-item>
                                     <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION'">
                                         <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify Schedule</md-button>

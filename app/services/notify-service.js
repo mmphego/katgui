@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .factory('NotifyService', NotifyService);
 
-    function NotifyService($mdDialog, $mdToast, $log, SensorsService) {
+    function NotifyService($mdDialog, $mdToast, $log, SensorsService, ConfigService, DATETIME_FORMAT) {
 
         var api = {};
         api.toastPosition = 'bottom right';
@@ -175,8 +175,8 @@
                     "           <div flex><pre>{{content}}</pre></div>" +
                     "           <div layout='column' class='resource-sensors-list' style='margin: 0 16px'>" +
                     "               <div style='height: 24px' ng-repeat='sensor in sensors'>" +
-                    "                   <div layout='row' class='resource-sensor-item'>" +
-                    "                       <span style='width: 310px'>{{sensor.name}}</span>" +
+                    "                   <div layout='row' class='resource-sensor-item' title='{{sensor.name}}'>" +
+                    "                       <span style='width: 310px; overflow: hidden; text-overflow: ellipsis'>{{sensor.name}}</span>" +
                     "                       <span class='resource-sensor-status-item' ng-class='sensorClass(sensor.status)'>{{sensor.status}}</span>" +
                     "                       <span class='resource-sensor-time-item' title='Timestamp (Received: {{sensor.received_timestamp}})'>{{sensor.timestamp}}</span>" +
                     "                       <span flex class='resource-sensor-value-item'>{{sensor.value}}</span>" +

@@ -85,7 +85,7 @@
         };
 
         vm.viewSBTasklog = function (item) {
-            ObsSchedService.viewTaskLogForSBIdCode(item.id_code);
+            ObsSchedService.viewTaskLogForSBIdCode(item.id_code, 'dryrun');
         };
 
         vm.onTimeSet = function (newDate) {
