@@ -35,7 +35,7 @@
             state: 'scheduler.subarrays',
             title: 'Manage Subarrays Schedule Blocks'
         }, {
-            name: 'Resources',
+            name: 'Set-up Subs',
             textOffset: 0,
             state: 'scheduler.resources',
             title: 'Set-up Subarray'
