@@ -102,12 +102,10 @@
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
                     <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by item.id"
                          ng-click="vm.setSelectedSchedule(item);" style="padding: 0 4px"
-                         ng-class="{'selected-schedule-row': item.state !== 'ACTIVE' && item === vm.selectedSchedule,
-                                'schedule-row-executing': item.state === 'ACTIVE' && item !== vm.selectedSchedule,
-                                'schedule-row-executing-and-selected': item.state === 'ACTIVE' && item === vm.selectedSchedule}"
+                         ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
                          class="schedule-draft-item" layout="row" layout-align="start center">
 
-                            <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
+                            <md-progress-linear md-theme="green" ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
                                                 md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; opacity: 0.8;">
                             </md-progress-linear>

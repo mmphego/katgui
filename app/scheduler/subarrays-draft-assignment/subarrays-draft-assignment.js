@@ -29,6 +29,7 @@
         vm.currentActionsMenuIndex = -1;
         vm.showVerifyMenuItem = false;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
+        vm.scheduleData = ObsSchedService.scheduleData;
         vm.subarrays = ObsSchedService.subarrays;
 
         vm.draftsOrderByFields = [
