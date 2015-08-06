@@ -73,6 +73,7 @@
                 api.deferredMap['connectDefer'].resolve();
                 api.subscribe('mon:*');
                 api.subscribe('sched:*');
+                api.subscribe('time:*');
                 if ($rootScope.currentUser.req_role === 'lead_operator') {
                     api.subscribe('auth:*');
                 }
