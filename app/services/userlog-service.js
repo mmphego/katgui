@@ -6,7 +6,7 @@
     function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService) {
 
         var api = {};
-        api.urlBase = SERVER_URL + '/katcontrol/api/v1';
+        api.urlBase = SERVER_URL + '/katcontrol';
         api.userlogs = [];
         api.my_userlogs = [];
         api.report_userlogs = [];

@@ -3,10 +3,10 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail($scope, ObsSchedService, $stateParams, $mdDialog, $interval) {
+    function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval) {
 
         var vm = this;
-        vm.subarray_id = parseInt($stateParams.subarray_id);
+
         vm.draftListProcessingServerCall = false;
         vm.scheduleListProcessingServerCall = false;
         vm.selectedSchedule = null;
@@ -18,16 +18,37 @@
         vm.subarrays = ObsSchedService.subarrays;
         vm.subarray = {};
 
-        var unbindWatch = $scope.$watchCollection('vm.subarrays', function (newVal, oldVal) {
-            vm.subarray = _.findWhere(vm.subarrays, {id: '' + vm.subarray_id});
-            if (vm.subarray) {
-                unbindWatch();
+        vm.checkCASubarrays = function () {
+            for (var i = 0; i < ObsSchedService.subarrays.length; i++) {
+                if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email &&
+                    $stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
+                    vm.subarray_id = parseInt(ObsSchedService.subarrays[i].id);
+                }
             }
+            if (vm.subarray_id) {
+                vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
+            }
+        };
+
+        if ($stateParams.subarray_id !== '' && $rootScope.iAmLO) {
+            vm.subarray_id = parseInt($stateParams.subarray_id);
+        } else {
+            vm.checkCASubarrays();
+        }
+
+        if (!vm.subarray_id) {
+            $state.go('scheduler');
+        }
+
+        vm.unbindIAmCA = $rootScope.$watch('iAmCA', function () {
+            vm.checkCASubarrays();
         });
 
-        vm.completedOrderByFields = [
+        vm.completedFields = [
             {label: 'ID', value: 'id_code'},
             {label: 'Description', value: 'description'},
+            {label: 'State', value: 'state'},
+            {label: 'Outcome', value: 'outcome'},
             {label: 'Date', value: 'desired_start_time'},
             {label: 'State', value: 'state'},
             {label: 'Type', value: 'type'}
@@ -56,21 +77,6 @@
         vm.moveScheduleRowToDraft = function (item) {
             ObsSchedService.scheduleToDraft(vm.subarray_id, item.id_code);
         };
-
-        vm.setCompletedOrderBy = function (column, reverse) {
-            var newOrderBy = _.findWhere(vm.completedOrderByFields, {value: column});
-            if ((vm.completedOrderBy || {}).value === column) {
-                if (newOrderBy.reverse === undefined) {
-                    newOrderBy.reverse = true;
-                } else if (newOrderBy.reverse) {
-                    newOrderBy.reverse = undefined;
-                    newOrderBy = null;
-                }
-            }
-            vm.completedOrderBy = newOrderBy;
-        };
-
-        vm.setCompletedOrderBy('id_code', true);
 
         vm.setSelectedSchedule = function (selectedSchedule, dontDeselectOnSame) {
             if (vm.selectedSchedule === selectedSchedule && !dontDeselectOnSame) {
@@ -119,20 +125,18 @@
         };
 
         vm.sbProgress = function (sb) {
-            var progress = 0;
-            if (sb.expected_duration_seconds && sb.actual_start_time) {
-                var startDate = moment.utc(sb.actual_start_time);
-                var startDateTime = startDate.toDate().getTime();
-                var endDate = moment.utc(startDate).add(sb.expected_duration_seconds, 'seconds');
-                var now = moment.utc(new Date());
-                progress = (now.toDate().getTime() - startDateTime) / (endDate.toDate().getTime() - startDateTime) * 100;
-            }
-            return progress;
+            var startDate = moment.utc(sb.actual_start_time);
+            var startDateTime = startDate.toDate().getTime();
+            var endDate = moment.utc(startDate).add(sb.expected_duration_seconds, 'seconds');
+            var now = moment.utc(new Date());
+            return (now.toDate().getTime() - startDateTime) / (endDate.toDate().getTime() - startDateTime) * 100;
         };
 
         vm.progressInterval = $interval(function () {
             ObsSchedService.scheduleData.forEach(function (sb) {
-                sb.progress = vm.sbProgress(sb);
+                if (sb.expected_duration_seconds && sb.actual_start_time) {
+                    sb.progress = vm.sbProgress(sb);
+                }
             });
         }, 1500);
 
@@ -140,12 +144,14 @@
             ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
         };
 
+        vm.setSubarrayMaintenance = function (maintenance) {
+            ObsSchedService.setSubarrayMaintenance(vm.subarray_id, maintenance ? 'set' : 'clear');
+        };
+
         vm.setPriority = function (sb, event) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Set Priority - ' + sb.id_code + ' (current: ' + sb.priority + ')';
                         $scope.priorities = ["LOW", "HIGH"];
                         $scope.currentPriority = sb.priority;
@@ -158,7 +164,7 @@
                         };
                     },
                     template:
-                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 8px;">{{::title}}</span>' +
@@ -169,7 +175,7 @@
                     '           </div>' +
                     '       </div>' +
                     '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
                     '       </div>' +
                     '   </div>' +
                     '</md-dialog>',

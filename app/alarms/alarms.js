@@ -37,14 +37,14 @@
         ConfigService.loadAggregateSensorDetail();
 
         vm.alarmsOrderByFields = [
-            {label: 'Severity', value: 'severity'},
+            {label: 'Severity', value: 'severity_value'},
             {label: 'Timestamp', value: 'timestamp'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
             {label: 'Message', value: 'value'}
         ];
         vm.knownAlarmsOrderByFields = [
-            {label: 'Severity', value: 'severity'},
+            {label: 'Severity', value: 'severity_value'},
             {label: 'Timestamp', value: 'timestamp'},
             {label: 'Priority', value: 'priority'},
             {label: 'Name', value: 'name'},
@@ -61,7 +61,7 @@
             vm.alarmsOrderBy = newOrderBy;
         };
 
-        vm.setAlarmsOrderBy('timestamp', true);
+        vm.setAlarmsOrderBy('severity_value');
 
         vm.setKnownAlarmsOrderBy = function (column, reverse) {
             var newOrderBy = _.findWhere(vm.knownAlarmsOrderByFields, {value: column});

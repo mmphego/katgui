@@ -97,6 +97,15 @@
                                     {name: parsedAllocations[m][0], allocation: parsedAllocations[m][1]});
                             }
                         }
+                    } else if (sensorNameList[1] === 'delegated_ca') {
+                        ObsSchedService.subarrays[subarrayIndex][sensorNameList[1]] = sensor.value.value;
+                        var iAmCA;
+                        for (var i in ObsSchedService.subarrays) {
+                            if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email) {
+                                iAmCA = true;
+                            }
+                        }
+                        $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
                     } else {
                         ObsSchedService.subarrays[subarrayIndex][sensorNameList[1]] = sensor.value.value;
                     }
@@ -123,11 +132,8 @@
             }
         });
 
-        vm.stateGo = function (newState) {
-            $state.go(newState);
-        };
 
-        vm.stateGoWithSubId = function (newState, subarray_id) {
+        $rootScope.stateGoWithSubId = function (newState, subarray_id) {
             $state.go(newState, {subarray_id: subarray_id});
         };
 

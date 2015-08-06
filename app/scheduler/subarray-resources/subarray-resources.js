@@ -7,11 +7,27 @@
 
         var vm = this;
 
-        if ($stateParams.subarray_id) {
+        vm.checkCASubarrays = function () {
+            for (var i = 0; i < ObsSchedService.subarrays.length; i++) {
+                if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email &&
+                    $stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
+                    vm.subarray_id = parseInt(ObsSchedService.subarrays[i].id);
+                }
+            }
+        };
+
+        if ($stateParams.subarray_id !== '' && $rootScope.iAmLO) {
             vm.subarray_id = parseInt($stateParams.subarray_id);
         } else {
-            vm.subarray_id = null;
+            vm.checkCASubarrays();
         }
+        if (!vm.subarray_id) {
+            $state.go('scheduler');
+        }
+        vm.unbindIAmCA = $rootScope.$watch('iAmCA', function () {
+            vm.checkCASubarrays();
+        });
+
         vm.subarrays = ObsSchedService.subarrays;
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;
@@ -85,8 +101,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Select a Config Label';
                         $scope.configLabels = ObsSchedService.configLabels;
                         ObsSchedService.listConfigLabels();
@@ -102,7 +116,7 @@
                         };
                     },
                     template:
-                        '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                        '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                         '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                         '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                         '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
@@ -116,7 +130,7 @@
                         '           </div>' +
                         '       </div>' +
                         '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
                         '       </div>' +
                         '   </div>' +
                         '</md-dialog>',
@@ -128,8 +142,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Select a Band';
                         $scope.bands = vm.bands;
 
@@ -141,7 +153,7 @@
                         };
                     },
                     template:
-                        '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                        '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                         '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                         '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                         '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
@@ -152,7 +164,7 @@
                         '           </div>' +
                         '       </div>' +
                         '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
                         '       </div>' +
                         '   </div>' +
                         '</md-dialog>',
@@ -164,8 +176,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Select a Product';
                         $scope.products = vm.products;
 
@@ -177,7 +187,7 @@
                         };
                     },
                     template:
-                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
@@ -188,7 +198,7 @@
                     '           </div>' +
                     '       </div>' +
                     '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
                     '       </div>' +
                     '   </div>' +
                     '</md-dialog>',
@@ -200,8 +210,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Select a Control Authority';
                         UserService.listUsers();
                         $scope.users = UserService.users;
@@ -217,7 +225,7 @@
                         };
                     },
                     template:
-                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
@@ -231,7 +239,7 @@
                     '           </div>' +
                     '       </div>' +
                     '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
                     '       </div>' +
                     '   </div>' +
                     '</md-dialog>',
@@ -258,6 +266,7 @@
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
+            vm.unbindIAmCA();
         });
     }
 

@@ -31,7 +31,7 @@
 //
 //    it('should load the KATObsPortalUrl for the task log view', function () {
 //        expect(connectListenerSpy).toHaveBeenCalled();
-//        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
+//        httpBackend.expect('GET', 'http://localhost:9876/katconf/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
 //        scope.$digest();
 //    });
 //
@@ -43,7 +43,7 @@
 //
 //    it('should unbind watchers', inject(function () {
 //        //the get happens because we call $digest
-//        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
+//        httpBackend.expect('GET', 'http://localhost:9876/katconf/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
 //        var unbindStateChangeStartSpy = spyOn(ctrl, "unbindStateChangeStart");
 //        var disconnectListenerSpy = spyOn(ObsSchedService, "disconnectListener");
 //        scope.$emit("$destroy");
@@ -54,7 +54,7 @@
 //
 //    it('should hide the parent display when navigating to a child state', function () {
 //        //the get happens because we call $digest
-//        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
+//        httpBackend.expect('GET', 'http://localhost:9876/katconf/system-config/sections/katportal/katobsportal').respond('urlfortests.com');
 //        scope.$root.$broadcast('$stateChangeStart', {name: 'scheduler.drafts'});
 //        scope.$root.$digest();
 //        expect(ctrl.childStateShowing).toBeTruthy();

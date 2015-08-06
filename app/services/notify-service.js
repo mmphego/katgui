@@ -28,20 +28,18 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = title;
                         $scope.content = content;
                         $scope.hide = function () {
                             $mdDialog.hide();
                         };
                     },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label=''>" +
                     "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
                     "<div flex>{{content}}</div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
+                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
                     "</div>" +
                     "</div>" +
                     "</md-dialog>",
@@ -55,21 +53,19 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = title;
                         $scope.content = content;
                         $scope.hide = function () {
                             $mdDialog.hide();
                         };
                     },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label=''>" +
                     "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span style='margin:8px'>{{title}}</span></md-toolbar>" +
                     "<div flex><pre>{{content}}</pre></div>" +
                     "</div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
+                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
                     "</div>" +
                     "</md-dialog>",
                     targetEvent: event
@@ -82,21 +78,18 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.sb = sb;
                         $scope.hide = function () {
                             $mdDialog.hide();
                             $rootScope.mdDialogSb = undefined;
                         };
                     },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label='Schedule Block Details'>" +
+                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label='Schedule Block Details'>" +
                     "<md-content style='padding: 0; margin: 0; width: 500px;height:800px' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
                     "<textarea style='resize: none; overflow: auto; border: 0; background: transparent' auto-grow readonly>{{sb | json:4}}</textarea>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button class='md-primary' style='margin-left: 8px;' md-theme='{{themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
+                    "<md-button class='md-primary' style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
                     "</div>" +
                     "</md-content></md-dialog>",
                     targetEvent: event
@@ -107,8 +100,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = title;
                         $scope.content = content;
                         $scope.hide = function () {
@@ -178,7 +169,7 @@
                             SensorsService.disconnectListener();
                         });
                     },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{themePrimary}}' aria-label=''>" +
+                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label=''>" +
                     "   <div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
                     "       <md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
                     "           <div flex><pre>{{content}}</pre></div>" +
@@ -194,7 +185,7 @@
                     "           </div>" +
                     "   </div>" +
                     "   <div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "       <md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
+                    "       <md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
                     "   </div>" +
                     "</md-dialog>",
                     targetEvent: event

@@ -140,15 +140,6 @@ describe('MonitorService', function () {
         expect(errorSpy).toHaveBeenCalledWith('There was an error sending a jsonrpc request:');
     });
 
-    it('should log an error message when receiving an unknown message type', function () {
-        var errorSpy = spyOn($log, 'error');
-        var result = MonitorService.connectListener();
-        expect(MonitorService.connection).toBeDefined();
-        expect(result).toBeTruthy();
-        MonitorService.onSockJSMessage({data: '{"a": ""}'});
-        expect(errorSpy).toHaveBeenCalledWith('Dangling monitor message...');
-    });
-
     it('should add the message in an array if it was not received in an array', function () {
         var errorSpy = spyOn($log, 'error');
         var result = MonitorService.connectListener();
@@ -156,12 +147,6 @@ describe('MonitorService', function () {
         expect(result).toBeTruthy();
         MonitorService.onSockJSMessage(goodMessageKataware);
         expect(errorSpy).toHaveBeenCalledWith('Dangling monitor message...');
-    });
-
-    it('should do nothing when there is no data in the message', function () {
-        var errorSpy = spyOn($log, 'error');
-        MonitorService.onSockJSMessage(badMessage);
-        expect(errorSpy).not.toHaveBeenCalled();
     });
 
     it('should not push the data into an array when the id is redis-pubsub-init', function () {

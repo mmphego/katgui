@@ -3,13 +3,14 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, SERVER_URL, KatGuiUtil, $timeout, StatusService,
-                            AlarmsService, ObsSchedService, $interval, $q, $log, ReceptorStateService) {
+    function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
+                            $rootScope, $q, $log, ReceptorStateService) {
 
-        var urlBase = SERVER_URL + '/katmonitor/api/v1';
+        var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
         api.deferredMap = {};
         api.connection = null;
+        api.lastSyncedTime = null;
 
         //websocket default heartbeat is every 30 seconds
         //so allow for 35 seconds before alerting about timeout
@@ -72,6 +73,10 @@
                 api.deferredMap['connectDefer'].resolve();
                 api.subscribe('mon:*');
                 api.subscribe('sched:*');
+                api.subscribe('time:*');
+                if ($rootScope.currentUser.req_role === 'lead_operator') {
+                    api.subscribe('auth:*');
+                }
             }
         };
 
@@ -99,6 +104,10 @@
                 if (messages.error) {
                     $log.error('There was an error sending a jsonrpc request:');
                     $log.error(messages);
+                } else if (messages.result.msg_channel === 'mon:time') {
+                    //add one seconds because our display update interval
+                    //is only every second
+                    api.lastSyncedTime = messages.result.msg_data + 1;
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.result) {
                         if (messages.id === 'redis-pubsub') {
@@ -124,6 +133,12 @@
                                     var channelNameSplit = messageChannel[1].split('.');
                                     if (channelNameSplit[1] === 'lo_id') {
                                         api.currentLeadOperator.name = messageObj.msg_data.value !== '' ? messageObj.msg_data.value : 'None';
+                                        $rootScope.iAmLO = api.currentLeadOperator.name === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'lead_operator';
+                                        if (api.currentUser &&
+                                            api.currentUser.req_role === 'lead_operator' &&
+                                            api.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                                            $rootScope.logout();
+                                        }
                                     } else if (channelNameSplit[1] === 'interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
                                     } else if (channelNameSplit[0] === 'kataware') {

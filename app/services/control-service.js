@@ -6,7 +6,7 @@
 
     function ControlService($http, SERVER_URL, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katcontrol/api/v1';
+        var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
 
         api.stowAll = function () {

@@ -110,8 +110,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog, $filter) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.ulog = ulog;
                         if (!$scope.ulog.start_time) {
                             $scope.ulog.start_time = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm');

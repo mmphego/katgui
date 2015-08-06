@@ -132,13 +132,6 @@
         };
 
         $rootScope.connectEvents = function () {
-
-            if (!vm.updateTimeDisplayInterval) {
-                vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000); //update local clock every second
-                vm.syncTimeWithServerInterval = $interval(vm.syncTimeWithServer, 60000); //sync time every minute
-                vm.syncTimeWithServer();
-            }
-
             MonitorService.connectListener()
                 .then(function () {
                     if (vm.connectMonitorInterval) {
@@ -188,7 +181,7 @@
             $mdSidenav('right-sidenav').toggle();
         };
 
-        vm.logout = function () {
+        $rootScope.logout = function () {
             vm.disconnectIssued = true;
             MonitorService.disconnectListener();
             $mdSidenav('right-sidenav').close();
@@ -196,22 +189,26 @@
             vm.showNavbar = false;
         };
 
-        vm.stateGo = function (newState) {
+        $rootScope.stateGo = function (newState) {
             $state.go(newState);
         };
 
         vm.sideNavStateGo = function (newState) {
-            vm.stateGo(newState);
+            $rootScope.stateGo(newState);
             $mdSidenav('left-sidenav').close();
         };
 
         vm.sideNavRightStateGo = function (newState) {
-            vm.stateGo(newState);
+            $rootScope.stateGo(newState);
             $mdSidenav('right-sidenav').close();
         };
 
-        vm.currentState = function () {
+        $rootScope.currentStateTitle = function () {
             return $state.current.title;
+        };
+
+        $rootScope.currentStateName = function () {
+            return $state.current.name;
         };
 
         vm.navigateToParentState = function () {
@@ -234,13 +231,13 @@
         };
 
         vm.updateTimeDisplay = function () {
-            if ($rootScope.serverTimeOnLoad > 0) {
-                var utcTime = moment.utc($rootScope.serverTimeOnLoad, 'X');
-                var localTime = moment($rootScope.serverTimeOnLoad, 'X');
-                vm.utcTime = utcTime.format('HH:mm:ss');
-                vm.localTime = localTime.format('HH:mm:ss');
-                vm.currentDate = utcTime.format('YYYY-MM-DD');
-                vm.dayOfYear = utcTime.dayOfYear();
+            if (MonitorService.lastSyncedTime && vm.showNavbar) {
+                var utcTime = moment.utc(MonitorService.lastSyncedTime, 'X');
+                var localTime = moment(MonitorService.lastSyncedTime, 'X');
+                $rootScope.utcTime = utcTime.format('HH:mm:ss');
+                $rootScope.localTime = localTime.format('HH:mm:ss');
+                $rootScope.currentDate = utcTime.format('YYYY-MM-DD');
+                $rootScope.dayOfYear = utcTime.dayOfYear();
 
                 var fractionalHours = utcTime.hours() + utcTime.minutes() / 60 + (utcTime.seconds() / 60) / 60;
                 var julianDayWithTime = KatGuiUtil.julianDayWithTime(
@@ -248,15 +245,9 @@
                     utcTime.month() + 1,
                     utcTime.year(),
                     fractionalHours);
-                vm.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
-                //todo bind to the dates on the rootscope
-                $rootScope.julianDay = vm.julianDay;
+                $rootScope.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
                 if ($rootScope.longitude) {
-                    vm.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
-                }
-                $rootScope.serverTimeOnLoad += 1; //unix time is seconds, so only add one
-                if (!$scope.$$phase) {
-                    $scope.$digest();
+                    $rootScope.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
                 }
             }
         };
@@ -264,13 +255,13 @@
         vm.syncTimeWithServer = function () {
             ControlService.getCurrentServerTime()
                 .success(function (serverTime) {
-                    $rootScope.serverTimeOnLoad = serverTime.katcontrol_webserver_current_time;
                     $log.info('Syncing current time with KATPortal (utc ' + DATETIME_FORMAT + '): ' +
-                    moment.utc($rootScope.serverTimeOnLoad, 'X').format(DATETIME_FORMAT));
+                    moment.utc(MonitorService.lastSyncedTime, 'X').format(DATETIME_FORMAT));
+                    MonitorService.lastSyncedTime = serverTime.katcontrol_webserver_current_time;
                 })
                 .error(function (error) {
                     $log.error("Error syncing time with KATPortal! " + error);
-                    $rootScope.serverTimeOnLoad = 0;
+                    MonitorService.lastSyncedTime = null;
                     vm.localSiderealTime = "Error syncing time!";
                 });
             ConfigService.getSiteLocation()
@@ -284,6 +275,9 @@
                     $log.error(error);
                 });
         };
+
+        vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000);
+        vm.syncTimeWithServer();
 
         $rootScope.objectKeys = function (obj) {
             return Object.keys(obj);
@@ -332,6 +326,7 @@
         $scope.$on('$destroy', function () {
             MonitorService.disconnectListener();
             vm.undbindLoginSuccess();
+            vm.updateTimeDisplayInterval();
         });
     }
 
@@ -478,7 +473,7 @@
             name: 'scheduler',
             url: '/scheduler',
             templateUrl: 'app/scheduler/scheduler-home.html',
-            title: 'Scheduler',
+            title: 'Subarrays',
             data: {
                 authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
             }
@@ -498,7 +493,7 @@
             parent: schedulerHome,
             url: '/subarrays/:subarray_id',
             templateUrl: 'app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.html',
-            title: 'Scheduler.Schedule Blocks',
+            title: 'Subarrays.Schedule Blocks',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -508,7 +503,7 @@
             parent: schedulerHome,
             url: '/resources/:subarray_id',
             templateUrl: 'app/scheduler/subarray-resources/subarray-resources.html',
-            title: 'Scheduler.Resources',
+            title: 'Subarrays.Resource Assignment',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -518,7 +513,7 @@
             parent: schedulerHome,
             url: '/observations',
             templateUrl: 'app/scheduler/observations/observations-overview.html',
-            title: 'Scheduler.Observations Schedules',
+            title: 'Subarrays.Observations Overview',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }
@@ -529,7 +524,7 @@
             parent: schedulerHome,
             url: '/observations/:subarray_id',
             templateUrl: 'app/scheduler/observations/observations-detail.html',
-            title: 'Scheduler.Observations',
+            title: 'Subarrays.Observations',
             data: {
                 authorizedRoles: [USER_ROLES.all]
             }

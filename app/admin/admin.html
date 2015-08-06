@@ -32,7 +32,7 @@
                 <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">
                     Show Only Deactivated Users
                 </md-checkbox>
-                <md-button  style="margin-right: 8px;" ng-click="vm.createUser()" class="md-icon-button" md-theme="{{themePrimaryButtons}}">
+                <md-button  style="margin: 0" ng-click="vm.createUser()" class="md-icon-button" md-theme="{{themePrimaryButtons}}">
                     <md-icon class="fa" md-font-icon="fa-plus" style="margin-top: 8px;"></md-icon>
                     <md-tooltip>Create A User</md-tooltip>
                 </md-button>
@@ -58,7 +58,7 @@
         </md-toolbar>
 
         <div id="userListId" flex class="user-list" md-theme="{{themePrimaryButtons}}">
-            <div class="user-row animate-repeat" flex layout="row" layout-align="start center"
+            <div class="user-row" flex layout="row" layout-align="start center"
                  ng-repeat="user in vm.userData | filter:{activated: !vm.showDeactivatedUsers} | regexSearch:vm.orderByFields:q | orderBy:vm.orderBy.value:vm.orderBy.reverse track by user.id"
                  ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
                 <input flex type="text" placeholder="Name" class="user-admin-input" md-theme="{{themePrimary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}"
@@ -87,10 +87,6 @@
                         <span class="fa fa-check"></span>
                     </button>
                 </div>
-                <button ng-if="vm.isCurrentUserLO && user.roles.indexOf('control_authority') > -1" ng-show="!user.temp && user.activated && !user.editing"
-                        title="Assign To Subarray" class="user-row-button" ng-click="vm.delegateControlDialog(user, $event)">
-                    <span class="fa fa-cube"></span>
-                </button>
                 <button title="Reset Password" ng-show="!user.temp && !user.editing" class="user-row-button" ng-click="vm.resetPassword($event, user)">
                     <span class="fa fa-key"></span>
                 </button>

@@ -8,7 +8,7 @@ describe('ApplicationCtrl', function () {
     var scope, ctrl, location, state, mdSidenav, SessionService, ControlService, MonitorService, ConfigService, mdToast, interval, recoverLoginSpy, q, httpBackend, localStorage, controller;
 
     beforeEach(inject(function ($rootScope, $location, $state, $templateCache, _SessionService_, _ControlService_, _MonitorService_, _$mdToast_,
-                                _ConfigService_, _$interval_, _$q_, _$injector_, _$localStorage_, _$controller_, _ConfigService_) {
+                                _ConfigService_, _$interval_, _$q_, _$injector_, _$localStorage_, _$controller_) {
         httpBackend = _$injector_.get('$httpBackend');
         q = _$q_;
         controller = _$controller_;
@@ -35,6 +35,9 @@ describe('ApplicationCtrl', function () {
         _ConfigService_.getSystemConfig = function () {
             return _$q_.defer().promise;
         };
+
+        httpBackend.when('GET', 'http://localhost:9876/katcontrol/time').respond(200, {});
+        httpBackend.when('GET', 'http://localhost:9876/katconf/array/position').respond(200, {});
 
         mdSidenav = function () {
             return {
@@ -63,15 +66,6 @@ describe('ApplicationCtrl', function () {
         recoverLoginSpy = spyOn(SessionService, 'recoverLogin');
     }));
 
-    it('should call the service functions to log the user out and disconnect all listeners', inject(function () {
-        var disconnectMonitorServiceSpy = spyOn(MonitorService, 'disconnectListener');
-        var logoutSessionServiceSpy = spyOn(SessionService, 'logout');
-        ctrl.logout();
-        expect(disconnectMonitorServiceSpy).toHaveBeenCalled();
-        expect(logoutSessionServiceSpy).toHaveBeenCalled();
-        expect(ctrl.showNavbar).toBe(false);
-    }));
-
     it('should init the defaults for variables', function() {
         localStorage = {};
         localStorage['showLST'] = undefined;
@@ -93,127 +87,6 @@ describe('ApplicationCtrl', function () {
         ctrl.toggleLeftSidenav();
         ctrl.toggleRightSidenav();
     }));
-
-    it('should connect events and start the time sync with the web server', function () {
-        var updateTimeDisplaySpy = spyOn(ctrl, 'updateTimeDisplay');
-        var syncTimeWithServerSpy = spyOn(ctrl, 'syncTimeWithServer');
-        scope.$root.connectEvents();
-        interval.flush(60000);
-        expect(updateTimeDisplaySpy).toHaveBeenCalled();
-        expect(syncTimeWithServerSpy).toHaveBeenCalled();
-    });
-
-    it('should navigate to a new state', function () {
-        var stateSpy = spyOn(state, "go");
-        ctrl.stateGo('scheduler.drafts');
-        expect(stateSpy).toHaveBeenCalled();
-    });
-
-    it('should change state when links are clicked in the left sidenav', function () {
-        var stateSpy = spyOn(ctrl, "stateGo");
-        ctrl.sideNavStateGo('test state');
-        expect(stateSpy).toHaveBeenCalledWith('test state');
-    });
-
-    it('should change state when links are clicked in the right sidenav', function () {
-        var stateSpy = spyOn(ctrl, "stateGo");
-        ctrl.sideNavRightStateGo('test state');
-        expect(stateSpy).toHaveBeenCalledWith('test state');
-    });
-
-    it('should return the current state\'s title', function () {
-        scope.$root.loggedIn = true;
-        ctrl.stateGo('home');
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Home');
-    });
-
-    it('should navigate to the parent state', function () {
-        scope.$root.loggedIn = true;
-        ctrl.stateGo('scheduler');
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler');
-        ctrl.navigateToParentState();
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Home');
-        ctrl.stateGo('scheduler.drafts');
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler.Drafts');
-        ctrl.navigateToParentState();
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler');
-        ctrl.navigateToParentState();
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Home');
-        ctrl.stateGo('scheduler.observations.detail');
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler.Observations Schedules');
-        ctrl.navigateToParentState();
-        scope.$root.$digest();
-        expect(ctrl.currentState()).toEqual('Scheduler');
-    });
-
-    it('should update the time display with utc, sast, julian date and lst', function () {
-        scope.$root.serverTimeOnLoad = 0;
-        ctrl.updateTimeDisplay();
-        expect(scope.$root.serverTimeOnLoad).toBe(0);
-        scope.$root.serverTimeOnLoad = 1400;
-        ctrl.updateTimeDisplay();
-        expect(ctrl.utcTime).toEqual('00:23:20');
-        expect(ctrl.localTime).toEqual('02:23:20');
-        expect(ctrl.julianDay).toEqual(2440585.516);
-        expect(ctrl.localSiderealTime).not.toBeDefined();
-        expect(scope.$root.serverTimeOnLoad).toBe(1401);
-
-        scope.$root.longitude = 21.410555555555554;
-        ctrl.updateTimeDisplay();
-        expect(ctrl.utcTime).toEqual('00:23:21');
-        expect(ctrl.localTime).toEqual('02:23:21');
-        expect(ctrl.julianDay).toEqual(2440585.516);
-        expect(ctrl.localSiderealTime).toBe('8:22:05');
-        expect(scope.$root.serverTimeOnLoad).toBe(1402);
-
-        scope.$root.serverTimeOnLoad = 14000;
-        ctrl.updateTimeDisplay();
-        expect(ctrl.utcTime).toEqual('03:53:20');
-        expect(ctrl.localTime).toEqual('05:53:20');
-        expect(ctrl.julianDay).toEqual(2440585.662);
-        expect(ctrl.localSiderealTime).toBe('11:52:39');
-        expect(scope.$root.serverTimeOnLoad).toBe(14001);
-    });
-
-    it('should call the service functions to sync time with the server and set the serverTimeOnLoad on success', function () {
-        httpBackend.expect('GET', 'http://localhost:9876:8840/array/position').respond(21.410555555555554);
-        var deferred = q.defer();
-        var getCurrentServerTimeSpy = spyOn(ControlService, 'getCurrentServerTime').and.returnValue(wrapPromise(deferred.promise));
-        var deferred2 = q.defer();
-        var getSiteLocationSpy = spyOn(ConfigService, 'getSiteLocation').and.returnValue(wrapPromise(deferred2.promise));
-        ctrl.syncTimeWithServer();
-        expect(getCurrentServerTimeSpy).toHaveBeenCalled();
-        expect(getSiteLocationSpy).toHaveBeenCalled();
-        deferred.resolve({katcontrol_webserver_current_time: 12000});
-        deferred2.resolve('"-30:43:17.34, 21:24:38.46, 1038"');
-        scope.$root.$digest();
-        expect(scope.$root.serverTimeOnLoad).toBe(12000);
-        expect(scope.$root.longitude).toBe(21.410555555555554);
-    });
-
-    it('should call the service functions to sync time with the server and set the serverTimeOnLoad on error and LST errors', function () {
-        httpBackend.expect('GET', 'http://localhost:9876:8840/array/position').respond(21.410555555555554);
-        var deferred = q.defer();
-        var getCurrentServerTimeSpy = spyOn(ControlService, 'getCurrentServerTime').and.returnValue(wrapPromise(deferred.promise));
-        var deferred2 = q.defer();
-        var getSiteLocationSpy = spyOn(ConfigService, 'getSiteLocation').and.returnValue(wrapPromise(deferred2.promise));
-        ctrl.syncTimeWithServer();
-        expect(getCurrentServerTimeSpy).toHaveBeenCalled();
-        expect(getSiteLocationSpy).toHaveBeenCalled();
-        deferred.reject('test error');
-        deferred2.reject('test error 2');
-        scope.$root.$digest();
-        expect(scope.$root.serverTimeOnLoad).toBe(0);
-        expect(ctrl.localSiderealTime).toBe('Error syncing time!');
-        expect(scope.$root.longitude).not.toBeDefined();
-    });
 
     it('should emit keydown events', function () {
         spyOn(scope.$root, "$emit");

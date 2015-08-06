@@ -5,7 +5,7 @@
 
     function ObsSchedService($http, SERVER_URL, ConfigService, $log, $q, $mdDialog, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katcontrol/api/v1';
+        var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
         api.scheduleData = [];
         api.scheduleDraftData = [];
@@ -206,7 +206,6 @@
 
                 var draftIndex = _.findLastIndex(api.scheduleDraftData, {id_code: sb.id_code});
                 var scheduledIndex = _.findLastIndex(api.scheduleData, {id_code: sb.id_code});
-                var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id_code: sb.id_code});
 
                 if (draftIndex > -1 && sb.state !== 'DRAFT') {
                     api.scheduleDraftData.splice(draftIndex, 1);
@@ -222,11 +221,6 @@
                 } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
                     api.scheduleData.push(sb);
                 }
-                if (completedIndex === -1 && (sb.state !== 'SCHEDULED' && sb.state !== 'ACTIVE' && sb.state !== 'DRAFT')) {
-                    api.scheduleCompletedData.push(sb);
-                } else if (completedIndex > -1) {
-                    api.scheduleCompletedData[completedIndex] = sb;
-                }
             } else if (action === 'sb_add') {
                 if (sb.state === 'DRAFT') {
                     api.scheduleDraftData.push(sb);
@@ -239,6 +233,12 @@
             } else if (action === 'sb_order_change') {
                 NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
                 api.getScheduledScheduleBlocks();
+            } else if (action === 'sb_add_completed') {
+                api.scheduleCompletedData.unshift(sb);
+            } else if (action === 'sb_remove_completed') {
+                //only a limited number of completed sbs are shown
+                var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id_code: sb.id_code});
+                api.scheduleCompletedData.splice(completedIndex, 1);
             } else {
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
                 $log.error(sb)
@@ -288,8 +288,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         $scope.title = 'Select a Device in ' + resource + ' to Restart';
                         $scope.devices = [];
                         api.listResourceMaintenanceDevices(resource)
@@ -311,7 +309,7 @@
                         };
                     },
                     template:
-                    '<md-dialog style="padding: 0;" md-theme="{{themePrimary}}">' +
+                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 16px;">{{::title}}</span>' +
@@ -326,7 +324,7 @@
                     '           </div>' +
                     '       </div>' +
                     '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
                     '       </div>' +
                     '   </div>' +
                     '</md-dialog>',

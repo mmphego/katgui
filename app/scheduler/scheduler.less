@@ -581,6 +581,16 @@
     }
 }
 
+.left-arrow-transform-small {
+    transform: scale(0.15) rotate(180deg);
+    width: 75px;
+    height: 40px;
+    stroke-width: 5;
+    svg {
+        transform: translate(-175px, -90px);
+    }
+}
+
 .overlay-progress-circular {
     position: absolute;
     left: 0;
@@ -590,4 +600,15 @@
     background: rgba(81, 81, 81, 0.25);
     cursor: not-allowed;
     z-index: 100;
+}
+
+.progress-bar-fill {
+    top: 0 !important;
+    z-index: -1;
+    opacity: 0.4;
+    height: 100% !important;
+    div {
+        top: 0 !important;
+        height: 100% !important;
+    }
 }
