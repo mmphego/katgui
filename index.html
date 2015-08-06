@@ -296,8 +296,8 @@
         <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" class="md-whiteframe-z1" md-theme-watch="true"
                     ng-class="{'slide-in-vertically-navbar': loggedIn, 'connection-lost-bg-bright': vm.connectionToMonitorLost}" >
             <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden;">
-                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-navicon"></md-icon>
+                <md-button class="mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
+                    <span class="fa fa-navicon"></span>
                 </md-button>
 
                 <span flex style="font-size: 30px; cursor: pointer;" title="Click to Navigate to Parent Display" ng-click="vm.navigateToParentState()">{{$root.currentStateTitle()}}</span>
@@ -330,13 +330,13 @@
                     </div>
                 </div>
 
-                <md-button class="md-icon-button mainbar-navbar-button" ng-click="$root.stateGo('home')" title="Home">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-home"></md-icon>
+                <md-button class="mainbar-navbar-button" ng-click="$root.stateGo('home')" title="Home">
+                    <span class="fa fa-home"></span>
                 </md-button>
 
-                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="$root.stateGo('alarms')"
+                <md-button class="mainbar-navbar-button" style="overflow: visible;" ng-click="$root.stateGo('alarms')"
                     title="Alarms">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-warning"></md-icon>
+                    <span class="fa fa-warning"></span>
                     <span title="Warning Alarms" ng-show="newAlarms"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
                     <span title="Error Alarms" ng-show="errorAlarms"
@@ -345,8 +345,8 @@
                           class="badge alarm-badge alarm-badge-crit">{{critAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span>
                 </md-button>
 
-                <md-button class="mainbar-navbar-button md-icon-button" ng-click="vm.toggleRightSidenav()">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-user"></md-icon>
+                <md-button class="mainbar-navbar-button" ng-click="vm.toggleRightSidenav()">
+                    <span class="fa fa-user"></span>
                 </md-button>
             </div>
 
