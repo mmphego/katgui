@@ -226,7 +226,13 @@ angular.module('katGui.d3')
                                     d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
                                 }
                                 if (items[i].pos_delta_sky) {
-                                    d.tooltipHtml += "<br/>Delta Sky: " + Math.round(items[i].pos_delta_sky.value * pm) / pm;
+                                    d.tooltipHtml += "<br/>Delta sky: " + Math.round(items[i].pos_delta_sky.value * pm) / pm;
+                                }
+                                if (items[i].pos_delta_azim && items[i].pos_delta_elev) {
+                                    d.tooltipHtml += "<br/>Delta azim: " + Math.round(items[i].pos_delta_azim.value * pm) / pm + ", Delta elev: " + Math.round(items[i].pos_delta_elev.value * pm) / pm;
+                                }
+                                if (items[i].target) {
+                                    d.tooltipHtml += "<br/>Target: " + items[i].target.value;
                                 }
                                 d.tooltipHtml += "<br/>";
                             }
