@@ -80,7 +80,13 @@
                         $scope.title = 'Set VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
-                            $scope.presetIDs.push(i);
+                            $http.get(urlBase + '/presetset/')
+                            if (i < 10) {
+                                $scope.presetIDs.push('m00' + i);
+                            }
+                            else {
+                                $scope.presetIDs.push('m0' + i);
+                            }
                         }
                         $scope.hide = function () {
                             $mdDialog.hide();
@@ -119,7 +125,12 @@
                         $scope.title = 'Go To VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
-                            $scope.presetIDs.push(i);
+                            if (i < 10) {
+                                $scope.presetIDs.push('m00' + i);
+                            }
+                            else {
+                                $scope.presetIDs.push('m0' + i);
+                            }
                         }
                         $scope.hide = function () {
                             $mdDialog.hide();
