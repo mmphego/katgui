@@ -23,12 +23,11 @@
         <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 8px;">
             <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
                  layout="row" layout-align="start" flex
-                 style="min-width: 650px;">
+                 style="min-width: 650px;" md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
 
                 <div class="" style="margin-left: 0; margin-top: 8px;" layout="column" layout-align="start" flex>
 
                     <md-toolbar
-                        md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                         ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                         layout="row" layout-align="center center" title="{{subarray.description}}"
                         style="max-height: 64px; min-height: 64px; position: relative; margin-top: -7px"
@@ -71,7 +70,7 @@
                         </div>
 
                     </md-toolbar>
-                    <div md-theme="{{themePrimaryButtons}}" flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
+                    <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div style="padding: 0 4px"
                              ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id} track by item.id"
                              class="schedule-draft-item" layout="column">

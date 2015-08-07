@@ -11,6 +11,7 @@
                 if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email &&
                     $stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
                     vm.subarray_id = parseInt(ObsSchedService.subarrays[i].id);
+                    $scope.subarray = ObsSchedService.subarrays[i];
                 }
             }
         };
@@ -22,6 +23,12 @@
         }
         if (!vm.subarray_id) {
             $state.go('scheduler');
+        } else {
+            vm.unbindDelegateWatch = $scope.$watch('subarray.delegated_ca', function (newVal) {
+                if (newVal !== $rootScope.currentUser.email && !$rootScope.iAmLO) {
+                    $state.go('scheduler');
+                }
+            });
         }
         vm.unbindIAmCA = $rootScope.$watch('iAmCA', function () {
             vm.checkCASubarrays();
@@ -126,5 +133,12 @@
         vm.navigateToSchedulerDetails = function (subarray_id) {
             $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
         };
+
+        $scope.$on('$destroy', function () {
+            vm.unbindIAmCA();
+            if (vm.unbindDelegateWatch) {
+                vm.unbindDelegateWatch();
+            }
+        });
     }
 })();
