@@ -87,10 +87,6 @@
                 });
         };
 
-        api.getCurrentServerTime = function () {
-            return $http.get(urlBase + '/time');
-        };
-
         return api;
     }
 

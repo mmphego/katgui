@@ -139,7 +139,6 @@
                         vm.connectMonitorInterval = null;
                         vm.connectionToMonitorLost = false;
                         $log.info('Reconnected Monitor Connection.');
-                        vm.syncTimeWithServer();
                     }
                 }, function () {
                     $log.error('Could not establish Monitor connection. Retrying every 10 seconds.');
@@ -252,32 +251,17 @@
             }
         };
 
-        vm.syncTimeWithServer = function () {
-            ControlService.getCurrentServerTime()
-                .success(function (serverTime) {
-                    $log.info('Syncing current time with KATPortal (utc ' + DATETIME_FORMAT + '): ' +
-                    moment.utc(MonitorService.lastSyncedTime, 'X').format(DATETIME_FORMAT));
-                    MonitorService.lastSyncedTime = serverTime.katcontrol_webserver_current_time;
-                })
-                .error(function (error) {
-                    $log.error("Error syncing time with KATPortal! " + error);
-                    MonitorService.lastSyncedTime = null;
-                    vm.localSiderealTime = "Error syncing time!";
-                });
-            ConfigService.getSiteLocation()
-                .success(function (result) {
-                    var trimmedResult = result.replace(/"/g, '');
-                    $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
-                    $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
-                })
-                .error(function (error) {
-                    $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
-                    $log.error(error);
-                });
-        };
-
         vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000);
-        vm.syncTimeWithServer();
+        ConfigService.getSiteLocation()
+            .success(function (result) {
+                var trimmedResult = result.replace(/"/g, '');
+                $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
+                $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
+            })
+            .error(function (error) {
+                $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
+                $log.error(error);
+            });
 
         $rootScope.objectKeys = function (obj) {
             return Object.keys(obj);

@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .factory('NotifyService', NotifyService);
 
-    function NotifyService($mdDialog, $mdToast, $log, SensorsService) {
+    function NotifyService($mdDialog, $mdToast, $log, SensorsService, ConfigService, DATETIME_FORMAT) {
 
         var api = {};
         api.toastPosition = 'bottom right';
@@ -87,7 +87,7 @@
                     template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label='Schedule Block Details'>" +
                     "<md-content style='padding: 0; margin: 0; width: 500px;height:800px' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
-                    "<textarea style='resize: none; overflow: auto; border: 0; background: transparent' auto-grow readonly>{{sb | json:4}}</textarea>" +
+                    "<pre ng-bind-html='sb | prettifyJSON'></pre>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
                     "<md-button class='md-primary' style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
                     "</div>" +
@@ -175,8 +175,8 @@
                     "           <div flex><pre>{{content}}</pre></div>" +
                     "           <div layout='column' class='resource-sensors-list' style='margin: 0 16px'>" +
                     "               <div style='height: 24px' ng-repeat='sensor in sensors'>" +
-                    "                   <div layout='row' class='resource-sensor-item'>" +
-                    "                       <span style='width: 310px'>{{sensor.name}}</span>" +
+                    "                   <div layout='row' class='resource-sensor-item' title='{{sensor.name}}'>" +
+                    "                       <span style='width: 310px; overflow: hidden; text-overflow: ellipsis'>{{sensor.name}}</span>" +
                     "                       <span class='resource-sensor-status-item' ng-class='sensorClass(sensor.status)'>{{sensor.status}}</span>" +
                     "                       <span class='resource-sensor-time-item' title='Timestamp (Received: {{sensor.received_timestamp}})'>{{sensor.timestamp}}</span>" +
                     "                       <span flex class='resource-sensor-value-item'>{{sensor.value}}</span>" +

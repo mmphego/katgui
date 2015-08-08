@@ -59,11 +59,14 @@
             'ap_requested_elev',
             'pos_request_base_dec',
             'pos_request_base_ra',
+            'pos_delta_azim',
+            'pos_delta_elev',
             'pos_delta_sky',
             'mode',
             'inhibited',
             'ap_device_status',
             'lock',
+            'target',
             'windstow_active'
         ];
 

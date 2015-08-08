@@ -74,9 +74,7 @@
                 api.subscribe('mon:*');
                 api.subscribe('sched:*');
                 api.subscribe('time:*');
-                if ($rootScope.currentUser.req_role === 'lead_operator') {
-                    api.subscribe('auth:*');
-                }
+                api.subscribe('auth:*');
             }
         };
 
@@ -127,19 +125,19 @@
                             }
                             if (messageObj.msg_channel) {
                                 var messageChannel = messageObj.msg_channel.split(":");
-                                if (messageChannel[0] === 'sched') {
+                                if (messageObj.msg_channel === 'auth:current_lo') {
+                                    api.currentLeadOperator.name = messageObj.msg_data.lo;
+                                    $rootScope.iAmLO = api.currentLeadOperator.name === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'lead_operator';
+                                    if ($rootScope.currentUser &&
+                                        $rootScope.currentUser.req_role === 'lead_operator' &&
+                                        api.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                                        $rootScope.logout();
+                                    }
+                                } else if (messageChannel[0] === 'sched') {
                                     ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
                                     var channelNameSplit = messageChannel[1].split('.');
-                                    if (channelNameSplit[1] === 'lo_id') {
-                                        api.currentLeadOperator.name = messageObj.msg_data.value !== '' ? messageObj.msg_data.value : 'None';
-                                        $rootScope.iAmLO = api.currentLeadOperator.name === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'lead_operator';
-                                        if (api.currentUser &&
-                                            api.currentUser.req_role === 'lead_operator' &&
-                                            api.currentLeadOperator.name !== $rootScope.currentUser.email) {
-                                            $rootScope.logout();
-                                        }
-                                    } else if (channelNameSplit[1] === 'interlock_state') {
+                                    if (channelNameSplit[1] === 'interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
                                     } else if (channelNameSplit[0] === 'kataware') {
                                         AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);

@@ -1,6 +1,6 @@
 <div ng-controller="SchedulerHomeCtrl as vm" flex layout-fill layout="column"
      ng-class="{'connection-lost-bg':vm.connectionLost}" md-theme="{{themePrimary}}"
-     style="min-width: 1220px; min-height: 1040px;">
+     style="min-width: 1220px; min-height: 800px;">
 
     <div ng-if="$root.iAmLO || $root.iAmCA" ng-show="!vm.childStateShowing" layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}"
          style="margin: 11px 8px" md-theme="{{themePrimaryButtons}}">
@@ -24,11 +24,18 @@
             <div ng-repeat="subarray in vm.subarrays track by $index" layout="column" layout-align="start center"
                  class="md-whiteframe-z1" style="margin: 12px 0;" md-theme="{{themePrimaryButtons}}" ng-if="$root.iAmLO || subarray.delegated_ca === $root.currentUser.email">
                 <md-toolbar md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
-                            class="md-whiteframe-z2 md-toolbar-tools-medium" layout="row" layout-align="center center"
+                            class="md-whiteframe-z2 md-toolbar-tools-medium" layout="row" layout-align="start center"
                             ng-class="{'md-hue-2': subarray.state !== 'inactive'}">
                     <span>SUBARRAY {{subarray.id}} - {{subarray.state}}</span>
                     <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
                     <span ng-if="subarray.maintenance" title="Subarray is in Maintenance" class="fa fa-wrench" style="position: absolute; right: 8px; top: 12px;"></span>
+                    <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 0; left: 0; right: 0; font-size: 12px">
+                        <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
+                        <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ? subarray.band : 'None'}}</b></span>
+                        <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product ? subarray.product : 'None'}}</b></span>
+                            <span ng-show="subarray.state === 'active' || subarray.config_label"
+                                  title="Config Label"><i>Config Label: </i><b>{{subarray.config_label ? subarray.config_label : 'None'}}</b></span>
+                    </div>
                 </md-toolbar>
                 <div layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <md-button class="md-primary md-raised" ng-click="$root.stateGoWithSubId('scheduler.resources', subarray.id)"

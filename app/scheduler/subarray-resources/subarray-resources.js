@@ -12,6 +12,7 @@
                 if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email &&
                     $stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
                     vm.subarray_id = parseInt(ObsSchedService.subarrays[i].id);
+                    $scope.subarray = ObsSchedService.subarrays[i];
                 }
             }
         };
@@ -23,10 +24,17 @@
         }
         if (!vm.subarray_id) {
             $state.go('scheduler');
+        } else {
+            vm.unbindDelegateWatch = $scope.$watch('subarray.delegated_ca', function (newVal) {
+                if (newVal !== $rootScope.currentUser.email && !$rootScope.iAmLO) {
+                    $state.go('scheduler');
+                }
+            });
         }
         vm.unbindIAmCA = $rootScope.$watch('iAmCA', function () {
             vm.checkCASubarrays();
         });
+
 
         vm.subarrays = ObsSchedService.subarrays;
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
@@ -88,8 +96,12 @@
         };
 
         vm.isResourceInMaintenance = function (resource) {
-            resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
-            return resource.maintenance;
+            if (ObsSchedService.resources_in_maintenance) {
+                resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
+                return resource.maintenance;
+            } else {
+                return false;
+            }
         };
 
         vm.isResourceFaulty = function (resource) {
@@ -267,6 +279,9 @@
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
             vm.unbindIAmCA();
+            if (vm.unbindDelegateWatch) {
+                vm.unbindDelegateWatch();
+            }
         });
     }
 

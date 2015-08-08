@@ -61,6 +61,7 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Lead Operator Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
+                api.connection.send($rootScope.currentUser.email);
             }
         };
 
