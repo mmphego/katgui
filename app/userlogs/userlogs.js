@@ -100,7 +100,8 @@
                 lineHeight: 10
                 }
             );
-            pdf.save('Test.pdf');
+            var export_time = $filter('date')(new Date(), "yyyy-MM-dd_HH'h'mm");
+            pdf.save('Shift_Report_' + export_time + '.pdf');
         };
 
         vm.getCompleteUserLog = function (ulog, userlogs, tags, event) {
