@@ -18,7 +18,7 @@
         }])
         .controller('UserlogCtrl', UserlogCtrl);
 
-    function UserlogCtrl($mdDialog, $rootScope, $filter, $log, $timeout, UserLogService) {
+    function UserlogCtrl($mdDialog, $rootScope, $filter, $log, $timeout, $window, $compile, UserLogService) {
 
         var vm = this;
 
@@ -62,6 +62,46 @@
 
         vm.onTimeSet = function (value, target, attribute) {
             target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm');
+        };
+
+        vm.exportPdf = function(reportStart, reportEnd){
+            var pdf = new jsPDF('l', 'mm', 'a4');
+            var report_markup = '<table id=basic-table border="1px" style="width:100%; font-family:verdana,arial,sans-serif; font-size:10px; padding:10px;">' +
+            '<thead>' +
+                '<tr>' +
+                    '<th>Userlog Type</th>' +
+                    '<th>Event Started</th>' +
+                    '<th>Event Ended</th>' +
+                    '<th>Userlog Content</th>' +
+                '</tr>' +
+            '</thead>';
+            for (var ilog = 0; ilog < vm.report_userlogs.length; ilog++) {
+                report_markup += '<tr>' +
+                    '<td>' + vm.report_userlogs[ilog].userlog_type + '</td>' +
+                    '<td>' + vm.report_userlogs[ilog].start_time + '</td>' +
+                    '<td>' + vm.report_userlogs[ilog].end_time + '</td>' +
+                    '<td>' + vm.report_userlogs[ilog].userlog_content + '</td>' +
+                    '</tr>';
+            };
+            report_markup += '</table>';
+
+            pdf.setFontSize(20);
+            pdf.text('Shift Report', 20, 25);
+            pdf.setFontSize(12);
+            pdf.text(('From: ' + reportStart + '     To: ' + reportEnd), 20, 50);
+            var report_element = document.createElement('div');
+            report_element.innerHTML = report_markup;
+            var res = pdf.autoTableHtmlToJson(report_element.firstChild, true);
+            pdf.autoTable(res.columns, res.data, {
+                startY: 60,
+                margins: {horizontal: 15, top: 25, bottom: 20},
+                overflow: 'linebreak',
+                padding: 2,
+                lineHeight: 10
+                }
+            );
+            var export_time = $filter('date')(new Date(), "yyyy-MM-dd_HH'h'mm");
+            pdf.save('Shift_Report_' + export_time + '.pdf');
         };
 
         vm.getCompleteUserLog = function (ulog, userlogs, tags, event) {
