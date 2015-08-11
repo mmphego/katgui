@@ -15,10 +15,9 @@
 
         api.loadKATObsPortalURL = function () {
             $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
-                .success(function (result) {
-                    api.KATObsPortalURL = "http://" + JSON.parse(result);
-                })
-                .error(function (message) {
+                .then(function (result) {
+                    api.KATObsPortalURL = "http://" + JSON.parse(result.data);
+                }, function (message) {
                     $log.error(message);
                 });
         };
@@ -27,11 +26,10 @@
             var deferred = $q.defer();
             if (!api.aggregateSensorDetail) {
                 $http(createRequest('get', urlBase + '/aggregates'))
-                    .success(function (result) {
-                        api.aggregateSensorDetail = result;
+                    .then(function (result) {
+                        api.aggregateSensorDetail = result.data;
                         deferred.resolve(api.aggregateSensorDetail);
-                    })
-                    .error(function (message) {
+                    }, function (message) {
                         $log.error(message);
                         deferred.reject(message);
                     });
@@ -47,11 +45,10 @@
         api.getSystemConfig = function () {
             var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/system-config'))
-                .success(function (result) {
-                    api.systemConfig = result;
+                .then(function (result) {
+                    api.systemConfig = result.data;
                     deferred.resolve(api.systemConfig);
-                })
-                .error(function (message) {
+                }, function (message) {
                     $log.error(message);
                     deferred.reject(message);
                 });
@@ -71,13 +68,12 @@
 
             var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/installed-config/receptors'))
-                .success(function (result) {
-                    result.forEach(function (item) {
+                .then(function (result) {
+                    result.data.forEach(function (item) {
                         api.receptorList.push(item);
                     });
                     deferred.resolve(api.receptorList);
-                })
-                .error(function (result) {
+                }, function (result) {
                     $log.error(result);
                     deferred.reject();
                 });

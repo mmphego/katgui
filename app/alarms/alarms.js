@@ -153,17 +153,15 @@
 
         vm.viewAlarmSystemConfig = function ($event) {
             ConfigService.getConfigFileContents('static/alarms/common.conf')
-                .success(function (commonResult) {
+                .then(function (commonResult) {
                     ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
-                        .success(function (alarmsResult) {
-                            var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
+                        .then(function (alarmsResult) {
+                            var displayResult = JSON.parse(commonResult.data) + '\n\n' + JSON.parse(alarmsResult.data);
                             NotifyService.showPreDialog('System Config for Alarms', displayResult, $event);
-                        })
-                        .error(function (result) {
+                        }, function (result) {
                             $log.error(result);
                         })
-                })
-                .error(function (result) {
+                }, function (result) {
                     $log.error(result);
                 });
         };

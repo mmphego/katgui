@@ -11,10 +11,9 @@
         vm.subscriptions = {};
 
         ConfigService.getStatusTreesForTop()
-            .success(function (statusTreeResult) {
-                StatusService.setTopStatusTrees(statusTreeResult);
-            })
-            .error(function () {
+            .then(function (result) {
+                StatusService.setTopStatusTrees(result.data);
+            }, function () {
                 NotifyService.showSimpleDialog("Error retrieving status tree structure from katconf-webserver, is the server running?");
             });
     }
