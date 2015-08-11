@@ -10,20 +10,6 @@
 
         var vm = this;
 
-        vm.afterInit = function() {
-            if ($rootScope.currentUser) {
-                if ($rootScope.currentUser.req_role === USER_ROLES.lead_operator ||
-                    $rootScope.currentUser.req_role === USER_ROLES.operator) {
-                    vm.canOperateVDS = true;
-                    vm.connectListeners();
-                }
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
-            }
-        };
-
-        vm.afterInit();
-
         var urlBase = SERVER_URL + '/katcontrol/vds';
         //todo set the image source from katconfig
         //not implemented in katconfig yet
@@ -264,6 +250,21 @@
         vm.initSensors = function () {
             SensorsService.setSensorStrategy('anc', 'vds_*', 'event', 0, 0);
         };
+
+
+        vm.afterInit = function() {
+            if ($rootScope.currentUser) {
+                if ($rootScope.currentUser.req_role === USER_ROLES.lead_operator ||
+                    $rootScope.currentUser.req_role === USER_ROLES.operator) {
+                    vm.canOperateVDS = true;
+                    vm.connectListeners();
+                }
+            } else {
+                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+            }
+        };
+
+        vm.afterInit();
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
