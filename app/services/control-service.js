@@ -80,7 +80,7 @@
         api.handleRequestResponse = function (request) {
             request
                 .then(function (result) {
-                    NotifyService.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                    NotifyService.showSimpleToast(result.data.result.replace(/\\_/g, ' '));
                 }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });

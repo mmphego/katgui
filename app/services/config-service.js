@@ -16,7 +16,7 @@
         api.loadKATObsPortalURL = function () {
             $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
                 .then(function (result) {
-                    api.KATObsPortalURL = "http://" + JSON.parse(result);
+                    api.KATObsPortalURL = "http://" + JSON.parse(result.data);
                 }, function (message) {
                     $log.error(message);
                 });
@@ -27,7 +27,7 @@
             if (!api.aggregateSensorDetail) {
                 $http(createRequest('get', urlBase + '/aggregates'))
                     .then(function (result) {
-                        api.aggregateSensorDetail = result;
+                        api.aggregateSensorDetail = result.data;
                         deferred.resolve(api.aggregateSensorDetail);
                     }, function (message) {
                         $log.error(message);
@@ -46,7 +46,7 @@
             var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/system-config'))
                 .then(function (result) {
-                    api.systemConfig = result;
+                    api.systemConfig = result.data;
                     deferred.resolve(api.systemConfig);
                 }, function (message) {
                     $log.error(message);
@@ -69,7 +69,7 @@
             var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/installed-config/receptors'))
                 .then(function (result) {
-                    result.forEach(function (item) {
+                    result.data.forEach(function (item) {
                         api.receptorList.push(item);
                     });
                     deferred.resolve(api.receptorList);

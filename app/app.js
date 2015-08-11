@@ -253,7 +253,7 @@
         vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000);
         ConfigService.getSiteLocation()
             .then(function (result) {
-                var trimmedResult = result.replace(/"/g, '');
+                var trimmedResult = result.data.replace(/"/g, '');
                 $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
                 $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
             }, function (error) {

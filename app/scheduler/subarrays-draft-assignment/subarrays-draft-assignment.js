@@ -88,7 +88,7 @@
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code)
                 .then(function (result) {
-                    $log.info(result);
+                    $log.info(result.data);
                 }, function (result) {
                     NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
                 });

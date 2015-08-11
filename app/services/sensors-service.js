@@ -183,8 +183,8 @@
             var deferred = $q.defer();
             $http.get(urlBase + '/resource')
                 .then(function (result) {
-                    for (var i in result) {
-                        api.resources[result[i].name] = result[i];
+                    for (var i in result.data) {
+                        api.resources[result.data[i].name] = result.data[i];
                     }
                     deferred.resolve(api.resources);
                 }, function (result) {
@@ -198,15 +198,15 @@
             $http.get(urlBase + '/resource/' + resourceName + '/sensors')
                 .then(function (result) {
                     api.resources[resourceName].sensorsList = [];
-                    for (var i in result) {
+                    for (var i in result.data) {
                         api.resources[resourceName].sensorsList.push({
-                            name: result[i].name,
-                            python_identifier: result[i].python_identifier,
-                            description: result[i].description,
-                            value: result[i].value,
-                            timestamp: result[i].timestamp,
-                            received_timestamp: result[i].received_timestamp,
-                            status: result[i].status
+                            name: result.data[i].name,
+                            python_identifier: result.data[i].python_identifier,
+                            description: result.data[i].description,
+                            value: result.data[i].value,
+                            timestamp: result.data[i].timestamp,
+                            received_timestamp: result.data[i].received_timestamp,
+                            status: result.data[i].status
                         });
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);

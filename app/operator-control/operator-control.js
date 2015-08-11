@@ -46,7 +46,7 @@
             request
                 .then(function (result) {
                     vm.waitingForRequestResult = false;
-                    NotifyService.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                    NotifyService.showSimpleToast(result.data.result.replace(/\\_/g, ' '));
                 }, function (error) {
                     vm.waitingForRequestResult = false;
                     NotifyService.showSimpleDialog('Error sending request', error);

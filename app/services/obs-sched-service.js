@@ -22,7 +22,7 @@
             }
             request
                 .then(function (result) {
-                    var message = result.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
+                    var message = result.data.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
                     if (message.split(' ')[1] === 'ok') {
                         NotifyService.showSimpleToast(message);
                     } else {
@@ -136,7 +136,7 @@
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
             $http(createRequest('get', urlBase + '/sb')
                 .then(function (result) {
-                    var jsonResult = JSON.parse(result.result);
+                    var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
@@ -151,7 +151,7 @@
             api.scheduleData.splice(0, api.scheduleData.length);
             $http(createRequest('get', urlBase + '/sb/scheduled')
                 .then(function (result) {
-                    var jsonResult = JSON.parse(result.result);
+                    var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
                         api.scheduleData.push(jsonResult[i]);
                     }
@@ -164,7 +164,7 @@
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
             $http(createRequest('get', urlBase + '/sb/completed/' + sub_nr + '/' + max_nr)
                 .then(function (result) {
-                    var jsonResult = JSON.parse(result.result);
+                    var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
                         api.scheduleCompletedData.push(jsonResult[i]);
                     }
@@ -244,7 +244,7 @@
             api.configLabels.splice(0, api.configLabels.length);
             $http(createRequest('get', urlBase + '/config-labels')
                 .then(function (result) {
-                    result.forEach(function (item) {
+                    result.data.forEach(function (item) {
                         var configLabel = JSON.parse(item);
                         configLabel.date = moment.utc(configLabel.date).format('YYYY-DD-MM hh:mm:ss');
                         api.configLabels.push(configLabel);
@@ -286,7 +286,7 @@
                         $scope.devices = [];
                         api.listResourceMaintenanceDevices(resource)
                             .then(function (result) {
-                                var resultList = JSON.parse(result.result.replace(/\"/g, '').replace(/\'/g, '"'));
+                                var resultList = JSON.parse(result.data.result.replace(/\"/g, '').replace(/\'/g, '"'));
                                 for (var i in resultList) {
                                     $scope.devices.push(resultList[i]);
                                 }

@@ -156,7 +156,7 @@
                 .then(function (commonResult) {
                     ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
                         .then(function (alarmsResult) {
-                            var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
+                            var displayResult = JSON.parse(commonResult.data) + '\n\n' + JSON.parse(alarmsResult.data);
                             NotifyService.showPreDialog('System Config for Alarms', displayResult, $event);
                         }, function (result) {
                             $log.error(result);

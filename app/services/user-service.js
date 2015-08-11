@@ -43,8 +43,8 @@
                 }))
                 .then(function (result) {
                     var oldUser = _.findWhere(api.users, {email: user.email});
-                    for (var attr in result) {
-                        oldUser[attr] = result[attr];
+                    for (var attr in result.data) {
+                        oldUser[attr] = result.data[attr];
                     }
                     oldUser.temp = false;
                     oldUser.editing = false;
@@ -65,12 +65,12 @@
                 }))
                 .then(function (result) {
                     var oldUser = _.findWhere(api.users, {id: result.id});
-                    for (var attr in result) {
-                        oldUser[attr] = result[attr];
+                    for (var attr in result.data) {
+                        oldUser[attr] = result.data[attr];
                     }
-                    NotifyService.showSimpleToast("Updated user " + result.name);
+                    NotifyService.showSimpleToast("Updated user " + result.data.name);
                 }, function (result) {
-                    NotifyService.showSimpleDialog("Error sending request", "Error updating user " + result.name);
+                    NotifyService.showSimpleDialog("Error sending request", "Error updating user " + result.data.name);
                 });
         };
 

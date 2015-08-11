@@ -85,7 +85,7 @@
             if (vm.targets.length === 0) {
                 ConfigService.getSources()
                     .then(function (result) {
-                        vm.targets = result;
+                        vm.targets = result.data;
                         vm.filterChanged();
 
                         for (var i in result) {
@@ -182,12 +182,12 @@
             if (!receptor.horizonMask) {
                 ConfigService.getHorizonMask(receptor.name)
                     .then(function (result) {
-                        if (!result.error) {
+                        if (!result.data.error) {
                             receptor.showHorizonMask = true;
-                            receptor.horizonMask = "az el\r" + JSON.parse(result);
+                            receptor.horizonMask = "az el\r" + JSON.parse(result.data);
                             vm.redraw(true);
                         } else {
-                            NotifyService.showSimpleDialog('Error Retrieving Horizon Mask', result.error);
+                            NotifyService.showSimpleDialog('Error Retrieving Horizon Mask', result.data.error);
                         }
 
                     }, function () {

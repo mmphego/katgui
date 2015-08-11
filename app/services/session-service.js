@@ -120,8 +120,8 @@
         }
 
         function verifySuccess(result) {
-            if (result.session_id) {
-                if (result.confirmation_token) {
+            if (result.data.session_id) {
+                if (result.data.confirmation_token) {
                     $log.info('Found confirmation token');
                     var b = result.confirmation_token.split(".");
                     var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
@@ -129,24 +129,24 @@
                         payload.current_lo &&
                         payload.current_lo.length > 0 &&
                         payload.current_lo !== payload.requester) {
-                        confirmRole(result.session_id, payload);
+                        confirmRole(result.data.session_id, payload);
                     } else {
                         api.login(payload.session_id);
                     }
                 } else {
                     $log.info('No token, off to login');
-                    api.login(result.session_id);
+                    api.login(result.data.session_id);
                 }
             } else {
                 //User's session expired, we got a message
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.message);
+                NotifyService.showSimpleToast(result.data.message);
             }
         }
 
         function verifyError(result) {
-            if (result && result.session_id === null) {
+            if (result.data && result.data.session_id === null) {
                 api.currentUser = null;
                 api.loggedIn = false;
                 $localStorage['currentUserToken'] = undefined;
@@ -154,7 +154,7 @@
                 $state.go('login');
             } else {
                 console.error('Error logging return, server returned with:');
-                console.error(result);
+                console.error(result.data);
                 NotifyService.showSimpleToast('Error connecting to KATPortal.');
                 $state.go('login');
             }
@@ -234,12 +234,12 @@
                 $log.info('No session id');
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.message);
+                NotifyService.showSimpleToast(result.data.message);
             }
         }
 
         function loginError(result) {
-            if (result && result.session_id === null) {
+            if (result.data && result.data.session_id === null) {
                 api.currentUser = null;
                 api.loggedIn = false;
                 $localStorage['currentUserToken'] = undefined;
@@ -247,9 +247,9 @@
                 $state.go('login');
             } else {
                 $log.error('Error logging return, server returned with:');
-                $log.error(result);
-                if (result.err_msg) {
-                    NotifyService.showSimpleToast(result.err_msg);
+                $log.error(result.data);
+                if (result.data.err_msg) {
+                    NotifyService.showSimpleToast(result.data.err_msg);
                 } else {
                     NotifyService.showSimpleToast('Error connecting to KATPortal.');
                 }

@@ -57,7 +57,7 @@
             $http(createRequest('get', api.urlBase + '/logs/query?user=' + user))
                 .then(function (result) {
                     api.my_userlogs.splice(0, api.my_userlogs.length);
-                    result.forEach(function (userlog) {
+                    result.data.forEach(function (userlog) {
                         api.my_userlogs.push(userlog);
                     });
                     defer.resolve();
@@ -115,7 +115,7 @@
             $http(createRequest('get', api.urlBase + '/logs/query' + query_uri))
                 .then(function (result) {
                     api.report_userlogs.splice(0, api.report_userlogs.length);
-                    result.forEach(function (userlog) {
+                    result.data.forEach(function (userlog) {
                         userlog.start_time = $filter('date')(new Date(userlog.start_time), 'yyyy-MM-dd HH:mm');
                         userlog.end_time = $filter('date')(new Date(userlog.end_time), 'yyyy-MM-dd HH:mm');
                         api.report_userlogs.push(userlog);
@@ -156,7 +156,7 @@
                 responseType: 'blob'
             })
                 .then(function (result) {
-                    var blob = result;
+                    var blob = result.data;
                     var url = $window.URL || $window.webkitURL;
                     var file_url = url.createObjectURL(blob);
                     var downloadLink = angular.element('<a></a>');
@@ -183,8 +183,8 @@
                     tags: ulog.tags
                 }))
                 .then(function (result) {
-                    ulog.id = result.id;
-                    NotifyService.showSimpleToast("New " + result.userlog_type + " added! ");
+                    ulog.id = result.data.id;
+                    NotifyService.showSimpleToast("New " + result.data.userlog_type + " added! ");
                     defer.resolve();
                 }, function (result) {
                     NotifyService.showSimpleDialog("Error creating userlog", result);
@@ -206,8 +206,8 @@
                     tags: ulog.tags
                 }))
                 .then(function (result) {
-                    ulog.id = result.id;
-                    NotifyService.showSimpleToast("Edited userlog " + result.id);
+                    ulog.id = result.data.id;
+                    NotifyService.showSimpleToast("Edited userlog " + result.data.id);
                     defer.resolve();
                 }, function (result) {
                     NotifyService.showSimpleDialog("Error creating userlog", result);

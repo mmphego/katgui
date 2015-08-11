@@ -52,10 +52,10 @@
         };
 
         ConfigService.getStatusTreeForReceptor()
-            .then(function (statusTreeResult) {
+            .then(function (result) {
                 ConfigService.getReceptorList()
                     .then(function (receptors) {
-                        StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);
+                        StatusService.setReceptorsAndStatusTree(result.data, receptors);
                         for (var receptor in StatusService.statusData) {
                             //recursively populate children
                             vm.populateTree(StatusService.statusData[receptor], receptor);

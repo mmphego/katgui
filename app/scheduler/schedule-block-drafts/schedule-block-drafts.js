@@ -43,7 +43,7 @@
             item.editing = false;
             ObsSchedService.updateScheduleDraft(item)
                 .then(function (result) {
-                    $log.info(result);
+                    $log.info(result.data);
                     item.isDirty = false;
                     item.editing = false;
                 }, function (result) {

@@ -19,7 +19,7 @@
         vm.toggleFloodLights = function () {
             ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
                 .then(function (result) {
-                    NotifyService.showSimpleToast(result.result.replace(/\\_/g, ' '));
+                    NotifyService.showSimpleToast(result.data.result.replace(/\\_/g, ' '));
                 }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });
@@ -202,11 +202,11 @@
         };
 
         function requestSuccess(result) {
-            NotifyService.showSimpleToast(result);
+            NotifyService.showSimpleToast(result.data);
         }
 
         function requestError(result) {
-            NotifyService.showSimpleDialog('Error sending VDS command.', result);
+            NotifyService.showSimpleDialog('Error sending VDS command.', result.data);
         }
 
         vm.connectListeners = function () {
