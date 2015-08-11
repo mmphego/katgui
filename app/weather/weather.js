@@ -42,12 +42,11 @@
         vm.dataTimeWindow = new Date().getTime();
 
         ConfigService.getWindstowLimits()
-            .success(function (result) {
+            .then(function (result) {
                 vm.windSpeedLimitLine = parseFloat(result.stow_speed_m_s);
                 vm.windGustLimitLine = parseFloat(result.stow_gust_speed_m_s);
                 vm.redrawWindChart([], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine], true);
-            })
-            .error(function(error) {
+            }, function(error) {
                 NotifyService.showSimpleDialog('Could not retrieve windstow limits from katconf_ws', error);
             });
 
@@ -109,7 +108,7 @@
                 if (!sensor.skipHistory) {
                     var katstoreSensorName = sensor.python_identifier.replace(/\./g, '_');
                     DataService.findSensor(katstoreSensorName, startDate, new Date().getTime(), 0, 'ms', 'json', vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
-                        .success(function (result) {
+                        .then(function (result) {
                             resourcesHistoriesReceived++;
                             var newData = [];
                             //pack the result in the way our chart needs it
@@ -153,8 +152,7 @@
                             if (resourcesHistoriesReceived >= vm.resourcesHistoriesCount) {
                                 deferred.resolve();
                             }
-                        })
-                        .error(function (error) {
+                        }, function (error) {
                             resourcesHistoriesReceived++;
                             if (resourcesHistoriesReceived >= vm.resourcesHistoriesCount) {
                                 deferred.resolve();

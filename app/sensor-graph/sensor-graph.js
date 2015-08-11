@@ -181,14 +181,13 @@
                 vm.sensorSearchNames.splice(0, vm.sensorSearchNames.length);
                 vm.waitingForSearchResult = true;
                 DataService.findSensorName(searchStr, vm.sensorType)
-                    .success(function (result) {
+                    .then(function (result) {
                         result.data.forEach(function (sensor) {
                             sensor.type = vm.sensorType;
                             vm.sensorSearchNames.push(sensor);
                         });
                         vm.waitingForSearchResult = false;
-                    })
-                    .error(function (result) {
+                    }, function (result) {
                         NotifyService.showSimpleDialog('Error Finding Sensors', 'There was an error finding sensors, is the server running?');
                         $log.error(result);
                         vm.waitingForSearchResult = false;
@@ -215,24 +214,22 @@
             if (sensor.type === 'discrete') {
                 //get the sensor info for the y-axis values
                 DataService.sensorInfo(sensor.name)
-                    .success(function (result) {
+                    .then(function (result) {
                         //vm.redrawChart(null, vm.showGridLines, result.params);
                         vm.clearData();
                         vm.findSensorData(result, startDate, endDate, result.params);
-                    })
-                    .error(function (error) {
+                    }, function (error) {
                         $log.error(error);
                         NotifyService.showSimpleDialog('Error Finding Sensor Info', 'There was an error plotting the discrete sensor data, is the server running?');
                     });
             } else {
                 DataService.sensorInfo(sensor.name)
-                    .success(function (result) {
+                    .then(function (result) {
                         vm.findSensorData(result, startDate, endDate);
                         if (vm.liveData) {
                             vm.connectLiveFeed(result);
                         }
-                    })
-                    .error(function (error) {
+                    }, function (error) {
                         $log.error(error);
                         NotifyService.showSimpleDialog('Error Finding Sensor Info', 'There was an error plotting the discrete sensor data, is the server running?');
                     });
@@ -254,7 +251,7 @@
             }
 
             DataService.findSensor(sensor.sensor, startDate, endDate, 5000, 'ms', 'json', interval)
-                .success(function (result) {
+                .then(function (result) {
                     vm.waitingForSearchResult = false;
                     var newData = [];
                     //pack the result in the way our chart needs it
@@ -280,8 +277,7 @@
                         NotifyService.showSimpleToast('No sensor data found for ' + sensor.sensor + '.');
                     }
 
-                })
-                .error(function (error) {
+                }, function (error) {
                     vm.waitingForSearchResult = false;
                     $log.error(error);
                     NotifyService.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
@@ -309,7 +305,7 @@
             vm.showTips = false;
             NotifyService.showSimpleToast('Retrieving sensor data, please wait.');
             DataService.findSensorDataFromRegex(sensorName, startDate, endDate, 10000, 'ms', 'json', vm.sensorType)
-                .success(function (result) {
+                .then(function (result) {
                     var newData = [];
                     //pack the result in the way our chart needs it
                     //because the json we receive is not good enough
@@ -332,8 +328,7 @@
                     } else {
                         NotifyService.showSimpleToast('No sensor data found for ' + sensorName + '.');
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                     NotifyService.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
                 });

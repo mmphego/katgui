@@ -52,7 +52,7 @@
         };
 
         ConfigService.getStatusTreeForReceptor()
-            .success(function (statusTreeResult) {
+            .then(function (statusTreeResult) {
                 ConfigService.getReceptorList()
                     .then(function (receptors) {
                         StatusService.setReceptorsAndStatusTree(statusTreeResult, receptors);

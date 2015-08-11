@@ -24,8 +24,7 @@
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
             $http(createRequest('get', urlBase + '/user/verify/' + role))
-                .success(verifySuccess)
-                .error(verifyError);
+                .then(verifySuccess, verifyError);
         };
 
 
@@ -33,27 +32,24 @@
 
             $rootScope.jwt = session_id;
             $http(createRequest('post', urlBase + '/user/login', {}))
-                .success(function(result){
+                .then(function(result){
                     loginSuccess(result, session_id);
-                })
-                .error(loginError);
+                }, loginError);
         };
 
         api.logout = function () {
             if ($rootScope.loggedIn) {
                 $http(createRequest('post', urlBase + '/user/logout',{}))
-                    .success(logoutResultSuccess)
-                    .error(logoutResultError);
+                    .then(logoutResultSuccess, logoutResultError);
             }
         };
 
         api.recoverLogin = function () {
             if ($rootScope.jwt) {
                 $http(createRequest('post', urlBase + '/user/login'))
-                    .success(function(result){
+                    .then(function(result){
                         loginSuccess(result, $rootScope.jwt);
-                    })
-                    .error(loginError);
+                    }, loginError);
             }
         };
 

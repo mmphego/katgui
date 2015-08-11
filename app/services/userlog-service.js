@@ -55,14 +55,13 @@
         api.listMyUserLogs = function (user) {
             var defer = $q.defer();
             $http(createRequest('get', api.urlBase + '/logs/query?user=' + user))
-                .success(function (result) {
+                .then(function (result) {
                     api.my_userlogs.splice(0, api.my_userlogs.length);
                     result.forEach(function (userlog) {
                         api.my_userlogs.push(userlog);
                     });
                     defer.resolve();
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog("Could not retrieve any userlogs", result);
                     defer.reject();
                 });
@@ -114,7 +113,7 @@
             $log.info("Query uri: " + query_uri);
             var defer = $q.defer();
             $http(createRequest('get', api.urlBase + '/logs/query' + query_uri))
-                .success(function (result) {
+                .then(function (result) {
                     api.report_userlogs.splice(0, api.report_userlogs.length);
                     result.forEach(function (userlog) {
                         userlog.start_time = $filter('date')(new Date(userlog.start_time), 'yyyy-MM-dd HH:mm');
@@ -122,8 +121,7 @@
                         api.report_userlogs.push(userlog);
                     });
                     defer.resolve();
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog("Could not retrieve any userlogs", result);
                     defer.reject();
                 });
@@ -142,10 +140,9 @@
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
             })
-                .success(function () {
+                .then(function () {
                     $log.info("Attachments uploaded!");
-                })
-                .error(function () {
+                }, function () {
                     $log.error(api.urlBase + '/log/attach/' + ulog_id);
                 }));
         };
@@ -158,7 +155,7 @@
                 },
                 responseType: 'blob'
             })
-                .success(function (result) {
+                .then(function (result) {
                     var blob = result;
                     var url = $window.URL || $window.webkitURL;
                     var file_url = url.createObjectURL(blob);
@@ -167,8 +164,7 @@
                     downloadLink.attr('download', file_alias);
                     downloadLink[0].click();
                     url.revokeObjectURL(file_url);
-                })
-                .error(function () {
+                }, function () {
                     $log.error(api.urlBase + '/logs/get/attach');
                 }));
         };
@@ -186,12 +182,11 @@
                     content: ulog.userlog_content,
                     tags: ulog.tags
                 }))
-                .success(function (result) {
-                    ulog.id = result.id
+                .then(function (result) {
+                    ulog.id = result.id;
                     NotifyService.showSimpleToast("New " + result.userlog_type + " added! ");
                     defer.resolve();
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog("Error creating userlog", result);
                     defer.reject();
                 });
@@ -210,12 +205,11 @@
                     content: ulog.userlog_content,
                     tags: ulog.tags
                 }))
-                .success(function (result) {
-                    ulog.id = result.id
+                .then(function (result) {
+                    ulog.id = result.id;
                     NotifyService.showSimpleToast("Edited userlog " + result.id);
                     defer.resolve();
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog("Error creating userlog", result);
                     defer.reject();
                 });

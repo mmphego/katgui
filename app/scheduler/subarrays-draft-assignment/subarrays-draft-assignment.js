@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl($rootScope, ObsSchedService, $scope, $state, $stateParams, $mdDialog) {
+    function SubArraysCtrl($rootScope, ObsSchedService, $scope, $state, $stateParams, $mdDialog, $log) {
 
         var vm = this;
         vm.checkCASubarrays = function () {
@@ -87,10 +87,9 @@
 
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code)
-                .success(function (result) {
+                .then(function (result) {
                     $log.info(result);
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
                 });
         };

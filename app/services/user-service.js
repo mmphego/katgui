@@ -41,7 +41,7 @@
                     email: user.email,
                     roles: user.roles.join(',')
                 }))
-                .success(function (result) {
+                .then(function (result) {
                     var oldUser = _.findWhere(api.users, {email: user.email});
                     for (var attr in result) {
                         oldUser[attr] = result[attr];
@@ -49,8 +49,7 @@
                     oldUser.temp = false;
                     oldUser.editing = false;
                     NotifyService.showSimpleToast("Created user");
-                })
-                .error(function (result) {
+                }, function (result) {
                     _.findWhere(api.users, {id: user.id}).editing = true;
                     NotifyService.showSimpleDialog("Error creating user", result);
                 });
@@ -64,14 +63,13 @@
                     activated: user.activated,
                     roles: user.roles.join(',')
                 }))
-                .success(function (result) {
+                .then(function (result) {
                     var oldUser = _.findWhere(api.users, {id: result.id});
                     for (var attr in result) {
                         oldUser[attr] = result[attr];
                     }
                     NotifyService.showSimpleToast("Updated user " + result.name);
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog("Error sending request", "Error updating user " + result.name);
                 });
         };

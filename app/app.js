@@ -252,12 +252,11 @@
 
         vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000);
         ConfigService.getSiteLocation()
-            .success(function (result) {
+            .then(function (result) {
                 var trimmedResult = result.replace(/"/g, '');
                 $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
                 $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
-            })
-            .error(function (error) {
+            }, function (error) {
                 $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
                 $log.error(error);
             });

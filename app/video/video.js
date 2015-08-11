@@ -18,10 +18,9 @@
 
         vm.toggleFloodLights = function () {
             ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
-                .success(function (result) {
+                .then(function (result) {
                     NotifyService.showSimpleToast(result.result.replace(/\\_/g, ' '));
-                })
-                .error(function (error) {
+                }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });
         };
@@ -94,8 +93,7 @@
                         };
                         $scope.setPreset = function (preset) {
                             $http(createRequest('post', urlBase + '/presetset/' + preset)
-                                .success(requestSuccess)
-                                .error(requestError));
+                                .then(requestSuccess, requestError));
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
@@ -139,8 +137,7 @@
                         $scope.gotoPreset = function (preset) {
                             vm.lastPreset = preset;
                             $http(createRequest('post', urlBase + '/presetgoto/' + preset)
-                                .success(requestSuccess)
-                                .error(requestError));
+                                .then(requestSuccess, requestError));
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
@@ -196,14 +193,12 @@
 
         vm.stopVDS = function () {
             $http(createRequest('post', urlBase + '/stop')
-                .success(requestSuccess)
-                .error(requestError));
+                .then(requestSuccess, requestError));
         };
 
         vm.vdsCommand = function (endpoint, args) {
             $http(createRequest('post', urlBase + '/' + endpoint + '/' + args)
-                .success(requestSuccess)
-                .error(requestError));
+                .then(requestSuccess, requestError));
         };
 
         function requestSuccess(result) {

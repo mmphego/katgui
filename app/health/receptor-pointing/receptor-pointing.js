@@ -84,7 +84,7 @@
         vm.getSources = function () {
             if (vm.targets.length === 0) {
                 ConfigService.getSources()
-                    .success(function (result) {
+                    .then(function (result) {
                         vm.targets = result;
                         vm.filterChanged();
 
@@ -93,8 +93,7 @@
                                 vm.filters[result[i].tags[j]] = {name: result[i].tags[j]};
                             }
                         }
-                    })
-                    .error(function (error) {
+                    }, function (error) {
                         $log.error(error);
                     });
             }
@@ -182,7 +181,7 @@
         vm.toggleHorizonMask = function (receptor) {
             if (!receptor.horizonMask) {
                 ConfigService.getHorizonMask(receptor.name)
-                    .success(function (result) {
+                    .then(function (result) {
                         if (!result.error) {
                             receptor.showHorizonMask = true;
                             receptor.horizonMask = "az el\r" + JSON.parse(result);
@@ -191,8 +190,7 @@
                             NotifyService.showSimpleDialog('Error Retrieving Horizon Mask', result.error);
                         }
 
-                    })
-                    .error(function () {
+                    }, function () {
                         NotifyService.showSimpleDialog('Error Retrieving Horizon Mask', 'Could not retrieve a horizon mask for ' + receptor.name);
                     });
             } else {

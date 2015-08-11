@@ -139,21 +139,6 @@ describe('AdminCtrl', function () {
         expect(UserService.users.length).toBe(0);
     });
 
-    it('should deactivate a user', inject(function ($httpBackend) {
-        //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator
-        $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
-        ctrl.deactivateUser({name: 'test', roles: [], id: 1});
-        $httpBackend.flush();
-    }));
-
-    it('should activate a user', inject(function ($httpBackend) {
-        //?name=Francois%20Joubert&email=fjoubert@ska.ac.za&activated=false&roles=control_authority,lead_operator
-        $httpBackend.expect('POST', UserService.urlBase + '/user/modify/1').respond(200, "");
-        ctrl.activateUser({name: 'test', roles: [], id: 1});
-
-        $httpBackend.flush();
-    }));
-
     it('should reset the password', inject(function () {
         //running the code at least to check for exceptions
         ctrl.resetPassword(null, {name: 'test', roles: [], id: 1});

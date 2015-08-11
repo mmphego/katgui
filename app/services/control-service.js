@@ -79,10 +79,9 @@
 
         api.handleRequestResponse = function (request) {
             request
-                .success(function (result) {
+                .then(function (result) {
                     NotifyService.showSimpleToast(result.result.replace(/\\_/g, ' '));
-                })
-                .error(function (error) {
+                }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });
         };

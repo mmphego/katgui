@@ -21,7 +21,7 @@
                 deferred = $q.defer();
             }
             request
-                .success(function (result) {
+                .then(function (result) {
                     var message = result.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
                     if (message.split(' ')[1] === 'ok') {
                         NotifyService.showSimpleToast(message);
@@ -31,8 +31,7 @@
                     if (deferred) {
                         deferred.resolve();
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                     if (deferred) {
                         deferred.resolve();
@@ -77,11 +76,10 @@
 
         api.setSchedulePriority = function (id_code, priority) {
             $http(createRequest('post', urlBase + '/sb/' + id_code + '/priority/' + priority)
-                .success(function (result) {
+                .then(function (result) {
                     NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
                     $log.info(result);
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 }));
         };
@@ -137,15 +135,14 @@
         api.getScheduleBlocks = function () {
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
             $http(createRequest('get', urlBase + '/sb')
-                .success(function (result) {
+                .then(function (result) {
                     var jsonResult = JSON.parse(result.result);
                     for (var i in jsonResult) {
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
                         }
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 }));
         };
@@ -153,13 +150,12 @@
         api.getScheduledScheduleBlocks = function () {
             api.scheduleData.splice(0, api.scheduleData.length);
             $http(createRequest('get', urlBase + '/sb/scheduled')
-                .success(function (result) {
+                .then(function (result) {
                     var jsonResult = JSON.parse(result.result);
                     for (var i in jsonResult) {
                         api.scheduleData.push(jsonResult[i]);
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 }));
         };
@@ -167,13 +163,12 @@
         api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
             $http(createRequest('get', urlBase + '/sb/completed/' + sub_nr + '/' + max_nr)
-                .success(function (result) {
+                .then(function (result) {
                     var jsonResult = JSON.parse(result.result);
                     for (var i in jsonResult) {
                         api.scheduleCompletedData.push(jsonResult[i]);
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 }));
         };
@@ -248,14 +243,13 @@
         api.listConfigLabels = function () {
             api.configLabels.splice(0, api.configLabels.length);
             $http(createRequest('get', urlBase + '/config-labels')
-                .success(function (result) {
+                .then(function (result) {
                     result.forEach(function (item) {
                         var configLabel = JSON.parse(item);
                         configLabel.date = moment.utc(configLabel.date).format('YYYY-DD-MM hh:mm:ss');
                         api.configLabels.push(configLabel);
                     });
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 }));
         };
@@ -291,13 +285,12 @@
                         $scope.title = 'Select a Device in ' + resource + ' to Restart';
                         $scope.devices = [];
                         api.listResourceMaintenanceDevices(resource)
-                            .success(function (result) {
+                            .then(function (result) {
                                 var resultList = JSON.parse(result.result.replace(/\"/g, '').replace(/\'/g, '"'));
                                 for (var i in resultList) {
                                     $scope.devices.push(resultList[i]);
                                 }
-                            })
-                            .error(function (error) {
+                            }, function (error) {
                                 $log.error(error);
                             });
 

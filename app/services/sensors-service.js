@@ -182,13 +182,12 @@
         api.listResources = function () {
             var deferred = $q.defer();
             $http.get(urlBase + '/resource')
-                .success(function (result) {
+                .then(function (result) {
                     for (var i in result) {
                         api.resources[result[i].name] = result[i];
                     }
                     deferred.resolve(api.resources);
-                })
-                .error(function (result) {
+                }, function (result) {
                     deferred.reject(result);
                 });
             return deferred.promise;
@@ -197,7 +196,7 @@
         api.listResourceSensors = function (resourceName) {
             var deferred = $q.defer();
             $http.get(urlBase + '/resource/' + resourceName + '/sensors')
-                .success(function (result) {
+                .then(function (result) {
                     api.resources[resourceName].sensorsList = [];
                     for (var i in result) {
                         api.resources[resourceName].sensorsList.push({
@@ -211,8 +210,7 @@
                         });
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);
-                })
-                .error(function (result) {
+                }, function (result) {
                     deferred.reject(result);
                 });
             return deferred.promise;
