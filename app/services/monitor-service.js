@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
-                            $rootScope, $q, $log, ReceptorStateService) {
+                            $rootScope, $q, $log, ReceptorStateService, NotifyService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -131,6 +131,9 @@
                                     if ($rootScope.currentUser &&
                                         $rootScope.currentUser.req_role === 'lead_operator' &&
                                         api.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                                        NotifyService.showDialog(
+                                            'You are logged out.', 'You have been logged out because ' +
+                                            api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
                                         $rootScope.logout();
                                     }
                                 } else if (messageChannel[0] === 'sched') {

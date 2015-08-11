@@ -12,11 +12,11 @@
                 <input class="fade-in search-input-box" type="search"
                        style="min-width: 200px;"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
-                <md-button ng-click="vm.knowSelectedAlarms()" class="md-primary md-raised"
+                <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.knowSelectedAlarms()" class="md-primary md-raised"
                            title="Know Selected Alarms">Know</md-button>
-                <md-button ng-click="vm.acknowledgeSelectedAlarms()" class="md-primary md-raised"
+                <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.acknowledgeSelectedAlarms()" class="md-primary md-raised"
                            title="Acknowledge Selected Alarms">Acknowledge</md-button>
-                <md-button ng-click="vm.clearSelectedAlarms()"class="md-primary md-raised"
+                <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.clearSelectedAlarms()"class="md-primary md-raised"
                            title="Clear Selected Alarms">Clear</md-button>
                 <md-checkbox style="font-size: 12px;" class="md-primary" ng-model="vm.showClearedAlarms">Show Cleared Alarms
                 </md-checkbox>
@@ -112,15 +112,15 @@
                               style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                               title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Know Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Know Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.knowAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-check"></span>
                     </md-button>
-                    <md-button title="Acknowledge Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Acknowledge Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.acknowledgeAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-check-circle-o"></span>
                     </md-button>
-                    <md-button title="Clear Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Clear Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.clearAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-ban"></span>
                     </md-button>
@@ -144,7 +144,7 @@
                     <input flex class="fade-in search-input-box" type="search"
                            style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Search Known Alarms..."/>
-                    <md-button ng-click="vm.cancelKnowSelectedAlarms()" class="md-primary md-raised"
+                    <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.cancelKnowSelectedAlarms()" class="md-primary md-raised"
                                style="font-size: 14px">Cancel Known
                     </md-button>
                     <div layout="column" style="font-size: 12px;">
@@ -246,7 +246,7 @@
                               style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                               title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Cancel Known Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Cancel Known Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.cancelKnownAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-remove"></span>
                     </md-button>

@@ -30,9 +30,11 @@
             };
         });
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $log, NotifyService) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $log, NotifyService,
+                        USER_ROLES) {
 
         var vm = this;
+        vm.canOperateAlarms = false;
 
         ConfigService.loadAggregateSensorDetail();
 
@@ -151,17 +153,15 @@
 
         vm.viewAlarmSystemConfig = function ($event) {
             ConfigService.getConfigFileContents('static/alarms/common.conf')
-                .success(function (commonResult) {
+                .then(function (commonResult) {
                     ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
-                        .success(function (alarmsResult) {
-                            var displayResult = JSON.parse(commonResult) + '\n\n' + JSON.parse(alarmsResult);
+                        .then(function (alarmsResult) {
+                            var displayResult = JSON.parse(commonResult.data) + '\n\n' + JSON.parse(alarmsResult.data);
                             NotifyService.showPreDialog('System Config for Alarms', displayResult, $event);
-                        })
-                        .error(function (result) {
+                        }, function (result) {
                             $log.error(result);
                         })
-                })
-                .error(function (result) {
+                }, function (result) {
                     $log.error(result);
                 });
         };
@@ -181,8 +181,22 @@
             AlarmsService.tailAlarmsHistory();
         };
 
+        vm.afterInit = function() {
+            if ($rootScope.currentUser) {
+                vm.canOperateAlarms = $rootScope.currentUser.req_role === USER_ROLES.operator ||
+                $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
+            } else {
+                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+            }
+        };
+
+        vm.afterInit();
+
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
         $scope.$on('$destroy', function () {
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess();
+            }
             vm.unbindShortcuts('keydown');
         });
     }

@@ -2,13 +2,11 @@
     angular.module('katGui.admin', ['katGui.services', 'katGui.util'])
         .controller('AdminCtrl', AdminCtrl);
 
-    function AdminCtrl($scope, $mdDialog, $rootScope, $log, UserService, KatGuiUtil, ObsSchedService, ConfigService,
-                       NotifyService) {
+    function AdminCtrl($scope, $mdDialog, $rootScope, $log, UserService, KatGuiUtil, NotifyService) {
 
         var vm = this;
         vm.showDeactivatedUsers = false;
         vm.isUserAdmin = false;
-        vm.isCurrentUserLO = false;
         vm.orderByFields = [
             {label: 'Id', value: 'id'},
             {label: 'Name', value: 'name'},
@@ -174,8 +172,7 @@
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                vm.isCurrentUserLO = $rootScope.currentUser.req_role === 'lead_operator';
-                vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1 || vm.isCurrentUserLO;
+                vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1 || $rootScope.iAmLO;
                 if (vm.isUserAdmin) {
                     vm.listUsers();
                 }
@@ -189,7 +186,7 @@
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
             if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess('loginSuccess');
+                vm.undbindLoginSuccess();
             }
         });
     }

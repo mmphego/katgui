@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorPointingEquatorial', function ($log) {
+    .directive('receptorPointingEquatorial', function () {
         return {
             restrict: 'EA',
             scope: {
@@ -9,7 +9,7 @@ angular.module('katGui.d3')
             link: function (scope, element) {
 
                 //precisionMultiplicative
-                var pm = 10000;
+                var pm = 100;
 
                 //handle resizing
                 var unbindResize = scope.$watch(function () {

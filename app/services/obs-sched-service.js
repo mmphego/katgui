@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($http, SERVER_URL, ConfigService, $log, $q, $mdDialog, NotifyService) {
+    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService, $log, $q, $mdDialog, NotifyService) {
 
         var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
@@ -21,8 +21,8 @@
                 deferred = $q.defer();
             }
             request
-                .success(function (result) {
-                    var message = result.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
+                .then(function (result) {
+                    var message = result.data.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
                     if (message.split(' ')[1] === 'ok') {
                         NotifyService.showSimpleToast(message);
                     } else {
@@ -31,8 +31,7 @@
                     if (deferred) {
                         deferred.resolve();
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                     if (deferred) {
                         deferred.resolve();
@@ -44,152 +43,148 @@
         };
 
         api.markResourceFaulty = function (resource, faulty) {
-            api.handleRequestResponse($http.post(urlBase + '/resource/' + resource + '/faulty/' + faulty));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/faulty/' + faulty)));
         };
 
         api.markResourceInMaintenance = function (resource, maintenance) {
-            api.handleRequestResponse($http.post(urlBase + '/resource/' + resource + '/maintenance/' + maintenance));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/maintenance/' + maintenance)));
         };
 
         api.restartMaintenanceDevice = function (sub_nr, resource, device) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/resource/' + resource + '/device/' + device + '/restart'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/resource/' + resource + '/device/' + device + '/restart')));
         };
 
         api.listResourceMaintenanceDevices = function (resource) {
-            return $http.get(urlBase + '/resource/' + resource + '/maintenance-device-list');
+            return $http(createRequest('get',  + '/resource/' + resource + '/maintenance-device-list'));
         };
 
         api.deleteScheduleDraft = function (id) {
-            return $http.post(urlBase + '/sb/' + id + '/delete');
+            return $http(createRequest('post', urlBase + '/sb/' + id + '/delete'));
         };
 
         api.scheduleDraft = function (sub_nr, id) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id + '/schedule'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id + '/schedule')));
         };
 
         api.scheduleToDraft = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/to-draft'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/to-draft')));
         };
 
         api.scheduleToComplete = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/complete'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/complete')));
         };
 
         api.setSchedulePriority = function (id_code, priority) {
-            $http.post(urlBase + '/sb/' + id_code + '/priority/' + priority)
-                .success(function (result) {
+            $http(createRequest('post', urlBase + '/sb/' + id_code + '/priority/' + priority))
+                .then(function (result) {
                     NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
                     $log.info(result);
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 });
         };
 
         api.verifyScheduleBlock = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/verify'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/verify')));
         };
 
         api.executeSchedule = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/execute'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/execute')));
         };
 
         api.stopSchedule = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/stop'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/stop')));
         };
 
         api.cancelExecuteSchedule = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
         };
 
         api.cloneSchedule = function (id_code) {
-            return $http.post(urlBase + '/sb/' + id_code + '/clone');
+            return $http(createRequest('post', urlBase + '/sb/' + id_code + '/clone'));
         };
 
         api.assignScheduleBlock = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/assign'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/assign')));
         };
 
         api.unassignScheduleBlock = function (sub_nr, id_code) {
-            api.handleRequestResponse($http.post(urlBase + '/sb/' + sub_nr + '/' + id_code + '/unassign'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/unassign')));
         };
 
         api.assignResourcesToSubarray = function (sub_nr, resources) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/assign-resource/' + resources));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/assign-resource/' + resources)));
         };
 
         api.unassignResourcesFromSubarray = function (sub_nr, resources) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/unassign-resource/' + resources));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/unassign-resource/' + resources)));
         };
 
         api.activateSubarray = function (sub_nr) {
-            return api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/activate'), true);
+            return api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/activate'), true));
         };
 
         api.setSubarrayMaintenance = function (sub_nr, maintenance) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/maintenance/' + maintenance));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/maintenance/' + maintenance)));
         };
 
         api.freeSubarray = function (sub_nr) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/free'));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/free')));
         };
 
         api.getScheduleBlocks = function () {
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
-            $http.get(urlBase + '/sb')
-                .success(function (result) {
-                    var jsonResult = JSON.parse(result.result);
+            $http(createRequest('get', urlBase + '/sb'))
+                .then(function (result) {
+                    var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
                         }
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 });
         };
 
         api.getScheduledScheduleBlocks = function () {
             api.scheduleData.splice(0, api.scheduleData.length);
-            $http.get(urlBase + '/sb/scheduled')
-                .success(function (result) {
-                    var jsonResult = JSON.parse(result.result);
+            $http(createRequest('get', urlBase + '/sb/scheduled'))
+                .then(function (result) {
+                    var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
                         api.scheduleData.push(jsonResult[i]);
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 });
         };
 
         api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
-            $http.get(urlBase + '/sb/completed/' + sub_nr + '/' + max_nr)
-                .success(function (result) {
-                    var jsonResult = JSON.parse(result.result);
+            $http(createRequest('get', urlBase + '/sb/completed/' + sub_nr + '/' + max_nr))
+                .then(function (result) {
+                    var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
                         api.scheduleCompletedData.push(jsonResult[i]);
                     }
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 });
         };
 
         api.setSchedulerModeForSubarray = function (sub_nr, mode) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/sched-mode/' + mode));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/sched-mode/' + mode)));
         };
 
         api.updateScheduleDraft = function (scheduleBlockDraft) {
-            return $http.post(urlBase + '/sb/' + scheduleBlockDraft.id_code, {
+            return $http(createRequest('post', urlBase + '/sb/' + scheduleBlockDraft.id_code, {
                 id_code: scheduleBlockDraft.id_code,
                 type: scheduleBlockDraft.type,
                 instruction_set: scheduleBlockDraft.instruction_set,
                 description: scheduleBlockDraft.description,
                 desired_start_time: scheduleBlockDraft.desired_start_time
-            });
+            }));
         };
 
         api.receivedScheduleMessage = function (action, sb) {
@@ -247,33 +242,32 @@
 
         api.listConfigLabels = function () {
             api.configLabels.splice(0, api.configLabels.length);
-            $http.get(urlBase + '/config-labels')
-                .success(function (result) {
-                    result.forEach(function (item) {
+            $http(createRequest('get', urlBase + '/config-labels'))
+                .then(function (result) {
+                    result.data.forEach(function (item) {
                         var configLabel = JSON.parse(item);
                         configLabel.date = moment.utc(configLabel.date).format('YYYY-DD-MM hh:mm:ss');
                         api.configLabels.push(configLabel);
                     });
-                })
-                .error(function (error) {
+                }, function (error) {
                     $log.error(error);
                 });
         };
 
         api.setConfigLabel = function (sub_nr, config_label) {
-            api.handleRequestResponse($http.post(urlBase + '/config-labels/' + sub_nr + '/' + config_label));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/config-labels/' + sub_nr + '/' + config_label)));
         };
 
         api.setBand = function (sub_nr, band) {
-            api.handleRequestResponse($http.post(urlBase + '/bands/' + sub_nr + '/' + band));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/bands/' + sub_nr + '/' + band)));
         };
 
         api.setProduct = function (sub_nr, product) {
-            api.handleRequestResponse($http.post(urlBase + '/products/' + sub_nr + '/' + product));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/products/' + sub_nr + '/' + product)));
         };
 
         api.delegateControl = function (sub_nr, userName) {
-            api.handleRequestResponse($http.post(urlBase + '/subarray/' + sub_nr + '/delegate-control/' + userName));
+            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/delegate-control/' + userName)));
         };
 
         api.viewTaskLogForSBIdCode = function (id_code, mode) {
@@ -291,13 +285,12 @@
                         $scope.title = 'Select a Device in ' + resource + ' to Restart';
                         $scope.devices = [];
                         api.listResourceMaintenanceDevices(resource)
-                            .success(function (result) {
-                                var resultList = JSON.parse(result.result.replace(/\"/g, '').replace(/\'/g, '"'));
+                            .then(function (result) {
+                                var resultList = JSON.parse(result.data.result.replace(/\"/g, '').replace(/\'/g, '"'));
                                 for (var i in resultList) {
                                     $scope.devices.push(resultList[i]);
                                 }
-                            })
-                            .error(function (error) {
+                            }, function (error) {
                                 $log.error(error);
                             });
 
@@ -331,6 +324,16 @@
                     targetEvent: event
                 });
         };
+
+        function createRequest(method, url) {
+            return {
+                method: method,
+                url: url,
+                headers: {
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
+                }
+            };
+        }
 
         return api;
     }

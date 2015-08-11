@@ -20,13 +20,12 @@
     ])
         .constant('UI_VERSION', '0.0.1')
         .constant('USER_ROLES', {
-            noAuth: 'noAuth',
-            all: '*',
-            monitor: 'monitor',
-            operator: 'operator',
-            leadOperator: 'leadOperator',
-            control: 'control',
-            expert: 'expert'
+            all: "all",
+            user_admin: "user_admin",
+            control_authority: "control_authority",
+            lead_operator: "lead_operator",
+            operator: "operator",
+            read_only: "read_only"
         })
         .constant('THEMES', [
             {
@@ -58,8 +57,8 @@
         .controller('ApplicationCtrl', ApplicationCtrl);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
-                             ConfigService, USER_ROLES, MonitorService, ControlService, KatGuiUtil, SessionService,
-                             CENTRAL_LOGGER_PORT, $log, DATETIME_FORMAT, NotifyService) {
+                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
+                             CENTRAL_LOGGER_PORT, $log, NotifyService) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -253,12 +252,11 @@
 
         vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000);
         ConfigService.getSiteLocation()
-            .success(function (result) {
-                var trimmedResult = result.replace(/"/g, '');
+            .then(function (result) {
+                var trimmedResult = result.data.replace(/"/g, '');
                 $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
                 $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
-            })
-            .error(function (error) {
+            }, function (error) {
                 $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
                 $log.error(error);
             });
@@ -315,7 +313,7 @@
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider,
-                             $httpProvider, USER_ROLES, $locationProvider, $urlMatcherFactoryProvider) {
+                             $httpProvider, $urlMatcherFactoryProvider) {
 
         $urlMatcherFactoryProvider.strictMode(false);
         //disable this in production for performance boost
@@ -335,183 +333,119 @@
         $stateProvider.state('login', {
             url: '/login',
             templateUrl: 'app/login-form/login-form.html',
-            title: 'Login',
-            data: {
-                authorizedRoles: [USER_ROLES.noAuth]
-            }
+            title: 'Login'
         });
         $stateProvider.state('admin', {
             url: '/admin',
             templateUrl: 'app/admin/admin.html',
-            title: 'User Admin',
-            data: {
-                authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
+            title: 'User Admin'
         });
         $stateProvider.state('alarms', {
             url: '/alarms',
             templateUrl: 'app/alarms/alarms.html',
-            title: 'Alarms',
-            data: {
-                authorizedRoles: [USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
+            title: 'Alarms'
         });
         $stateProvider.state('config', {
             url: '/config',
             templateUrl: 'app/config/config.html',
-            title: 'Configure katGUI',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Configure katGUI'
         });
         $stateProvider.state('health', {
             url: '/health',
             templateUrl: 'app/health/health.html',
-            title: 'Health & State',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Health & State'
         });
         $stateProvider.state('receptorHealth', {
             url: '/receptor-health',
             templateUrl: 'app/health/receptor-health/receptor-health.html',
-            title: 'Receptor Health',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Receptor Health'
         });
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',
-            title: 'Receptor Status',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Receptor Status'
         });
         $stateProvider.state('receptorPointing', {
             url: '/receptor-pointing',
             templateUrl: 'app/health/receptor-pointing/receptor-pointing.html',
-            title: 'Receptor Pointing',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Receptor Pointing'
         });
         $stateProvider.state('customHealth', {
             url: '/custom-health?layout',
             templateUrl: 'app/health/custom-health/custom-health.html',
-            title: 'Custom Health',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Custom Health'
         });
         $stateProvider.state('home', {
             url: '/home',
             templateUrl: 'app/landing/landing.html',
-            title: 'Home',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Home'
         });
         $stateProvider.state('operator-control', {
             url: '/operator-control',
             templateUrl: 'app/operator-control/operator-control.html',
-            title: 'Operator Control',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
+            title: 'Operator Control'
         });
         $stateProvider.state('process-control', {
             url: '/process-control',
             templateUrl: 'app/process-control/process-control.html',
-            title: 'Process Control',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Process Control'
         });
         $stateProvider.state('cam-components', {
             url: '/cam-components',
             templateUrl: 'app/cam-components/cam-components.html',
-            title: 'CAM Components',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'CAM Components'
         });
         $stateProvider.state('device-status', {
             url: '/device-status',
             templateUrl: 'app/device-status/device-status.html',
-            title: 'Device Status',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Device Status'
         });
         $stateProvider.state('instrumental-config', {
             url: '/instrumental-config',
             templateUrl: 'app/instrumental-config/instrumental-config.html',
-            title: 'Instrumental Configuration',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Instrumental Configuration'
         });
 
         var schedulerHome = {
             name: 'scheduler',
             url: '/scheduler',
             templateUrl: 'app/scheduler/scheduler-home.html',
-            title: 'Subarrays',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
+            title: 'Subarrays'
         };
         var sbDrafts = {
             name: 'scheduler.drafts',
             parent: schedulerHome,
             url: '/drafts',
             templateUrl: 'app/scheduler/schedule-block-drafts/schedule-block-drafts.html',
-            title: 'Scheduler.Drafts',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
+            title: 'Scheduler.Drafts'
         };
         var subArrays = {
             name: 'scheduler.subarrays',
             parent: schedulerHome,
             url: '/subarrays/:subarray_id',
             templateUrl: 'app/scheduler/subarrays-draft-assignment/subarrays-draft-assignment.html',
-            title: 'Subarrays.Schedule Blocks',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Subarrays.Schedule Blocks'
         };
         var subArrayResources = {
             name: 'scheduler.resources',
             parent: schedulerHome,
             url: '/resources/:subarray_id',
             templateUrl: 'app/scheduler/subarray-resources/subarray-resources.html',
-            title: 'Subarrays.Resource Assignment',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Subarrays.Resource Assignment'
         };
         var observationsOverview = {
             name: 'scheduler.observations',
             parent: schedulerHome,
             url: '/observations',
             templateUrl: 'app/scheduler/observations/observations-overview.html',
-            title: 'Subarrays.Observations Overview',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
-
+            title: 'Subarrays.Observations Overview'
         };
         var observationsDetail = {
             name: 'scheduler.observations.detail',
             parent: schedulerHome,
             url: '/observations/:subarray_id',
             templateUrl: 'app/scheduler/observations/observations-detail.html',
-            title: 'Subarrays.Observations',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Subarrays.Observations'
         };
 
         $stateProvider
@@ -524,47 +458,32 @@
         $stateProvider.state('sensor-graph', {
             url: '/sensor-graph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
-            title: 'Sensor Graphs',
-            data: {
-                authorizedRoles: [USER_ROLES.operator, USER_ROLES.leadOperator, USER_ROLES.control, USER_ROLES.expert]
-            }
+            title: 'Sensor Graphs'
         });
         $stateProvider.state('sensor-list', {
             url: '/sensor-list',
             templateUrl: 'app/sensor-list/sensor-list.html',
-            title: 'Sensor List',
+            title: 'Sensor List'
         });
         $stateProvider.state('about', {
             url: '/about',
             templateUrl: 'app/about/about.html',
-            title: 'About',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'About'
         });
         $stateProvider.state('video', {
             url: '/video',
             templateUrl: 'app/video/video.html',
-            title: 'Video',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Video'
         });
         $stateProvider.state('weather', {
             url: '/weather',
             templateUrl: 'app/weather/weather.html',
-            title: 'Weather',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'Weather'
         });
         $stateProvider.state('userlogs', {
             url: '/userlogs',
             templateUrl: 'app/userlogs/userlogs.html',
-            title: 'User Logging',
-            data: {
-                authorizedRoles: [USER_ROLES.all]
-            }
+            title: 'User Logging'
         });
         /* Add New States Above */
         $urlRouterProvider.otherwise('/login');

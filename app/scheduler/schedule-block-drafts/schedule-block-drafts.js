@@ -42,12 +42,11 @@
         vm.saveDraft = function (item) {
             item.editing = false;
             ObsSchedService.updateScheduleDraft(item)
-                .success(function (result) {
-                    $log.info(result);
+                .then(function (result) {
+                    $log.info(result.data);
                     item.isDirty = false;
                     item.editing = false;
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog('Error Saving SB ' + item.id_code + '.', result);
                 });
         };
@@ -68,10 +67,9 @@
 
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code)
-                .success(function (result) {
+                .then(function (result) {
                     $log.info(result);
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
                 });
         };

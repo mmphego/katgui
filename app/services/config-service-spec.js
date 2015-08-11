@@ -18,23 +18,6 @@ describe('ConfigService', function() {
         httpBackend.verifyNoOutstandingRequest();
     });
 
-    it('should load the katobsportal url', inject(function() {
-        httpBackend.when('GET', 'http://localhost:9876/katconf/system-config/sections/katportal/katobsportal').respond(200, '"www.fakeaddress.com"');
-        ConfigService.loadKATObsPortalURL();
-        scope.$digest();
-        httpBackend.flush();
-        expect(ConfigService.KATObsPortalURL).toBe('http://www.fakeaddress.com');
-    }));
-
-    it('should log to $log when katobsportal url could not be retrieved', inject(function() {
-        spyOn($log, 'error');
-        httpBackend.when('GET', 'http://localhost:9876/katconf/system-config/sections/katportal/katobsportal').respond(500, 'error message');
-        ConfigService.loadKATObsPortalURL();
-        scope.$digest();
-        httpBackend.flush();
-        expect($log.error).toHaveBeenCalledWith('error message');
-    }));
-
     it('should get the status tree for the receptors', function() {
         httpBackend.when('GET', 'http://localhost:9876/katconf/statustrees/receptors_view/receptors').respond(200, {});
         var resultPromise = ConfigService.getStatusTreeForReceptor();
@@ -49,26 +32,6 @@ describe('ConfigService', function() {
         httpBackend.flush();
         expect(resultPromise.success).toBeDefined();
         expect(resultPromise.error).toBeDefined();
-    });
-
-    it('should get the receptor list and populate the receptorList data structure and to return a promise', function() {
-        httpBackend.when('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, ['m011', 'm022', 'm033']);
-        var resultPromise = ConfigService.getReceptorList();
-        scope.$digest();
-        httpBackend.flush();
-        expect(resultPromise.then).toBeDefined();
-        expect(ConfigService.receptorList.length).toBe(3);
-    });
-
-    it('should get the receptor list log an error and to return a promise', function() {
-        spyOn($log, 'error');
-        httpBackend.when('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(500, 'error message');
-        var resultPromise = ConfigService.getReceptorList();
-        scope.$digest();
-        httpBackend.flush();
-        expect(resultPromise.then).toBeDefined();
-        expect(ConfigService.receptorList.length).toBe(0);
-        expect($log.error).toHaveBeenCalledWith('error message');
     });
 
     it('should get the site location', function() {
