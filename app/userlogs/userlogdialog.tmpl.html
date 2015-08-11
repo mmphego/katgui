@@ -1,9 +1,9 @@
-<md-dialog md-theme="{{themePrimary}}" class="md-whiteframe-z1" style="min-width: 600px; overflow: visible"
+<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 600px; overflow: visible"
            ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false;">
     <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
         <span>User Log Editor</span>
     </md-toolbar>
-    <md-dialog-content style="padding: 12px;" layout="column" md-theme="{{themePrimaryButtons}}">
+    <md-dialog-content style="padding: 12px;" layout="column" md-theme="{{$root.themePrimaryButtons}}">
         <div layout="row">
             <div layout="row" layout-align="center center" style="min-width: 220px;">
                 <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
@@ -99,7 +99,7 @@
             </div>
         </div>
     </md-dialog-content>
-    <div class="md-actions" md-theme="{{themePrimaryButtons}}">
+    <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">
         <md-button ng-click="hide()" class="md-primary">
             Cancel
         </md-button>

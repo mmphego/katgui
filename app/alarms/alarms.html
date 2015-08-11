@@ -12,11 +12,11 @@
                 <input class="fade-in search-input-box" type="search"
                        style="min-width: 200px;"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Alarms..."/>
-                <md-button ng-click="vm.knowSelectedAlarms()" class="md-primary md-raised"
+                <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.knowSelectedAlarms()" class="md-primary md-raised"
                            title="Know Selected Alarms">Know</md-button>
-                <md-button ng-click="vm.acknowledgeSelectedAlarms()" class="md-primary md-raised"
+                <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.acknowledgeSelectedAlarms()" class="md-primary md-raised"
                            title="Acknowledge Selected Alarms">Acknowledge</md-button>
-                <md-button ng-click="vm.clearSelectedAlarms()"class="md-primary md-raised"
+                <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.clearSelectedAlarms()"class="md-primary md-raised"
                            title="Clear Selected Alarms">Clear</md-button>
                 <md-checkbox style="font-size: 12px;" class="md-primary" ng-model="vm.showClearedAlarms">Show Cleared Alarms
                 </md-checkbox>
@@ -37,12 +37,12 @@
             </div>
             <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;"
                  layout="row" layout-align="start center">
-                <span style="width: 26px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('severity')">
-                    <span style="padding: 8px"></span>
+                <span style="width: 60px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('severity_value')">
+                    <span style="">Severity</span>
                     <span class="fa"
-                          ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'severity' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'severity' && vm.alarmsOrderBy.reverse}"></span>
+                          ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'severity_value' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'severity_value' && vm.alarmsOrderBy.reverse}"></span>
                 </span>
-                <span style="width: 168px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('timestamp')">
+                <span style="width: 172px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('timestamp')">
                     <span>Date Changed</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'timestamp' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'timestamp' && vm.alarmsOrderBy.reverse}"></span>
@@ -67,10 +67,9 @@
         </md-toolbar>
         <div flex class="alarms-list alarms-list-large" ng-click="vm.selectAllAlarms = false">
             <div
-                ng-repeat="item in filteredAlarms = ($root.alarmsData | alarmsFilter:vm.showClearedAlarms | regexSearch:vm.alarmsOrderByFields:vm.q | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse)"
-                class="animate-repeat-opacity">
+                ng-repeat="item in filteredAlarms = ($root.alarmsData | alarmsFilter:vm.showClearedAlarms | regexSearch:vm.alarmsOrderByFields:vm.q | orderBy:'timestamp':true | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse) track by $index"
+                class="">
                 <div ng-click="item.selected = !item.selected;" class="alarm-row-item"
-
                      ng-switch="item.severity" layout="row" layout-align="start center"
                      ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
                     'alarm-list-item-badge-error': item.severity === 'error',
@@ -113,15 +112,15 @@
                               style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                               title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Know Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Know Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.knowAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-check"></span>
                     </md-button>
-                    <md-button title="Acknowledge Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Acknowledge Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.acknowledgeAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-check-circle-o"></span>
                     </md-button>
-                    <md-button title="Clear Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Clear Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.clearAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-ban"></span>
                     </md-button>
@@ -145,7 +144,7 @@
                     <input flex class="fade-in search-input-box" type="search"
                            style="min-width: 200px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Search Known Alarms..."/>
-                    <md-button ng-click="vm.cancelKnowSelectedAlarms()" class="md-primary md-raised"
+                    <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.cancelKnowSelectedAlarms()" class="md-primary md-raised"
                                style="font-size: 14px">Cancel Known
                     </md-button>
                     <div layout="column" style="font-size: 12px;">
@@ -202,8 +201,8 @@
 
         <div ng-show="vm.showKnownAlarmsList" flex class="alarms-list" ng-click="vm.selectAllKnownAlarms = false">
             <div
-                ng-repeat="item in filteredKnownAlarms = ($root.alarmsData | alarmsKnownFilter:vm.showKnownNominalAlarms:vm.showKnownMaintenanceAlarms | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse)"
-                class="animate-repeat-opacity">
+                ng-repeat="item in filteredKnownAlarms = ($root.alarmsData | alarmsKnownFilter:vm.showKnownNominalAlarms:vm.showKnownMaintenanceAlarms | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:'timestamp':true | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse) track by $index"
+                class="">
                 <div ng-click="item.selected = !item.selected" flex class="alarm-row-item"
                      ng-switch="item.severity" layout="row" layout-align="start center"
                      ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
@@ -247,7 +246,7 @@
                               style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                               title="{{item.value}}">{{item.value}}</span>
                     </div>
-                    <md-button title="Cancel Known Alarm" class="inline-action-button" style="margin: 0"
+                    <md-button ng-disabled="!vm.canOperateAlarms" title="Cancel Known Alarm" class="inline-action-button" style="margin: 0"
                                ng-click="vm.cancelKnownAlarm(item); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-remove"></span>
                     </md-button>

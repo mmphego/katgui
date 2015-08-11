@@ -3,13 +3,14 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService($rootScope, SERVER_URL, KatGuiUtil, $timeout, StatusService,
-                            AlarmsService, ObsSchedService, $interval, $q, $log, ReceptorStateService) {
+    function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
+                            $rootScope, $q, $log, ReceptorStateService, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katmonitor/api/v1';
+        var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
         api.deferredMap = {};
         api.connection = null;
+        api.lastSyncedTime = null;
 
         //websocket default heartbeat is every 30 seconds
         //so allow for 35 seconds before alerting about timeout
@@ -72,6 +73,8 @@
                 api.deferredMap['connectDefer'].resolve();
                 api.subscribe('mon:*');
                 api.subscribe('sched:*');
+                api.subscribe('time:*');
+                api.subscribe('auth:*');
             }
         };
 
@@ -99,6 +102,10 @@
                 if (messages.error) {
                     $log.error('There was an error sending a jsonrpc request:');
                     $log.error(messages);
+                } else if (messages.result.msg_channel === 'time:time') {
+                    //add one seconds because our display update interval
+                    //is only every second
+                    api.lastSyncedTime = messages.result.msg_data + 1;
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.result) {
                         if (messages.id === 'redis-pubsub') {
@@ -118,13 +125,22 @@
                             }
                             if (messageObj.msg_channel) {
                                 var messageChannel = messageObj.msg_channel.split(":");
-                                if (messageChannel[0] === 'sched') {
+                                if (messageObj.msg_channel === 'auth:current_lo') {
+                                    api.currentLeadOperator.name = messageObj.msg_data.lo;
+                                    $rootScope.iAmLO = api.currentLeadOperator.name === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'lead_operator';
+                                    if ($rootScope.currentUser &&
+                                        $rootScope.currentUser.req_role === 'lead_operator' &&
+                                        api.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                                        NotifyService.showDialog(
+                                            'You are logged out.', 'You have been logged out because ' +
+                                            api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
+                                        $rootScope.logout();
+                                    }
+                                } else if (messageChannel[0] === 'sched') {
                                     ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
                                     var channelNameSplit = messageChannel[1].split('.');
-                                    if (channelNameSplit[1] === 'lo_id') {
-                                        api.currentLeadOperator.name = messageObj.msg_data.value !== '' ? messageObj.msg_data.value : 'None';
-                                    } else if (channelNameSplit[1] === 'interlock_state') {
+                                    if (channelNameSplit[1] === 'interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
                                     } else if (channelNameSplit[0] === 'kataware') {
                                         AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);

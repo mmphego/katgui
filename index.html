@@ -149,7 +149,7 @@
                 <md-item>
                     <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
-                            <md-button flex><span class="fa fa-heart"></span><span>Health & State</span></md-button>
+                            <md-button flex><span class="fa fa-heart"></span><span>Top Health</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
                             <md-button flex><span class="fa fa-th"></span><span>Receptor Status</span></md-button>
@@ -161,25 +161,25 @@
                             <md-button flex><span class="fa fa-th-large"></span><span>Receptor Health</span></md-button>
                         </div>
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('customHealth')">
-                            <md-button flex><span class="fa fa-heartbeat"></span><span>Custom Health & State</span></md-button>
+                            <md-button flex><span class="fa fa-heartbeat"></span><span>Custom Health</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
-                <md-item>
+                <md-item ng-if="$root.currentUser.req_role === 'operator' || $root.currentUser.req_role === 'lead_operator'">
                     <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operator-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
                             <md-button flex><span class="fa fa-cogs"></span><span>Operator Control</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
-                <md-item>
+                <md-item ng-if="$root.currentUser.req_role === 'lead_operator'">
                     <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('cam-components')">
                         <div class="menu-item" layout="row" layout-align="start center">
                             <md-button flex><span class="fa fa-cubes"></span><span>CAM Components</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
-                <md-item>
+                <md-item ng-if="$root.currentUser.req_role === 'lead_operator'">
                     <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('process-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
                             <md-button flex><span class="fa fa-wrench"></span><span>Process Control</span></md-button>
@@ -188,22 +188,25 @@
                 </md-item>
                 <md-item>
                     <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.openCentralLogger()">
-                        <md-button flex><span class="fa fa-file-text-o"></span><span>Central Logger</span></md-button>
+                        <md-button flex><span class="fa fa-file-text-o"></span><span>Central Logs</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content layout="column" style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;">
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
-                            <md-button flex><span class="fa fa-list"></span><span>Scheduler Management</span></md-button>
+                            <md-button flex><span class="fa fa-list"></span><span>Subarrays Workflow</span></md-button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
+                        <div ng-if="$root.currentUser.req_role === 'lead_operator' || $root.currentUser.req_role === 'control_authority'"
+                             class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
                             <md-button flex><span class="fa fa-pencil"></span><span>Schedule Block Drafts</span></md-button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
-                            <md-button flex><span class="fa fa-asterisk"></span><span>Subarrays</span></md-button>
+                        <div ng-if="$root.currentUser.req_role === 'lead_operator' || $root.currentUser.req_role === 'control_authority'"
+                             class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
+                            <md-button flex><span class="fa fa-asterisk"></span><span>Subarray Schedule Blocks</span></md-button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.resources')">
-                            <md-button flex><span class="fa fa-sitemap"></span><span>Subarrays Resources</span></md-button>
+                        <div ng-if="$root.currentUser.req_role === 'lead_operator' || $root.currentUser.req_role === 'control_authority'"
+                             class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.resources')">
+                            <md-button flex><span class="fa fa-sitemap"></span><span>Set-up Subarray</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.observations')">
                             <md-button flex><span class="fa fa-binoculars"></span><span>Observations Overview</span></md-button>
@@ -234,7 +237,7 @@
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlogs')">
-                        <md-button flex><span class="fa fa-pencil-square-o"></span><span>User Logging</span></md-button>
+                        <md-button flex><span class="fa fa-pencil-square-o"></span><span>User Logs</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -245,11 +248,6 @@
                 <md-item>
                     <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('weather')">
                         <md-button flex><span class="fa fa-cloud"></span><span>Weather</span></md-button>
-                    </md-item-content>
-                </md-item>
-                <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('about')">
-                        <md-button flex><span class="fa fa-info"></span><span>About katGUI</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -283,11 +281,16 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavRightStateGo('about')">
+                        <md-button flex><span class="fa fa-info"></span><span style="margin-left: 8px">About katGUI</span></md-button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
                     <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.logout()">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.logout()">
                         <md-button flex><span class="fa"></span><span>Logout</span></md-button>
                     </md-item-content>
                 </md-item>
@@ -299,30 +302,47 @@
         <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" class="md-whiteframe-z1" md-theme-watch="true"
                     ng-class="{'slide-in-vertically-navbar': loggedIn, 'connection-lost-bg-bright': vm.connectionToMonitorLost}" >
             <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden;">
-                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-navicon"></md-icon>
+                <md-button class="mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
+                    <span class="fa fa-navicon"></span>
                 </md-button>
 
-                <span flex style="font-size: 30px; cursor: pointer;" ng-click="vm.navigateToParentState()">{{vm.currentState()}}</span>
-                <span style="margin-right: 8px">
-                    LO: {{$root.currentLeadOperator.name}}
-                    <md-tooltip>Current Lead Operator</md-tooltip>
-                </span>
-                <div ng-if="vm.localSiderealTime" ng-show="showLST">
-                    <span style="font-size: 32px;">{{vm.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
-                    <md-tooltip>Local Sidereal Time</md-tooltip>
-                </div>
-                <div ng-if="vm.utcTime && showLocalAndSAST">
-                    <span class="toolbar-time-span">{{vm.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
-                    <span class="toolbar-time-span">{{vm.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> SAST</span>
+                <span flex style="font-size: 30px; cursor: pointer;" title="Click to Navigate to Parent Display" ng-click="vm.navigateToParentState()">{{$root.currentStateTitle()}}</span>
+                <div layout="column" layout-align="start center" style="margin-right: 8px">
+                    <md-menu style="padding: 0">
+                        <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdOpenMenu()">
+                            <span>{{$root.currentUser.email}}</span><i style="font-size: 12px"> ({{$root.currentUser.req_role}})</i>
+                            <span style="font-size: 14px" class="fa fa-caret-down"></span>
+                        </md-button>
+                        <md-menu-content width="3" style="padding: 8px">
+                            <md-menu-item>
+                                <md-button ng-click="$root.logout()">Logout</md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+
+                    <span style="font-size: 14px;">
+                        LO: {{$root.currentLeadOperator.name}}
+                        <md-tooltip>Current Lead Operator</md-tooltip>
+                    </span>
                 </div>
 
-                <md-button class="md-icon-button mainbar-navbar-button" ng-click="vm.stateGo('home')">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-home"></md-icon>
+                <div style="position: absolute; top: 0; left: 0; right: 0; pointer-events: none" layout="row" layout-align="center center">
+                    <div ng-if="$root.localSiderealTime" ng-show="showLST" title="Local Sidereal Time">
+                        <span style="font-size: 32px;">{{$root.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
+                    </div>
+                    <div ng-if="$root.utcTime && showLocalAndSAST">
+                        <span class="toolbar-time-span">{{$root.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
+                        <span class="toolbar-time-span">{{$root.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> local</span>
+                    </div>
+                </div>
+
+                <md-button class="mainbar-navbar-button" ng-click="$root.stateGo('home')" title="Home">
+                    <span class="fa fa-home"></span>
                 </md-button>
 
-                <md-button class="md-icon-button mainbar-navbar-button" style="overflow: visible;" ng-click="vm.stateGo('alarms')">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-warning"></md-icon>
+                <md-button class="mainbar-navbar-button" style="overflow: visible;" ng-click="$root.stateGo('alarms')"
+                    title="Alarms">
+                    <span class="fa fa-warning"></span>
                     <span title="Warning Alarms" ng-show="newAlarms"
                           class="badge alarm-badge alarm-badge-warn">{{newAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'warn'}).length}}</span>
                     <span title="Error Alarms" ng-show="errorAlarms"
@@ -331,36 +351,37 @@
                           class="badge alarm-badge alarm-badge-crit">{{critAlarms = (alarmsData | filter:{priority:'new'} | filter:{severity:'critical'}).length}}</span>
                 </md-button>
 
-                <md-button class="mainbar-navbar-button md-icon-button"  ng-click="vm.toggleRightSidenav()">
-                    <md-icon md-theme="white" class="fa md-primary" md-font-icon="fa-user"></md-icon>
+                <md-button class="mainbar-navbar-button" ng-click="vm.toggleRightSidenav()">
+                    <span class="fa fa-user"></span>
                 </md-button>
             </div>
 
         </md-toolbar>
         <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" style="margin-bottom: 25px">
         </md-content>
-        <div class="main-footer-toolbar" layout="column">
+        <div class="main-footer-toolbar" layout="column" ng-if="loggedIn">
             <md-toolbar md-theme="{{themePrimary}}" class="md-toolbar-tools-small md-whiteframe-z1" layout="row">
                 <span>
-                    Interlock State: {{$root.interlockState.value}}
+                    Interlock State: {{$root.interlockState.value ? $root.interlockState.value : 'None'}}
                     <md-tooltip>Current Interlock State</md-tooltip>
                 </span>
-                <div flex style="text-align: center">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0" layout="row" layout-align="center center">
                     <span style="margin: 0 4px;">{{::$root.systemConfig.version.description}}</span>
                     <span style="margin: 0 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
                     <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
                 </div>
+                <span flex></span>
                 <div layout="row">
-                    <div ng-show="showDayOfYear && vm.dayOfYear">
-                        <span>{{vm.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
+                    <div ng-show="showDayOfYear && $root.dayOfYear">
+                        <span>{{$root.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
                         <md-tooltip>Current UTC Day Of Year</md-tooltip>
                     </div>
-                    <div ng-show="showDate && vm.currentDate">
-                        <span>{{vm.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
+                    <div ng-show="showDate && $root.currentDate">
+                        <span>{{$root.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
                         <md-tooltip>Current UTC Date</md-tooltip>
                     </div>
-                    <div ng-if="vm.julianDay" ng-show="showJulianDate">
-                        <span>{{vm.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
+                    <div ng-if="$root.julianDay" ng-show="showJulianDate">
+                        <span>{{$root.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
                         <md-tooltip>Julian Day</md-tooltip>
                     </div>
                 </div>

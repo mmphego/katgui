@@ -10,7 +10,7 @@
             <div class="config-div-item">
                 <md-subheader>Theme</md-subheader>
                 <md-select md-theme="{{themePrimaryButtons}}" ng-model="vm.selectedTheme" class="config-md-select"
-                           style="min-width: 140px; margin-left: 8px;" placeholder="Select a Theme..."
+                           style="width: 150px; margin-left: 8px;" placeholder="Select a Theme..."
                            ng-change="vm.themeChanged()">
                     <md-option ng-value="theme.name" ng-repeat="theme in vm.themes">{{theme.name}}</md-option>
                 </md-select>

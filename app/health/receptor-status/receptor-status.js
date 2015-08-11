@@ -9,7 +9,7 @@
         var vm = this;
         vm.receptorsData = [];
         vm.subarrays = {subarray_free: {id: 'free', state: 'inactive'}};
-        vm.sortBySubarrays = false;
+        vm.sortBySubarrays = true;
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;

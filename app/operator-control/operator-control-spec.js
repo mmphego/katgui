@@ -285,7 +285,7 @@ describe('OperatorControlCtrl', function () {
     //    inhibited: false
     //}];
     it('should have the configured receptors', inject(function () {
-        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
         var deferred = q.defer();
         var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
         receptorStateService.getReceptorList();
@@ -296,7 +296,7 @@ describe('OperatorControlCtrl', function () {
     }));
 
     it('should update the time at each interval', function() {
-        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
         var deferred = q.defer();
         var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
         receptorStateService.getReceptorList();
@@ -321,7 +321,7 @@ describe('OperatorControlCtrl', function () {
         expect(ctrl.receptorsData.length).toBe(5);
         //these GET happens in this test because we run a $digest loop when calling flush, the other tests doesnt need it
         //because the service is never created completely
-        httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+        httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
         interval.flush(10000);
         expect(ctrl.receptorsData[0].lastUpdate.length).not.toBe(0);
         expect(ctrl.receptorsData[0].since.length).not.toBe(0);
@@ -329,7 +329,7 @@ describe('OperatorControlCtrl', function () {
     });
 
     //it('should update the inhibited message', inject(function () {
-    //    httpBackend.expect('GET', 'http://localhost:9876/katconf/api/v1/installed-config/receptors').respond(200, {});
+    //    httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
     //    var deferred = q.defer();
     //    var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
     //    receptorStateService.getReceptorList();

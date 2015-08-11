@@ -1,4 +1,4 @@
-<div layout="column" layout-align="start center" md-theme="{{vm.themePrimary}}">
+<div layout="column" layout-align="start center" md-theme="{{$root.themePrimary}}">
 
     <md-toolbar class="widget-toolbar md-whiteframe-z1">
     </md-toolbar>
@@ -12,12 +12,12 @@
         <navigation-pie svg-title="System & User Logs" data="vm.logsNavData" width="280" height="280"></navigation-pie>
     </div>
 
-    <div layout="row" layout-align="center center" class="" md-theme="{{vm.themePrimaryButtons}}">
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('video')">Video</md-button>
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('instrumental-config')">Instrumental Configuration</md-button>
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('admin')">User Administration</md-button>
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('config')">KATGUI Configuration</md-button>
-        <md-button class="md-raised md-primary" ng-click="vm.stateGo('about')">About KATGUI</md-button>
+    <div layout="row" layout-align="center center" class="" md-theme="{{$root.themePrimaryButtons}}">
+        <md-button class="md-raised md-primary" ng-click="$root.stateGo('video')">Video</md-button>
+        <md-button class="md-raised md-primary" ng-click="$root.stateGo('instrumental-config')">Instrumental Configuration</md-button>
+        <md-button class="md-raised md-primary" ng-click="$root.stateGo('admin')">User Administration</md-button>
+        <md-button class="md-raised md-primary" ng-click="$root.stateGo('config')">KATGUI Configuration</md-button>
+        <md-button class="md-raised md-primary" ng-click="$root.stateGo('about')">About KATGUI</md-button>
     </div>
 
     <div class="navigation-tooltip" style="display: none; background-color: #ffffff"></div>

@@ -15,12 +15,9 @@
             });
     }
 
-    function NavigationWidgetCtrl($scope, $rootScope, $state, KatGuiUtil, CENTRAL_LOGGER_PORT) {
+    function NavigationWidgetCtrl($rootScope, KatGuiUtil, CENTRAL_LOGGER_PORT) {
 
         var vm = this;
-
-        vm.themePrimaryButtons = $rootScope.themePrimaryButtons;
-        vm.themePrimary = $rootScope.themePrimary;
 
         vm.openCentralLogger = function () {
             //TODO get from config and eventually redo central logger
@@ -38,10 +35,10 @@
             state: 'scheduler.subarrays',
             title: 'Manage Subarrays Schedule Blocks'
         }, {
-            name: 'Resources',
+            name: 'Set-up Subs',
             textOffset: 0,
             state: 'scheduler.resources',
-            title: 'Manage Subarray Resources'
+            title: 'Set-up Subarray'
         }, {
             name: 'Observations',
             textOffset: 10,
@@ -132,21 +129,7 @@
             title: 'User Defined Logs'
         }];
 
-        vm.unbindThemePrimaryButtons = $rootScope.$watch('themePrimaryButtons', function (newVal) {
-            vm.themePrimaryButtons = newVal;
-        });
-
-        vm.unbindThemePrimary = $rootScope.$watch('themePrimary', function (newVal) {
-            vm.themePrimary = newVal;
-        });
-
-        vm.stateGo = function (newState) {
-            $state.go(newState);
-        };
-
-        $scope.$on('$destroy', function () {
-            vm.unbindThemePrimary();
-            vm.unbindThemePrimaryButtons();
-        });
+        //$scope.$on('$destroy', function () {
+        //});
     }
 })();

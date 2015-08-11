@@ -3,10 +3,12 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, $log, NotifyService) {
+    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katauth/api/v1';
+        var urlBase = SERVER_URL + '/katauth';
         var api = {};
+        api.connection = null;
+        api.deferredMap = {};
         $rootScope.jwt = $localStorage['currentUserToken'];
 
         var jwtHeader = {
@@ -22,8 +24,7 @@
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
             $http(createRequest('get', urlBase + '/user/verify/' + role))
-                .success(verifySuccess)
-                .error(verifyError);
+                .then(verifySuccess, verifyError);
         };
 
 
@@ -31,32 +32,72 @@
 
             $rootScope.jwt = session_id;
             $http(createRequest('post', urlBase + '/user/login', {}))
-                .success(function(result){
+                .then(function(result){
                     loginSuccess(result, session_id);
-                })
-                .error(loginError);
+                }, loginError);
         };
 
         api.logout = function () {
             if ($rootScope.loggedIn) {
                 $http(createRequest('post', urlBase + '/user/logout',{}))
-                    .success(logoutResultSuccess)
-                    .error(logoutResultError);
+                    .then(logoutResultSuccess, logoutResultError);
             }
         };
 
         api.recoverLogin = function () {
             if ($rootScope.jwt) {
                 $http(createRequest('post', urlBase + '/user/login'))
-                    .success(function(result){
+                    .then(function(result){
                         loginSuccess(result, $rootScope.jwt);
-                    })
-                    .error(loginError);
+                    }, loginError);
+            }
+        };
+
+        api.onSockJSOpen = function () {
+            if (api.connection && api.connection.readyState) {
+                $log.info('Lead Operator Connection Established.');
+                api.deferredMap['connectDefer'].resolve();
+                api.connection.send($rootScope.currentUser.email);
+            }
+        };
+
+        api.onSockJSClose = function () {
+            $log.info('Disconnected Lead Operator Connection.');
+            api.connection = null;
+        };
+
+        api.onSockJSMessage = function (e) {
+            api.connection.send($rootScope.currentUser.email);
+            $log.info('Received: ' + e.data);
+        };
+
+        api.connectListener = function (skipDeferObject) {
+            $log.info('Lead Operator Connecting...');
+            api.connection = new SockJS(urlBase + '/alive');
+            api.connection.onopen = api.onSockJSOpen;
+            api.connection.onmessage = api.onSockJSMessage;
+            api.connection.onclose = api.onSockJSClose;
+
+            if (!skipDeferObject) {
+                api.deferredMap['connectDefer'] = $q.defer();
+                return api.deferredMap['connectDefer'].promise;
+            }
+        };
+
+        api.disconnectListener = function () {
+            if (api.connection) {
+                $log.info('Disconnecting Lead Operator.');
+                api.connection.close();
+            } else {
+                $log.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 
         function logoutResultSuccess() {
             NotifyService.showSimpleToast('Logout successful.');
+            if (api.connection) {
+                api.disconnectListener();
+            }
             $rootScope.currentUser = null;
             $rootScope.loggedIn = false;
             $localStorage['currentUserToken'] = null;
@@ -66,6 +107,9 @@
 
         function logoutResultError(result) {
             NotifyService.showSimpleToast('Error Logging out, resetting local user session.');
+            if (api.connection) {
+                api.disconnectListener();
+            }
             $rootScope.currentUser = null;
             $rootScope.loggedIn = false;
             $localStorage['currentUserToken'] = null;
@@ -76,32 +120,33 @@
         }
 
         function verifySuccess(result) {
-            if (result.session_id) {
-                if (result.confirmation_token) {
+            if (result.data.session_id) {
+                if (result.data.confirmation_token) {
                     $log.info('Found confirmation token');
-                    var b = result.confirmation_token.split(".");
+                    var b = result.data.confirmation_token.split(".");
                     var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
-                    if (payload.current_lo &&
+                    if (payload.req_role === 'lead_operator' &&
+                        payload.current_lo &&
                         payload.current_lo.length > 0 &&
                         payload.current_lo !== payload.requester) {
-                        confirmRole(result.session_id, payload);
+                        confirmRole(result.data.session_id, payload);
                     } else {
                         api.login(payload.session_id);
                     }
                 } else {
                     $log.info('No token, off to login');
-                    api.login(result.session_id);
+                    api.login(result.data.session_id);
                 }
             } else {
                 //User's session expired, we got a message
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.message);
+                NotifyService.showSimpleToast(result.data.message);
             }
         }
 
         function verifyError(result) {
-            if (result && result.session_id === null) {
+            if (result.data && result.data.session_id === null) {
                 api.currentUser = null;
                 api.loggedIn = false;
                 $localStorage['currentUserToken'] = undefined;
@@ -109,7 +154,7 @@
                 $state.go('login');
             } else {
                 console.error('Error logging return, server returned with:');
-                console.error(result);
+                console.error(result.data);
                 NotifyService.showSimpleToast('Error connecting to KATPortal.');
                 $state.go('login');
             }
@@ -119,8 +164,6 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.themePrimary = $rootScope.themePrimary;
-                        $scope.themePrimaryButtons = $rootScope.themePrimaryButtons;
                         var readonly_session_id = session_id;
                         var requested_session_id = payload.session_id;
                         $scope.current_lo = payload.current_lo;
@@ -139,13 +182,13 @@
                             $mdDialog.hide();
                         };
                     },
-                    template: '<md-dialog md-theme="{{themePrimary}}" class="md-whiteframe-z1">' +
+                    template: '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">' +
                         '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{requested_role}}</md-toolbar>' +
                         '  <md-dialog-content class="md-padding" layout="column">' +
                         '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
                         '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be logged out.</p>' +
                         '  </md-dialog-content>' +
-                        '  <div class="md-actions" md-theme="{{themePrimaryButtons}}">' +
+                        '  <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">' +
                         '    <md-button ng-click="cancel()" class="md-primary">' +
                         '      Cancel' +
                         '    </md-button>' +
@@ -182,18 +225,21 @@
                     NotifyService.showSimpleToast('Login successful, welcome ' + payload.name + '.');
                     $rootScope.$emit('loginSuccess', true);
                     $rootScope.connectEvents();
+                    if (payload.req_role === 'lead_operator') {
+                        api.connectListener(false);
+                    }
                 }
             } else {
                 //User's session expired, we got a message
                 $log.info('No session id');
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.message);
+                NotifyService.showSimpleToast(result.data.message);
             }
         }
 
         function loginError(result) {
-            if (result && result.session_id === null) {
+            if (result.data && result.data.session_id === null) {
                 api.currentUser = null;
                 api.loggedIn = false;
                 $localStorage['currentUserToken'] = undefined;
@@ -201,8 +247,12 @@
                 $state.go('login');
             } else {
                 $log.error('Error logging return, server returned with:');
-                $log.error(result);
-                NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                $log.error(result.data);
+                if (result.data.err_msg) {
+                    NotifyService.showSimpleToast(result.data.err_msg);
+                } else {
+                    NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                }
                 $state.go('login');
             }
         }

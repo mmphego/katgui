@@ -12,6 +12,8 @@
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code'},
             {label: 'Description', value: 'description'},
+            {label: 'Expected Duration', value: 'expected_duration'},
+            {label: 'Verification State', value: 'verification_state'},
             {label: 'Date', value: 'desired_start_time'},
             {label: 'State', value: 'state'},
             {label: 'Type', value: 'type'}
@@ -19,7 +21,7 @@
 
         vm.limitTo = 5;
         $scope.loadMore = function() {
-            vm.limitTo += 10;
+            vm.limitTo += 30;
         };
 
         vm.setDraftsOrderBy = function (column) {
@@ -40,12 +42,11 @@
         vm.saveDraft = function (item) {
             item.editing = false;
             ObsSchedService.updateScheduleDraft(item)
-                .success(function (result) {
-                    $log.info(result);
+                .then(function (result) {
+                    $log.info(result.data);
                     item.isDirty = false;
                     item.editing = false;
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog('Error Saving SB ' + item.id_code + '.', result);
                 });
         };
@@ -66,10 +67,9 @@
 
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code)
-                .success(function (result) {
+                .then(function (result) {
                     $log.info(result);
-                })
-                .error(function (result) {
+                }, function (result) {
                     NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
                 });
         };
@@ -83,7 +83,7 @@
         };
 
         vm.viewSBTasklog = function (item) {
-            ObsSchedService.viewTaskLogForSBIdCode(item.id_code);
+            ObsSchedService.viewTaskLogForSBIdCode(item.id_code, 'dryrun');
         };
 
         vm.onTimeSet = function (newDate) {

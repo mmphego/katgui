@@ -1,129 +1,180 @@
-<div flex layout="row" style="min-width: 1220px; min-height: 500px; max-height: 100%; margin: 8px;" ng-controller="SbDraftsCtrl as vm">
+<div flex layout="column" style="min-width: 1260px; min-height: 500px; max-height: 100%; margin: 8px 0"
+     ng-controller="SbDraftsCtrl as vm">
 
-    <div class="md-whiteframe-z2" layout="column" flex>
-        <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showDraftTools = true;" ng-mouseleave="showDraftTools = false;">
-            <div layout="row" class="unselectable">
-                <span flex style="max-height: 10px;"></span>
-                <input class="fade-in search-input-box" ng-show="showDraftTools || vm.q" type="search"
-                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
-                <md-button  style="font-size: 16px; margin-top: -5px;margin-right: -5px;" class="md-fab md-mini md-primary" md-theme="{{themePrimaryButtons}}"
-                           ng-click="vm.saveAllDirtyDrafts()">
-                    <md-icon class="fa center-md-icon" md-font-icon="fa-check"></md-icon>
-                    <md-tooltip>Save All Changes</md-tooltip>
-                </md-button>
-            </div>
+    <div layout="row" layout-align="center center" style="margin: 0 8px" md-theme="{{themePrimaryButtons}}">
+        <md-button style="border: 8px solid #4CAF50; border-radius: 4px; margin: -1px"
+                   title="Schedule Block Drafts"
+                   ng-click="$root.stateGo('scheduler.drafts')">
+            <span>SB Drafts</span>
+        </md-button>
+        <span flex></span>
+        <md-button class="md-primary md-raised" style="margin: 0"
+                   ng-click="$root.stateGo('scheduler')">
+            <span>Subarrays Workflow</span>
+        </md-button>
+        <span flex></span>
+        <md-button style="margin: 0" title="All Subarrays Observations Overview"
+                   ng-click="$root.stateGo('scheduler.observations')">
+            <span>Obs Overview</span>
+        </md-button>
+    </div>
 
-            <div flex class="unselectable list-subheader-title" layout="row" layout-align="center center">
-                <span style="max-width: 115px;min-width: 115px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
-                    <span style="padding-left: 8px;">ID</span>
+    <div flex layout="row" style="margin: 8px">
+        <div class="md-whiteframe-z2" layout="column" flex>
+            <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showDraftTools = true;"
+                        ng-mouseleave="showDraftTools = false;">
+                <div layout="row" class="unselectable">
+                    <span flex style="max-height: 10px;"></span>
+                    <input class="fade-in search-input-box" ng-show="showDraftTools || vm.q" type="search"
+                           ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
+                    <md-button style="font-size: 16px; margin-top: -5px;margin-right: -5px;"
+                               class="md-fab md-mini md-primary" md-theme="{{themePrimaryButtons}}"
+                               ng-click="vm.saveAllDirtyDrafts()">
+                        <md-icon class="fa center-md-icon" md-font-icon="fa-check"></md-icon>
+                        <md-tooltip>Save All Changes</md-tooltip>
+                    </md-button>
+                </div>
+
+                <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
+                     style="position: absolute; left: 8px; right: 8px; bottom: 0; padding: 0">
+                <span style="width: 119px" class="subheader-text" ng-click="vm.setDraftsOrderBy('id_code')">
+                    <span>ID</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
                 <span flex style="width: 180px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('description')">
-                    <span style="padding: 8px">Description</span>
+                    <span>Description</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'description' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'description' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
-                <span style="max-width: 142px;min-width: 142px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('type')">
-                    <span style="padding: 8px">Type</span>
+                <span style="width: 142px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('expected_duration')">
+                    <span>Expected Duration</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'expected_duration' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'expected_duration' && vm.draftsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="width: 146px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('verification_state')">
+                    <span>Verification State</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'verification_state' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'verification_state' && vm.draftsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span style="width: 142px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('type')">
+                    <span>Type</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'type' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'type' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
-                <span style="max-width: 215px;min-width: 215px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
-                    <span style="padding: 8px">Desired Time</span>
+                <span style="width: 215px;" class="subheader-text" ng-click="vm.setDraftsOrderBy('desired_start_time')">
+                    <span>Desired Time</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
                           style="margin-right: 4px;"></span>
                 </span>
-            </div>
-        </md-toolbar>
-        <div class="schedule-draft-data-list" style="direction: rtl; overflow: auto" flex>
-            <div ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by item.id_code"
-                 ng-click="vm.setSelectedScheduleDraft(item)"
-                 ng-class="{'selected-draft-schedule-row': item.id_code === vm.selectedScheduleDraft.id_code}" class="schedule-draft-item animate-repeat-opacity" layout="column" post-ng-repeat-load-more>
-                <div layout="row" layout-align="center center" style="max-height: 38px;">
-                    <md-progress-circular md-theme="{{themePrimaryButtons}}" class="smaller-progress-circular" ng-if="item.pendingVerify" class="md-primary" md-mode="indeterminate">
-                    </md-progress-circular>
-                    <md-tooltip ng-if="item.pendingVerify">Verification State: {{item.verification_state}}</md-tooltip>
-
-                    <div layout="row" class="schedule-block-name-div">
-                        <span class="schedule-block-id-text"
-                              ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
-                            {{item.id_code}}</span>
-                        <i>{{item.owner}}</i>
-                    </div>
-                    <input ng-if="item.editing" ng-change="item.isDirty = true;" type="text" ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
-                            class="schedule-item-description-input" style="height: 27px;"
-                           ng-model="item.description" placeholder="Description"/>
-                    <span ng-if="!item.editing" flex style="overflow: hidden; text-overflow: ellipsis;" title="{{item.description}}">{{item.description}}</span>
-
-                    <md-select ng-if="item.editing" ng-model="item.type"  style="width: 126px; margin-left: 4px; margin-right:4px;"
-                               ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                               class="md-primary" ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
-                        <md-option ng-value="type" ng-repeat="type in vm.types">{{type}}</md-option>
-                    </md-select>
-                    <span ng-if="!item.editing" style="width: 134px; margin-left: 4px; margin-right:4px;"
+                </div>
+            </md-toolbar>
+            <div class="schedule-draft-data-list" style="direction: rtl; overflow: auto" flex>
+                <div
+                    ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by item.id"
+                    ng-click="vm.setSelectedScheduleDraft(item)"
+                    ng-class="{'selected-draft-schedule-row': item.id_code === vm.selectedScheduleDraft.id_code}"
+                    class="schedule-draft-item" layout="column" post-ng-repeat-load-more>
+                    <div layout="row" layout-align="start center" style="max-height: 38px; padding: 0 4px">
+                        <md-progress-linear ng-if="item.verification_state === 'VERIFYING'" class="md-primary"
+                                            md-mode="indeterminate"
+                                            style="position: absolute; left: 0; right: 0; margin-top: -5px;">
+                        </md-progress-linear>
+                        <div layout="column" layout-align="start" style="padding-top: 4px; width: 125px">
+                        <span
+                            ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
+                            style="font-size: 14px; font-weight: bold"
+                            ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
+                        </span>
+                            <span><i>{{item.owner}}</i></span>
+                        </div>
+                        <input ng-if="item.editing" ng-change="item.isDirty = true;" type="text"
+                               ng-click="vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();" flex
+                               class="schedule-item-description-input" style="height: 27px;"
+                               ng-model="item.description" placeholder="Description"/>
+                        <span ng-if="!item.editing" flex style="overflow: hidden; text-overflow: ellipsis;"
+                              title="{{item.description}}">{{item.description}}</span>
+                        <span style="width: 134px; margin: 0 4px">{{item.expected_duration}}</span>
+                        <span style="width: 134px; margin: 0 4px">{{item.verification_state}}</span>
+                        <md-select ng-if="item.editing" ng-model="item.type" style="width: 126px; margin: 0 4px"
+                                   ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
+                                   class="md-primary"
+                                   ng-click="item.isDirty = true; vm.setSelectedScheduleDraft(item, true); $event.stopPropagation();">
+                            <md-option ng-value="type" ng-repeat="type in vm.types">{{type}}</md-option>
+                        </md-select>
+                    <span ng-if="!item.editing" style="width: 134px; margin: 0 4px"
                           ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">
                         {{item.type}}</span>
-                    <input ng-if="item.editing" ng-change="item.isDirty = true; vm.validateInputDate(item);" type="text"  title="UTC"
-                           class="schedule-item-input schedule-item-date-input" ng-class="{'invalid-date-error': item.hasInvalidInput}"
-                           ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time" placeholder=""/>
-                    <span  ng-if="!item.editing" style="width: 140px;">{{item.desired_start_time}}</span>
-                    <span class="sb-row-button" ng-show="!item.editing"></span>
-                    <span ng-if="item.pendingVerify" class="sb-row-button"></span>
-                    <button ng-if="!item.pendingVerify" title="Save the draft" ng-show="item.isDirty || item.editing" style="transition: 0s;"  class="sb-row-button"
-                               ng-click="vm.saveDraft(item); $event.stopPropagation();">
-                        <span class="fa fa-check"></span>
-                    </button>
-                    <!--ng-click="vm.openSchedulerEditMenu(item, $event);"-->
-                    <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}">
-                        <md-button class="md-icon-button inline-action-button" ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                        <input ng-if="item.editing" ng-change="item.isDirty = true; vm.validateInputDate(item);"
+                               type="text" title="UTC"
+                               class="schedule-item-input schedule-item-date-input"
+                               ng-class="{'invalid-date-error': item.hasInvalidInput}"
+                               ng-click="vm.openDatePicker(item, $event);" ng-model="item.desired_start_time"
+                               placeholder=""/>
+                        <span ng-if="!item.editing" style="width: 140px;">{{item.desired_start_time}}</span>
+                        <md-button ng-show="item.editing" class="inline-action-button"
+                                   ng-click="vm.saveDraft(item); $event.stopPropagation()"
                                    style="margin: 0">
-                            <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                            <span style="display: inherit" class="fa fa-check"></span>
                         </md-button>
-                        <md-menu-content style="padding: 8px;">
-                            <md-menu-item ng-if="item.loadMenuContents">
-                                <md-button ng-click="item.editing = true">Edit Draft</md-button>
-                            </md-menu-item>
-                            <md-menu-item ng-if="item.loadMenuContents" ng-show="item.type == 'OBSERVATION'">
-                                <md-button ng-disabled="!item.sub_nr" title="{{!item.sub_nr ? 'Assign to a Subarray before verifying.' : ''}}"
-                                           ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
-                            </md-menu-item>
-                            <md-menu-item ng-if="item.loadMenuContents">
-                                <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
-                            </md-menu-item>
-                            <md-menu-item ng-if="item.loadMenuContents">
-                                <md-button ng-click="vm.removeDraft(item)">Delete Draft</md-button>
-                            </md-menu-item>
-                        </md-menu-content>
-                    </md-menu>
+                        <md-button ng-if="!item.editing" class="inline-action-button"
+                                   ng-click="vm.removeDraft(item); $event.stopPropagation()" style="margin: 0"
+                                   title="Delete Draft">
+                            <span style="display: inherit" class="fa fa-remove"></span>
+                        </md-button>
+                        <md-menu md-theme="{{themePrimaryButtons}}">
+                            <md-button class="md-icon-button inline-action-button"
+                                       ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                                       style="margin: 0">
+                                <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                            </md-button>
+                            <md-menu-content style="padding: 8px;">
+                                <md-menu-item ng-if="item.loadMenuContents">
+                                    <md-button ng-click="item.editing = true">Edit Draft</md-button>
+                                </md-menu-item>
+                                <md-menu-item ng-if="item.loadMenuContents" ng-show="item.type == 'OBSERVATION'">
+                                    <md-button ng-disabled="!item.sub_nr"
+                                               title="{{!item.sub_nr ? 'Assign to a Subarray before verifying' : ''}}"
+                                               ng-click="vm.verifyDraft(item)">Verify Draft
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item ng-if="item.loadMenuContents">
+                                    <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div layout="column" style="max-width: 400px;min-width: 400px;"
-         ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null,'script-window-without-box-shadow': vm.selectedScheduleDraft === null}">
-        <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
-            <div flex style="margin: 8px;" layout="row" layout-align="start center">
-                <span style="cursor: pointer;">Schedule Block Details</span>
-            </div>
-        </md-toolbar>
-        <div flex layout="column">
-            <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
-                 ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
+        <div layout="column" style="max-width: 400px;min-width: 400px;"
+             ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null,'script-window-without-box-shadow': vm.selectedScheduleDraft === null}">
+            <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
+                <div flex style="margin: 8px;" layout="row" layout-align="start center">
+                    <span style="cursor: pointer;">Schedule Block Details</span>
+                </div>
+            </md-toolbar>
+            <div flex layout="column">
+                <div layout-fill flex class="schedule-block-script-window md-whiteframe-z1" layout="column"
+                     ng-class="{'highlight-script-window': vm.selectedScheduleDraft !== null, 'md-whiteframe-z2': vm.selectedScheduleDraft === null}">
 
-                <div flex ng-if="vm.selectedScheduleDraft !== null" >
-                    <pre flex ng-bind-html='vm.selectedScheduleDraft | prettifyJSON'></pre>
+                    <div flex ng-if="vm.selectedScheduleDraft !== null">
+                        <pre flex ng-bind-html='vm.selectedScheduleDraft | prettifyJSON'></pre>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="schedulerDatePickerMenu" class="datepickerMenu md-whiteframe-z1" ng-show="vm.showDatePicker">
-        <datetimepicker data-ng-model="vm.currentSelectedDate" data-on-set-time="vm.onTimeSet(newDate, oldDate)"></datetimepicker>
+        <div id="schedulerDatePickerMenu" class="datepickerMenu md-whiteframe-z1" ng-show="vm.showDatePicker">
+            <datetimepicker data-ng-model="vm.currentSelectedDate"
+                            data-on-set-time="vm.onTimeSet(newDate, oldDate)"></datetimepicker>
+        </div>
     </div>
 </div>

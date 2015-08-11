@@ -5,7 +5,7 @@
 
     function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http) {
 
-        var urlBase = SERVER_URL + '/katmonitor/api/v1';
+        var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
         api.connection = null;
         api.deferredMap = {};
@@ -49,9 +49,7 @@
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
-            if (api.connection === null) {
-                $log.error('No Sensors Connection Present for unsubscribing, ignoring command for pattern ' + pattern);
-            } else if (api.connection.readyState) {
+            if (api.connection && api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
@@ -166,8 +164,6 @@
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
-            } else {
-                $log.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 
@@ -186,13 +182,12 @@
         api.listResources = function () {
             var deferred = $q.defer();
             $http.get(urlBase + '/resource')
-                .success(function (result) {
-                    for (var i in result) {
-                        api.resources[result[i].name] = result[i];
+                .then(function (result) {
+                    for (var i in result.data) {
+                        api.resources[result.data[i].name] = result.data[i];
                     }
                     deferred.resolve(api.resources);
-                })
-                .error(function (result) {
+                }, function (result) {
                     deferred.reject(result);
                 });
             return deferred.promise;
@@ -201,22 +196,21 @@
         api.listResourceSensors = function (resourceName) {
             var deferred = $q.defer();
             $http.get(urlBase + '/resource/' + resourceName + '/sensors')
-                .success(function (result) {
+                .then(function (result) {
                     api.resources[resourceName].sensorsList = [];
-                    for (var i in result) {
+                    for (var i in result.data) {
                         api.resources[resourceName].sensorsList.push({
-                            name: result[i].name,
-                            python_identifier: result[i].python_identifier,
-                            description: result[i].description,
-                            value: result[i].value,
-                            timestamp: result[i].timestamp,
-                            received_timestamp: result[i].received_timestamp,
-                            status: result[i].status
+                            name: result.data[i].name,
+                            python_identifier: result.data[i].python_identifier,
+                            description: result.data[i].description,
+                            value: result.data[i].value,
+                            timestamp: result.data[i].timestamp,
+                            received_timestamp: result.data[i].received_timestamp,
+                            status: result.data[i].status
                         });
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);
-                })
-                .error(function (result) {
+                }, function (result) {
                     deferred.reject(result);
                 });
             return deferred.promise;

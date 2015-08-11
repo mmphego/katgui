@@ -24,12 +24,21 @@
             messageObj.severity = alarmValues[0];
             messageObj.priority = alarmValues[1];
             messageObj.name = messageName.replace('mon:kataware.alarm_', '');
-            messageObj.date = moment.utc(messageObj.timestamp, 'X').format('DD-MM-\'YY HH:mm:ss');
+            messageObj.date = moment.utc(messageObj.timestamp, 'X').format('DD-MM-YYYY HH:mm:ss');
+
+            var severity_value =
+                alarmValues[0] === 'critical'? 0 :
+                alarmValues[0] === 'error'? 1 :
+                alarmValues[0] === 'warn'? 2 :
+                alarmValues[0] === 'unknown'? 3 :
+                alarmValues[0] === 'nominal'? 4 : 5;
+            messageObj.severity_value = severity_value;
 
             var foundAlarm = _.findWhere(api.alarmsData, {name: messageObj.name});
             if (foundAlarm) {
                 foundAlarm.priority = messageObj.priority;
                 foundAlarm.severity = messageObj.severity;
+                foundAlarm.severity_value = severity_value;
                 foundAlarm.timestamp = messageObj.timestamp;
                 foundAlarm.date = messageObj.date;
                 foundAlarm.value = messageObj.value;

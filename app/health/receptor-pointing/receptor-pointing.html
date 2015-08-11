@@ -52,12 +52,13 @@
     </md-menu>
 
     <div flex layout="column" style="overflow: hidden">
-        <div layout="row" layout-align="center center" style="overflow: auto; height: 90px;"
+        <div layout="row" layout-align="center center" style="overflow: visible; height: 90px;"
              ng-show="vm.showReceptorStates">
             <div ng-repeat="receptor in vm.receptorsData | filter:{'skyPlot':false} track by $index"
                  class="{{receptor.name + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
                  layout="column" layout-align="center center" ng-click="vm.toggleHorizonMask(receptor)"
-                 title="{{'Click to toggle the horizon mask for ' + receptor.name}}">
+                 title="{{'Click to toggle the horizon mask for ' + receptor.name}}" style="overflow: visible"
+                ng-mouseenter="receptor.showDetails = true" ng-mouseleave="receptor.showDetails = false">
                 <span>
                     {{receptor.name}}
                 </span>
@@ -69,6 +70,22 @@
                       title="AP on Target"></span>
                 <span ng-show="receptor.showHorizonMask" class="fa fa-area-chart horizon-mask-showing"
                       title="Showing Horizon Mask"></span>
+                <div class="md-whiteframe-z3 receptor-pointing-tooltip-top" ng-show="receptor.showDetails"
+                     style="top: 68px; left: -105px; min-width: 268px"
+                     layout="column" layout-align="start">
+                    <span style="width: 100%; text-align: center"><b>{{receptor.name}}</b></span>
+                    <span>azim: <b>{{receptor['ap_actual_azim'].value | number:2}}</b>, elev: <b>{{receptor['ap_actual_elev'].value | number:2}}</b></span>
+                    <span>azim: <b>{{receptor['ap_requested_azim'].value | number:2}}</b>, elev: <b>{{receptor['ap_requested_elev'].value | number:2}}</b> (requested)</span>
+                    <span>ra: <b>{{receptor['pos_request_base_ra'].value | number:2}}</b>, dec: <b>{{receptor['pos_request_base_dec'].value | number:2}}</b> (requested)</span>
+                    <span>Delta sky: <b>{{receptor['pos_delta_sky'].value | number:2}}</b></span>
+                    <span>Delta azim: <b>{{receptor['pos_delta_azim'].value | number:2}}</b>, Delta elev: <b>{{receptor['pos_delta_elev'].value | number:2}}</b></span>
+                    <span>Target: <b>{{receptor['target'].value}}</b></span>
+                    <span>Status:</span>
+                    <span>Lock: <b>{{receptor['lock'].value}}</b></span>
+                    <span>Mode: <b>{{receptor['mode'].value}}</b></span>
+                    <span>Inhibited: <b>{{receptor['inhibited'].value}}</b></span>
+                    <span>Windstow Active: <b>{{receptor['windstow_active'].value}}</b></span>
+                </div>
             </div>
         </div>
         <receptor-pointing-equatorial ng-if="vm.useEquatorial" flex style="overflow: hidden"

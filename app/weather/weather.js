@@ -42,12 +42,11 @@
         vm.dataTimeWindow = new Date().getTime();
 
         ConfigService.getWindstowLimits()
-            .success(function (result) {
-                vm.windSpeedLimitLine = parseFloat(result.stow_speed_m_s);
-                vm.windGustLimitLine = parseFloat(result.stow_gust_speed_m_s);
+            .then(function (result) {
+                vm.windSpeedLimitLine = parseFloat(result.data.stow_speed_m_s);
+                vm.windGustLimitLine = parseFloat(result.data.stow_gust_speed_m_s);
                 vm.redrawWindChart([], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine], true);
-            })
-            .error(function(error) {
+            }, function(error) {
                 NotifyService.showSimpleDialog('Could not retrieve windstow limits from katconf_ws', error);
             });
 
@@ -109,20 +108,20 @@
                 if (!sensor.skipHistory) {
                     var katstoreSensorName = sensor.python_identifier.replace(/\./g, '_');
                     DataService.findSensor(katstoreSensorName, startDate, new Date().getTime(), 0, 'ms', 'json', vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
-                        .success(function (result) {
+                        .then(function (result) {
                             resourcesHistoriesReceived++;
                             var newData = [];
                             //pack the result in the way our chart needs it
                             //because the json we receive is not good enough for d3
-                            for (var attr in result) {
+                            for (var attr in result.data) {
                                 var name = attr.replace('anc_', '').replace('weather_', '').replace(/_/g, ' ');
-                                for (var i = 0; i < result[attr].length; i++) {
+                                for (var i = 0; i < result.data[attr].length; i++) {
                                     var newSensor = {
                                         name: name,
                                         Sensor: attr,
-                                        Timestamp: result[attr][i][0],
-                                        Value: result[attr][i][1],
-                                        timestamp: moment.utc(result[attr][i][0], 'X').format(DATETIME_FORMAT),
+                                        Timestamp: result.data[attr][i][0],
+                                        Value: result.data[attr][i][1],
+                                        timestamp: moment.utc(result.data[attr][i][0], 'X').format(DATETIME_FORMAT),
                                         color: sensor.color
                                     };
                                     if (sensor.python_identifier.indexOf('pressure') !== -1) {
@@ -153,8 +152,7 @@
                             if (resourcesHistoriesReceived >= vm.resourcesHistoriesCount) {
                                 deferred.resolve();
                             }
-                        })
-                        .error(function (error) {
+                        }, function (error) {
                             resourcesHistoriesReceived++;
                             if (resourcesHistoriesReceived >= vm.resourcesHistoriesCount) {
                                 deferred.resolve();
