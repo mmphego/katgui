@@ -252,7 +252,11 @@
             } else {
                 $log.error('Error logging return, server returned with:');
                 $log.error(result);
-                NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                if (result.err_msg) {
+                    NotifyService.showSimpleToast(result.err_msg);
+                } else {
+                    NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                }
                 $state.go('login');
             }
         }

@@ -30,9 +30,22 @@
             };
         });
 
-    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $log, NotifyService) {
+    function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $log, NotifyService,
+                        USER_ROLES) {
 
         var vm = this;
+        vm.canOperateAlarms = false;
+
+        vm.afterInit = function() {
+            if ($rootScope.currentUser) {
+                vm.canOperateAlarms = $rootScope.currentUser.req_role === USER_ROLES.operator ||
+                                      $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
+            } else {
+                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+            }
+        };
+
+        vm.afterInit();
 
         ConfigService.loadAggregateSensorDetail();
 
@@ -183,6 +196,9 @@
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
         $scope.$on('$destroy', function () {
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess();
+            }
             vm.unbindShortcuts('keydown');
         });
     }

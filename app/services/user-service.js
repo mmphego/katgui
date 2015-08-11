@@ -26,6 +26,8 @@
                         $log.error('Could not retrieve any users.');
                         def.reject();
                     }
+                }, function (error) {
+                    $log.error(error);
                 });
 
             return def.promise;
