@@ -81,7 +81,7 @@
                         $scope.title = 'Set VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
-                            $http.post(urlBase + '/presetset/');
+                            $http(createRequest('post', urlBase + '/presetset/'));
                             if (i < 10) {
                                 $scope.presetIDs.push('m00' + i);
                             }
@@ -93,9 +93,9 @@
                             $mdDialog.hide();
                         };
                         $scope.setPreset = function (preset) {
-                            $http.post(urlBase + '/presetset/' + preset)
+                            $http(createRequest('post', urlBase + '/presetset/' + preset)
                                 .success(requestSuccess)
-                                .error(requestError);
+                                .error(requestError));
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
@@ -138,9 +138,9 @@
                         };
                         $scope.gotoPreset = function (preset) {
                             vm.lastPreset = preset;
-                            $http.post(urlBase + '/presetgoto/' + preset)
+                            $http(createRequest('post', urlBase + '/presetgoto/' + preset)
                                 .success(requestSuccess)
-                                .error(requestError);
+                                .error(requestError));
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
@@ -195,15 +195,15 @@
         };
 
         vm.stopVDS = function () {
-            $http.post(urlBase + '/stop')
+            $http(createRequest('post', urlBase + '/stop')
                 .success(requestSuccess)
-                .error(requestError);
+                .error(requestError));
         };
 
         vm.vdsCommand = function (endpoint, args) {
-            $http.post(urlBase + '/' + endpoint + '/' + args)
+            $http(createRequest('post', urlBase + '/' + endpoint + '/' + args)
                 .success(requestSuccess)
-                .error(requestError);
+                .error(requestError));
         };
 
         function requestSuccess(result) {
@@ -280,6 +280,16 @@
                 vm.undbindLoginSuccess();
             }
         });
+
+        function createRequest(method, url) {
+            return {
+                method: method,
+                url: url,
+                headers: {
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
+                }
+            };
+        }
     }
 })();
 
