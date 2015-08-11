@@ -37,7 +37,10 @@
     "angular-mocks": "~1.4",
     "ngstorage": "~0.3",
     "sockjs": "~0.3.4",
-    "underscore": "~1.8"
+    "underscore": "~1.8",
+    "jspdf": "*",
+    "html2canvas": "*",
+    "jspdf-autotable": "*"
   },
   "resolutions": {
     "angular": ">= 1.4",
