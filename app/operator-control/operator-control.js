@@ -3,9 +3,10 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $interval, ReceptorStateService, ControlService, NotifyService) {
+    function OperatorControlCtrl($rootScope, $scope, $interval, $state, USER_ROLES, ReceptorStateService, ControlService, NotifyService) {
 
         var vm = this;
+
         vm.receptorsData = ReceptorStateService.receptorsData;
         vm.waitingForRequestResult = false;
 
@@ -52,6 +53,20 @@
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });
         };
+
+        vm.afterInit = function() {
+            if ($rootScope.currentUser) {
+                if ($rootScope.currentUser.req_role !== USER_ROLES.lead_operator &&
+                    $rootScope.currentUser.req_role !== USER_ROLES.operator) {
+                    $state.go('home');
+                }
+            } else {
+                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+            }
+        };
+
+        vm.afterInit();
+
         var stopInterval = $interval(function () {
             ReceptorStateService.updateReceptorDates();
         }, 1000);
@@ -59,6 +74,9 @@
         $scope.$on('$destroy', function () {
             if (!vm.connectInterval) {
                 $interval.cancel(vm.connectInterval);
+            }
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess();
             }
             $interval.cancel(stopInterval);
         });

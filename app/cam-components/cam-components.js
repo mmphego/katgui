@@ -4,7 +4,7 @@
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
     function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
-                               ControlService, NotifyService) {
+                               ControlService, NotifyService, $state) {
 
         var vm = this;
 
@@ -111,8 +111,6 @@
             ControlService.toggleKATCPMessageProxy(resource, newValue? 'enable' : 'disable');
         };
 
-        vm.connectListeners();
-
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
             var sensorNameList = strList[1].split('.');
@@ -154,6 +152,20 @@
             }
         };
 
+        vm.afterInit = function() {
+            if ($rootScope.currentUser) {
+                if ($rootScope.currentUser.req_role !== USER_ROLES.lead_operator) {
+                    $state.go('home');
+                } else {
+                    vm.connectListeners();
+                }
+            } else {
+                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+            }
+        };
+
+        vm.afterInit();
+
         $scope.$on('$destroy', function () {
             for (var key in SensorsService.resources) {
                 SensorsService.removeResourceListeners(key);
@@ -162,6 +174,9 @@
             unbindUpdate();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess();
+            }
         });
     }
 })();

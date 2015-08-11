@@ -4,7 +4,7 @@
         <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
                    ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true"
                     class="md-primary md-raised md-icon-button">
-            <span md-theme="white" class="fa fa-eye" ng-show="!showLegend" title="Show Legend"></span>
+            <span md-theme="white" class="fa fa-eye" ng-show="showLegend" title="Show Legend"></span>
             <span md-theme="white" class="fa fa-eye-slash" ng-show="!showLegend" title="Hide Legend"></span>
         </md-button>
         <div class="md-whiteframe-z3" layout="column" ng-show="showLegend" style="background: white; padding: 8px;">

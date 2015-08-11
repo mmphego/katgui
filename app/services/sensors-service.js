@@ -49,9 +49,7 @@
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
-            if (api.connection === null) {
-                $log.error('No Sensors Connection Present for unsubscribing, ignoring command for pattern ' + pattern);
-            } else if (api.connection.readyState) {
+            if (api.connection && api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
@@ -166,8 +164,6 @@
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
-            } else {
-                $log.error('Attempting to disconnect an already disconnected connection!');
             }
         };
 

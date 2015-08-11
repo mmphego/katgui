@@ -31,7 +31,7 @@
         </md-button>
     </div>
 
-    <div flex layout="row" layout-align="start" style="margin-top: 16px">
+    <div flex layout="row" layout-align="start" style="margin-top: 16px; max-height: 100%; min-height: 100%;">
 
         <div flex layout="column" style="overflow: auto; padding-left: 8px; margin-right: 8px">
             <div flex ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id'"

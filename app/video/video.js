@@ -6,9 +6,10 @@
         .controller('VideoCtrl', VideoCtrl);
 
     function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog, ControlService, SensorsService,
-                       SERVER_URL, NotifyService) {
+                       SERVER_URL, NotifyService, USER_ROLES) {
 
         var vm = this;
+
         var urlBase = SERVER_URL + '/katcontrol/vds';
         //todo set the image source from katconfig
         //not implemented in katconfig yet
@@ -80,7 +81,7 @@
                         $scope.title = 'Set VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
-                            $http.get(urlBase + '/presetset/')
+                            $http(createRequest('post', urlBase + '/presetset/'));
                             if (i < 10) {
                                 $scope.presetIDs.push('m00' + i);
                             }
@@ -92,9 +93,9 @@
                             $mdDialog.hide();
                         };
                         $scope.setPreset = function (preset) {
-                            $http.get(urlBase + '/presetset/' + preset)
+                            $http(createRequest('post', urlBase + '/presetset/' + preset)
                                 .success(requestSuccess)
-                                .error(requestError);
+                                .error(requestError));
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
@@ -137,9 +138,9 @@
                         };
                         $scope.gotoPreset = function (preset) {
                             vm.lastPreset = preset;
-                            $http.get(urlBase + '/presetgoto/' + preset)
+                            $http(createRequest('post', urlBase + '/presetgoto/' + preset)
                                 .success(requestSuccess)
-                                .error(requestError);
+                                .error(requestError));
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
@@ -194,15 +195,15 @@
         };
 
         vm.stopVDS = function () {
-            $http.get(urlBase + '/stop')
+            $http(createRequest('post', urlBase + '/stop')
                 .success(requestSuccess)
-                .error(requestError);
+                .error(requestError));
         };
 
         vm.vdsCommand = function (endpoint, args) {
-            $http.get(urlBase + '/' + endpoint + '/' + args)
+            $http(createRequest('post', urlBase + '/' + endpoint + '/' + args)
                 .success(requestSuccess)
-                .error(requestError);
+                .error(requestError));
         };
 
         function requestSuccess(result) {
@@ -250,7 +251,20 @@
             SensorsService.setSensorStrategy('anc', 'vds_*', 'event', 0, 0);
         };
 
-        vm.connectListeners();
+
+        vm.afterInit = function() {
+            if ($rootScope.currentUser) {
+                if ($rootScope.currentUser.req_role === USER_ROLES.lead_operator ||
+                    $rootScope.currentUser.req_role === USER_ROLES.operator) {
+                    vm.canOperateVDS = true;
+                    vm.connectListeners();
+                }
+            } else {
+                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+            }
+        };
+
+        vm.afterInit();
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
@@ -262,7 +276,20 @@
             unbindUpdate();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess();
+            }
         });
+
+        function createRequest(method, url) {
+            return {
+                method: method,
+                url: url,
+                headers: {
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
+                }
+            };
+        }
     }
 })();
 

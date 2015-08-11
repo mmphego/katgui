@@ -7,7 +7,7 @@
         </div>
     </div>
 
-    <div class="legend-popup" style="background: transparent;" layout="row" ng-init="transparentButton = true"
+    <div ng-if="vm.canOperateVDS" class="legend-popup" style="background: transparent;" layout="row" ng-init="transparentButton = true"
          ng-class="{'transparent-legend':transparentButton && !showControls}">
         <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showControls = true" ng-click="showControls = !showControls"
                    ng-mouseenter="transparentButton = false" ng-mouseleave="transparentButton = true" class="md-fab md-mini md-primary">
@@ -78,7 +78,7 @@
         </div>
     </div>
 
-    <md-button ng-disabled="!vm.sensorValues.vds_flood_lights_on" ng-click="vm.toggleFloodLights()" class="md-raised md-primary floodlights-button" md-theme="{{themePrimaryButtons}}">
+    <md-button ng-if="vm.canOperateVDS" ng-disabled="!vm.sensorValues.vds_flood_lights_on" ng-click="vm.toggleFloodLights()" class="md-raised md-primary floodlights-button" md-theme="{{themePrimaryButtons}}">
         Switch Floodlights {{!vm.sensorValues.vds_flood_lights_on.value? 'on' : 'off'}}
     </md-button>
 </div>

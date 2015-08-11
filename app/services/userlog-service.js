@@ -130,44 +130,47 @@
             return defer.promise;
         };
 
-        api.uploadFileToUrl = function(file, ulog_id){
+        api.uploadFileToUrl = function (file, ulog_id) {
             var fd = new FormData();
             for (var i = 0; i < file.length; i++) {
                 fd.append('filedata[]', file[i]);
             }
-            $http.post(api.urlBase + '/logs/' + ulog_id + '/attachments', fd, {
+            $http(createRequest('post', api.urlBase + '/logs/' + ulog_id + '/attachments', fd, {
                 transformRequest: angular.identity,
-                headers: {'Content-Type': undefined,
-                          'Authorization': 'CustomJWT ' + $rootScope.jwt}
+                headers: {
+                    'Content-Type': undefined,
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
+                }
             })
-            .success(function(){
-                $log.info("Attachments uploaded!");
-            })
-            .error(function(){
-                $log.error(api.urlBase + '/log/attach/' + ulog_id);
-            });
+                .success(function () {
+                    $log.info("Attachments uploaded!");
+                })
+                .error(function () {
+                    $log.error(api.urlBase + '/log/attach/' + ulog_id);
+                }));
         };
 
-        api.getFileFromUrl = function(file_name, file_alias, ulog_id) {
-            $http.get(api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
-                headers: {'Content-Type': 'application/json',
-                          'Authorization': 'CustomJWT ' + $rootScope.jwt
+        api.getFileFromUrl = function (file_name, file_alias, ulog_id) {
+            $http(createRequest('get', api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
                 },
-                responseType:'blob'
+                responseType: 'blob'
             })
-            .success(function(result){
-                var blob = result;
-                var url = $window.URL || $window.webkitURL;
-                var file_url = url.createObjectURL(blob);
-                var downloadLink = angular.element('<a></a>');
-                downloadLink.attr('href',file_url);
-                downloadLink.attr('download', file_alias);
-                downloadLink[0].click();
-                url.revokeObjectURL(file_url);
-            })
-            .error(function(){
-                $log.error(api.urlBase + '/logs/get/attach');
-            });
+                .success(function (result) {
+                    var blob = result;
+                    var url = $window.URL || $window.webkitURL;
+                    var file_url = url.createObjectURL(blob);
+                    var downloadLink = angular.element('<a></a>');
+                    downloadLink.attr('href', file_url);
+                    downloadLink.attr('download', file_alias);
+                    downloadLink[0].click();
+                    url.revokeObjectURL(file_url);
+                })
+                .error(function () {
+                    $log.error(api.urlBase + '/logs/get/attach');
+                }));
         };
 
         api.addUserLog = function (ulog) {
