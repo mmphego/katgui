@@ -75,13 +75,13 @@
         };
 
         api.setSchedulePriority = function (id_code, priority) {
-            $http(createRequest('post', urlBase + '/sb/' + id_code + '/priority/' + priority)
+            $http(createRequest('post', urlBase + '/sb/' + id_code + '/priority/' + priority))
                 .then(function (result) {
                     NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
                     $log.info(result);
                 }, function (error) {
                     $log.error(error);
-                }));
+                });
         };
 
         api.verifyScheduleBlock = function (sub_nr, id_code) {
@@ -134,7 +134,7 @@
 
         api.getScheduleBlocks = function () {
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
-            $http(createRequest('get', urlBase + '/sb')
+            $http(createRequest('get', urlBase + '/sb'))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
@@ -144,12 +144,12 @@
                     }
                 }, function (error) {
                     $log.error(error);
-                }));
+                });
         };
 
         api.getScheduledScheduleBlocks = function () {
             api.scheduleData.splice(0, api.scheduleData.length);
-            $http(createRequest('get', urlBase + '/sb/scheduled')
+            $http(createRequest('get', urlBase + '/sb/scheduled'))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
@@ -157,12 +157,12 @@
                     }
                 }, function (error) {
                     $log.error(error);
-                }));
+                });
         };
 
         api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
-            $http(createRequest('get', urlBase + '/sb/completed/' + sub_nr + '/' + max_nr)
+            $http(createRequest('get', urlBase + '/sb/completed/' + sub_nr + '/' + max_nr))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
@@ -170,7 +170,7 @@
                     }
                 }, function (error) {
                     $log.error(error);
-                }));
+                });
         };
 
         api.setSchedulerModeForSubarray = function (sub_nr, mode) {
@@ -242,7 +242,7 @@
 
         api.listConfigLabels = function () {
             api.configLabels.splice(0, api.configLabels.length);
-            $http(createRequest('get', urlBase + '/config-labels')
+            $http(createRequest('get', urlBase + '/config-labels'))
                 .then(function (result) {
                     result.data.forEach(function (item) {
                         var configLabel = JSON.parse(item);
@@ -251,7 +251,7 @@
                     });
                 }, function (error) {
                     $log.error(error);
-                }));
+                });
         };
 
         api.setConfigLabel = function (sub_nr, config_label) {
