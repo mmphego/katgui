@@ -55,7 +55,7 @@
         };
 
         api.listResourceMaintenanceDevices = function (resource) {
-            return $http(createRequest('get',  + '/resource/' + resource + '/maintenance-device-list'));
+            return $http(createRequest('get',  urlBase + '/resource/' + resource + '/maintenance-device-list'));
         };
 
         api.deleteScheduleDraft = function (id) {
@@ -121,7 +121,7 @@
         };
 
         api.activateSubarray = function (sub_nr) {
-            return api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/activate'), true));
+            return $http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/activate'), true);
         };
 
         api.setSubarrayMaintenance = function (sub_nr, maintenance) {

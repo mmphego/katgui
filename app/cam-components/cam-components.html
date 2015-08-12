@@ -62,9 +62,13 @@
             </span>
     </md-toolbar>
 
-    <div class="md-whiteframe-z1" md-theme="{{themePrimaryButtons}}" style="overflow: auto; margin-bottom: 8px;">
-        <div ng-repeat="key in $root.objectKeys(vm.resourcesNames) | orderBy:key track by key"
-             class="process-control-container">
+    <div class="md-whiteframe-z1" style="overflow: auto; margin-bottom: 8px;">
+        <div layout="column" ng-repeat="node in vm.nodes | orderBy:node track by $index" style="margin-top: 4px">
+            <md-toolbar class="md-toolbar-tools-small md-whiteframe-z1">
+                <span flex><b>{{node}}</b></span>
+            </md-toolbar>
+            <div ng-repeat="key in $root.objectKeys(vm.resourcesNames) | orderBy:key track by key"
+             class="process-control-container" ng-if="vm.resourcesNames[key].node === node">
             <div flex role="heading"
                  ng-init="vm.resourcesNames[key].showDetails = false"
                  class="process-control-bg-transition md-whiteframe-z1"
@@ -133,6 +137,7 @@
                     <div style="display: inline-block; margin-left: 4px;"><span><b>{{sensor.value}}</b></span></div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </div>

@@ -179,7 +179,7 @@ angular.module('material.core')
     });
 
 function regexSearchFilter() {
-    return function (input, fields, regex) {
+    return function (input, fields, regex, objDict) {
         if (regex) {
             var pattern;
             try {
@@ -189,8 +189,12 @@ function regexSearchFilter() {
                 return input;
             }
 
+            if (objDict) {
+                input = objDict;
+            }
+
             var inputArray = [];
-            if (angular.isObject(input) === "object") {
+            if (angular.isObject(input)) {
                 for (var key in input) {
                     input[key]._key = key;
                     inputArray.push(input[key]);
@@ -206,7 +210,10 @@ function regexSearchFilter() {
             for (var i = 0; i < inputArray.length; i++) {
                 for (var idx in fields) {
                     if (pattern.test(inputArray[i][fields[idx].value])) {
-                        if (angular.isObject(out) === "object") {
+                        if (objDict) {
+                            out.push(inputArray[i]._key);
+                        }
+                        else if (angular.isObject(out)) {
                             out[inputArray[i]._key] = inputArray[i];
                         } else {
                             out.push(inputArray[i]);

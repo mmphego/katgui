@@ -3,7 +3,8 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog, $stateParams, UserService) {
+    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog, $stateParams, UserService,
+                                   NotifyService) {
 
         var vm = this;
 
@@ -74,7 +75,11 @@
         vm.activateSubarray = function (subarray) {
             subarray.showProgress = true;
             ObsSchedService.activateSubarray(subarray.id)
-                .then(function() {
+                .then(function (result) {
+                    NotifyService.showSimpleToast(result.data.result);
+                    subarray.showProgress = false;
+                }, function (error) {
+                    NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
                     subarray.showProgress = false;
                 });
         };
