@@ -186,7 +186,7 @@
                     </md-toolbar>
 
                     <div flex md-theme="{{themePrimaryButtons}}" class="schedule-draft-data-list md-whiteframe-z1"
-                         style="padding: 0; direction: rtl; max-height: 300px" ng-class="{'maintenance-bg':subarray.maintenance}">
+                         style="padding: 0; overflow: auto; min-height: 200px; max-height: 300px" ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by item.id"
                              ng-click="vm.setSelectedSchedule(item);" style="padding: 0 4px"
                              ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
