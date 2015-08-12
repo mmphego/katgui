@@ -21,6 +21,9 @@
                               ng-class="{'fa-caret-up': vm.orderBy.value === 'userlog_type' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'userlog_type' && vm.orderBy.reverse}"
                               style="margin-right: 4px;"></span>
                     </span>
+                    <span class="subheader-text" style="width: 150px">
+                        <span>Log Timestamp</span>
+                    </span>
                     <span class="subheader-text" style="width: 185px" ng-click="vm.setOrderBy('start_time')">
                         <span>Start Time (UTC)</span>
                         <span class="fa"
@@ -45,6 +48,7 @@
             <div ng-repeat="e_ulog in vm.my_userlogs | regexSearch:vm.orderByFields:vm.q | orderBy:vm.orderBy.value:vm.orderBy.reverse"
                           flex layout="row" layout-align="start center" class="user-log-row">
                 <span style="width: 120px">{{e_ulog.userlog_type}}</span>
+                <span style="width: 150px">{{e_ulog.timestamp}}</span>
                 <span style="width: 185px" ng-style="{'background': ulog.scolor}">
                     {{e_ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
@@ -129,6 +133,8 @@
                         <md-list-item>
                             <div class="md-list-item-text" style="font-size: 18px; font-weight: bold" layout="row" flex>
                                 <span style="width: 130px">Userlog Type</span>
+                                <span style="width: 150px">Log Timestamp</span>
+                                <span style="width: 130px">User</span>
                                 <span style="width: 150px">Event Started</span>
                                 <span style="width: 150px">Event Ended</span>
                                 <span style="width: 150px">Userlog Content</span>
@@ -139,6 +145,8 @@
                             <div class="md-list-item-text" style="font-size:small" flex
                                  layout="row">
                                 <span style="width: 130px">{{rlog.userlog_type}}</span>
+                                <span style="width: 150px">{{rlog.timestamp}}</span>
+                                <span style="width: 130px">{{rlog.name}}</span>
                                 <span style="width: 150px">{{rlog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 <span style="width: 150px">{{rlog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 <span flex>{{rlog.userlog_content}}</span>
