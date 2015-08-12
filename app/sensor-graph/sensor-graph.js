@@ -182,7 +182,7 @@
                 vm.waitingForSearchResult = true;
                 DataService.findSensorName(searchStr, vm.sensorType)
                     .then(function (result) {
-                        result.forEach(function (sensor) {
+                        result.data.forEach(function (sensor) {
                             sensor.type = vm.sensorType;
                             vm.sensorSearchNames.push(sensor);
                         });
@@ -217,7 +217,7 @@
                     .then(function (result) {
                         //vm.redrawChart(null, vm.showGridLines, result.params);
                         vm.clearData();
-                        vm.findSensorData(result, startDate, endDate, result.params);
+                        vm.findSensorData(result, startDate, endDate, result.data.params);
                     }, function (error) {
                         $log.error(error);
                         NotifyService.showSimpleDialog('Error Finding Sensor Info', 'There was an error plotting the discrete sensor data, is the server running?');
@@ -225,7 +225,7 @@
             } else {
                 DataService.sensorInfo(sensor.name)
                     .then(function (result) {
-                        vm.findSensorData(result, startDate, endDate);
+                        vm.findSensorData(result.data, startDate, endDate);
                         if (vm.liveData) {
                             vm.connectLiveFeed(result);
                         }
@@ -256,12 +256,12 @@
                     var newData = [];
                     //pack the result in the way our chart needs it
                     //because the json we receive is not good enough for d3
-                    for (var attr in result) {
-                        for (var i = 0; i < result[attr].length; i++) {
+                    for (var attr in result.data) {
+                        for (var i = 0; i < result.data[attr].length; i++) {
                             newData.push({
                                 Sensor: attr,
-                                Timestamp: result[attr][i][0],
-                                Value: result[attr][i][1],
+                                Timestamp: result.data[attr][i][0],
+                                Value: result.data[attr][i][1],
                                 Details: sensor
                             });
                         }
@@ -309,12 +309,12 @@
                     var newData = [];
                     //pack the result in the way our chart needs it
                     //because the json we receive is not good enough
-                    for (var attr in result) {
-                        for (var i = 0; i < result[attr].length; i++) {
+                    for (var attr in result.data) {
+                        for (var i = 0; i < result.data[attr].length; i++) {
                             newData.push({
                                 Sensor: attr,
-                                Timestamp: result[attr][i].sample_ts,
-                                Value: result[attr][i].value
+                                Timestamp: result.data[attr][i].sample_ts,
+                                Value: result.data[attr][i].value
                             });
                         }
                         if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensorName})) || vm.liveData) {
