@@ -10,6 +10,7 @@
         api.userlogs = [];
         api.my_userlogs = [];
         api.report_userlogs = [];
+        api.activity_logs = [];
         api.focus_ulog = {};
         api.tags = [];
         api.taxonomies = [];
@@ -123,6 +124,24 @@
                     defer.resolve();
                 }, function (result) {
                     NotifyService.showSimpleDialog("Could not retrieve any userlogs", result);
+                    defer.reject();
+                });
+            return defer.promise;
+        };
+
+        api.queryActivityLogs = function (query) {
+            var query_uri = encodeURI(query);
+            $log.info("Activity Log Query uri: " + query_uri);
+            var defer = $q.defer();
+            $http(createRequest('get', api.urlBase + '/activity' + query_uri))
+                .then(function (result) {
+                    api.activity_logs.splice(0, api.activity_logs.length);
+                    result.data.forEach(function (activitylog) {
+                        api.activity_logs.push(activitylog);
+                    });
+                    defer.resolve();
+                }, function (result) {
+                    NotifyService.showSimpleDialog("Could not retrieve any activity logs", result);
                     defer.reject();
                 });
             return defer.promise;

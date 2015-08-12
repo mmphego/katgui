@@ -118,6 +118,9 @@
                             <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time)"
                                        style="margin-right: 0;">Export PDF
                             </md-button>
+                            <md-checkbox ng-model="vm.include_activity_logs" aria-label="Include Activity Logs">
+                                Include Activity logs in Export?
+                            </md-checkbox>
                         </div>
                     </md-toolbar>
                 </div>
