@@ -70,6 +70,8 @@
             '<thead>' +
                 '<tr>' +
                     '<th>Userlog Type</th>' +
+                    '<th>Log Timestamp</th>' +
+                    '<th>User</th>' +
                     '<th>Event Started</th>' +
                     '<th>Event Ended</th>' +
                     '<th>Userlog Content</th>' +
@@ -78,6 +80,8 @@
             for (var ilog = 0; ilog < vm.report_userlogs.length; ilog++) {
                 report_markup += '<tr>' +
                     '<td>' + vm.report_userlogs[ilog].userlog_type + '</td>' +
+                    '<td>' + vm.report_userlogs[ilog].timestamp + '</td>' +
+                    '<td>' + vm.report_userlogs[ilog].name + '</td>' +
                     '<td>' + vm.report_userlogs[ilog].start_time + '</td>' +
                     '<td>' + vm.report_userlogs[ilog].end_time + '</td>' +
                     '<td>' + vm.report_userlogs[ilog].userlog_content + '</td>' +
