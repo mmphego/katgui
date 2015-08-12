@@ -73,7 +73,7 @@
 
         vm.initSensors = function () {
             if (vm.resourcesNames.length === 0) {
-                vm.nodes = Object.keys(ConfigService.systemConfig.nodes);
+                vm.nodes = ConfigService.resourceGroups;
                 SensorsService.listResources()
                     .then(function (result) {
                         for (var key in result) {

@@ -184,10 +184,14 @@
             $http.get(urlBase + '/resource')
                 .then(function (result) {
                     for (var i in result.data) {
-                        for (var node in ConfigService.systemConfig.nodes) {
-                            var processList = Object.keys(ConfigService.systemConfig[node]);
+                        for (var node in ConfigService.systemConfig['katconn:resources']) {
+                            var processList = ConfigService.systemConfig['katconn:resources'][node];
                             if (processList.indexOf(result.data[i].name) > -1) {
-                                result.data[i].node = node;
+                                var group = 'Components';
+                                if (node === 'single_ctl') {
+                                    group = 'Proxies';
+                                }
+                                result.data[i].node = group;
                                 break;
                             }
                         }
