@@ -115,10 +115,13 @@
                             <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event, vm.blank_query)"
                                        style="margin-right: 0;">Generate Report
                             </md-button>
+                            <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time)"
+                                       style="margin-right: 0;">Export PDF
+                            </md-button>
                         </div>
                     </md-toolbar>
                 </div>
-                <div flex layout="column" style="width:100%" ng-show="vm.report_userlogs.length > 0">
+                <div id="printarea" flex layout="column" style="width:100%" ng-show="vm.report_userlogs.length > 0">
                     <md-list>
                         <md-list-item>
                             <div class="md-list-item-text" style="font-size: 18px; font-weight: bold" layout="row" flex>
