@@ -55,7 +55,7 @@
         };
 
         api.listResourceMaintenanceDevices = function (resource) {
-            return $http(createRequest('get',  + '/resource/' + resource + '/maintenance-device-list'));
+            return $http(createRequest('get',  urlBase + '/resource/' + resource + '/maintenance-device-list'));
         };
 
         api.deleteScheduleDraft = function (id) {
