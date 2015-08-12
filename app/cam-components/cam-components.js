@@ -4,7 +4,7 @@
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
     function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
-                               ControlService, NotifyService, $state) {
+                               ControlService, NotifyService, $state, USER_ROLES) {
 
         var vm = this;
 

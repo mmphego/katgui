@@ -4,7 +4,7 @@
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
     function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
-                                ControlService, DATETIME_FORMAT, NotifyService, $state) {
+                                ControlService, DATETIME_FORMAT, NotifyService, $state, USER_ROLES) {
 
         var vm = this;
 
