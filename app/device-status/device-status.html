@@ -8,9 +8,8 @@
                              md-theme="{{themePrimaryButtons}}" style="font-size: 16px;">
                     Hide Nominal Sensors
                 </md-checkbox>
-                <!--todo implement search field-->
-                <!--<input class="fade-in search-input-box" type="search"-->
-                       <!--ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Sensors..."/>-->
+                <input class="fade-in search-input-box" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Sensors..."/>
             </div>
 
             <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
@@ -45,8 +44,7 @@
             </div>
         </md-toolbar>
         <div flex style="margin-bottom: 16px; padding: 8px;" class="md-whiteframe-z1">
-            <!--todo implement search field-->
-            <div ng-repeat="key in vm.sortedSensorNames track by $index" layout="row"
+            <div ng-repeat="key in vm.sortedSensorNames | regexSearch:vm.sensorsOrderByFields:vm.q track by $index" layout="row"
                  ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[key].status !== 'nominal'">
                 <span class="resource-sensor-name" style="min-width: 350px;max-width: 350px;">{{vm.sensorValues[key].name}}</span>
                 <span class="resource-sensor-status-item" ng-class="vm.sensorClass(vm.sensorValues[key].status)">{{vm.sensorValues[key].status}}</span>

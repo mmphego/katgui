@@ -92,8 +92,8 @@
                             $mdDialog.hide();
                         };
                         $scope.setPreset = function (preset) {
-                            $http(createRequest('post', urlBase + '/presetset/' + preset)
-                                .then(requestSuccess, requestError));
+                            $http(createRequest('post', urlBase + '/presetset/' + preset))
+                                .then(requestSuccess, requestError);
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
@@ -192,13 +192,13 @@
         };
 
         vm.stopVDS = function () {
-            $http(createRequest('post', urlBase + '/stop')
-                .then(requestSuccess, requestError));
+            $http(createRequest('post', urlBase + '/stop'))
+                .then(requestSuccess, requestError);
         };
 
         vm.vdsCommand = function (endpoint, args) {
-            $http(createRequest('post', urlBase + '/' + endpoint + '/' + args)
-                .then(requestSuccess, requestError));
+            $http(createRequest('post', urlBase + '/' + endpoint + '/' + args))
+                .then(requestSuccess, requestError);
         };
 
         function requestSuccess(result) {
