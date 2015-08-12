@@ -139,12 +139,12 @@
                     'Content-Type': undefined,
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
-            })
+            }))
                 .then(function () {
                     $log.info("Attachments uploaded!");
                 }, function () {
                     $log.error(api.urlBase + '/log/attach/' + ulog_id);
-                }));
+                });
         };
 
         api.getFileFromUrl = function (file_name, file_alias, ulog_id) {
@@ -154,7 +154,7 @@
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 },
                 responseType: 'blob'
-            })
+            }))
                 .then(function (result) {
                     var blob = result.data;
                     var url = $window.URL || $window.webkitURL;
@@ -166,7 +166,7 @@
                     url.revokeObjectURL(file_url);
                 }, function () {
                     $log.error(api.urlBase + '/logs/get/attach');
-                }));
+                });
         };
 
         api.addUserLog = function (ulog) {
