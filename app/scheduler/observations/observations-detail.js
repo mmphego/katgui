@@ -3,7 +3,8 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval) {
+    function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval,
+                                        NotifyService) {
 
         var vm = this;
 
@@ -118,7 +119,12 @@
         };
 
         vm.activateSubarray = function () {
-            ObsSchedService.activateSubarray(vm.subarray_id);
+            ObsSchedService.activateSubarray(vm.subarray_id)
+                .then(function (result) {
+                    NotifyService.showSimpleToast(result.data.result);
+                }, function (error) {
+                    NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
+                });
         };
 
         vm.isResourceInMaintenance = function (resource) {
@@ -170,8 +176,7 @@
                             ObsSchedService.setSchedulePriority(sb.id_code, priority);
                         };
                     },
-                    template:
-                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                    template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 8px;">{{::title}}</span>' +
