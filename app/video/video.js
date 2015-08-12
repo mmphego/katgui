@@ -136,8 +136,8 @@
                         };
                         $scope.gotoPreset = function (preset) {
                             vm.lastPreset = preset;
-                            $http(createRequest('post', urlBase + '/presetgoto/' + preset)
-                                .then(requestSuccess, requestError));
+                            $http(createRequest('post', urlBase + '/presetgoto/' + preset))
+                                .then(requestSuccess, requestError);
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
