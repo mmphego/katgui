@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, DATETIME_FORMAT, NotifyService) {
+    function SbDraftsCtrl($scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, NotifyService) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;
@@ -47,7 +47,7 @@
                     item.isDirty = false;
                     item.editing = false;
                 }, function (result) {
-                    NotifyService.showSimpleDialog('Error Saving SB ' + item.id_code + '.', result);
+                    NotifyService.showPreDialog('Error Saving SB ' + item.id_code, result.data);
                 });
         };
 
@@ -70,7 +70,7 @@
                 .then(function (result) {
                     $log.info(result);
                 }, function (result) {
-                    NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
+                    NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code, result.data);
                 });
         };
 
@@ -87,17 +87,16 @@
         };
 
         vm.onTimeSet = function (newDate) {
-            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format(DATETIME_FORMAT);
+            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY-MM-DD HH:mm:ss');
             $scope.filteredDraftItems[vm.currentRowDatePickerIndex].isDirty = true;
             vm.showDatePicker = false;
             vm.currentSelectedDate = moment.utc(newDate);
             vm.currentRowDatePickerIndex = -1;
         };
 
-        vm.openDatePicker = function (item, $event) {
-            var rowIndex = $scope.filteredDraftItems.indexOf(item);
-            //TODO keyboard shortcut like escape to close datepicker
-            if (vm.currentRowDatePickerIndex !== rowIndex) {
+        vm.openDatePicker = function (item, $event, $index) {
+
+            if (vm.currentRowDatePickerIndex !== $index) {
                 vm.setSelectedScheduleDraft(item, true);
                 var existingVal = item.desired_start_time;
                 if (existingVal && existingVal.length > 0) {
@@ -110,7 +109,7 @@
                     top: rect.top + offset.y + 'px'
                 };
                 angular.element(document.getElementById('schedulerDatePickerMenu')).css(overLayCSS);
-                vm.currentRowDatePickerIndex = $scope.filteredDraftItems.indexOf(vm.scheduleDraftData[rowIndex]);
+                vm.currentRowDatePickerIndex = $index;
                 vm.showDatePicker = true;
             } else {
                 //the same row's button was clicked, so close the popup
@@ -120,7 +119,7 @@
         };
 
         vm.validateInputDate = function (item) {
-            var d = moment(item.desired_start_time, DATETIME_FORMAT);
+            var d = moment(item.desired_start_time, 'YYYY-MM-DD HH:mm:ss');
             item.hasValidInput = d.isValid();
             return d.isValid();
         };

@@ -12,6 +12,7 @@
         api.KATObsPortalURL = null;
         api.systemConfig = {};
         api.aggregateSensorDetail = null;
+        api.resourceGroups = ['Components', 'Proxies'];
 
         api.loadKATObsPortalURL = function () {
             $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))

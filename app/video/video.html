@@ -78,7 +78,11 @@
         </div>
     </div>
 
-    <md-button ng-if="vm.canOperateVDS" ng-disabled="!vm.sensorValues.vds_flood_lights_on" ng-click="vm.toggleFloodLights()" class="md-raised md-primary floodlights-button" md-theme="{{themePrimaryButtons}}">
-        Switch Floodlights {{!vm.sensorValues.vds_flood_lights_on.value? 'on' : 'off'}}
-    </md-button>
+    <div layout="row" layout-align="start center" class="floodlights-button" md-theme="{{themePrimaryButtons}}">
+        <span>Floodlights {{vm.sensorValues.vds_flood_lights_on.value? 'on' : 'off'}}</span>
+        <md-switch ng-disabled="!vm.sensorValues.vds_flood_lights_on" ng-model="vm.sensorValues.vds_flood_lights_on.value"
+                   ng-click="vm.toggleFloodLights()">
+        </md-switch>
+    </div>
+
 </div>

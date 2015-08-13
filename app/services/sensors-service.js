@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http, ConfigService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -184,6 +184,17 @@
             $http.get(urlBase + '/resource')
                 .then(function (result) {
                     for (var i in result.data) {
+                        for (var node in ConfigService.systemConfig['katconn:resources']) {
+                            var processList = ConfigService.systemConfig['katconn:resources'][node];
+                            if (processList.indexOf(result.data[i].name) > -1) {
+                                var group = 'Components';
+                                if (node === 'single_ctl') {
+                                    group = 'Proxies';
+                                }
+                                result.data[i].node = group;
+                                break;
+                            }
+                        }
                         api.resources[result.data[i].name] = result.data[i];
                     }
                     deferred.resolve(api.resources);

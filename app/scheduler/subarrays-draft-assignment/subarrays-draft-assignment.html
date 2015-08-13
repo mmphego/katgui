@@ -34,9 +34,10 @@
     <div flex layout="row" layout-align="start" style="margin-top: 16px; max-height: 100%; min-height: 100%;">
 
         <div flex layout="column" style="overflow: auto; padding-left: 8px; margin-right: 8px">
-            <div flex ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id'"
-                class="subarray-container" layout="row" layout-align="start"
-                md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
+            <div flex
+                 ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id'"
+                 class="subarray-container" layout="row" layout-align="start"
+                 md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
 
                 <div layout="column" flex>
                     <md-toolbar
@@ -50,12 +51,17 @@
                             <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
                         </span>
                         <span flex></span>
-                        <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 7px; left: 0; right: 0; font-size: 12px">
+
+                        <div layout="row" layout-align="center center"
+                             style="position: absolute; padding: 0; top: 7px; left: 0; right: 0; font-size: 12px">
                             <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
-                            <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ? subarray.band : 'None'}}</b></span>
-                            <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product ? subarray.product : 'None'}}</b></span>
+                            <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ?
+                                subarray.band : 'None'}}</b></span>
+                            <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product
+                                ? subarray.product : 'None'}}</b></span>
                             <span ng-show="subarray.state === 'active' || subarray.config_label"
-                                  title="Config Label"><i>Config Label: </i><b>{{subarray.config_label ? subarray.config_label : 'None'}}</b></span>
+                                  title="Config Label"><i>Config Label: </i><b>{{subarray.config_label ?
+                                subarray.config_label : 'None'}}</b></span>
                         </div>
 
                         <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
@@ -102,15 +108,17 @@
                         </span>
                         </div>
                     </md-toolbar>
-                    <div md-theme="{{themePrimary}}" flex class="schedule-draft-data-list md-whiteframe-z1"
-                         ng-class="{'maintenance-bg':subarray.maintenance}">
+                    <md-virtual-repeat-container md-theme="{{themePrimary}}" flex
+                                                 class="schedule-draft-data-list md-whiteframe-z1"
+                                                 ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div
-                            ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} track by item.id"
+                            md-virtual-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'}"
                             style="padding: 0 4px" flex layout="row" layout-align="start center"
                             ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                             ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}"
-                            class="schedule-draft-item" layout="column">
-                            <md-progress-linear ng-if="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
+                            class="schedule-draft-item" layout="column" ng-show="item">
+                            <md-progress-linear ng-if="item.verification_state === 'VERIFYING'"
+                                                class="md-primary progress-bar-fill"
                                                 md-mode="indeterminate"
                                                 style="position: absolute; left: 0; right: 0;">
                             </md-progress-linear>
@@ -156,12 +164,13 @@
                                 </md-menu-content>
                             </md-menu>
                         </div>
-                    </div>
+                    </md-virtual-repeat-container>
 
                     <md-toolbar ng-class="{'md-hue-2': subarray.state !== 'inactive'}" style="margin-top: 8px"
                                 class="md-whiteframe-z1 md-toolbar-tools-medium"
                                 layout="row" layout-align="center center" title="{{subarray.description}}">
                         <span flex style="margin-top: -5px;">Observations</span>
+
                         <div class="unselectable list-subheader-title" layout="row" layout-align="start center"
                              style="position: absolute; right: 0; bottom: 0; padding: 0; height: 12px">
                             <span style="width: 125px; padding-left: 8px" class="subheader-text">
@@ -185,55 +194,72 @@
                         </div>
                     </md-toolbar>
 
-                    <div flex md-theme="{{themePrimaryButtons}}" class="schedule-draft-data-list md-whiteframe-z1"
-                         style="padding: 0; direction: rtl; max-height: 300px" ng-class="{'maintenance-bg':subarray.maintenance}">
-                        <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by item.id"
-                             ng-click="vm.setSelectedSchedule(item);" style="padding: 0 4px"
-                             ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
-                             class="schedule-draft-item" layout="row" layout-align="start center">
+                    <md-virtual-repeat-container flex md-theme="{{themePrimaryButtons}}" class="schedule-draft-data-list md-whiteframe-z1"
+                         style="padding: 0; overflow: auto; min-height: 200px; max-height: 300px"
+                         ng-class="{'maintenance-bg':subarray.maintenance}">
+                        <div
+                            md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id})"
+                            ng-click="vm.setSelectedSchedule(item);" style="padding: 0 4px"
+                            ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
+                            class="schedule-draft-item" layout="row" layout-align="start center" ng-show="item">
 
-                            <md-progress-linear md-theme="green" ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
-                                                md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
+                            <md-progress-linear md-theme="green" ng-if="item.state === 'ACTIVE'"
+                                                class="md-primary progress-bar-fill"
+                                                md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}"
+                                                value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; opacity: 0.8;">
                             </md-progress-linear>
                             <div layout="column" layout-align="start" style="width: 120px">
-                                <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                      style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
+                                <span
+                                    ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
+                                    style="font-size: 14px; font-weight: bold"
+                                    ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}
                                 </span>
                                 <span><i>{{item.owner}}</i></span>
                             </div>
-                            <span flex style="overflow: hidden; text-overflow: ellipsis;" title="{{::item.description}}">{{::item.description}}</span>
+                            <span flex style="overflow: hidden; text-overflow: ellipsis;"
+                                  title="{{::item.description}}">{{::item.description}}</span>
 
                             <span style="width: 150px">{{item.verification_state}}</span>
                             <span style="width: 75px"
                                   ng-class="{'green-color': item.ready, 'red-color': !item.ready}">{{item.ready? 'READY' : 'NOT READY'}}</span>
-                            <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                  style="text-transform: uppercase; width: 105px">{{item.type}}</span>
+                            <span
+                                ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
+                                style="text-transform: uppercase; width: 105px">{{item.type}}</span>
                             <span style="width: 140px;">{{item.desired_start_time}}</span>
                             <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}">
-                                <md-button class="md-icon-button inline-action-button" ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                                <md-button class="md-icon-button inline-action-button"
+                                           ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
                                            style="margin: 0">
                                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
                                     <md-menu-item>
-                                        <md-button ng-click="vm.viewSBTasklog(item, 'progress')" title="View Progress in a New Tab">View Progress</md-button>
+                                        <md-button ng-click="vm.viewSBTasklog(item, 'progress')"
+                                                   title="View Progress in a New Tab">View Progress
+                                        </md-button>
                                     </md-menu-item>
                                     <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION'">
-                                        <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify Schedule</md-button>
+                                        <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify
+                                            Schedule
+                                        </md-button>
                                     </md-menu-item>
                                     <md-menu-item ng-if="item.loadMenuContents">
-                                        <md-button ng-click="vm.moveScheduleRowToDraft(item)" title="Move Schedule Block to Draft">Move to Draft</md-button>
+                                        <md-button ng-click="vm.moveScheduleRowToDraft(item)"
+                                                   title="Move Schedule Block to Draft">Move to Draft
+                                        </md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="vm.setPriority(item, $event)" title="Set Schedule Block's Priority">Set Priority</md-button>
+                                        <md-button ng-click="vm.setPriority(item, $event)"
+                                                   title="Set Schedule Block's Priority">Set Priority
+                                        </md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
                             <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
                             <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
                         </div>
-                    </div>
+                    </md-virtual-repeat-container>
                 </div>
 
                 <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised"
@@ -249,23 +275,22 @@
              style="max-width: 385px; min-width: 385px; padding-right: 8px; padding-bottom: 8px;"
              class="md-whitespace-z1">
             <div class="md-whiteframe-z2" layout="column" flex>
-                <md-toolbar class="panel-toolbar-small md-whiteframe-z1" ng-mouseenter="showDraftTools = true;"
-                            ng-mouseleave="showDraftTools = false;">
+                <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
                     <div layout="row" class="unselectable md-toolbar-tools">
                         <span flex>Drafts</span>
                         <input class="fade-in search-input-box" type="search"
                                ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
                     </div>
                 </md-toolbar>
-                <div flex class="schedule-draft-data-list" flex>
+                <md-virtual-repeat-container flex class="schedule-draft-data-list" flex>
                     <div
-                        ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} | regexSearch:vm.draftsOrderByFields:vm.q | limitTo:vm.limitTo track by item.id_code"
+                        md-virtual-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null} | regexSearch:vm.draftsOrderByFields:vm.q"
                         title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
                         style="cursor: pointer !important;"
                         ng-class="{'selected-resource-item': item.selected}"
                         ng-click="item.selected = !item.selected;"
                         class="schedule-draft-item" layout="column" layout-align="center start"
-                        post-ng-repeat-load-more>
+                        ng-show="item">
                         <div layout="row" layout-align="start center" style="padding: 0 2px">
                             <md-button class="inline-action-button"
                                        ng-click="vm.removeDraft(item); $event.stopPropagation()"
@@ -292,7 +317,7 @@
                             <span style="overflow: hidden; margin-left: 4px">{{item.desired_start_time}}</span>
                         </div>
                     </div>
-                </div>
+                </md-virtual-repeat-container>
             </div>
 
         </div>

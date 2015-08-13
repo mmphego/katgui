@@ -8,7 +8,8 @@
         <navigation-pie svg-title="Receptors" data="vm.receptorNavData" width="280" height="280"></navigation-pie>
         <navigation-pie svg-title="Sensors" data="vm.sensorsNavData" width="280" height="280"></navigation-pie>
         <navigation-pie svg-title="Health & Alarms" data="vm.topNavData" width="280" height="280"></navigation-pie>
-        <navigation-pie svg-title="Controls & Info" data="vm.controlsNavData" width="280" height="280"></navigation-pie>
+        <navigation-pie ng-if="$root.currentUser.req_role === 'lead_operator' || $root.currentUser.req_role === 'operator'"
+                        svg-title="Controls & Info" data="vm.controlsNavData" width="280" height="280"></navigation-pie>
         <navigation-pie svg-title="System & User Logs" data="vm.logsNavData" width="280" height="280"></navigation-pie>
     </div>
 

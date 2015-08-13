@@ -56,6 +56,7 @@
         };
 
         vm.initSensors = function () {
+            vm.nodes = ConfigService.resourceGroups;
             SensorsService.listResources()
                 .then(function () {
                     for (var key in SensorsService.resources) {
@@ -66,7 +67,8 @@
                             port: SensorsService.resources[key].port,
                             build_state: SensorsService.resources[key].build_state,
                             api_version: SensorsService.resources[key].api_version,
-                            connected: SensorsService.resources[key].synced
+                            connected: SensorsService.resources[key].synced,
+                            node: SensorsService.resources[key].node
                         };
                         vm.resourcesNames[key].nodeman = $rootScope.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
                         SensorsService.setSensorStrategy(

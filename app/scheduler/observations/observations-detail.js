@@ -3,7 +3,8 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
-    function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval) {
+    function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval,
+                                        NotifyService) {
 
         var vm = this;
 
@@ -43,6 +44,8 @@
             vm.unbindDelegateWatch = $scope.$watch('subarray.delegated_ca', function (newVal) {
                 if (newVal !== $rootScope.currentUser.email && !$rootScope.iAmLO) {
                     $state.go('scheduler');
+                } else {
+                    vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
                 }
             });
         }
@@ -118,7 +121,12 @@
         };
 
         vm.activateSubarray = function () {
-            ObsSchedService.activateSubarray(vm.subarray_id);
+            ObsSchedService.activateSubarray(vm.subarray_id)
+                .then(function (result) {
+                    NotifyService.showSimpleToast(result.data.result);
+                }, function (error) {
+                    NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
+                });
         };
 
         vm.isResourceInMaintenance = function (resource) {
@@ -147,10 +155,6 @@
             });
         }, 1500);
 
-        vm.listCompleted = function () {
-            ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
-        };
-
         vm.setSubarrayMaintenance = function (maintenance) {
             ObsSchedService.setSubarrayMaintenance(vm.subarray_id, maintenance ? 'set' : 'clear');
         };
@@ -170,8 +174,7 @@
                             ObsSchedService.setSchedulePriority(sb.id_code, priority);
                         };
                     },
-                    template:
-                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                    template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
                     '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
                     '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
                     '           <span flex style="margin: 8px;">{{::title}}</span>' +
@@ -190,13 +193,18 @@
                 });
         };
 
-        vm.listCompleted();
+        vm.cancelListeningToCompletedUpdates = $rootScope.$on('sb_completed_change',function () {
+            ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
+        });
+
+        ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
 
         $scope.$on('$destroy', function () {
             if (vm.progressInterval) {
                 $interval.cancel(vm.progressInterval);
             }
             vm.unbindIAmCA();
+            vm.cancelListeningToCompletedUpdates();
             if (vm.unbindDelegateWatch) {
                 vm.unbindDelegateWatch();
             }

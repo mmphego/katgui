@@ -50,9 +50,9 @@
         };
 
         vm.tiltUp = function () {
-            var newTiltValue = vm.sensorValues.vds_tilt_position.value - 5;
-            if (newTiltValue < -1) {
-                newTiltValue = 0;
+            var newTiltValue = vm.sensorValues.vds_tilt_position.value + 5;
+            if (newTiltValue > 60) {
+                newTiltValue = 60;
             }
             vm.vdsCommand('tilt/to', newTiltValue);
         };
@@ -62,8 +62,8 @@
         };
 
         vm.tiltDown = function () {
-            var newTiltValue = vm.sensorValues.vds_tilt_position.value + 5;
-            if (newTiltValue > 60) {
+            var newTiltValue = vm.sensorValues.vds_tilt_position.value - 5;
+            if (newTiltValue < -1) {
                 newTiltValue = 0;
             }
             vm.vdsCommand('tilt/to', newTiltValue);
@@ -136,8 +136,8 @@
                         };
                         $scope.gotoPreset = function (preset) {
                             vm.lastPreset = preset;
-                            $http(createRequest('post', urlBase + '/presetgoto/' + preset)
-                                .then(requestSuccess, requestError));
+                            $http(createRequest('post', urlBase + '/presetgoto/' + preset))
+                                .then(requestSuccess, requestError);
                         };
                     },
                     template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +

@@ -2,16 +2,18 @@
 
     <div layout="row" style="margin: 16px;">
         <div layout="column" style="min-width:138px;">
-            <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="center center">
-                <span>Components</span>
-            </md-toolbar>
-            <div class="md-whiteframe-z1" style="position: absolute">
-                <div ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
-                     ng-repeat="resource in vm.resourcesNames | orderBy:'name' track by $index"
-                     style="position: relative">
-                    <md-button class="resource-root-item" ng-click="vm.listResourceSensors(resource.name);">
-                        {{resource.name}}
-                    </md-button>
+            <div layout="column" style="margin-bottom: 8px" ng-repeat="node in vm.nodes | orderBy:node track by $index">
+                <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="center center">
+                    <span>{{node}}</span>
+                </md-toolbar>
+                <div class="md-whiteframe-z1" style="">
+                    <div ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
+                         ng-repeat="resource in vm.resourcesNames | filter:{'node':node} | orderBy:'name' track by $index"
+                         style="position: relative">
+                        <md-button class="resource-root-item" ng-click="vm.listResourceSensors(resource.name);">
+                            {{resource.name}}
+                        </md-button>
+                    </div>
                 </div>
             </div>
         </div>

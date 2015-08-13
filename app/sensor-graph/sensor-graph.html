@@ -121,24 +121,20 @@
             <!--ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>-->
             <!--</md-input-container>-->
 
-            <md-input-container md-no-float class="sensor-search-input">
+            <md-input-container md-no-float class="sensor-search-input" style="padding: 0 4px;">
                 <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
                        placeholder="Search for sensors... e.g. *wind*" ng-model="vm.sensorSearchStr"
                        ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
                        ng-class="{'input-error':vm.sensorSearchFieldLengthError}"
                        title="Type a sensor name expression and press enter. E.g. *wind*"/>
             </md-input-container>
+            <div style="min-height: 5px" ng-show="!vm.waitingForSearchResult"></div>
+            <md-progress-linear style="padding: 0 8px;" ng-show="vm.waitingForSearchResult" class="md-primary" md-mode="indeterminate"></md-progress-linear>
+
             <div class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames | orderBy:'name' track by $index"
                      ng-click="vm.searchSensorClicked(sensor);">
                     <span>{{sensor.name}}</span>
-                </div>
-                <div layout="row" layout-align="center center" class="search-loading-overlay unselectable"
-                     ng-if="vm.waitingForSearchResult">
-                    <div class="spinner">
-                        <div class="double-bounce1"></div>
-                        <div class="double-bounce2"></div>
-                    </div>
                 </div>
             </div>
 

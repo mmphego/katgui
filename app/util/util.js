@@ -179,7 +179,7 @@ angular.module('material.core')
     });
 
 function regexSearchFilter() {
-    return function (input, fields, regex) {
+    return function (input, fields, regex, objDict) {
         if (regex) {
             var pattern;
             try {
@@ -189,8 +189,13 @@ function regexSearchFilter() {
                 return input;
             }
 
+            if (objDict) {
+                input = objDict;
+            }
+
             var inputArray = [];
-            if (angular.isObject(input) === "object") {
+            if (input instanceof Array === false &&
+                angular.isObject(input)) {
                 for (var key in input) {
                     input[key]._key = key;
                     inputArray.push(input[key]);
@@ -200,13 +205,17 @@ function regexSearchFilter() {
             }
 
             var out = [];
-            if (angular.isObject(input) == "object") {
+            if (input instanceof Array === false &&
+                angular.isObject(input) == "object") {
                 out = {};
             }
             for (var i = 0; i < inputArray.length; i++) {
                 for (var idx in fields) {
                     if (pattern.test(inputArray[i][fields[idx].value])) {
-                        if (angular.isObject(out) === "object") {
+                        if (objDict) {
+                            out.push(inputArray[i]._key);
+                        }
+                        else if (input instanceof Array === false && angular.isObject(out)) {
                             out[inputArray[i]._key] = inputArray[i];
                         } else {
                             out.push(inputArray[i]);
@@ -351,11 +360,15 @@ function katGuiUtil(SERVER_URL, $sce) {
             return r + (pEnd || '');
         },
         prettyPrint: function(obj) {
-            var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
-            return $sce.trustAsHtml(JSON.stringify(obj, null, 3)
-                .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
-                .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-                .replace(jsonLine, JSON.prettify.replacer));
+            if (obj) {
+                var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+                return $sce.trustAsHtml(JSON.stringify(obj, null, 3)
+                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(jsonLine, JSON.prettify.replacer));
+            } else {
+                return '';
+            }
         }
     };
 

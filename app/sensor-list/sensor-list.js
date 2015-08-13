@@ -4,7 +4,7 @@
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval, $log, DATETIME_FORMAT,
-                            NotifyService) {
+                            NotifyService, ConfigService) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -73,10 +73,11 @@
 
         vm.initSensors = function () {
             if (vm.resourcesNames.length === 0) {
+                vm.nodes = ConfigService.resourceGroups;
                 SensorsService.listResources()
                     .then(function (result) {
                         for (var key in result) {
-                            vm.resourcesNames.push({name: key});
+                            vm.resourcesNames.push({name: key, node: result[key].node});
                         }
                     });
             }
