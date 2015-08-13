@@ -28,17 +28,23 @@
             name: 'SB Drafts',
             textOffset: -10,
             state: 'scheduler.drafts',
-            title: 'Manage Schedule Block Drafts'
+            title: 'Manage Schedule Block Drafts',
+            hide: $rootScope.currentUser.req_role !== 'lead_operator' &&
+            $rootScope.currentUser.req_role !== 'control_authority'
         }, {
             name: 'SBs',
             textOffset: -10,
             state: 'scheduler.subarrays',
-            title: 'Manage Subarrays Schedule Blocks'
+            title: 'Manage Subarrays Schedule Blocks',
+            hide: $rootScope.currentUser.req_role !== 'lead_operator' &&
+            $rootScope.currentUser.req_role !== 'control_authority'
         }, {
             name: 'Set-up Subs',
             textOffset: 0,
             state: 'scheduler.resources',
-            title: 'Set-up Subarray'
+            title: 'Set-up Subarray',
+            hide: $rootScope.currentUser.req_role !== 'lead_operator' &&
+            $rootScope.currentUser.req_role !== 'control_authority'
         }, {
             name: 'Observations',
             textOffset: 10,
@@ -48,7 +54,9 @@
             name: 'Workflow',
             textOffset: 10,
             state: 'scheduler',
-            title: 'View Schedule Block Workflow'
+            title: 'View Schedule Block Workflow',
+            hide: $rootScope.currentUser.req_role !== 'lead_operator' &&
+            $rootScope.currentUser.req_role !== 'control_authority'
         }];
 
         vm.receptorNavData = [{
@@ -96,15 +104,18 @@
         vm.controlsNavData = [{
             name: 'Components',
             state: 'cam-components',
-            title: 'CAM Components & Versions'
+            title: 'CAM Components & Versions',
+            hide: $rootScope.currentUser.req_role !== 'lead_operator'
         }, {
             name: 'Processes',
             state: 'process-control',
-            title: 'CAM Processes Control'
+            title: 'CAM Processes Control',
+            hide: $rootScope.currentUser.req_role !== 'lead_operator'
         }, {
             name: 'Operator',
             state: 'operator-control',
-            title: 'Operator Controls'
+            title: 'Operator Controls',
+            hide: $rootScope.currentUser.req_role !== 'lead_operator' && $rootScope.currentUser.req_role !== 'operator'
         }];
 
         vm.logsNavData = [{

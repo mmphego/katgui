@@ -188,15 +188,21 @@
         };
 
         api.receivedScheduleMessage = function (action, sb) {
+            $log.info(action);
+            $log.info(sb);
             if (action === 'sb_remove') {
                 //only drafts can be deleted in the db
+                var removedSB = null;
                 for (var i in api.scheduleDraftData) {
-                    if (api.scheduleDraftData[i].id_code === sb.id_code) {
+                    if (api.scheduleDraftData[i].id === sb.id) {
+                        removedSB = api.scheduleDraftData[i];
                         api.scheduleDraftData.splice(i, 1);
                         break;
                     }
                 }
-                NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been removed');
+                if (removedSB) {
+                    NotifyService.showSimpleToast('SB ' + removedSB.id_code + ' has been removed');
+                }
             } else if (action === 'sb_update') {
 
                 var draftIndex = _.findLastIndex(api.scheduleDraftData, {id_code: sb.id_code});
@@ -228,12 +234,8 @@
             } else if (action === 'sb_order_change') {
                 NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
                 api.getScheduledScheduleBlocks();
-            } else if (action === 'sb_add_completed') {
-                api.scheduleCompletedData.unshift(sb);
-            } else if (action === 'sb_remove_completed') {
-                //only a limited number of completed sbs are shown
-                var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id_code: sb.id_code});
-                api.scheduleCompletedData.splice(completedIndex, 1);
+            } else if (action === 'sb_completed_change') {
+                $rootScope.$emit('sb_completed_change', '');
             } else {
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
                 $log.error(sb)

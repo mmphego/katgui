@@ -130,6 +130,7 @@
                                     $rootScope.iAmLO = api.currentLeadOperator.name === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'lead_operator';
                                     if ($rootScope.currentUser &&
                                         $rootScope.currentUser.req_role === 'lead_operator' &&
+                                        api.currentLeadOperator.name.length > 0 &&
                                         api.currentLeadOperator.name !== $rootScope.currentUser.email) {
                                         NotifyService.showDialog(
                                             'You are logged out.', 'You have been logged out because ' +
