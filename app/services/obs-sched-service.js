@@ -327,14 +327,21 @@
                 });
         };
 
-        function createRequest(method, url) {
-            return {
+        function createRequest(method, url, data) {
+            var req = {
                 method: method,
                 url: url,
                 headers: {
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
             };
+
+            if (data && method === 'post') {
+                req.headers['Content-Type'] = 'application/json';
+                req.data = data;
+            }
+
+            return req;
         }
 
         return api;
