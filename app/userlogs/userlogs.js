@@ -66,70 +66,83 @@
 
         vm.activity_logs = UserLogService.activity_logs;
         vm.include_activity_logs = false;
-        vm.exportPdf = function(reportStart, reportEnd){
+        vm.exportPdf = function(reportStart, reportEnd, logtypes){
             var pdf = new jsPDF('l', 'mm', 'a4');
             var export_time = $filter('date')(new Date(), "yyyy-MM-dd_HH'h'mm");
-            var report_markup = '<table id=basic-table border="1px" style="width:100%; font-family:verdana,arial,sans-serif; font-size:10px; padding:10px;">' +
-            '<thead>' +
-                '<tr>' +
-                    '<th>Userlog Type</th>' +
-                    '<th>Log Timestamp</th>' +
-                    '<th>User</th>' +
-                    '<th>Event Started</th>' +
-                    '<th>Event Ended</th>' +
-                    '<th>Userlog Content</th>' +
-                '</tr>' +
-            '</thead>';
-            for (var ilog = 0; ilog < vm.report_userlogs.length; ilog++) {
-                report_markup += '<tr>' +
-                    '<td>' + vm.report_userlogs[ilog].userlog_type + '</td>' +
-                    '<td>' + vm.report_userlogs[ilog].timestamp + '</td>' +
-                    '<td>' + vm.report_userlogs[ilog].name + '</td>' +
-                    '<td>' + vm.report_userlogs[ilog].start_time + '</td>' +
-                    '<td>' + vm.report_userlogs[ilog].end_time + '</td>' +
-                    '<td>' + vm.report_userlogs[ilog].userlog_content + '</td>' +
-                    '</tr>';
-            };
-            report_markup += '</table>';
+            var start_time = $filter('date')(reportStart, 'yyyy-MM-dd HH:mm');
+            var end_time = $filter('date')(reportEnd, 'yyyy-MM-dd HH:mm');
+            var a_query = "?";
+            var included_types = "All";
+            if (logtypes) {a_query += "log_type=" + logtypes + "&"}
+            if (start_time) {a_query += "start_time=" + start_time + "&"}
+            if (end_time) {a_query += "end_time=" + end_time + "&"}
 
-            pdf.setFontSize(20);
-            pdf.text('Shift Report', 20, 25);
-            pdf.setFontSize(12);
-            pdf.text(('From: ' + reportStart + '     To: ' + reportEnd), 20, 50);
-            var report_element = document.createElement('div');
-            report_element.innerHTML = report_markup;
-            var res = pdf.autoTableHtmlToJson(report_element.firstChild, true);
-            pdf.autoTable(res.columns, res.data, {
-                startY: 60,
-                margins: {horizontal: 15, top: 25, bottom: 20},
-                overflow: 'linebreak',
-                padding: 2,
-                lineHeight: 10
-                }
-            );
-            if (vm.include_activity_logs) {
-                var columns = [{title: "Log Message", key: "msg"}];
-                var a_query = "?";
-                var start_time = $filter('date')(reportStart, 'yyyy-MM-dd HH:mm');
-                var end_time = $filter('date')(reportEnd, 'yyyy-MM-dd HH:mm');
-                if (start_time) {a_query += "start_time=" + start_time + "&"}
-                if (end_time) {a_query += "end_time=" + end_time + "&"}
-                UserLogService.queryActivityLogs(a_query).then(function (result) {
-                    pdf.autoTable(columns, vm.activity_logs, {
-                        startY: pdf.autoTableEndPosY() + 50,
-                        margins: {horizontal: 15, top: 25, bottom: 20},
-                        overflow: 'linebreak',
-                        padding: 1,
-                        lineHeight: 9,
-                        fontSize: 7
-                        }
-                    );
+            UserLogService.queryUserLogs(a_query).then(function (result) {
+                var report_markup = '<table id=basic-table border="1px" style="width:100%; font-family:verdana,arial,sans-serif;">' +
+                '<thead>' +
+                    '<tr>' +
+                        '<th>Userlog Type</th>' +
+                        '<th>Log Timestamp</th>' +
+                        '<th>User</th>' +
+                        '<th>Event Started</th>' +
+                        '<th>Event Ended</th>' +
+                        '<th>Userlog Content</th>' +
+                    '</tr>' +
+                '</thead>';
+                for (var ilog = 0; ilog < vm.report_userlogs.length; ilog++) {
+                    report_markup += '<tr>' +
+                        '<td>' + vm.report_userlogs[ilog].userlog_type + '</td>' +
+                        '<td>' + vm.report_userlogs[ilog].timestamp + '</td>' +
+                        '<td>' + vm.report_userlogs[ilog].name + '</td>' +
+                        '<td>' + vm.report_userlogs[ilog].start_time + '</td>' +
+                        '<td>' + vm.report_userlogs[ilog].end_time + '</td>' +
+                        '<td>' + vm.report_userlogs[ilog].userlog_content + '</td>' +
+                        '</tr>';
+                };
+                report_markup += '</table>';
+
+                pdf.setFontSize(20);
+                pdf.setFont("Times");
+                pdf.text('Userlog Report - ' + export_time, 20, 25);
+                pdf.setFontSize(12);
+                if (logtypes) {included_types = logtypes}
+                pdf.text(('Included log types: ' + included_types), 20, 35);
+                pdf.setFontSize(12);
+                pdf.text(('From: ' + reportStart + '     To: ' + reportEnd), 20, 45);
+                var report_element = document.createElement('div');
+                report_element.innerHTML = report_markup;
+                var res = pdf.autoTableHtmlToJson(report_element.firstChild, true);
+                pdf.autoTable(res.columns, res.data, {
+                    startY: 60,
+                    margins: {horizontal: 15, top: 25, bottom: 20},
+                    overflow: 'linebreak',
+                    padding: 2,
+                    lineHeight: 10,
+                    fontSize: 8
+                    }
+                );
+            }).then(function (result) {
+                if (vm.include_activity_logs) {
+                    var columns = [{title: "System Activity Logs", key: "msg"}];
+                    
+                    UserLogService.queryActivityLogs(a_query).then(function (result) {
+                        pdf.autoTable(columns, vm.activity_logs, {
+                            startY: pdf.autoTableEndPosY() + 50,
+                            margins: {horizontal: 15, top: 25, bottom: 20},
+                            overflow: 'linebreak',
+                            padding: 1,
+                            lineHeight: 9,
+                            fontSize: 7
+                            }
+                        );
+                        pdf.save('Shift_Report_' + export_time + '.pdf');
+                    });
+                } else {
                     pdf.save('Shift_Report_' + export_time + '.pdf');
-                });
-            } else {
-                pdf.save('Shift_Report_' + export_time + '.pdf');
-            }
+                }
+            });
         };
+
 
         vm.getCompleteUserLog = function (ulog, userlogs, tags, event) {
             UserLogService.getUserLog(ulog.id).then(function () {
@@ -172,9 +185,6 @@
                 $log.info(result);
             });
         };
-
-        //vm.queryActivityLogs = function (activityStart, activityEnd) {
-        //};
 
         vm.editUserLog = function (ulog, userlogs, tags, event) {
             $mdDialog

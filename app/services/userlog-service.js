@@ -152,13 +152,13 @@
             for (var i = 0; i < file.length; i++) {
                 fd.append('filedata[]', file[i]);
             }
-            $http(createRequest('post', api.urlBase + '/logs/' + ulog_id + '/attachments', fd, {
+            $http.post(api.urlBase + '/logs/' + ulog_id + '/attachments', fd, {
                 transformRequest: angular.identity,
                 headers: {
                     'Content-Type': undefined,
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
-            }))
+            })
                 .then(function () {
                     $log.info("Attachments uploaded!");
                 }, function () {
@@ -167,13 +167,13 @@
         };
 
         api.getFileFromUrl = function (file_name, file_alias, ulog_id) {
-            $http(createRequest('get', api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
+            $http.get(api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 },
                 responseType: 'blob'
-            }))
+            })
                 .then(function (result) {
                     var blob = result.data;
                     var url = $window.URL || $window.webkitURL;

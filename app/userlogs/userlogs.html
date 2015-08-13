@@ -70,8 +70,7 @@
                         <span style="margin-left: 16px" flex>Report Parameters:</span>
                         <div layout="row" layout-align="start center" md-theme="{{themePrimaryButtons}}" style="margin: 0 16px; font-size: 14px;">
                             <md-select placeholder="Select User Log Type" ng-model="vm.blank_query.userlog_type"
-                                       style="width: 150px; margin: 0 8px">
-                                <md-option value="">All</md-option>
+                                       style="width: 150px; margin: 0 8px" multiple="true">
                                 <md-option value="shift_log">Shift Log</md-option>
                                 <md-option value="time_loss">Time-loss Log</md-option>
                                 <md-option value="observation">Observation Log</md-option>
@@ -117,9 +116,9 @@
                                                 data-on-set-time="vm.showEndDatePicker = false; vm.onTimeSet(vm.blank_query.end_time, ulog, 'end_time')"></datetimepicker>
                             </div>
                             <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event, vm.blank_query)"
-                                       style="margin-right: 0;">Generate Report
+                                       style="margin-right: 0;">Preview Report
                             </md-button>
-                            <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time)"
+                            <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time, vm.blank_query.userlog_type)"
                                        style="margin-right: 0;">Export PDF
                             </md-button>
                             <md-checkbox ng-model="vm.include_activity_logs" aria-label="Include Activity Logs">
@@ -140,7 +139,7 @@
                                 <span style="width: 150px">Userlog Content</span>
                             </div>
                         </md-list-item>
-                        <md-list-item ng-repeat="rlog in vm.report_userlogs | filter:vm.blank_query.userlog_type">
+                        <md-list-item ng-repeat="rlog in vm.report_userlogs">
                             <md-divider></md-divider>
                             <div class="md-list-item-text" style="font-size:small" flex
                                  layout="row">
