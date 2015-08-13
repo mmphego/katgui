@@ -21,11 +21,10 @@
 
     <div flex layout="row" style="margin: 8px; max-height: 100%; min-height: 100%;">
         <div class="md-whiteframe-z2" layout="column" flex>
-            <md-toolbar class="md-whiteframe-z1" ng-mouseenter="showDraftTools = true;"
-                        ng-mouseleave="showDraftTools = false;">
+            <md-toolbar class="md-whiteframe-z1">
                 <div layout="row" class="unselectable">
                     <span flex style="max-height: 10px;"></span>
-                    <input class="fade-in search-input-box" ng-show="showDraftTools || vm.q" type="search"
+                    <input class="fade-in search-input-box" type="search"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Drafts..."/>
                     <md-button style="font-size: 16px; margin-top: -5px;margin-right: -5px;"
                                class="md-fab md-mini md-primary" md-theme="{{themePrimaryButtons}}"
@@ -75,9 +74,9 @@
                 </span>
                 </div>
             </md-toolbar>
-            <div class="schedule-draft-data-list" style="direction: rtl; overflow: auto" flex>
+            <md-virtual-repeat-container class="schedule-draft-data-list" style="direction: rtl; overflow: auto" flex>
                 <div
-                    ng-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse | limitTo:vm.limitTo) track by item.id"
+                    md-virtual-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse)"
                     ng-click="vm.setSelectedScheduleDraft(item)"
                     ng-class="{'selected-draft-schedule-row': item.id_code === vm.selectedScheduleDraft.id_code}"
                     class="schedule-draft-item" layout="column" post-ng-repeat-load-more>
@@ -151,7 +150,7 @@
                         </md-menu>
                     </div>
                 </div>
-            </div>
+            </md-virtual-repeat-container>
         </div>
 
         <div layout="column" style="max-width: 400px;min-width: 400px;"
