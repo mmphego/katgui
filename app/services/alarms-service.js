@@ -48,7 +48,7 @@
                 api.alarmsData.push(messageObj);
             }
 
-            if (messageObj.priority === 'new') {
+            if (messageObj.priority === 'new' && messageObj.severity !== 'nominal') {
                 if (messageObj.severity === 'critical') {
                     SoundService.playCriticalAlarm();
                 } else if (messageObj.severity === 'error') {

@@ -183,14 +183,14 @@
                 DataService.findSensorName(searchStr, vm.sensorType)
                     .then(function (result) {
                         if (result.data.error) {
-                            $log.error(result.data.error);
+                            NotifyService.showPreDialog('Error Finding Sensor Info', result.data.error);
+                            vm.waitingForSearchResult = false;
                         } else if (result.data.data) {
                             result.data.data.forEach(function (sensor) {
                                 sensor.type = vm.sensorType;
                                 vm.sensorSearchNames.push(sensor);
                             });
                             vm.waitingForSearchResult = false;
-
                         }
                     }, function (result) {
                         NotifyService.showSimpleDialog('Error Finding Sensors', 'There was an error finding sensors, is the server running?');

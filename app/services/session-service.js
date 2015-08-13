@@ -29,7 +29,6 @@
 
 
         api.login = function (session_id) {
-
             $rootScope.jwt = session_id;
             $http(createRequest('post', urlBase + '/user/login', {}))
                 .then(function(result){
@@ -46,10 +45,11 @@
 
         api.recoverLogin = function () {
             if ($rootScope.jwt) {
-                $http(createRequest('post', urlBase + '/user/login'))
-                    .then(function(result){
-                        loginSuccess(result, $rootScope.jwt);
-                    }, loginError);
+                var b = $rootScope.jwt.split(".");
+                var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
+                $http(createRequest('get', urlBase + '/user/verify/' + payload.req_role))
+                    .then(verifySuccess, verifyError);
+                $rootScope.currentUser = payload;
             }
         };
 
@@ -127,7 +127,6 @@
                     var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
                     if (payload.req_role === 'lead_operator' &&
                         payload.current_lo &&
-                        payload.current_lo.length > 0 &&
                         payload.current_lo !== payload.requester) {
                         confirmRole(result.data.session_id, payload);
                     } else {

@@ -35,8 +35,7 @@
             <div
                 ng-repeat="subarray in vm.subarrays | filter: {id: vm.subarray_id} | orderBy:'id' track by $index"
                 class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
-                style="min-width: 650px; position: relative" ng-mouseenter="subarray.mousehover = true"
-                ng-mouseleave="subarray.mousehover = false" ng-init="subarray.mousehover = false" flex>
+                style="min-width: 650px; position: relative" flex>
 
                 <div layout="column" layout-align="start" flex>
 

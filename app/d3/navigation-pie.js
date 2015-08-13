@@ -55,15 +55,25 @@ angular.module('katGui.d3')
 
                 g.append("path")
                     .attr("d", arc)
-                    .attr("class", "pie-button-path")
+                    .attr("class", function (d) {
+                        return d.data.hide ? 'pie-button-path-disabled' : 'pie-button-path';
+                    })
                     .style("stroke", color)
-                    .style("fill", bgColor)
+                    .style("fill", function (d) {
+                        return d.data.hide ? 'rgba(0,0,0,0.12)' : bgColor;
+                    })
                     .on("mousemove", function (d) {
                         tooltip.style("display", null);
                         tooltip.attr("transform", "translate(10, 10)");
-                        tooltip.html(
-                            "<div>" + d.data.title + "</div>"
-                        );
+                        if (d.data.hide) {
+                            tooltip.html(
+                                "<div>You do not have the necessary rights.</div>"
+                            );
+                        } else {
+                            tooltip.html(
+                                "<div>" + d.data.title + "</div>"
+                            );
+                        }
                         var offset = d3.mouse(uiViewDiv);
                         var x = offset[0];
                         var y = offset[1];
@@ -74,11 +84,13 @@ angular.module('katGui.d3')
                     .on("mouseout", function () {
                        tooltip.style("display", "none");
                     })
-                    .on("mousedown", function (d) {
-                        if(d.data.state instanceof Function) {
-                            d.data.state(d.data.stateParams);
-                        } else {
-                            $state.go(d.data.state, d.data.stateParams);
+                    .on("mouseup", function (d) {
+                        if (!d.data.hide) {
+                            if(d.data.state instanceof Function) {
+                                d.data.state(d.data.stateParams);
+                            } else {
+                                $state.go(d.data.state, d.data.stateParams);
+                            }
                         }
                     });
 
@@ -89,7 +101,9 @@ angular.module('katGui.d3')
                     })
                     .attr("dy", ".35em")
                     .attr("class", "pie-button-text")
-                    .style("fill", color)
+                    .style("fill", function (d) {
+                        return d.data.hide ? 'rgba(0,0,0,0.5)' : color;
+                    })
                     .text(function(d) {
                         return d.data.name;
                     });

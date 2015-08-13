@@ -44,6 +44,8 @@
             vm.unbindDelegateWatch = $scope.$watch('subarray.delegated_ca', function (newVal) {
                 if (newVal !== $rootScope.currentUser.email && !$rootScope.iAmLO) {
                     $state.go('scheduler');
+                } else {
+                    vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
                 }
             });
         }
@@ -153,10 +155,6 @@
             });
         }, 1500);
 
-        vm.listCompleted = function () {
-            ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
-        };
-
         vm.setSubarrayMaintenance = function (maintenance) {
             ObsSchedService.setSubarrayMaintenance(vm.subarray_id, maintenance ? 'set' : 'clear');
         };
@@ -195,13 +193,18 @@
                 });
         };
 
-        vm.listCompleted();
+        vm.cancelListeningToCompletedUpdates = $rootScope.$on('sb_completed_change',function () {
+            ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
+        });
+
+        ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
 
         $scope.$on('$destroy', function () {
             if (vm.progressInterval) {
                 $interval.cancel(vm.progressInterval);
             }
             vm.unbindIAmCA();
+            vm.cancelListeningToCompletedUpdates();
             if (vm.unbindDelegateWatch) {
                 vm.unbindDelegateWatch();
             }
