@@ -265,6 +265,11 @@
             var strList = sensor.name.split(':');
             var sensorName = strList[1].split('.')[1];
             vm.sensorValues[sensorName] = sensor.value;
+            if (sensor.name.split('.')[1] === 'vds_focus_position') {
+                vm.focus = sensor.value.value;
+            } else if (sensor.name.split('.')[1] === 'vds_zoom_position') {
+                vm.zoom = sensor.value.value;
+            }
         });
 
         $scope.$on('$destroy', function () {
