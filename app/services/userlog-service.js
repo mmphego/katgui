@@ -10,6 +10,7 @@
         api.userlogs = [];
         api.my_userlogs = [];
         api.report_userlogs = [];
+        api.activity_logs = [];
         api.focus_ulog = {};
         api.tags = [];
         api.taxonomies = [];
@@ -58,6 +59,9 @@
                 .then(function (result) {
                     api.my_userlogs.splice(0, api.my_userlogs.length);
                     result.data.forEach(function (userlog) {
+                        if (userlog.timestamp) {
+                            userlog.timestamp = moment(userlog.timestamp).format('YYYY-DD-MM HH:mm:ss.SSS')
+                        }
                         api.my_userlogs.push(userlog);
                     });
                     defer.resolve();
@@ -128,18 +132,36 @@
             return defer.promise;
         };
 
+        api.queryActivityLogs = function (query) {
+            var query_uri = encodeURI(query);
+            $log.info("Activity Log Query uri: " + query_uri);
+            var defer = $q.defer();
+            $http(createRequest('get', api.urlBase + '/activity' + query_uri))
+                .then(function (result) {
+                    api.activity_logs.splice(0, api.activity_logs.length);
+                    result.data.forEach(function (activitylog) {
+                        api.activity_logs.push(activitylog);
+                    });
+                    defer.resolve();
+                }, function (result) {
+                    NotifyService.showSimpleDialog("Could not retrieve any activity logs", result);
+                    defer.reject();
+                });
+            return defer.promise;
+        };
+
         api.uploadFileToUrl = function (file, ulog_id) {
             var fd = new FormData();
             for (var i = 0; i < file.length; i++) {
                 fd.append('filedata[]', file[i]);
             }
-            $http(createRequest('post', api.urlBase + '/logs/' + ulog_id + '/attachments', fd, {
+            $http.post(api.urlBase + '/logs/' + ulog_id + '/attachments', fd, {
                 transformRequest: angular.identity,
                 headers: {
                     'Content-Type': undefined,
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
-            }))
+            })
                 .then(function () {
                     $log.info("Attachments uploaded!");
                 }, function () {
@@ -148,13 +170,13 @@
         };
 
         api.getFileFromUrl = function (file_name, file_alias, ulog_id) {
-            $http(createRequest('get', api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
+            $http.get(api.urlBase + '/logs/' + ulog_id + '/attachments/' + file_name, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 },
                 responseType: 'blob'
-            }))
+            })
                 .then(function (result) {
                     var blob = result.data;
                     var url = $window.URL || $window.webkitURL;
