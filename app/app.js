@@ -96,7 +96,7 @@
             $rootScope.logNumberOfLines = 200;
         }
         if (!$rootScope.sensorListStrategyInterval) {
-            $rootScope.sensorListStrategyInterval = 10;
+            $rootScope.sensorListStrategyInterval = 3;
         }
         if (!angular.isDefined($rootScope.showLST)) {
             $rootScope.showLST = true;
