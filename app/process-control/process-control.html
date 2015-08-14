@@ -1,6 +1,6 @@
-<div flex layout="row" layout-align="center start" ng-controller="ProcessControlCtrl as vm" style="margin-left: 16px; margin-right: 16px; margin-bottom: 16px;">
-    <div flex ng-repeat="nm_key in $root.objectKeys(vm.detailedProcesses) | orderBy:nm_key track by nm_key" style="margin: 16px; min-width: 320px; max-width: 320px">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools md-toolbar-tools-medium" layout="row" layout-align="start center"
+<div layout="row" ng-controller="ProcessControlCtrl as vm">
+    <div ng-repeat="nm_key in $root.objectKeys(vm.detailedProcesses) | orderBy:nm_key track by nm_key" style="padding: 8px; min-width: 320px; max-width: 320px">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center"
                     ng-init="vm[nm_key + 'showDetails'] = true">
             <span flex ng-init="vm[nm_key + 'showProcList'] = true"
                   ng-click="vm[nm_key + 'showProcList'] = !vm[nm_key + 'showProcList']">

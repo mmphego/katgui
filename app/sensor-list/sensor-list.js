@@ -88,7 +88,7 @@
                     '',
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
-                    120);
+                    10);
             }
         };
 
@@ -131,7 +131,7 @@
             if (!vm.resources[resourceName].sensorsList) {
                 SensorsService.listResourceSensors(resourceName)
                     .then(function (result) {
-                        vm.limitTo = 50;
+                        vm.resources[resourceName].sensorsList = result;
                         vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
                         if (!$scope.$$phase) {
                             $scope.$digest();
@@ -141,7 +141,7 @@
                             '',
                             $rootScope.sensorListStrategyType,
                             $rootScope.sensorListStrategyInterval,
-                            120);
+                            10);
                     });
             } else {
                 vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
@@ -240,6 +240,10 @@
                 $scope.$apply();
             }
             vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
+        };
+
+        $scope.filterByNotNominal = function(sensor) {
+            return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal'
         };
 
         $scope.$on('$destroy', function () {
