@@ -1,42 +1,42 @@
-<div flex style="padding: 16px;" ng-controller="UserlogCtrl as vm" layout="column">
-    <md-tabs flex class="md-whiteframe-z1" style="overflow: auto">
-        <md-tab flex label="My User Logs">
-            <md-toolbar layout="row" class="md-toolbar-tools-medium md-whiteframe-z1">
+<div flex style="padding: 8px; min-width: 1200px" ng-controller="UserlogCtrl as vm" layout="column">
+    <md-tabs flex class="md-whiteframe-z1">
+        <md-tab flex label="My User Logs" layout="column">
+            <md-toolbar layout="row" class="md-toolbar-tools-medium md-whiteframe-z1" style="position: relative">
                 <span flex></span>
                 <input class="fade-in search-input-box" type="search"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Userlogs..."/>
                 <md-button class="md-icon-button inline-action-button"
-                           ng-click="vm.editUserLog(vm.blank_ulog, vm.my_userlogs, vm.tags, $event)"
+                           ng-click="vm.editUserLog(vm.blank_ulog, vm.my_userlogs, $event)"
                            style="margin: 0 8px">
                     <md-icon class="fa" md-font-icon="fa-plus"></md-icon>
                 </md-button>
                 <md-button class="md-icon-button inline-action-button" ng-click="vm.getMyUserLogs()" style="margin: 0">
                     <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
                 </md-button>
-                <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
-                     style="position: absolute; left: 0; bottom: 0; padding: 0 8px">
+                <div class="unselectable list-subheader-title" layout="row" layout-align="start center"
+                     style="position: absolute; left: 8px; bottom: 0; width: 700px">
                     <span class="subheader-text" style="width: 120px" ng-click="vm.setOrderBy('userlog_type')">
                         <span>Log Type</span>
                         <span class="fa"
                               ng-class="{'fa-caret-up': vm.orderBy.value === 'userlog_type' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'userlog_type' && vm.orderBy.reverse}"
                               style="margin-right: 4px;"></span>
                     </span>
-                    <span class="subheader-text" style="width: 150px">
+                    <span class="subheader-text" style="width: 180px">
                         <span>Log Timestamp</span>
                     </span>
-                    <span class="subheader-text" style="width: 185px" ng-click="vm.setOrderBy('start_time')">
+                    <span class="subheader-text" style="width: 155px" ng-click="vm.setOrderBy('start_time')">
                         <span>Start Time (UTC)</span>
                         <span class="fa"
                               ng-class="{'fa-caret-up': vm.orderBy.value === 'start_time' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'start_time' && vm.orderBy.reverse}"
                               style="margin-right: 4px;"></span>
                     </span>
-                    <span class="subheader-text" style="width: 185px" ng-click="vm.setOrderBy('end_time')">
+                    <span class="subheader-text" style="width: 155px" ng-click="vm.setOrderBy('end_time')">
                         <span>End Time (UTC)</span>
                         <span class="fa"
                               ng-class="{'fa-caret-up': vm.orderBy.value === 'end_time' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'end_time' && vm.orderBy.reverse}"
                               style="margin-right: 4px;"></span>
                     </span>
-                    <span flex class="subheader-text" ng-click="vm.setOrderBy('userlog_content')">
+                    <span class="subheader-text" ng-click="vm.setOrderBy('userlog_content')">
                         <span>Log Content</span>
                         <span class="fa"
                               ng-class="{'fa-caret-up': vm.orderBy.value === 'userlog_content' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'userlog_content' && vm.orderBy.reverse}"
@@ -44,32 +44,34 @@
                     </span>
                 </div>
             </md-toolbar>
-
-            <div ng-repeat="e_ulog in vm.my_userlogs | regexSearch:vm.orderByFields:vm.q | orderBy:vm.orderBy.value:vm.orderBy.reverse"
-                          flex layout="row" layout-align="start center" class="user-log-row">
-                <span style="width: 120px">{{e_ulog.userlog_type}}</span>
-                <span style="width: 150px">{{e_ulog.timestamp}}</span>
-                <span style="width: 185px" ng-style="{'background': ulog.scolor}">
-                    {{e_ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
-                </span>
-                <span style="width: 185px" ng-style="{'background': ulog.ecolor}">
-                    {{e_ulog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
-                </span>
-                <span flex>{{e_ulog.userlog_content}}</span>
-                <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
-                           ng-click="vm.getCompleteUserLog(e_ulog, vm.my_userlogs, vm.tags, $event); $event.stopPropagation();">
-                    <span style="display: inherit" class="fa fa-edit"></span>
-                </md-button>
+            <div flex style="overflow: auto">
+                <div ng-repeat="e_ulog in vm.my_userlogs | regexSearch:vm.orderByFields:vm.q | orderBy:vm.orderBy.value:vm.orderBy.reverse"
+                              flex layout="row" layout-align="start center" class="user-log-row">
+                    <span style="width: 120px">{{e_ulog.userlog_type}}</span>
+                    <span style="width: 180px">{{e_ulog.timestamp}}</span>
+                    <span style="width: 155px" ng-style="{'background': ulog.scolor}">
+                        {{e_ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                    </span>
+                    <span style="width: 155px" ng-style="{'background': ulog.ecolor}">
+                        {{e_ulog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                    </span>
+                    <span flex>{{e_ulog.userlog_content}}</span>
+                    <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
+                               ng-click="vm.getCompleteUserLog(e_ulog, vm.my_userlogs, $event); $event.stopPropagation();">
+                        <span style="display: inherit" class="fa fa-edit"></span>
+                    </md-button>
+                </div>
             </div>
         </md-tab>
         <md-tab flex label="Userlog Reports" class="md-whiteframe-z1" style="overflow: auto">
             <div layout="column" layout-align="start center" ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false;"
                 style="cursor: inherit">
                 <div layout="row" style="width: 100%">
-                    <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="start center">
-                        <span style="margin-left: 16px" flex>Report Parameters:</span>
-                        <div layout="row" layout-align="start center" md-theme="{{themePrimaryButtons}}" style="margin: 0 16px; font-size: 14px;">
-                            <md-select placeholder="Select User Log Type" ng-model="vm.blank_query.userlog_type"
+                    <md-toolbar class="md-whiteframe-z1 md-toolbar-tools" layout="row" layout-align="start center" style="padding: 0">
+                        <span style="margin-left: 8px" flex></span>
+                        <div layout="row" layout-align="start center" md-theme="{{themePrimaryButtons}}" style="margin: 0 4px; font-size: 14px;">
+                            <md-select placeholder="Select User Log Type" class="md-primary md-raised" ng-model="vm.blank_query.userlog_type"
+                                       title="{{vm.blank_query.userlog_type}}"
                                        style="width: 150px; margin: 0 8px" multiple="true">
                                 <md-option value="shift_log">Shift Log</md-option>
                                 <md-option value="time_loss">Time-loss Log</md-option>
@@ -121,8 +123,9 @@
                             <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time, vm.blank_query.userlog_type)"
                                        style="margin-right: 0;">Export PDF
                             </md-button>
-                            <md-checkbox ng-model="vm.include_activity_logs" aria-label="Include Activity Logs">
-                                Include Activity logs in Export?
+                            <md-checkbox ng-model="vm.include_activity_logs" aria-label="Include Activity Logs"
+                                style="font-size: 12px; width: 120px; line-height: 1.3;">
+                                Include Activity logs in Export
                             </md-checkbox>
                         </div>
                     </md-toolbar>

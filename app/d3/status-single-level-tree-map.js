@@ -44,6 +44,7 @@ angular.module('katGui.d3')
                                 width = element.parent()[0].clientWidth - 40;
                             }
 
+                            d3.select(element[0]).selectAll('md-toolbar').remove();
                             d3.select(element[0]).selectAll('div').remove();
                             drawTreemap(width, height);
                         });
@@ -74,13 +75,17 @@ angular.module('katGui.d3')
 
                         root = scope.data;
 
-                        var labelDiv = d3.select(element[0]).append("div")
-                            .attr("class", "status-top-label md-whiteframe-z2")
+                        var labelDiv = d3.select(element[0]).append("md-toolbar")
+                            .attr("class", function () {
+                                var classStr = "status-top-label md-whiteframe-z2 ";
+                                classStr += angular.element(document.querySelector('md-content')).attr('class');
+                                return classStr;
+                            })
+                            .attr("title", root.name)
+                            .style("overflow", "hidden")
                             .style("width", "100%")
-                            .style("height", "35px")
-                            .style("background", function () {
-                                return (window.getComputedStyle(document.getElementById('main-top-toolbar')) || {}).backgroundColor;
-                            });
+                            .style("max-height", "35px")
+                            .style("min-height", "35px");
 
                         labelDiv
                             .append("div")

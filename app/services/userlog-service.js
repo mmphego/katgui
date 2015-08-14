@@ -6,7 +6,8 @@
     function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService) {
 
         var api = {};
-        api.urlBase = SERVER_URL + '/katcontrol';
+        //api.urlBase = SERVER_URL + '/katcontrol';
+        api.urlBase = 'http://monctl.devw.camlab.kat.ac.za:8820';
         api.userlogs = [];
         api.my_userlogs = [];
         api.report_userlogs = [];
@@ -59,6 +60,9 @@
                 .then(function (result) {
                     api.my_userlogs.splice(0, api.my_userlogs.length);
                     result.data.forEach(function (userlog) {
+                        if (userlog.timestamp) {
+                            userlog.timestamp = moment(userlog.timestamp).format('YYYY-DD-MM HH:mm:ss.SSS')
+                        }
                         api.my_userlogs.push(userlog);
                     });
                     defer.resolve();

@@ -18,7 +18,7 @@
         }])
         .controller('UserlogCtrl', UserlogCtrl);
 
-    function UserlogCtrl($mdDialog, $rootScope, $filter, $log, $timeout, $window, $compile, UserLogService) {
+    function UserlogCtrl($mdDialog, $rootScope, $filter, $log, $timeout, UserLogService) {
 
         var vm = this;
 
@@ -98,11 +98,10 @@
                         '<td>' + vm.report_userlogs[ilog].end_time + '</td>' +
                         '<td>' + vm.report_userlogs[ilog].userlog_content + '</td>' +
                         '</tr>';
-                };
+                }
                 report_markup += '</table>';
 
                 pdf.setFontSize(20);
-                pdf.setFont("Times");
                 pdf.text('Userlog Report - ' + export_time, 20, 25);
                 pdf.setFontSize(12);
                 if (logtypes) {included_types = logtypes}
@@ -124,7 +123,7 @@
             }).then(function (result) {
                 if (vm.include_activity_logs) {
                     var columns = [{title: "System Activity Logs", key: "msg"}];
-                    
+
                     UserLogService.queryActivityLogs(a_query).then(function (result) {
                         pdf.autoTable(columns, vm.activity_logs, {
                             startY: pdf.autoTableEndPosY() + 50,
@@ -144,10 +143,10 @@
         };
 
 
-        vm.getCompleteUserLog = function (ulog, userlogs, tags, event) {
+        vm.getCompleteUserLog = function (ulog, userlogs, event) {
             UserLogService.getUserLog(ulog.id).then(function () {
                 vm.focused_ulog = UserLogService.focus_ulog;
-                vm.editUserLog(vm.focused_ulog, userlogs, tags, event);
+                vm.editUserLog(vm.focused_ulog, userlogs, event);
             });
         };
 
@@ -186,27 +185,39 @@
             });
         };
 
-        vm.editUserLog = function (ulog, userlogs, tags, event) {
+        vm.editUserLog = function (ulog, userlogs, event) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog, $filter) {
                         $scope.ulog = ulog;
-                        if (!$scope.ulog.start_time) {
-                            $scope.ulog.start_time = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm');
-                        }
-                        if (!$scope.ulog.end_time) {
-                            var now = new Date();
-                            now.setHours(now.getHours() + 1);
-                            $scope.ulog.end_time = $filter('date')(now, 'yyyy-MM-dd HH:mm');
+                        //if (!$scope.ulog.start_time) {
+                        //    $scope.ulog.start_time = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm');
+                        //}
+                        //if (!$scope.ulog.end_time) {
+                        //    var now = new Date();
+                        //    now.setHours(now.getHours() + 1);
+                        //    $scope.ulog.end_time = $filter('date')(now, 'yyyy-MM-dd HH:mm');
+                        //}
+                        if (!$scope.ulog.userlog_type) {
+                            $scope.ulog.userlog_type = 'shift_log';
                         }
                         $log.info('Updated focus log: ' + JSON.stringify(ulog));
-                        $scope.tags = tags;
+                        $scope.tags = UserLogService.tags;
                         $scope.selectedItem = null;
                         $scope.searchText = null;
                         $scope.selectedTags = ulog.tags;
                         $log.info('Tags already on log: ' + JSON.stringify(ulog.tags));
                         $scope.chosen_tags = [];
-                        $log.info('Tags fetched from db: ' + JSON.stringify(tags));
+                        $scope.unbindTagWatch = $scope.$watchCollection('selectedTags', function (newVal, oldVal) {
+                            if (newVal !== oldVal) {
+                                $scope.selectedTags = $scope.selectedTags.filter(function (item) {
+                                    return item.name && item.name.length > 0;
+                                });
+                                $scope.selectedTags = _.uniq($scope.selectedTags, function (item) {
+                                   return item.name;
+                                });
+                            }
+                        });
                         $scope.hide = function () {
                             $mdDialog.hide();
                         };
@@ -218,7 +229,7 @@
                                 start_time: $filter('date')(ulog.start_time, 'yyyy-MM-dd HH:mm'),
                                 end_time: $filter('date')(ulog.end_time, 'yyyy-MM-dd HH:mm'),
                                 userlog_content: ulog.userlog_content,
-                                tags: $scope.chosen_tags,
+                                tags: $scope.chosen_tags
                             };
                             $scope.tagFix();
                             var file = $scope.myFile;
@@ -261,7 +272,6 @@
                                     $scope.chosen_tags.push(tag.name);
                                 }
                             });
-                            $log.info('Selected tag objects: ' + JSON.stringify($scope.selectedTags));
                         };
                         $scope.onTimeSet = function (value, target, attribute) {
                             target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm');
@@ -270,6 +280,9 @@
                         $scope.getFile = function(downloadPath, name, ulog_id) {
                             UserLogService.getFileFromUrl(downloadPath, name, ulog_id);
                         };
+                        $scope.$on('destroy', function () {
+                            $scope.unbindTagWatch();
+                        });
                     },
                     templateUrl: 'app/userlogs/userlogdialog.tmpl.html',
                     targetEvent: event
@@ -284,7 +297,6 @@
                         userlog_content: "",
                         tags: []
                     };
-                    $log.info('Closing userlog editing dialog');
                 });
         };
     }

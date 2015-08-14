@@ -6,7 +6,7 @@
     <md-dialog-content style="padding: 12px;" layout="column" md-theme="{{$root.themePrimaryButtons}}">
         <div layout="row">
             <div layout="row" layout-align="center center" style="min-width: 220px;">
-                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
+                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;"   required ng-class="{'input-error':register.name.$error.required}">
                     <input flex type="text"
                            data-ng-model="ulog.start_time" placeholder="Start Date"
                            title="Start Date 'HH:mm:ss yyyy-MM-dd'"
@@ -44,13 +44,13 @@
             </div>
         </div>
         <div ng-form name="testForm">
-        <md-select style="margin: 16px 0" placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px" name="testType" required ng-class="{'input-error':register.name.$error.required}">
-            <md-option value="shift_log">Shift Log</md-option>
-            <md-option value="time_loss">Time-loss Log</md-option>
-            <md-option value="observation">Observation Log</md-option>
-            <md-option value="status_log">Status Log</md-option>
-            <md-option value="maintenance">Maintenance</md-option>
+        <md-select style="margin: 16px 0; width: 205px" placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px" name="testType">
             <md-option value="alarm_log">Alarm Log</md-option>
+            <md-option value="maintenance">Maintenance</md-option>
+            <md-option value="observation">Observation Log</md-option>
+            <md-option value="shift_log">Shift Log</md-option>
+            <md-option value="status_log">Status Log</md-option>
+            <md-option value="time_loss">Time-loss Log</md-option>
         </md-select>
         </div>
         <div layout="row">
@@ -62,18 +62,14 @@
             </div>
         </div>
 
-        <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match>
+        <md-chips ng-model="selectedTags">
             <md-autocomplete
-                md-selected-item="selectedItem"
-                md-selected-item-change=""
                 md-search-text="searchText"
-                md-search-text-change=""
                 md-items="item in querySearch(searchText)"
                 md-item-text="item.name"
-                ng-blur=clear()
                 placeholder="Select tags">
                 <md-item-template>
-                    <span md-highlight-text="searchText">{{item.name}}</span>
+                    <span md-highlight-text="searchText" title="{{item.slug}}">{{item.name}}</span>
                 </md-item-template>
                 <md-not-found>
                     No matches found
@@ -101,10 +97,10 @@
         </div>
     </md-dialog-content>
     <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">
-        <md-button ng-click="hide()" class="md-primary">
+        <md-button ng-click="hide()" class="md-primary md-raised">
             Cancel
         </md-button>
-        <md-button ng-click="add()" class="md-primary" ng-disabled="testForm.testType.$error.required">
+        <md-button ng-click="add()" class="md-primary md-raised" ng-disabled="testForm.testType.$error.required">
             Submit Log
         </md-button>
     </div>
