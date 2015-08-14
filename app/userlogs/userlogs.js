@@ -171,6 +171,9 @@
                         $log.info('Tags already on log: ' + JSON.stringify(ulog.tags));
                         $scope.chosen_tags = [];
                         $log.info('Tags fetched from db: ' + JSON.stringify(tags));
+                        $scope.add_tag_from_list = function (listed_tag) {
+                            $scope.selectedTags.push(listed_tag);
+                        };
                         $scope.hide = function () {
                             $mdDialog.hide();
                         };

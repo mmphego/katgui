@@ -1,4 +1,4 @@
-<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 600px; overflow: visible"
+<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 800px; overflow: visible"
            ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false;">
     <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
         <span>User Log Editor</span>
@@ -61,7 +61,8 @@
             </div>
         </div>
 
-        <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match>
+        <div layout="row" flex>
+        <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match flex>
             <md-autocomplete
                 md-selected-item="selectedItem"
                 md-selected-item-change=""
@@ -79,14 +80,26 @@
                 </md-not-found>
             </md-autocomplete>
             <md-chip-template>
-                    <span>
+                    <span style="overflow: auto; width: 100%;">
                         <strong>{{$chip.name}}</strong>
                     </span>
             </md-chip-template>
-            <md-button class="md-fab" aria-label="Eat cake">
+            <md-button class="md-fab" aria-label="Remove Tag">
                 <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
             </md-button>
         </md-chips>
+        <md-button class="md-icon-button" ng-click="toggleTags = !toggleTags" style="margin-left: 0; margin-top: 1px;" flex="10">
+            <md-icon class="fa" md-font-icon="fa-tags"></md-icon>
+        </md-button>
+        <div ng-init="toggleTags = false" ng-show="toggleTags" id="replyForm">
+            <md-virtual-repeat-container id="vertical-container" 
+                                         style="height: 100px; width: 200px; position: absolute; bottom: 100px; background-color: white; border: 1px solid darkgray; box-shadow: 10px 10px 5px #888888;">
+                <div md-virtual-repeat="listed_tag in tags" class="repeated-item" flex style="padding-left: 5px;" ng-click="add_tag_from_list(listed_tag)">
+                    {{listed_tag.name}}
+                </div>
+            </md-virtual-repeat-container>
+        </div>
+        </div>
 
         <div layout="row" layout-align="start center" style="margin: 16px 0">
             <span style="margin-right: 8px">Attachments:</span>
