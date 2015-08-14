@@ -6,8 +6,7 @@
     function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService) {
 
         var api = {};
-        //api.urlBase = SERVER_URL + '/katcontrol';
-        api.urlBase = 'http://monctl.devw.camlab.kat.ac.za:8820';
+        api.urlBase = SERVER_URL + '/katcontrol';
         api.userlogs = [];
         api.my_userlogs = [];
         api.report_userlogs = [];
