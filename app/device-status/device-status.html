@@ -43,9 +43,9 @@
                     </span>
             </div>
         </md-toolbar>
-        <div flex style="margin-bottom: 16px; padding: 8px;" class="md-whiteframe-z1">
+        <div flex style="margin-bottom: 16px; padding: 8px 0" class="md-whiteframe-z1">
             <div ng-repeat="key in vm.sortedSensorNames | regexSearch:vm.sensorsOrderByFields:vm.q:vm.sensorValues track by $index" layout="row"
-                 ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[key].status !== 'nominal'">
+                 ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[key].status !== 'nominal'" class="device-status-row-item">
                 <span class="resource-sensor-name" style="min-width: 350px;max-width: 350px;">{{vm.sensorValues[key].name}}</span>
                 <span class="resource-sensor-status-item" ng-class="vm.sensorClass(vm.sensorValues[key].status)">{{vm.sensorValues[key].status}}</span>
                 <span class="resource-sensor-time-item">{{vm.sensorValues[key].date}}</span>
