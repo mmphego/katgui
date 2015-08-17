@@ -25,6 +25,16 @@
         vm.orderByFields = [
             {label: 'Type', value: 'userlog_type'},
             {label: 'Start Time', value: 'start_time'},
+            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'End Time', value: 'end_time'},
+            {label: 'Content', value: 'userlog_content'}
+        ];
+
+        vm.orderByUserLogsFields = [
+            {label: 'Type', value: 'userlog_type'},
+            {label: 'Start Time', value: 'start_time'},
+            {label: 'Timestamp', value: 'timestamp'},
+            {label: 'Name', value: 'name'},
             {label: 'End Time', value: 'end_time'},
             {label: 'Content', value: 'userlog_content'}
         ];
@@ -89,16 +99,18 @@
                         '<th>Userlog Content</th>' +
                     '</tr>' +
                 '</thead>';
-                for (var ilog = 0; ilog < vm.report_userlogs.length; ilog++) {
+
+                vm.filtered_report_userlogs.forEach(function (item) {
                     report_markup += '<tr>' +
-                        '<td>' + vm.report_userlogs[ilog].userlog_type + '</td>' +
-                        '<td>' + vm.report_userlogs[ilog].timestamp + '</td>' +
-                        '<td>' + vm.report_userlogs[ilog].name + '</td>' +
-                        '<td>' + vm.report_userlogs[ilog].start_time + '</td>' +
-                        '<td>' + vm.report_userlogs[ilog].end_time + '</td>' +
-                        '<td>' + vm.report_userlogs[ilog].userlog_content + '</td>' +
-                        '</tr>';
-                }
+                    '<td>' + item.userlog_type + '</td>' +
+                    '<td>' + item.timestamp + '</td>' +
+                    '<td>' + item.name + '</td>' +
+                    '<td>' + item.start_time + '</td>' +
+                    '<td>' + item.end_time + '</td>' +
+                    '<td>' + item.userlog_content + '</td>' +
+                    '</tr>';
+                });
+
                 report_markup += '</table>';
 
                 pdf.setFontSize(20);
@@ -142,7 +154,6 @@
             });
         };
 
-
         vm.getCompleteUserLog = function (ulog, userlogs, event) {
             UserLogService.getUserLog(ulog.id).then(function () {
                 vm.focused_ulog = UserLogService.focus_ulog;
@@ -181,7 +192,7 @@
             if (start_time) {query += "start_time=" + start_time + "&"}
             if (end_time) {query += "end_time=" + end_time + "&"}
             UserLogService.queryUserLogs(query).then(function (result) {
-                $log.info(result);
+                $log.info('User log query result length: ' + vm.report_userlogs.length);
             });
         };
 
