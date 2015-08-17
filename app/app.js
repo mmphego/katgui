@@ -329,7 +329,6 @@
         //$locationProvider.html5Mode(true);
         configureThemes($mdThemingProvider);
 
-
         $stateProvider.state('login', {
             url: '/login',
             templateUrl: 'app/login-form/login-form.html',
@@ -489,7 +488,7 @@
         $urlRouterProvider.otherwise('/login');
     }
 
-    function runKatGui($rootScope, $state, $localStorage, $log) {
+    function runKatGui($rootScope, $state, $localStorage, $log, $templateCache) {
 
         $rootScope.$on('$stateChangeStart', function (event, toState) {
             if (!$rootScope.loggedIn && toState.name !== 'login') {
@@ -503,6 +502,12 @@
                 $rootScope.requestedStateBeforeLogin = null;
                 event.preventDefault();
                 $state.go(newStateName);
+            }
+        });
+
+        $rootScope.$on('$routeChangeStart', function(event, next, current) {
+            if (typeof(current) !== 'undefined'){
+                $templateCache.remove(current.templateUrl);
             }
         });
 

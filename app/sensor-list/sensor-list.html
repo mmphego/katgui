@@ -67,7 +67,7 @@
                     </span>
                 </div>
             </md-toolbar>
-            <md-virtual-repeat-container flex style="padding: 8px; overflow: auto; min-height: 100%;" class="md-whiteframe-z1">
+            <md-virtual-repeat-container flex style="padding: 8px 0; overflow: auto; min-height: 100%;" class="md-whiteframe-z1">
                 <!--ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal'"-->
                 <div
                     md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)"
