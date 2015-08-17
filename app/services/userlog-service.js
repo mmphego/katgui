@@ -59,9 +59,7 @@
                 .then(function (result) {
                     api.my_userlogs.splice(0, api.my_userlogs.length);
                     result.data.forEach(function (userlog) {
-                        if (userlog.timestamp) {
-                            userlog.timestamp = moment(userlog.timestamp).format('YYYY-DD-MM HH:mm:ss.SSS')
-                        }
+                        userlog.timestamp = moment(userlog.timestamp).format('YYYY-DD-MM HH:mm:ss.SSS')
                         api.my_userlogs.push(userlog);
                     });
                     defer.resolve();
@@ -120,6 +118,7 @@
                 .then(function (result) {
                     api.report_userlogs.splice(0, api.report_userlogs.length);
                     result.data.forEach(function (userlog) {
+                        userlog.timestamp = moment(userlog.timestamp).format('YYYY-DD-MM HH:mm:ss.SSS')
                         userlog.start_time = $filter('date')(new Date(userlog.start_time), 'yyyy-MM-dd HH:mm');
                         userlog.end_time = $filter('date')(new Date(userlog.end_time), 'yyyy-MM-dd HH:mm');
                         api.report_userlogs.push(userlog);
