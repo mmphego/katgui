@@ -63,7 +63,7 @@
     </md-toolbar>
 
     <div class="md-whiteframe-z1" style="overflow: auto; margin-bottom: 8px;">
-        <div layout="column" ng-repeat="node in vm.nodes | orderBy:node track by $index" style="margin-top: 4px">
+        <div layout="column" ng-repeat="node in vm.nodes | orderBy:node:true track by $index" style="margin-top: 4px">
             <md-toolbar class="md-toolbar-tools-small md-whiteframe-z1">
                 <span flex><b>{{node}}</b></span>
             </md-toolbar>
