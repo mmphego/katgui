@@ -243,14 +243,17 @@
                     utcTime.month() + 1,
                     utcTime.year(),
                     fractionalHours);
-                $rootScope.julianDay = Math.round(julianDayWithTime * 1000) / 1000;
+                $rootScope.julianDay = Math.floor(julianDayWithTime * 100000) / 100000;
                 if ($rootScope.longitude) {
                     $rootScope.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
+                }
+                if (!$scope.$$phase) {
+                    $scope.$digest();
                 }
             }
         };
 
-        vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 1000);
+        vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 500);
         ConfigService.getSiteLocation()
             .then(function (result) {
                 var trimmedResult = result.data.replace(/"/g, '');

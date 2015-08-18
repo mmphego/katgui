@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('multiLineChart', function (DATETIME_FORMAT) {
+    .directive('multiLineChart', function (DATETIME_FORMAT, $timeout) {
         return {
             restrict: 'EA',
             scope: {
@@ -27,8 +27,11 @@ angular.module('katGui.d3')
                     return element[0].clientHeight + ', ' + element[0].clientWidth;
                 }, function (newVal, oldVal) {
                     if (newVal !== oldVal) {
-                        drawSvg();
-                        drawValues();
+                        //allow for some time for the dom elements to complete resizing
+                        $timeout(function () {
+                            drawSvg();
+                            drawValues();
+                        }, 750);
                     }
                 });
 
