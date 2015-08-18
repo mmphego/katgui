@@ -253,7 +253,7 @@
             }
         };
 
-        vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 250);
+        vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 500);
         ConfigService.getSiteLocation()
             .then(function (result) {
                 var trimmedResult = result.data.replace(/"/g, '');
