@@ -39,8 +39,8 @@
             <div layout="row">
                 <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
                     <input type="text" ng-change="vm.startTimeChange()" class=""
-                           ng-model="vm.sensorStartDateReadable" placeholder="Start Date"
-                           ng-class="{'input-error':vm.dateTimeError}" title="End Date 'HH:mm:ss yyyy-MM-dd'"
+                           ng-model="vm.sensorStartDateReadable" placeholder="Start Date (UTC)"
+                           ng-class="{'input-error':vm.dateTimeError}" title="Start Date 'HH:mm:ss yyyy-MM-dd' UTC"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
                 <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
@@ -72,8 +72,8 @@
             <div layout="row" layout="center center" style="margin-top: -10px;" ng-show="!vm.showRelativeTime">
                 <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
                     <input type="text" ng-change="vm.endTimeChange()" class=""
-                           ng-model="vm.sensorEndDateReadable" placeholder="End Date"
-                           ng-class="{'input-error':vm.endDateTimeError}" title="Start Date 'HH:mm:ss yyyy-MM-dd'"
+                           ng-model="vm.sensorEndDateReadable" placeholder="End Date (UTC)"
+                           ng-class="{'input-error':vm.endDateTimeError}" title="End Date 'HH:mm:ss yyyy-MM-dd' (UTC)"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
                 <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"

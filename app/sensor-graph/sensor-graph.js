@@ -3,19 +3,19 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, KatGuiUtil, DataService, $filter, SensorsService, $interval, $log,
+    function SensorGraphCtrl($scope, $rootScope, DataService, SensorsService, $interval, $log,
                              NotifyService) {
 
         var vm = this;
-        var DATETIME_FORMAT = 'HH:mm:ss yyyy-MM-dd';
+        var DATETIME_FORMAT = 'HH:mm:ss YYYY-MM-DD';
         vm.showGridLines = false;
         vm.dateTimeError = false;
         vm.sensorNames = [];
         vm.sensorStartDatetime = new Date();
-        vm.sensorStartDatetime = new Date(vm.sensorStartDatetime.getTime() - 60000 * 60); //one hour earlier
-        vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, DATETIME_FORMAT);
+        vm.sensorStartDatetime = new Date((vm.sensorStartDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000)) - (60000 * 60)); //one hour earlier
+        vm.sensorStartDateReadable = moment(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
         vm.sensorEndDatetime = new Date();
-        vm.sensorEndDateReadable = $filter('date')(vm.sensorEndDatetime, DATETIME_FORMAT);
+        vm.sensorEndDateReadable = moment(vm.sensorEndDatetime.getTime() + (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000)).format(DATETIME_FORMAT);
         vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
@@ -80,12 +80,12 @@
         };
 
         vm.onTimeSet = function () {
-            vm.sensorStartDateReadable = $filter('date')(vm.sensorStartDatetime, DATETIME_FORMAT);
+            vm.sensorStartDateReadable = moment(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
             vm.dateTimeError = false;
         };
 
         vm.onEndTimeSet = function () {
-            vm.sensorEndDateReadable = $filter('date')(vm.sensorEndDatetime, DATETIME_FORMAT);
+            vm.sensorEndDateReadable = moment(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
             vm.endDateTimeError = false;
         };
 
@@ -202,19 +202,19 @@
         };
 
         vm.searchSensorClicked = function (sensor) {
-            var startDate = vm.sensorStartDatetime.getTime();
-            var endDate = vm.sensorEndDatetime.getTime();
+            var startDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
+            var endDate = vm.sensorEndDatetime.getTime() - (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000);
             if (vm.showRelativeTime) {
                 endDate = (vm.getMillisecondsDifference(
                     vm.plusMinus,
-                    vm.sensorStartDatetime.getTime(),
+                    startDate,
                     vm.unitLength,
                     vm.unitType));
             }
 
             if (endDate < startDate) {
                 startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime();
+                endDate = vm.sensorStartDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
             }
 
             if (sensor.type === 'discrete') {
@@ -285,56 +285,6 @@
 
                 }, function (error) {
                     vm.waitingForSearchResult = false;
-                    $log.error(error);
-                    NotifyService.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
-                });
-        };
-
-        vm.findSensorDataFromRegex = function (sensorName, $event) {
-            if ($event.keyCode !== 13) {
-                return;
-            }
-            var startDate = vm.sensorStartDatetime.getTime();
-            var endDate = vm.sensorEndDatetime.getTime();
-            if (vm.showRelativeTime) {
-                endDate = (vm.getMillisecondsDifference(
-                    vm.plusMinus,
-                    vm.sensorStartDatetime.getTime(),
-                    vm.unitLength,
-                    vm.unitType));
-            }
-
-            if (endDate < startDate) {
-                startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime();
-            }
-            vm.showTips = false;
-            NotifyService.showSimpleToast('Retrieving sensor data, please wait.');
-            DataService.findSensorDataFromRegex(sensorName, startDate, endDate, 10000, 'ms', 'json', vm.sensorType)
-                .then(function (result) {
-                    var newData = [];
-                    //pack the result in the way our chart needs it
-                    //because the json we receive is not good enough
-                    for (var attr in result.data) {
-                        for (var i = 0; i < result.data[attr].length; i++) {
-                            newData.push({
-                                Sensor: attr,
-                                Timestamp: result.data[attr][i].sample_ts,
-                                Value: result.data[attr][i].value
-                            });
-                        }
-                        if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensorName})) || vm.liveData) {
-                            vm.sensorNames.push({name: attr, liveData: vm.liveData, sensor: sensor});
-                        }
-                    }
-
-                    if (newData.length !== 0) {
-                        NotifyService.showSimpleToast(newData.length + ' sensor data points found for ' + sensorName + '.');
-                        vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
-                    } else {
-                        NotifyService.showSimpleToast('No sensor data found for ' + sensorName + '.');
-                    }
-                }, function (error) {
                     $log.error(error);
                     NotifyService.showSimpleDialog('Error Finding Sensor Data', 'There was an error finding sensor data, is the server running?');
                 });
