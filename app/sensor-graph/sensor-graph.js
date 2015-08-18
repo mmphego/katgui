@@ -233,7 +233,7 @@
                     .then(function (result) {
                         vm.findSensorData(result.data, startDate, endDate);
                         if (vm.liveData) {
-                            vm.connectLiveFeed(result);
+                            vm.connectLiveFeed(result.data);
                         }
                     }, function (error) {
                         $log.error(error);
@@ -381,21 +381,11 @@
         };
 
         vm.connectLiveFeed = function (sensor) {
-            var sensorName;
-            var component;
-            if (sensor.data && sensor.data.katcp_name) {
-                sensorName = sensor.data.katcp_name.substr(sensor.data.katcp_name.indexOf('.') + 1);
-                component = sensor.data.katcp_name.split('.')[0];
-                sensor.data.component = component;
-            } else {
-                sensorName = sensor.katcp_name.substr(sensor.katcp_name.indexOf('.') + 1);
-                component = sensor.katcp_name.split('.')[0];
-                sensor.component = component;
-            }
+            var sensorName = sensor.katcp_name.substr(sensor.katcp_name.indexOf('.') + 1);
             sensorName = sensorName.replace(/\./g, '_');
-            SensorsService.subscribe(component + '.' + sensorName, SensorsService.guid);
+            SensorsService.subscribe(sensor.component + '.' + sensorName, SensorsService.guid);
             SensorsService.setSensorStrategy(
-                component,
+                sensor.component,
                 sensorName,
                 $rootScope.sensorListStrategyType,
                 $rootScope.sensorListStrategyInterval,
