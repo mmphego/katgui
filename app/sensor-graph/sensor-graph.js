@@ -66,7 +66,7 @@
         vm.initSensors = function () {
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
-                    var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+                    var sensorName = sensor.katcp_name.substr(sensor.katcp_name.indexOf('.') + 1);
                     sensorName = sensorName.replace(/\./g, '_');
                     SensorsService.setSensorStrategy(
                         sensor.component,
@@ -152,7 +152,7 @@
 
         vm.clearData = function () {
             vm.sensorNames.forEach(function (item) {
-                var sensorName = item.sensor.katcp_sensor_name.substr(item.sensor.katcp_sensor_name.indexOf('.') + 1);
+                var sensorName = item.sensor.katcp_name.substr(item.sensor.katcp_name.indexOf('.') + 1);
                 sensorName = sensorName.replace(/\./g, '_');
                 SensorsService.unsubscribe(item.sensor.component + '.' + sensorName, vm.guid);
                 item.liveData = false;
@@ -341,7 +341,7 @@
 
         vm.chipRemovePressed = function (chip) {
             vm.removeSensorLine(chip.name);
-            var sensorName = chip.sensor.katcp_sensor_name.substr(chip.sensor.katcp_sensor_name.indexOf('.') + 1);
+            var sensorName = chip.sensor.katcp_name.substr(chip.sensor.katcp_name.indexOf('.') + 1);
             sensorName = sensorName.replace(/\./g, '_');
             SensorsService.unsubscribe(chip.sensor.component + '.' + sensorName, vm.guid);
         };
@@ -380,10 +380,20 @@
         };
 
         vm.connectLiveFeed = function (sensor) {
-            var sensorName = sensor.katcp_sensor_name.substr(sensor.katcp_sensor_name.indexOf('.') + 1);
+            var sensorName;
+            var component;
+            if (sensor.data && sensor.data.katcp_name) {
+                sensorName = sensor.data.katcp_name.substr(sensor.data.katcp_name.indexOf('.') + 1);
+                component = sensor.data.katcp_name.split('.')[0];
+                sensor.data.component = component;
+            } else {
+                sensorName = sensor.katcp_name.substr(sensor.katcp_name.indexOf('.') + 1);
+                component = sensor.katcp_name.split('.')[0];
+                sensor.component = component;
+            }
             sensorName = sensorName.replace(/\./g, '_');
             SensorsService.setSensorStrategy(
-                sensor.component,
+                component,
                 sensorName,
                 $rootScope.sensorListStrategyType,
                 $rootScope.sensorListStrategyInterval,
@@ -412,7 +422,7 @@
                     vm.connectLiveFeed(item.sensor);
                     item.liveData = true;
                 } else {
-                    var sensorName = item.sensor.katcp_sensor_name.substr(item.sensor.katcp_sensor_name.indexOf('.') + 1);
+                    var sensorName = item.sensor.katcp_name.substr(item.sensor.katcp_name.indexOf('.') + 1);
                     sensorName = sensorName.replace(/\./g, '_');
                     SensorsService.unsubscribe(item.sensor.component + '.' + sensorName, vm.guid);
                     item.liveData = false;

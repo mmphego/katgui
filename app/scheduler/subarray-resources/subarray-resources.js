@@ -105,6 +105,7 @@
                 resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
                 return resource.maintenance;
             } else {
+                resource.maintenance = false;
                 return false;
             }
         };
