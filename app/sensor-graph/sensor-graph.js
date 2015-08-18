@@ -14,8 +14,8 @@
         vm.sensorStartDatetime = new Date();
         vm.sensorStartDatetime = new Date((vm.sensorStartDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000)) - (60000 * 60)); //one hour earlier
         vm.sensorStartDateReadable = moment(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
-        vm.sensorEndDatetime = new Date();
-        vm.sensorEndDateReadable = moment(vm.sensorEndDatetime.getTime() + (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000)).format(DATETIME_FORMAT);
+        vm.sensorEndDatetime = new Date(new Date().getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000));
+        vm.sensorEndDateReadable = moment(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
         vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
@@ -214,7 +214,7 @@
 
             if (endDate < startDate) {
                 startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
+                endDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
             }
 
             if (sensor.type === 'discrete') {
