@@ -67,7 +67,7 @@
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
                     var sensorName = sensor.katcp_name.substr(sensor.katcp_name.indexOf('.') + 1);
-                    sensorName = sensorName.replace(/\./g, '_');
+                    sensorName = sensorName.replace(/\./g, '_').replace(/-/g, '_');
                     SensorsService.subscribe(sensor.component + '.' + sensorName, SensorsService.guid);
                     SensorsService.setSensorStrategy(
                         sensor.component,
@@ -154,7 +154,7 @@
         vm.clearData = function () {
             vm.sensorNames.forEach(function (item) {
                 var sensorName = item.sensor.katcp_name.substr(item.sensor.katcp_name.indexOf('.') + 1);
-                sensorName = sensorName.replace(/\./g, '_');
+                sensorName = sensorName.replace(/\./g, '_').replace(/-/g, '_');
                 SensorsService.unsubscribe(item.sensor.component + '.' + sensorName, SensorsService.guid);
                 item.liveData = false;
             });
@@ -293,7 +293,7 @@
         vm.chipRemovePressed = function (chip) {
             vm.removeSensorLine(chip.name);
             var sensorName = chip.sensor.katcp_name.substr(chip.sensor.katcp_name.indexOf('.') + 1);
-            sensorName = sensorName.replace(/\./g, '_');
+            sensorName = sensorName.replace(/\./g, '_').replace(/-/g, '_');
             SensorsService.unsubscribe(chip.sensor.component + '.' + sensorName, SensorsService.guid);
         };
 
@@ -332,7 +332,7 @@
 
         vm.connectLiveFeed = function (sensor) {
             var sensorName = sensor.katcp_name.substr(sensor.katcp_name.indexOf('.') + 1);
-            sensorName = sensorName.replace(/\./g, '_');
+            sensorName = sensorName.replace(/\./g, '_').replace(/-/g, '_');
             SensorsService.subscribe(sensor.component + '.' + sensorName, SensorsService.guid);
             SensorsService.setSensorStrategy(
                 sensor.component,
@@ -344,7 +344,7 @@
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             if (sensor.value) {
-                var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_');
+                var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_').replace(/-/g, '_');
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
                     vm.redrawChart([{
                         Sensor: realSensorName,
