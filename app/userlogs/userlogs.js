@@ -157,7 +157,7 @@
         vm.getCompleteUserLog = function (ulog, userlogs, event) {
             UserLogService.getUserLog(ulog.id).then(function () {
                 vm.focused_ulog = UserLogService.focus_ulog;
-                vm.editUserLog(vm.focused_ulog, userlogs, event);
+                vm.editUserLog(vm.focused_ulog, userlogs, vm.tags, event);
             });
         };
 
@@ -196,10 +196,10 @@
             });
         };
 
-        vm.editUserLog = function (ulog, userlogs, event) {
+        vm.editUserLog = function (ulog, userlogs, tags, event) {
             $mdDialog
                 .show({
-                    controller: function ($rootScope, $scope, $mdDialog, $filter) {
+                    controller: function ($rootScope, $scope, $mdDialog, $filter, UserLogService, $log) {
                         $scope.ulog = ulog;
                         //if (!$scope.ulog.start_time) {
                         //    $scope.ulog.start_time = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm');
@@ -213,7 +213,7 @@
                             $scope.ulog.userlog_type = 'shift_log';
                         }
                         $log.info('Updated focus log: ' + JSON.stringify(ulog));
-                        $scope.tags = UserLogService.tags;
+                        $scope.tags = tags;
                         $scope.selectedItem = null;
                         $scope.searchText = null;
                         $scope.selectedTags = ulog.tags;
