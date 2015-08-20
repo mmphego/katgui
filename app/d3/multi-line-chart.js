@@ -21,7 +21,7 @@ angular.module('katGui.d3')
                 scope.hideTooltip = true;
                 var contextBrushColor = '#333';
                 if (bgColor !== 'rgb(255, 255, 255)') {
-                    contextBrushColor = '#fff'
+                    contextBrushColor = '#fff';
                 }
 
                 var unbindResize = scope.$watch(function () {
@@ -88,10 +88,10 @@ angular.module('katGui.d3')
                                 existingDataLine.values.push(d);
                                 existingDataLine.values = _.sortBy(existingDataLine.values, function (sensor) {
                                     return sensor.Timestamp;
-                                })
+                                });
                                 existingDataLine.values = _.uniq(existingDataLine.values, true, function (sensor) {
                                     return sensor.Timestamp;
-                                })
+                                });
                                 if (existingDataLine.values.length > 1 &&
                                     existingDataLine.values[0].Timestamp === existingDataLine.values[existingDataLine.values.length - 1].Timestamp) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);

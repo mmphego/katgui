@@ -21,7 +21,7 @@ angular.module('katGui.d3')
                 element.css({'background-color': bgColor});
                 var contextBrushColor = '#333';
                 if (bgColor !== 'rgb(255, 255, 255)') {
-                    contextBrushColor = '#fff'
+                    contextBrushColor = '#fff';
                 }
 
                 var unbindResize = scope.$watch(function () {
@@ -52,17 +52,17 @@ angular.module('katGui.d3')
 
                             var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
                             if (existingDataLine) {
-                                while (existingDataLine.values.length > 0
-                                && new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
+                                while (existingDataLine.values.length > 0 &&
+                                new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
                                     existingDataLine.values.splice(0, 1);
                                 }
                                 existingDataLine.values.push(d);
                                 existingDataLine.values = _.sortBy(existingDataLine.values, function (sensor) {
                                     return sensor.Timestamp;
-                                })
+                                });
                                 existingDataLine.values = _.uniq(existingDataLine.values, true, function (sensor) {
                                     return sensor.Timestamp;
-                                })
+                                });
                                 if (existingDataLine.values.length > 1 &&
                                     existingDataLine.values[0].Timestamp === existingDataLine.values[existingDataLine.values.length - 1].Timestamp) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
@@ -262,7 +262,7 @@ angular.module('katGui.d3')
                         scope.nestedData.forEach(function (data) {
                             if (!d3.select("." + data.key + "-tooltip")[0][0]) {
                                 var focusTooltip = svg.append("g")
-                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
+                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key);
                                 focusTooltip.append("circle")
                                     .attr("class", "focus-tooltip-circle" + data.key)
                                     .style("fill", "none")
