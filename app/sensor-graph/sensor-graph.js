@@ -244,6 +244,7 @@
 
         vm.findSensorData = function (sensor, startDate, endDate, yAxisValues) {
 
+            vm.removeSensorLine(sensor.sensor);
             vm.waitingForSearchResult = true;
             vm.showTips = false;
             var humanizedDuration = moment.duration(endDate).subtract(startDate).humanize();

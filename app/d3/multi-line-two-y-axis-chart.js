@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('multiLineTwoYAxisChart', function (DATETIME_FORMAT) {
+    .directive('multiLineTwoYAxisChart', function (DATETIME_FORMAT, $timeout) {
         return {
             restrict: 'EA',
             scope: {
@@ -21,15 +21,18 @@ angular.module('katGui.d3')
                 element.css({'background-color': bgColor});
                 var contextBrushColor = '#333';
                 if (bgColor !== 'rgb(255, 255, 255)') {
-                    contextBrushColor = '#fff'
+                    contextBrushColor = '#fff';
                 }
 
                 var unbindResize = scope.$watch(function () {
                     return element[0].clientHeight + ', ' + element[0].clientWidth;
                 }, function (newVal, oldVal) {
                     if (newVal !== oldVal) {
-                        drawSvg();
-                        drawValues();
+                        //allow for some time for the dom elements to complete resizing
+                        $timeout(function () {
+                            drawSvg();
+                            drawValues();
+                        }, 750);
                     }
                 });
 
@@ -49,11 +52,21 @@ angular.module('katGui.d3')
 
                             var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
                             if (existingDataLine) {
-                                while (existingDataLine.values.length > 0
-                                && new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
+                                while (existingDataLine.values.length > 0 &&
+                                new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
                                     existingDataLine.values.splice(0, 1);
                                 }
                                 existingDataLine.values.push(d);
+                                existingDataLine.values = _.sortBy(existingDataLine.values, function (sensor) {
+                                    return sensor.Timestamp;
+                                });
+                                existingDataLine.values = _.uniq(existingDataLine.values, true, function (sensor) {
+                                    return sensor.Timestamp;
+                                });
+                                if (existingDataLine.values.length > 1 &&
+                                    existingDataLine.values[0].Timestamp === existingDataLine.values[existingDataLine.values.length - 1].Timestamp) {
+                                    existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
+                                }
                             } else {
                                 scope.nestedData.push({key: d.Sensor, values: [d], rightAxis: d.rightAxis, color: d.color});
                             }
@@ -118,12 +131,16 @@ angular.module('katGui.d3')
                             .attr("width", width)
                             .attr("height", height)
                             .attr("class", "overlay")
-                            //.on("mouseover", function() {
-                            //})
                             .on("mouseout", function () {
                                 if (!scope.lockShowTooltip) {
                                     d3.select(element[0]).selectAll(".focus-tooltip").style("display", "none");
                                     tooltip.style('display', 'none');
+                                }
+                            })
+                            .on("mouseover", function () {
+                                if (!scope.lockShowTooltip) {
+                                    d3.select(element[0]).selectAll(".focus-tooltip").style("display", "initial");
+                                    tooltip.style('display', 'initial');
                                 }
                             })
                             .on("mousemove", function () {
@@ -245,7 +262,7 @@ angular.module('katGui.d3')
                         scope.nestedData.forEach(function (data) {
                             if (!d3.select("." + data.key + "-tooltip")[0][0]) {
                                 var focusTooltip = svg.append("g")
-                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
+                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key);
                                 focusTooltip.append("circle")
                                     .attr("class", "focus-tooltip-circle" + data.key)
                                     .style("fill", "none")
@@ -283,9 +300,6 @@ angular.module('katGui.d3')
                 }
 
                 function mousemove(calledWithoutEvent) {
-                    if (calledWithoutEvent !== true) {
-                        d3.select(element[0]).selectAll(".focus-tooltip").style("display", null);
-                    }
                     var mouse = null;
                     var tooltipValues = [];
                     scope.nestedData.forEach(function (data) {
@@ -341,7 +355,7 @@ angular.module('katGui.d3')
                             xTranslate -= 180;
                         }
 
-                        tooltip.attr("style", "transform: translate(" + (xTranslate ) + "px,  0)");
+                        tooltip.style("transform", "translate(" + (xTranslate ) + "px,  0)");
                     }
 
                     if (!calledWithoutEvent) {
