@@ -210,8 +210,6 @@ angular.module('katGui.d3')
                             .attr("width", width)
                             .attr("height", height)
                             .attr("class", "overlay")
-                            //.on("mouseover", function() {
-                            //})
                             .on("mouseout", function () {
                                 if (!scope.lockShowTooltip) {
                                     d3.select(element[0]).selectAll(".focus-tooltip").style("display", "none");
