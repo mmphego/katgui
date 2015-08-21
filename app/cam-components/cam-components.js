@@ -21,13 +21,6 @@
 
         var sensorNameList = ['version', 'build'];
 
-
-        // host: SensorsService.resources[key].host,
-        // port: SensorsService.resources[key].port,
-        // build_state: SensorsService.resources[key].build_state,
-        // api_version: SensorsService.resources[key].api_version,
-        // connected: SensorsService.resources[key].synced,
-
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
