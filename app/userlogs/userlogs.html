@@ -6,7 +6,7 @@
                 <input class="fade-in search-input-box" type="search"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Userlogs..."/>
                 <md-button class="md-icon-button inline-action-button"
-                           ng-click="vm.editUserLog(vm.blank_ulog, vm.my_userlogs, $event)"
+                           ng-click="vm.editUserLog(vm.blank_ulog, vm.my_userlogs, vm.tags, $event)"
                            style="margin: 0 8px">
                     <md-icon class="fa" md-font-icon="fa-plus"></md-icon>
                 </md-button>

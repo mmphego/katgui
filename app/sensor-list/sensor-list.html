@@ -2,7 +2,7 @@
 
     <div flex layout="row" style="margin: 16px; max-height: 100%; min-height: 100%">
         <div layout="column" style="min-width:138px;">
-            <div layout="column" style="margin-bottom: 8px" ng-repeat="node in vm.nodes | orderBy:node track by $index">
+            <div layout="column" style="margin-bottom: 8px" ng-repeat="node in vm.nodes | orderBy:node:true track by $index">
                 <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="center center">
                     <span>{{node}}</span>
                 </md-toolbar>
@@ -20,7 +20,7 @@
         <div flex class="resource-sensors-list" layout="column" style="max-height: 100%; min-height: 100%">
             <md-toolbar class="md-whiteframe-z1" style=" min-height: 80px">
                 <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
-                    <span flex>Sensors</span>
+                    <span flex>Sensors {{' - ' + vm.resourceSensorsBeingDisplayed | uppercase}}</span>
                     <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-click="$event.stopPropagation()"
                                  md-theme="{{themePrimaryButtons}}" style="font-size: 16px;">
                         Hide Nominal Sensors

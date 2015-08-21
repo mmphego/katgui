@@ -1,5 +1,5 @@
 <md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 800px; overflow: visible"
-           ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false;">
+           ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false; toggleTags = false;">
     <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
         <span>User Log Editor</span>
     </md-toolbar>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div layout="row" flex>
+        <div layout="row" layout-align="start center" flex>
         <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match flex>
             <md-autocomplete
                 md-search-text="searchText"
@@ -85,16 +85,15 @@
                 <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
             </md-button>
         </md-chips>
-        <md-button class="md-icon-button" ng-click="toggleTags = !toggleTags" style="margin-left: 0; margin-top: 1px;" flex="10">
-            <md-icon class="fa" md-font-icon="fa-tags"></md-icon>
+        <md-button ng-click="toggleTags = !toggleTags; $event.stopPropagation()" style="margin: 0; padding: 0; min-height: 32px; min-width: 32px">
+            <span class="fa fa-tags"></span>
         </md-button>
         <div ng-init="toggleTags = false" ng-show="toggleTags" id="replyForm">
-            <md-virtual-repeat-container id="vertical-container"
-                                         style="height: 100px; width: 200px; position: absolute; bottom: 100px; background-color: white; border: 1px solid darkgray; box-shadow: 10px 10px 5px #888888;">
-                <div md-virtual-repeat="listed_tag in tags" class="repeated-item" flex style="padding-left: 5px;" ng-click="add_tag_from_list(listed_tag)">
+            <div id="vertical-container" class="md-whiteframe-z3 tag-popup-list">
+                <div ng-repeat="listed_tag in tags track by $index" class="repeated-item" flex ng-click="add_tag_from_list(listed_tag)">
                     {{listed_tag.name}}
                 </div>
-            </md-virtual-repeat-container>
+            </div>
         </div>
         </div>
 

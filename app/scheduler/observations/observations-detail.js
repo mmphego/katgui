@@ -30,6 +30,16 @@
             if (vm.subarray_id) {
                 vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
             }
+
+            if (!vm.subarray.id && vm.subarray_id) {
+                vm.checkSubarrayDataInterval = $interval(function () {
+                    if (!vm.subarray.id) {
+                        vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
+                    } else {
+                        $interval.cancel(vm.checkSubarrayDataInterval);
+                    }
+                }, 500);
+            }
         };
 
         if ($stateParams.subarray_id !== '' && $rootScope.iAmLO) {

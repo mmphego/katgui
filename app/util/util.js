@@ -292,15 +292,15 @@ function katGuiUtil(SERVER_URL, $sce) {
         var str;
         if (min >= 10) {
             str = h + ":" + min;
-        }
-        else {
+        } else {
             str = h + ":0" + min;
         }
 
         if (secs < 10) {
             str = str + ":0" + secs;
-        }
-        else {
+        } else if (secs === 60) {
+            str = str + ":00";
+        } else {
             str = str + ":" + secs;
         }
         return (" " + str).trim();

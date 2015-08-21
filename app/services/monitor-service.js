@@ -103,9 +103,7 @@
                     $log.error('There was an error sending a jsonrpc request:');
                     $log.error(messages);
                 } else if (messages.result.msg_channel === 'time:time') {
-                    //add one seconds because our display update interval
-                    //is only every second
-                    api.lastSyncedTime = messages.result.msg_data + 1;
+                    api.lastSyncedTime = messages.result.msg_data + 0.5;
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.result) {
                         if (messages.id === 'redis-pubsub') {

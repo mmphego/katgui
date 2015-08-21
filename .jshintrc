@@ -32,6 +32,6 @@
         "alert": true,
         "d3": true,
         "SockJS": true,
-        "CryptoJS": true,
+        "CryptoJS": true
     }
 }
