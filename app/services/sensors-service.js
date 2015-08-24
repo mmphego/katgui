@@ -204,6 +204,31 @@
             return deferred.promise;
         };
 
+        api.listResourcesFromConfig = function () {
+            var deferred = $q.defer();
+            for (var node in ConfigService.systemConfig['katconn:resources']) {
+                var processList = ConfigService.systemConfig['katconn:resources'][node].split(',');
+                for (var i in processList) {
+                    var group = 'Components';
+                    if (node === 'single_ctl') {
+                        group = 'Proxies';
+                    }
+                    var processClientConfig = ConfigService.systemConfig['katconn:clients'][processList[i]].split(':');
+                    api.resources[processList[i]] = {
+                        name: processList[i],
+                        host: processClientConfig[0],
+                        port: processClientConfig[1],
+                        node: group
+                    };
+                }
+            }
+
+            $timeout(function () {
+                deferred.resolve(api.resources);
+            }, 0);
+            return deferred.promise;
+        };
+
         api.listResourceSensors = function (resourceName) {
             var deferred = $q.defer();
             $http.get(urlBase + '/resource/' + resourceName + '/sensors')

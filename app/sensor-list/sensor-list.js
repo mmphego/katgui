@@ -74,7 +74,7 @@
         vm.initSensors = function () {
             if (vm.resourcesNames.length === 0) {
                 vm.nodes = ConfigService.resourceGroups;
-                SensorsService.listResources()
+                SensorsService.listResourcesFromConfig()
                     .then(function (result) {
                         for (var key in result) {
                             vm.resourcesNames.push({name: key, node: result[key].node});
@@ -243,7 +243,7 @@
         };
 
         $scope.filterByNotNominal = function(sensor) {
-            return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal'
+            return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal';
         };
 
         $scope.$on('$destroy', function () {
