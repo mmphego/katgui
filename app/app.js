@@ -270,13 +270,12 @@
 
         $rootScope.showSBDetails = NotifyService.showSBDetails;
 
-        vm.openCentralLogger = function () {
-            //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
+        $rootScope.openCentralLogger = function () {
+            window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + ':' + CENTRAL_LOGGER_PORT).focus();
         };
 
-        vm.openGangliaLink = function () {
-            window.open('ganglia/');
+        $rootScope.openGangliaLink = function () {
+            window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
         };
 
         vm.openIRCDisplay = function ($event) {

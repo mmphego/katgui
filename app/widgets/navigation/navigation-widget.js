@@ -19,11 +19,6 @@
 
         var vm = this;
 
-        vm.openCentralLogger = function () {
-            //TODO get from config and eventually redo central logger
-            KatGuiUtil.openRelativePath('', CENTRAL_LOGGER_PORT);
-        };
-
         vm.schedulerNavData = [{
             name: 'SB Drafts',
             textOffset: -10,
@@ -120,7 +115,7 @@
 
         vm.logsNavData = [{
             name: 'Central Logs',
-            state: vm.openCentralLogger,
+            state: $rootScope.openCentralLogger,
             textOffset: -10,
             title: 'Open Central Logger in a new tab'
         }, {
