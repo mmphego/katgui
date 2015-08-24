@@ -3,8 +3,8 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, DataService, SensorsService, $interval, $log,
-                             NotifyService) {
+    function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService,
+                             SensorsService, $interval, $log, NotifyService) {
 
         var vm = this;
         var DATETIME_FORMAT = 'HH:mm:ss YYYY-MM-DD';
@@ -28,6 +28,9 @@
         vm.yAxisMaxValue = 100;
         vm.disconnectIssued = false;
         vm.connectInterval = null;
+        if (!$localStorage['sensorGraphAutoCompleteList']) {
+            $localStorage['sensorGraphAutoCompleteList'] = [];
+        }
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -179,6 +182,13 @@
                 return;
             }
             if (searchStr.length > 2) {
+                var originalSearchStr = searchStr;
+                if (searchStr[0] !== "*") {
+                    searchStr = "*" + searchStr;
+                }
+                if (searchStr[searchStr.length - 1] !== "*") {
+                    searchStr = searchStr + "*";
+                }
                 vm.sensorSearchNames.splice(0, vm.sensorSearchNames.length);
                 vm.waitingForSearchResult = true;
                 DataService.findSensorName(searchStr, vm.sensorType)
@@ -192,6 +202,9 @@
                                 vm.sensorSearchNames.push(sensor);
                             });
                             vm.waitingForSearchResult = false;
+                            if (result.data.data.length > 0 && $localStorage['sensorGraphAutoCompleteList'].indexOf(originalSearchStr) === -1) {
+                                $localStorage['sensorGraphAutoCompleteList'].push(originalSearchStr);
+                            }
                         }
                     }, function (result) {
                         NotifyService.showSimpleDialog('Error Finding Sensors', 'There was an error finding sensors, is the server running?');
@@ -283,6 +296,7 @@
                     } else {
                         NotifyService.showSimpleToast('No sensor data found for ' + sensor.sensor + '.');
                     }
+                    vm.waitingForSearchResult = false;
 
                 }, function (error) {
                     vm.waitingForSearchResult = false;
@@ -371,6 +385,41 @@
                     item.liveData = false;
                 }
             });
+        };
+
+        vm.querySearch = function (query) {
+            var results = query ? $localStorage['sensorGraphAutoCompleteList'].filter(vm.createFilterFor(query)) : [];
+            return results;
+        };
+
+        vm.createFilterFor = function (query) {
+            return function filterFn(item) {
+                return (item.indexOf(query) > -1);
+            };
+        };
+
+        vm.selectedItemChange = function (item, $event) {
+            if (item) {
+                vm.findSensorNames(item, {keyCode: 13}); //simulate keypress
+            }
+        };
+
+        vm.removeAutoCompleteItem = function (item) {
+            vm.waitingForSearchResult = true;
+            var index = $localStorage['sensorGraphAutoCompleteList'].indexOf(item);
+            if (index > -1) {
+                $localStorage['sensorGraphAutoCompleteList'].splice(index, 1);
+            }
+            vm.searchText = "";
+            $timeout(function () {
+                vm.waitingForSearchResult = false;
+            }, 50);
+        };
+
+        vm.enterPressesOnInput = function (item) {
+            if (item) {
+                vm.findSensorNames(item, {keyCode: 13});
+            }
         };
 
         $scope.$on('$destroy', function () {

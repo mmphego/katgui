@@ -7,7 +7,7 @@ angular.module('katGui.util')
     .filter('prettifyJSON', function() {
         return function (input) {
             return JSON.prettify.prettyPrint(input);
-        }
+        };
     })
     .filter('utcDateFromUnix', function(DATETIME_FORMAT) {
         return function (input) {
@@ -23,6 +23,25 @@ angular.module('katGui.util')
                     $timeout(scope.$parent.loadMore, 100);
                 }
             }
+        };
+    })
+    .directive('enterPressed', function () {
+        return function (scope, element, attrs) {
+            element.bind("keydown keypress", function (event) {
+                if(event.which === 13) {
+                    var fn = function(command) {
+                        var cmd = command;
+                        return function() {
+                            scope.$eval(cmd);
+                        };
+                    }(attrs.enterPressed.replace('()', '("'+ event.target.value +'")' ));
+
+                  // Apply function
+                  scope.$apply(fn);
+
+                  event.preventDefault();
+                }
+            });
         };
     })
     .directive('draggable', function($document) {
@@ -206,7 +225,7 @@ function regexSearchFilter() {
 
             var out = [];
             if (input instanceof Array === false &&
-                angular.isObject(input) == "object") {
+                angular.isObject(input) === "object") {
                 out = {};
             }
             for (var i = 0; i < inputArray.length; i++) {
@@ -353,10 +372,12 @@ function katGuiUtil(SERVER_URL, $sce) {
             var val = '<span class=json-value>';
             var str = '<span class=json-string>';
             var r = pIndent || '';
-            if (pKey)
+            if (pKey) {
                 r = r + key + pKey.replace(/[": ]/g, '') + '</span>: ';
-            if (pVal)
-                r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
+            }
+            if (pVal) {
+                r = r + (pVal[0] === '"' ? str : val) + pVal + '</span>';
+            }
             return r + (pEnd || '');
         },
         prettyPrint: function(obj) {

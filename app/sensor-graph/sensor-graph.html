@@ -121,13 +121,35 @@
             <!--ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>-->
             <!--</md-input-container>-->
 
-            <md-input-container md-no-float class="sensor-search-input" style="padding: 0 4px;">
-                <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
+            <!-- <md-input-container md-no-float class="sensor-search-input" style="padding: 0 4px;"> -->
+                <!-- <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
                        placeholder="Search for sensors... e.g. *wind*" ng-model="vm.sensorSearchStr"
                        ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
                        ng-class="{'input-error':vm.sensorSearchFieldLengthError}"
-                       title="Type a sensor name expression and press enter. E.g. *wind*"/>
-            </md-input-container>
+                       title="Type a sensor name expression and press enter. E.g. *wind*"/> -->
+            <!-- </md-input-container> -->
+            <md-autocomplete style="min-width: 350px;"
+                md-no-cache="true"
+                ng-disabled="vm.waitingForSearchResult"
+                md-search-text="vm.searchText"
+                md-items="item in vm.querySearch(vm.searchText)"
+                md-selected-item-change="vm.selectedItemChange(item)"
+                md-item-text="item"
+                placeholder="Type a sensor name expression E.g. wind"
+                enter-pressed="vm.enterPressesOnInput()">
+                <md-item-template>
+                    <div layout="row" layout-align="start center">
+                        <span flex md-highlight-text="vm.searchText">{{item}}</span>
+                        <button class="md-button" ng-click="vm.removeAutoCompleteItem(item); $event.stopPropagation();"
+                            style="max-width: 32px; min-width: 32px; max-height: 32px;">
+                            <span class="fa fa-remove"></span>
+                        </button>
+                    </div>
+                </md-item-template>
+                <md-not-found>
+                    No matches found
+                </md-not-found>
+            </md-autocomplete>
             <div style="min-height: 5px" ng-show="!vm.waitingForSearchResult"></div>
             <md-progress-linear style="padding: 0 8px;" ng-show="vm.waitingForSearchResult" class="md-primary" md-mode="indeterminate"></md-progress-linear>
 
