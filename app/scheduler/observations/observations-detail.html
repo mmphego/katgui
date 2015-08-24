@@ -112,7 +112,7 @@
                                                 md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; opacity: 0.8;">
                             </md-progress-linear>
-                            <span title="{{item.priority}}" style="min-width: 14px" class="fa" ng-class="{'fa-arrow-circle-up': item.priority === 'HIGH', 'fa-arrow-circle-down': item.priority === 'LOW'}"></span>
+                            <span title="{{item.priority}}" style="min-width: 14px; font-size: 14px" class="fa" ng-class="{'fa-arrow-circle-up dark-blue-grey-color': item.priority === 'HIGH', 'fa-arrow-circle-down light-grey-color': item.priority === 'LOW'}"></span>
                             <div layout="column" layout-align="start" style="width: 120px">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                       style="font-size: 14px; font-weight: bold">{{item.id_code}}
@@ -245,26 +245,13 @@
                     <div flex style="margin-left: 8px;" layout="row" layout-align="center center">
                         <span flex>Resources</span>
                     </div>
-                    <div style="font-size: 12px; width: 100%;" layout="row" layout-align="start center">
-                        <span style="margin-left: 8px;" flex>Selected SB Resources</span>
-                        <span style="margin-right: 8px;">Subarray Resources</span>
+                    <div style="left: 0; bottom: 0; position: absolute; height: 12px" layout="row">
+                        <span style="font-size: 10px; margin-right: 2px;" title="Resources in Maintenance">Maint.</span>
+                        <span style="font-size: 10px;" title="Resources Marked as Faulty">Faulty</span>
                     </div>
                 </md-toolbar>
                 <div flex style="padding: 0" layout="row">
-                    <div class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; width: 180px; overflow: hidden">
-                        <div ng-repeat="resource in vm.subarray.allocations track by $index" layout-align="center center"
-                             class="resource-pool-item" layout="row" ng-if="!vm.selectedSchedule || resource.allocation === vm.selectedSchedule.id_code">
-                            <span style="min-width: 22px; margin-left: 4px;">
-                                <span class="fa fa-wrench maintenance-text" ng-if="resource.maintenance" title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
-                            </span>
-                            <span style="min-width: 22px; margin-left: 4px;">
-                                <span class="fa fa-warning error-text" style="font-size: 18px; min-width: 18px;" ng-if="resource.faulty" title="Resource Marked Faulty"></span>
-                            </span>
-                            <span flex style="font-size:18px; margin-left: 4px;"
-                                  ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
-                        </div>
-                    </div>
-                    <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; max-width: 450px;" layout="column">
+                    <div flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; max-width: 450px; overflow: auto" layout="column">
                         <div ng-repeat="resource in vm.subarray.allocations track by $index" layout-align="center center"
                              class="resource-pool-item" layout="row">
                             <span style="min-width: 22px; margin-left: 4px;">
@@ -303,4 +290,3 @@
         </div>
     </div>
 </div>
-
