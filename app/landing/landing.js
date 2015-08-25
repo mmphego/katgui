@@ -17,16 +17,15 @@
                                 title: "Navigation Controls"
                             }
                         ]
+                    }, {
+                       widgets: [
+                           {
+                               type: "ApodWidget",
+                               config: {},
+                               title: "APOD"
+                           }
+                       ]
                     }
-                    //, {
-                    //    widgets: [
-                    //        {
-                    //            type: "GanttWidget",
-                    //            config: {},
-                    //            title: "Observation Schedule (EXAMPLE DATA)"
-                    //        }
-                    //    ]
-                    //}
                 ]
             }
         ]
