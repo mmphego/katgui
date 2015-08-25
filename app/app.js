@@ -10,6 +10,7 @@
         'katGui.d3',
         'katGui.health',
         'katGui.widgets.navigationWidget',
+        'katGui.widgets.apodWidget',
         'katGui.widgets.ganttWidget',
         'katGui.dashboardStructure',
         'katGui.landing',
@@ -276,6 +277,10 @@
 
         $rootScope.openGangliaLink = function () {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
+        };
+
+        $rootScope.openUrlInNewTab = function (url) {
+            window.open(url).focus();
         };
 
         vm.openIRCDisplay = function ($event) {
