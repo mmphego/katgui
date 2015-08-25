@@ -72,7 +72,7 @@
 
         vm.onTimeSet = function (newDate) {
             if (newDate < new Date(1996, 05, 16) || newDate > new Date()) {
-                vm.errorText = "Date must be between Jun 16, 1996 and Aug 25, 2015.";
+                vm.errorText = "Date must be between Jun 16, 1996 and today.";
             } else {
                 vm.errorText = "";
                 vm.loadApod(newDate);
