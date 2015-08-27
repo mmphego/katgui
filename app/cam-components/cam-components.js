@@ -19,7 +19,7 @@
             });
         }
 
-        var sensorNameList = ['version*', 'build*'];
+        var sensorNameList = ['version', 'build'];
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -57,34 +57,31 @@
 
         vm.initSensors = function () {
             vm.nodes = ConfigService.resourceGroups;
-            SensorsService.listResources()
-                .then(function () {
-                    for (var key in SensorsService.resources) {
+            SensorsService.listResourcesFromConfig()
+                .then(function (result) {
+                    for (var key in result) {
                         vm.resourcesNames[key] = {
                             name: key,
                             sensors: {},
-                            host: SensorsService.resources[key].host,
-                            port: SensorsService.resources[key].port,
-                            build_state: SensorsService.resources[key].build_state,
-                            api_version: SensorsService.resources[key].api_version,
-                            connected: SensorsService.resources[key].synced,
-                            node: SensorsService.resources[key].node
+                            host: result[key].host,
+                            port: result[key].port,
+                            node: result[key].node
                         };
                         vm.resourcesNames[key].nodeman = $rootScope.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
+                        for (var i in sensorNameList) {
+                            SensorsService.setSensorStrategy(
+                                key, sensorNameList[i], 'event-rate', 1, 120);
+                        }
                         SensorsService.setSensorStrategy(
-                            key, sensorNameList[0], 'event', 0, 0);
+                            key, 'logging_katcpmsgs_devices_enabled', 'event-rate', 1, 120);
                         SensorsService.setSensorStrategy(
-                            key, sensorNameList[1], 'event', 0, 0);
-                        SensorsService.setSensorStrategy(
-                            key, 'logging_katcpmsgs_devices_enabled', 'event-rate', 1, 10);
-                        SensorsService.setSensorStrategy(
-                            key, 'logging_katcpmsgs_proxy_enabled', 'event-rate', 1, 10);
+                            key, 'logging_katcpmsgs_proxy_enabled', 'event-rate', 1, 120);
                     }
 
                     SensorsService.setSensorStrategy(
-                        'sys', 'monitor_*', 'event', 0, 0);
+                        'sys', 'monitor_', 'event-rate', 1, 120);
                     SensorsService.setSensorStrategy(
-                        'sys', 'config_label', 'event', 0, 0);
+                        'sys', 'config_label', 'event-rate', 1, 120);
                 });
 
         };
@@ -114,6 +111,7 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
+            $log.info(sensor);
             var strList = sensor.name.split(':');
             var sensorNameList = strList[1].split('.');
             $scope.$apply(function () {
@@ -143,12 +141,12 @@
 
         vm.disableAllKATCPMessageLogging = function () {
             for (var name in vm.resourcesNames) {
-                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled
-                    && vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled.value) {
+                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled &&
+                    vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled.value) {
                     ControlService.toggleKATCPMessageDevices(name, 'disable');
                 }
-                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled
-                    && vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled.value) {
+                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled &&
+                    vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled.value) {
                     ControlService.toggleKATCPMessageProxy(name, 'disable');
                 }
             }

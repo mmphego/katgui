@@ -146,10 +146,10 @@
                             fontSize: 7
                             }
                         );
-                        pdf.save('Shift_Report_' + export_time + '.pdf');
+                        pdf.save('Userlog_Report_' + export_time + '.pdf');
                     });
                 } else {
-                    pdf.save('Shift_Report_' + export_time + '.pdf');
+                    pdf.save('Userlog_Report_' + export_time + '.pdf');
                 }
             });
         };
@@ -292,6 +292,18 @@
                         };
                         $scope.onTimeSet = function (value, target, attribute) {
                             target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm');
+                                if (ulog.start_time <= ulog.end_time) {
+                                    $scope.endDateTimeError = false;
+                                } else {
+                                    $scope.endDateTimeError = true;
+                                }
+                        };
+                        $scope.onTimeChange = function () {
+                            if (ulog.start_time <= ulog.end_time) {
+                                $scope.endDateTimeError = false;
+                            } else {
+                                $scope.endDateTimeError = true;
+                            }
                         };
                         $scope.file_url = UserLogService.file_url;
                         $scope.getFile = function(downloadPath, name, ulog_id) {

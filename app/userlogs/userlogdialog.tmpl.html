@@ -6,8 +6,8 @@
     <md-dialog-content style="padding: 12px;" layout="column" md-theme="{{$root.themePrimaryButtons}}">
         <div layout="row">
             <div layout="row" layout-align="center center" style="min-width: 220px;">
-                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;"   required ng-class="{'input-error':register.name.$error.required}">
-                    <input flex type="text"
+                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
+                    <input flex type="text" ng-change="onTimeChange()"
                            data-ng-model="ulog.start_time" placeholder="Start Date"
                            title="Start Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()"/>
@@ -26,7 +26,7 @@
             <div flex layout="row" layout-align="center center">TO</div>
             <div layout="row" layout-align="center center" style="min-width: 220px;">
                 <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
-                    <input flex type="text"
+                    <input flex type="text" ng-change="onTimeChange()"
                            data-ng-model="ulog.end_time" placeholder="End Date"
                            title="End Date 'HH:mm:ss yyyy-MM-dd'"
                            ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()"/>
@@ -43,7 +43,7 @@
                                 data-on-set-time="vm.showEndDatePicker = false; onTimeSet(ulog.end_time, ulog, 'end_time')"></datetimepicker>
             </div>
         </div>
-        <div ng-form name="testForm">
+        <div>
         <md-select style="margin: 16px 0; width: 205px" placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px" name="testType">
             <md-option value="alarm_log">Alarm Log</md-option>
             <md-option value="maintenance">Maintenance</md-option>
@@ -110,10 +110,13 @@
         </div>
     </md-dialog-content>
     <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">
+        <div ng-show ="endDateTimeError" style="color:red;">
+            End date cannot be before start date!
+        </div>
         <md-button ng-click="hide()" class="md-primary md-raised">
             Cancel
         </md-button>
-        <md-button ng-click="add()" class="md-primary md-raised" ng-disabled="testForm.testType.$error.required">
+        <md-button ng-click="add()" class="md-primary md-raised" ng-disabled="endDateTimeError">
             Submit Log
         </md-button>
     </div>

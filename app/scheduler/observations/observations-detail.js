@@ -31,7 +31,7 @@
                 vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
             }
 
-            if (!vm.subarray.id && vm.subarray_id) {
+            if ((!vm.subarray || !vm.subarray.id) && vm.subarray_id) {
                 vm.checkSubarrayDataInterval = $interval(function () {
                     if (!vm.subarray.id) {
                         vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});

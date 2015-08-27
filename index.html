@@ -53,7 +53,7 @@
 <script src="bower_components/jsjws/ext/json-sans-eval-min.js"></script>
 <script src="bower_components/jsrsasign/jsrsasign-4.7.0-all-min.js"></script>
 <script src="bower_components/d3/d3.min.js"></script>
-<script src="bower_components/jspdf/dist/jspdf.debug.js"></script>
+<script src="bower_components/jspdf/dist/jspdf.min.js"></script>
 <script src="bower_components/html2canvas/build/html2canvas.js"></script>
 <script src="bower_components/jspdf-autotable/jspdf.plugin.autotable.js"></script>
 <!--<script src="bower_components/angular-gantt/assets/angular-gantt.js"></script>-->
@@ -113,6 +113,7 @@
 <script src="app/alarms/alarms.js"></script>
 <script src="app/alarms/alarms-notify.js"></script>
 <script src="app/widgets/navigation/navigation-widget.js"></script>
+<script src="app/widgets/apod/apod-widget.js"></script>
 <script src="app/widgets/gantt/gantt-widget.js"></script>
 <script src="app/widgets/dashboard-structures.js"></script>
 <script src="app/scheduler/scheduler-home.js"></script>
@@ -187,7 +188,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.openCentralLogger()">
+                    <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="$root.openCentralLogger()">
                         <md-button flex><span class="fa fa-file-text-o"></span><span>Central Logs</span></md-button>
                     </md-item-content>
                 </md-item>
@@ -251,7 +252,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openGangliaLink()">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.openGangliaLink()">
                         <md-button flex><span class="fa fa-area-chart"></span><span>Cluster Monitoring (Ganglia)</span></md-button>
                     </md-item-content>
                 </md-item>
