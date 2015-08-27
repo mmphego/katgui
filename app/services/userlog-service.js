@@ -119,8 +119,6 @@
                     api.report_userlogs.splice(0, api.report_userlogs.length);
                     result.data.forEach(function (userlog) {
                         userlog.timestamp = moment(userlog.timestamp).format('YYYY-DD-MM HH:mm:ss.SSS')
-                        userlog.start_time = $filter('date')(new Date(userlog.start_time), 'yyyy-MM-dd HH:mm');
-                        userlog.end_time = $filter('date')(new Date(userlog.end_time), 'yyyy-MM-dd HH:mm');
                         api.report_userlogs.push(userlog);
                     });
                     defer.resolve();
@@ -224,7 +222,8 @@
                     start_time: ulog.start_time,
                     end_time: ulog.end_time,
                     content: ulog.userlog_content,
-                    tags: ulog.tags
+                    tags: ulog.tags,
+                    metadata_to_del: ulog.metadata_to_del
                 }))
                 .then(function (result) {
                     ulog.id = result.data.id;
