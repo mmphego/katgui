@@ -182,7 +182,6 @@
             UserLogService.listTaxonomies();
         };
 
-        vm.report_userlogs = UserLogService.report_userlogs;
         vm.queryUserlogs = function (event, b_query) {
             var query = "?";
             var log_type = b_query.userlog_type;
@@ -192,6 +191,7 @@
             if (start_time) {query += "start_time=" + start_time + "&"}
             if (end_time) {query += "end_time=" + end_time + "&"}
             UserLogService.queryUserLogs(query).then(function (result) {
+                vm.report_userlogs = UserLogService.report_userlogs;
                 $log.info('User log query result length: ' + vm.report_userlogs.length);
             });
         };
@@ -201,6 +201,15 @@
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog, $filter, UserLogService, $log) {
                         $scope.ulog = ulog;
+                        $scope.metadata_to_del = [];
+                        $scope.toggle = function (item, list) {
+                            var idx = list.indexOf(item);
+                            if (idx > -1) list.splice(idx, 1);
+                            else list.push(item);
+                        };
+                        $scope.exists = function (item, list) {
+                            return list.indexOf(item) > -1;
+                        };
                         if (!$scope.ulog.userlog_type) {
                             $scope.ulog.userlog_type = 'shift_log';
                         }
@@ -236,7 +245,8 @@
                                 start_time: $filter('date')(ulog.start_time, 'yyyy-MM-dd HH:mm'),
                                 end_time: $filter('date')(ulog.end_time, 'yyyy-MM-dd HH:mm'),
                                 userlog_content: ulog.userlog_content,
-                                tags: $scope.chosen_tags
+                                tags: $scope.chosen_tags,
+                                metadata_to_del: $scope.metadata_to_del
                             };
                             $scope.tagFix();
                             var file = $scope.myFile;
