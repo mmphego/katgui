@@ -56,14 +56,14 @@ angular.module('katGui.d3')
 
                     if (newData) {
                         newData.forEach(function (d) {
-                            d.date = new Date(parseFloat(d.Timestamp) * 1000);
+                            d.date = new Date(d.Timestamp);
                             if (yAxisValues) {
                                 d.value = d.Value;
                             } else {
                                 if (typeof(d.Value) === 'boolean') {
                                     d.value = d.Value ? 1 : 0;
-                                } else if (typeof(d.Value) === 'number' || !isNaN(parseFloat(d.Value))) {
-                                    d.value = parseFloat(d.Value);
+                                } else if (typeof(d.Value) === 'number' || !isNaN(d.Value)) {
+                                    d.value = d.Value;
                                 } else {
                                     d.value = d.Value;
                                     if (!scope.yAxisValues) {

@@ -119,7 +119,7 @@
                 vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
                 vm.clearChart();
             }
-            if (ConfigService.sensorGroups[resourceName]) {
+            if (ConfigService.sensorGroups && ConfigService.sensorGroups[resourceName]) {
                 vm.resourceSensorsBeingDisplayed = resourceName;
                 if (!vm.resources[resourceName]) {
                     vm.resources[resourceName] = {};

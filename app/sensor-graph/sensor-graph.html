@@ -141,7 +141,7 @@
 
             <div class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames | orderBy:'name' track by $index"
-                     ng-click="vm.searchSensorClicked(sensor);" title="{{sensor.attributes.description}}">
+                     ng-click="vm.findSensorData(sensor);" title="{{sensor.attributes.description}}">
                     <span>{{sensor.name}}</span>
                 </div>
             </div>
