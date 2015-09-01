@@ -152,9 +152,13 @@
                 NotifyService.showSimpleToast('Invalid username or password.');
                 $state.go('login');
             } else {
-                console.error('Error logging return, server returned with:');
-                console.error(result.data);
-                NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                $log.error('Error logging return, server returned with:');
+                $log.error(result.data);
+                if (result.data.err_msg) {
+                    NotifyService.showSimpleToast('Error: ' + result.data.err_msg);
+                } else {
+                    NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                }
                 $state.go('login');
             }
         }

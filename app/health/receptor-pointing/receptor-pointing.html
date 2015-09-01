@@ -8,7 +8,7 @@
         <md-menu-content width="4" style="padding-left: 16px;" ng-click="$event.stopPropagation()">
             <md-menu-item>
                 <md-checkbox class="md-primary" ng-model="vm.useEquatorial" ng-init="vm.useEquatorial = true" ng-change="vm.redraw(true)"
-                    ng-click="$event.stopPropagation()" md-menu-align-target>
+                    ng-click="$event.stopPropagation(); vm.delaydRedrawAfterViewChange()" md-menu-align-target>
                     <span>Use Equatorial Coordinates</span>
                 </md-checkbox>
             </md-menu-item>

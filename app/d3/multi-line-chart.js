@@ -127,7 +127,7 @@ angular.module('katGui.d3')
 
                 scope.clearFunction = function () {
                     scope.yAxisValues = null;
-                    scope.nestedData.splice(0, scope.nestedData.length);
+                    scope.nestedData = [];
                     drawSvg();
                     drawValues();
                 };
@@ -217,7 +217,7 @@ angular.module('katGui.d3')
                                 }
                             })
                             .on("mouseover", function () {
-                                if (!scope.lockShowTooltip) {
+                                if (!scope.lockShowTooltip && scope.nestedData.length > 0) {
                                     d3.select(element[0]).selectAll(".focus-tooltip").style("display", "initial");
                                     tooltip.style('display', 'initial');
                                 }
@@ -495,6 +495,9 @@ angular.module('katGui.d3')
                 }
 
                 function mousemove(calledWithoutEvent) {
+                    if (scope.nestedData.length === 0) {
+                        return;
+                    }
                     var mouse = null;
                     var tooltipValues = [];
                     scope.nestedData.forEach(function (data) {

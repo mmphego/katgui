@@ -114,20 +114,6 @@
                 </md-select>
             </div>
 
-            <!--<md-input-container md-no-float class="sensor-search-input">-->
-            <!--<input type="text" ng-change="vm.validateSearchInputLength(vm.sensorRegexStr)"-->
-            <!--placeholder="Search for sensors by regex..." ng-model="vm.sensorRegexStr"-->
-            <!--ng-keypress="vm.findSensorDataFromRegex(vm.sensorRegexStr, $event)"-->
-            <!--ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>-->
-            <!--</md-input-container>-->
-
-            <!-- <md-input-container md-no-float class="sensor-search-input" style="padding: 0 4px;"> -->
-                <!-- <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
-                       placeholder="Search for sensors... e.g. *wind*" ng-model="vm.sensorSearchStr"
-                       ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
-                       ng-class="{'input-error':vm.sensorSearchFieldLengthError}"
-                       title="Type a sensor name expression and press enter. E.g. *wind*"/> -->
-            <!-- </md-input-container> -->
             <md-autocomplete style="min-width: 350px;"
                 md-no-cache="true"
                 ng-disabled="vm.waitingForSearchResult"
@@ -155,7 +141,7 @@
 
             <div class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames | orderBy:'name' track by $index"
-                     ng-click="vm.searchSensorClicked(sensor);">
+                     ng-click="vm.searchSensorClicked(sensor);" title="{{sensor.attributes.description}}">
                     <span>{{sensor.name}}</span>
                 </div>
             </div>
@@ -168,10 +154,16 @@
                 <span ng-show="vm.sensorSearchNames.length === 0" style="margin-left: 4px;">There are no results.</span>
             </div>
 
-            <div layout="column" style="width: 100%;">
+            <div layout="column" layout-align="start center" style="width: 100%;">
                 <md-checkbox class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()">
                     Include Live Data
                 </md-checkbox>
+                <md-button class="md-primary md-raised" ng-click="vm.clearData()">
+                    Clear Sensor Graph
+                </md-button>
+                <md-button class="md-primary md-raised" ng-click="vm.drawAllSensorNamesConfirm($event)">
+                    Draw All Sensors
+                </md-button>
             </div>
         </div>
     </div>

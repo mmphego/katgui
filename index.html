@@ -300,8 +300,8 @@
     </md-sidenav>
 
     <div layout="column" flex>
-        <md-toolbar id="main-top-toolbar" ng-if="loggedIn" ng-show="vm.showNavbar" class="md-whiteframe-z1" md-theme-watch="true"
-                    ng-class="{'slide-in-vertically-navbar': loggedIn, 'connection-lost-bg-bright': vm.connectionToMonitorLost}" >
+        <md-toolbar id="main-top-toolbar" ng-if="$root.loggedIn" ng-show="vm.showNavbar" class="md-whiteframe-z3" md-theme-watch="true" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden;"
+                    ng-class="{'slide-in-vertically-navbar': $root.loggedIn && !vm.showNavbar, 'connection-lost-bg-bright': vm.connectionToMonitorLost}" >
             <div class="md-toolbar-tools" layout="row" style="padding: 0; max-height: 56px; min-height: 56px; overflow: hidden;">
                 <md-button class="mainbar-navbar-button" ng-click="vm.toggleLeftSidenav()">
                     <span class="fa fa-navicon"></span>

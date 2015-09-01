@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorPointingHorizontal', function () {
+    .directive('receptorPointingHorizontal', function ($timeout) {
         return {
             restrict: 'EA',
             scope: {
@@ -15,8 +15,11 @@ angular.module('katGui.d3')
                     return element[0].clientHeight + ', ' + element[0].clientWidth;
                 }, function (newVal, oldVal) {
                     if (newVal !== oldVal && !scope.drawingSvg) {
-                        drawSvg();
-                        drawValues();
+                        //allow for some time for the dom elements to complete resizing
+                        $timeout(function () {
+                            drawSvg();
+                            drawValues();
+                        }, 750);
                     }
                 });
 
@@ -67,11 +70,11 @@ angular.module('katGui.d3')
                         }
                     });
 
-                    if (!svg
-                        || scope.showGridLines !== showGridLines
-                        || newHorizonData
-                        || horizonMaskToggled
-                        || scope.showNames !== showNames) {
+                    if (!svg ||
+                        scope.showGridLines !== showGridLines ||
+                        newHorizonData ||
+                        horizonMaskToggled ||
+                        scope.showNames !== showNames) {
                         scope.showGridLines = showGridLines;
                         scope.showNames = showNames;
                         drawSvg();
@@ -121,7 +124,7 @@ angular.module('katGui.d3')
                     yAxisElement = chart.append("g")
                         .attr("class", "y axis y-axis");
 
-                    x.domain([-180, 180]);
+                    x.domain([-190, 190]);
                     y.domain([-5, 100]);
 
                     //create the axis

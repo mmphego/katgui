@@ -102,6 +102,15 @@
         if (!angular.isDefined($rootScope.showLST)) {
             $rootScope.showLST = true;
         }
+        if (!angular.isDefined($rootScope.showDate)) {
+            $rootScope.showDate = true;
+        }
+        if (!angular.isDefined($rootScope.showDayOfYear)) {
+            $rootScope.showDayOfYear = false;
+        }
+        if (!angular.isDefined($rootScope.showJulianDate)) {
+            $rootScope.showJulianDate = true;
+        }
 
         if (!angular.isDefined($rootScope.showLocalAndSAST)) {
             $rootScope.showLocalAndSAST = true;
@@ -109,9 +118,6 @@
 
         vm.currentUser = null;
         vm.userRoles = USER_ROLES;
-        vm.userCanOperate = false;
-        vm.userLoggedIn = false;
-        vm.actionMenuOpen = false;
         vm.connectionToMonitorLost = false;
         $rootScope.alarmsData = AlarmsService.alarmsData;
         $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;

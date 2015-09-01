@@ -87,6 +87,9 @@
         };
 
         api.setClassesOfSensor = function (d, sensorToUpdateName) {
+            if (!d) {
+                return;
+            }
             if (d.depth > 0) {
                 if (!d.sensorValue) {
                     d.sensorValue = {};

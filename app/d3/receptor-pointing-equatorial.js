@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorPointingEquatorial', function () {
+    .directive('receptorPointingEquatorial', function ($timeout) {
         return {
             restrict: 'EA',
             scope: {
@@ -16,8 +16,11 @@ angular.module('katGui.d3')
                     return element[0].clientHeight + ', ' + element[0].clientWidth;
                 }, function (newVal, oldVal) {
                     if (newVal !== oldVal) {
-                        drawSvg();
-                        drawValues();
+                        //allow for some time for the dom elements to complete resizing
+                        $timeout(function () {
+                            drawSvg();
+                            drawValues();
+                        }, 750);
                     }
                 });
 
@@ -54,11 +57,11 @@ angular.module('katGui.d3')
                         }
                     });
 
-                    if (!svg
-                        || scope.showGridLines !== showGridLines
-                        || newHorizonData
-                        || horizonMaskToggled
-                        || scope.showNames !== showNames) {
+                    if (!svg ||
+                        scope.showGridLines !== showGridLines ||
+                        newHorizonData ||
+                        horizonMaskToggled ||
+                        scope.showNames !== showNames) {
                         scope.showGridLines = showGridLines;
                         scope.showNames = showNames;
                         drawSvg();
@@ -86,7 +89,7 @@ angular.module('katGui.d3')
 
                     width = element[0].clientWidth - margin.left - margin.right;
                     height = element[0].clientHeight - margin.top - margin.bottom - 5;
-                    scale = height * .45;
+                    scale = height * 0.45;
 
                     if (height < 0) {
                         height = 0;
@@ -97,8 +100,8 @@ angular.module('katGui.d3')
                         .scale(scale)
                         .clipAngle(130)
                         .rotate([0, -90])
-                        .translate([width / 2 + .5, height / 2 + .5])
-                        .precision(.01);
+                        .translate([width / 2 + 0.5, height / 2 + 0.5])
+                        .precision(0.01);
 
                     path = d3.geo.path()
                         .projection(projection);
@@ -360,9 +363,9 @@ angular.module('katGui.d3')
                             var itemsList = svg.selectAll("." + d.name + "_actual")[0];
 
                             for (var i = itemsList.length - 1; i >= 0; i--) {
-                                if (i != itemsList.length - 1 && itemsList.length - 1 - i >= scope.trailDots) {
+                                if (i !== itemsList.length - 1 && itemsList.length - 1 - i >= scope.trailDots) {
                                     itemsList[i].remove();
-                                } else if (i != itemsList.length - 1) {
+                                } else if (i !== itemsList.length - 1) {
                                     angular.element(itemsList[i]).attr("r", 2);
                                 }
                             }
