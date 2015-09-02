@@ -70,15 +70,7 @@
         vm.initSensors = function () {
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
-                    var sensorName = sensor.katcp_name.substr(sensor.katcp_name.indexOf('.') + 1);
-                    sensorName = sensorName.replace(/\./g, '_').replace(/-/g, '_');
-                    SensorsService.subscribe(sensor.component + '.' + sensorName, SensorsService.guid);
-                    SensorsService.setSensorStrategy(
-                        sensor.component,
-                        sensorName,
-                        $rootScope.sensorListStrategyType,
-                        $rootScope.sensorListStrategyInterval,
-                        $rootScope.sensorListStrategyInterval);
+                    vm.connectLiveFeed(sensor);
                 });
             }
         };
@@ -182,12 +174,18 @@
             if (searchStr.length > 2) {
                 vm.sensorSearchNames.splice(0, vm.sensorSearchNames.length);
                 vm.waitingForSearchResult = true;
-                DataService.sensorsInfo([searchStr])
+                DataService.sensorsInfo(searchStr, vm.sensorType, 1000)
                     .then(function (result) {
                         vm.waitingForSearchResult = false;
+                        $log.info(result.data);
                         if (result.data) {
                             result.data.forEach(function (sensor) {
-                                vm.sensorSearchNames.push(sensor);
+                                vm.sensorSearchNames.push({
+                                    name: sensor[0],
+                                    component: sensor[1],
+                                    attributes: sensor[2],
+                                    type: vm.sensorType
+                                });
                             });
                             if ($localStorage['sensorGraphAutoCompleteList'].indexOf(searchStr) === -1) {
                                 $localStorage['sensorGraphAutoCompleteList'].push(searchStr);
@@ -276,8 +274,6 @@
 
         vm.chipRemovePressed = function (chip) {
             vm.removeSensorLine(chip.name);
-            var sensorName = chip.sensor.katcp_name.substr(chip.sensor.katcp_name.indexOf('.') + 1);
-            sensorName = sensorName.replace(/\./g, '_').replace(/-/g, '_');
         };
 
         vm.setLineStrokeWidth = function (chipName) {
@@ -344,8 +340,6 @@
                     vm.connectLiveFeed(item.sensor);
                     item.liveData = true;
                 } else {
-                    var sensorName = item.sensor.katcp_name.substr(item.sensor.katcp_name.indexOf('.') + 1);
-                    sensorName = sensorName.replace(/\./g, '_');
                     item.liveData = false;
                 }
             });

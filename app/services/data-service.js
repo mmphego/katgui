@@ -22,14 +22,18 @@
             return $http.get(requestStr);
         };
 
-        api.sensorsInfo = function (sensorNames) {
+        api.sensorsInfo = function (sensorNames, type, limit) {
             var request = {
                 method: 'post',
                 url: urlBase + 'sensors-info',
                 headers: {}
             };
             request.headers['Content-Type'] = 'application/json';
-            request.data = sensorNames;
+            request.data = {
+                sensors: sensorNames,
+                type: type,
+                limit: limit
+            };
             return $http(request);
         };
 
