@@ -41,7 +41,7 @@ angular.module('katGui.d3', ['katGui.util'])
 
                     width = element[0].clientWidth;
                     height = element[0].clientHeight;
-                    scale = height * .4;
+                    scale = height * 0.4;
 
                     if (height < 0) {
                         height = 0;

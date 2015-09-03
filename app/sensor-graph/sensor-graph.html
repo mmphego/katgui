@@ -124,7 +124,7 @@
                 placeholder="Type a sensor name expression E.g. wind"
                 enter-pressed="vm.enterPressesOnInput()">
                 <md-item-template>
-                    <div layout="row" layout-align="start center">
+                    <div layout="row">
                         <span flex md-highlight-text="vm.searchText">{{item}}</span>
                         <button class="md-button" ng-click="vm.removeAutoCompleteItem(item); $event.stopPropagation();"
                             style="max-width: 32px; min-width: 32px; max-height: 32px;">
@@ -136,8 +136,8 @@
                     No matches found
                 </md-not-found>
             </md-autocomplete>
-            <div style="min-height: 5px" ng-show="!vm.waitingForSearchResult"></div>
-            <md-progress-linear style="padding: 0 8px;" ng-show="vm.waitingForSearchResult" class="md-primary" md-mode="indeterminate"></md-progress-linear>
+            <div style="min-height: 5px; width: 100%; padding: 4px 8px;" ng-show="!vm.waitingForSearchResult"></div>
+            <md-progress-linear style="padding: 4px 8px;" ng-show="vm.waitingForSearchResult" class="md-primary" md-mode="indeterminate"></md-progress-linear>
 
             <div class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames | orderBy:'name' track by $index"

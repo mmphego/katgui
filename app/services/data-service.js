@@ -8,33 +8,49 @@
         var urlBase = SERVER_URL + '/katstore/';
         var api = {};
 
-        api.sensorData = function (sensorName, startDate, endDate, limit, time_type, format, interval) {
+        api.sensorsInfo = function (sensorNames, type, limit) {
             var requestStr = urlBase +
-                'sensor-samples?sensor=' + sensorName +
+                'sensors?sensors=' + sensorNames +
+                '&type=' + type +
+                '&limit=' + limit;
+            return $http.get(requestStr);
+        };
+
+        api.sensorData = function (sensorName, startDate, endDate, limit, interval) {
+            var requestStr = urlBase +
+                'samples?sensor=' + sensorName +
                 '&start=' + startDate +
                 '&end=' + endDate +
                 '&limit=' + limit +
-                '&time_type=' + time_type +
-                '&format=' + format;
+                '&format=json' +
+                '&time_type=ms';
             if (interval) {
                 requestStr += '&interval=' + interval;
             }
             return $http.get(requestStr);
         };
 
-        api.sensorsInfo = function (sensorNames, type, limit) {
-            var request = {
-                method: 'post',
-                url: urlBase + 'sensors-info',
-                headers: {}
-            };
-            request.headers['Content-Type'] = 'application/json';
-            request.data = {
+        api.sensorDataRegex = function (sensorNames, startDate, endDate, limit, interval) {
+            var data = {
                 sensors: sensorNames,
-                type: type,
-                limit: limit
+                start_ts: startDate,
+                end_ts: endDate,
+                limit: limit,
+                format: 'json',
+                time_type: 'ms'
             };
-            return $http(request);
+            if (interval) {
+                data.interval = interval;
+            }
+
+            var req = {
+                method: 'post',
+                url: urlBase + 'samples?format=json',
+                headers: {},
+                data: data
+            };
+            req.headers['Content-Type'] = 'application/json';
+            return $http(req);
         };
 
         return api;

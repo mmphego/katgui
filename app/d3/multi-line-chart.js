@@ -56,20 +56,20 @@ angular.module('katGui.d3')
 
                     if (newData) {
                         newData.forEach(function (d) {
-                            d.date = new Date(d.Timestamp);
+                            d.date = new Date(d.sample_ts * 1000);
                             if (yAxisValues) {
-                                d.value = d.Value;
+                                d.value = d.value;
                             } else {
-                                if (typeof(d.Value) === 'boolean') {
-                                    d.value = d.Value ? 1 : 0;
-                                } else if (typeof(d.Value) === 'number' || !isNaN(d.Value)) {
-                                    d.value = d.Value;
+                                if (typeof(d.value) === 'boolean') {
+                                    d.value = d.value ? 1 : 0;
+                                } else if (typeof(d.value) === 'number' || !isNaN(d.value)) {
+                                    d.value = d.value;
                                 } else {
-                                    d.value = d.Value;
+                                    d.value = d.value;
                                     if (!scope.yAxisValues) {
                                         scope.yAxisValues = [];
                                     }
-                                    var yAxisValue = d.Value.replace(/\'/g, '"');
+                                    var yAxisValue = d.value.replace(/\'/g, '"');
                                     if (scope.yAxisValues.indexOf(yAxisValue) === -1) {
                                         scope.yAxisValues.push(yAxisValue);
                                         scope.yAxisValues = _.sortBy(scope.yAxisValues, function (d) {
@@ -80,24 +80,18 @@ angular.module('katGui.d3')
                                 }
                             }
 
-                            var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
+                            var existingDataLine = _.findWhere(scope.nestedData, {key: d.sensor});
                             if (existingDataLine) {
                                 if (existingDataLine.values.length > dataLimit) {
                                     existingDataLine.values.splice(0, 1);
                                 }
                                 existingDataLine.values.push(d);
-                                existingDataLine.values = _.sortBy(existingDataLine.values, function (sensor) {
-                                    return sensor.Timestamp;
-                                });
-                                existingDataLine.values = _.uniq(existingDataLine.values, true, function (sensor) {
-                                    return sensor.Timestamp;
-                                });
                                 if (existingDataLine.values.length > 1 &&
-                                    existingDataLine.values[0].Timestamp === existingDataLine.values[existingDataLine.values.length - 1].Timestamp) {
+                                    existingDataLine.values[0].sample_ts === existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
                                 }
                             } else {
-                                scope.nestedData.push({key: d.Sensor, values: [d], color: d.color});
+                                scope.nestedData.push({key: d.sensor, values: [d], color: d.color});
                             }
                         });
                     }
@@ -143,7 +137,7 @@ angular.module('katGui.d3')
                 var tooltip = d3.select(element[0]).append("div")
                     .attr("class", "multi-line-tooltip");
 
-                var margin = {top: 10, right: 10, bottom: 100, left: 60},
+                var margin = {top: 10, right: 10, bottom: 110, left: 60},
                     width, height, height2;
                 var margin2 = {top: 0, right: 10, bottom: 20, left: 60};
                 var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2,
@@ -168,7 +162,7 @@ angular.module('katGui.d3')
                     if (scope.hideContextZoom) {
                         margin.bottom = 35;
                     } else {
-                        margin.bottom = 100;
+                        margin.bottom = 110;
                     }
 
                     width = element[0].clientWidth - margin.left - margin.right;
@@ -181,11 +175,6 @@ angular.module('katGui.d3')
 
                     if (width < 0) {
                         width = 0;
-                    }
-
-                    if (scope.yAxisValues) {
-                        margin.left = 120;
-                        margin2 = {top: height, right: 10, bottom: 20, left: 120};
                     }
 
                     d3.select(element[0]).select('svg').remove();
@@ -251,7 +240,7 @@ angular.module('katGui.d3')
                                 return scope.yAxisValues[i];
                             });
                     } else {
-                        yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
+                        yAxis = d3.svg.axis().scale(y).orient("left").ticks(10).tickFormat(d3.format(".00f"));
                     }
 
                     if (scope.showGridLines) {
@@ -429,7 +418,7 @@ angular.module('katGui.d3')
                     } else {
                         yAxisElement.selectAll(".y-axis text")
                             .each(function (d) {
-                                wrapText(this, d.toString(), margin.left);
+                                wrapText(this, formatTwoDecimals(d).toString(), margin.left);
                             });
                     }
 
@@ -512,32 +501,33 @@ angular.module('katGui.d3')
                         if (!mouse) {
                             return;
                         }
-
                         var x0 = x.invert(mouse[0]),
                             i = bisectDate(data.values, x0, 1);
                         var d0 = data.values[i - 1],
                             d1 = data.values[i];
-
                         var d;
 
                         if (d0 && d0.date && d1 && d1.date) {
                             d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-
                             var xTranslate = (x(d.date) + margin.left);
                             var yTranslate = (y(d.value) + margin.top);
 
                             var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                             focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                            d.TooltipValue = formatTwoDecimals(d.value);
+                            if (typeof(d.value) === 'number') {
+                                d.TooltipValue = formatTwoDecimals(d.value);
+                            } else {
+                                d.TooltipValue = d.value;
+                            }
                             tooltipValues.push(d);
                         }
                     });
                     if (tooltipValues.length > 0) {
                         var html = "";
                         for (var i in tooltipValues) {
-                            html += "<div class='" + tooltipValues[i].Sensor + "' layout='column'>";
-                            html += "<span layout='row'><i flex>" + (tooltipValues[i].Sensor ? tooltipValues[i].Sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 12px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
-                            html += "<span>" + moment.utc(tooltipValues[i].Timestamp, 'X').format(DATETIME_FORMAT) + "</span>";
+                            html += "<div class='" + tooltipValues[i].sensor + "' layout='column'>";
+                            html += "<span layout='row'><i flex>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
+                            html += "<span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].sample_ts, 'X').format(DATETIME_FORMAT) + "</span>";
                             html += "</div>";
                         }
                         html += "";
@@ -547,10 +537,8 @@ angular.module('katGui.d3')
                         if (xTranslate + 300 > width) {
                             xTranslate -= 300;
                         }
-
                         tooltip.style("transform", "translate(" + (xTranslate ) + "px,  8px)");
                     }
-
                     if (!calledWithoutEvent) {
                         scope.lastMouse = mouse;
                     }
