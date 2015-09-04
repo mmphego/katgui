@@ -292,7 +292,7 @@
 
         $rootScope.openSystemLogger = function () {
             if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/logfile/" ).focus();
+                window.open(ConfigService.KATObsPortalURL + "/logfile/" + $rootScope.logNumberOfLines).focus();
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
