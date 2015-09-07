@@ -47,28 +47,22 @@ angular.module('katGui.d3')
 
                     if (newData) {
                         newData.forEach(function (d) {
-                            d.date = new Date(parseFloat(d.Timestamp) * 1000);
-                            d.value = parseFloat(d.Value);
+                            d.date = new Date(parseFloat(d.sample_ts));
+                            d.value = parseFloat(d.value);
 
-                            var existingDataLine = _.findWhere(scope.nestedData, {key: d.Sensor});
+                            var existingDataLine = _.findWhere(scope.nestedData, {key: d.sensor});
                             if (existingDataLine) {
                                 while (existingDataLine.values.length > 0 &&
                                 new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
                                     existingDataLine.values.splice(0, 1);
                                 }
                                 existingDataLine.values.push(d);
-                                existingDataLine.values = _.sortBy(existingDataLine.values, function (sensor) {
-                                    return sensor.Timestamp;
-                                });
-                                existingDataLine.values = _.uniq(existingDataLine.values, true, function (sensor) {
-                                    return sensor.Timestamp;
-                                });
                                 if (existingDataLine.values.length > 1 &&
-                                    existingDataLine.values[0].Timestamp === existingDataLine.values[existingDataLine.values.length - 1].Timestamp) {
+                                    existingDataLine.values[0].sample_ts === existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
                                 }
                             } else {
-                                scope.nestedData.push({key: d.Sensor, values: [d], rightAxis: d.rightAxis, color: d.color});
+                                scope.nestedData.push({key: d.sensor, values: [d], rightAxis: d.rightAxis, color: d.color});
                             }
                         });
                     }
@@ -91,6 +85,7 @@ angular.module('katGui.d3')
                     var existingDataLine = _.findWhere(scope.nestedData, {key: sensorName.replace(/\./g, '_')});
                     if (existingDataLine) {
                         scope.nestedData.splice(scope.nestedData.indexOf(existingDataLine), 1);
+                        d3.select("." + existingDataLine.key + "-tooltip").remove();
                         drawValues();
                     }
                 };
@@ -262,10 +257,10 @@ angular.module('katGui.d3')
                         scope.nestedData.forEach(function (data) {
                             if (!d3.select("." + data.key + "-tooltip")[0][0]) {
                                 var focusTooltip = svg.append("g")
-                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key);
+                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
+                                    .style("display", "none");
                                 focusTooltip.append("circle")
-                                    .attr("class", "focus-tooltip-circle" + data.key)
-                                    .style("fill", "none")
+                                    .attr("class", "focus-tooltip-circle")
                                     .attr("r", 4.5);
                             }
                         });
@@ -300,6 +295,9 @@ angular.module('katGui.d3')
                 }
 
                 function mousemove(calledWithoutEvent) {
+                    if (scope.nestedData.length === 0) {
+                        return;
+                    }
                     var mouse = null;
                     var tooltipValues = [];
                     scope.nestedData.forEach(function (data) {
@@ -342,17 +340,17 @@ angular.module('katGui.d3')
                     if (tooltipValues.length > 0) {
                         var html = "";
                         for (var i in tooltipValues) {
-                            html += "<div class='" + tooltipValues[i].Sensor + "' layout='column'>";
-                            html += "<span layout='row'><i flex>" + (tooltipValues[i].Sensor ? tooltipValues[i].Sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 12px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
-                            html += "<span>" + moment.utc(tooltipValues[i].Timestamp, 'X').format(DATETIME_FORMAT) + "</span>";
+                            html += "<div class='" + tooltipValues[i].sensor + "' layout='column'>";
+                            html += "<span layout='row'><i flex>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
+                            html += "<span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span>";
                             html += "</div>";
                         }
                         html += "";
                         tooltip.html(html);
                         var xTranslate = (x(tooltipValues[0].date) + margin.left + 15);
 
-                        if (xTranslate + 180 > width) {
-                            xTranslate -= 180;
+                        if (xTranslate + 350 > width) {
+                            xTranslate -= 350;
                         }
 
                         tooltip.style("transform", "translate(" + (xTranslate ) + "px,  0)");

@@ -399,7 +399,8 @@ angular.module('katGui.d3')
                         scope.nestedData.forEach(function (data) {
                             if (!d3.select("." + data.key + "-tooltip")[0][0]) {
                                 var focusTooltip = svg.append("g")
-                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key);
+                                    .attr("class", "focus-tooltip " + data.key + "-tooltip " + data.key)
+                                    .style("display", "none");
                                 focusTooltip.append("circle")
                                     .attr("class", "focus-tooltip-circle")
                                     .attr("r", 4.5);
