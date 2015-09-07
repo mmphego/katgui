@@ -4,7 +4,7 @@
         .controller('WeatherCtrl', WeatherCtrl);
 
     function WeatherCtrl($rootScope, $scope, DataService, SensorsService, KatGuiUtil, $interval, $log, $q,
-                         DATETIME_FORMAT, ConfigService, NotifyService, $timeout) {
+                         DATETIME_FORMAT, ConfigService, NotifyService, $timeout, $localStorage) {
 
         var vm = this;
         vm.ancResource = {
@@ -37,8 +37,16 @@
         vm.windSpeedLimitLine = 0;
         vm.windGustLimitLine = 0;
         vm.maxSensorValue = {};
-        vm.historicalRange = '2h';
-        vm.sensorGroupingInterval = 30;
+        if (!$localStorage['weatherHistoricalRange']) {
+            vm.historicalRange = '2h';
+        } else {
+            vm.historicalRange = $localStorage['weatherHistoricalRange'];
+        }
+        if (!$localStorage['sensorGroupingInterval']) {
+            vm.sensorGroupingInterval = 30;
+        } else {
+            vm.sensorGroupingInterval = $localStorage['sensorGroupingInterval'];
+        }
         vm.dataTimeWindow = new Date().getTime();
 
         ConfigService.getWindstowLimits()
@@ -89,7 +97,6 @@
             var startDate = vm.getTimestampFromHistoricalRange();
             vm.dataTimeWindow = new Date().getTime() - startDate;
             var sensorNameList = [];
-            var resourcesHistoriesReceived = 0;
 
             var regexSearch = '';
             for (var i = 0; i < vm.ancResource.sensorList.length; i++) {
@@ -155,7 +162,7 @@
                         $rootScope.sensorListStrategyInterval,
                         $rootScope.sensorListStrategyInterval);
 
-                }, 2000);
+                }, 1000);
             }
         };
 
@@ -260,9 +267,10 @@
         };
 
         vm.historicalRangeChanged = function () {
+            $localStorage['weatherHistoricalRange'] = vm.historicalRange;
+            $localStorage['sensorGroupingInterval'] = vm.sensorGroupingInterval;
             vm.clearWindChart();
             vm.clearChart();
-            vm.maxSensorValue = {};
             vm.initSensors(true);
         };
 

@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('multiLineTwoYAxisChart', function (DATETIME_FORMAT, $timeout) {
+    .directive('multiLineTwoYAxisChart', function (DATETIME_FORMAT, $timeout, $log) {
         return {
             restrict: 'EA',
             scope: {
@@ -45,6 +45,7 @@ angular.module('katGui.d3')
                 scope.nestedData = [];
                 scope.redrawFunction = function (newData, showGridLines, dataWindowDuration) {
 
+                    var doSort = false;
                     if (newData) {
                         newData.forEach(function (d) {
                             d.date = new Date(parseFloat(d.sample_ts));
@@ -52,6 +53,9 @@ angular.module('katGui.d3')
 
                             var existingDataLine = _.findWhere(scope.nestedData, {key: d.sensor});
                             if (existingDataLine) {
+                                if (existingDataLine.values[existingDataLine.values.length - 1].sample_ts < existingDataLine.values[0].sample_ts) {
+                                    doSort = true;
+                                }
                                 while (existingDataLine.values.length > 0 &&
                                 new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
                                     existingDataLine.values.splice(0, 1);
@@ -65,6 +69,16 @@ angular.module('katGui.d3')
                                 scope.nestedData.push({key: d.sensor, values: [d], rightAxis: d.rightAxis, color: d.color});
                             }
                         });
+                    }
+
+
+                    if (doSort) {
+                        scope.nestedData.forEach(function (d) {
+                            d.values = _.sortBy(d.values, function (item) {
+                                return item.sample_ts;
+                            });
+                        });
+                        $log.info('Sorting all two-axis data sets.');
                     }
 
                     if (showGridLines !== scope.showGridLines) {

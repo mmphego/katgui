@@ -53,6 +53,7 @@ angular.module('katGui.d3')
                             return d.toUpperCase();
                         });
                     }
+                    var doSort = false;
 
                     if (newData) {
                         newData.forEach(function (d) {
@@ -86,6 +87,9 @@ angular.module('katGui.d3')
                                     existingDataLine.values.splice(0, 1);
                                 }
                                 existingDataLine.values.push(d);
+                                if (existingDataLine.values[existingDataLine.values.length - 1].sample_ts < existingDataLine.values[0].sample_ts) {
+                                    doSort = true;
+                                }
                                 if (existingDataLine.values.length > 1 &&
                                     existingDataLine.values[0].sample_ts === existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
@@ -94,6 +98,15 @@ angular.module('katGui.d3')
                                 scope.nestedData.push({key: d.sensor, values: [d], color: d.color});
                             }
                         });
+
+                        if (doSort) {
+                            scope.nestedData.forEach(function (d) {
+                                d.values = _.sortBy(d.values, function (item) {
+                                    return item.sample_ts;
+                                });
+                            });
+                            $log.info('Sorting all data sets.');
+                        }
                     }
 
                     if (showGridLines !== scope.showGridLines) {
