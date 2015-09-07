@@ -56,16 +56,14 @@
              ng-show="vm.showReceptorStates">
             <div ng-repeat="receptor in vm.receptorsData | filter:{'skyPlot':false} track by $index"
                  class="{{receptor.name + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
-                 layout="column" layout-align="center center" ng-click="vm.toggleHorizonMask(receptor)"
+                 layout="column" layout-align="start center" ng-click="vm.toggleHorizonMask(receptor)"
                  title="{{'Click to toggle the horizon mask for ' + receptor.name}}" style="overflow: visible"
                 ng-mouseenter="receptor.showDetails = true" ng-mouseleave="receptor.showDetails = false">
-                <span>
-                    {{receptor.name}}
-                </span>
-                <span ng-show="!receptor.windstow_active.value">{{receptor.mode.value}}</span>
-                <span ng-show="receptor.windstow_active.value">WINDSTOW</span>
-                <span style="width: 100%; text-align: center;"
-                      class="inhibited-item" ng-show="receptor.inhibited.value">INHIBIT</span>
+                <div class="receptor-legend-item-text">{{receptor.name}}</div>
+                <div class="receptor-legend-item-text" ng-show="!receptor.windstow_active.value">{{receptor.mode.value}}</div>
+                <div class="receptor-legend-item-text" ng-show="receptor.windstow_active.value">WINDSTOW</div>
+                <div style="width: 100%; text-align: center;"
+                      class="inhibited-item receptor-legend-item-text" ng-show="receptor.inhibited.value">INHIBIT</div>
                 <span ng-show="receptor.lock.value" class="fa fa-asterisk on-target-span"
                       title="AP on Target"></span>
                 <span ng-show="receptor.showHorizonMask" class="fa fa-area-chart horizon-mask-showing"
