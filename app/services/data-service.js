@@ -11,7 +11,7 @@
         api.sensorsInfo = function (sensorNames, type, limit) {
             var requestStr = urlBase +
                 'sensors?sensors=' + sensorNames +
-                '&type=' + type +
+                '&sensor_type=' + type +
                 '&limit=' + limit;
             return $http.get(requestStr);
         };

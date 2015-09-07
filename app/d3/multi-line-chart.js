@@ -56,7 +56,7 @@ angular.module('katGui.d3')
 
                     if (newData) {
                         newData.forEach(function (d) {
-                            d.date = new Date(d.sample_ts * 1000);
+                            d.date = new Date(d.sample_ts);
                             if (yAxisValues) {
                                 d.value = d.value;
                             } else {
@@ -130,6 +130,7 @@ angular.module('katGui.d3')
                     var existingDataLine = _.findWhere(scope.nestedData, {key: sensorName.replace(/\./g, '_')});
                     if (existingDataLine) {
                         scope.nestedData.splice(scope.nestedData.indexOf(existingDataLine), 1);
+                        d3.select("." + existingDataLine.key + "-tooltip").remove();
                         drawValues();
                     }
                 };
@@ -527,15 +528,15 @@ angular.module('katGui.d3')
                         for (var i in tooltipValues) {
                             html += "<div class='" + tooltipValues[i].sensor + "' layout='column'>";
                             html += "<span layout='row'><i flex>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
-                            html += "<span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].sample_ts, 'X').format(DATETIME_FORMAT) + "</span>";
+                            html += "<span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span>";
                             html += "</div>";
                         }
                         html += "";
                         tooltip.html(html);
                         var xTranslate = (x(tooltipValues[0].date) + margin.left + 15);
 
-                        if (xTranslate + 300 > width) {
-                            xTranslate -= 300;
+                        if (xTranslate + 350 > width) {
+                            xTranslate -= 350;
                         }
                         tooltip.style("transform", "translate(" + (xTranslate ) + "px,  8px)");
                     }

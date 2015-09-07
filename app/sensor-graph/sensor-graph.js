@@ -29,6 +29,7 @@
         vm.yAxisMaxValue = 100;
         vm.disconnectIssued = false;
         vm.connectInterval = null;
+        vm.sensorServiceConnected = SensorsService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
         }
@@ -165,18 +166,19 @@
             }
         };
 
-        vm.findSensorNames = function (searchStr, $event) {
-            if ($event.keyCode !== 13) {
-                //13 == enter
-                return;
+        vm.findSensorNames = function (searchStr, event) {
+            if (event) {
+                event.stopPropagation();
             }
-            if (searchStr.length > 2) {
-                vm.sensorSearchNames.splice(0, vm.sensorSearchNames.length);
+            if (searchStr && searchStr.length > 2 && !vm.waitingForSearchResult) {
+                vm.sensorSearchNames = [];
                 vm.waitingForSearchResult = true;
                 DataService.sensorsInfo(searchStr, vm.sensorType, 1000)
                     .then(function (result) {
                         vm.waitingForSearchResult = false;
-                        if (result.data) {
+                        if (result.data.error) {
+                            NotifyService.showPreDialog('Error retrieving sensors', result.data.error);
+                        } else if (result.data) {
                             result.data.forEach(function (sensor) {
                                 vm.sensorSearchNames.push({
                                     name: sensor[0],
@@ -250,7 +252,8 @@
                         NotifyService.showSimpleToast(newData.length + ' sensor data points found for ' + sensor.name + '.');
                     }
                     if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
-                        vm.sensorNames.push({name: sensor.name, liveData: vm.liveData, sensor: sensor});
+                        sensor.liveData = vm.liveData;
+                        vm.sensorNames.push(sensor);
                     }
                     vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
                 } else if (!suppressToast) {
@@ -260,10 +263,6 @@
                 vm.waitingForSearchResult = false;
                 $log.info(error);
             });
-        };
-
-        vm.chipRemovePressed = function (chip) {
-            vm.removeSensorLine(chip.name);
         };
 
         vm.setLineStrokeWidth = function (chipName) {
@@ -294,7 +293,7 @@
 
         vm.sensorTypeChanged = function () {
             vm.clearData();
-            vm.findSensorNames(vm.searchText, {keyCode: 13}); //simulate keypress
+            vm.findSensorNames(vm.searchText); //simulate keypress
         };
 
         vm.connectLiveFeed = function (sensor) {
@@ -312,8 +311,8 @@
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
                     vm.redrawChart([{
                         sensor: realSensorName,
-                        value_ts: sensor.value.timestamp,
-                        sample_ts: sensor.value.received_timestamp,
+                        value_ts: sensor.value.timestamp * 1000,
+                        sample_ts: sensor.value.received_timestamp * 1000,
                         value: sensor.value.value
                     }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 }
@@ -323,10 +322,14 @@
         vm.liveDataChanged = function () {
             vm.sensorNames.forEach(function (item) {
                 if (!item.liveData) {
-                    vm.connectLiveFeed(item.sensor);
+                    vm.connectLiveFeed(item);
                     item.liveData = true;
                 } else {
                     item.liveData = false;
+                    vm.disconnectIssued = true;
+                    SensorsService.disconnectListener();
+                    vm.connectListeners();
+                    vm.disconnectIssued = false;
                 }
             });
         };
@@ -336,38 +339,40 @@
             return results;
         };
 
+        vm.chipsQuerySearch = function (query) {
+            var results = query ? vm.sensorSearchNames.filter(vm.createFilterFor(query)) : [];
+            return results;
+        };
+
         vm.createFilterFor = function (query) {
             return function filterFn(item) {
-                return (item.indexOf(query) > -1);
+                return (item.name ? item.name.indexOf(query) > -1 : item.indexOf(query) > -1);
             };
         };
 
-        vm.selectedItemChange = function (item, $event) {
-            if (item) {
-                vm.findSensorNames(item, {keyCode: 13}); //simulate keypress
-            }
-        };
-
-        vm.removeAutoCompleteItem = function (item) {
-            vm.waitingForSearchResult = true;
+        vm.removeAutoCompleteItem = function (item, event) {
             var index = $localStorage['sensorGraphAutoCompleteList'].indexOf(item);
             if (index > -1) {
                 $localStorage['sensorGraphAutoCompleteList'].splice(index, 1);
             }
+            var oldSearchText = vm.searchText;
             vm.searchText = "";
             $timeout(function () {
-                vm.waitingForSearchResult = false;
-            }, 50);
+                vm.searchText = oldSearchText;
+            }, 0);
+            event.stopPropagation();
         };
 
-        vm.enterPressesOnInput = function (item) {
-            if (item) {
-                vm.findSensorNames(item, {keyCode: 13});
+        vm.autoCompleteKeyPressed = function (event) {
+            var selectedAutocompleteItem = document.getElementsByClassName('selected')[0];
+            if (selectedAutocompleteItem && event.shiftKey &&
+                (event.keyCode === 8 || event.keyCode === 46)) {
+                vm.removeAutoCompleteItem(selectedAutocompleteItem.innerText.trim(), event);
             }
         };
 
         vm.drawAllSensorNamesConfirm = function (event) {
-            if (vm.sensorSearchNames.length > 50) {
+            if (vm.sensorSearchNames.length > 25) {
                 NotifyService.showConfirmDialog(event, 'Confirm Sensor Chart Drawing',
                     'Drawing ' + vm.sensorSearchNames.length + ' sensors might take longer than expected, do you wish to continue?',
                     'Yes', 'Cancel')
@@ -419,7 +424,12 @@
                     for (var attr in result.data) {
                         newData = newData.concat(result.data[attr]);
                         if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: attr}))) {
-                            vm.sensorNames.push({name: attr, liveData: vm.liveData, sensor: {}});
+                            var sensor = _.findWhere(vm.sensorSearchNames, {name: attr});
+                            sensor.liveData = vm.liveData;
+                            vm.sensorNames.push(sensor);
+                            if (vm.liveData) {
+                                vm.connectLiveFeed(sensor);
+                            }
                         }
                     }
                     if (newData) {
@@ -429,6 +439,19 @@
                     vm.waitingForSearchResult = false;
                     $log.info(error);
                 });
+        };
+
+        vm.chipRemoved = function (chip) {
+            vm.removeSensorLine(chip.name);
+        };
+
+        vm.chipAppended = function (chip) {
+            if (chip.name) {
+                vm.findSensorData(chip);
+            }
+            vm.sensorNames = vm.sensorNames.filter(function (item) {
+                return item.name && item.name.length > 0;
+            });
         };
 
         $scope.$on('$destroy', function () {

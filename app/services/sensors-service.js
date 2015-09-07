@@ -63,6 +63,7 @@
                 $log.info('Sensors Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
                 api.subscribe('*', api.guid);
+                api.connected = true;
             }
         };
 
@@ -70,6 +71,7 @@
             $log.info('Disconnected Sensors Connection.');
             api.connection = null;
             api.lastHeartBeat = null;
+            api.connected = false;
         };
 
         api.checkAlive = function () {

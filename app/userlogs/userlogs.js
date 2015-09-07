@@ -83,9 +83,9 @@
             var end_time = $filter('date')(reportEnd, 'yyyy-MM-dd HH:mm');
             var a_query = "?";
             var included_types = "All";
-            if (logtypes) {a_query += "log_type=" + logtypes + "&"}
-            if (start_time) {a_query += "start_time=" + start_time + "&"}
-            if (end_time) {a_query += "end_time=" + end_time + "&"}
+            if (logtypes) {a_query += "log_type=" + logtypes + "&";}
+            if (start_time) {a_query += "start_time=" + start_time + "&";}
+            if (end_time) {a_query += "end_time=" + end_time + "&";}
 
             UserLogService.queryUserLogs(a_query).then(function (result) {
                 var report_markup = '<table id=basic-table border="1px" style="width:100%; font-family:verdana,arial,sans-serif;">' +
@@ -116,7 +116,9 @@
                 pdf.setFontSize(20);
                 pdf.text('Userlog Report - ' + export_time, 20, 25);
                 pdf.setFontSize(12);
-                if (logtypes) {included_types = logtypes}
+                if (logtypes) {
+                    included_types = logtypes;
+                }
                 pdf.text(('Included log types: ' + included_types), 20, 35);
                 pdf.setFontSize(12);
                 pdf.text(('From: ' + reportStart + '     To: ' + reportEnd), 20, 45);
@@ -188,9 +190,9 @@
             var log_type = b_query.userlog_type;
             var start_time = $filter('date')(b_query.start_time, 'yyyy-MM-dd HH:mm');
             var end_time = $filter('date')(b_query.end_time, 'yyyy-MM-dd HH:mm');
-            if (log_type) {query += "log_type=" + log_type + "&"}
-            if (start_time) {query += "start_time=" + start_time + "&"}
-            if (end_time) {query += "end_time=" + end_time + "&"}
+            if (log_type) {query += "log_type=" + log_type + "&";}
+            if (start_time) {query += "start_time=" + start_time + "&";}
+            if (end_time) {query += "end_time=" + end_time + "&";}
             UserLogService.queryUserLogs(query).then(function (result) {
                 $log.info('User log query result length: ' + vm.report_userlogs.length);
             });

@@ -29,17 +29,16 @@ angular.module('katGui.util')
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {
                 if(event.which === 13) {
-                    var fn = function(command) {
+                    var fn = (function(command) {
                         var cmd = command;
                         return function() {
                             scope.$eval(cmd);
                         };
-                    }(attrs.enterPressed.replace('()', '("'+ event.target.value +'")' ));
+                    })(attrs.enterPressed.replace('()', '("'+ event.target.value +'")' ));
 
                   // Apply function
                   scope.$apply(fn);
-
-                  event.preventDefault();
+                  event.stopPropagation();
                 }
             });
         };
