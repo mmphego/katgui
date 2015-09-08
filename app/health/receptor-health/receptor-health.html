@@ -21,10 +21,10 @@
         <div md-theme="{{themePrimaryButtons}}" class="" layout="row" layout-align="start center"
             style="position: absolute; right: 0; top: 0">
             <md-menu style="padding: 0">
-                <md-button class="md-icon-button" ng-click="$mdOpenMenu()">
+                <md-button class="md-icon-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'health-menu-content')">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
-                <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;">
+                <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;" id="health-menu-content" md-menu-disable-close>
                     <md-menu-item>
                         <md-select ng-model="vm.mapType" style="margin: 0; padding: 0" ng-click="$event.stopPropagation()"
                                    class="md-primary" md-theme="{{themePrimaryButtons}}" ng-change="vm.mapTypeChanged()">

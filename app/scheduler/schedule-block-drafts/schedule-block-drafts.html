@@ -129,21 +129,21 @@
                         </md-button>
                         <md-menu md-theme="{{themePrimaryButtons}}">
                             <md-button class="md-icon-button inline-action-button"
-                                       ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                                       ng-click="$mdOpenMenu(); $event.stopPropagation()"
                                        style="margin: 0">
                                 <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                             </md-button>
                             <md-menu-content style="padding: 8px;">
-                                <md-menu-item ng-if="item.loadMenuContents">
+                                <md-menu-item>
                                     <md-button ng-click="item.editing = true">Edit Draft</md-button>
                                 </md-menu-item>
-                                <md-menu-item ng-if="item.loadMenuContents" ng-show="item.type == 'OBSERVATION'">
+                                <md-menu-item ng-show="item.type == 'OBSERVATION'">
                                     <md-button ng-disabled="!item.sub_nr"
                                                title="{{!item.sub_nr ? 'Assign to a Subarray before verifying' : ''}}"
                                                ng-click="vm.verifyDraft(item)">Verify Draft
                                     </md-button>
                                 </md-menu-item>
-                                <md-menu-item ng-if="item.loadMenuContents">
+                                <md-menu-item>
                                     <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
                                 </md-menu-item>
                             </md-menu-content>

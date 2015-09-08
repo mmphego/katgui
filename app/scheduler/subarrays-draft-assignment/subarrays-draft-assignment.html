@@ -150,15 +150,15 @@
                             </md-button>
                             <md-menu>
                                 <md-button class="md-icon-button inline-action-button"
-                                           ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                                           ng-click="$mdOpenMenu(); $event.stopPropagation()"
                                            style="margin: 0">
                                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
-                                    <md-menu-item ng-if="item.loadMenuContents && item.type === 'OBSERVATION'">
+                                    <md-menu-item ng-if="item.type === 'OBSERVATION'">
                                         <md-button ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="item.loadMenuContents">
+                                    <md-menu-item>
                                         <md-button ng-click="vm.viewSBTasklog(item, 'dryrun')">View Tasklog</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
@@ -229,7 +229,7 @@
                             <span style="width: 140px;">{{item.desired_start_time}}</span>
                             <md-menu ng-show="!item.pendingVerify" md-theme="{{themePrimaryButtons}}">
                                 <md-button class="md-icon-button inline-action-button"
-                                           ng-click="item.loadMenuContents = true; $mdOpenMenu(); $event.stopPropagation()"
+                                           ng-click="$mdOpenMenu(); $event.stopPropagation()"
                                            style="margin: 0">
                                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                                 </md-button>
@@ -239,12 +239,12 @@
                                                    title="View Progress in a New Tab">View Progress
                                         </md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION'">
+                                    <md-menu-item ng-if="item.type == 'OBSERVATION'">
                                         <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify
                                             Schedule
                                         </md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="item.loadMenuContents">
+                                    <md-menu-item>
                                         <md-button ng-click="vm.moveScheduleRowToDraft(item)"
                                                    title="Move Schedule Block to Draft">Move to Draft
                                         </md-button>

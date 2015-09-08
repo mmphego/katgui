@@ -88,7 +88,7 @@
                 });
                 if (subarrayIndex > -1) {
                     if (sensorNameList[1] === 'allocations') {
-                        var parsedAllocations = JSON.parse(sensor.value.value);
+                        var parsedAllocations = sensor.value.value !== "" ? JSON.parse(sensor.value.value) : [];
                         ObsSchedService.subarrays[subarrayIndex].allocations = [];
 
                         if (parsedAllocations.length > 0) {

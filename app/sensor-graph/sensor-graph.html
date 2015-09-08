@@ -204,30 +204,28 @@
                 <md-icon class="fa" md-font-icon="fa-remove"></md-icon>
             </md-button>
             <md-menu md-theme="{{themePrimaryButtons}}" style="padding: 0">
-                <md-button class="md-icon-button" ng-click="$mdOpenMenu()">
+                <md-button class="md-icon-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'sensor-graph-menu-content')">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
+                <md-menu-content width="4" style="padding-left: 16px;" id="sensor-graph-menu-content" md-menu-disable-close>
                     <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()">
                             Show Grid Lines
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
                         <md-checkbox class="md-primary" ng-model="vm.showContextZoom"
-                                     ng-change="vm.showOptionsChanged()" ng-click="$event.stopPropagation()">
+                                     ng-change="vm.showOptionsChanged()">
                             Show Context Zoom
                         </md-checkbox>
                     </md-menu-item>
-                    <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                    <md-menu-item menu-disable-close>
+                        <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()">
                             Use Fixed Y Axis Values
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -239,7 +237,7 @@
                         </div>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"

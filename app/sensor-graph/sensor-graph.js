@@ -109,7 +109,7 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
-            vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
+            vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
         };
 
         vm.showHelp = function ($event) {

@@ -188,19 +188,44 @@
             }
         };
 
-        vm.chipRemovePressed = function ($chip) {
-            var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
-                return item.name === $chip.name;
-            });
-            if (sensorIndex > -1) {
-                for (var i = 0; i < vm.sensorsToDisplay.length; i++) {
-                    if (vm.sensorsToDisplay[i].python_identifier === $chip.name.split('.')[1]) {
-                        vm.sensorsToDisplay[i].selectedForChart = false;
+        vm.chipRemoved = function ($chip) {
+            for (var i = 0; i < vm.sensorsToDisplay.length; i++) {
+                if (vm.sensorsToDisplay[i].python_identifier === $chip.name.split('.')[1]) {
+                    vm.sensorsToDisplay[i].selectedForChart = false;
+                    break;
+                }
+            }
+            vm.removeSensorLine($chip.name);
+        };
+
+        vm.chipAppended = function (chip) {
+            if (chip.name) {
+                var sensorPlotNameFound = false;
+                for (var i = 0; i < vm.sensorsPlotNames.length; i++) {
+                    if (vm.resourceSensorsBeingDisplayed + '_' + chip.python_identifier === vm.sensorsPlotNames[i].class) {
+                        sensorPlotNameFound = true;
                         break;
                     }
                 }
-                vm.removeSensorLine($chip.name);
+                if (!sensorPlotNameFound) {
+                    chip.selectedForChart = true;
+                    vm.plotLiveSensorFeed(chip, false);
+                }
             }
+            vm.sensorsPlotNames = vm.sensorsPlotNames.filter(function (item) {
+                return item.name && item.name.length > 0;
+            });
+        };
+
+        vm.chipsQuerySearch = function (query) {
+            var results = query ? vm.sensorsToDisplay.filter(vm.createFilterFor(query)) : [];
+            return results;
+        };
+
+        vm.createFilterFor = function (query) {
+            return function filterFn(item) {
+                return (item.name ? item.name.indexOf(query) > -1 : item.indexOf(query) > -1);
+            };
         };
 
         vm.clearChartData = function () {
@@ -258,11 +283,11 @@
                         return item.name === strList[1];
                     }) > -1) {
                 vm.redrawChart([{
-                    Sensor: strList[1].replace(/\./g, '_'),
-                    ValueTimestamp: sensor.value.timestamp,
-                    Timestamp: sensor.value.received_timestamp,
-                    Value: sensor.value.value
-                }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 100);
+                    sensor: strList[1].replace(/\./g, '_'),
+                    value_ts: sensor.value.timestamp,
+                    sample_ts: sensor.value.received_timestamp,
+                    value: sensor.value.value
+                }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
             }
         });
 

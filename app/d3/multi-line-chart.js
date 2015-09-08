@@ -7,10 +7,10 @@ angular.module('katGui.d3')
                 redrawFunction: '=',
                 clearFunction: '=',
                 removeSensorFunction: '=',
-                hideContextZoom: '=hideContextZoom',
+                hideContextZoom: '@hideContextZoom',
                 yMin: '=yMin',
                 yMax: '=yMax',
-                mouseOverTooltip: '='
+                mouseOverTooltip: '@'
             },
             replace: false,
             link: function (scope, element) {
@@ -41,6 +41,7 @@ angular.module('katGui.d3')
                     return d.date;
                 }).left;
                 scope.showGridLines = false;
+                scope.hideContextZoom = false;
                 scope.currentBrush = {};
                 scope.nestedData = [];
                 scope.redrawFunction = function (newData, showGridLines, hideContextZoom, useFixedYAxis, yAxisValues, dataLimit, limitOverlayValues, forceRedraw) {
@@ -114,8 +115,8 @@ angular.module('katGui.d3')
                         redrawSVG = true;
                     }
 
-                    if (showGridLines !== scope.showGridLines) {
-                        scope.showGridLines = showGridLines;
+                    if (hideContextZoom !== scope.hideContextZoom) {
+                        scope.hideContextZoom = hideContextZoom;
                         redrawSVG = true;
                     }
 

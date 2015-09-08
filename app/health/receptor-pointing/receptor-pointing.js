@@ -202,7 +202,7 @@
         vm.delaydRedrawAfterViewChange = function () {
             $timeout(function () {
                 vm.redraw(false);
-            }, 2000);
+            }, 1000);
         };
 
         var bgColor = angular.element(document.querySelector("md-content")).css('background-color');
