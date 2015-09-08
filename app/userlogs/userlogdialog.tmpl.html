@@ -102,9 +102,10 @@
             <input file-model="myFile" type="file" name="files[]" multiple/>
         </div>
         <div layout="column">
-            <div ng-repeat="attach in ulog.metadata" style="height: 26px">
+            <div ng-repeat="attach in ulog.metadata" style="height: 32px" layout="row" layout-align="space-between center">
                 <span flex>{{attach.m_name}}</span>
-                <span style="margin-left: 4px;" class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name, ulog.id)"></span>
+                <span flex="10" style="margin-left: 4px;" class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name, ulog.id)"></span>
+                <md-checkbox flex="10" ng-checked="exists(attach.m_name, metadata_to_del)" ng-click="toggle(attach.m_name, metadata_to_del)">del?</md-checkbox>
             </div>
         </div>
     </md-dialog-content>

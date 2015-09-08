@@ -224,7 +224,8 @@
                     start_time: ulog.start_time,
                     end_time: ulog.end_time,
                     content: ulog.userlog_content,
-                    tags: ulog.tags
+                    tags: ulog.tags,
+                    metadata_to_del: ulog.metadata_to_del
                 }))
                 .then(function (result) {
                     ulog.id = result.data.id;

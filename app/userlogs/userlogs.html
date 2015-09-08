@@ -56,6 +56,10 @@
                         {{e_ulog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                     </span>
                     <span flex>{{e_ulog.userlog_content}}</span>
+                    <span class="md-caption" ng-show="e_ulog.attachment_count>0">
+                        {{e_ulog.attachment_count}} 
+                        <md-icon class="fa" md-font-icon="fa-paperclip"></md-icon>
+                    </span>
                     <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
                                ng-click="vm.getCompleteUserLog(e_ulog, vm.my_userlogs, $event); $event.stopPropagation();">
                         <span style="display: inherit" class="fa fa-edit"></span>
@@ -158,6 +162,13 @@
                                 <span style="width: 150px">{{rlog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 <span style="width: 150px">{{rlog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 <span flex>{{rlog.userlog_content}}</span>
+                                <span class="md-caption" ng-show="rlog.attachment_count > 0">
+                                    {{rlog.attachment_count}} 
+                                    <md-icon class="fa" md-font-icon="fa-paperclip"></md-icon>
+                                    <md-tooltip md-direction="left">
+                                            {{rlog.attachments}}
+                                    </md-tooltip>
+                                </span>
                             </div>
                         </md-list-item>
                     </md-list>
