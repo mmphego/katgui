@@ -64,11 +64,11 @@
             <span flex ng-click="vm.hideWindChart = !vm.hideWindChart">Wind Speed</span>
             <span style="font-size: 14px;">Wind Speed Limit: {{vm.windSpeedLimitLine}}m.s. - Wind Gust Limit: {{vm.windGustLimitLine}}m.s.</span>
             <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0">
-                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
+                <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'weather-wind-menu-content')"
                            style="margin-left: 0; margin-right: 8px;">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
+                <md-menu-content width="4" style="padding-left: 16px;" id="weather-wind-menu-content" md-menu-disable-close>
                     <md-menu-item>
                         <md-checkbox class="md-primary" ng-model="vm.hideWindChart" ng-init="vm.hideWindChart = false"
                                      ng-click="$event.stopPropagation()">
@@ -76,19 +76,17 @@
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showWindGridLines" ng-change="vm.showWindOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox class="md-primary" ng-model="vm.showWindGridLines" ng-change="vm.showWindOptionsChanged()">
                             Show Grid Lines
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.useFixedWindYAxis"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox class="md-primary" ng-model="vm.useFixedWindYAxis">
                             Use Fixed Left Y Axis Values
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedWindYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -100,7 +98,7 @@
                         </div>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedWindYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -121,11 +119,11 @@
         <md-toolbar class="md-toolbar-tools-medium md-whiteframe-z1" style="padding-right: 0">
             <span flex ng-click="vm.hideWeatherChart = !vm.hideWeatherChart">Pressure, Humidity and Temperature</span>
             <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0">
-                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
+                <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'weather-menu-content')"
                            style="margin-left: 0; margin-right: 8px;">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
+                <md-menu-content width="4" style="padding-left: 16px;" id="weather-menu-content" md-menu-disable-close>
                     <md-menu-item>
                         <md-checkbox class="md-primary" ng-model="vm.hideWeatherChart" ng-init="vm.hideWeatherChart = false"
                                      ng-click="$event.stopPropagation()">
@@ -133,19 +131,17 @@
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()">
                             Show Grid Lines
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-checkbox disabled class="md-primary" ng-model="vm.useFixedRightYAxis"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox disabled class="md-primary" ng-model="vm.useFixedRightYAxis">
                             Use Fixed Right Y Axis Values
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedRightYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -157,7 +153,7 @@
                         </div>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedRightYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -169,8 +165,7 @@
                         </div>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-checkbox disabled class="md-primary" ng-model="vm.useFixedYAxis"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox disabled class="md-primary" ng-model="vm.useFixedYAxis">
                             Use Fixed Left Y Axis Values
                         </md-checkbox>
                     </md-menu-item>

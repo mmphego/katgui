@@ -331,23 +331,25 @@
     position: relative;
     border: 2px solid currentColor;
     background: currentColor;
-    span {
-        color: white;
-        font-weight: 600;
-        text-shadow: 1px 1px #333;
-    }
     min-width: 60px;
     min-height: 66px;
     margin-right: 8px;
     overflow: hidden;
     cursor: pointer !important;
 
-    &:hover {
-        border: 2px solid #333333;
+    span {
+        color: white;
+        font-weight: 600;
+        text-shadow: 1px 1px #333;
     }
-}
 
-.receptor-legend-item {
+    .receptor-legend-item-text {
+        text-align: center;
+        color: white;
+        font-weight: 600;
+        text-shadow: 1px 1px #333;
+    }
+
     .on-target-span {
         text-shadow: none;
         left: 0;
@@ -361,6 +363,10 @@
         right: 0;
         top: 0;
         font-size: 12px;
+    }
+
+    &:hover {
+        border: 2px solid #333333;
     }
 }
 

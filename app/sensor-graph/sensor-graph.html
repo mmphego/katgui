@@ -1,5 +1,6 @@
 <div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}" flex
-     ng-click="vm.showDatePicker = false;vm.showEndDatePicker = false;">
+     ng-click="vm.showDatePicker = false;vm.showEndDatePicker = false;"
+     style="cursor: auto; max-height: 100%; min-height: 100%">
 
     <div layout="column" style="margin: 8px; min-width: 366px; max-width: 366px; min-height: 100%;">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
@@ -114,48 +115,26 @@
                 </md-select>
             </div>
 
-            <!--<md-input-container md-no-float class="sensor-search-input">-->
-            <!--<input type="text" ng-change="vm.validateSearchInputLength(vm.sensorRegexStr)"-->
-            <!--placeholder="Search for sensors by regex..." ng-model="vm.sensorRegexStr"-->
-            <!--ng-keypress="vm.findSensorDataFromRegex(vm.sensorRegexStr, $event)"-->
-            <!--ng-class="{'input-error':vm.sensorSearchFieldLengthError}" title="Start Typing to Search"/>-->
-            <!--</md-input-container>-->
-
-            <!-- <md-input-container md-no-float class="sensor-search-input" style="padding: 0 4px;"> -->
-                <!-- <input type="text" ng-change="vm.validateSearchInputLength(vm.sensorSearchStr)"
-                       placeholder="Search for sensors... e.g. *wind*" ng-model="vm.sensorSearchStr"
-                       ng-keypress="vm.findSensorNames(vm.sensorSearchStr, $event)"
-                       ng-class="{'input-error':vm.sensorSearchFieldLengthError}"
-                       title="Type a sensor name expression and press enter. E.g. *wind*"/> -->
-            <!-- </md-input-container> -->
             <md-autocomplete style="min-width: 350px;"
                 md-no-cache="true"
                 ng-disabled="vm.waitingForSearchResult"
                 md-search-text="vm.searchText"
                 md-items="item in vm.querySearch(vm.searchText)"
-                md-selected-item-change="vm.selectedItemChange(item)"
-                md-item-text="item"
-                placeholder="Type a sensor name expression E.g. wind"
-                enter-pressed="vm.enterPressesOnInput()">
+                md-selected-item="vm.selectedSearchItem"
+                placeholder="Type a sensor regular expression. E.g. wind"
+                md-autofocus
+                ng-keydown="vm.autoCompleteKeyPressed($event)"
+                enter-pressed="vm.findSensorNames(vm.searchText)">
                 <md-item-template>
-                    <div layout="row" layout-align="start center">
-                        <span flex md-highlight-text="vm.searchText">{{item}}</span>
-                        <button class="md-button" ng-click="vm.removeAutoCompleteItem(item); $event.stopPropagation();"
-                            style="max-width: 32px; min-width: 32px; max-height: 32px;">
-                            <span class="fa fa-remove"></span>
-                        </button>
-                    </div>
+                    <span md-highlight-text="searchText">{{item}}</span>
                 </md-item-template>
-                <md-not-found>
-                    No matches found
-                </md-not-found>
             </md-autocomplete>
-            <div style="min-height: 5px" ng-show="!vm.waitingForSearchResult"></div>
-            <md-progress-linear style="padding: 0 8px;" ng-show="vm.waitingForSearchResult" class="md-primary" md-mode="indeterminate"></md-progress-linear>
+            <div style="min-height: 5px; width: 100%; padding: 4px 8px;" ng-show="!vm.waitingForSearchResult"></div>
+            <md-progress-linear style="padding: 4px 8px;" ng-show="vm.waitingForSearchResult" class="md-primary" md-mode="indeterminate"></md-progress-linear>
 
-            <div class="sensor-search-name-list unselectable md-whiteframe-z1">
+            <div flex class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames | orderBy:'name' track by $index"
-                     ng-click="vm.searchSensorClicked(sensor);">
+                     ng-click="vm.findSensorData(sensor);" title="{{sensor.attributes.description}}">
                     <span>{{sensor.name}}</span>
                 </div>
             </div>
@@ -163,15 +142,22 @@
             <div style="width: 100%; margin-top: 4px;" layout="row" layout-align="center center">
                 <span ng-show="vm.sensorSearchNames.length === 1000" title="Refine the search to see more sensors"
                       class="fa fa-warning"></span>
-                <span ng-show="vm.sensorSearchNames.length > 1" style="margin-left: 4px;">Displaying {{vm.sensorSearchNames.length}} results.</span>
+                <span ng-show="vm.sensorSearchNames.length > 1" style="margin-left: 4px;"><i>Displaying {{vm.sensorSearchNames.length}} result(s)</i></span>
                 <span ng-show="vm.sensorSearchNames.length === 1" style="margin-left: 4px;">There is 1 result.</span>
                 <span ng-show="vm.sensorSearchNames.length === 0" style="margin-left: 4px;">There are no results.</span>
             </div>
 
-            <div layout="column" style="width: 100%;">
-                <md-checkbox class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()">
+            <div layout="column" layout-align="start center" style="width: 100%;">
+                <md-checkbox class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()"
+                    ng-disabled="vm.sensorServiceConnected">
                     Include Live Data
                 </md-checkbox>
+                <md-button class="md-primary md-raised" ng-click="vm.clearData()">
+                    Clear Sensor Graph
+                </md-button>
+                <md-button class="md-primary md-raised" ng-click="vm.drawAllSensorNamesConfirm($event)">
+                    Draw All Sensors
+                </md-button>
             </div>
         </div>
     </div>
@@ -180,56 +166,66 @@
         <md-toolbar layout="row" layout-align="end center" class="md-whiteframe-z1 ">
             <div flex layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}"
                  class="md-toolbar-tools-medium">
-                <md-chips flex class="custom-chips" ng-model="vm.sensorNames" readonly="true">
+                <md-chips flex class="custom-chips"
+                    md-on-remove="vm.chipRemoved($chip)"
+                    md-on-append="vm.chipAppended($chip)"
+                    md-require-match
+                    ng-model="vm.sensorNames"
+                    delete-button-label="Remove"
+                    delete-hint="Remove from Sensor Graph"
+                    title="Filter on Sensor List Results">
+                    <md-autocomplete
+                        md-search-text="vm.chipsSearchText"
+                        md-items="item in vm.chipsQuerySearch(vm.chipsSearchText)"
+                        md-item-text="item.name">
+                        <md-item-template>
+                            <span md-highlight-text="searchText" title="{{item.attributes.description}}">{{item.name}}</span>
+                        </md-item-template>
+                        <md-not-found>
+                            No matches found
+                        </md-not-found>
+                    </md-autocomplete>
                     <md-chip-template title="{{$chip.name}}" ng-mouseenter="vm.setLineStrokeWidth($chip.name)"
                                       ng-mouseleave="vm.removeLineStrokeWidth($chip.name)">
                         <span class="{{$chip.name}}">
                           <strong>{{$chip.name}}</strong>
                         </span>
                     </md-chip-template>
-                    <button md-chip-remove ng-click="vm.chipRemovePressed($chip)" class="md-primary sensor-name-chip">
-                        <md-icon md-font-icon="fa-close" class="fa"></md-icon>
-                    </button>
                 </md-chips>
             </div>
         </md-toolbar>
         <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart" clear-function="vm.clearChart"
                           remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
-                          y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
+                          y-min="vm.yAxisMinValue" mouse-over-tooltip="true"
+                          style="max-height: 100%; min-height: 100%"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
-            <!--<md-button class="md-icon-button"-->
-            <!--ng-click="vm.showHelp($event)">-->
-            <!--<md-icon class="fa" md-font-icon="fa-question"></md-icon>-->
-            <!--</md-button>-->
             <md-button class="md-icon-button"
                        ng-click="vm.clearData()" title="Clear Data">
                 <md-icon class="fa" md-font-icon="fa-remove"></md-icon>
             </md-button>
             <md-menu md-theme="{{themePrimaryButtons}}" style="padding: 0">
-                <md-button class="md-icon-button" ng-click="$mdOpenMenu()">
+                <md-button class="md-icon-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'sensor-graph-menu-content')">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
+                <md-menu-content width="4" style="padding-left: 16px;" id="sensor-graph-menu-content" md-menu-disable-close>
                     <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()">
                             Show Grid Lines
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
                         <md-checkbox class="md-primary" ng-model="vm.showContextZoom"
-                                     ng-change="vm.showOptionsChanged()" ng-click="$event.stopPropagation()">
+                                     ng-change="vm.showOptionsChanged()">
                             Show Context Zoom
                         </md-checkbox>
                     </md-menu-item>
-                    <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                    <md-menu-item menu-disable-close>
+                        <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()">
                             Use Fixed Y Axis Values
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -241,7 +237,7 @@
                         </div>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"

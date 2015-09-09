@@ -104,26 +104,13 @@ multi-line-chart {
     min-width: 350px;
     max-width: 350px;
     min-height: 300px;
-    max-height: 300px;
     font-size: 12px;
     overflow: auto;
     position: relative;
-    //    border: 1px solid rgba(158, 158, 158, 0.5);
-}
-
-//todo, better overlay without using fixed
-.search-loading-overlay {
-    background: rgba(158,158,158,0.1);
-    position: absolute;
-    left: 0;
-    top: -20px;
-    height: 720px;
-    width: 340px;
 }
 
 .sensor-search-input {
     width: 334px;
-    //    margin-left: 8px;
     padding-bottom: 8px;
 }
 
@@ -131,54 +118,11 @@ multi-line-chart {
     max-height: 52px;
     min-height: 52px;
     overflow: auto;
-//    .md-chip {
-//        background: rgba(158,158,158, 0.5) !important;
-//    }
-
 }
 
 .custom-chips .md-chip {
-    position: relative;
-    padding-right: 3.5rem;
-}
-
-.custom-chips .md-chip .md-chip-remove-container {
-    position: absolute;
-    right: 0.4rem;
-    top: 0.4rem;
-    margin-right: 0;
-    height: 2.4rem;
-    background: none;
-}
-
-.custom-chips .md-chip .md-chip-remove-container button.sensor-name-chip {
-    position: relative;
-    height: 2.4rem;
-    width: 2.4rem;
-    line-height: 3rem;
-    text-align: center;
-//    background: rgba(158,158,158, 0.5) !important;
-    border-radius: 50%;
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    margin: 0;
-//    transition: background 0.15s linear;
-    display: block;
-}
-
-.custom-chips .md-chip .md-chip-remove-container button.sensor-name-chip md-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate3d(-49%, -34%, 0);
-    font-size: 18px;
-    color: white;
-    fill: white;
-}
-
-.custom-chips .md-chip .md-chip-remove-container button.sensor-name-chip:hover, .chipsdemoBasicUsage .custom-chips .md-chip .md-chip-remove-container button.vegetablechip:focus {
-    background: rgba(244, 67, 54, 1);
+    // position: relative;
+    // padding-right: 3.5rem;
 }
 
 .sensor-graph-tips {
@@ -241,53 +185,6 @@ multi-line-chart {
         margin-top: 660px;
         width: 380px;
         height: 54px;
-    }
-}
-
-.spinner {
-    width: 80px;
-    height: 80px;
-
-    position: relative;
-    margin: 100px auto;
-}
-
-.double-bounce1, .double-bounce2 {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background-color: rgba(158, 158, 158, 0.8);
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    left: 0;
-
-    -webkit-animation: bounce 2.0s infinite ease-in-out;
-    animation: bounce 2.0s infinite ease-in-out;
-}
-
-.double-bounce2 {
-    -webkit-animation-delay: -1.0s;
-    animation-delay: -1.0s;
-}
-
-@-webkit-keyframes bounce {
-    0%, 100% {
-        -webkit-transform: scale(0.0)
-    }
-    50% {
-        -webkit-transform: scale(1.0)
-    }
-}
-
-@keyframes bounce {
-    0%, 100% {
-        transform: scale(0.0);
-        -webkit-transform: scale(0.0);
-    }
-    50% {
-        transform: scale(1.0);
-        -webkit-transform: scale(1.0);
     }
 }
 

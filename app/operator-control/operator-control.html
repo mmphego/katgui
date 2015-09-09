@@ -14,8 +14,8 @@
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.stopAll()" class="md-raised md-primary">Stop Observations</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
-            <md-button ng-disabled="vm.waitingForRequestResult || $root.currentUser.req_role !== 'lead_operator'" ng-click="vm.shutdownSPCorr()" class="md-raised md-primary">Power Down SP & CORR</md-button>
-            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.shutdownComputing()" class="md-raised md-primary">Shutdown Computing</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult || $root.currentUser.req_role !== 'lead_operator'" ng-click="vm.shutdownSPCorr($event)" class="md-raised md-primary">Power Down SP & CORR</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult" ng-click="vm.shutdownComputing($event)" class="md-raised md-primary">Shutdown Computing</md-button>
         </div>
 
         <md-list class="receptor-state-list">

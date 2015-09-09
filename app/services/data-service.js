@@ -5,40 +5,52 @@
 
     function DataService($http, SERVER_URL) {
 
-        var urlBase = SERVER_URL + '/katstore/katstore/';
+        var urlBase = SERVER_URL + '/katstore/';
         var api = {};
 
-        api.findSensor = function (sensorName, startDate, endDate, limit, time_type, format, interval) {
+        api.sensorsInfo = function (sensorNames, type, limit) {
             var requestStr = urlBase +
-                '?sensor=' + sensorName +
+                'sensors?sensors=' + sensorNames +
+                '&sensor_type=' + type +
+                '&limit=' + limit;
+            return $http.get(requestStr);
+        };
+
+        api.sensorData = function (sensorName, startDate, endDate, limit, interval) {
+            var requestStr = urlBase +
+                'samples?sensor=' + sensorName +
                 '&start=' + startDate +
                 '&end=' + endDate +
                 '&limit=' + limit +
-                '&time_type=' + time_type +
-                '&format=' + format;
+                '&format=json' +
+                '&time_type=ms';
             if (interval) {
                 requestStr += '&interval=' + interval;
             }
             return $http.get(requestStr);
         };
 
-        api.findSensorName = function (searchStr, sensor_type) {
-            return $http.get(urlBase + 'findsensor?sensor=' + searchStr + '&sensor_type=' + sensor_type + '&limit=1000');
-        };
+        api.sensorDataRegex = function (sensorNames, startDate, endDate, limit, interval) {
+            var data = {
+                sensors: sensorNames,
+                start_ts: startDate,
+                end_ts: endDate,
+                limit: limit,
+                format: 'json',
+                time_type: 'ms'
+            };
+            if (interval) {
+                data.interval = interval;
+            }
 
-        api.sensorInfo = function (sensorName) {
-            return $http.get(urlBase + 'sensor/' + sensorName);
-        };
-
-        api.findSensorDataFromRegex = function (sensorName, startDate, endDate, limit, time_type, format, sensor_type) {
-            return $http.get(urlBase +
-            '?sensor=' + sensorName +
-            '&start=' + startDate +
-            '&end=' + endDate +
-            '&limit=' + limit +
-            '&time_type=' + time_type +
-            '&format=' + format +
-            '&sensor_type=' + sensor_type);
+            var req = {
+                method: 'post',
+                url: urlBase + 'samples?format=json',
+                headers: {},
+                data: data
+            };
+            req.headers['Content-Type'] = 'application/json';
+            return $http(req);
         };
 
         return api;

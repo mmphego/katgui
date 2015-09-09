@@ -63,6 +63,7 @@
                 $log.info('Sensors Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
                 api.subscribe('*', api.guid);
+                api.connected = true;
             }
         };
 
@@ -70,6 +71,7 @@
             $log.info('Disconnected Sensors Connection.');
             api.connection = null;
             api.lastHeartBeat = null;
+            api.connected = false;
         };
 
         api.checkAlive = function () {
@@ -114,11 +116,10 @@
                             $log.error(messageObj);
                         }
                     });
-                } else if (messages.result.id === 'set_sensor_strategy') {
+                } else if (messages.result.id === 'set_sampling_strategy') {
                     $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else if (messages.result) {
-                    //subscribe response
-                    $log.info(messages.result);
+                    $log.info('Subscribed to: ' + JSON.stringify(messages.result));
                 } else {
                     $log.error('Dangling sensors message...');
                     $log.error(e);
@@ -168,7 +169,7 @@
         };
 
         api.setSensorStrategy = function (resource, sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
-            api.sendSensorsCommand('set_sensor_strategy',
+            api.sendSensorsCommand('set_sampling_strategy',
                 [
                     api.guid,
                     resource,

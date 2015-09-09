@@ -32,14 +32,28 @@
             vm.handleRequestResponse(ControlService.resumeOperations());
         };
 
-        vm.shutdownComputing = function () {
-            vm.waitingForRequestResult = true;
-            vm.handleRequestResponse(ControlService.shutdownComputing());
+        vm.shutdownComputing = function (event) {
+            NotifyService.showImportantConfirmDialog(event, 'Confirm Shutdown',
+                'Are you sure you want to shutdown all computing?',
+                'Yes', 'Cancel')
+                    .then(function () {
+                        vm.waitingForRequestResult = true;
+                        vm.handleRequestResponse(ControlService.shutdownComputing());
+                    }, function () {
+                        NotifyService.showSimpleToast('Cancelled Shutdown');
+                    });
         };
 
-        vm.shutdownSPCorr = function () {
-            vm.waitingForRequestResult = true;
-            vm.handleRequestResponse(ControlService.shutdownSPCorr());
+        vm.shutdownSPCorr = function (event) {
+            NotifyService.showImportantConfirmDialog(event, 'Confirm Shutdown',
+                'Are you sure you want to powerdown SP and the Correlators?',
+                'Yes', 'Cancel')
+                    .then(function () {
+                        vm.waitingForRequestResult = true;
+                        vm.handleRequestResponse(ControlService.shutdownSPCorr());
+                    }, function () {
+                        NotifyService.showSimpleToast('Cancelled Shutdown');
+                    });
         };
 
         vm.handleRequestResponse = function (request) {

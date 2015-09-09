@@ -4,7 +4,7 @@
         .controller('ReceptorPointingCtrl', ReceptorPointingCtrl);
 
     function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $interval, $log,
-                                  NotifyService) {
+                                  NotifyService, $timeout) {
 
         var vm = this;
         vm.receptorsData = [];
@@ -76,7 +76,7 @@
                 .then(function (result) {
                     result.forEach(function (item) {
                         vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false});
-                        SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 360);
+                        SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 10);
                     });
                 });
         };
@@ -88,9 +88,9 @@
                         vm.targets = result.data;
                         vm.filterChanged();
 
-                        for (var i in result) {
-                            for (var j in result[i].tags) {
-                                vm.filters[result[i].tags[j]] = {name: result[i].tags[j]};
+                        for (var i in vm.targets) {
+                            for (var j in vm.targets[i].tags) {
+                                vm.filters[vm.targets[i].tags[j]] = {name: vm.targets[i].tags[j]};
                             }
                         }
                     }, function (error) {
@@ -197,6 +197,12 @@
                 receptor.showHorizonMask = !receptor.showHorizonMask;
                 vm.redraw(true);
             }
+        };
+
+        vm.delaydRedrawAfterViewChange = function () {
+            $timeout(function () {
+                vm.redraw(false);
+            }, 1000);
         };
 
         var bgColor = angular.element(document.querySelector("md-content")).css('background-color');

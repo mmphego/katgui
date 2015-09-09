@@ -64,7 +64,7 @@
                     roles: user.roles.join(',')
                 }))
                 .then(function (result) {
-                    var oldUser = _.findWhere(api.users, {id: result.id});
+                    var oldUser = _.findWhere(api.users, {id: result.data.id});
                     for (var attr in result.data) {
                         oldUser[attr] = result.data[attr];
                     }

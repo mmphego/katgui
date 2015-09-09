@@ -1,12 +1,13 @@
-<div layout="column" flex ng-controller="SensorListCtrl as vm" style="max-height: 100%; min-height: 100%">
+<div layout="column" flex ng-controller="SensorListCtrl as vm">
 
-    <div flex layout="row" style="margin: 16px; max-height: 100%; min-height: 100%">
-        <div layout="column" style="min-width:138px;">
-            <div layout="column" style="margin-bottom: 8px" ng-repeat="node in vm.nodes | orderBy:node:true track by $index">
+    <div flex layout="row" style="margin: 16px;">
+        <div layout="column" style="min-width:150px;">
+            <div layout="column" ng-repeat="node in vm.nodes | orderBy:node:true track by $index"
+                class="md-whiteframe-z1" style="margin-bottom: 8px;">
                 <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="center center">
                     <span>{{node}}</span>
                 </md-toolbar>
-                <div class="md-whiteframe-z1" style="overflow: auto">
+                <div flex style="overflow: auto">
                     <div ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
                          ng-repeat="resource in vm.resourcesNames | filter:{'node':node} | orderBy:'name' track by $index"
                          style="position: relative">
@@ -21,6 +22,9 @@
             <md-toolbar class="md-whiteframe-z1" style=" min-height: 80px">
                 <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
                     <span flex>Sensors {{' - ' + vm.resourceSensorsBeingDisplayed | uppercase}}</span>
+                    <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.showSensorGroups()">
+                        Select a Sensor Groups
+                    </md-button>
                     <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-click="$event.stopPropagation()"
                                  md-theme="{{themePrimaryButtons}}" style="font-size: 16px;">
                         Hide Nominal Sensors
@@ -115,31 +119,29 @@
                 <md-icon ng-show="!vm.showChart" class="fa" md-font-icon="fa-chevron-up"></md-icon>
             </md-button>
             <md-menu md-theme="{{themePrimaryButtons}}">
-                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()"
+                <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'sensor-list-menu-content')"
                            style="margin-left: 0; margin-right: 8px;">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
+                <md-menu-content width="4" style="padding-left: 16px;" id="sensor-list-menu-content" md-menu-disable-close>
                     <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.showOptionsChanged()">
                             Show Grid Lines
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
                         <md-checkbox class="md-primary" ng-model="vm.showContextZoom"
-                                     ng-change="vm.showOptionsChanged()" ng-click="$event.stopPropagation()">
+                                     ng-change="vm.showOptionsChanged()">
                             Show Context Zoom
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()"
-                                     ng-click="$event.stopPropagation()">
+                        <md-checkbox class="md-primary" ng-model="vm.useFixedYAxis" ng-change="vm.showOptionsChanged()">
                             Use Fixed Y Axis Values
                         </md-checkbox>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -151,7 +153,7 @@
                         </div>
                     </md-menu-item>
                     <md-menu-item ng-if="vm.useFixedYAxis">
-                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
+                        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
                             <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
@@ -165,15 +167,24 @@
                 </md-menu-content>
             </md-menu>
         </md-toolbar>
-        <md-chips flex class="custom-chips" ng-model="vm.sensorsPlotNames" readonly="true">
+        <md-chips flex class="custom-chips" ng-model="vm.sensorsPlotNames" md-theme="{{themePrimaryButtons}}"
+                md-on-remove="vm.chipRemoved($chip)" md-on-append="vm.chipAppended($chip)" style="margin: 2px">
+                <md-autocomplete
+                    md-search-text="vm.chipsSearchText"
+                    md-items="item in vm.chipsQuerySearch(vm.chipsSearchText)"
+                    md-item-text="item.name">
+                    <md-item-template>
+                        <span md-highlight-text="searchText" title="{{item.attributes.description}}">{{item.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found
+                    </md-not-found>
+                </md-autocomplete>
             <md-chip-template title="{{$chip.name}}">
                 <span class="{{$chip.class}}" style="font-size: 10px;">
                   <strong>{{$chip.name}}</strong>
                 </span>
             </md-chip-template>
-            <button md-chip-remove ng-click="vm.chipRemovePressed($chip)" class="md-primary sensor-name-chip">
-                <md-icon md-font-icon="fa-close" class="fa"></md-icon>
-            </button>
         </md-chips>
         <multi-line-chart ng-show="vm.showChart" flex redraw-function="vm.redrawChart" hide-context-zoom="true"
                           clear-function="vm.clearChart" class="sensor-list-multi-line-chart"

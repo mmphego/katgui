@@ -59,7 +59,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
-                             CENTRAL_LOGGER_PORT, $log, NotifyService) {
+                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -102,6 +102,15 @@
         if (!angular.isDefined($rootScope.showLST)) {
             $rootScope.showLST = true;
         }
+        if (!angular.isDefined($rootScope.showDate)) {
+            $rootScope.showDate = true;
+        }
+        if (!angular.isDefined($rootScope.showDayOfYear)) {
+            $rootScope.showDayOfYear = false;
+        }
+        if (!angular.isDefined($rootScope.showJulianDate)) {
+            $rootScope.showJulianDate = true;
+        }
 
         if (!angular.isDefined($rootScope.showLocalAndSAST)) {
             $rootScope.showLocalAndSAST = true;
@@ -109,9 +118,6 @@
 
         vm.currentUser = null;
         vm.userRoles = USER_ROLES;
-        vm.userCanOperate = false;
-        vm.userLoggedIn = false;
-        vm.actionMenuOpen = false;
         vm.connectionToMonitorLost = false;
         $rootScope.alarmsData = AlarmsService.alarmsData;
         $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
@@ -306,6 +312,23 @@
             }
         };
 
+        //todo material milestone v0.12 will have an option to not close menu when an item is clicked
+        $rootScope.openMenu = function ($mdOpenMenu, $event, menuContentId) {
+            var menu = $mdOpenMenu($event);
+            $timeout(function() {
+                var menuContent = document.getElementById(menuContentId);
+                var included = ['INPUT'];
+                menuContent.parentElement.addEventListener('click', function(e) {
+                    if (included.indexOf(e.target.nodeName) > -1) {
+                        e.stopPropagation();
+                    } else {
+                        return false;
+                    }
+
+                }, true);
+            });
+        };
+
         //so that all controllers and directives has access to which keys are pressed
         document.onkeydown = function (event) {
             event = event || window.event;
@@ -464,7 +487,7 @@
         $stateProvider.state('sensor-graph', {
             url: '/sensor-graph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
-            title: 'Sensor Graphs'
+            title: 'Sensor Graph'
         });
         $stateProvider.state('sensor-list', {
             url: '/sensor-list',

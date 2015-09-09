@@ -80,6 +80,7 @@
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'config_label', 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'maintenance', 'event', 0, 0);
                     SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'delegated_ca', 'event', 0, 0);
+                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'pool_resources', 'event', 0, 0);
                     ObsSchedService.subarrays.push({id: subarrays[i]});
                 }
             } else if (sensorNameList[0].indexOf('subarray_') === 0) {
@@ -88,8 +89,10 @@
                 });
                 if (subarrayIndex > -1) {
                     if (sensorNameList[1] === 'allocations') {
-                        var parsedAllocations = JSON.parse(sensor.value.value);
-                        ObsSchedService.subarrays[subarrayIndex].allocations = [];
+                        var parsedAllocations = sensor.value.value !== "" ? JSON.parse(sensor.value.value) : [];
+                        if (!ObsSchedService.subarrays[subarrayIndex].allocations) {
+                            ObsSchedService.subarrays[subarrayIndex].allocations = [];
+                        }
 
                         if (parsedAllocations.length > 0) {
                             for (var m in parsedAllocations) {
@@ -100,12 +103,24 @@
                     } else if (sensorNameList[1] === 'delegated_ca') {
                         ObsSchedService.subarrays[subarrayIndex][sensorNameList[1]] = sensor.value.value;
                         var iAmCA;
-                        for (var i in ObsSchedService.subarrays) {
-                            if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email) {
+                        for (var idx in ObsSchedService.subarrays) {
+                            if (ObsSchedService.subarrays[idx]['delegated_ca'] === $rootScope.currentUser.email) {
                                 iAmCA = true;
                             }
                         }
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
+                    } else if (sensorNameList[1] === 'pool_resources') {
+                        var parsedResources = sensor.value.value.split(',');
+                        if (!ObsSchedService.subarrays[subarrayIndex].allocations) {
+                            ObsSchedService.subarrays[subarrayIndex].allocations = [];
+                        }
+
+                        if (parsedResources.length > 0) {
+                            for (var r in parsedResources) {
+                                ObsSchedService.subarrays[subarrayIndex].allocations.push(
+                                    {name: parsedResources[r], allocation: ''});
+                            }
+                        }
                     } else {
                         ObsSchedService.subarrays[subarrayIndex][sensorNameList[1]] = sensor.value.value;
                     }
@@ -117,8 +132,8 @@
                 ObsSchedService.poolResourcesFree.splice(0, ObsSchedService.poolResourcesFree.length);
                 var resourcesList = sensor.value.value.split(',');
                 if (resourcesList.length > 0 && resourcesList[0] !== '') {
-                    for (var i in resourcesList) {
-                        ObsSchedService.poolResourcesFree.push({name: resourcesList[i]});
+                    for (var index in resourcesList) {
+                        ObsSchedService.poolResourcesFree.push({name: resourcesList[index]});
                     }
                 }
             } else if (sensorNameList[1].indexOf('mode_') === 0) {

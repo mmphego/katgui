@@ -111,7 +111,6 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            $log.info(sensor);
             var strList = sensor.name.split(':');
             var sensorNameList = strList[1].split('.');
             $scope.$apply(function () {

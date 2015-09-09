@@ -3,20 +3,20 @@
     angular.module('katGui.services')
         .factory('NotifyService', NotifyService);
 
-    function NotifyService($mdDialog, $mdToast, $log, SensorsService, ConfigService, DATETIME_FORMAT) {
+    function NotifyService($rootScope, $mdDialog, $mdToast, $log, $q, SensorsService, ConfigService, DATETIME_FORMAT) {
 
         var api = {};
         api.toastPosition = 'bottom right';
         api.toastHideDelay = 3500;
 
         api.showSimpleToast = function (message) {
-            $mdToast.show(
-                $mdToast.simple()
-                    .content(message)
-                    .position(api.toastPosition)
-                    .hideDelay(api.toastHideDelay)
-            );
-
+            $mdToast.hide();
+            var simpleToast = $mdToast.simple()
+                .content(message)
+                .highlightAction(true)
+                .position(api.toastPosition)
+                .hideDelay(api.toastHideDelay);
+            $mdToast.show(simpleToast);
             $log.info('Showing toast-message: ' + message);
         };
 
@@ -47,6 +47,60 @@
                 });
 
             $log.info('Showing dialog, title: ' + title + ', message: ' + content);
+        };
+
+        api.showConfirmDialog = function(event, title, content, confirmText, cancelText) {
+            var deferred = $q.defer();
+            var confirmButton = confirmText ? confirmText : 'Confirm';
+            var cancelButton = cancelText ? cancelText : 'Cancel';
+            var confirm = $mdDialog.confirm()
+                .title(title)
+                .content(content)
+                .ariaLabel('')
+                .ok(confirmButton)
+                .cancel(cancelButton)
+                .targetEvent(event);
+            $mdDialog.show(confirm).then(function() {
+                deferred.resolve();
+            }, function() {
+                deferred.reject();
+            });
+            return deferred.promise;
+        };
+
+        api.showImportantConfirmDialog = function(event, title, content, confirmText, cancelText) {
+            var deferred = $q.defer();
+            var confirmButton = confirmText ? confirmText : 'Confirm';
+            var cancelButton = cancelText ? cancelText : 'Cancel';
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = title;
+                        $scope.content = content;
+                        $scope.resolve = function () {
+                            deferred.resolve();
+                            $mdDialog.hide();
+                        };
+                        $scope.reject = function () {
+                            deferred.reject();
+                            $mdDialog.hide();
+                        };
+                    },
+                    template: "<md-dialog style='padding: 0;' md-theme='red' aria-label=''>" +
+                    "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
+                    "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span style='margin:8px'>{{title}}</span></md-toolbar>" +
+                    "<div flex><p>{{content}}</p></div>" +
+                    "</div>" +
+                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='' ng-click='reject()'>" + cancelButton + "</md-button>" +
+                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='red' aria-label='' ng-click='resolve()'>" + confirmButton + "</md-button>" +
+                    "</div>" +
+                    "</md-dialog>",
+                    targetEvent: event
+                });
+
+            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
+            return deferred.promise;
         };
 
         api.showPreDialog = function (title, content, event) {

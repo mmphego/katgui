@@ -23,6 +23,15 @@
                 });
         };
 
+        api.loadSensorGroups = function () {
+            $http(createRequest('get', urlBase + '/sensor-groups'))
+                .then(function (result) {
+                    api.sensorGroups = result.data;
+                }, function (message) {
+                    $log.error(message);
+                });
+        };
+
         api.loadAggregateSensorDetail = function () {
             var deferred = $q.defer();
             if (!api.aggregateSensorDetail) {
