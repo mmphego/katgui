@@ -273,7 +273,7 @@ function autoGrow() {
 /* istanbul ignore next */
 //be very sure you know what you are doing when you alter the below functions
 //they are not tested
-function katGuiUtil(SERVER_URL, $sce, $timeout) {
+function katGuiUtil(SERVER_URL, $sce) {
 
     this.generateUUID = function () {
         var d = new Date().getTime();
