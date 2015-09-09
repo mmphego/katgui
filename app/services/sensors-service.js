@@ -116,7 +116,7 @@
                             $log.error(messageObj);
                         }
                     });
-                } else if (messages.result.id === 'set_sensor_strategy') {
+                } else if (messages.result.id === 'set_sampling_strategy') {
                     $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else if (messages.result) {
                     $log.info('Subscribed to: ' + JSON.stringify(messages.result));
@@ -169,7 +169,7 @@
         };
 
         api.setSensorStrategy = function (resource, sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
-            api.sendSensorsCommand('set_sensor_strategy',
+            api.sendSensorsCommand('set_sampling_strategy',
                 [
                     api.guid,
                     resource,
