@@ -16,27 +16,27 @@
             return $http.get(requestStr);
         };
 
-        api.sensorData = function (sensorName, startDate, endDate, limit, interval) {
+        api.sensorData = function (namespace, sensorName, startDate, endDate, limit, interval) {
             var requestStr = urlBase +
                 'samples?sensor=' + sensorName +
                 '&start=' + startDate +
                 '&end=' + endDate +
                 '&limit=' + limit +
-                '&format=json' +
-                '&time_type=ms';
+                '&time_type=ms' +
+                '&namespace=' + encodeURI(namespace);
             if (interval) {
                 requestStr += '&interval=' + interval;
             }
             return $http.get(requestStr);
         };
 
-        api.sensorDataRegex = function (sensorNames, startDate, endDate, limit, interval) {
+        api.sensorDataRegex = function (namespace, sensorNames, startDate, endDate, limit, interval) {
             var data = {
+                namespace: namespace,
                 sensors: sensorNames,
                 start_ts: startDate,
                 end_ts: endDate,
                 limit: limit,
-                format: 'json',
                 time_type: 'ms'
             };
             if (interval) {
@@ -45,7 +45,7 @@
 
             var req = {
                 method: 'post',
-                url: urlBase + 'samples?format=json',
+                url: urlBase + 'samples',
                 headers: {},
                 data: data
             };
