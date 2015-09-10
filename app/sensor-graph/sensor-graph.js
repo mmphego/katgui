@@ -65,9 +65,9 @@
                 });
         };
 
-        if ($rootScope.loggedIn) {
+        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
             vm.connectListeners();
-        }
+        });
 
         vm.initSensors = function () {
             if (vm.liveData) {
@@ -475,6 +475,9 @@
             vm.liveDataChanged();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess();
+            }
         });
     }
 })();
