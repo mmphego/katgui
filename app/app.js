@@ -330,7 +330,7 @@
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider,
-                             $httpProvider, $urlMatcherFactoryProvider, $locationProvider) {
+                             $httpProvider, $urlMatcherFactoryProvider) {
 
         $urlMatcherFactoryProvider.strictMode(false);
         //disable this in production for performance boost
