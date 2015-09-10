@@ -157,7 +157,7 @@
                     NotifyService.showSimpleToast('Error: ' + result.data.err_msg);
                     $state.go('login');
                 } else {
-                    if (!window.location.pathname.endsWith('sensor-graph')) {
+                    if (!window.location.hash.endsWith('sensor-graph')) {
                         NotifyService.showSimpleToast('Error connecting to KATPortal.');
                         $log.error(result);
                     }
