@@ -65,7 +65,9 @@
                 });
         };
 
-        vm.connectListeners();
+        if ($rootScope.loggedIn) {
+            vm.connectListeners();
+        }
 
         vm.initSensors = function () {
             if (vm.liveData) {
@@ -235,6 +237,9 @@
             }
             DataService.sensorData.apply(this, requestParams)
                 .then(function (result) {
+                    if (result.data instanceof Array) {
+                        vm.sensorDataReceived(null, {value: result.data});
+                    }
                     if (vm.liveData) {
                         vm.connectLiveFeed(sensor);
                     }
@@ -284,7 +289,7 @@
                 $rootScope.sensorListStrategyInterval);
         };
 
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
+        vm.sensorDataReceived = function (event, sensor) {
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
                 var newData = [];
@@ -336,7 +341,9 @@
                     }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 }
             }
-        });
+        };
+
+        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', vm.sensorDataReceived);
 
         vm.liveDataChanged = function () {
             vm.sensorNames.forEach(function (item) {
@@ -438,7 +445,11 @@
 
             DataService.sensorDataRegex(SensorsService.guid, searchSensorList, startDate, endDate, DATALIMIT, interval)
                 .then(function (result) {
-                    $log.info('Waiting for ' + result.data.row_count + ' data points on websocket.');
+                    if (result.data instanceof Array) {
+                        vm.sensorDataReceived(null, {value: result.data});
+                    } else {
+                        $log.info('Waiting for ' + result.data.row_count + ' data points on websocket.');
+                    }
                 }, function (error) {
                     vm.waitingForSearchResult = false;
                     $log.info(error);

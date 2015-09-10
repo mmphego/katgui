@@ -74,69 +74,94 @@
         } else {
             angular.element(document.querySelector('body')).removeClass('dark-theme');
         }
-
-        vm.showNavbar = true;
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
-        $rootScope.showDate = $localStorage['showDate'];
-        $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
-        $rootScope.showJulianDate = $localStorage['showJulianDate'];
-        $rootScope.showLST = $localStorage['showLST'];
-        $rootScope.showLocalAndSAST = $localStorage['showLocalAndSAST'];
-        $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
-        $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
-        $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
-        $rootScope.logNumberOfLines = $localStorage['logNumberOfLines'];
-        $rootScope.disableAlarmSounds = $localStorage['disableAlarmSounds'];
 
-        if (!$rootScope.sensorListStrategyType) {
-            $rootScope.sensorListStrategyType = 'event-rate';
-        }
-        if (!$rootScope.logNumberOfLines) {
-            $rootScope.logNumberOfLines = 200;
-        }
-        if (!$rootScope.sensorListStrategyInterval) {
-            $rootScope.sensorListStrategyInterval = 3;
-        }
-        if (!angular.isDefined($rootScope.showLST)) {
-            $rootScope.showLST = true;
-        }
-        if (!angular.isDefined($rootScope.showDate)) {
-            $rootScope.showDate = true;
-        }
-        if (!angular.isDefined($rootScope.showDayOfYear)) {
-            $rootScope.showDayOfYear = false;
-        }
-        if (!angular.isDefined($rootScope.showJulianDate)) {
-            $rootScope.showJulianDate = true;
-        }
+        vm.initApp = function () {
+            vm.showNavbar = true;
+            $rootScope.showDate = $localStorage['showDate'];
+            $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
+            $rootScope.showJulianDate = $localStorage['showJulianDate'];
+            $rootScope.showLST = $localStorage['showLST'];
+            $rootScope.showLocalAndSAST = $localStorage['showLocalAndSAST'];
+            $rootScope.showLargeAlarms = $localStorage['showLargeAlarms'];
+            $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
+            $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
+            $rootScope.logNumberOfLines = $localStorage['logNumberOfLines'];
+            $rootScope.disableAlarmSounds = $localStorage['disableAlarmSounds'];
+            $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
 
-        if (!angular.isDefined($rootScope.showLocalAndSAST)) {
-            $rootScope.showLocalAndSAST = true;
-        }
+            if (!angular.isDefined($rootScope.showAlarms)) {
+                $rootScope.showAlarms = true;
+            }
 
-        vm.currentUser = null;
-        vm.userRoles = USER_ROLES;
-        vm.connectionToMonitorLost = false;
-        $rootScope.alarmsData = AlarmsService.alarmsData;
-        $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
-        $rootScope.interlockState = MonitorService.interlockState;
+            if (!$rootScope.sensorListStrategyType) {
+                $rootScope.sensorListStrategyType = 'event-rate';
+            }
+            if (!$rootScope.logNumberOfLines) {
+                $rootScope.logNumberOfLines = 200;
+            }
+            if (!$rootScope.sensorListStrategyInterval) {
+                $rootScope.sensorListStrategyInterval = 3;
+            }
+            if (!angular.isDefined($rootScope.showLST)) {
+                $rootScope.showLST = true;
+            }
+            if (!angular.isDefined($rootScope.showDate)) {
+                $rootScope.showDate = true;
+            }
+            if (!angular.isDefined($rootScope.showDayOfYear)) {
+                $rootScope.showDayOfYear = false;
+            }
+            if (!angular.isDefined($rootScope.showJulianDate)) {
+                $rootScope.showJulianDate = true;
+            }
 
-        ConfigService.loadKATObsPortalURL();
-        ConfigService.getSystemConfig().then(function (systemConfig) {
-            $rootScope.systemConfig = systemConfig;
+            if (!angular.isDefined($rootScope.showLocalAndSAST)) {
+                $rootScope.showLocalAndSAST = true;
+            }
+
+            vm.currentUser = null;
+            vm.userRoles = USER_ROLES;
+            vm.connectionToMonitorLost = false;
+            $rootScope.alarmsData = AlarmsService.alarmsData;
+            $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
+            $rootScope.interlockState = MonitorService.interlockState;
+
+            ConfigService.loadKATObsPortalURL();
+            ConfigService.getSystemConfig().then(function (systemConfig) {
+                $rootScope.systemConfig = systemConfig;
+            });
+
+            vm.utcTime = '';
+            vm.localTime = '';
+
+            if (vm.updateTimeDisplayInterval) {
+                $interval.cancel(vm.updateTimeDisplayInterval);
+            }
+            vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 500);
+            ConfigService.getSiteLocation()
+                .then(function (result) {
+                    var trimmedResult = result.data.replace(/"/g, '');
+                    $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
+                    $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
+                }, function (error) {
+                    $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
+                    $log.error(error);
+                });
+
+            $rootScope.showSBDetails = NotifyService.showSBDetails;
+        };
+
+        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+            vm.showNavbar = true;
+            vm.initApp();
         });
-
-        $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
-        if (!angular.isDefined($rootScope.showAlarms)) {
-            $rootScope.showAlarms = true;
-        }
 
         $rootScope.isNavbarVisible = function () {
             return vm.showNavbar;
         };
-
         $rootScope.connectEvents = function () {
             MonitorService.connectListener()
                 .then(function () {
@@ -155,15 +180,9 @@
                 });
             vm.handleMonitorSocketTimeout();
         };
-
         vm.toggleNavbar = function () {
             vm.showNavbar = !vm.showNavbar;
         };
-
-        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
-            vm.showNavbar = true;
-        });
-
         vm.handleMonitorSocketTimeout = function () {
             MonitorService.getTimeoutPromise()
                 .then(function () {
@@ -177,15 +196,12 @@
                     }
                 });
         };
-
         vm.toggleLeftSidenav = function () {
             $mdSidenav('left-sidenav').toggle();
         };
-
         vm.toggleRightSidenav = function () {
             $mdSidenav('right-sidenav').toggle();
         };
-
         $rootScope.logout = function () {
             vm.disconnectIssued = true;
             MonitorService.disconnectListener();
@@ -193,29 +209,23 @@
             SessionService.logout();
             vm.showNavbar = false;
         };
-
         $rootScope.stateGo = function (newState) {
             $state.go(newState);
         };
-
         vm.sideNavStateGo = function (newState) {
             $rootScope.stateGo(newState);
             $mdSidenav('left-sidenav').close();
         };
-
         vm.sideNavRightStateGo = function (newState) {
             $rootScope.stateGo(newState);
             $mdSidenav('right-sidenav').close();
         };
-
         $rootScope.currentStateTitle = function () {
             return $state.current.title;
         };
-
         $rootScope.currentStateName = function () {
             return $state.current.name;
         };
-
         vm.navigateToParentState = function () {
             if ($state.current.parent) {
                 $state.go($state.current.parent.name);
@@ -223,10 +233,6 @@
                 $state.go('home');
             }
         };
-
-        vm.utcTime = '';
-        vm.localTime = '';
-
         $rootScope.displayPromiseResult = function (result) {
             if (result.result === 'ok') {
                 NotifyService.showSimpleToast(result.message);
@@ -234,7 +240,6 @@
                 NotifyService.showSimpleDialog(result.result, result.message);
             }
         };
-
         vm.updateTimeDisplay = function () {
             if (MonitorService.lastSyncedTime && vm.showNavbar) {
                 var utcTime = moment.utc(MonitorService.lastSyncedTime, 'X');
@@ -259,43 +264,24 @@
                 }
             }
         };
-
-        vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 500);
-        ConfigService.getSiteLocation()
-            .then(function (result) {
-                var trimmedResult = result.data.replace(/"/g, '');
-                $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
-                $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
-            }, function (error) {
-                $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
-                $log.error(error);
-            });
-
         $rootScope.objectKeys = function (obj) {
             return Object.keys(obj);
         };
-
-        $rootScope.showSBDetails = NotifyService.showSBDetails;
-
         $rootScope.openCentralLogger = function () {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + ':' + CENTRAL_LOGGER_PORT).focus();
         };
-
         $rootScope.openGangliaLink = function () {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
         };
-
         $rootScope.openUrlInNewTab = function (url) {
             window.open(url).focus();
         };
-
         vm.openIRCDisplay = function ($event) {
             NotifyService.showPreDialog(
                 'IRC Information',
                 'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
                 $event);
         };
-
         $rootScope.openSystemLogger = function () {
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/logfile/" + $rootScope.logNumberOfLines).focus();
@@ -303,7 +289,6 @@
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
-
         $rootScope.openKatsnifferLogger = function (logFileName) {
             if (ConfigService.KATObsPortalURL) {
                 window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
@@ -338,12 +323,14 @@
         $scope.$on('$destroy', function () {
             MonitorService.disconnectListener();
             vm.undbindLoginSuccess();
-            vm.updateTimeDisplayInterval();
+            if (vm.updateTimeDisplayInterval) {
+                $interval.cancel(vm.updateTimeDisplayInterval);
+            }
         });
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider,
-                             $httpProvider, $urlMatcherFactoryProvider) {
+                             $httpProvider, $urlMatcherFactoryProvider, $locationProvider) {
 
         $urlMatcherFactoryProvider.strictMode(false);
         //disable this in production for performance boost
@@ -356,7 +343,7 @@
         }
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
-        //$locationProvider.html5Mode(true);
+        $locationProvider.html5Mode(true);
         configureThemes($mdThemingProvider);
 
         $stateProvider.state('login', {
@@ -487,7 +474,8 @@
         $stateProvider.state('sensor-graph', {
             url: '/sensor-graph',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
-            title: 'Sensor Graph'
+            title: 'Sensor Graph',
+            noAuth: true
         });
         $stateProvider.state('sensor-list', {
             url: '/sensor-list',
@@ -515,13 +503,35 @@
             title: 'User Logging'
         });
         /* Add New States Above */
-        $urlRouterProvider.otherwise('/login');
+        // $urlRouterProvider.otherwise('/login');
+        $urlRouterProvider.otherwise(function ($injector, $location) {
+            var $state = $injector.get('$state');
+            var trailingWord = $location.absUrl().split('/').pop();
+            if (trailingWord === 'sensor-graph') {
+                // $location.url('#/sensor-graph');
+                // $location.replace().url('/#/sensor-graph');
+                // $state.go('sensor-graph');
+                $state.transitionTo('sensor-graph', {location: false, notify: false});
+            } else {
+                return '/login';
+            }
+        });
+        // $urlRouterProvider.rule(function($injector, $location){
+        //     var $state = $injector.get('$state');
+        //     var trailingWord = $location.absUrl().split('/').pop();
+        //     if (trailingWord === 'sensor-graph') {
+        //         // $location.url('#/sensor-graph');
+        //         // $location.replace().url('/#/sensor-graph');
+        //         // $state.go('sensor-graph');
+        //         return '/#/sensor-graph';
+        //     }
+        // });
     }
 
     function runKatGui($rootScope, $state, $localStorage, $log, $templateCache) {
 
         $rootScope.$on('$stateChangeStart', function (event, toState) {
-            if (!$rootScope.loggedIn && toState.name !== 'login') {
+            if (toState.noAuth || !$rootScope.loggedIn && toState.name !== 'login') {
                 if (!$localStorage['currentUserToken']) {
                     event.preventDefault();
                     $rootScope.requestedStateBeforeLogin = toState.name;
