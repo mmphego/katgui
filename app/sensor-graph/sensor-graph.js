@@ -226,43 +226,22 @@
                 interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
             }
 
+            var requestParams;
             if (sensor.type === 'discrete') {
                 vm.clearData();
-                vm.handleSensorDataRequest(sensor, suppressToast, DataService.sensorData(sensor.name, startDate, endDate, DATALIMIT));
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT];
             } else {
-                vm.handleSensorDataRequest(
-                    sensor,
-                    suppressToast,
-                    DataService.sensorData(sensor.name, startDate, endDate, DATALIMIT, interval));
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT, interval];
             }
-        };
-
-        vm.handleSensorDataRequest = function (sensor, suppressToast, request) {
-            request.then(function (result) {
-                vm.waitingForSearchResult = false;
-                if (vm.liveData) {
-                    vm.connectLiveFeed(sensor);
-                }
-                var newData = [];
-                for (var attr in result.data) {
-                    newData = newData.concat(result.data[attr]);
-                }
-                if (newData) {
-                    if (!suppressToast) {
-                        NotifyService.showSimpleToast(newData.length + ' sensor data points found for ' + sensor.name + '.');
+            DataService.sensorData.apply(this, requestParams)
+                .then(function (result) {
+                    if (vm.liveData) {
+                        vm.connectLiveFeed(sensor);
                     }
-                    if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
-                        sensor.liveData = vm.liveData;
-                        vm.sensorNames.push(sensor);
-                    }
-                    vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
-                } else if (!suppressToast) {
-                    NotifyService.showSimpleToast('No sensor data found for ' + sensor.name + '.');
-                }
-            }, function (error) {
-                vm.waitingForSearchResult = false;
-                $log.info(error);
-            });
+                }, function (error) {
+                    vm.waitingForSearchResult = false;
+                    $log.info(error);
+                });
         };
 
         vm.setLineStrokeWidth = function (chipName) {
@@ -306,7 +285,47 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            if (sensor.value) {
+            if (sensor.value && sensor.value instanceof Array) {
+                vm.waitingForSearchResult = false;
+                var newData = [];
+                var newSensorNames = {};
+                for (var attr in sensor.value) {
+                    var sensorName = sensor.value[attr][3];
+
+                    newData.push({
+                        status: sensor.value[attr][4],
+                        sensor: sensorName,
+                        value: sensor.value[attr][2],
+                        sample_ts: sensor.value[attr][1] / 1000,
+                    });
+                    newSensorNames[sensorName] = {};
+                }
+                var newSensorNamesKeys = Object.keys(newSensorNames);
+                for (var index in newSensorNamesKeys) {
+                    if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: newSensorNamesKeys[index]}))) {
+                        var existingSensor = _.findWhere(vm.sensorSearchNames, {name: newSensorNamesKeys[index]});
+                        existingSensor.liveData = vm.liveData;
+                        vm.sensorNames.push(existingSensor);
+                        if (vm.liveData) {
+                            vm.connectLiveFeed(existingSensor);
+                        }
+                    }
+                }
+                var toastMessage = '';
+                if (newSensorNamesKeys.length === 0) {
+                    toastMessage = newData.length + ' sensor data points found.';
+                } else if (newSensorNamesKeys.length === 1 && newData) {
+                    toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys[0] + '.';
+                } else if (newData) {
+                    toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys.length + ' sensors.';
+                }
+
+                NotifyService.showSimpleToast(toastMessage);
+                if (newData) {
+                    vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
+                }
+            }
+            else if (sensor.value) {
                 var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_').replace(/-/g, '_');
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
                     vm.redrawChart([{
@@ -417,24 +436,9 @@
                 interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
             }
 
-            DataService.sensorDataRegex(searchSensorList, startDate, endDate, DATALIMIT, interval)
+            DataService.sensorDataRegex(SensorsService.guid, searchSensorList, startDate, endDate, DATALIMIT, interval)
                 .then(function (result) {
-                    vm.waitingForSearchResult = false;
-                    var newData = [];
-                    for (var attr in result.data) {
-                        newData = newData.concat(result.data[attr]);
-                        if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: attr}))) {
-                            var sensor = _.findWhere(vm.sensorSearchNames, {name: attr});
-                            sensor.liveData = vm.liveData;
-                            vm.sensorNames.push(sensor);
-                            if (vm.liveData) {
-                                vm.connectLiveFeed(sensor);
-                            }
-                        }
-                    }
-                    if (newData) {
-                        vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
-                    }
+                    $log.info('Waiting for ' + result.data.row_count + ' data points on websocket.');
                 }, function (error) {
                     vm.waitingForSearchResult = false;
                     $log.info(error);
