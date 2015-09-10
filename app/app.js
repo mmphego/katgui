@@ -343,7 +343,10 @@
         }
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
-        $locationProvider.html5Mode(true);
+        // $locationProvider.html5Mode({
+        //     enabled: true,
+        //     requireBase: false
+        // });
         configureThemes($mdThemingProvider);
 
         $stateProvider.state('login', {
