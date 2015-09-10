@@ -503,29 +503,7 @@
             title: 'User Logging'
         });
         /* Add New States Above */
-        // $urlRouterProvider.otherwise('/login');
-        $urlRouterProvider.otherwise(function ($injector, $location) {
-            var $state = $injector.get('$state');
-            var trailingWord = $location.absUrl().split('/').pop();
-            if (trailingWord === 'sensor-graph') {
-                // $location.url('#/sensor-graph');
-                // $location.replace().url('/#/sensor-graph');
-                // $state.go('sensor-graph');
-                $state.transitionTo('sensor-graph', {location: false, notify: false});
-            } else {
-                return '/login';
-            }
-        });
-        // $urlRouterProvider.rule(function($injector, $location){
-        //     var $state = $injector.get('$state');
-        //     var trailingWord = $location.absUrl().split('/').pop();
-        //     if (trailingWord === 'sensor-graph') {
-        //         // $location.url('#/sensor-graph');
-        //         // $location.replace().url('/#/sensor-graph');
-        //         // $state.go('sensor-graph');
-        //         return '/#/sensor-graph';
-        //     }
-        // });
+        $urlRouterProvider.otherwise('/login');
     }
 
     function runKatGui($rootScope, $state, $localStorage, $log, $templateCache) {
