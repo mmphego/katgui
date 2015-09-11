@@ -148,7 +148,7 @@
             </div>
 
             <div layout="column" layout-align="start center" style="width: 100%;">
-                <md-checkbox class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()"
+                <md-checkbox ng-if="$root.loggedIn" class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()"
                     ng-disabled="vm.sensorServiceConnected">
                     Include Live Data
                 </md-checkbox>

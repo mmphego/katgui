@@ -22,8 +22,11 @@
                 '&start=' + startDate +
                 '&end=' + endDate +
                 '&limit=' + limit +
-                '&time_type=ms' +
-                '&namespace=' + encodeURI(namespace);
+                '&time_type=ms';
+
+            if (namespace) {
+                requestStr += '&namespace=' + encodeURI(namespace);
+            }
             if (interval) {
                 requestStr += '&interval=' + interval;
             }
@@ -32,13 +35,15 @@
 
         api.sensorDataRegex = function (namespace, sensorNames, startDate, endDate, limit, interval) {
             var data = {
-                namespace: namespace,
                 sensors: sensorNames,
                 start_ts: startDate,
                 end_ts: endDate,
                 limit: limit,
                 time_type: 'ms'
             };
+            if (namespace) {
+                data.namespace = namespace;
+            }
             if (interval) {
                 data.interval = interval;
             }

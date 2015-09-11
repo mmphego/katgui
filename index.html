@@ -5,23 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
-    <!-- endbuild -->
-    <!--todo: using this base tag breaks relative paths for includes like css, js and images-->
-    <!--figure that out before using the base element-->
-    <!--<base href="/">-->
+    <!-- <base href="/"> -->
 </head>
-
-<!-- Place this asynchronous JavaScript just before your </body> tag -->
-<!--<script type="text/javascript">-->
-<!--(function () {-->
-<!--var po = document.createElement('script');-->
-<!--po.type = 'text/javascript';-->
-<!--po.async = true;-->
-<!--po.src = 'https://apis.google.com/js/client:plusone.js';-->
-<!--var s = document.getElementsByTagName('script')[0];-->
-<!--s.parentNode.insertBefore(po, s);-->
-<!--})();-->
-<!--</script>-->
 
 <body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="row" ng-cloak>
 
@@ -358,7 +343,7 @@
             </div>
 
         </md-toolbar>
-        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" style="margin-bottom: 25px">
+        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" ng-class="{'margin-bottom-25': $root.loggedIn}">
         </md-content>
         <div class="main-footer-toolbar" layout="column" ng-if="loggedIn">
             <md-toolbar md-theme="{{themePrimary}}" class="md-toolbar-tools-small md-whiteframe-z1" layout="row">

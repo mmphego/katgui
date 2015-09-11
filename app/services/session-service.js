@@ -3,7 +3,8 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, NotifyService) {
+    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL,
+                            KatGuiUtil, $timeout, $q, $interval, $log, $location, NotifyService) {
 
         var urlBase = SERVER_URL + '/katauth';
         var api = {};
@@ -152,14 +153,15 @@
                 NotifyService.showSimpleToast('Invalid username or password.');
                 $state.go('login');
             } else {
-                $log.error('Error logging return, server returned with:');
-                $log.error(result.data);
-                if (result.data.err_msg) {
+                if (result.data && result.data.err_msg) {
                     NotifyService.showSimpleToast('Error: ' + result.data.err_msg);
+                    $state.go('login');
                 } else {
-                    NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                    if (!window.location.hash.endsWith('sensor-graph')) {
+                        NotifyService.showSimpleToast('Error connecting to KATPortal.');
+                        $log.error(result);
+                    }
                 }
-                $state.go('login');
             }
         }
 
