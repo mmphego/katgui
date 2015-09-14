@@ -46,7 +46,7 @@
             </md-toolbar>
             <div flex style="overflow: auto">
                 <div ng-repeat="e_ulog in vm.my_userlogs | regexSearch:vm.orderByFields:vm.q | orderBy:vm.orderBy.value:vm.orderBy.reverse"
-                              flex layout="row" layout-align="start center" class="user-log-row">
+                              flex layout="row" layout-align="start center" class="user-log-row" ng-dblclick="vm.getCompleteUserLog(e_ulog, vm.my_userlogs, $event); $event.stopPropagation();">
                     <span style="width: 120px">{{e_ulog.userlog_type}}</span>
                     <span style="width: 180px">{{e_ulog.timestamp}}</span>
                     <span style="width: 155px" ng-style="{'background': ulog.scolor}">
@@ -76,68 +76,102 @@
                         <input class="fade-in search-input-box" style="width: 200px; max-width: 200px" type="search"
                                ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Filter Userlogs..."/>
                     </md-toolbar>
-                    <div md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z1 md-toolbar-tools" layout="row" layout-align="start center" style="padding: 0">
-                        <span style="margin-left: 8px" flex>Report Parameters</span>
-                        <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
-                            <md-select placeholder="Select User Log Type" ng-model="vm.blank_query.userlog_type"
-                                       title="{{vm.blank_query.userlog_type}}"
-                                       style="width: 150px; margin: 0 8px" multiple="true">
-                                <md-option value="shift_log">Shift Log</md-option>
-                                <md-option value="time_loss">Time-loss Log</md-option>
-                                <md-option value="observation">Observation Log</md-option>
-                                <md-option value="status_log">Status Log</md-option>
-                                <md-option value="maintenance">Maintenance</md-option>
-                                <md-option value="alarm_log">Alarm Log</md-option>
-                            </md-select>
-                            <div layout="row" layout-align="center center" style="min-width: 220px; position: relative">
-                                <md-input-container flex md-no-float style="padding: 0;">
-                                    <input flex type="text"
-                                           data-ng-model="vm.blank_query.start_time" placeholder="Start Date"
-                                           title="Start Date 'HH:mm:ss yyyy-MM-dd'"
-                                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()"/>
-                                </md-input-container>
-                                <span></span>
-                                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
-                                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
-                                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                    <div md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z1 md-toolbar-tools"" layout="row" layout-align="start center" style="padding: 0">
+                            <span style="margin-left: 8px" flex>Report Parameters</span>
+
+                            <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
+                                <md-select placeholder="Select User Log Type" ng-model="vm.blank_query.userlog_type"
+                                           title="{{vm.blank_query.userlog_type}}"
+                                           style="width: 150px; margin: 0 8px" multiple="true">
+                                    <md-option value="shift_log">Shift Log</md-option>
+                                    <md-option value="time_loss">Time-loss Log</md-option>
+                                    <md-option value="observation">Observation Log</md-option>
+                                    <md-option value="status_log">Status Log</md-option>
+                                    <md-option value="maintenance">Maintenance</md-option>
+                                    <md-option value="alarm_log">Alarm Log</md-option>
+                                </md-select>
+                                <div layout="row" layout-align="center center" style="min-width: 220px; position: relative">
+                                    <md-input-container flex md-no-float style="padding: 0;">
+                                        <input flex type="text"
+                                               data-ng-model="vm.blank_query.start_time" placeholder="Start Date"
+                                               title="Start Date 'HH:mm:ss yyyy-MM-dd'"
+                                               ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()"/>
+                                    </md-input-container>
+                                    <span></span>
+                                    <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
+                                               ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                                        <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                                    </md-button>
+                                    <datetimepicker ng-show="vm.showDatePicker" ng-init="vm.showDatePicker = false"
+                                                    class="datepickerMenu md-whiteframe-z1"
+                                                    data-ng-model="vm.blank_query.start_time" style="position: absolute; left: 0; top: 34px"
+                                                    data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
+                                                    data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(vm.blank_query.start_time, vm.blank_query, 'start_time')"></datetimepicker>
+                                </div>
+                                <!--<span style="margin: 0 8px"></span>-->
+                                <div layout="row" layout-align="center center" style="min-width: 220px;  position: relative">
+                                    <md-input-container flex md-no-float style="padding: 0;">
+                                        <input flex type="text"
+                                               data-ng-model="vm.blank_query.end_time" placeholder="End Date"
+                                               title="End Date 'HH:mm:ss yyyy-MM-dd'"
+                                               ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()"/>
+                                    </md-input-container>
+                                    <span></span>
+                                    <md-button class="md-icon-button" style="margin-left: 0;width: 40px; height: 40px;"
+                                               ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                                        <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                                    </md-button>
+                                    <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
+                                                    data-ng-model="vm.blank_query.end_time" style="position: absolute; left: 0; top: 34px"
+                                                    class="datepickerMenu md-whiteframe-z1"
+                                                    data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
+                                                    data-on-set-time="vm.showEndDatePicker = false; vm.onTimeSet(vm.blank_query.end_time, vm.blank_query, 'end_time')"></datetimepicker>
+                                </div>
+                                <md-checkbox ng-model="vm.include_activity_logs" aria-label="Include Activity Logs"
+                                             style="font-size: 12px; width: 120px; line-height: 1.3;">
+                                    Include Activity logs in Export
+                                </md-checkbox>
+                                <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event, vm.blank_query)"
+                                           style="margin-right: 0;">Preview Report
                                 </md-button>
-                                <datetimepicker ng-show="vm.showDatePicker" ng-init="vm.showDatePicker = false"
-                                                class="datepickerMenu md-whiteframe-z1"
-                                                data-ng-model="vm.blank_query.start_time" style="position: absolute; left: 0; top: 34px"
-                                                data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
-                                                data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(vm.blank_query.start_time, vm.blank_query, 'start_time')"></datetimepicker>
-                            </div>
-                            <!--<span style="margin: 0 8px"></span>-->
-                            <div layout="row" layout-align="center center" style="min-width: 220px;  position: relative">
-                                <md-input-container flex md-no-float style="padding: 0;">
-                                    <input flex type="text"
-                                           data-ng-model="vm.blank_query.end_time" placeholder="End Date"
-                                           title="End Date 'HH:mm:ss yyyy-MM-dd'"
-                                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()"/>
-                                </md-input-container>
-                                <span></span>
-                                <md-button class="md-icon-button" style="margin-left: 0;width: 40px; height: 40px;"
-                                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
-                                    <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                                <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time, vm.blank_query.userlog_type)"
+                                           style="margin-right: 0;">Export PDF
                                 </md-button>
-                                <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
-                                                data-ng-model="vm.blank_query.end_time" style="position: absolute; left: 0; top: 34px"
-                                                class="datepickerMenu md-whiteframe-z1"
-                                                data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
-                                                data-on-set-time="vm.showEndDatePicker = false; vm.onTimeSet(vm.blank_query.end_time, vm.blank_query, 'end_time')"></datetimepicker>
                             </div>
-                            <md-checkbox ng-model="vm.include_activity_logs" aria-label="Include Activity Logs"
-                                         style="font-size: 12px; width: 120px; line-height: 1.3;">
-                                Include Activity logs in Export
-                            </md-checkbox>
-                            <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event, vm.blank_query)"
-                                       style="margin-right: 0;">Preview Report
-                            </md-button>
-                            <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time, vm.blank_query.userlog_type)"
-                                       style="margin-right: 0;">Export PDF
-                            </md-button>
-                        </div>
                     </div>
+
+                        <div layout="row" layout-align="start center">
+                            <md-button ng-click="toggleTags = !toggleTags; $event.stopPropagation()" style="margin: 0; padding: 0; min-height: 32px; min-width: 32px">
+                                <span class="fa fa-tags"></span>
+                            </md-button>
+                            <div ng-init="toggleTags = false" ng-show="toggleTags" style="height: 100px; width: 200px; position: absolute; bottom: 100px; background-color: white; border: 1px solid darkgray; box-shadow: 10px 10px 5px #888888; overflow: auto;">
+                                    <div ng-repeat="listed_tag in vm.tags track by $index" class="repeated-item" flex ng-click="vm.add_tag_from_list(listed_tag)">
+                                        {{listed_tag.name}}
+                                    </div>
+                            </div>
+                            <md-chips ng-model="vm.tagChips" md-autocomplete-snap md-require-match flex>
+                                <md-autocomplete
+                                    md-search-text="searchText"
+                                    md-no-cache="True"
+                                    md-items="item in vm.querySearch(searchText)"
+                                    md-item-text="item.name"
+                                    placeholder="Select tags">
+                                    <md-item-template>
+                                        <span md-highlight-text="searchText" title="{{item.slug}}">{{item.name}}</span>
+                                    </md-item-template>
+                                    <md-not-found>
+                                        No matches found
+                                    </md-not-found>
+                                </md-autocomplete>
+                                <md-chip-template>
+                                    <span style="font-size:small">{{$chip.name}}</span>
+                                </md-chip-template>
+                                <md-button class="md-fab" aria-label="Remove Tag">
+                                    <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
+                                </md-button>
+                            </md-chips>
+                        </div>
+
                 </div>
                 <div id="printarea" flex layout="column" style="width:100%" ng-show="vm.report_userlogs.length > 0">
                     <md-list>
@@ -155,7 +189,7 @@
                                       style="padding: 0 8px; min-height: 32px">
                             <md-divider></md-divider>
                             <div class="md-list-item-text" style="font-size:small" flex
-                                 layout="row">
+                                 layout="row" ng-click="vm.getCompleteUserLogView(rlog, vm.filtered_report_userlogs, $event); $event.stopPropagation();">
                                 <span style="width: 130px">{{rlog.userlog_type}}</span>
                                 <span style="width: 180px">{{rlog.timestamp}}</span>
                                 <span style="width: 130px">{{rlog.name}}</span>
