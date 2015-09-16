@@ -72,7 +72,8 @@
                 $log.info('Monitor Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
                 api.subscribe('mon:*');
-                api.subscribe('sched:*');
+                api.subscribe('alarms:*');
+                api.subscribe('health:*');
                 api.subscribe('time:*');
                 api.subscribe('auth:*');
             }
@@ -117,11 +118,13 @@
                         }
 
                         messages.result.forEach(function (message) {
+                            $log.info(message);
                             var messageObj = message;
                             if (_.isString(message)) {
                                 messageObj = JSON.parse(message);
                             }
                             if (messageObj.msg_channel) {
+                                var channelNameSplit;
                                 var messageChannel = messageObj.msg_channel.split(":");
                                 if (messageObj.msg_channel === 'auth:current_lo') {
                                     api.currentLeadOperator.name = messageObj.msg_data.lo;
@@ -138,11 +141,9 @@
                                 } else if (messageChannel[0] === 'sched') {
                                     ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
-                                    var channelNameSplit = messageChannel[1].split('.');
+                                    channelNameSplit = messageChannel[1].split('.');
                                     if (channelNameSplit[1] === 'interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
-                                    } else if (channelNameSplit[0] === 'kataware') {
-                                        AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                                     } else if (channelNameSplit.length > 1 &&
                                         (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
                                         channelNameSplit[1] === 'vds_flood_lights_on')) {
@@ -153,6 +154,20 @@
                                     } else if (channelNameSplit.length > 1) {
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
+                                } else if (messageChannel[0] === 'health') {
+                                    channelNameSplit = messageChannel[1].split('.');
+                                    if (channelNameSplit.length > 1 &&
+                                        (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
+                                        channelNameSplit[1] === 'vds_flood_lights_on')) {
+                                        ReceptorStateService.receptorMessageReceived({
+                                            name: messageObj.msg_channel,
+                                            value: messageObj.msg_data
+                                        });
+                                    } else if (channelNameSplit.length > 1) {
+                                        StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
+                                    }
+                                } else if (messageChannel[0] === 'alarm' && messageChannel[1].split('.')[0] === 'kataware') {
+                                    AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                                 }
                             } else {
                                 $log.error('Dangling monitor message...');

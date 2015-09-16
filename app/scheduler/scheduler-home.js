@@ -11,7 +11,7 @@
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
     function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService,
-                               NotifyService) {
+                               NotifyService, MonitorService) {
 
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
@@ -19,6 +19,7 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
+        MonitorService.subscribe('sched:*');
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -165,6 +166,7 @@
         ObsSchedService.getScheduledScheduleBlocks();
 
         $scope.$on('$destroy', function () {
+            MonitorService.unsubscribe('sched:*');
             vm.unbindStateChangeStart();
             vm.unbindUpdate();
 

@@ -84,11 +84,11 @@ angular.module('katGui.d3')
 
                             var existingDataLine = _.findWhere(scope.nestedData, {key: d.sensor});
                             if (existingDataLine) {
-                                if (existingDataLine.values.length > dataLimit) {
+                                if (dataLimit && existingDataLine.values.length > dataLimit) {
                                     existingDataLine.values.splice(0, 1);
                                 }
                                 existingDataLine.values.push(d);
-                                if (existingDataLine.values[existingDataLine.values.length - 1].sample_ts < existingDataLine.values[0].sample_ts) {
+                                if (d.sample_ts < existingDataLine.values[0].sample_ts) {
                                     doSort = true;
                                 }
                                 if (existingDataLine.values.length > 1 &&
