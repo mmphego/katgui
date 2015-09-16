@@ -76,6 +76,7 @@ describe('ApplicationCtrl', function () {
             $scope: scope, $state: state, $mdSidenav: mdSidenav, SessionService: SessionService, $localStorage: localStorage,
             MonitorService: MonitorService, ControlService: ControlService, $mdToast: mdToast, $interval: interval
         });
+        ctrl.initApp();
         expect(scope.$root.showLST).toBeTruthy();
         expect(scope.$root.showLocalAndSAST).toBeTruthy();
         expect(scope.$root.themePrimary).toBe('teal');
@@ -113,4 +114,3 @@ describe('ApplicationCtrl', function () {
         };
     }
 });
-
