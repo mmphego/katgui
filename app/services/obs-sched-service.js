@@ -273,8 +273,8 @@
         };
 
         api.viewTaskLogForSBIdCode = function (id_code, mode) {
-            if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/tailtask/" + id_code + "/" + mode).focus();
+            if (ConfigService.GetKATFileServerURL()) {
+                window.open(ConfigService.GetKATFileServerURL() + "/tailtask/" + id_code + "/" + mode).focus();
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }

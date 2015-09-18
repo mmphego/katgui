@@ -26,12 +26,12 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
-        api.subscribe = function (pattern) {
+        api.subscribe = function (namespace, pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [pattern, true],
-                'id': 'monitor' + KatGuiUtil.generateUUID()
+                'params': [namespace, pattern],
+                'id': KatGuiUtil.generateUUID()
             };
 
             if (api.connection === null) {
@@ -53,7 +53,7 @@
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
                 'params': [pattern],
-                'id': 'monitor' + KatGuiUtil.generateUUID()
+                'id': KatGuiUtil.generateUUID()
             };
 
             if (api.connection === null) {
@@ -71,11 +71,15 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Monitor Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe('mon:*');
-                api.subscribe('alarms:*');
-                api.subscribe('health:*');
-                api.subscribe('time:*');
-                api.subscribe('auth:*');
+                api.subscribe('mon', '*');
+                api.subscribe('alarms', '*');
+                api.subscribe('health', '*');
+                api.subscribe('time', '*');
+                api.subscribe('auth', '*');
+                // api.subscribe('alarms:*');
+                // api.subscribe('health:*');
+                // api.subscribe('time:*');
+                // api.subscribe('auth:*');
             }
         };
 
@@ -118,7 +122,6 @@
                         }
 
                         messages.result.forEach(function (message) {
-                            $log.info(message);
                             var messageObj = message;
                             if (_.isString(message)) {
                                 messageObj = JSON.parse(message);
@@ -141,32 +144,22 @@
                                 } else if (messageChannel[0] === 'sched') {
                                     ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
-                                    channelNameSplit = messageChannel[1].split('.');
-                                    if (channelNameSplit[1] === 'interlock_state') {
+                                    if (messageChannel[1] === 'sys_interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
-                                    } else if (channelNameSplit.length > 1 &&
-                                        (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
-                                        channelNameSplit[1] === 'vds_flood_lights_on')) {
-                                        ReceptorStateService.receptorMessageReceived({
-                                            name: messageObj.msg_channel,
-                                            value: messageObj.msg_data
-                                        });
-                                    } else if (channelNameSplit.length > 1) {
+                                    } else {
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
                                 } else if (messageChannel[0] === 'health') {
-                                    channelNameSplit = messageChannel[1].split('.');
-                                    if (channelNameSplit.length > 1 &&
-                                        (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
-                                        channelNameSplit[1] === 'vds_flood_lights_on')) {
+                                    if ((messageChannel[1].endsWith('mode') || messageChannel[1].endsWith('inhibited') ||
+                                        messageChannel[1].endsWith('vds_flood_lights_on'))) {
                                         ReceptorStateService.receptorMessageReceived({
                                             name: messageObj.msg_channel,
                                             value: messageObj.msg_data
                                         });
-                                    } else if (channelNameSplit.length > 1) {
+                                    } else {
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
-                                } else if (messageChannel[0] === 'alarm' && messageChannel[1].split('.')[0] === 'kataware') {
+                                } else if (messageChannel[0] === 'alarms') {
                                     AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                                 }
                             } else {
@@ -190,7 +183,7 @@
         api.connectListener = function () {
             api.deferredMap['connectDefer'] = $q.defer();
             $log.info('Monitor Connecting...');
-            api.connection = new SockJS(urlBase + '/monitor');
+            api.connection = new SockJS(urlBase + '/portal');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
             api.connection.onclose = api.onSockJSClose;

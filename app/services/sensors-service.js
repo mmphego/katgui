@@ -26,7 +26,7 @@
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [guid + ':' + pattern],
+                'params': [guid, pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -45,7 +45,7 @@
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [guid + ':' + pattern],
+                'params': [guid, pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -138,7 +138,7 @@
             } else {
                 api.guid = KatGuiUtil.generateUUID();
                 $log.info('Sensors Connecting...');
-                api.connection = new SockJS(urlBase + '/sensors');
+                api.connection = new SockJS(urlBase + '/client');
                 api.connection.onopen = api.onSockJSOpen;
                 api.connection.onmessage = api.onSockJSMessage;
                 api.connection.onclose = api.onSockJSClose;
@@ -168,16 +168,22 @@
             }
         };
 
-        api.setSensorStrategy = function (resource, sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
+        api.setSensorStrategy = function (sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
             api.sendSensorsCommand('set_sampling_strategy',
                 [
                     api.guid,
-                    resource,
                     sensorName,
-                    strategyType,
-                    strategyIntervalMin,
-                    strategyIntervalMax
-                ]);
+                    strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax
+                ], api.guid);
+        };
+
+        api.setSensorStrategies = function (pattern, strategyType, strategyIntervalMin, strategyIntervalMax) {
+            api.sendSensorsCommand('set_sampling_strategies',
+                [
+                    api.guid,
+                    pattern,
+                    strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax
+                ], api.guid);
         };
 
         api.listResources = function () {

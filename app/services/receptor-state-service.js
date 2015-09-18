@@ -26,7 +26,7 @@
                         }
                         var lastUpdateValue;
                         if (lastUpdate) {
-                            lastUpdateValue = moment(lastUpdate, 'X').format(DATETIME_FORMAT)
+                            lastUpdateValue = moment(lastUpdate, 'X').format(DATETIME_FORMAT);
                         }
 
                         api.receptorsData.push({
@@ -43,33 +43,8 @@
         };
 
         api.receptorMessageReceived = function (message) {
-            var sensorNameList = message.name.split(':')[1].split('.');
-            var receptor = sensorNameList[0];
-            var sensorName = sensorNameList[1];
-            api.sensorValues[receptor + '_' + sensorName] = message.value;
-
-            api.receptorsData.forEach(function (item) {
-                if (item.name === receptor && message.value) {
-                    if (sensorName === 'mode' && item.status !== message.value.value) {
-                        item.state = message.value.value;
-                    } else if (sensorName === 'inhibited' && item.inhibited !== message.value.value) {
-                        item.inhibited = message.value.value;
-                    }
-                    item.lastUpdate = moment(message.value.timestamp, 'X').format(DATETIME_FORMAT);
-                }
-            });
-        };
-
-        api.updateReceptorDates = function () {
-            api.receptorsData.forEach(function (item) {
-                if (item.lastUpdate) {
-                    item.since = moment(item.lastUpdate, DATETIME_FORMAT).format(DATETIME_FORMAT);
-                    item.fromNow = moment(item.lastUpdate, DATETIME_FORMAT).fromNow();
-                } else {
-                    item.since = "error";
-                    item.fromNow = "Connection Error!";
-                }
-            });
+            var sensorName = message.name.split(':')[1];
+            api.sensorValues[sensorName] = message.value;
         };
 
         return api;

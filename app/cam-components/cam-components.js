@@ -68,20 +68,10 @@
                             node: result[key].node
                         };
                         vm.resourcesNames[key].nodeman = $rootScope.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
-                        for (var i in sensorNameList) {
-                            SensorsService.setSensorStrategy(
-                                key, sensorNameList[i], 'event-rate', 1, 120);
-                        }
-                        SensorsService.setSensorStrategy(
-                            key, 'logging_katcpmsgs_devices_enabled', 'event-rate', 1, 120);
-                        SensorsService.setSensorStrategy(
-                            key, 'logging_katcpmsgs_proxy_enabled', 'event-rate', 1, 120);
                     }
 
-                    SensorsService.setSensorStrategy(
-                        'sys', 'monitor_', 'event-rate', 1, 120);
-                    SensorsService.setSensorStrategy(
-                        'sys', 'config_label', 'event-rate', 1, 120);
+                    SensorsService.setSensorStrategies(
+                        'version|build|katcpmsgs|sys_monitor_|config_label', 'event-rate', 1, 120);
                 });
 
         };
@@ -112,14 +102,16 @@
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
-            var sensorNameList = strList[1].split('.');
+            var sensorName = strList[1];
             $scope.$apply(function () {
-                if (sensorNameList[1].indexOf('monitor_') === 0) {
-                    var resource = sensorNameList[1].split('monitor_')[1];
+                if (sensorName.indexOf('monitor_') > -1) {
+                    var resource = sensorName.split('monitor_')[1];
                     vm.resourcesNames[resource].connected = sensor.value.value;
                 } else {
-                    vm.resourcesNames[sensorNameList[0]].sensors[sensorNameList[1]] = {
-                        name: sensorNameList[1],
+                    var parentName = KatGuiUtil.getParentNameFromSensor(sensorName);
+                    sensorName = sensorName.replace(parentName + '_', '');
+                    vm.resourcesNames[parentName].sensors[sensorName] = {
+                        name: sensorName,
                         value: sensor.value.value
                     };
                 }

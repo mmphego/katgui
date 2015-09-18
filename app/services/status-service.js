@@ -40,7 +40,7 @@
         };
 
         api.messageReceivedSensors = function (messageName, message) {
-            if (messageName.indexOf('mon:') === 0) {
+            if (messageName.indexOf('health:') === 0) {
                 messageName = messageName.split(':')[1];
             }
             message.name = messageName;

@@ -392,6 +392,21 @@ function katGuiUtil(SERVER_URL, $sce) {
         }
     };
 
+    this.getParentNameFromSensor = function (sensorName) {
+        var exceptions = ['nm', 'mon', 'subarray', 'data', 'katgui'];
+        var sensorNameList = sensorName.split(/_(.+)?/);
+        var firstPart = sensorNameList[0];
+        var secondPart = sensorNameList[1];
+        if (firstPart === 'agg') {
+            return 'agg';
+        }
+        if (exceptions.indexOf(firstPart) > -1) {
+            return firstPart + '_' + secondPart.split(/_(.+)?/)[0];
+        } else {
+            return firstPart;
+        }
+    };
+
     return this;
 }
 

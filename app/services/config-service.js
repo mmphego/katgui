@@ -14,15 +14,6 @@
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
 
-        api.loadKATObsPortalURL = function () {
-            $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
-                .then(function (result) {
-                    api.KATObsPortalURL = "http://" + JSON.parse(result.data);
-                }, function (message) {
-                    $log.error(message);
-                });
-        };
-
         api.loadSensorGroups = function () {
             $http(createRequest('get', urlBase + '/sensor-groups'))
                 .then(function (result) {
@@ -63,6 +54,14 @@
                     deferred.reject(message);
                 });
             return deferred.promise;
+        };
+
+        api.GetKATFileServerURL = function () {
+            if (api.systemConfig) {
+                return 'http://' + api.systemConfig.katportal.katfileserver;
+            } else {
+                return '';
+            }
         };
 
         api.getStatusTreeForReceptor = function () {

@@ -3,11 +3,12 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $interval, $state, USER_ROLES, ReceptorStateService, ControlService, NotifyService) {
+    function OperatorControlCtrl($rootScope, $scope, $state, USER_ROLES, ReceptorStateService, ControlService, NotifyService) {
 
         var vm = this;
 
         vm.receptorsData = ReceptorStateService.receptorsData;
+        vm.sensorValues = ReceptorStateService.sensorValues;
         vm.waitingForRequestResult = false;
 
         ReceptorStateService.getReceptorList();
@@ -80,18 +81,10 @@
 
         vm.afterInit();
 
-        var stopInterval = $interval(function () {
-            ReceptorStateService.updateReceptorDates();
-        }, 1000);
-
         $scope.$on('$destroy', function () {
-            if (!vm.connectInterval) {
-                $interval.cancel(vm.connectInterval);
-            }
             if (vm.undbindLoginSuccess) {
                 vm.undbindLoginSuccess();
             }
-            $interval.cancel(stopInterval);
         });
     }
 })();

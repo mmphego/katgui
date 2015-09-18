@@ -129,7 +129,6 @@
             $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
             $rootScope.interlockState = MonitorService.interlockState;
 
-            ConfigService.loadKATObsPortalURL();
             ConfigService.getSystemConfig().then(function (systemConfig) {
                 $rootScope.systemConfig = systemConfig;
             });
@@ -283,15 +282,15 @@
                 $event);
         };
         $rootScope.openSystemLogger = function () {
-            if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/logfile/" + $rootScope.logNumberOfLines).focus();
+            if (ConfigService.GetKATFileServerURL()) {
+                window.open(ConfigService.GetKATFileServerURL() + "/logfile/" + $rootScope.logNumberOfLines).focus();
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
         };
         $rootScope.openKatsnifferLogger = function (logFileName) {
-            if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
+            if (ConfigService.GetKATFileServerURL()) {
+                window.open(ConfigService.GetKATFileServerURL() + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
