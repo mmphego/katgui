@@ -15,7 +15,7 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
 
-        var sensorNameList = ['device_status', 'serial', 'lru'];
+        var sensorNameList = [];
 
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
@@ -94,15 +94,7 @@
         };
 
         vm.initSensors = function () {
-            SensorsService.listResources()
-                .then(function () {
-                    for (var key in SensorsService.resources) {
-                        SensorsService.setSensorStrategy(
-                            key, sensorNameList[0], 'event', 0, 0);
-                        SensorsService.setSensorStrategy(
-                            key, sensorNameList[1], 'event', 0, 0);
-                    }
-                });
+            SensorsService.setSensorStrategies('^(?!agg_).*_device_status|serial|lru', 'event-rate', 1, 120);
         };
 
         vm.sensorClass = function (status) {
@@ -112,9 +104,9 @@
         vm.connectListeners();
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            sensor.value.name = sensor.value.name = sensor.name.split(':')[1];
+            sensor.value.name = sensor.name.split(':')[1];
             sensor.value.date = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
-            vm.sensorValues[sensor.value.name.replace(/\./g, '_')] = sensor.value;
+            vm.sensorValues[sensor.value.name] = sensor.value;
             //note: manual sorting because we are using json as our datasource
             vm.setSensorsOrderBy(vm.sensorsOrderBy.value, true);
         });
