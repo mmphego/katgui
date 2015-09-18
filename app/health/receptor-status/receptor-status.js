@@ -67,14 +67,27 @@
             vm.receptorsData.splice(0, vm.receptorsData.length);
             ConfigService.getReceptorList()
                 .then(function (result) {
-                    result.forEach(function (item) {
+                    var receptorSensorsRegex = '';
+                    result.forEach(function (item, index) {
+                        if (index > 0) {
+                            receptorSensorsRegex += '|';
+                        }
                         vm.receptorsData.push({name: item, subarray: 'free'});
-                        SensorsService.setSensorStrategy(item, vm.receptorSensorsToConnect, 'event-rate', 1, 10);
+                        for (var i = 0; i < vm.receptorSensorsToConnect.length; i++) {
+                            if (i > 0) {
+                                receptorSensorsRegex += '|';
+                            }
+                            receptorSensorsRegex += item + '_' + vm.receptorSensorsToConnect[i];
+                        }
                     });
                     for (var i = 1; i <= 4; i++) {
-                        SensorsService.setSensorStrategy('subarray_' + i, vm.subarraySensorsToConnect, 'event-rate', 1, 10);
+                        receptorSensorsRegex += '|subarray_' + i + '_state';
+                        receptorSensorsRegex += '|subarray_' + i + '_allocations';
+                        receptorSensorsRegex += '|subarray_' + i + '_maintenance';
+                        vm.subarrays['subarray_' + i] = {id: i.toString()};
                     }
-                    SensorsService.setSensorStrategy('katpool', 'resources_in_maintenance', 'event-rate', 1, 10);
+                    receptorSensorsRegex += '|katpool_resources_in_maintenance';
+                    SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 10);
                 });
         };
         vm.connectListeners();
@@ -82,12 +95,10 @@
         vm.statusMessageReceived = function (event, message) {
             if (message.value) {
                 var sensor = message.name.split(':')[1];
-                var resource = sensor.split('.')[0];
-                var sensorName = sensor.split('.')[1];
 
                 vm.receptorsData.forEach(function (receptor) {
-                    if (resource === 'katpool') {
-                        if (sensorName === 'resources_in_maintenance') {
+                    if (sensor.startsWith('katpool')) {
+                        if (sensor.endsWith('resources_in_maintenance')) {
                             receptor.in_maintenance = false;
                             var resourcesList = message.value.value.split(',');
                             resourcesList.forEach(function (res) {
@@ -96,16 +107,15 @@
                                 }
                             });
                         }
-                    } else if (receptor.name === resource) {
-                        receptor[sensorName] = message.value;
+                    } else if (sensor.startsWith(receptor.name)) {
+                        receptor[sensor.replace(receptor.name + '_', '')] = message.value;
                     }
                 });
 
-                if (resource.indexOf('subarray_') === 0) {
-                    if (!vm.subarrays[resource]) {
-                        vm.subarrays[resource] = {id: resource.split('_')[1]};
-                    }
-                    if (sensorName === 'allocations') {
+                if (sensor.startsWith('subarray_')) {
+                    var resource = sensor.split('_').slice(0, 2).join('_');
+                    var sensorName = sensor.replace(resource + '_', '');
+                    if (sensor.endsWith('allocations')) {
                         if (message.value.value.length > 0) {
                             vm.subarrays[resource]['oldAllocations'] = vm.subarrays[resource]['allocations'];
                             var newAllocations = JSON.parse(message.value.value);
@@ -141,7 +151,7 @@
                                 if (d[0] === receptor.name) {
                                     var subarrayId = resource.split('_')[1];
                                     if (subarrayId !== receptor.subarray) {
-                                        receptor.oldSubarray = receptor.subarray
+                                        receptor.oldSubarray = receptor.subarray;
                                         receptorsChangedSubarrays.push(receptor);
                                     }
                                     receptor.subarray = subarrayId;
