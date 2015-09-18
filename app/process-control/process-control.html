@@ -21,20 +21,20 @@
                 <div flex ng-click="vm.detailedProcesses[nm_key][key].showDetail = !vm.detailedProcesses[nm_key][key].showDetail" role="heading"
                      ng-init="vm.detailedProcesses[nm_key][key].showDetail = false" class="process-control-bg-transition md-whiteframe-z1"
                      style="padding: 6px;" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.detailedProcesses[nm_key][key].showDetail}">
-                    <span ng-show="!vm.sensorsToDisplay[key + '_running'].value" class="red-color" style="width: 160px; margin: 0;"><b>{{key | uppercase}}</b></span>
-                    <span ng-show="vm.sensorsToDisplay[key + '_running'].value" class="green-color" style="width: 160px; margin: 0;"><b>{{key | uppercase}}</b></span>
+                    <span ng-show="!vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" class="red-color" style="width: 160px; margin: 0;"><b>{{key | uppercase}}</b></span>
+                    <span ng-show="vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" class="green-color" style="width: 160px; margin: 0;"><b>{{key | uppercase}}</b></span>
 
                     <div layout="row" style="position: absolute; right: 0; top: 0">
-                        <md-button ng-show="!vm.sensorsToDisplay[key + '_running'].value" ng-click="vm.startProcess(nm_key, key); $event.stopPropagation()" title="Start Process">
+                        <md-button ng-show="!vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" ng-click="vm.startProcess(nm_key, key); $event.stopPropagation()" title="Start Process">
                             <i class="fa fa-play"></i>
                         </md-button>
-                        <md-button ng-show="vm.sensorsToDisplay[key + '_running'].value" ng-click="vm.restartProcess(nm_key, key); $event.stopPropagation()" title="Restart Process">
+                        <md-button ng-show="vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" ng-click="vm.restartProcess(nm_key, key); $event.stopPropagation()" title="Restart Process">
                             <i class="fa fa-refresh"></i>
                         </md-button>
-                        <md-button ng-show="vm.sensorsToDisplay[key + '_running'].value" ng-click="vm.killProcess(nm_key, key); $event.stopPropagation()" title="Kill Process">
+                        <md-button ng-show="vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" ng-click="vm.killProcess(nm_key, key); $event.stopPropagation()" title="Kill Process">
                             <i class="fa fa-remove"></i>
                         </md-button>
-                        <md-button ng-show="vm.sensorsToDisplay[key + '_running'].value" ng-click="vm.stopProcess(nm_key, key); $event.stopPropagation()" title="Stop Process">
+                        <md-button ng-show="vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" ng-click="vm.stopProcess(nm_key, key); $event.stopPropagation()" title="Stop Process">
                             <i class="fa fa-stop"></i>
                         </md-button>
                     </div>
@@ -43,7 +43,7 @@
                     <div ng-repeat="(key, sensor) in vm.detailedProcesses[nm_key][key].sensors | orderBy:'name' track by key"
                          style="margin: 4px;" ng-if="key !== 'showDetail'" title="{{'Timestamp: ' + vm.sensorsToDisplay[key].date}}">
                         <span>{{key}}:</span>
-                        <span style="margin-left: 4px"><b>{{vm.sensorsToDisplay[key].value}}</b></span>
+                        <span style="margin-left: 4px"><b>{{vm.sensorsToDisplay[nm_key + '_' + key].value}}</b></span>
                     </div>
                 </div>
             </div>
