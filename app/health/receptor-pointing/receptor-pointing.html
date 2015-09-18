@@ -58,11 +58,11 @@
                  title="{{'Click to toggle the horizon mask for ' + receptor.name}}" style="overflow: visible"
                 ng-mouseenter="receptor.showDetails = true" ng-mouseleave="receptor.showDetails = false">
                 <div class="receptor-legend-item-text">{{receptor.name}}</div>
-                <div class="receptor-legend-item-text" ng-show="!receptor.windstow_active.value">{{receptor.mode.value}}</div>
-                <div class="receptor-legend-item-text" ng-show="receptor.windstow_active.value">WINDSTOW</div>
+                <div class="receptor-legend-item-text" ng-show="!vm.sensorValues[receptor.name + '_windstow_active'].value">{{vm.sensorValues[receptor.name + '_mode'].value}}</div>
+                <div class="receptor-legend-item-text" ng-show="vm.sensorValues[receptor.name + '_windstow_active'].value">WINDSTOW</div>
                 <div style="width: 100%; text-align: center;"
-                      class="inhibited-item receptor-legend-item-text" ng-show="receptor.inhibited.value">INHIBIT</div>
-                <span ng-show="receptor.lock.value" class="fa fa-asterisk on-target-span"
+                      class="inhibited-item receptor-legend-item-text" ng-show="vm.sensorValues[receptor.name + '_inhibited'].value">INHIBIT</div>
+                <span ng-show="vm.sensorValues[receptor.name + '_lock'].value" class="fa fa-asterisk on-target-span"
                       title="AP on Target"></span>
                 <span ng-show="receptor.showHorizonMask" class="fa fa-area-chart horizon-mask-showing"
                       title="Showing Horizon Mask"></span>
@@ -70,17 +70,16 @@
                      style="top: 68px; left: -105px; min-width: 268px"
                      layout="column" layout-align="start">
                     <span style="width: 100%; text-align: center"><b>{{receptor.name}}</b></span>
-                    <span>azim: <b>{{receptor['ap_actual_azim'].value | number:2}}</b>, elev: <b>{{receptor['ap_actual_elev'].value | number:2}}</b></span>
-                    <span>azim: <b>{{receptor['ap_requested_azim'].value | number:2}}</b>, elev: <b>{{receptor['ap_requested_elev'].value | number:2}}</b> (requested)</span>
-                    <span>ra: <b>{{receptor['pos_request_base_ra'].value | number:2}}</b>, dec: <b>{{receptor['pos_request_base_dec'].value | number:2}}</b> (requested)</span>
-                    <span>Delta sky: <b>{{receptor['pos_delta_sky'].value | number:2}}</b></span>
-                    <span>Delta azim: <b>{{receptor['pos_delta_azim'].value | number:2}}</b>, Delta elev: <b>{{receptor['pos_delta_elev'].value | number:2}}</b></span>
-                    <span>Target: <b>{{receptor['target'].value}}</b></span>
-                    <span>Status:</span>
-                    <span>Lock: <b>{{receptor['lock'].value}}</b></span>
-                    <span>Mode: <b>{{receptor['mode'].value}}</b></span>
-                    <span>Inhibited: <b>{{receptor['inhibited'].value}}</b></span>
-                    <span>Windstow Active: <b>{{receptor['windstow_active'].value}}</b></span>
+                    <span>azim: <b>{{vm.sensorValues[receptor.name + '_ap_actual_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[receptor.name + '_ap_actual_elev'].value | number:2}}</b></span>
+                    <span>azim: <b>{{vm.sensorValues[receptor.name + '_ap_requested_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[receptor.name + '_ap_requested_elev'].value | number:2}}</b> (requested)</span>
+                    <span>ra: <b>{{vm.sensorValues[receptor.name + '_pos_request_base_ra'].value | number:2}}</b>, dec: <b>{{vm.sensorValues[receptor.name + '_pos_request_base_dec'].value | number:2}}</b> (requested)</span>
+                    <span>Delta sky: <b>{{vm.sensorValues[receptor.name + '_pos_delta_sky'].value | number:2}}</b></span>
+                    <span>Delta azim: <b>{{vm.sensorValues[receptor.name + '_pos_delta_azim'].value | number:2}}</b>, Delta elev: <b>{{vm.sensorValues[receptor.name + '_pos_delta_elev'].value | number:2}}</b></span>
+                    <span>Target: <b>{{vm.sensorValues[receptor.name + '_target'].value}}</b></span>
+                    <span>Lock: <b>{{vm.sensorValues[receptor.name + '_lock'].value}}</b></span>
+                    <span>Mode: <b>{{vm.sensorValues[receptor.name + '_mode'].value}}</b></span>
+                    <span>Inhibited: <b>{{vm.sensorValues[receptor.name + '_inhibited'].value}}</b></span>
+                    <span>Windstow Active: <b>{{vm.sensorValues[receptor.name + '_windstow_active'].value}}</b></span>
                 </div>
             </div>
         </div>
