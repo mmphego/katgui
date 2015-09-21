@@ -327,9 +327,9 @@ angular.module('katGui.d3')
                             var itemsList = svg.selectAll("." + d.name + "_actual")[0];
 
                             for (var i = itemsList.length - 1; i >= 0; i--) {
-                                if (i != itemsList.length - 1 && itemsList.length - 1 - i >= scope.trailDots) {
+                                if (i !== itemsList.length - 1 && itemsList.length - 1 - i >= scope.trailDots) {
                                     itemsList[i].remove();
-                                } else if (i != itemsList.length - 1) {
+                                } else if (i !== itemsList.length - 1) {
                                     angular.element(itemsList[i]).attr("r", 2);
                                 }
                             }
