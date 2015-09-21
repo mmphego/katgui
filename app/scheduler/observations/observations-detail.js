@@ -31,9 +31,9 @@
                 vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
             }
 
-            if ((!vm.subarray || !vm.subarray.id) && vm.subarray_id) {
+            if (!vm.subarray && vm.subarray_id) {
                 vm.checkSubarrayDataInterval = $interval(function () {
-                    if (!vm.subarray.id) {
+                    if (!vm.subarray || !vm.subarray.id) {
                         vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
                     } else {
                         $interval.cancel(vm.checkSubarrayDataInterval);
@@ -56,6 +56,13 @@
                     $state.go('scheduler');
                 } else {
                     vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
+                    vm.checkSubarrayDataInterval = $interval(function () {
+                        if (!vm.subarray) {
+                            vm.subarray = _.findWhere(vm.subarrays, {id: vm.subarray_id.toString()});
+                        } else {
+                            $interval.cancel(vm.checkSubarrayDataInterval);
+                        }
+                    }, 500);
                 }
             });
         }

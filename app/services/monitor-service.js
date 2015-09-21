@@ -34,25 +34,20 @@
                 'id': KatGuiUtil.generateUUID()
             };
 
-            if (api.connection === null) {
-                $log.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
-            } else if (api.connection.readyState) {
+            if (api.connection && api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(pattern);
+                    api.subscribe(namespace, pattern);
                 }, 500);
             }
         };
 
-        api.unsubscribe = function (pattern) {
-            if (typeof(pattern) !== 'object' && pattern.indexOf('mon:') === -1) {
-                pattern = 'mon:' + pattern;
-            }
+        api.unsubscribe = function (namespace, pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [pattern],
+                'params': [namespace, pattern],
                 'id': KatGuiUtil.generateUUID()
             };
 
@@ -62,7 +57,7 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.unsubscribe(pattern);
+                    api.unsubscribe(namespace, pattern);
                 }, 500);
             }
         };
@@ -76,10 +71,6 @@
                 api.subscribe('health', '*');
                 api.subscribe('time', '*');
                 api.subscribe('auth', '*');
-                // api.subscribe('alarms:*');
-                // api.subscribe('health:*');
-                // api.subscribe('time:*');
-                // api.subscribe('auth:*');
             }
         };
 
@@ -200,7 +191,6 @@
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
-                api.unsubscribe('*');
             } else {
                 $log.error('Attempting to disconnect an already disconnected connection!');
             }

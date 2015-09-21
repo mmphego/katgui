@@ -238,7 +238,7 @@
                 $rootScope.$emit('sb_completed_change', '');
             } else {
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
-                $log.error(sb)
+                $log.error(sb);
             }
         };
 
