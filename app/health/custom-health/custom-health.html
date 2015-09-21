@@ -20,15 +20,10 @@
     <md-toolbar layout="row" layout-align="center center" md-theme="{{themePrimary}}" class="custom-health-toolbar md-whiteframe-z1"
         ng-init="vm.showToolbar = true" ng-show="vm.showToolbar" style="width: calc(100% - 8px);">
 
-        <md-select ng-model="vm.resource" style="margin-left: 8px; margin-right:4px; padding: 0;"
-                   class="" placeholder="Select a Resource">
-            <md-option ng-value="resource.name" ng-repeat="resource in vm.resourcesNames | orderBy:'name' track by $index">{{resource.name}}</md-option>
-        </md-select>
-
-        <input type="text" style="width: 300px; height: 32px; color: #333333;" ng-model="vm.regex" placeholder="Enter Sensor Regex"/>
+        <input type="text" style="width: 300px; height: 32px; color: #333333; margin-left: 8px" ng-model="vm.regex" placeholder="Enter Sensor Regex"/>
         <span style="margin-left: 8px;">Width:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedWidth" placeholder="View Width"/>
         <span style="margin-left: 8px;">Height:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedHeight" placeholder="View Height"/>
-        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.buildView(vm.resource, vm.regex)"
+        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.buildView(vm.regex)"
                    class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">
             Add View
         </md-button>

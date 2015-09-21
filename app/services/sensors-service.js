@@ -116,10 +116,9 @@
                             $log.error(messageObj);
                         }
                     });
-                } else if (messages.result.id === 'set_sampling_strategy') {
-                    $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else if (messages.result) {
                     $log.info('Subscribed to: ' + JSON.stringify(messages.result));
+                    $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else {
                     $log.error('Dangling sensors message...');
                     $log.error(e);
