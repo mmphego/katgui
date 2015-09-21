@@ -76,7 +76,10 @@
             ConfigService.getReceptorList()
                 .then(function (result) {
                     var sensorsRegexToConnect = '';
-                    result.forEach(function (item) {
+                    result.forEach(function (item, index) {
+                        if (index > 0) {
+                            sensorsRegexToConnect += '|';
+                        }
                         for (var i = 0; i < vm.sensorsToConnect.length; i++) {
                             if (i > 0) {
                                 sensorsRegexToConnect += '|';
