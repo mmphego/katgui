@@ -243,7 +243,7 @@
         };
 
         vm.initSensors = function () {
-            SensorsService.setSensorStrategy('anc', 'vds_*', 'event', 0, 0);
+            SensorsService.setSensorStrategies('anc_vds_*', 'event-rate', 1, 360);
         };
 
 
@@ -262,12 +262,11 @@
         vm.afterInit();
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var strList = sensor.name.split(':');
-            var sensorName = strList[1].split('.')[1];
+            var sensorName = sensor.name.split(':')[1].replace('anc_', '');
             vm.sensorValues[sensorName] = sensor.value;
-            if (sensor.name.split('.')[1] === 'vds_focus_position') {
+            if (sensorName === 'vds_focus_position') {
                 vm.focus = sensor.value.value;
-            } else if (sensor.name.split('.')[1] === 'vds_zoom_position') {
+            } else if (sensorName === 'vds_zoom_position') {
                 vm.zoom = sensor.value.value;
             }
         });
@@ -292,5 +291,3 @@
         }
     }
 })();
-
-
