@@ -41,7 +41,7 @@
             }
         };
 
-        api.unsubscribe = function (pattern, guid) {
+        api.unsubscribe = function (guid, pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
@@ -62,7 +62,7 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Sensors Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe('*', api.guid);
+                api.subscribe(api.guid, '*');
                 api.connected = true;
             }
         };

@@ -57,7 +57,7 @@
 
         vm.initSensors = function () {
             ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
-            MonitorService.subscribe('sched', '*');
+            MonitorService.subscribe('sched');
             var strategiesRegex = 'katpool_pool_resources_free|katpool_resources_faulty|katpool_resources_in_maintenance';
 
             ConfigService.getSystemConfig()

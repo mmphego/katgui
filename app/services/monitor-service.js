@@ -66,11 +66,11 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Monitor Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe('mon', '*');
-                api.subscribe('alarms', '*');
-                api.subscribe('health', '*');
-                api.subscribe('time', '*');
-                api.subscribe('auth', '*');
+                api.subscribe('mon');
+                api.subscribe('alarms');
+                api.subscribe('health');
+                api.subscribe('time');
+                api.subscribe('auth');
             }
         };
 
