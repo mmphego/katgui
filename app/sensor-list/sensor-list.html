@@ -22,9 +22,9 @@
             <md-toolbar class="md-whiteframe-z1" style=" min-height: 80px">
                 <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
                     <span flex>Sensors {{' - ' + vm.resourceSensorsBeingDisplayed | uppercase}}</span>
-                    <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.showSensorGroups()">
+                    <!-- <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.showSensorGroups()">
                         Select a Sensor Groups
-                    </md-button>
+                    </md-button> -->
                     <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-click="$event.stopPropagation()"
                                  md-theme="{{themePrimaryButtons}}" style="font-size: 16px;">
                         Hide Nominal Sensors

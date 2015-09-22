@@ -74,10 +74,12 @@
         vm.initSensors = function () {
             if (vm.resourcesNames.length === 0) {
                 vm.nodes = ConfigService.resourceGroups;
-                SensorsService.listResourcesFromConfig();
-                for (var key in SensorsService.resources) {
-                    vm.resourcesNames.push({name: key, node: SensorsService.resources[key].node});
-                }
+                SensorsService.listResourcesFromConfig()
+                    .then(function () {
+                        for (var key in SensorsService.resources) {
+                            vm.resourcesNames.push({name: key, node: SensorsService.resources[key].node});
+                        }
+                    });
             }
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {

@@ -212,26 +212,27 @@
 
         api.listResourcesFromConfig = function () {
             var deferred = $q.defer();
-            for (var node in ConfigService.systemConfig['katconn:resources']) {
-                var processList = ConfigService.systemConfig['katconn:resources'][node].split(',');
-                for (var i in processList) {
-                    var group = 'Components';
-                    if (node === 'single_ctl') {
-                        group = 'Proxies';
+            ConfigService.getSystemConfig()
+                .then(function (systemConfig) {
+                    for (var node in systemConfig['katconn:resources']) {
+                        var processList = systemConfig['katconn:resources'][node].split(',');
+                        for (var i in processList) {
+                            var group = 'Components';
+                            if (node === 'single_ctl') {
+                                group = 'Proxies';
+                            }
+                            var processClientConfig = systemConfig['katconn:clients'][processList[i]].split(':');
+                            api.resources[processList[i]] = {
+                                name: processList[i],
+                                host: processClientConfig[0],
+                                port: processClientConfig[1],
+                                node: group
+                            };
+                        }
                     }
-                    var processClientConfig = ConfigService.systemConfig['katconn:clients'][processList[i]].split(':');
-                    api.resources[processList[i]] = {
-                        name: processList[i],
-                        host: processClientConfig[0],
-                        port: processClientConfig[1],
-                        node: group
-                    };
-                }
-            }
 
-            $timeout(function () {
-                deferred.resolve(api.resources);
-            }, 0);
+                    deferred.resolve(api.resources);
+                });
             return deferred.promise;
         };
 
@@ -264,7 +265,7 @@
 
         api.sendSensorsCommand = function (method, params, desired_jsonRPCId) {
 
-            if (api.connection) {
+            if (api.connection && api.connection.readyState) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': method,
@@ -274,12 +275,10 @@
                 if (desired_jsonRPCId) {
                     jsonRPC.id = desired_jsonRPCId;
                 }
-
+                $log.info('sending command ' + method);
                 api.connection.send(JSON.stringify(jsonRPC));
             } else {
-                $timeout(function () {
-                    api.sendSensorsCommand(method, params, desired_jsonRPCId);
-                }, 500);
+                $log.error('Sensor connection not connected ' + method);
             }
         };
 
