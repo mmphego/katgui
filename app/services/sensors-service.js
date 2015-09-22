@@ -22,11 +22,11 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
-        api.subscribe = function (pattern, guid) {
+        api.subscribe = function (pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [guid, pattern],
+                'params': [api.guid, pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -36,16 +36,16 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(pattern, guid);
+                    api.subscribe(pattern);
                 }, 500);
             }
         };
 
-        api.unsubscribe = function (guid, pattern) {
+        api.unsubscribe = function (pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [guid, pattern],
+                'params': [api.guid, pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -53,7 +53,7 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.unsubscribe(pattern, guid);
+                    api.unsubscribe(pattern);
                 }, 500);
             }
         };
@@ -62,7 +62,7 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Sensors Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe(api.guid, '*');
+                api.subscribe('*');
                 api.connected = true;
             }
         };
@@ -159,7 +159,7 @@
 
         api.disconnectListener = function () {
             if (api.connection) {
-                api.unsubscribe('*', api.guid);
+                api.unsubscribe('*');
                 $log.info('Disconnecting Sensors Connection.');
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
