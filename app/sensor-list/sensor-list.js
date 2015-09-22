@@ -113,7 +113,7 @@
             if (vm.resourceSensorsBeingDisplayed === resourceName) {
                 return;
             }
-            if (vm.resourceSensorsBeingDisplayed.length > 0) {
+            // if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 // SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
                 // SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*', vm.guid);
                 vm.resourceSensorsBeingDisplayed = resourceName;
@@ -123,7 +123,7 @@
                 vm.disconnectIssued = false;
                 vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
                 vm.clearChart();
-            }
+            // }
             if (ConfigService.sensorGroups && ConfigService.sensorGroups[resourceName]) {
                 // vm.resourceSensorsBeingDisplayed = resourceName;
                 // if (!vm.resources[resourceName]) {
@@ -166,11 +166,14 @@
                         if (!$scope.$$phase) {
                             $scope.$digest();
                         }
-                        SensorsService.setSensorStrategies(
-                            '^' + resourceName + '_*',
-                            $rootScope.sensorListStrategyType,
-                            $rootScope.sensorListStrategyInterval,
-                            10);
+
+                        //remove for now because we use disconnect to clear listeners
+                        //so initSensors will call setSensorStrategies
+                        // SensorsService.setSensorStrategies(
+                        //     '^' + resourceName + '_*',
+                        //     $rootScope.sensorListStrategyType,
+                        //     $rootScope.sensorListStrategyInterval,
+                        //     10);
                     });
             }
             vm.resourceSensorsBeingDisplayed = resourceName;
