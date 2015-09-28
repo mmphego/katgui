@@ -320,16 +320,17 @@
                         }
                     }
                 }
-                var toastMessage = '';
-                if (newSensorNamesKeys.length === 0) {
-                    toastMessage = newData.length + ' sensor data points found.';
-                } else if (newSensorNamesKeys.length === 1 && newData) {
-                    toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys[0] + '.';
-                } else if (newData) {
-                    toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys.length + ' sensors.';
-                }
-
-                NotifyService.showSimpleToast(toastMessage);
+                //TODO better messages for data points received, toasts for this are very intrusive
+                // var toastMessage = '';
+                // if (newSensorNamesKeys.length === 0) {
+                //     toastMessage = newData.length + ' sensor data points found.';
+                // } else if (newSensorNamesKeys.length === 1 && newData) {
+                //     toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys[0] + '.';
+                // } else if (newData) {
+                //     toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys.length + ' sensors.';
+                // }
+                //
+                // NotifyService.showSimpleToast(toastMessage);
                 if (newData) {
                     vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
                 }
