@@ -119,27 +119,29 @@
                         var newWindData = [];
                         for (var attr in result.data) {
                             for (var i = 0; i < result.data[attr].length; i++) {
-                                var newSensor = result.data[attr][i];
+                                if (attr !== 'result') {
+                                    var newSensor = result.data[attr][i];
 
-                                if (newSensor.sensor.indexOf('pressure') !== -1) {
-                                    newSensor.rightAxis = true;
-                                }
-                                if (!vm.maxSensorValue[newSensor.sensor]) {
-                                    vm.maxSensorValue[newSensor.sensor] = {
-                                        sample_ts: newSensor.sample_ts,
-                                        value: newSensor.value
-                                    };
-                                } else if (newSensor.value >= vm.maxSensorValue[newSensor.sensor].value) {
-                                    vm.maxSensorValue[newSensor.sensor] = {
-                                        sample_ts: newSensor.sample_ts,
-                                        value: newSensor.value
-                                    };
-                                }
-                                if (newSensor.sensor.indexOf('wind_speed') > -1 ||
-                                    newSensor.sensor.indexOf('gust_speed') > -1) {
-                                    newWindData.push(newSensor);
-                                } else {
-                                    newData.push(newSensor);
+                                    if (newSensor.sensor.indexOf('pressure') !== -1) {
+                                        newSensor.rightAxis = true;
+                                    }
+                                    if (!vm.maxSensorValue[newSensor.sensor]) {
+                                        vm.maxSensorValue[newSensor.sensor] = {
+                                            sample_ts: newSensor.sample_ts,
+                                            value: newSensor.value
+                                        };
+                                    } else if (newSensor.value >= vm.maxSensorValue[newSensor.sensor].value) {
+                                        vm.maxSensorValue[newSensor.sensor] = {
+                                            sample_ts: newSensor.sample_ts,
+                                            value: newSensor.value
+                                        };
+                                    }
+                                    if (newSensor.sensor.indexOf('wind_speed') > -1 ||
+                                        newSensor.sensor.indexOf('gust_speed') > -1) {
+                                        newWindData.push(newSensor);
+                                    } else {
+                                        newData.push(newSensor);
+                                    }
                                 }
                             }
                         }

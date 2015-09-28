@@ -275,7 +275,6 @@
                 if (desired_jsonRPCId) {
                     jsonRPC.id = desired_jsonRPCId;
                 }
-                $log.info('sending command ' + method);
                 api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $log.error('Sensor connection not connected ' + method);
