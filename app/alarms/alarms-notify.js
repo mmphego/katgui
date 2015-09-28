@@ -20,19 +20,15 @@
             '                   \'alarm-nominal\': alarm.severity === \'nominal\', ' +
             '                   \'alarm-unknown\': alarm.severity === \'unknown\'}" ' +
             '                   title="{{showLargeAlarms? alarm.value : alarm.date + \' --- \' + alarm.severity + \' --- \' + alarm.value}}">',
-                //'       ng-mouseover="hover = true;" ng-mouseleave="hover = false;" title="{{alarm.value}}">',
-            '       <div>',
-            '           <ul>',
-            '               <li class="li-inline"><button class="alarm-close"  title="Hide Alarm Notification" ng-click="vm.hideAlarmNotification(alarm)"><span class="fa fa-eye-slash"></span></button></li>',
-            '               <li class="li-inline"><button class="alarm-close"  title="Acknowledge Alarm" ng-click="vm.acknowledgeMessage(alarm)">Ack</button></li>',
-            '               <li class="li-inline"><button class="alarm-close"  title="Know Alarm" ng-click="vm.knowMessage(alarm)">Know</button></li>',
-            '           </ul>',
+            '       <div layout="row" style="position: absolute; right: 0">',
+            '           <button class="alarm-close" title="Know Alarm" ng-click="vm.knowMessage(alarm)">Know</button>',
+            '           <button class="alarm-close" title="Acknowledge Alarm" ng-click="vm.acknowledgeMessage(alarm)">Ack</button>',
+            '           <button class="alarm-close" title="Hide Alarm Notification" ng-click="vm.hideAlarmNotification(alarm)"><span class="fa fa-eye-slash"></span></button>',
             '       </div>',
             '       <div class="datestamp"><span>{{alarm.date}}</span></div>',
             '       <div class="severitystamp"><span>{{alarm.severity}}</span></div>',
             '       <div><span class="alarm-message-name">{{alarm.name}}</span>',
             '       <div class="alarm-message"><span>{{alarm.value}}</span></div>',
-            '       </div>',
             '   </div>',
             '</div>'
             ].join(''),
@@ -59,5 +55,3 @@
         };
     }
 })();
-
-

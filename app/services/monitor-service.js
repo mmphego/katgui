@@ -31,7 +31,7 @@
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
                 'params': [namespace, pattern],
-                'id': KatGuiUtil.generateUUID()
+                'id': 'monitor-' + KatGuiUtil.generateUUID()
             };
 
             if (api.connection && api.connection.readyState) {
@@ -48,7 +48,7 @@
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
                 'params': [namespace, pattern],
-                'id': KatGuiUtil.generateUUID()
+                'id': 'monitor-' + KatGuiUtil.generateUUID()
             };
 
             if (api.connection === null) {
