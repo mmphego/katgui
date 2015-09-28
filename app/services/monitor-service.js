@@ -93,6 +93,7 @@
         };
 
         api.onSockJSMessage = function (e) {
+
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {
@@ -101,7 +102,6 @@
                 } else if (messages.result.msg_channel === 'time:time') {
                     api.lastSyncedTime = messages.result.msg_data + 0.5;
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
-                    $log.info(e.data);
                     if (messages.result) {
                         if (messages.id === 'redis-pubsub') {
                             var arrayResult = [];
