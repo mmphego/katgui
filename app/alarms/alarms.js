@@ -5,11 +5,13 @@
         .filter('alarmsFilter', function () {
             return function (alarms, showCleared) {
                 var filtered = [];
-                for (var i = 0; i < alarms.length; i++) {
-                    var alarm = alarms[i];
-                    if (alarm.priority !== 'known' &&
-                        (alarm.priority === 'cleared' && showCleared || alarm.priority !== 'cleared')) {
-                        filtered.push(alarm);
+                if (alarms) {
+                    for (var i = 0; i < alarms.length; i++) {
+                        var alarm = alarms[i];
+                        if (alarm.priority !== 'known' &&
+                            (alarm.priority === 'cleared' && showCleared || alarm.priority !== 'cleared')) {
+                            filtered.push(alarm);
+                        }
                     }
                 }
                 return filtered;
@@ -18,12 +20,14 @@
         .filter('alarmsKnownFilter', function () {
             return function (alarms, showKnownNominalAlarms, showKnownMaintenanceAlarms) {
                 var filtered = [];
-                for (var i = 0; i < alarms.length; i++) {
-                    var alarm = alarms[i];
-                    if (alarm.priority === 'known' &&
-                        (alarm.severity === 'nominal' && showKnownNominalAlarms || alarm.severity !== 'nominal') &&
-                        (alarm.severity === 'maintenance' && showKnownMaintenanceAlarms || alarm.severity !== 'maintenance')) {
-                        filtered.push(alarm);
+                if (alarms) {
+                    for (var i = 0; i < alarms.length; i++) {
+                        var alarm = alarms[i];
+                        if (alarm.priority === 'known' &&
+                            (alarm.severity === 'nominal' && showKnownNominalAlarms || alarm.severity !== 'nominal') &&
+                            (alarm.severity === 'maintenance' && showKnownMaintenanceAlarms || alarm.severity !== 'maintenance')) {
+                            filtered.push(alarm);
+                        }
                     }
                 }
                 return filtered;
@@ -160,7 +164,7 @@
                             NotifyService.showPreDialog('System Config for Alarms', displayResult, $event);
                         }, function (result) {
                             $log.error(result);
-                        })
+                        });
                 }, function (result) {
                     $log.error(result);
                 });

@@ -11,7 +11,7 @@
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
     function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService,
-                               NotifyService) {
+                               NotifyService, MonitorService, ConfigService) {
 
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
@@ -56,52 +56,53 @@
         vm.connectListeners();
 
         vm.initSensors = function () {
-            SensorsService.setSensorStrategy('katpool', 'subarrays$', 'event', 0, 0);
+            ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
+            MonitorService.subscribe('sched');
+            var strategiesRegex = 'katpool_pool_resources_free|katpool_resources_faulty|katpool_resources_in_maintenance';
+
+            ConfigService.getSystemConfig()
+                .then(function (systemConfig) {
+                    var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
+                    subarray_nrs.forEach(function (sub_nr) {
+                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'allocations';
+                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'product';
+                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'state';
+                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'band';
+                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'config_label';
+                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'maintenance';
+                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'delegated_ca';
+                        strategiesRegex += '|sched_mode_' + sub_nr;
+                        ObsSchedService.subarrays.push({id: sub_nr});
+                    });
+
+                    SensorsService.setSensorStrategies(strategiesRegex, 'event-rate', 1, 360);
+                });
         };
 
         vm.unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var strList = sensor.name.split(':');
-            var sensorNameList = strList[1].split('.');
+            var sensorName = sensor.name.split(':')[1];
 
-            if (sensorNameList[0] === 'katpool' && sensorNameList[1] === 'subarrays') {
-
-                SensorsService.setSensorStrategy('katpool', 'pool_resources_free', 'event', 0, 0);
-                SensorsService.setSensorStrategy('katpool', 'resources_faulty', 'event', 0, 0);
-                SensorsService.setSensorStrategy('katpool', 'resources_in_maintenance', 'event', 0, 0);
-
-                ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
-                var subarrays = sensor.value.value.split(',');
-                for (var i = 0; i < subarrays.length; i++) {
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'allocations', 'event', 0, 0);
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'product', 'event', 0, 0);
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'state', 'event', 0, 0);
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'band', 'event', 0, 0);
-                    SensorsService.setSensorStrategy('sched', 'mode_' + subarrays[i], 'event', 0, 0);
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'config_label', 'event', 0, 0);
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'maintenance', 'event', 0, 0);
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'delegated_ca', 'event', 0, 0);
-                    SensorsService.setSensorStrategy('subarray_' + subarrays[i], 'pool_resources', 'event', 0, 0);
-                    ObsSchedService.subarrays.push({id: subarrays[i]});
-                }
-            } else if (sensorNameList[0].indexOf('subarray_') === 0) {
+            if (sensorName.startsWith('subarray_')) {
                 var subarrayIndex = _.findIndex(ObsSchedService.subarrays, function (item) {
-                    return item.id === sensorNameList[0].split('_')[1];
+                    return item.id === sensorName.split('_')[1];
                 });
                 if (subarrayIndex > -1) {
-                    if (sensorNameList[1] === 'allocations') {
+                    var trimmedSensorName = sensorName.replace('subarray_' + ObsSchedService.subarrays[subarrayIndex].id + '_', '');
+                    if (sensorName.endsWith('allocations')) {
                         var parsedAllocations = sensor.value.value !== "" ? JSON.parse(sensor.value.value) : [];
                         if (!ObsSchedService.subarrays[subarrayIndex].allocations) {
                             ObsSchedService.subarrays[subarrayIndex].allocations = [];
+                        } else {
+                           ObsSchedService.subarrays[subarrayIndex].allocations.splice(0, ObsSchedService.subarrays[subarrayIndex].allocations.length);
                         }
-
                         if (parsedAllocations.length > 0) {
                             for (var m in parsedAllocations) {
                                 ObsSchedService.subarrays[subarrayIndex].allocations.push(
                                     {name: parsedAllocations[m][0], allocation: parsedAllocations[m][1]});
                             }
                         }
-                    } else if (sensorNameList[1] === 'delegated_ca') {
-                        ObsSchedService.subarrays[subarrayIndex][sensorNameList[1]] = sensor.value.value;
+                    } else if (sensorName.endsWith('delegated_ca')) {
+                        ObsSchedService.subarrays[subarrayIndex][trimmedSensorName] = sensor.value.value;
                         var iAmCA;
                         for (var idx in ObsSchedService.subarrays) {
                             if (ObsSchedService.subarrays[idx]['delegated_ca'] === $rootScope.currentUser.email) {
@@ -109,26 +110,14 @@
                             }
                         }
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
-                    } else if (sensorNameList[1] === 'pool_resources') {
-                        var parsedResources = sensor.value.value.split(',');
-                        if (!ObsSchedService.subarrays[subarrayIndex].allocations) {
-                            ObsSchedService.subarrays[subarrayIndex].allocations = [];
-                        }
-
-                        if (parsedResources.length > 0) {
-                            for (var r in parsedResources) {
-                                ObsSchedService.subarrays[subarrayIndex].allocations.push(
-                                    {name: parsedResources[r], allocation: ''});
-                            }
-                        }
                     } else {
-                        ObsSchedService.subarrays[subarrayIndex][sensorNameList[1]] = sensor.value.value;
+                        ObsSchedService.subarrays[subarrayIndex][trimmedSensorName] = sensor.value.value;
                     }
                 } else {
                     $log.error('Unknown subarray sensor value: ');
                     $log.error(sensor.value);
                 }
-            } else if (sensorNameList[1] === 'pool_resources_free') {
+            } else if (sensorName.endsWith('pool_resources_free')) {
                 ObsSchedService.poolResourcesFree.splice(0, ObsSchedService.poolResourcesFree.length);
                 var resourcesList = sensor.value.value.split(',');
                 if (resourcesList.length > 0 && resourcesList[0] !== '') {
@@ -136,17 +125,17 @@
                         ObsSchedService.poolResourcesFree.push({name: resourcesList[index]});
                     }
                 }
-            } else if (sensorNameList[1].indexOf('mode_') === 0) {
-                var subarrayId = sensorNameList[1].split('_')[1];
+            } else if (sensorName.indexOf('mode_') > -1) {
+                var subarrayId = sensorName.split('_')[2];
                 var subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
                 if (subarray) {
                     subarray.mode = sensor.value.value;
                 }
             } else {
-                ObsSchedService[sensorNameList[1]] = sensor.value.value;
+                var trimmed = sensorName.replace('katpool_', '');
+                ObsSchedService[trimmed] = sensor.value.value;
             }
         });
-
 
         $rootScope.stateGoWithSubId = function (newState, subarray_id) {
             $state.go(newState, {subarray_id: subarray_id});
@@ -165,6 +154,7 @@
         ObsSchedService.getScheduledScheduleBlocks();
 
         $scope.$on('$destroy', function () {
+            MonitorService.unsubscribe('sched', '*');
             vm.unbindStateChangeStart();
             vm.unbindUpdate();
 

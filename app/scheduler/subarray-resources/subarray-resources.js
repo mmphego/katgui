@@ -36,7 +36,6 @@
             vm.checkCASubarrays();
         });
 
-
         vm.subarrays = ObsSchedService.subarrays;
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;

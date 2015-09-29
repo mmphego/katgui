@@ -11,8 +11,8 @@
         $rootScope.$on('alarmMessage', api.receivedAlarmMessage);
 
         api.tailAlarmsHistory = function () {
-            if (ConfigService.KATObsPortalURL) {
-                window.open(ConfigService.KATObsPortalURL + "/logfile/alarms.log").focus();
+            if (ConfigService.GetKATFileServerURL()) {
+                window.open(ConfigService.GetKATFileServerURL() + "/logfile/alarms.log").focus();
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
             }
@@ -23,7 +23,7 @@
             var alarmValues = messageObj.value.toString().split(',');
             messageObj.severity = alarmValues[0];
             messageObj.priority = alarmValues[1];
-            messageObj.name = messageName.replace('mon:kataware.alarm_', '');
+            messageObj.name = messageName.replace('alarms:kataware_alarm_', '');
             messageObj.date = moment.utc(messageObj.timestamp, 'X').format('DD-MM-YYYY HH:mm:ss');
 
             var severity_value =

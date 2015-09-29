@@ -15,6 +15,7 @@
         vm.targets = [];
         vm.targetsToDisplay = [];
         vm.filters = [];
+        vm.sensorValues = {};
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -74,10 +75,20 @@
             vm.receptorsData.splice(0, vm.receptorsData.length);
             ConfigService.getReceptorList()
                 .then(function (result) {
-                    result.forEach(function (item) {
+                    var sensorsRegexToConnect = '';
+                    result.forEach(function (item, index) {
+                        if (index > 0) {
+                            sensorsRegexToConnect += '|';
+                        }
+                        for (var i = 0; i < vm.sensorsToConnect.length; i++) {
+                            if (i > 0) {
+                                sensorsRegexToConnect += '|';
+                            }
+                            sensorsRegexToConnect += '^' + item + '_' + vm.sensorsToConnect[i];
+                        }
                         vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false});
-                        SensorsService.setSensorStrategy(item, vm.sensorsToConnect, 'event-rate', 1, 10);
                     });
+                    SensorsService.setSensorStrategies(sensorsRegexToConnect, 'event-rate', 1, 10);
                 });
         };
 
@@ -152,19 +163,13 @@
         };
 
         vm.statusMessageReceived = function (event, message) {
-
-            if (message.value) {
-                var sensor = message.name.split(':')[1];
-                var resource = sensor.split('.')[0];
-                var sensorName = sensor.split('.')[1];
-
-                //todo make receptorsData a dictionary
-                vm.receptorsData.forEach(function (receptor) {
-                    if (receptor.name === resource) {
-                        receptor[sensorName] = message.value;
-                    }
-                });
-            }
+            var sensor = message.name.split(':')[1];
+            vm.sensorValues[sensor] = message.value;
+            vm.receptorsData.forEach(function (receptor) {
+                if (sensor.startsWith(receptor.name)) {
+                    receptor[sensor.replace(receptor.name + '_', '')] = message.value;
+                }
+            });
             if (!vm.stopUpdating) {
                 vm.stopUpdating = $interval(function () {
                     vm.redraw(false);

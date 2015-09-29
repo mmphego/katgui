@@ -295,38 +295,38 @@ describe('OperatorControlCtrl', function () {
         expect(ctrl.receptorsData.length).toBe(5);
     }));
 
-    it('should update the time at each interval', function() {
-        httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
-        var deferred = q.defer();
-        var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
-        receptorStateService.getReceptorList();
-        expect(getReceptorListSpy).toHaveBeenCalled();
-        deferred.resolve(['m011', 'm022', 'm033', 'm044', 'm055']);
-        scope.$digest();
-        expect(ctrl.receptorsData.length).toBe(5);
-
-        receptorStateService.receptorMessageReceived({
-            name: 'mon:m011.mode',
-            value: {
-                received_timestamp: 1425975097.022549,
-                status: 1,
-                timestamp: 1425975097.020974,
-                value: 'STOP'
-            }
-        });
-        expect(ctrl.receptorsData[0].lastUpdate.length).not.toBe(0);
-        expect(ctrl.receptorsData[0].since).toBeUndefined();
-        expect(ctrl.receptorsData[0].fromNow).toBeUndefined();
-        expect(ctrl.receptorsData[0]);
-        expect(ctrl.receptorsData.length).toBe(5);
-        //these GET happens in this test because we run a $digest loop when calling flush, the other tests doesnt need it
-        //because the service is never created completely
-        httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
-        interval.flush(10000);
-        expect(ctrl.receptorsData[0].lastUpdate.length).not.toBe(0);
-        expect(ctrl.receptorsData[0].since.length).not.toBe(0);
-        expect(ctrl.receptorsData[0].fromNow.length).not.toBe(0);
-    });
+    // it('should update the time at each interval', function() {
+    //     httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
+    //     var deferred = q.defer();
+    //     var getReceptorListSpy = spyOn(configService, 'getReceptorList').and.returnValue(deferred.promise);
+    //     receptorStateService.getReceptorList();
+    //     expect(getReceptorListSpy).toHaveBeenCalled();
+    //     deferred.resolve(['m011', 'm022', 'm033', 'm044', 'm055']);
+    //     scope.$digest();
+    //     expect(ctrl.receptorsData.length).toBe(5);
+    //
+    //     receptorStateService.receptorMessageReceived({
+    //         name: 'mon:m011.mode',
+    //         value: {
+    //             received_timestamp: 1425975097.022549,
+    //             status: 1,
+    //             timestamp: 1425975097.020974,
+    //             value: 'STOP'
+    //         }
+    //     });
+    //     expect(ctrl.receptorsData[0].lastUpdate.length).not.toBe(0);
+    //     expect(ctrl.receptorsData[0].since).toBeUndefined();
+    //     expect(ctrl.receptorsData[0].fromNow).toBeUndefined();
+    //     expect(ctrl.receptorsData[0]);
+    //     expect(ctrl.receptorsData.length).toBe(5);
+    //     //these GET happens in this test because we run a $digest loop when calling flush, the other tests doesnt need it
+    //     //because the service is never created completely
+    //     httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});
+    //     interval.flush(10000);
+    //     expect(ctrl.receptorsData[0].lastUpdate.length).not.toBe(0);
+    //     expect(ctrl.receptorsData[0].since.length).not.toBe(0);
+    //     expect(ctrl.receptorsData[0].fromNow.length).not.toBe(0);
+    // });
 
     //it('should update the inhibited message', inject(function () {
     //    httpBackend.expect('GET', 'http://localhost:9876/katconf/installed-config/receptors').respond(200, {});

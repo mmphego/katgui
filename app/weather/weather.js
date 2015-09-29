@@ -9,13 +9,13 @@
         var vm = this;
         vm.ancResource = {
             sensorList: [
-                {python_identifier: 'anc.weather_pressure', color: '#1f77b4'},
-                {python_identifier: 'anc.weather_temperature', color: '#ff7f0e'},
-                {python_identifier: 'anc.weather_relative_humidity', color: '#2ca02c'},
-                {python_identifier: 'anc.weather_rainfall', skipHistory: true},
-                {python_identifier: 'anc.gust_wind_speed', color: '#ff7f0e'},
-                {python_identifier: 'anc.weather_wind_direction', skipHistory: true},
-                {python_identifier: 'anc.mean_wind_speed', color: '#1f77b4'}]
+                {python_identifier: 'anc_weather_pressure', color: '#1f77b4'},
+                {python_identifier: 'anc_weather_temperature', color: '#ff7f0e'},
+                {python_identifier: 'anc_weather_relative_humidity', color: '#2ca02c'},
+                {python_identifier: 'anc_weather_rainfall', skipHistory: true},
+                {python_identifier: 'anc_gust_wind_speed', color: '#ff7f0e'},
+                {python_identifier: 'anc_weather_wind_direction', skipHistory: true},
+                {python_identifier: 'anc_mean_wind_speed', color: '#1f77b4'}]
         };
         vm.resourcesHistoriesCount = 4;
         vm.guid = KatGuiUtil.generateUUID();
@@ -96,24 +96,27 @@
         vm.initSensors = function (skipConnectSensorListeners) {
             var startDate = vm.getTimestampFromHistoricalRange();
             vm.dataTimeWindow = new Date().getTime() - startDate;
-            var sensorNameList = [];
 
-            var regexSearch = '';
+            var dataRegexSearch = '';
+            var samplingRegexSearch = '';
             for (var i = 0; i < vm.ancResource.sensorList.length; i++) {
                 var sensor = vm.ancResource.sensorList[i];
-                var sensorName = sensor.python_identifier.replace('anc.', '');
-                sensorNameList.push(sensorName);
-                sensorName = 'anc_' + sensorName;
+                var sensorName = sensor.python_identifier;
                 if (!sensor.skipHistory) {
                     if (i < vm.ancResource.sensorList.length - 1) {
-                        regexSearch += sensorName + '|';
+                        dataRegexSearch += sensorName + '|';
                     } else {
-                        regexSearch += sensorName;
+                        dataRegexSearch += sensorName;
                     }
+                }
+                if (i < vm.ancResource.sensorList.length - 1) {
+                    samplingRegexSearch += sensorName + '|';
+                } else {
+                    samplingRegexSearch += sensorName;
                 }
             }
 
-            DataService.sensorDataRegex(regexSearch, startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
+            DataService.sensorDataRegex(dataRegexSearch, startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
                 .then(function (result) {
                     if (result.data.error) {
                         NotifyService.showPreDialog('Error retrieving historical weather data', result.data.error);
@@ -122,27 +125,29 @@
                         var newWindData = [];
                         for (var attr in result.data) {
                             for (var i = 0; i < result.data[attr].length; i++) {
-                                var newSensor = result.data[attr][i];
+                                if (attr !== 'result') {
+                                    var newSensor = result.data[attr][i];
 
-                                if (newSensor.sensor.indexOf('pressure') !== -1) {
-                                    newSensor.rightAxis = true;
-                                }
-                                if (!vm.maxSensorValue[newSensor.sensor]) {
-                                    vm.maxSensorValue[newSensor.sensor] = {
-                                        sample_ts: newSensor.sample_ts,
-                                        value: newSensor.value
-                                    };
-                                } else if (newSensor.value >= vm.maxSensorValue[newSensor.sensor].value) {
-                                    vm.maxSensorValue[newSensor.sensor] = {
-                                        sample_ts: newSensor.sample_ts,
-                                        value: newSensor.value
-                                    };
-                                }
-                                if (newSensor.sensor.indexOf('wind_speed') > -1 ||
-                                    newSensor.sensor.indexOf('gust_speed') > -1) {
-                                    newWindData.push(newSensor);
-                                } else {
-                                    newData.push(newSensor);
+                                    if (newSensor.sensor.indexOf('pressure') !== -1) {
+                                        newSensor.rightAxis = true;
+                                    }
+                                    if (!vm.maxSensorValue[newSensor.sensor]) {
+                                        vm.maxSensorValue[newSensor.sensor] = {
+                                            sample_ts: newSensor.sample_ts,
+                                            value: newSensor.value
+                                        };
+                                    } else if (newSensor.value >= vm.maxSensorValue[newSensor.sensor].value) {
+                                        vm.maxSensorValue[newSensor.sensor] = {
+                                            sample_ts: newSensor.sample_ts,
+                                            value: newSensor.value
+                                        };
+                                    }
+                                    if (newSensor.sensor.indexOf('wind_speed') > -1 ||
+                                        newSensor.sensor.indexOf('gust_speed') > -1) {
+                                        newWindData.push(newSensor);
+                                    } else {
+                                        newData.push(newSensor);
+                                    }
                                 }
                             }
                         }
@@ -155,9 +160,8 @@
                 });
             if (!skipConnectSensorListeners) {
                 $timeout(function () {
-                    SensorsService.setSensorStrategy(
-                        'anc',
-                        sensorNameList,
+                    SensorsService.setSensorStrategies(
+                        samplingRegexSearch,
                         $rootScope.sensorListStrategyType,
                         $rootScope.sensorListStrategyInterval,
                         $rootScope.sensorListStrategyInterval);
@@ -173,7 +177,7 @@
                 gustSpeed = null;
             vm.ancResource.sensorList.forEach(function (oldSensor) {
                 if (oldSensor.python_identifier === strList[1]) {
-                    oldSensor.name = oldSensor.python_identifier.replace('anc.', '').replace('weather_', '').replace(/_/g, ' ');
+                    oldSensor.name = oldSensor.python_identifier.replace('anc_', '').replace('weather_', '').replace(/_/g, ' ');
                     oldSensor.sensorValue = sensor.value;
                     oldSensor.status = sensor.value.status;
                     oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss');

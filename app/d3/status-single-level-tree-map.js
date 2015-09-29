@@ -134,8 +134,7 @@ angular.module('katGui.d3')
                                         classString += " " + d.objectValue.parent_name;
                                         classString += "_" + d.sensor.replace(/\./g, "_");
                                     } else {
-                                        classString += " " + d.sensor.split('.')[0];
-                                        classString += "_" + d.sensor.split('.')[1];
+                                        classString += " " + d.sensor;
                                     }
                                     return classString;
                                 })

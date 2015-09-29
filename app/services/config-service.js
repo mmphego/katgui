@@ -10,18 +10,9 @@
         api.receptorHealthTree = {};
         api.receptorList = [];
         api.KATObsPortalURL = null;
-        api.systemConfig = {};
+        api.systemConfig = null;
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
-
-        api.loadKATObsPortalURL = function () {
-            $http(createRequest('get', urlBase + '/system-config/sections/katportal/katobsportal'))
-                .then(function (result) {
-                    api.KATObsPortalURL = "http://" + JSON.parse(result.data);
-                }, function (message) {
-                    $log.error(message);
-                });
-        };
 
         api.loadSensorGroups = function () {
             $http(createRequest('get', urlBase + '/sensor-groups'))
@@ -54,15 +45,29 @@
 
         api.getSystemConfig = function () {
             var deferred = $q.defer();
-            $http(createRequest('get', urlBase + '/system-config'))
-                .then(function (result) {
-                    api.systemConfig = result.data;
+            if (api.systemConfig) {
+                $timeout(function () {
                     deferred.resolve(api.systemConfig);
-                }, function (message) {
-                    $log.error(message);
-                    deferred.reject(message);
-                });
+                }, 1);
+            } else {
+                $http(createRequest('get', urlBase + '/system-config'))
+                    .then(function (result) {
+                        api.systemConfig = result.data;
+                        deferred.resolve(api.systemConfig);
+                    }, function (message) {
+                        $log.error(message);
+                        deferred.reject(message);
+                    });
+            }
             return deferred.promise;
+        };
+
+        api.GetKATFileServerURL = function () {
+            if (api.systemConfig) {
+                return 'http://' + api.systemConfig.katportal.katfileserver;
+            } else {
+                return '';
+            }
         };
 
         api.getStatusTreeForReceptor = function () {

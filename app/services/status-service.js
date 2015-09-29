@@ -40,7 +40,7 @@
         };
 
         api.messageReceivedSensors = function (messageName, message) {
-            if (messageName.indexOf('mon:') === 0) {
+            if (messageName.indexOf('health:') === 0) {
                 messageName = messageName.split(':')[1];
             }
             message.name = messageName;
@@ -55,8 +55,8 @@
                     }
                 }
             }
-            api.sensorValues[messageName.replace('.', '_')] = message;
-            api.itemsToUpdate[messageName.replace('.', '_')] = message;
+            api.sensorValues[messageName] = message;
+            api.itemsToUpdate[messageName] = message;
             if (!api.stopUpdating) {
                 api.stopUpdating = $interval(api.applyPendingUpdates, 500);
             }

@@ -49,55 +49,43 @@
                 });
         };
 
-        SensorsService.listResources()
-            .then(function () {
-                for (var key in vm.resources) {
-                    vm.resourcesNames.push({name: key});
-                }
-            });
-
         vm.unbindSetSensorStrategy = $rootScope.$on('setSensorStrategyMessage', function (event, message) {
 
             for (var i = 0; i < vm.regexStrings.length; i++) {
 
-                for (var k in message.sensors) {
-                    if (message.sensors[k][0].parent_name === vm.regexStrings[i].name.split('.')[0]
-                        && (message.sensors[k][2]).indexOf(vm.regexStrings[i].name.split('.')[1]) !== -1) {
+                var regex = new RegExp(vm.regexStrings[i]);
+
+                for (var key in message) {
+                    if (regex.test(key)) {
 
                         if (!vm.customStatusTrees[i]) {
                             vm.customStatusTrees[i] = {
                                 name: vm.regexStrings[i].name,
-                                resource: vm.regexStrings[i].name.split('.')[0],
+                                resource: vm.regexStrings[i].name,
                                 size: vm.regexStrings[i].size,
                                 sensor: '',
                                 children: []
                             };
                         }
 
-                        if (!_.findWhere(vm.customStatusTrees[i].children, {name: message.sensors[k][2]})) {
+                        if (!_.findWhere(vm.customStatusTrees[i].children, {name: vm.regexStrings[i].name})) {
                             vm.customStatusTrees[i].children.push({
-                                name: message.sensors[k][2],
-                                sensor: message.sensors[k][2],
-                                sensorValue: {
-                                    timestamp: message.sensors[k][0].reading[0],
-                                    received_timestamp: message.sensors[k][0].reading[1],
-                                    status: message.sensors[k][0].reading[2],
-                                    value: message.sensors[k][0].reading[3]
-                                },
-                                objectValue: message.sensors[k][0]
+                                name: key,
+                                sensor: key,
+                                sensorValue: {}
                             });
                         }
                     }
-                    SensorsService.subscribe(message.resource + '.' + message.sensors[k][2], vm.guid);
+                    // SensorsService.subscribe(message.resource + '.' + message.sensors[k][2], vm.guid);
                 }
             }
         });
 
         vm.unbindSensorsUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var strList = sensor.name.split(':');
-            var sensorNameList = strList[1].split('.');
+            var sensorName = sensor.name.split(':')[1];
+            sensor.name = sensorName;
 
-            $scope.itemsToUpdate[sensorNameList[1]] = sensor;
+            $scope.itemsToUpdate[sensorName] = sensor;
             if (!vm.stopUpdating) {
                 vm.stopUpdating = $interval(vm.applyPendingUpdates, $rootScope.sensorListStrategyInterval);
             }
@@ -109,7 +97,7 @@
             var attributes = Object.keys($scope.itemsToUpdate);
             if (attributes.length > 0) {
                 for (var i = 0; i < attributes.length; i++) {
-                    var sensorName = $scope.itemsToUpdate[attributes[i]].name.split(':')[1].replace(/\./g, '-');
+                    var sensorName = $scope.itemsToUpdate[attributes[i]].name;
                     var queryString = '.' + sensorName;
                     var resultList = d3.selectAll(queryString);
                     resultList[0].forEach(function (element) {
@@ -145,17 +133,16 @@
             }
         };
 
-        vm.buildView = function (resource, regex) {
+        vm.buildView = function (regex) {
             var sensorRegex = {
-                name: resource + '.' + regex,
+                name: regex,
                 size: {w: vm.selectedWidth, h: vm.selectedHeight},
                 sizeString: vm.selectedWidth + 'x' + vm.selectedHeight
             };
             var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
             if (!existingItem) {
                 vm.regexStrings.push(sensorRegex);
-                SensorsService.setSensorStrategy(
-                    resource,
+                SensorsService.setSensorStrategies(
                     regex,
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,

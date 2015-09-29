@@ -22,10 +22,11 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.hideNominalSensors = false;
+        vm.sensorValues = {};
 
-        if (!ConfigService.sensorGroups) {
-            ConfigService.loadSensorGroups();
-        }
+        // if (!ConfigService.sensorGroups) {
+        //     ConfigService.loadSensorGroups();
+        // }
 
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
@@ -74,17 +75,16 @@
             if (vm.resourcesNames.length === 0) {
                 vm.nodes = ConfigService.resourceGroups;
                 SensorsService.listResourcesFromConfig()
-                    .then(function (result) {
-                        for (var key in result) {
-                            vm.resourcesNames.push({name: key, node: result[key].node});
+                    .then(function () {
+                        for (var key in SensorsService.resources) {
+                            vm.resourcesNames.push({name: key, node: SensorsService.resources[key].node});
                         }
                     });
             }
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                SensorsService.setSensorStrategy(
-                    vm.resourceSensorsBeingDisplayed,
-                    '',
+                SensorsService.setSensorStrategies(
+                    '^' + vm.resourceSensorsBeingDisplayed + '*',
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
                     10);
@@ -113,55 +113,67 @@
             if (vm.resourceSensorsBeingDisplayed === resourceName) {
                 return;
             }
-            if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
-                SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*', vm.guid);
+            // if (vm.resourceSensorsBeingDisplayed.length > 0) {
+                // SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
+                // SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*', vm.guid);
+                vm.resourceSensorsBeingDisplayed = resourceName;
+                vm.disconnectIssued = true;
+                SensorsService.disconnectListener();
+                vm.connectListeners();
+                vm.disconnectIssued = false;
                 vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
                 vm.clearChart();
-            }
+            // }
             if (ConfigService.sensorGroups && ConfigService.sensorGroups[resourceName]) {
-                vm.resourceSensorsBeingDisplayed = resourceName;
-                if (!vm.resources[resourceName]) {
-                    vm.resources[resourceName] = {};
-                }
-                vm.resources[resourceName].sensorsList = [];
-                vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
-                var sensorNameList = ConfigService.sensorGroups[resourceName].sensors.split('|');
-                sensorNameList.forEach(function (sensor) {
-                    var resource = '';
-                    var sensorName = '';
-                    var firstPart = sensor.split('_', 1)[0];
-                    if (firstPart === 'mon' || firstPart === 'nm') {
-                        var secondPart = sensor.substring(sensor.indexOf('_') + 1);
-                        resource = firstPart + '_' + secondPart;
-                        sensorName = secondPart;
-                    } else {
-                        resource = firstPart;
-                        sensorName = sensor.substring(sensor.indexOf('_') + 1);
-                    }
-                    sensorName = sensorName.replace(/\\_/g, '_');
-                    SensorsService.setSensorStrategy(
-                        resource,
-                        sensorName,
-                        $rootScope.sensorListStrategyType,
-                        $rootScope.sensorListStrategyInterval,
-                        10);
-                });
+                // vm.resourceSensorsBeingDisplayed = resourceName;
+                // if (!vm.resources[resourceName]) {
+                //     vm.resources[resourceName] = {};
+                // }
+                // vm.resources[resourceName].sensorsList = [];
+                // vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
+                // var sensorNameList = ConfigService.sensorGroups[resourceName].sensors.split('|');
+                // sensorNameList.forEach(function (sensor) {
+                //     var resource = '';
+                //     var sensorName = '';
+                //     var firstPart = sensor.split('_', 1)[0];
+                //     if (firstPart === 'mon' || firstPart === 'nm') {
+                //         var secondPart = sensor.substring(sensor.indexOf('_') + 1);
+                //         resource = firstPart + '_' + secondPart;
+                //         sensorName = secondPart;
+                //     } else {
+                //         resource = firstPart;
+                //         sensorName = sensor.substring(sensor.indexOf('_') + 1);
+                //     }
+                //     sensorName = sensorName.replace(/\\_/g, '_');
+                //     SensorsService.setSensorStrategies(
+                //         vm.resourceSensorsBeingDisplayed + '*',
+                //         $rootScope.sensorListStrategyType,
+                //         $rootScope.sensorListStrategyInterval,
+                //         10);
+                // });
 
             } else {
                 SensorsService.listResourceSensors(resourceName)
                     .then(function (result) {
                         vm.resources[resourceName].sensorsList = result;
                         vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
+                        vm.sensorsToDisplay.forEach(function (item) {
+                            item.timestamp = moment.utc(item.timestamp, 'X').format(DATETIME_FORMAT);
+                            item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(DATETIME_FORMAT);
+                            vm.sensorValues[resourceName + '_' + item.python_identifier] = item;
+                            item.parentName = resourceName;
+                        });
                         if (!$scope.$$phase) {
                             $scope.$digest();
                         }
-                        SensorsService.setSensorStrategy(
-                            resourceName,
-                            '',
-                            $rootScope.sensorListStrategyType,
-                            $rootScope.sensorListStrategyInterval,
-                            10);
+
+                        //remove for now because we use disconnect to clear listeners
+                        //so initSensors will call setSensorStrategies
+                        // SensorsService.setSensorStrategies(
+                        //     '^' + resourceName + '_*',
+                        //     $rootScope.sensorListStrategyType,
+                        //     $rootScope.sensorListStrategyInterval,
+                        //     10);
                     });
             }
             vm.resourceSensorsBeingDisplayed = resourceName;
@@ -172,19 +184,17 @@
         };
 
         vm.plotLiveSensorFeed = function (sensor, remove) {
-            if (sensor.sensorValue) {
-                var sensorName = sensor.sensorValue.name.split(':')[1];
-                if (remove) {
-                    var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
-                        return item.name === sensorName;
-                    });
-                    if (sensorIndex > -1) {
-                        vm.sensorsPlotNames.splice(sensorIndex, 1);
-                        vm.removeSensorLine(sensorName);
-                    }
-                } else {
-                    vm.sensorsPlotNames.push({name: sensorName, class: sensorName.replace(/\./g, '_')});
+            var sensorName = sensor.parentName + '_' + sensor.python_identifier;
+            if (remove) {
+                var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
+                    return item.name === sensorName;
+                });
+                if (sensorIndex > -1) {
+                    vm.sensorsPlotNames.splice(sensorIndex, 1);
+                    vm.removeSensorLine(sensorName);
                 }
+            } else {
+                vm.sensorsPlotNames.push({name: sensorName, class: sensorName.replace(/\./g, '_')});
             }
         };
 
@@ -249,45 +259,24 @@
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
-            var sensorNameList = strList[1].split('.');
-            var sensorFound = false;
-            if (!vm.resources[sensorNameList[0]].sensorsList) {
-                vm.resources[sensorNameList[0]].sensorsList = [];
-            }
-            vm.resources[sensorNameList[0]].sensorsList.forEach(function (oldSensor) {
-                if (sensorNameList[0] + '.' + oldSensor.python_identifier === strList[1]) {
-                    oldSensor.sensorValue = sensor.value;
-                    oldSensor.status = sensor.value.status;
-                    oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
-                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
-                    oldSensor.value = sensor.value.value;
-                    sensorFound = true;
-                }
-            });
-            if (!sensorFound) {
-                vm.resources[sensorNameList[0]].sensorsList.push({
-                    name: sensorNameList[1],
-                    sensorValue: sensor.value,
-                    status: sensor.value.status,
-                    timestamp: moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT),
-                    received_timestamp: moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT),
-                    value: sensor.value.value,
-                    python_identifier: sensorNameList[1]
-                });
-                vm.sensorsToDisplay = vm.resources[sensorNameList[0]].sensorsList;
-            }
+            if (vm.sensorValues[strList[1]]) {
+                vm.sensorValues[strList[1]].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
+                vm.sensorValues[strList[1]].status = sensor.value.status;
+                vm.sensorValues[strList[1]].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+                vm.sensorValues[strList[1]].value = sensor.value.value;
 
-            if (vm.sensorsPlotNames.length > 0 &&
-                _.findIndex(vm.sensorsPlotNames,
-                    function (item) {
-                        return item.name === strList[1];
-                    }) > -1) {
-                vm.redrawChart([{
-                    sensor: strList[1].replace(/\./g, '_'),
-                    value_ts: sensor.value.timestamp,
-                    sample_ts: sensor.value.received_timestamp,
-                    value: sensor.value.value
-                }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                if (vm.sensorsPlotNames.length > 0 &&
+                    _.findIndex(vm.sensorsPlotNames,
+                        function (item) {
+                            return item.name === strList[1];
+                        }) > -1) {
+                    vm.redrawChart([{
+                        sensor: strList[1].replace(/\./g, '_'),
+                        value_ts: sensor.value.timestamp,
+                        sample_ts: sensor.value.received_timestamp,
+                        value: sensor.value.value
+                    }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                }
             }
         });
 

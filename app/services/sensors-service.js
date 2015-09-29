@@ -22,11 +22,11 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
-        api.subscribe = function (pattern, guid) {
+        api.subscribe = function (pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [guid + ':' + pattern],
+                'params': [api.guid, pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -36,16 +36,16 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(pattern, guid);
+                    api.subscribe(pattern);
                 }, 500);
             }
         };
 
-        api.unsubscribe = function (pattern, guid) {
+        api.unsubscribe = function (pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [guid + ':' + pattern],
+                'params': [api.guid, pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -53,7 +53,7 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.unsubscribe(pattern, guid);
+                    api.unsubscribe(pattern);
                 }, 500);
             }
         };
@@ -62,7 +62,7 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Sensors Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe('*', api.guid);
+                api.subscribe('*');
                 api.connected = true;
             }
         };
@@ -116,10 +116,9 @@
                             $log.error(messageObj);
                         }
                     });
-                } else if (messages.result.id === 'set_sampling_strategy') {
-                    $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else if (messages.result) {
                     $log.info('Subscribed to: ' + JSON.stringify(messages.result));
+                    $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else {
                     $log.error('Dangling sensors message...');
                     $log.error(e);
@@ -138,7 +137,7 @@
             } else {
                 api.guid = KatGuiUtil.generateUUID();
                 $log.info('Sensors Connecting...');
-                api.connection = new SockJS(urlBase + '/sensors');
+                api.connection = new SockJS(urlBase + '/client');
                 api.connection.onopen = api.onSockJSOpen;
                 api.connection.onmessage = api.onSockJSMessage;
                 api.connection.onclose = api.onSockJSClose;
@@ -160,7 +159,7 @@
 
         api.disconnectListener = function () {
             if (api.connection) {
-                api.unsubscribe('*', api.guid);
+                api.unsubscribe('*');
                 $log.info('Disconnecting Sensors Connection.');
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
@@ -168,16 +167,22 @@
             }
         };
 
-        api.setSensorStrategy = function (resource, sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
+        api.setSensorStrategy = function (sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
             api.sendSensorsCommand('set_sampling_strategy',
                 [
                     api.guid,
-                    resource,
                     sensorName,
-                    strategyType,
-                    strategyIntervalMin,
-                    strategyIntervalMax
-                ]);
+                    strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax
+                ], api.guid);
+        };
+
+        api.setSensorStrategies = function (pattern, strategyType, strategyIntervalMin, strategyIntervalMax) {
+            api.sendSensorsCommand('set_sampling_strategies',
+                [
+                    api.guid,
+                    pattern,
+                    strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax
+                ], api.guid);
         };
 
         api.listResources = function () {
@@ -207,26 +212,27 @@
 
         api.listResourcesFromConfig = function () {
             var deferred = $q.defer();
-            for (var node in ConfigService.systemConfig['katconn:resources']) {
-                var processList = ConfigService.systemConfig['katconn:resources'][node].split(',');
-                for (var i in processList) {
-                    var group = 'Components';
-                    if (node === 'single_ctl') {
-                        group = 'Proxies';
+            ConfigService.getSystemConfig()
+                .then(function (systemConfig) {
+                    for (var node in systemConfig['katconn:resources']) {
+                        var processList = systemConfig['katconn:resources'][node].split(',');
+                        for (var i in processList) {
+                            var group = 'Components';
+                            if (node === 'single_ctl') {
+                                group = 'Proxies';
+                            }
+                            var processClientConfig = systemConfig['katconn:clients'][processList[i]].split(':');
+                            api.resources[processList[i]] = {
+                                name: processList[i],
+                                host: processClientConfig[0],
+                                port: processClientConfig[1],
+                                node: group
+                            };
+                        }
                     }
-                    var processClientConfig = ConfigService.systemConfig['katconn:clients'][processList[i]].split(':');
-                    api.resources[processList[i]] = {
-                        name: processList[i],
-                        host: processClientConfig[0],
-                        port: processClientConfig[1],
-                        node: group
-                    };
-                }
-            }
 
-            $timeout(function () {
-                deferred.resolve(api.resources);
-            }, 0);
+                    deferred.resolve(api.resources);
+                });
             return deferred.promise;
         };
 
@@ -259,7 +265,7 @@
 
         api.sendSensorsCommand = function (method, params, desired_jsonRPCId) {
 
-            if (api.connection) {
+            if (api.connection && api.connection.readyState) {
                 var jsonRPC = {
                     'jsonrpc': '2.0',
                     'method': method,
@@ -269,12 +275,9 @@
                 if (desired_jsonRPCId) {
                     jsonRPC.id = desired_jsonRPCId;
                 }
-
                 api.connection.send(JSON.stringify(jsonRPC));
             } else {
-                $timeout(function () {
-                    api.sendSensorsCommand(method, params, desired_jsonRPCId);
-                }, 500);
+                $log.error('Sensor connection not connected ' + method);
             }
         };
 

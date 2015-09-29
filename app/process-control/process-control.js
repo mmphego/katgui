@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
-    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
+    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, $timeout, ConfigService,
                                 ControlService, DATETIME_FORMAT, NotifyService, $state, USER_ROLES) {
 
         var vm = this;
@@ -20,7 +20,6 @@
             SensorsService.connectListener()
                 .then(function () {
                     vm.initSensors();
-
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
@@ -55,6 +54,17 @@
             vm.detailedProcesses = {};
             vm.nodemans.splice(0, vm.nodemans.length);
 
+            if (!ConfigService.systemConfig.nodes) {
+                ConfigService.getSystemConfig()
+                    .then(function () {
+                        vm.loadNodes();
+                    });
+            } else {
+                vm.loadNodes();
+            }
+        };
+
+        vm.loadNodes = function () {
             for (var node in ConfigService.systemConfig.nodes) {
                 var nodeName = 'nm_' + node;
                 vm.detailedProcesses[nodeName] = {};
@@ -80,23 +90,34 @@
         vm.listResourceSensors = function (resource) {
             SensorsService.listResourceSensors(resource)
                 .then(function () {
-                    SensorsService.resources[resource].sensorsList.forEach(function (item) {
+                    var runningSensorNamesToSetStrategies = '';
+                    var detailSensorNamesToSetStrategies = '';
+                    SensorsService.resources[resource].sensorsList.forEach(function (item, index) {
                         if (item.name.indexOf('.') > -1) {
                             var processName = item.name.split('.')[0];
                             if (!vm.detailedProcesses[resource][processName]) {
                                 vm.detailedProcesses[resource][processName] = {sensors: {}};
                             }
-                            vm.sensorsToDisplay[item.python_identifier] = item;
+                            vm.sensorsToDisplay[resource + '_' + item.python_identifier] = item;
                             vm.detailedProcesses[resource][processName].sensors[item.python_identifier] = item;
                             if (item.python_identifier.indexOf('running') !== -1) {
-                                SensorsService.setSensorStrategy(
-                                    resource, item.python_identifier, 'event-rate', 1, 120);
+                                if (runningSensorNamesToSetStrategies.length > 0) {
+                                    runningSensorNamesToSetStrategies += '|';
+                                }
+                                runningSensorNamesToSetStrategies += resource + '_' + item.python_identifier;
                             } else {
-                                SensorsService.setSensorStrategy(
-                                    resource, item.python_identifier, 'event-rate', 3, 120);
+                                if (detailSensorNamesToSetStrategies.length > 0) {
+                                    detailSensorNamesToSetStrategies += '|';
+                                }
+                                detailSensorNamesToSetStrategies += resource + '_' + item.python_identifier;
                             }
                         }
                     });
+                    SensorsService.setSensorStrategies(runningSensorNamesToSetStrategies, 'event-rate', 1, 120);
+                    $timeout(function () {
+                        SensorsService.setSensorStrategies(detailSensorNamesToSetStrategies, 'event-rate', 1, 120);
+                    }, 1000);
+
                 });
         };
 
@@ -132,15 +153,14 @@
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
-            var sensorNameList = strList[1].split('.');
             $scope.$apply(function () {
-                if (vm.sensorsToDisplay[sensorNameList[1]]) {
-                    vm.sensorsToDisplay[sensorNameList[1]].value = sensor.value.value;
-                    vm.sensorsToDisplay[sensorNameList[1]].timestamp = sensor.value.timestamp;
-                    vm.sensorsToDisplay[sensorNameList[1]].date = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
-                    vm.sensorsToDisplay[sensorNameList[1]].received_timestamp = sensor.value.received_timestamp;
-                    vm.sensorsToDisplay[sensorNameList[1]].status = sensor.value.status;
-                    vm.sensorsToDisplay[sensorNameList[1]].name = sensorNameList[1];
+                if (vm.sensorsToDisplay[strList[1]]) {
+                    vm.sensorsToDisplay[strList[1]].value = sensor.value.value;
+                    vm.sensorsToDisplay[strList[1]].timestamp = sensor.value.timestamp;
+                    vm.sensorsToDisplay[strList[1]].date = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+                    vm.sensorsToDisplay[strList[1]].received_timestamp = sensor.value.received_timestamp;
+                    vm.sensorsToDisplay[strList[1]].status = sensor.value.status;
+                    vm.sensorsToDisplay[strList[1]].name = strList[1];
                 } else {
                     $log.error('Dangling sensor message');
                     $log.error(sensor);

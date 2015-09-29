@@ -26,34 +26,29 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
-        api.subscribe = function (pattern) {
+        api.subscribe = function (namespace, pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [pattern, true],
-                'id': 'monitor' + KatGuiUtil.generateUUID()
+                'params': [namespace, pattern],
+                'id': 'monitor-' + KatGuiUtil.generateUUID()
             };
 
-            if (api.connection === null) {
-                $log.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
-            } else if (api.connection.readyState) {
+            if (api.connection && api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(pattern);
+                    api.subscribe(namespace, pattern);
                 }, 500);
             }
         };
 
-        api.unsubscribe = function (pattern) {
-            if (typeof(pattern) !== 'object' && pattern.indexOf('mon:') === -1) {
-                pattern = 'mon:' + pattern;
-            }
+        api.unsubscribe = function (namespace, pattern) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [pattern],
-                'id': 'monitor' + KatGuiUtil.generateUUID()
+                'params': [namespace, pattern],
+                'id': 'monitor-' + KatGuiUtil.generateUUID()
             };
 
             if (api.connection === null) {
@@ -62,7 +57,7 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.unsubscribe(pattern);
+                    api.unsubscribe(namespace, pattern);
                 }, 500);
             }
         };
@@ -71,10 +66,11 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Monitor Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe('mon:*');
-                api.subscribe('sched:*');
-                api.subscribe('time:*');
-                api.subscribe('auth:*');
+                api.subscribe('mon');
+                api.subscribe('alarms');
+                api.subscribe('health');
+                api.subscribe('time');
+                api.subscribe('auth');
             }
         };
 
@@ -122,6 +118,7 @@
                                 messageObj = JSON.parse(message);
                             }
                             if (messageObj.msg_channel) {
+                                var channelNameSplit;
                                 var messageChannel = messageObj.msg_channel.split(":");
                                 if (messageObj.msg_channel === 'auth:current_lo') {
                                     api.currentLeadOperator.name = messageObj.msg_data.lo;
@@ -138,21 +135,23 @@
                                 } else if (messageChannel[0] === 'sched') {
                                     ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
-                                    var channelNameSplit = messageChannel[1].split('.');
-                                    if (channelNameSplit[1] === 'interlock_state') {
+                                    if (messageChannel[1] === 'sys_interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
-                                    } else if (channelNameSplit[0] === 'kataware') {
-                                        AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
-                                    } else if (channelNameSplit.length > 1 &&
-                                        (channelNameSplit[1] === 'mode' || channelNameSplit[1] === 'inhibited' ||
-                                        channelNameSplit[1] === 'vds_flood_lights_on')) {
+                                    } else {
+                                        StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
+                                    }
+                                } else if (messageChannel[0] === 'health') {
+                                    if ((messageChannel[1].endsWith('mode') || messageChannel[1].endsWith('inhibited') ||
+                                        messageChannel[1].endsWith('vds_flood_lights_on'))) {
                                         ReceptorStateService.receptorMessageReceived({
                                             name: messageObj.msg_channel,
                                             value: messageObj.msg_data
                                         });
-                                    } else if (channelNameSplit.length > 1) {
+                                    } else {
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
+                                } else if (messageChannel[0] === 'alarms') {
+                                    AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                                 }
                             } else {
                                 $log.error('Dangling monitor message...');
@@ -175,7 +174,7 @@
         api.connectListener = function () {
             api.deferredMap['connectDefer'] = $q.defer();
             $log.info('Monitor Connecting...');
-            api.connection = new SockJS(urlBase + '/monitor');
+            api.connection = new SockJS(urlBase + '/portal');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
             api.connection.onclose = api.onSockJSClose;
@@ -192,7 +191,6 @@
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
-                api.unsubscribe('*');
             } else {
                 $log.error('Attempting to disconnect an already disconnected connection!');
             }
