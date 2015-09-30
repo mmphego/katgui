@@ -50,14 +50,10 @@
         };
 
         vm.unbindSetSensorStrategy = $rootScope.$on('setSensorStrategyMessage', function (event, message) {
-
             for (var i = 0; i < vm.regexStrings.length; i++) {
-
                 var regex = new RegExp(vm.regexStrings[i]);
-
                 for (var key in message) {
                     if (regex.test(key)) {
-
                         if (!vm.customStatusTrees[i]) {
                             vm.customStatusTrees[i] = {
                                 name: vm.regexStrings[i].name,
@@ -67,7 +63,6 @@
                                 children: []
                             };
                         }
-
                         if (!_.findWhere(vm.customStatusTrees[i].children, {name: vm.regexStrings[i].name})) {
                             vm.customStatusTrees[i].children.push({
                                 name: key,
@@ -76,7 +71,6 @@
                             });
                         }
                     }
-                    // SensorsService.subscribe(message.resource + '.' + message.sensors[k][2], vm.guid);
                 }
             }
         });
@@ -194,15 +188,13 @@
                 if (layout) {
                     var regex = layout.split(',')[0];
                     var size = layout.split(',')[1].split('x');
-                    var resource = regex.split('.')[0];
-                    var sensor = regex.split('.')[1];
 
                     //todo possible timing issue between when we build the status trees
                     //and when getting multiple setSensorStrategyMessage on rootScope
                     $timeout(function () {
                         vm.selectedWidth = parseInt(size[0]);
                         vm.selectedHeight = parseInt(size[1]);
-                        vm.buildView(resource, sensor);
+                        vm.buildView(regex);
                     }, lastTimeout);
                     lastTimeout += 500;
                 }
