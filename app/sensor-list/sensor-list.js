@@ -271,9 +271,9 @@
                             return item.name === strList[1];
                         }) > -1) {
                     vm.redrawChart([{
-                        sensor: strList[1].replace(/\./g, '_'),
-                        value_ts: sensor.value.timestamp,
-                        sample_ts: sensor.value.received_timestamp,
+                        sensor: strList[1],
+                        value_ts: sensor.value.timestamp * 1000,
+                        sample_ts: sensor.value.received_timestamp * 1000,
                         value: sensor.value.value
                     }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 }
