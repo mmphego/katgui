@@ -121,45 +121,11 @@
                     if (result.data.error) {
                         NotifyService.showPreDialog('Error retrieving historical weather data', result.data.error);
                     } else {
-
                         if (result.data instanceof Array) {
                             vm.sensorDataReceived(null, {value: result.data});
                         } else {
                             $log.info('Waiting for ' + result.data.row_count + ' data points on websocket.');
                         }
-
-                        // var newData = [];
-                        // var newWindData = [];
-                        // for (var attr in result.data) {
-                        //     for (var i = 0; i < result.data[attr].length; i++) {
-                        //         if (attr !== 'result') {
-                        //             var newSensor = result.data[attr][i];
-                        //
-                        //             if (newSensor.sensor.indexOf('pressure') !== -1) {
-                        //                 newSensor.rightAxis = true;
-                        //             }
-                        //             if (!vm.maxSensorValue[newSensor.sensor]) {
-                        //                 vm.maxSensorValue[newSensor.sensor] = {
-                        //                     sample_ts: newSensor.sample_ts,
-                        //                     value: newSensor.value
-                        //                 };
-                        //             } else if (newSensor.value >= vm.maxSensorValue[newSensor.sensor].value) {
-                        //                 vm.maxSensorValue[newSensor.sensor] = {
-                        //                     sample_ts: newSensor.sample_ts,
-                        //                     value: newSensor.value
-                        //                 };
-                        //             }
-                        //             if (newSensor.sensor.indexOf('wind_speed') > -1 ||
-                        //                 newSensor.sensor.indexOf('gust_speed') > -1) {
-                        //                 newWindData.push(newSensor);
-                        //             } else {
-                        //                 newData.push(newSensor);
-                        //             }
-                        //         }
-                        //     }
-                        // }
-                        // vm.redrawWindChart(newWindData, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
-                        // vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
                     }
                 }, function (error) {
                     $log.error(error);
@@ -193,6 +159,9 @@
                             value: sensor.value[attr][2],
                             sample_ts: sensor.value[attr][1] / 1000,
                         };
+                        if (sensorName.indexOf('pressure') !== -1) {
+                            latestSensor.rightAxis = true;
+                        }
                         newData.push(latestSensor);
                     } else {
                         latestSensor = {

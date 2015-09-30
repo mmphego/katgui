@@ -121,7 +121,7 @@ angular.module('katGui.d3')
                 function drawSvg() {
 
                     width = element[0].clientWidth - margin.left - margin.right;
-                    height = element[0].clientHeight - margin.top - margin.bottom - 5;
+                    height = element[0].clientHeight - margin.top - margin.bottom - 10;
                     if (height < 0) {
                         height = 0;
                     }
