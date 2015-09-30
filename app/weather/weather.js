@@ -116,43 +116,50 @@
                 }
             }
 
-            DataService.sensorDataRegex(dataRegexSearch, startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
+            DataService.sensorDataRegex(SensorsService.guid, dataRegexSearch, startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
                 .then(function (result) {
                     if (result.data.error) {
                         NotifyService.showPreDialog('Error retrieving historical weather data', result.data.error);
                     } else {
-                        var newData = [];
-                        var newWindData = [];
-                        for (var attr in result.data) {
-                            for (var i = 0; i < result.data[attr].length; i++) {
-                                if (attr !== 'result') {
-                                    var newSensor = result.data[attr][i];
 
-                                    if (newSensor.sensor.indexOf('pressure') !== -1) {
-                                        newSensor.rightAxis = true;
-                                    }
-                                    if (!vm.maxSensorValue[newSensor.sensor]) {
-                                        vm.maxSensorValue[newSensor.sensor] = {
-                                            sample_ts: newSensor.sample_ts,
-                                            value: newSensor.value
-                                        };
-                                    } else if (newSensor.value >= vm.maxSensorValue[newSensor.sensor].value) {
-                                        vm.maxSensorValue[newSensor.sensor] = {
-                                            sample_ts: newSensor.sample_ts,
-                                            value: newSensor.value
-                                        };
-                                    }
-                                    if (newSensor.sensor.indexOf('wind_speed') > -1 ||
-                                        newSensor.sensor.indexOf('gust_speed') > -1) {
-                                        newWindData.push(newSensor);
-                                    } else {
-                                        newData.push(newSensor);
-                                    }
-                                }
-                            }
+                        if (result.data instanceof Array) {
+                            vm.sensorDataReceived(null, {value: result.data});
+                        } else {
+                            $log.info('Waiting for ' + result.data.row_count + ' data points on websocket.');
                         }
-                        vm.redrawWindChart(newWindData, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
-                        vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
+
+                        // var newData = [];
+                        // var newWindData = [];
+                        // for (var attr in result.data) {
+                        //     for (var i = 0; i < result.data[attr].length; i++) {
+                        //         if (attr !== 'result') {
+                        //             var newSensor = result.data[attr][i];
+                        //
+                        //             if (newSensor.sensor.indexOf('pressure') !== -1) {
+                        //                 newSensor.rightAxis = true;
+                        //             }
+                        //             if (!vm.maxSensorValue[newSensor.sensor]) {
+                        //                 vm.maxSensorValue[newSensor.sensor] = {
+                        //                     sample_ts: newSensor.sample_ts,
+                        //                     value: newSensor.value
+                        //                 };
+                        //             } else if (newSensor.value >= vm.maxSensorValue[newSensor.sensor].value) {
+                        //                 vm.maxSensorValue[newSensor.sensor] = {
+                        //                     sample_ts: newSensor.sample_ts,
+                        //                     value: newSensor.value
+                        //                 };
+                        //             }
+                        //             if (newSensor.sensor.indexOf('wind_speed') > -1 ||
+                        //                 newSensor.sensor.indexOf('gust_speed') > -1) {
+                        //                 newWindData.push(newSensor);
+                        //             } else {
+                        //                 newData.push(newSensor);
+                        //             }
+                        //         }
+                        //     }
+                        // }
+                        // vm.redrawWindChart(newWindData, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
+                        // vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
                     }
                 }, function (error) {
                     $log.error(error);
@@ -170,71 +177,112 @@
             }
         };
 
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var strList = sensor.name.split(':');
-            var windDirection = null,
-                windSpeed = null,
-                gustSpeed = null;
-            vm.ancResource.sensorList.forEach(function (oldSensor) {
-                if (oldSensor.python_identifier === strList[1]) {
-                    oldSensor.name = oldSensor.python_identifier.replace('anc_', '').replace('weather_', '').replace(/_/g, ' ');
-                    oldSensor.sensorValue = sensor.value;
-                    oldSensor.status = sensor.value.status;
-                    oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss');
-                    oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
-                    oldSensor.value = sensor.value.value;
-                    sensor.color = oldSensor.color;
-
-                    if (oldSensor.python_identifier.indexOf('wind_direction') !== -1) {
-                        windDirection = oldSensor.value;
-                        vm.latestWindDirection = windDirection;
+        vm.sensorDataReceived = function (event, sensor) {
+            if (sensor.value && sensor.value instanceof Array) {
+                var newData = [];
+                var newWindData = [];
+                var newSensorNames = {};
+                for (var attr in sensor.value) {
+                    var sensorName = sensor.value[attr][3];
+                    var latestSensor = null;
+                    if (sensorName.indexOf('wind_speed') === -1 &&
+                        sensorName.indexOf('gust_speed') === -1) {
+                        latestSensor = {
+                            status: sensor.value[attr][4],
+                            sensor: sensorName,
+                            value: sensor.value[attr][2],
+                            sample_ts: sensor.value[attr][1] / 1000,
+                        };
+                        newData.push(latestSensor);
+                    } else {
+                        latestSensor = {
+                            status: sensor.value[attr][4],
+                            sensor: sensorName,
+                            value: sensor.value[attr][2],
+                            sample_ts: sensor.value[attr][1] / 1000,
+                        };
+                        newWindData.push(latestSensor);
                     }
-                    if (oldSensor.python_identifier.indexOf('wind_speed') !== -1) {
-                        windSpeed = oldSensor.value;
-                    }
-                    if (oldSensor.python_identifier.indexOf('gust_speed') !== -1) {
-                        gustSpeed = oldSensor.value;
-                    }
-
-                    if (!vm.maxSensorValue[oldSensor.name]) {
-                        vm.maxSensorValue[oldSensor.name] = {timestamp: oldSensor.timestamp, value: oldSensor.value};
-                    } else if (oldSensor.value >= vm.maxSensorValue[oldSensor.name].value) {
-                        vm.maxSensorValue[oldSensor.name] = {timestamp: oldSensor.timestamp, value: oldSensor.value};
+                    if (!vm.maxSensorValue[sensorName]) {
+                        vm.maxSensorValue[sensorName] = {timestamp: latestSensor.sample_ts, value: latestSensor.value};
+                    } else if (latestSensor.value >= vm.maxSensorValue[latestSensor.sensor].value) {
+                        vm.maxSensorValue[latestSensor.sensor] = {timestamp: latestSensor.sample_ts, value: latestSensor.value};
                     }
                 }
-            });
-
-            if (windDirection) {
-                vm.redrawCompass(windDirection);
-            }
-            var newSensor;
-            if (windSpeed || gustSpeed) {
-                newSensor = {
-                    sensor: strList[1].replace(/\./g, '_'),
-                    sample_ts: sensor.value.timestamp * 1000,
-                    received_timestamp: sensor.value.received_timestamp * 1000,
-                    value: sensor.value.value,
-                    color: sensor.color
-                };
-                vm.redrawWindChart([newSensor], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
-            } else if (strList[1].indexOf('temperature') > -1 ||
-                strList[1].indexOf('humidity') > -1 ||
-                strList[1].indexOf('pressure') > -1) {
-
-                newSensor = {
-                    sensor: strList[1].replace(/\./g, '_'),
-                    sample_ts: sensor.value.timestamp * 1000,
-                    received_timestamp: sensor.value.received_timestamp * 1000,
-                    value: sensor.value.value,
-                    color: sensor.color
-                };
-
-                if (strList[1].indexOf('pressure') !== -1) {
-                    newSensor.rightAxis = true;
+                if (newData) {
+                    vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
                 }
-                vm.redrawChart([newSensor], vm.showGridLines, vm.dataTimeWindow);
+                if (newWindData) {
+                    vm.redrawWindChart(newWindData, vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
+                }
+            } else {
+                var strList = sensor.name.split(':');
+                var windDirection = null,
+                    windSpeed = null,
+                    gustSpeed = null;
+                vm.ancResource.sensorList.forEach(function (oldSensor) {
+                    if (oldSensor.python_identifier === strList[1]) {
+                        oldSensor.name = oldSensor.python_identifier.replace('anc_', '').replace('weather_', '').replace(/_/g, ' ');
+                        oldSensor.sensorValue = sensor.value;
+                        oldSensor.status = sensor.value.status;
+                        oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss');
+                        oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
+                        oldSensor.value = sensor.value.value;
+                        sensor.color = oldSensor.color;
+
+                        if (oldSensor.python_identifier.indexOf('wind_direction') !== -1) {
+                            windDirection = oldSensor.value;
+                            vm.latestWindDirection = windDirection;
+                        }
+                        if (oldSensor.python_identifier.indexOf('wind_speed') !== -1) {
+                            windSpeed = oldSensor.value;
+                        }
+                        if (oldSensor.python_identifier.indexOf('gust_speed') !== -1) {
+                            gustSpeed = oldSensor.value;
+                        }
+
+                        if (!vm.maxSensorValue[oldSensor.name]) {
+                            vm.maxSensorValue[oldSensor.name] = {timestamp: oldSensor.timestamp, value: oldSensor.value};
+                        } else if (oldSensor.value >= vm.maxSensorValue[oldSensor.name].value) {
+                            vm.maxSensorValue[oldSensor.name] = {timestamp: oldSensor.timestamp, value: oldSensor.value};
+                        }
+                    }
+                });
+
+                if (windDirection) {
+                    vm.redrawCompass(windDirection);
+                }
+                var newSensor;
+                if (windSpeed || gustSpeed) {
+                    newSensor = {
+                        sensor: strList[1].replace(/\./g, '_'),
+                        sample_ts: sensor.value.timestamp * 1000,
+                        received_timestamp: sensor.value.received_timestamp * 1000,
+                        value: sensor.value.value,
+                        color: sensor.color
+                    };
+                    vm.redrawWindChart([newSensor], vm.showWindGridLines, true, vm.useFixedWindYAxis, null, 1000, [vm.windSpeedLimitLine, vm.windGustLimitLine]);
+                } else if (strList[1].indexOf('temperature') > -1 ||
+                    strList[1].indexOf('humidity') > -1 ||
+                    strList[1].indexOf('pressure') > -1) {
+
+                    newSensor = {
+                        sensor: strList[1].replace(/\./g, '_'),
+                        sample_ts: sensor.value.timestamp * 1000,
+                        received_timestamp: sensor.value.received_timestamp * 1000,
+                        value: sensor.value.value,
+                        color: sensor.color
+                    };
+
+                    if (strList[1].indexOf('pressure') !== -1) {
+                        newSensor.rightAxis = true;
+                    }
+                    vm.redrawChart([newSensor], vm.showGridLines, vm.dataTimeWindow);
+                }
             }
-        });
+        };
+
+        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', vm.sensorDataReceived);
 
         vm.showOptionsChanged = function () {
             vm.redrawChart(null, vm.showGridLines, vm.dataTimeWindow);

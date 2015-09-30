@@ -511,17 +511,19 @@
     function runKatGui($rootScope, $state, $localStorage, $log, $templateCache) {
 
         $rootScope.$on('$stateChangeStart', function (event, toState) {
-            if (toState.noAuth || !$rootScope.loggedIn && toState.name !== 'login') {
-                if (!$localStorage['currentUserToken']) {
+            if (!toState.noAuth) {
+                if (!$rootScope.loggedIn && toState.name !== 'login') {
+                    if (!$localStorage['currentUserToken']) {
+                        event.preventDefault();
+                        $rootScope.requestedStateBeforeLogin = toState.name;
+                        $state.go('login');
+                    }
+                } else if ($rootScope.loggedIn && $rootScope.requestedStateBeforeLogin) {
+                    var newStateName = $rootScope.requestedStateBeforeLogin ? $rootScope.requestedStateBeforeLogin : 'home';
+                    $rootScope.requestedStateBeforeLogin = null;
                     event.preventDefault();
-                    $rootScope.requestedStateBeforeLogin = toState.name;
-                    $state.go('login');
+                    $state.go(newStateName);
                 }
-            } else if ($rootScope.loggedIn && $rootScope.requestedStateBeforeLogin) {
-                var newStateName = $rootScope.requestedStateBeforeLogin ? $rootScope.requestedStateBeforeLogin : 'home';
-                $rootScope.requestedStateBeforeLogin = null;
-                event.preventDefault();
-                $state.go(newStateName);
             }
         });
 
