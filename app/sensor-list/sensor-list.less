@@ -12,6 +12,9 @@
     .resource-sensor-item {
         cursor: pointer;
         padding: 0 8px;
+        max-height: 20px;
+        min-height: 20px;
+        overflow: hidden;
         &:hover {
             background-color: rgba(158, 158, 158, 0.1);
         }
@@ -20,22 +23,37 @@
 }
 
 .resource-sensor-name {
-    min-width: 250px;
-    max-width: 250px;
+    min-width: 270px;
+    max-width: 270px;
+    max-height: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: inline-block;
 }
 
 .resource-sensor-status-item {
     margin-left: 4px;
     margin-right: 4px;
     min-width: 80px;
+    max-width: 80px;
+    max-height: 20px;
+    display: inline-block;
 }
 
 .resource-sensor-time-item {
     margin-left: 4px;
     margin-right: 4px;
     min-width: 138px;
+    max-width: 138px;
+    max-height: 20px;
+    display: inline-block;
+}
+
+.resource-sensor-value-item {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 20px;
 }
 
 .active-sensor-list-resource {

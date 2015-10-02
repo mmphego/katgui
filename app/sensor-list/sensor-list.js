@@ -321,7 +321,7 @@
                 });
         };
 
-        $scope.filterByNotNominal = function(sensor) {
+        $scope.filterByNotNominal = function (sensor) {
             return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal';
         };
 
