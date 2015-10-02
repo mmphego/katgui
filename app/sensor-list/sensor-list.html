@@ -71,21 +71,16 @@
                     </span>
                 </div>
             </md-toolbar>
-            <md-virtual-repeat-container flex style="padding: 8px 0; overflow: auto; min-height: 100%;" class="md-whiteframe-z1">
-                <!--ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal'"-->
-                <div
-                    md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)"
-                    layout="column">
-                    <div title="{{sensor.description}}" class="resource-sensor-item"
-                        layout="row" class="unselectable"
-                        ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
-                        ng-class="{'selected-for-chart-row': sensor.selectedForChart}">
-                        <span class="resource-sensor-name">{{sensor.name}}</span>
-                        <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
-                        <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
-                        <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
-                        <span flex class="resource-sensor-value-item">{{sensor.value}}</span>
-                    </div>
+            <md-virtual-repeat-container flex style="padding: 8px 0; overflow: auto" class="md-whiteframe-z1" md-auto-shrink>
+                <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)"
+                     class="resource-sensor-item" md-item-size="20"
+                    ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
+                    ng-class="{'selected-for-chart-row': sensor.selectedForChart}" layout="row" layout-align="start center">
+                    <span title="{{sensor.description}}" class="resource-sensor-name">{{sensor.name}}</span>
+                    <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
+                    <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
+                    <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
+                    <span title="{{sensor.value}}" class="resource-sensor-value-item">{{sensor.value}}</span>
                 </div>
             </md-virtual-repeat-container>
         </div>
