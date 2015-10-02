@@ -244,6 +244,7 @@
                     if (result.data instanceof Array) {
                         vm.sensorDataReceived(null, {value: result.data});
                     }
+                    vm.sensorNames.push(sensor);
                     if (vm.liveData) {
                         vm.connectLiveFeed(sensor);
                     }
@@ -309,29 +310,15 @@
                     });
                     newSensorNames[sensorName] = {};
                 }
+                var drawSensor = false;
                 var newSensorNamesKeys = Object.keys(newSensorNames);
                 for (var index in newSensorNamesKeys) {
-                    if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: newSensorNamesKeys[index]}))) {
-                        var existingSensor = _.findWhere(vm.sensorSearchNames, {name: newSensorNamesKeys[index]});
-                        existingSensor.liveData = vm.liveData;
-                        vm.sensorNames.push(existingSensor);
-                        if (vm.liveData) {
-                            vm.connectLiveFeed(existingSensor);
-                        }
+                    if (angular.isDefined(_.findWhere(vm.sensorNames, {name: newSensorNamesKeys[index]}))) {
+                        drawSensor = true;
+                        break;
                     }
                 }
-                //TODO better messages for data points received, toasts for this are very intrusive
-                // var toastMessage = '';
-                // if (newSensorNamesKeys.length === 0) {
-                //     toastMessage = newData.length + ' sensor data points found.';
-                // } else if (newSensorNamesKeys.length === 1 && newData) {
-                //     toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys[0] + '.';
-                // } else if (newData) {
-                //     toastMessage = newData.length + ' sensor data points found for ' + newSensorNamesKeys.length + ' sensors.';
-                // }
-                //
-                // NotifyService.showSimpleToast(toastMessage);
-                if (newData) {
+                if (newData && drawSensor) {
                     vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
                 }
             }
