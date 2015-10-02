@@ -54,14 +54,10 @@
             vm.detailedProcesses = {};
             vm.nodemans.splice(0, vm.nodemans.length);
 
-            if (!ConfigService.systemConfig.nodes) {
-                ConfigService.getSystemConfig()
-                    .then(function () {
-                        vm.loadNodes();
-                    });
-            } else {
-                vm.loadNodes();
-            }
+            ConfigService.getSystemConfig()
+                .then(function () {
+                    vm.loadNodes();
+                });
         };
 
         vm.loadNodes = function () {
@@ -113,11 +109,16 @@
                             }
                         }
                     });
-                    SensorsService.setSensorStrategies(runningSensorNamesToSetStrategies, 'event-rate', 1, 120);
-                    $timeout(function () {
-                        SensorsService.setSensorStrategies(detailSensorNamesToSetStrategies, 'event-rate', 1, 120);
-                    }, 1000);
-
+                    if (runningSensorNamesToSetStrategies.length > 0) {
+                        SensorsService.setSensorStrategies(runningSensorNamesToSetStrategies, 'event-rate', 1, 120);
+                    }
+                    if (detailSensorNamesToSetStrategies.length > 0) {
+                        $timeout(function () {
+                            SensorsService.setSensorStrategies(detailSensorNamesToSetStrategies, 'event-rate', 1, 120);
+                        }, 1000);
+                    } else {
+                        vm.detailedProcesses[resource]['None'] = {sensors: {}};
+                    }
                 });
         };
 
