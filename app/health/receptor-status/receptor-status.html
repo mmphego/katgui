@@ -11,58 +11,18 @@
             </md-checkbox>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" style="padding: 16px; overflow: auto">
-
-            <div layout="column" layout-align="start" ng-show="!vm.sortBySubarrays">
-                <div class="md-whiteframe-z1">
-                    <div layout="row">
-                        <span class="receptor-status-row-span"></span>
-
-                        <div ng-repeat="receptor in vm.receptorsData track by $index"
-                             class="receptor-status-column-heading" layout="column" layout-align="center center"
-                             ng-class="{'in-maintenance-item':receptor.in_maintenance}">
-                            <span>{{receptor.name}}</span>
+            <div ng-show="!vm.sortBySubarrays" layout="column" style="text-align: center">
+                <div flex style="margin: 4px">
+                    <div ng-repeat="receptor in vm.receptorsData track by $index"
+                         class="receptor-status-block md-whiteframe-z1 unknown-item"
+                         ng-class="receptor.sensors_ok ? receptor.sensors_ok.status + '-item' : 'unknown-item'">
+                        <div>{{receptor.name}}<i style="font-size: 12px">{{(receptor.subarray !== 'free'? ' (' + receptor.subarray + ')' : '')}}</i></div>
+                        <div title="AP on Target" ng-if="receptor.windstow_active.value === false" class="nominal-item" ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
+                            <b>{{receptor.mode.value}}<span ng-show="receptor.lock.value" class="fa fa-asterisk"
+                                title="AP on Target"></span></b>
                         </div>
-                    </div>
-                    <div>
-                        <div layout="row">
-                            <div class="receptor-status-row-span" layout-align="start center" layout="row">
-                                <span>Health - Device Status (AP)</span>
-                            </div>
-                            <div ng-repeat="receptor in vm.receptorsData track by $index"
-                                 class="receptor-status-column-heading nominal-item"
-                                 layout="column" layout-align="center center"
-                                 ng-class="{'error-item':receptor.ap_device_status.value !== 'ok'}">
-                                <span>{{receptor.ap_device_status.value}}</span>
-                            </div>
-                        </div>
-                        <div layout="row">
-                            <div class="receptor-status-row-span" layout-align="start center" layout="row">
-                                <span>Mode</span>
-                            </div>
-                            <div ng-repeat="receptor in vm.receptorsData track by $index"
-                                 class="receptor-status-column-heading nominal-item"
-                                 layout="column" layout-align="center center"
-                                 ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
-                                <span ng-show="!receptor.windstow_active.value">{{receptor.mode.value}}</span>
-                                <span ng-show="receptor.windstow_active.value">WINDSTOW</span>
-                                <span style="width: 100%; text-align: center; border: 1px solid #333333;"
-                                      class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</span>
-                        <span ng-show="receptor.lock.value" class="fa fa-asterisk on-target-span"
-                              title="AP on Target"></span>
-                            </div>
-                        </div>
-                        <div layout="row">
-                            <div class="receptor-status-row-span" layout-align="start center" layout="row">
-                                <span>Assigned/Allocated</span>
-                            </div>
-                            <div ng-repeat="receptor in vm.receptorsData track by $index"
-                                 class="receptor-status-column-heading"
-                                 layout="column" layout-align="center center"
-                                 ng-class="{'in-maintenance-item':receptor.in_maintenance && !(receptor.assignedSubarray || receptor.allocatedSubarray), 'in-assigned-subarray-item': receptor.assignedSubarray, 'in-allocated-subarray-item': receptor.allocatedSubarray}">
-                                <span ng-show="receptor.subarray" title="{{'Subarray ' + receptor.subarray}}">Sub {{receptor.subarray}}</span>
-                                <span ng-show="!receptor.subarray">Free</span>
-                            </div>
-                        </div>
+                        <div ng-if="receptor.windstow_active.value" class="windstow-item"><b>WINDSTOW</b></div>
+                        <div class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</div>
                     </div>
                 </div>
             </div>
@@ -72,63 +32,41 @@
                  style="min-width: 650px;" flex>
                 <div layout="column" layout-align="start" flex>
                     <md-toolbar
-                        md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'white'}}"
-                        class="md-whiteframe-z1"
-                        ng-class="{'md-hue-2': subarray.state !== 'inactive'}"
-                        layout="row" layout-align="center center"
-                        style="max-height: 50px; min-height: 50px;">
-                        <div flex style="position: relative">
-                            <span ng-show="subarray.id === 'free'" style="position: absolute; left: 8px; top: -20px;">FREE</span>
-                            <span ng-show="subarray.id !== 'free'" style="position: absolute; left: 8px; top: 8px;">SUBARRAY {{subarray.id}}</span>
-                            <md-button ng-show="subarray.id !== 'free'" layout="row" style="min-height: 42px; width: calc(100% - 16px)"
-                                       class="unselectable"
-                                       ng-click="vm.navigateToSchedulerDetails(subarray.id)"
-                                       title="Click to Manage Observations for Subarray {{subarray.id}}">
-                                <span>{{subarray.state}}</span>
-                                <span ng-if="subarray.maintenance">{{", in maintenance"}}</span>
-                            </md-button>
+                        md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                        ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
+                        layout="row" layout-align="center center" title="{{subarray.description}}"
+                        style="max-height: 34px; min-height: 34px; position: relative;"
+                        ng-click="$root.stateGoWithSubId('scheduler.observations.detail', vm.subarray_id)">
+                        <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
+                            <span><b>{{subarray.state}}</b></span>
+                            <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
+                        </span>
+                        <span flex></span>
+
+                        <div layout="row" layout-align="center center"
+                             style="font-size: 12px;">
+                            <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
+                            <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ?
+                                subarray.band : 'None'}}</b></span>
+                            <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product
+                                ? subarray.product : 'None'}}</b></span>
+                            <span ng-show="subarray.state === 'active' || subarray.config_label" style="margin-right: 8px;"
+                                  title="Config Label"><i>Config Label: </i><b>{{subarray.config_label ?
+                                subarray.config_label : 'None'}}</b></span>
                         </div>
                     </md-toolbar>
 
-                    <div flex style="overflow: auto;" ng-class="{'maintenance-bg':subarray.maintenance}">
-                        <div layout="row">
-                            <span class="receptor-status-row-span"></span>
-
-                            <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index"
-                                 class="receptor-status-column-heading" layout="column" layout-align="center center"
-                                 ng-class="{'in-maintenance-item':receptor.in_maintenance}">
-                                <span>{{receptor.name}}</span>
+                    <div flex style="padding: 4px; text-align: center" ng-class="{'maintenance-bg':subarray.maintenance}">
+                        <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index"
+                             class="receptor-status-block md-whiteframe-z1"
+                             ng-class="vm.getReceptorBlockClass(receptor)">
+                            <div>{{receptor.name}}</div>
+                            <div title="AP on Target" ng-if="receptor.windstow_active.value === false" class="nominal-item" ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
+                                <b>{{receptor.mode.value}}<span ng-show="receptor.lock.value" class="fa fa-asterisk"
+                                    title="AP on Target"></span></b>
                             </div>
-                        </div>
-                        <div>
-                            <div layout="row">
-                                <div class="receptor-status-row-span" layout-align="start center" layout="row">
-                                    <span>Health - Device Status (AP)</span>
-                                </div>
-                                <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index"
-                                     class="receptor-status-column-heading nominal-item"
-                                     layout="column" layout-align="center center"
-                                     ng-class="{'error-item':receptor.ap_device_status.value !== 'ok'}">
-                                    <span>{{receptor.ap_device_status.value}}</span>
-                                </div>
-                            </div>
-                            <div layout="row">
-                                <div class="receptor-status-row-span" layout-align="start center" layout="row">
-                                    <span>Mode</span>
-                                </div>
-                                <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index"
-                                     class="receptor-status-column-heading nominal-item"
-                                     layout="column" layout-align="center center"
-                                     ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
-                                    <span ng-show="!receptor.windstow_active.value">{{receptor.mode.value}}</span>
-                                    <span ng-show="receptor.windstow_active.value">WINDSTOW</span>
-                                    <span style="width: 100%; text-align: center; border: 1px solid #333333;"
-                                      class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</span>
-                                    <span ng-show="receptor.lock.value" class="fa fa-asterisk on-target-span"
-                                        title="AP on Target"></span>
-                                </div>
-                            </div>
-
+                            <div ng-if="receptor.windstow_active.value" class="windstow-item"><b>WINDSTOW</b></div>
+                            <div class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</div>
                         </div>
                     </div>
                 </div>

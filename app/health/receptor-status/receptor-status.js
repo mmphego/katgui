@@ -16,9 +16,9 @@
         vm.connectionLost = false;
 
         vm.receptorSensorsToConnect = [
+            'sensors_ok',
             'mode',
             'inhibited',
-            'ap_device_status',
             'lock',
             'windstow_active'
         ];
@@ -88,6 +88,16 @@
                     }
                     receptorSensorsRegex += '|katpool_resources_in_maintenance';
                     SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 10);
+
+                    for (i = 1; i < 10; i++) {
+                        vm.receptorsData.push({name: 'test' + i, subarray: 'free', sensors_ok: {}, mode: {value: 'STOP'}});
+                    }
+                    for (i = 1; i < 30; i++) {
+                        vm.receptorsData.push({name: 'test' + (i + 10), subarray: '1', sensors_ok: {}, mode: {value: 'STOP'}});
+                    }
+                    for (i = 1; i < 20; i++) {
+                        vm.receptorsData.push({name: 'test' + (i + 40), subarray: '3', sensors_ok: {}, mode: {value: 'STOP'}});
+                    }
                 });
         };
         vm.connectListeners();
@@ -192,6 +202,10 @@
 
         vm.navigateToSchedulerDetails = function (subarray_id) {
             $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
+        };
+
+        vm.getReceptorBlockClass = function (receptor) {
+            return receptor.sensors_ok && receptor.sensors_ok.status? receptor.sensors_ok.status + '-item' : 'unknown-item';
         };
 
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
