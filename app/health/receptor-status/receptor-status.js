@@ -80,24 +80,26 @@
                             receptorSensorsRegex += item + '_' + vm.receptorSensorsToConnect[i];
                         }
                     });
+                    receptorSensorsRegex += '|subarray_._state';
+                    receptorSensorsRegex += '|subarray_._allocations';
+                    receptorSensorsRegex += '|subarray_._maintenance';
                     for (var i = 1; i <= 4; i++) {
-                        receptorSensorsRegex += '|subarray_' + i + '_state';
-                        receptorSensorsRegex += '|subarray_' + i + '_allocations';
-                        receptorSensorsRegex += '|subarray_' + i + '_maintenance';
                         vm.subarrays['subarray_' + i] = {id: i.toString()};
                     }
                     receptorSensorsRegex += '|katpool_resources_in_maintenance';
                     SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 10);
 
+                    //fake data for demos start
                     for (i = 1; i < 10; i++) {
-                        vm.receptorsData.push({name: 'test' + i, subarray: 'free', sensors_ok: {}, mode: {value: 'STOP'}});
+                        vm.receptorsData.push({name: 't0' + i, subarray: 'free', sensors_ok: {}, mode: {value: 'STOP'}});
                     }
                     for (i = 1; i < 30; i++) {
-                        vm.receptorsData.push({name: 'test' + (i + 10), subarray: '1', sensors_ok: {}, mode: {value: 'STOP'}});
+                        vm.receptorsData.push({name: 't0' + (i + 10), subarray: '1', sensors_ok: {}, mode: {value: 'STOP'}});
                     }
                     for (i = 1; i < 20; i++) {
-                        vm.receptorsData.push({name: 'test' + (i + 40), subarray: '3', sensors_ok: {}, mode: {value: 'STOP'}});
+                        vm.receptorsData.push({name: 't0' + (i + 40), subarray: '3', sensors_ok: {}, mode: {value: 'STOP'}});
                     }
+                    //fake data for demos end
                 });
         };
         vm.connectListeners();

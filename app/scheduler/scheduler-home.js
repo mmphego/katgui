@@ -64,16 +64,16 @@
                 .then(function (systemConfig) {
                     var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
                     subarray_nrs.forEach(function (sub_nr) {
-                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'allocations';
-                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'product';
-                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'state';
-                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'band';
-                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'config_label';
-                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'maintenance';
-                        strategiesRegex += '|subarray_' + sub_nr + '_' + 'delegated_ca';
-                        strategiesRegex += '|sched_mode_' + sub_nr;
                         ObsSchedService.subarrays.push({id: sub_nr});
                     });
+                    strategiesRegex += '|subarray_._allocations';
+                    strategiesRegex += '|subarray_._product';
+                    strategiesRegex += '|subarray_._state';
+                    strategiesRegex += '|subarray_._band';
+                    strategiesRegex += '|subarray_._config_label';
+                    strategiesRegex += '|subarray_._maintenance';
+                    strategiesRegex += '|subarray_._delegated_ca';
+                    strategiesRegex += '|sched_mode_.';
 
                     SensorsService.setSensorStrategies(strategiesRegex, 'event-rate', 1, 360);
                 });
