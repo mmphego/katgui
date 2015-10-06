@@ -23,6 +23,17 @@
                     children: statusTree.children
                 };
             });
+            //demo test data start
+            for (var i = 1; i < 60; i++) {
+                var testReceptorName = 't0' + i;
+                api.receptors.push(testReceptorName);
+                api.statusData[testReceptorName] = {
+                    name: testReceptorName,
+                    sensor: statusTree.sensor.replace('.', '_').replace('-', '_'),
+                    children: statusTree.children
+                };
+            }
+            //demo test data end
         };
 
         api.setTopStatusTrees = function (statusTrees) {
@@ -58,7 +69,7 @@
             api.sensorValues[messageName] = message;
             api.itemsToUpdate[messageName] = message;
             if (!api.stopUpdating) {
-                api.stopUpdating = $interval(api.applyPendingUpdates, 500);
+                api.stopUpdating = $interval(api.applyPendingUpdates, 1000);
             }
             $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
         };
@@ -90,7 +101,6 @@
             if (!d) {
                 return;
             }
-            if (d.depth > 0) {
                 if (!d.sensorValue) {
                     d.sensorValue = {};
                 }
@@ -101,9 +111,7 @@
                 }
                 statusClassResult += d.dx > 300 ? " child-big-text" : " child";
                 return statusClassResult;
-            } else if (d.sensorValue) {
-                return sensorToUpdateName + ' ' + d.sensorValue.status + '-child parent';
-            }
+            
         };
 
         function applyValueToSensor(node, sensorName, value, rootName) {

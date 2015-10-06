@@ -96,7 +96,7 @@
                         subarrayColor: "#d7d7d7"});
                     }
                     //fake data for demos end
-                    sensorsRegexToConnect += '|subarray_._pool_resources'
+                    sensorsRegexToConnect += '|subarray_._pool_resources';
                     SensorsService.setSensorStrategies(sensorsRegexToConnect, 'event-rate', 1, 10);
                 });
         };
