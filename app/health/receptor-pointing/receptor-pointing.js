@@ -16,6 +16,7 @@
         vm.targetsToDisplay = [];
         vm.filters = [];
         vm.sensorValues = {};
+        vm.subarrayColors = ["#EF6C00", "#2196F3", "#E91E63", "#43A047"];
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -86,8 +87,16 @@
                             }
                             sensorsRegexToConnect += '^' + item + '_' + vm.sensorsToConnect[i];
                         }
-                        vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false});
+                        vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false,
+                            subarrayColor: "#d7d7d7"});
                     });
+                    //fake data for demos start
+                    for (var i = 1; i < 60; i++) {
+                        vm.receptorsData.push({name: 't0' + i, showHorizonMask: false, skyPlot: false,
+                        subarrayColor: "#d7d7d7"});
+                    }
+                    //fake data for demos end
+                    sensorsRegexToConnect += '|subarray_._pool_resources'
                     SensorsService.setSensorStrategies(sensorsRegexToConnect, 'event-rate', 1, 10);
                 });
         };
@@ -165,11 +174,18 @@
         vm.statusMessageReceived = function (event, message) {
             var sensor = message.name.split(':')[1];
             vm.sensorValues[sensor] = message.value;
+
             vm.receptorsData.forEach(function (receptor) {
                 if (sensor.startsWith(receptor.name)) {
                     receptor[sensor.replace(receptor.name + '_', '')] = message.value;
+                } else if (sensor.endsWith('_pool_resources') &&
+                           message.value.value.indexOf(receptor.name) > -1) {
+                   receptor.sub_nr = parseInt(sensor.split('_')[1]);
+                   receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
+                   vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
                 }
             });
+
             if (!vm.stopUpdating) {
                 vm.stopUpdating = $interval(function () {
                     vm.redraw(false);

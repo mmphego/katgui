@@ -355,20 +355,21 @@
     position: relative;
     border: 2px solid currentColor;
     background: currentColor;
-    min-width: 60px;
-    min-height: 66px;
-    margin-right: 8px;
+    min-width: 45px;
+    min-height: 30px;
+    margin: 2px;
     overflow: hidden;
     cursor: pointer !important;
+    text-align: center;
 
     span {
         color: white;
-        font-weight: 600;
+        // font-weight: 600;
         text-shadow: 1px 1px #333;
     }
 
     .receptor-legend-item-text {
-        text-align: center;
+        margin-top: 2px;
         color: white;
         font-weight: 600;
         text-shadow: 1px 1px #333;
@@ -376,22 +377,50 @@
 
     .on-target-span {
         text-shadow: none;
-        left: 0;
-        top: 0;
-        font-size: 12px;
+        left: -1px;
+        top: -1px;
+        font-size: 10px;
     }
 
     .horizon-mask-showing {
         text-shadow: none;
         position: absolute;
-        right: 0;
-        top: 0;
-        font-size: 12px;
+        right: -1px;
+        top: -1px;
+        font-size: 10px;
+    }
+
+    .inhibited-showing {
+        text-shadow: none;
+        position: absolute;
+        right: -1px;
+        bottom: -1px;
+        font-size: 10px;
+    }
+
+    .stow-showing {
+        text-shadow: none;
+        position: absolute;
+        left: -1px;
+        bottom: -1px;
+        font-size: 10px;
+    }
+
+    .pointing-showing {
+        text-shadow: none;
+        position: absolute;
+        left: 18px;
+        bottom: -5px;
+        font-size: 10px;
     }
 
     &:hover {
-        border: 2px solid #333333;
+        border: 2px solid #777;
     }
+}
+
+.border-black-2px {
+    border: 2px solid #333333;
 }
 
 .actual-pos-border {

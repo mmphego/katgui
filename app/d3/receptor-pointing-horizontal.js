@@ -273,6 +273,8 @@ angular.module('katGui.d3')
                             var c = color(d.name + '_actual');
                             if (d.skyPlot) {
                                 c = 'black';
+                            } else if (d.subarrayColor) {
+                                c = d.subarrayColor;
                             }
                             var style = document.getElementById(d.name + '_actual_style_tag');
                             if (style && style.parentNode) {
