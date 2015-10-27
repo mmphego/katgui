@@ -30,9 +30,10 @@
     <div style="position: absolute">
 
     </div>
-    <div ng-if="!vm.loadingApod" class="md-whiteframe-z3" style="margin: 8px">
-        <img class="apod-image" ng-click="vm.openSelectedDateApod()" ng-src="{{vm.apodUrl}}">
+    <div ng-if="!vm.loadingApod && !vm.youtubeVideo" class="md-whiteframe-z3" style="margin: 8px">
+        <img ng-if="!vm.youtubeVideo" class="apod-image" ng-click="vm.openSelectedDateApod()" ng-src="{{vm.apodUrl}}">
     </div>
+    <iframe class="md-whiteframe-z3" style="margin: 8px; border: 0" width="640" height="360" ng-if="!vm.loadingApod && vm.youtubeVideo" ng-src="{{vm.apodUrl}}"></iframe>
     <div ng-if="!vm.loadingApod && vm.apodDescription" style="margin: 8px;">
         <p><b>Explanation:</b> {{" " + vm.apodDescription}}</p>
     </div>

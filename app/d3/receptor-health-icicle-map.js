@@ -125,7 +125,7 @@ angular.module('katGui.d3')
                                 halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
                             var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
-                            if (halfWidth < 120) {
+                            if (halfWidth < 120 && d.depth > 0) {
                                 strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
                             }
                             return strTranslate;
@@ -168,7 +168,7 @@ angular.module('katGui.d3')
                                     halfHeight = (y(d.y + d.dy) - y(d.y)) / 2;
 
                                 var strTranslate = "translate(" + halfWidth + "," + halfHeight + ")";
-                                if (halfWidth < 120) {
+                                if (halfWidth < 120 && d.depth > 0) {
                                     strTranslate += "rotate(90, " + x(d.x) + ", " + y(d.y) + ")";
                                 }
                                 return strTranslate;

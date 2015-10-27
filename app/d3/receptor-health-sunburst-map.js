@@ -104,7 +104,7 @@ angular.module('katGui.d3')
                             if (d.depth > 0) {
                                 return "rotate(" + computeTextRotation(d) + ")";
                             } else {
-                                return "translate(-30,3)";
+                                return "translate(-25,0)";
                             }
                         })
                         .attr("x", function (d) {
@@ -147,13 +147,19 @@ angular.module('katGui.d3')
                                 // check if the animated element's data e lies within the visible angle span given in d
                                 if (e.x >= d.x && e.x < (d.x + d.dx)) {
                                     // get a selection of the associated text element
-                                    var arcText = d3.select(this.parentNode).select("text");
+                                    var arcText = d3.select(this.parentNode).select("text.child");
                                     // fade in the text element and recalculate positions
                                     arcText.transition().duration(transitionDuration)
                                         .attr("opacity", 1)
                                         .attr("transform", function () {
                                             return "rotate(" + computeTextRotation(e) + ")";
                                         })
+                                        .attr("x", function (d) {
+                                            return y(d.y);
+                                        });
+                                    var parentArcText = d3.select(this.parentNode).select("text.parent");
+                                    parentArcText.transition().duration(transitionDuration)
+                                        .attr("opacity", 1)
                                         .attr("x", function (d) {
                                             return y(d.y);
                                         });

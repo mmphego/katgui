@@ -15,10 +15,11 @@
             });
     }
 
-    function ApodWidgetCtrl($scope, $rootScope, $http, $log, NotifyService) {
+    function ApodWidgetCtrl($scope, $rootScope, $http, $log, $sce, NotifyService) {
 
         var vm = this;
         vm.imgUrl = "";
+        vm.youtubeVideo = false;
 
         vm.loadApod = function (date) {
             vm.loadingApod = true;
@@ -35,7 +36,12 @@
                     vm.selectedDateString = vm.dateToString(vm.selectedDate);
                     vm.errorText = result.data.error;
                 } else {
-                    vm.apodUrl = result.data.url;
+                    vm.youtubeVideo = result.data.url.indexOf('www.youtube.com') > -1;
+                    if (vm.youtubeVideo) {
+                        vm.apodUrl = $sce.trustAsResourceUrl(result.data.url);
+                    } else {
+                        vm.apodUrl = result.data.url;
+                    }
                     vm.apodTitle = result.data.title;
                     vm.apodDescription = result.data.explanation;
                     vm.errorText = null;

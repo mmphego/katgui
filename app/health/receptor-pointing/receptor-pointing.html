@@ -1,7 +1,7 @@
 <div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative; overflow: hidden"
      ng-class="{'connection-lost-bg':vm.connectionLost}">
 
-    <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 8px;">
+    <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 120px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'pointing-menu-content')">
             <md-icon md-menu-origin class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
         </md-button>
@@ -49,38 +49,21 @@
         </md-menu-content>
     </md-menu>
 
-    <div flex layout="column" style="overflow: hidden">
-        <div layout="row" layout-align="center center" style="overflow: visible; height: 90px;"
-             ng-show="vm.showReceptorStates">
+    <div flex layout="column" style="overflow: hidden; margin-top: 8px;">
+        <div style="height: 90px; margin-bottom: 12px" ng-show="vm.showReceptorStates">
             <div ng-repeat="receptor in vm.receptorsData | filter:{'skyPlot':false} track by $index"
                  class="{{receptor.name + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
-                 layout="column" layout-align="start center" ng-click="vm.toggleHorizonMask(receptor)"
-                 title="{{'Click to toggle the horizon mask for ' + receptor.name}}" style="overflow: visible"
-                ng-mouseenter="receptor.showDetails = true" ng-mouseleave="receptor.showDetails = false">
+                 ng-click="vm.toggleHorizonMask(receptor)" title="{{'Click to toggle the horizon mask for ' + receptor.name}}"
+                 style="overflow: visible; display: inline-block" ng-class="{'border-black-2px': receptor.showHorizonMask}"
+                 ng-mouseenter="vm.receptorHoverName=receptor.name" ng-mouseleave="vm.receptorHoverName=''">
                 <div class="receptor-legend-item-text">{{receptor.name}}</div>
-                <div class="receptor-legend-item-text" ng-show="!vm.sensorValues[receptor.name + '_windstow_active'].value">{{vm.sensorValues[receptor.name + '_mode'].value}}</div>
-                <div class="receptor-legend-item-text" ng-show="vm.sensorValues[receptor.name + '_windstow_active'].value">WINDSTOW</div>
-                <div style="width: 100%; text-align: center;"
-                      class="inhibited-item receptor-legend-item-text" ng-show="vm.sensorValues[receptor.name + '_inhibited'].value">INHIBIT</div>
+                <span ng-show="vm.sensorValues[receptor.name + '_mode'].value === 'POINT'" class="pointing-showing">P</span>
                 <span ng-show="vm.sensorValues[receptor.name + '_lock'].value" class="fa fa-asterisk on-target-span"
                       title="AP on Target"></span>
-                <span ng-show="receptor.showHorizonMask" class="fa fa-area-chart horizon-mask-showing"
-                      title="Showing Horizon Mask"></span>
-                <div class="md-whiteframe-z3 receptor-pointing-tooltip-top" ng-show="receptor.showDetails"
-                     style="top: 68px; left: -105px; min-width: 268px"
-                     layout="column" layout-align="start">
-                    <span style="width: 100%; text-align: center"><b>{{receptor.name}}</b></span>
-                    <span>azim: <b>{{vm.sensorValues[receptor.name + '_ap_actual_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[receptor.name + '_ap_actual_elev'].value | number:2}}</b></span>
-                    <span>azim: <b>{{vm.sensorValues[receptor.name + '_ap_requested_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[receptor.name + '_ap_requested_elev'].value | number:2}}</b> (requested)</span>
-                    <span>ra: <b>{{vm.sensorValues[receptor.name + '_pos_request_base_ra'].value | number:2}}</b>, dec: <b>{{vm.sensorValues[receptor.name + '_pos_request_base_dec'].value | number:2}}</b> (requested)</span>
-                    <span>Delta sky: <b>{{vm.sensorValues[receptor.name + '_pos_delta_sky'].value | number:2}}</b></span>
-                    <span>Delta azim: <b>{{vm.sensorValues[receptor.name + '_pos_delta_azim'].value | number:2}}</b>, Delta elev: <b>{{vm.sensorValues[receptor.name + '_pos_delta_elev'].value | number:2}}</b></span>
-                    <span>Target: <b>{{vm.sensorValues[receptor.name + '_target'].value}}</b></span>
-                    <span>Lock: <b>{{vm.sensorValues[receptor.name + '_lock'].value}}</b></span>
-                    <span>Mode: <b>{{vm.sensorValues[receptor.name + '_mode'].value}}</b></span>
-                    <span>Inhibited: <b>{{vm.sensorValues[receptor.name + '_inhibited'].value}}</b></span>
-                    <span>Windstow Active: <b>{{vm.sensorValues[receptor.name + '_windstow_active'].value}}</b></span>
-                </div>
+                <span ng-show="vm.sensorValues[receptor.name + '_inhibited'].value" class="fa fa-ban inhibited-showing"
+                      title="Inhibited"></span>
+                <span ng-show="vm.sensorValues[receptor.name + '_mode'].value === 'STOW'" class="fa fa-dot-circle-o stow-showing"
+                      title="Stowed"></span>
             </div>
         </div>
         <receptor-pointing-equatorial ng-if="vm.useEquatorial" flex style="overflow: hidden"
@@ -90,7 +73,7 @@
     </div>
 
     <div ng-init="vm.showSkyPlotOptions = false" class="md-whiteframe-z3 sky-plot-options-containter" layout="column"
-         style="margin-bottom: 8px; position: absolute; left: 8px; top: 8px;">
+         style="margin-bottom: 8px; position: absolute; left: 6px; bottom: 0;">
         <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium">
             <span flex>Sky Plot Options</span>
             <md-button title="Clear Sky Plot" class="md-icon-button inline-action-button" style="margin: 0"
@@ -117,5 +100,21 @@
                 Clear Sky Plot
             </md-button>
         </div>
+    </div>
+    <div class="md-whiteframe-z3 receptor-pointing-tooltip-top" ng-show="vm.receptorHoverName.length > 0"
+         style="top: 120px; left: 8px; min-width: 268px"
+         layout="column" layout-align="start">
+        <span ng-if="vm.receptorHoverName.length > 0" class="{{vm.receptorHoverName+ '_actual'}}" style="width: 100%; text-align: center"><b>{{vm.receptorHoverName}}</b></span>
+        <span>azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_ap_actual_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_ap_actual_elev'].value | number:2}}</b></span>
+        <span>azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_ap_requested_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_ap_requested_elev'].value | number:2}}</b> (requested)</span>
+        <span>ra: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_base_ra'].value | number:2}}</b>, dec: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_base_dec'].value | number:2}}</b> (requested)</span>
+        <span>Delta sky: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_sky'].value | number:2}}</b></span>
+        <span>Delta azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_azim'].value | number:2}}</b>, Delta elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_elev'].value | number:2}}</b></span>
+        <span>Target: <b>{{vm.sensorValues[vm.receptorHoverName + '_target'].value}}</b></span>
+        <span>Lock: <b>{{vm.sensorValues[vm.receptorHoverName + '_lock'].value}}</b></span>
+        <span>Mode: <b>{{vm.sensorValues[vm.receptorHoverName + '_mode'].value}}</b></span>
+        <span>Inhibited: <b>{{vm.sensorValues[vm.receptorHoverName + '_inhibited'].value}}</b></span>
+        <span>Windstow Active: <b>{{vm.sensorValues[vm.receptorHoverName + '_windstow_active'].value}}</b></span>
+        <span>Subarray: <b>{{vm.sensorValues[vm.receptorHoverName + '_sub_nr'].value}}</b></span>
     </div>
 </div>

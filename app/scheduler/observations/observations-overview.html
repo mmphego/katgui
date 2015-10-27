@@ -22,10 +22,10 @@
     <div flex layout="row" style="margin-top: 8px">
         <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 8px;">
             <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
-                 layout="row" layout-align="start" flex
+                 layout="row" flex
                  style="min-width: 650px;" md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
 
-                <div class="" style="margin-left: 0; margin-top: 8px;" layout="column" layout-align="start" flex>
+                <div class="" style="margin-left: 0; margin-top: 8px;" layout="column" flex>
 
                     <md-toolbar
                         ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"

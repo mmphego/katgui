@@ -1,5 +1,5 @@
 (function () {
-    //
+    "use strict";
 
     angular.module('katGui', ['ngMaterial',
         'ui.bootstrap', 'ui.utils', 'ui.router',

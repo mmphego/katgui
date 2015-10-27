@@ -7,7 +7,7 @@
 
         var vm = this;
         vm.receptorHealthTree = ConfigService.receptorHealthTree;
-        vm.receptorList = ConfigService.receptorList;
+        vm.receptorList = StatusService.receptors;
         vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst'];
 
         if ($localStorage['receptorHealthDisplayMapType']) {

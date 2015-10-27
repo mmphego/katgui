@@ -38,7 +38,6 @@ angular.module('katGui.d3', ['katGui.util'])
 
                     //remove because we are redrawing the entire svg
                     d3.select('svg').remove();
-
                     width = element[0].clientWidth;
                     height = element[0].clientHeight;
                     scale = height * 0.4;
@@ -52,8 +51,8 @@ angular.module('katGui.d3', ['katGui.util'])
                         .scale(scale)
                         .clipAngle(130)
                         .rotate([0, -90])
-                        .translate([width / 2 + .5, height / 2 + .5])
-                        .precision(.01);
+                        .translate([width / 2 + 0.5, height / 2 + 0.5])
+                        .precision(0.01);
 
                     path = d3.geo.path()
                         .projection(projection);
@@ -105,6 +104,10 @@ angular.module('katGui.d3', ['katGui.util'])
                 }
 
                 function drawValues() {
+                    if (width === 0 || height === 0) {
+                        drawSvg();
+                    }
+
                     svg.selectAll('.wind-direction').remove();
                     svg.selectAll('.wind-direction-path').remove();
                     svg.append("circle")
