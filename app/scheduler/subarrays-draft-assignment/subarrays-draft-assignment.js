@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl($rootScope, ObsSchedService, $scope, $state, $stateParams, $mdDialog, $log) {
+    function SubArraysCtrl($rootScope, ObsSchedService, $scope, $state, $stateParams, $mdDialog, $log, NotifyService) {
 
         var vm = this;
         vm.checkCASubarrays = function () {

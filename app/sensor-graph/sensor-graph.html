@@ -114,21 +114,29 @@
                     <md-option value="d">Day(s)</md-option>
                 </md-select>
             </div>
+            <div layout="row">
+                <md-autocomplete style="min-width: 310px;"
+                    md-no-cache="true"
+                    ng-disabled="vm.waitingForSearchResult"
+                    md-search-text="vm.searchText"
+                    md-items="item in vm.querySearch(vm.searchText)"
+                    md-selected-item="vm.selectedSearchItem"
+                    placeholder="Type a sensor regular expression. E.g. wind"
+                    md-autofocus
+                    ng-keydown="vm.autoCompleteKeyPressed($event)"
+                    enter-pressed="vm.findSensorNames(vm.searchText)"
+                    flex>
+                    <md-item-template>
+                        <span md-highlight-text="searchText">{{item}}</span>
+                    </md-item-template>
+                </md-autocomplete>
+                <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}"
+                    ng-click="vm.findSensorNames(vm.searchText)"
+                    style="max-width: 28px; min-width: 28px; margin: 0 4px">
+                    <span class="fa fa-caret-right"></span>
+                </md-button>
+            </div>
 
-            <md-autocomplete style="min-width: 350px;"
-                md-no-cache="true"
-                ng-disabled="vm.waitingForSearchResult"
-                md-search-text="vm.searchText"
-                md-items="item in vm.querySearch(vm.searchText)"
-                md-selected-item="vm.selectedSearchItem"
-                placeholder="Type a sensor regular expression. E.g. wind"
-                md-autofocus
-                ng-keydown="vm.autoCompleteKeyPressed($event)"
-                enter-pressed="vm.findSensorNames(vm.searchText)">
-                <md-item-template>
-                    <span md-highlight-text="searchText">{{item}}</span>
-                </md-item-template>
-            </md-autocomplete>
             <div style="min-height: 5px; width: 100%; padding: 4px 8px;" ng-show="!vm.waitingForSearchResult"></div>
             <md-progress-linear style="padding: 4px 8px;" ng-show="vm.waitingForSearchResult" class="md-primary" md-mode="indeterminate"></md-progress-linear>
 
