@@ -23,17 +23,6 @@
                     children: statusTree.children
                 };
             });
-            //demo test data start
-            for (var i = 1; i < 60; i++) {
-                var testReceptorName = 't0' + i;
-                api.receptors.push(testReceptorName);
-                api.statusData[testReceptorName] = {
-                    name: testReceptorName,
-                    sensor: statusTree.sensor.replace('.', '_').replace('-', '_'),
-                    children: statusTree.children
-                };
-            }
-            //demo test data end
         };
 
         api.setTopStatusTrees = function (statusTrees) {
@@ -111,7 +100,7 @@
                 }
                 statusClassResult += d.dx > 300 ? " child-big-text" : " child";
                 return statusClassResult;
-            
+
         };
 
         function applyValueToSensor(node, sensorName, value, rootName) {

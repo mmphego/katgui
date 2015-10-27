@@ -88,18 +88,6 @@
                     }
                     receptorSensorsRegex += '|katpool_resources_in_maintenance';
                     SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 10);
-
-                    //fake data for demos start
-                    for (i = 1; i < 10; i++) {
-                        vm.receptorsData.push({name: 't0' + i, subarray: 'free', sensors_ok: {}, mode: {value: 'STOP'}});
-                    }
-                    for (i = 1; i < 30; i++) {
-                        vm.receptorsData.push({name: 't0' + (i + 10), subarray: '1', sensors_ok: {}, mode: {value: 'STOP'}});
-                    }
-                    for (i = 1; i < 20; i++) {
-                        vm.receptorsData.push({name: 't0' + (i + 40), subarray: '3', sensors_ok: {}, mode: {value: 'STOP'}});
-                    }
-                    //fake data for demos end
                 });
         };
         vm.connectListeners();

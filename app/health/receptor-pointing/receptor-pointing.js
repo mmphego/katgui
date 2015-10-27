@@ -90,12 +90,6 @@
                         vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false,
                             subarrayColor: "#d7d7d7"});
                     });
-                    //fake data for demos start
-                    for (var i = 1; i < 60; i++) {
-                        vm.receptorsData.push({name: 't0' + i, showHorizonMask: false, skyPlot: false,
-                        subarrayColor: "#d7d7d7"});
-                    }
-                    //fake data for demos end
                     sensorsRegexToConnect += '|subarray_._pool_resources';
                     SensorsService.setSensorStrategies(sensorsRegexToConnect, 'event-rate', 1, 10);
                 });
