@@ -469,3 +469,55 @@
     max-width: 28px;
     min-width: 28px;
 }
+
+.receptor-graphic-svg {
+    display: -webkit-inline-box;
+    max-width: 270px;
+    max-height: 270px;
+    min-width: 310px;
+    min-height: 310px;
+    svg {
+        // transform: scale(0.5) translate(-450px, -670px);
+        pointer-events: none;
+        transform: translate(-80px, -40px);
+        max-width: 440px;
+        max-height: 440px;
+        min-width: 440px;
+        min-height: 440px;
+    }
+}
+
+.receptor-graphic-sensors-nominal {
+    color: #4CAF50;
+    path {
+        stroke: #4CAF50 !important; //green
+    }
+    .fill-path-status {
+        path {
+            fill: rgba(76, 175, 80, 0.1) !important;
+        }
+    }
+}
+
+.receptor-graphic-sensors-error {
+    color: #F44336;
+    path {
+        stroke: #F44336 !important; //red
+    }
+    .fill-path-status {
+        path {
+            fill: rgba(244, 67, 54, 0.1) !important;
+        }
+    }
+}
+
+.receptor-graphic-stow {
+    path {
+        transform: translate(-2600px, 10200px) rotate(-48deg);
+    }
+    .fill-path-status {
+        path {
+            transform: translate(6000px, 0px) rotate(0deg);
+        }
+    }
+}
