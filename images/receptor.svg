@@ -22,7 +22,30 @@
        <path fill="none" stroke="rgb(0,0,0)" stroke-width="81" stroke-linejoin="bevel" d="M 6688,17494 L 3232,17494 4096,12206 5824,12206 6688,17494 Z"/>
       </g>
      </g>
-     <g class="com.sun.star.drawing.LineShape">
+     <g class="com.sun.star.drawing.LineShape fill-path-status">
+      <g id="id30" fill="none" stroke="rgb(0,0,0)" >
+       <path d="M 4302,14970 L 4295,15023"/>
+       <path d="M 4288,15075 L 4281,15128"/>
+       <path d="M 4274,15181 L 4267,15233"/>
+       <path d="M 4260,15286 L 4253,15338"/>
+       <path d="M 4246,15391 L 4239,15444"/>
+       <path d="M 4232,15496 L 4225,15549"/>
+       <path d="M 4218,15602 L 4211,15654"/>
+       <path d="M 4204,15707 L 4197,15759"/>
+       <path d="M 4190,15812 L 4183,15865"/>
+       <path d="M 4176,15917 L 4169,15970"/>
+       <path d="M 4162,16023 L 4155,16075"/>
+       <path d="M 4148,16128 L 4141,16180"/>
+       <path d="M 4134,16233 L 4127,16286"/>
+       <path d="M 4120,16338 L 4113,16391"/>
+       <path d="M 4106,16444 L 4099,16496"/>
+       <path d="M 4091,16549 L 4084,16601"/>
+       <path d="M 4077,16654 L 4070,16707"/>
+       <path d="M 4063,16759 L 4056,16812"/>
+       <path d="M 4049,16865 L 4048,16875"/>
+      </g>
+     </g>
+     <g class="com.sun.star.drawing.LineShape fill-path-status">
       <g id="id5" fill="none" stroke="rgb(0,0,0)">
        <path d="M 5621,15018 L 5628,15071"/>
        <path d="M 5635,15123 L 5642,15176"/>
@@ -893,7 +916,7 @@
        </g>
       </g>
      </g>
-     <g class="com.sun.star.drawing.LineShape">
+     <g class="com.sun.star.drawing.LineShape fill-path-status">
       <g id="id29" fill="none" stroke="rgb(0,0,0)" >
        <path d="M 4175,18399 L 4175,18452"/>
        <path d="M 4175,18505 L 4175,18558"/>
@@ -938,30 +961,7 @@
        <path d="M 4175,22646 L 4175,22699"/>
       </g>
      </g>
-     <g class="com.sun.star.drawing.LineShape">
-      <g id="id30" fill="none" stroke="rgb(0,0,0)" >
-       <path d="M 4302,14970 L 4295,15023"/>
-       <path d="M 4288,15075 L 4281,15128"/>
-       <path d="M 4274,15181 L 4267,15233"/>
-       <path d="M 4260,15286 L 4253,15338"/>
-       <path d="M 4246,15391 L 4239,15444"/>
-       <path d="M 4232,15496 L 4225,15549"/>
-       <path d="M 4218,15602 L 4211,15654"/>
-       <path d="M 4204,15707 L 4197,15759"/>
-       <path d="M 4190,15812 L 4183,15865"/>
-       <path d="M 4176,15917 L 4169,15970"/>
-       <path d="M 4162,16023 L 4155,16075"/>
-       <path d="M 4148,16128 L 4141,16180"/>
-       <path d="M 4134,16233 L 4127,16286"/>
-       <path d="M 4120,16338 L 4113,16391"/>
-       <path d="M 4106,16444 L 4099,16496"/>
-       <path d="M 4091,16549 L 4084,16601"/>
-       <path d="M 4077,16654 L 4070,16707"/>
-       <path d="M 4063,16759 L 4056,16812"/>
-       <path d="M 4049,16865 L 4048,16875"/>
-      </g>
-     </g>
-     <g class="com.sun.star.drawing.LineShape">
+     <g class="com.sun.star.drawing.LineShape fill-path-status">
       <g id="id31" fill="none" stroke="rgb(0,0,0)" >
        <path d="M 5675,18388 L 5675,18441"/>
        <path d="M 5675,18494 L 5675,18547"/>
