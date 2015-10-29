@@ -6,9 +6,28 @@
         style="position: absolute; top: -4px; right: 0;">
      Sort By Subarrays
     </md-checkbox>
+    <md-checkbox md-theme="{{themePrimaryButtons}}" class="md-primary" ng-model="vm.showGraphics"
+        ng-mouseenter="vm.showGraphicsHover = true" ng-mouseleave="vm.showGraphicsHover = false"
+        ng-class="{'opacity-50': !vm.showGraphicsHover}"
+        style="position: absolute; top: -4px; right: 160px;">
+     Show Graphics
+    </md-checkbox>
     <div flex style="padding: 16px">
         <div ng-show="!vm.sortBySubarrays" layout="column" style="text-align: center">
-            <div flex style="margin: 4px">
+            <div ng-show="vm.showGraphics">
+                <div ng-repeat="receptor in vm.receptorsData" class="md-whiteframe-z1" style="display: -webkit-inline-box; position: relative; margin: 2px;"
+                    ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW'}">
+                    <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
+                    <h2 style="position: absolute; top: 8px; right: 80px; margin: 0">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
+                    <div style="position: absolute; bottom: 8px; right: 2px; color: #000; font-size: 18px; text-align: end"
+                        layout="column">
+                        <span>{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
+                        <span>{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
+                        <span><b>{{receptor.inhibited.value? 'INHIBITED' : ''}}</b></span>
+                    </div>
+                </div>
+            </div>
+            <div ng-show="!vm.showGraphics" flex style="margin: 4px">
                 <div ng-repeat="receptor in vm.receptorsData track by $index"
                      class="receptor-status-block md-whiteframe-z1 unknown-item"
                      ng-class="receptor.sensors_ok ? receptor.sensors_ok.status + '-item' : 'unknown-item'">
@@ -51,8 +70,20 @@
                             subarray.config_label : 'None'}}</b></span>
                     </div>
                 </md-toolbar>
-
-                <div flex style="padding: 4px; text-align: center" ng-class="{'maintenance-bg':subarray.maintenance}">
+                <div ng-show="vm.showGraphics">
+                    <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index" class="md-whiteframe-z1" style="display: -webkit-inline-box; position: relative; margin: 2px;"
+                        ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW'}">
+                        <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
+                        <h2 style="position: absolute; top: 8px; right: 80px; margin: 0">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
+                        <div style="position: absolute; bottom: 8px; right: 2px; color: #000; font-size: 18px; text-align: end"
+                            layout="column">
+                            <span>{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
+                            <span>{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
+                            <span><b>{{receptor.inhibited.value? 'INHIBITED' : ''}}</b></span>
+                        </div>
+                    </div>
+                </div>
+                <div ng-show="!vm.showGraphics" flex style="padding: 4px; text-align: center" ng-class="{'maintenance-bg':subarray.maintenance}">
                     <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index"
                          class="receptor-status-block md-whiteframe-z1"
                          ng-class="vm.getReceptorBlockClass(receptor)">
