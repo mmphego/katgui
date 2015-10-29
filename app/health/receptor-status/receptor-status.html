@@ -16,14 +16,13 @@
         <div ng-show="!vm.sortBySubarrays" layout="column" style="text-align: center">
             <div ng-show="vm.showGraphics">
                 <div ng-repeat="receptor in vm.receptorsData" class="md-whiteframe-z1" style="display: -webkit-inline-box; position: relative; margin: 2px;"
-                    ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW'}">
+                    ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW', 'receptor-graphic-stop': receptor.mode.value === 'STOP'}">
                     <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
-                    <h2 style="position: absolute; top: 8px; right: 80px; margin: 0">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
-                    <div style="position: absolute; bottom: 8px; right: 2px; color: #000; font-size: 18px; text-align: end"
-                        layout="column">
-                        <span>{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
-                        <span>{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
-                        <span><b>{{receptor.inhibited.value? 'INHIBITED' : ''}}</b></span>
+                    <h2 class="receptor-graphic-name">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
+                    <div style="" class="receptor-graphic-labels" layout="column">
+                        <span ng-class="{'stop-item': receptor.mode.value === 'STOP'}">{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
+                        <span class="windstow-item">{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
+                        <span class="inhibited-item">{{receptor.inhibited.value? 'INHIBITED' : ''}}</span>
                     </div>
                 </div>
             </div>
@@ -71,15 +70,14 @@
                     </div>
                 </md-toolbar>
                 <div ng-show="vm.showGraphics">
-                    <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index" class="md-whiteframe-z1" style="display: -webkit-inline-box; position: relative; margin: 2px;"
-                        ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW'}">
+                    <div ng-repeat="receptor in vm.receptorsData" class="md-whiteframe-z1" style="display: -webkit-inline-box; position: relative; margin: 2px;"
+                        ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW', 'receptor-graphic-stop': receptor.mode.value === 'STOP'}">
                         <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
-                        <h2 style="position: absolute; top: 8px; right: 80px; margin: 0">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
-                        <div style="position: absolute; bottom: 8px; right: 2px; color: #000; font-size: 18px; text-align: end"
-                            layout="column">
-                            <span>{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
-                            <span>{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
-                            <span><b>{{receptor.inhibited.value? 'INHIBITED' : ''}}</b></span>
+                        <h2 class="receptor-graphic-name">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
+                        <div style="" class="receptor-graphic-labels" layout="column">
+                            <span ng-class="{'stop-item': receptor.mode.value === 'STOP'}">{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
+                            <span class="windstow-item">{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
+                            <span class="inhibited-item">{{receptor.inhibited.value? 'INHIBITED' : ''}}</span>
                         </div>
                     </div>
                 </div>
