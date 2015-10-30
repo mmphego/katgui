@@ -1,28 +1,13 @@
 (function () {
 
     angular.module('katGui.health')
-        .controller('ReceptorHealthCtrl', ReceptorHealthCtrl);
+        .controller('SubarrayHealthCtrl', SubarrayHealthCtrl);
 
-    function ReceptorHealthCtrl(ConfigService, StatusService, $localStorage) {
+    function SubarrayHealthCtrl(ConfigService, StatusService, $localStorage, $rootScope) {
 
         var vm = this;
         vm.receptorHealthTree = ConfigService.receptorHealthTree;
         vm.receptorList = StatusService.receptors;
-        vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst', 'Force Layout'];
-
-        if ($localStorage['receptorHealthDisplayMapType']) {
-            vm.mapType = $localStorage['receptorHealthDisplayMapType'];
-        }
-
-        if ($localStorage['receptorHealthDisplaySize']) {
-            vm.treeChartSize = JSON.parse($localStorage['receptorHealthDisplaySize']);
-        } else {
-            vm.treeChartSize = {width: 480, height: 480};
-        }
-
-        if (!vm.mapType) {
-            vm.mapType = 'Partition';
-        }
 
         vm.populateTree = function (parent, receptor) {
             if (parent.children && parent.children.length > 0) {
@@ -39,17 +24,9 @@
             }
         };
 
-        vm.chartSizeChanged = function () {
-            //this function is implemented in receptor-health-items
-            //this works because receptor-health-items inherits scope
-            $localStorage['receptorHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);
-            vm.redrawCharts();
-        };
-
-        vm.mapTypeChanged = function () {
-            $localStorage['receptorHealthDisplayMapType'] = vm.mapType;
-            vm.redrawCharts();
-        };
+        vm.redrawCharts = function () {
+            $rootScope.$emit('redrawChartMessage', [{id: 1, pool_resources: 'm044,m022'}, {id: 2, pool_resources: 'm011,m033'}, {id: 3, pool_resources: 'm055'}]);
+        }
 
         ConfigService.getStatusTreeForReceptor()
             .then(function (result) {

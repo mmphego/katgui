@@ -10,6 +10,7 @@ angular.module('katGui.d3')
             '<receptor-health-partition-map class="treemap-container" receptor="receptor" ng-switch-when="Partition"></receptor-health-partition-map>' +
             '<receptor-health-icicle-map class="treemap-container" receptor="receptor" ng-switch-when="Icicle"></receptor-health-icicle-map>' +
             '<receptor-health-sunburst-map class="treemap-container" receptor="receptor" ng-switch-when="Sunburst"></receptor-health-sunburst-map>' +
+            '<receptor-health-force class="treemap-container" receptor="receptor" ng-switch-when="Force Layout"></receptor-health-force>' +
             '</div>',
             link: function (scope) {
 
