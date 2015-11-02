@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('subarrayHealthMap', function (StatusService, $interval, $localStorage, $rootScope, d3Util) {
+    .directive('subarrayHealthMap', function (SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util) {
         return {
             restrict: 'E',
             scope: {},
@@ -12,6 +12,7 @@ angular.module('katGui.d3')
                 var svg;
 
                 scope.chartSize = {width: 0, height: 0};
+                scope.lastDrawnSize = scope.chartSize;
 
                 var unbindResize = scope.$watch(function () {
                     return element.parent()[0].clientHeight + ', ' + element.parent()[0].clientWidth;
@@ -24,11 +25,8 @@ angular.module('katGui.d3')
                                 scope.redrawTimeout = null;
                                 if (Math.abs(scope.lastDrawnSize.width - element.parent()[0].clientWidth) > 20 ||
                                     Math.abs(scope.lastDrawnSize.height - element.parent()[0].clientHeight) > 20) {
-                                    if (svg) {
-                                        d3.selectAll("svg").remove();
-                                    }
                                     scope.chartSize = {width: element.parent()[0].clientWidth, height: element.parent()[0].clientHeight};
-                                    scope.redraw(scope.subarrays);
+                                    scope.redraw(true);
                                 }
                             }, 750);
                         }
@@ -36,10 +34,7 @@ angular.module('katGui.d3')
                 });
 
                 $rootScope.$on('redrawChartMessage', function (event, message) {
-                    if (svg) {
-                        d3.selectAll("svg").remove();
-                    }
-                    scope.redraw(message);
+                    scope.redraw();
                 });
                 var width, height, radius;
 
@@ -71,7 +66,7 @@ angular.module('katGui.d3')
                     throw new Error("Unable to copy obj! Its type isn't supported.");
                 }
 
-                scope.redraw = function (subarrays) {
+                scope.redraw = function (force) {
                     width = scope.chartSize.width - 10;
                     height = scope.chartSize.height - 10;
                     if (width < 0) {
@@ -82,7 +77,10 @@ angular.module('katGui.d3')
                     }
                     radius = height;
 
-                    if (Object.keys(StatusService.statusData).length > 0 && subarrays) {
+                    if (force || !svg) {
+                        if (svg) {
+                            d3.selectAll("svg").remove();
+                        }
 
                         var zoom = d3.behavior.zoom()
                             .scaleExtent([0.1, 10])
@@ -97,112 +95,135 @@ angular.module('katGui.d3')
                         svg = container.append("g");
 
                         scope.lastDrawnSize = scope.chartSize;
-                        scope.subarrays = subarrays;
-                        root = {children: [], name: 'root'};
-                        subarrays.forEach(function (subarray) {
-                            var children = [];
-                            subarray.pool_resources.split(',').forEach(function (resource) {
-                                children.push(clone(StatusService.statusData[resource], resource));
-                            });
-                            root.children.push({children: children, name: 'Subarray_' + subarray.id, sensor: ''});
-                            svg.append("g")
-                                .attr("class", "subarray_" + subarray.id);
-                        });
+                    }
 
+                    scope.subarrayKeys = Object.keys(SensorsService.subarraySensorValues);
+                    var previousRoot = root;
+                    root = {children: [], name: 'root'};
+                    scope.subarrayKeys.forEach(function (subarrayKey) {
+                        var children = [];
+                        var subarray = SensorsService.subarraySensorValues[subarrayKey];
+                        var resourceList = subarray.pool_resources.value.split(',');
+                        if (resourceList.length === 1 && resourceList[0] === "") {
+                            resourceList = [];
+                        }
+                        resourceList.forEach(function (resource) {
+                            children.push(clone(StatusService.statusData[resource], resource));
+                        });
+                        root.children.push({
+                            children: children,
+                            sensor: '',
+                            name: 'Subarray_' + subarray.id,
+                            pool_resources: subarray.pool_resources.value
+                        });
+                        svg.append("g").attr("class", "subarray_" + subarray.id);
+                    });
+                    var updateForceLayout = false;
+                    if (previousRoot && root.children.length > 0 && previousRoot.children.length > 0) {
+                        for (var i = 0; i < root.children.length; i++) {
+                            if (previousRoot.children.length !== root.children.length ||
+                                previousRoot.children[i].pool_resources !== root.children[i].pool_resources) {
+                                updateForceLayout = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        updateForceLayout = true;
+                    }
+                    if (updateForceLayout) {
                         update();
                     }
                 };
 
                 function update() {
-                        var graphArea = svg;
+                    if (!root.children || root.children.length === 0) {
+                        return;
+                    }
+                    var graphArea = svg;
 
-                        var nodes = flatten(root);
-                        nodes.pop();//root
-                        var links = d3.layout.tree().links(nodes);
+                    var nodes = flatten(root);
+                    nodes.pop();//root
+                    var links = d3.layout.tree().links(nodes);
+                    graphArea.selectAll("parent").remove();
+                    // Update the links…
+                    var link = graphArea.selectAll(".link").data(links, function(d) {
+                        return d.target.id;
+                    });
+                    link.exit().remove();
+                    link.enter().append("line")
+                      .attr("class", "link");
 
-                        // Update the links…
-                        var link = graphArea.selectAll(".link").data(links, function(d) {
-                            return d.target.id;
+                    // Update the nodes…
+                    var node = graphArea.selectAll('g').data(nodes);
+                    node.exit().remove();
+
+                    var force = d3.layout.force()
+                        .size([width, height])
+                        .on("tick", function () {
+                            link.attr("x1", function(d) { return d.source.x; })
+                              .attr("y1", function(d) { return d.source.y; })
+                              .attr("x2", function(d) { return d.target.x; })
+                              .attr("y2", function(d) { return d.target.y; });
+
+                              node.attr("transform", function(d, i) {
+                                    return "translate(" + d.x + "," + d.y + ")";
+                                });
                         });
-                        link.exit().remove();
-                        link.enter().append("line")
-                          .attr("class", "link");
 
-                        // Update the nodes…
-                        var node = graphArea.selectAll('g').data(nodes);
-                        node.exit().remove();
+                    force.nodes(nodes)
+                        .links(links)
+                        .charge(-300)
+                        .start();
 
-                        var force = d3.layout.force()
-                            .size([width, height])
-                            .on("tick", function () {
-                                link.attr("x1", function(d) { return d.source.x; })
-                                  .attr("y1", function(d) { return d.source.y; })
-                                  .attr("x2", function(d) { return d.target.x; })
-                                  .attr("y2", function(d) { return d.target.y; });
+                    // Enter any new nodes.
+                    var gEnter = node.enter().append("g").attr("class", "parent");
 
-                                  node.attr("transform", function(d, i) {
-                                        return "translate(" + d.x + "," + d.y + ")";
-                                    });
-                            });
+                    gEnter.append("circle")
+                        .attr("class", function (d) {
+                            var classString = "";
+                            var fullSensorName = d.parentName + '_' + d.sensor;
+                            if (StatusService.sensorValues[fullSensorName]) {
+                                classString += StatusService.sensorValues[fullSensorName].status + '-child';
+                            } else {
+                                classString += 'no-fill';
+                            }
+                            if (d.name.startsWith('Subarray')) {
+                                classString += " subarray-node";
+                            }
+                            classString += " " + fullSensorName;
+                            return classString;
+                        })
+                        .attr("r", function(d) {
+                          return d.name.startsWith('Subarray') ? 40 : 15;
+                        })
+                        .style("cursor", "default")
+                        .call(function (d) {
+                            d3Util.applyTooltipValues(d, tooltip, d.parentName + '_' + d.sensor);
+                        });
 
-                        force.nodes(nodes)
-                            .links(links)
-                            .charge(-300)
-                            .start();
+                    gEnter.append("text")
+                        .style("font-size", function (d) {
+                            return d.name.startsWith('Subarray') ? 20 : 10;
+                        })
+                        .style("font-weight", function (d) {
+                            return d.name.startsWith('Subarray') ? 800 : 400;
+                        })
+                        .attr("class", "node-text")
+                        .attr("dy", ".35em")
+                        // .style("display", function (d) {
+                        //     if (StatusService.sensorValues[d.parentName + '_' + d.sensor] &&
+                        //         StatusService.sensorValues[d.parentName + '_' + d.sensor].status === 'nominal') {
+                        //             return 'none';
+                        //     } else {
+                        //         return null;
+                        //     }
+                        // })
+                        .text(function(d) {
+                            return d.name;
+                        });
 
-                            // .charge(function(d){
-                            //     var charge = -500;
-                            //     if (d.index === 0) charge = 10 * charge;
-                            //     return charge;
-                            // });
-
-                        // Enter any new nodes.
-                        var gEnter = node.enter().append("g");
-
-                        gEnter.append("circle")
-                            .attr("class", function (d) {
-                                var classString = "";
-                                var fullSensorName = d.parentName + '_' + d.sensor;
-                                if (StatusService.sensorValues[fullSensorName]) {
-                                    classString += StatusService.sensorValues[fullSensorName].status + '-child';
-                                } else {
-                                    classString += 'no-fill';
-                                }
-                                if (d.name.startsWith('Subarray')) {
-                                    classString += " subarray-node";
-                                }
-                                classString += " " + fullSensorName;
-                                return classString;
-                            })
-                            .attr("r", function(d) {
-                              return d.name.startsWith('Subarray') ? 40 : 15;
-                            })
-                            .style("cursor", "default")
-                            .call(function (d) {
-                                d3Util.applyTooltipValues(d, tooltip, d.parentName + '_' + d.sensor);
-                            });
-
-                        gEnter.append("text")
-                            .style("font-size", function (d) {
-                                return d.name.startsWith('Subarray') ? 20 : 10;
-                            })
-                            .style("font-weight", function (d) {
-                                return d.name.startsWith('Subarray') ? 800 : 400;
-                            })
-                            .attr("class", "node-text")
-                            .attr("dy", ".35em")
-                            // .style("display", function (d) {
-                            //     if (StatusService.sensorValues[d.parentName + '_' + d.sensor] &&
-                            //         StatusService.sensorValues[d.parentName + '_' + d.sensor].status === 'nominal') {
-                            //             return 'none';
-                            //     } else {
-                            //         return null;
-                            //     }
-                            // })
-                            .text(function(d) { return d.name; });
-
-                        graphArea.selectAll('subarray-node')
-                            .call(force.drag);
+                    graphArea.selectAll('subarray-node')
+                        .call(force.drag);
                 }
 
                 // Toggle children on click.
@@ -221,25 +242,29 @@ angular.module('katGui.d3')
 
                 // Returns a list of all nodes under the root.
                 function flatten(root) {
-                  var nodes = [], i = 0;
+                    var nodes = [], i = 0;
 
-                  function recurse(node) {
-                    if (node.children) {
-                        node.children.forEach(recurse);
+                    function recurse(node) {
+                        if (!node) {
+                            return;
+                        }
+                        if (node.children) {
+                            node.children.forEach(recurse);
+                        }
+                        if (!node.id) {
+                            node.id = ++i;
+                        }
+                        nodes.push(node);
                     }
-                    if (!node.id) {
-                        node.id = ++i;
-                    }
-                    nodes.push(node);
-                  }
 
-                  recurse(root);
-                  return nodes;
+                    recurse(root);
+                    return nodes;
                 }
 
                 function zoomed() {
                     svg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
                 }
+                scope.redraw(true);
             }
         };
     });
