@@ -71,7 +71,7 @@
                     </span>
                 </div>
             </md-toolbar>
-            <md-virtual-repeat-container style="padding: 8px 0; overflow: auto; height:1200px;" class="md-whiteframe-z1" md-auto-shrink>
+            <md-virtual-repeat-container style="padding: 8px 0; overflow: auto; min-height:1200px;max-height:1200px;" class="md-whiteframe-z1">
                 <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)"
                      class="resource-sensor-item" md-item-size="20"
                     ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
