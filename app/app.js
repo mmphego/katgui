@@ -378,6 +378,11 @@
             templateUrl: 'app/health/receptor-health/receptor-health.html',
             title: 'Receptor Health'
         });
+        $stateProvider.state('subarrayHealth', {
+            url: '/subarray-health',
+            templateUrl: 'app/health/subarray-health/subarray-health.html',
+            title: 'Subarray Health (Experimental)'
+        });
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',

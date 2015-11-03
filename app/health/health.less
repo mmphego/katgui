@@ -521,3 +521,56 @@
         }
     }
 }
+
+.receptor-graphic-stop {
+    path {
+        transform: translate(14500px, 0px) rotate(60deg);
+    }
+    .fill-path-status {
+        path {
+            transform: translate(0px, 0px) rotate(0deg);
+        }
+    }
+}
+
+.receptor-graphic-name {
+    position: absolute;
+    top: 8px;
+    right: 80px;
+    margin: 0;
+    background: rgba(255,255,255,0.8);
+}
+
+.receptor-graphic-labels{
+    position: absolute;
+    bottom: 8px;
+    right: 2px;
+    color: #000;
+    font-size: 18px;
+    text-align: center;
+    span {
+        padding: 0px 4px;
+    }
+}
+
+
+.node {
+  cursor: pointer;
+  stroke: #3182bd;
+  stroke-width: 1.5px;
+}
+
+.node-text {
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+.link {
+  fill: none;
+  stroke: #d7d7d7;
+  stroke-width: 1.5px;
+}
+
+.no-fill {
+    fill: none;
+}
