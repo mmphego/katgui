@@ -116,7 +116,6 @@ angular.module('katGui.d3')
                             name: 'Subarray_' + subarray.id,
                             pool_resources: subarray.pool_resources.value
                         });
-                        svg.append("g").attr("class", "subarray_" + subarray.id);
                     });
                     var updateForceLayout = false;
                     if (previousRoot && root.children.length > 0 && previousRoot.children.length > 0) {
@@ -164,19 +163,26 @@ angular.module('katGui.d3')
                               .attr("y1", function(d) { return d.source.y; })
                               .attr("x2", function(d) { return d.target.x; })
                               .attr("y2", function(d) { return d.target.y; });
-
-                              node.attr("transform", function(d, i) {
+                            node.attr("transform", function(d, i) {
                                     return "translate(" + d.x + "," + d.y + ")";
-                                });
+                            });
                         });
 
                     force.nodes(nodes)
                         .links(links)
-                        .charge(-300)
+                        .charge(-500)
                         .start();
 
                     // Enter any new nodes.
-                    var gEnter = node.enter().append("g").attr("class", "parent");
+                    var gEnter = node.enter()
+                        .append("g")
+                        .attr("class", "parent");
+
+                        // .on("click", function (d) {
+                        //     if (!d.name.startsWith("Subarray_")) {
+                        //         click(d);
+                        //     }
+                        // });
 
                     gEnter.append("circle")
                         .attr("class", function (d) {
