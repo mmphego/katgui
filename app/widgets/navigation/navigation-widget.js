@@ -70,7 +70,7 @@
             name: 'Sub Health',
             textOffset: 10,
             state: 'subarrayHealth',
-            title: 'Subarray Health'
+            title: 'Subarray Health (Experimental)'
         }];
 
         vm.sensorsNavData = [{
