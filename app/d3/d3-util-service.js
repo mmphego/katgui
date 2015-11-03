@@ -99,7 +99,6 @@ angular.module('katGui.d3')
         };
 
         api.updateTooltipValues = function (d, tooltip, rootName) {
-            var fontSizeAfterZoom = 14 * (1/window.devicePixelRatio);
             var sensorValue;
             var pythonIdentifier = d.sensor.replace(/\./g, '_');
             if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
@@ -111,9 +110,8 @@ angular.module('katGui.d3')
                 sensorValue = d.sensorValue;
             }
             if (sensorValue) {
-                //to display readable tooltips, no matter the zoom level
                 tooltip.html(
-                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'>" +
+                    "<div style='font-size: 14px'>" +
                     "<div><b>" + sensorValue.name + "</b></div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
@@ -122,7 +120,7 @@ angular.module('katGui.d3')
                 );
             } else {
                 tooltip.html(
-                    "<div style='font-size: +"+ fontSizeAfterZoom +"px'>Error Reading Sensor Value</div>"
+                    "<div style='font-size: 14px'>Error Reading Sensor Value</div>"
                 );
             }
         };
