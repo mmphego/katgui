@@ -1,7 +1,7 @@
 (function () {
 
     angular.module('katGui.services')
-        .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
+        .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devq.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
     function ControlService($rootScope, $http, SERVER_URL, NotifyService) {
