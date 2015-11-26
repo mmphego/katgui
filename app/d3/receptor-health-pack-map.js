@@ -67,9 +67,10 @@ angular.module('katGui.d3')
                         .data(nodes)
                         .enter().append("svg:circle")
                         .attr("class", function (d) {
+                            var prefix = d.prefix? d.prefix : '';
                             var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
-                            classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive');
+                            classStr += (StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor] ?
+                                StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor].status : 'inactive');
                             if (d.depth === 0) {
                                 return classStr + '-child parent';
                             } else {
@@ -100,9 +101,10 @@ angular.module('katGui.d3')
                         .data(nodes)
                         .enter().append("svg:text")
                         .attr("class", function (d) {
+                            var prefix = d.prefix? d.prefix : '';
                             var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' ';
-                            classStr += (StatusService.sensorValues[scope.dataMapName + '_' + d.sensor] ?
-                                StatusService.sensorValues[scope.dataMapName + '_' + d.sensor].status : 'inactive');
+                            classStr += (StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor] ?
+                                StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor].status : 'inactive');
                             if (d.depth === 0) {
                                 return classStr + '-child-text parent';
                             } else {

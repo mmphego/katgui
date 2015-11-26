@@ -9,12 +9,12 @@
         var vm = this;
         vm.ancResource = {
             sensorList: [
-                {python_identifier: 'anc_weather_pressure', color: '#1f77b4'},
-                {python_identifier: 'anc_weather_temperature', color: '#ff7f0e'},
-                {python_identifier: 'anc_weather_relative_humidity', color: '#2ca02c'},
+                {python_identifier: 'anc_air_pressure', color: '#1f77b4'},
+                {python_identifier: 'anc_air_temperature', color: '#ff7f0e'},
+                {python_identifier: 'anc_air_relative_humidity', color: '#2ca02c'},
                 {python_identifier: 'anc_weather_rainfall', skipHistory: true},
                 {python_identifier: 'anc_gust_wind_speed', color: '#ff7f0e'},
-                {python_identifier: 'anc_weather_wind_direction', skipHistory: true},
+                {python_identifier: 'anc_wind_direction', skipHistory: true},
                 {python_identifier: 'anc_mean_wind_speed', color: '#1f77b4'}]
         };
         vm.resourcesHistoriesCount = 4;
