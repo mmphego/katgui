@@ -248,7 +248,7 @@
                 .then(function (result) {
                     result.data.forEach(function (item) {
                         var configLabel = JSON.parse(item);
-                        configLabel.date = moment.utc(configLabel.date).format('YYYY-DD-MM hh:mm:ss');
+                        configLabel.date = moment.utc(configLabel.date).format('YYYY-MM-DD hh:mm:ss');
                         api.configLabels.push(configLabel);
                     });
                 }, function (error) {
