@@ -189,22 +189,18 @@
                                     }
                                 });
 
-                                $scope.sensorNameList.forEach(function (sensor) {
-                                    var resource = '';
-                                    var sensorName = '';
-
+                                var sensorsRegex = '';
+                                $scope.sensorNameList.forEach(function (sensor, index) {
                                     $scope.sensors[sensor] = {name: sensor};
-                                    var firstPart = sensor.split('_', 1)[0];
-                                    if (firstPart === 'mon' || firstPart === 'nm') {
-                                        var secondPart = sensor.substring(sensor.indexOf('_') + 1);
-                                        resource = firstPart + '_' + secondPart;
-                                        sensorName = secondPart;
-                                    } else {
-                                        resource = firstPart;
-                                        sensorName = sensor.substring(sensor.indexOf('_') + 1);
+                                    if (index !== 0) {
+                                        sensorsRegex += '|';
                                     }
-                                    SensorsService.setSensorStrategy(resource, sensorName, 'event-rate', 1, 360);
+                                    sensorsRegex += '^' + sensor;
                                 });
+                                if (sensorsRegex.length > 0) {
+                                    SensorsService.setSensorStrategies(sensorsRegex, 'event-rate', 1, 360);
+                                }
+
                             }, function () {
                                 $log.error('Could not establish sensor connection.');
                             });

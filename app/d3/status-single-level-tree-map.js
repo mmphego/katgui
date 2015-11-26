@@ -151,8 +151,8 @@ angular.module('katGui.d3')
                                     angular.element(document.querySelector("#" + d.sensor.replace(".", "_") + "hideButton")).css("display", "none");
                                 })
                                 .on("click", function(d) {
-                                    if (d.sensor.indexOf('agg_') !== 0) {
-                                        d3Util.showDialogForAggregateSensorInfo(d.sensor.split('.')[1]);
+                                    if (d.sensor.indexOf('agg_') > -1) {
+                                        d3Util.showDialogForAggregateSensorInfo(d.sensor);
                                     }
                                 });
 

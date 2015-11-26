@@ -45,7 +45,8 @@
             }
             message.name = messageName;
 
-            if (api.receptors.indexOf(messageName.split(".")[0]) > -1) {
+            if (api.receptors.indexOf(messageName.split("_")[0]) > -1 ||
+                api.receptors.indexOf(messageName.split("_")[1]) > -1 ) {
                 for (var receptor in api.statusData) {
                     if (messageName.indexOf(receptor) > -1) {
                         applyValueToSensor(api.statusData[receptor], messageName, message, receptor);
@@ -90,21 +91,21 @@
             if (!d) {
                 return;
             }
-                if (!d.sensorValue) {
-                    d.sensorValue = {};
-                }
-                var statusClassResult = sensorToUpdateName;
-                d.sensorValue = api.itemsToUpdate[sensorToUpdateName];
-                if (d.sensorValue) {
-                    statusClassResult += ' ' + d.sensorValue.status + '-child';
-                }
-                statusClassResult += d.dx > 300 ? " child-big-text" : " child";
-                return statusClassResult;
-
+            if (!d.sensorValue) {
+                d.sensorValue = {};
+            }
+            var statusClassResult = sensorToUpdateName;
+            d.sensorValue = api.itemsToUpdate[sensorToUpdateName];
+            if (d.sensorValue) {
+                statusClassResult += ' ' + d.sensorValue.status + '-child';
+            }
+            statusClassResult += d.dx > 300 ? " child-big-text" : " child";
+            return statusClassResult;
         };
 
         function applyValueToSensor(node, sensorName, value, rootName) {
-            if (sensorName === rootName + '.' + node.sensor) {
+            var prefix = node.prefix? node.prefix : '';
+            if (sensorName === prefix + rootName + '_' + node.sensor) {
                 if (!node.sensorValue) {
                     node.sensorValue = {};
                 }

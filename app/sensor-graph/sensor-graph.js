@@ -7,7 +7,7 @@
                              SensorsService, $interval, $log, NotifyService) {
 
         var vm = this;
-        var DATETIME_FORMAT = 'HH:mm:ss YYYY-MM-DD';
+        var DATETIME_FORMAT = 'HH:mm:ss DD-MM-YYYY';
         var DATALIMIT = 5000;
         vm.showGridLines = false;
         vm.dateTimeError = false;

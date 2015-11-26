@@ -1,6 +1,6 @@
 angular.module('katGui.util')
     .constant('CENTRAL_LOGGER_PORT', 9021)
-    .constant('DATETIME_FORMAT', 'HH:mm:ss YYYY-MM-DD')
+    .constant('DATETIME_FORMAT', 'HH:mm:ss DD-MM-YYYY')
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
