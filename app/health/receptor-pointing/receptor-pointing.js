@@ -55,10 +55,10 @@
         vm.connectListeners();
 
         vm.sensorsToConnect = [
-            'ap_actual_azim',
-            'ap_actual_elev',
-            'ap_requested_azim',
-            'ap_requested_elev',
+            'pos_actual_pointm_azim',
+            'pos_actual_pointm_elev',
+            'pos_request_pointm_azim',
+            'pos_request_pointm_elev',
             'pos_request_base_dec',
             'pos_request_base_ra',
             'pos_delta_azim',
@@ -66,7 +66,6 @@
             'pos_delta_sky',
             'mode',
             'inhibited',
-            'ap_device_status',
             'lock',
             'target',
             'windstow_active'
