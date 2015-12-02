@@ -61,10 +61,13 @@ angular.module('katGui.d3')
 
         //convenience function to create the id's for the html elements that needs to be styled
         api.createSensorId = function (d, rootName) {
+            if (!d.prefix) {
+                d.prefix = '';
+            }
             if (d.depth > 0) {
-                return rootName + "_" + d.sensor;
+                return d.prefix + rootName + "_" + d.sensor;
             } else {
-                return d.name + "_" + d.sensor;
+                return d.prefix + d.name + "_" + d.sensor;
             }
         };
 
@@ -101,11 +104,12 @@ angular.module('katGui.d3')
         api.updateTooltipValues = function (d, tooltip, rootName) {
             var sensorValue;
             var pythonIdentifier = d.sensor.replace(/\./g, '_');
+            var prefix = d.prefix? d.prefix : '';
             if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
                 sensorValue = StatusService.sensorValues[pythonIdentifier];
             }
-            else if (StatusService.sensorValues && StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor]) {
-                sensorValue = StatusService.sensorValues[(rootName? rootName + '_' : '') + d.sensor];
+            else if (StatusService.sensorValues && StatusService.sensorValues[prefix + (rootName? rootName + '_' : '') + d.sensor]) {
+                sensorValue = StatusService.sensorValues[prefix + (rootName? rootName + '_' : '') + d.sensor];
             } else  {
                 sensorValue = d.sensorValue;
             }

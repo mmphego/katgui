@@ -1,4 +1,4 @@
-<div class="view-container" flex ng-controller="AdminCtrl as vm" layout="column">
+<div class="view-container" flex ng-controller="AdminCtrl as vm" layout="column" style="min-width: 1100px">
 
     <div class="md-whiteframe-z1" layout="column" layout-align="start center" style="margin-bottom: 16px; position: relative; min-height: 269px;">
         <md-toolbar class="panel-toolbar md-whiteframe-z1" layout="row" layout-align="center">
@@ -29,7 +29,7 @@
                 <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
                 <input class="fade-in search-input-box" style="min-width: 250px;" type="search"
                        ng-model-options="{ debounce: 300 }" ng-model="q" placeholder="Search Users..."/>
-                <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary" style="font-size: 14px;" ng-model="vm.showDeactivatedUsers">
+                <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary" style="font-size: 16px;" ng-model="vm.showDeactivatedUsers">
                     Show Only Deactivated Users
                 </md-checkbox>
                 <md-button  style="margin: 0" ng-click="vm.createUser()" class="md-icon-button" md-theme="{{themePrimaryButtons}}">
