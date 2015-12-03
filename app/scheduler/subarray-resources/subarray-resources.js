@@ -4,7 +4,7 @@
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
     function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog, $stateParams, UserService,
-                                   NotifyService) {
+                                   NotifyService, ConfigService) {
 
         var vm = this;
 
@@ -40,8 +40,18 @@
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;
         vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
-        vm.bands = ["l", "s", "u", "x"];
-        vm.products = ["c856M4k", "c856M32k"];
+        vm.bands = [];
+        vm.products = [];
+        ConfigService.getSystemConfig()
+            .then(function (systemConfig) {
+                if (systemConfig.system.bands && systemConfig.system.products) {
+                    vm.bands = systemConfig.system.bands.split(',');
+                    vm.products = systemConfig.system.products.split(',');
+                } else {
+                    NotifyService.showSimpleDialog('Error loading bands and products',
+                        'Bands and products were not found in the system\'s config.');
+                }
+            });
 
         vm.selectAllUnassignedResources = function (selected) {
             vm.poolResourcesFree.forEach(function (item) {
