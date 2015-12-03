@@ -140,8 +140,8 @@
                         vm.receptorsData.push({
                             name: vm.targets[i].name,
                             skyPlot: true,
-                            ap_actual_azim: {value: az},
-                            ap_actual_elev: {value: el}
+                            pos_actual_pointm_azim: {value: az},
+                            pos_actual_pointm_elev: {value: el}
                             //pos_request_base_dec: {value: radec[1]},
                             //pos_request_base_ra: {value: radec[0]}
                         });

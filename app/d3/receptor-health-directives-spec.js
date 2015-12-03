@@ -25,7 +25,7 @@ describe('Directive: d3-chart', function () {
                             sensor: 'sensors_ok',
                             children: [{
                                 name: 'ap',
-                                sensor: 'ap_device_status',
+                                sensor: 'device_status',
                                 children: [
                                     {
                                         name: 'bp',
@@ -71,7 +71,7 @@ describe('Directive: d3-chart', function () {
         scope.$digest();
         document.body.appendChild(element[0]);
         expect(angular.element(document.querySelector('#m011_sensors_ok')).attr('class')).toContain('inactive-child child');
-        expect(angular.element(document.querySelector('#m011_ap_device_status')).attr('class')).toContain('inactive-child');
+        expect(angular.element(document.querySelector('#m011_device_status')).attr('class')).toContain('inactive-child');
     });
 
     it('should create a d3 receptor status pack map', function () {
@@ -83,7 +83,7 @@ describe('Directive: d3-chart', function () {
         scope.$digest();
         document.body.appendChild(element[0]);
         expect(angular.element(document.querySelector('#m011_sensors_ok')).attr('class')).toContain('inactive-child child');
-        expect(angular.element(document.querySelector('#m011_ap_device_status')).attr('class')).toContain('inactive-child');
+        expect(angular.element(document.querySelector('#m011_device_status')).attr('class')).toContain('inactive-child');
     });
 
     it('should create a d3 receptor status partition map', function () {
@@ -95,7 +95,7 @@ describe('Directive: d3-chart', function () {
         scope.$digest();
         document.body.appendChild(element[0]);
         expect(angular.element(document.querySelector('#m011_sensors_ok')).attr('class')).toContain('inactive-child child');
-        expect(angular.element(document.querySelector('#m011_ap_device_status')).attr('class')).toContain('inactive-child');
+        expect(angular.element(document.querySelector('#m011_device_status')).attr('class')).toContain('inactive-child');
     });
 
     it('should create a d3 receptor status sunburst map', function () {
@@ -107,7 +107,7 @@ describe('Directive: d3-chart', function () {
         scope.$digest();
         document.body.appendChild(element[0]);
         expect(angular.element(document.querySelector('#m011_sensors_ok')).attr('class')).toContain('inactive-child child');
-        expect(angular.element(document.querySelector('#m011_ap_device_status')).attr('class')).toContain('inactive-child');
+        expect(angular.element(document.querySelector('#m011_device_status')).attr('class')).toContain('inactive-child');
     });
 
     it('should create a d3 receptor status tree map', function () {
@@ -122,6 +122,6 @@ describe('Directive: d3-chart', function () {
         scope.$digest();
         document.body.appendChild(element[0]);
         expect(angular.element(document.querySelector('#m011_sensors_ok')).attr('class')).toContain('inactive-child child');
-        expect(angular.element(document.querySelector('#m011_ap_device_status')).attr('class')).toContain('inactive-child');
+        expect(angular.element(document.querySelector('#m011_device_status')).attr('class')).toContain('inactive-child');
     });
 });

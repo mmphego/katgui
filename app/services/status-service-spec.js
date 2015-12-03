@@ -10,7 +10,7 @@ describe('StatusService', function () {
     var statusTree = {
         sensor: 'sensors_ok',
         name: '',
-        children: [{name: 'ap', sensor: 'ap_sensor', children: [{name: 'bp', sensor: 'bp_sensor', children: []}]}, {name: 'dig', sensor: 'dig_sensor', children: []}]
+        children: [{name: 'ap', sensor: 'sensor', children: [{name: 'bp', sensor: 'bp_sensor', children: []}]}, {name: 'dig', sensor: 'dig_sensor', children: []}]
     };
 
     var topStatusTree = {
@@ -45,12 +45,12 @@ describe('StatusService', function () {
             m011: Object({
                 name: 'm011',
                 sensor: 'sensors_ok',
-                children: [Object({name: 'ap', sensor: 'ap_sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
+                children: [Object({name: 'ap', sensor: 'sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
             }),
             m022: Object({
                 name: 'm022',
                 sensor: 'sensors_ok',
-                children: [Object({name: 'ap', sensor: 'ap_sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
+                children: [Object({name: 'ap', sensor: 'sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
             })
         });
     });
@@ -93,7 +93,7 @@ describe('StatusService', function () {
     //
     // it('should apply a receptor message value to child sensor', function () {
     //     StatusService.setReceptorsAndStatusTree(statusTree, receptors);
-    //     StatusService.messageReceivedSensors('mon:m011.ap_sensor', receptorMessage);
+    //     StatusService.messageReceivedSensors('mon:m011.sensor', receptorMessage);
     //     expect(StatusService.statusData['m011'].children[0].sensorValue).toEqual(receptorMessage);
     // });
 });
