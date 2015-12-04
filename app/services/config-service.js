@@ -140,6 +140,11 @@
             return $http(createRequest('get', urlBase + '/config-file/user/correlators'));
         };
 
+        api.getApodForDate = function (date) {
+            var formatedDate = moment(date).format('YYYY/MM/DD');
+            return $http(createRequest('get', urlBase + '/apod/' + formatedDate));
+        };
+
         function createRequest(method, url) {
             return {
                 method: method,
