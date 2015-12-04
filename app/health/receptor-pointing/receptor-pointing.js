@@ -171,11 +171,16 @@
             vm.receptorsData.forEach(function (receptor) {
                 if (sensor.startsWith(receptor.name)) {
                     receptor[sensor.replace(receptor.name + '_', '')] = message.value;
-                } else if (sensor.endsWith('_pool_resources') &&
-                           message.value.value.indexOf(receptor.name) > -1) {
-                   receptor.sub_nr = parseInt(sensor.split('_')[1]);
-                   receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
-                   vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
+                } else if (sensor.endsWith('_pool_resources')) {
+                    if (message.value.value.indexOf(receptor.name) > -1) {
+                        receptor.sub_nr = parseInt(sensor.split('_')[1]);
+                        receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
+                        vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
+                    } else if (receptor.sub_nr === parseInt(sensor.split('_')[1])) {
+                        receptor.sub_nr = null;
+                        receptor.subarrayColor = "#d7d7d7";
+                        vm.sensorValues[receptor.name + '_sub_nr'] = null;
+                    }
                 }
             });
 
