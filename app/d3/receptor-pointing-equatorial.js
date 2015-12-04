@@ -230,8 +230,8 @@ angular.module('katGui.d3')
                     }
 
                     dataToDraw.forEach(function (d) {
-                        if (d.ap_actual_azim && d.ap_actual_elev) {
-                            var proj_actual = projection([d.ap_actual_azim.value, d.ap_actual_elev.value]);
+                        if (d.pos_actual_pointm_azim && d.pos_actual_pointm_elev) {
+                            var proj_actual = projection([d.pos_actual_pointm_azim.value, d.pos_actual_pointm_elev.value]);
                             d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
                             d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
                             d.proj_actual = round(proj_actual[0], 5) + ',' + round(proj_actual[1], 5);
@@ -241,8 +241,8 @@ angular.module('katGui.d3')
                             scope.positions[d.proj_actual].push(d);
                         }
 
-                        if (d.ap_requested_azim && d.ap_requested_elev) {
-                            var proj_requested = projection([d.ap_requested_azim.value, d.ap_requested_elev.value]);
+                        if (d.requested_azim && d.requested_elev) {
+                            var proj_requested = projection([d.requested_azim.value, d.requested_elev.value]);
                             d.proj_requested_az_x = Math.floor(proj_requested[0] * pm) / pm;
                             d.proj_requested_el_y = Math.floor(proj_requested[1] * pm) / pm;
                             d.proj_requested = d.proj_requested_az_x + ',' + d.proj_requested_el_y;
@@ -262,11 +262,11 @@ angular.module('katGui.d3')
                             for (var i in items) {
 
                                 d.tooltipHtml += "<b>" + items[i].name + " </b>";
-                                if (items[i].ap_actual_azim && items[i].ap_actual_elev) {
-                                    d.tooltipHtml += "<br/>azim: " + Math.round(items[i].ap_actual_azim.value * pm) / pm + ", elev: " + Math.round(items[i].ap_actual_elev.value * pm) / pm;
+                                if (items[i].pos_actual_pointm_azim && items[i].pos_actual_pointm_elev) {
+                                    d.tooltipHtml += "<br/>azim: " + Math.round(items[i].pos_actual_pointm_azim.value * pm) / pm + ", elev: " + Math.round(items[i].pos_actual_pointm_elev.value * pm) / pm;
                                 }
-                                if (items[i].ap_requested_azim && items[i].ap_requested_elev) {
-                                    d.tooltipHtml += "<br/>azim: " + Math.round(items[i].ap_requested_azim.value * pm) / pm + ", elev: " + Math.round(items[i].ap_requested_elev.value * pm) / pm + " (requested)";
+                                if (items[i].requested_azim && items[i].requested_elev) {
+                                    d.tooltipHtml += "<br/>azim: " + Math.round(items[i].requested_azim.value * pm) / pm + ", elev: " + Math.round(items[i].requested_elev.value * pm) / pm + " (requested)";
                                 }
                                 if (items[i].pos_request_base_ra && items[i].pos_request_base_dec) {
                                     d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
