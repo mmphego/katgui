@@ -70,6 +70,15 @@
             }
         };
 
+        api.GetCentralLoggerURL = function () {
+            if (api.systemConfig) {
+                return 'http://' + api.systemConfig.katportal.katlogger;
+            } else {
+                return '';
+            }
+        };
+
+
         api.getStatusTreeForReceptor = function () {
             return $http(createRequest('get', urlBase + '/statustrees/receptors_view/receptors'));
         };
