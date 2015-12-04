@@ -15,7 +15,7 @@
             });
     }
 
-    function ApodWidgetCtrl($scope, $rootScope, $http, $log, $sce, NotifyService) {
+    function ApodWidgetCtrl($scope, $rootScope, $http, $log, $sce, NotifyService, ConfigService) {
 
         var vm = this;
         vm.imgUrl = "";
@@ -26,10 +26,8 @@
             vm.selectedDate = date;
             vm.selectedDateString = vm.dateToString(vm.selectedDate);
             vm.todayDateString = vm.dateToString(new Date());
-            var apodStr = "https://api.nasa.gov/planetary/apod?date=";
-            apodStr += vm.selectedDateString;
-            apodStr += "&api_key=YZ8q8SXxrxwGDcn9iUKRvCvmqkUydF2tzhUs21IU";
-            $http.get(apodStr).then(function (result) {
+            ConfigService.getApodForDate(vm.selectedDate)
+                .then(function (result) {
                 if (result.data.error) {
                     NotifyService.showSimpleToast("Could not retrieve the APOD " + result.data.error);
                     vm.selectedDate = new Date();
