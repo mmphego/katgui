@@ -55,10 +55,10 @@
         vm.connectListeners();
 
         vm.sensorsToConnect = [
-            'ap_actual_azim',
-            'ap_actual_elev',
-            'ap_requested_azim',
-            'ap_requested_elev',
+            'pos_actual_pointm_azim',
+            'pos_actual_pointm_elev',
+            'pos_request_pointm_azim',
+            'pos_request_pointm_elev',
             'pos_request_base_dec',
             'pos_request_base_ra',
             'pos_delta_azim',
@@ -66,7 +66,6 @@
             'pos_delta_sky',
             'mode',
             'inhibited',
-            'ap_device_status',
             'lock',
             'target',
             'windstow_active'
@@ -141,8 +140,8 @@
                         vm.receptorsData.push({
                             name: vm.targets[i].name,
                             skyPlot: true,
-                            ap_actual_azim: {value: az},
-                            ap_actual_elev: {value: el}
+                            pos_actual_pointm_azim: {value: az},
+                            pos_actual_pointm_elev: {value: el}
                             //pos_request_base_dec: {value: radec[1]},
                             //pos_request_base_ra: {value: radec[0]}
                         });
@@ -172,11 +171,16 @@
             vm.receptorsData.forEach(function (receptor) {
                 if (sensor.startsWith(receptor.name)) {
                     receptor[sensor.replace(receptor.name + '_', '')] = message.value;
-                } else if (sensor.endsWith('_pool_resources') &&
-                           message.value.value.indexOf(receptor.name) > -1) {
-                   receptor.sub_nr = parseInt(sensor.split('_')[1]);
-                   receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
-                   vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
+                } else if (sensor.endsWith('_pool_resources')) {
+                    if (message.value.value.indexOf(receptor.name) > -1) {
+                        receptor.sub_nr = parseInt(sensor.split('_')[1]);
+                        receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
+                        vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
+                    } else if (receptor.sub_nr === parseInt(sensor.split('_')[1])) {
+                        receptor.sub_nr = null;
+                        receptor.subarrayColor = "#d7d7d7";
+                        vm.sensorValues[receptor.name + '_sub_nr'] = null;
+                    }
                 }
             });
 

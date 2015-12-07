@@ -78,6 +78,15 @@
             }
         };
 
+        api.GetCentralLoggerURL = function () {
+            if (api.systemConfig) {
+                return 'http://' + api.systemConfig.katportal.katlogger;
+            } else {
+                return '';
+            }
+        };
+
+
         api.getStatusTreeForReceptor = function () {
             return $http(createRequest('get', urlBase + '/statustrees/receptors_view/receptors'));
         };
@@ -146,6 +155,11 @@
 
         api.getCorrelatorsList = function () {
             return $http(createRequest('get', urlBase + '/config-file/user/correlators'));
+        };
+
+        api.getApodForDate = function (date) {
+            var formatedDate = moment(date).format('YYYY/MM/DD');
+            return $http(createRequest('get', urlBase + '/apod/' + formatedDate));
         };
 
         function createRequest(method, url) {

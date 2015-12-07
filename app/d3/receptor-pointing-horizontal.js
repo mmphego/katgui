@@ -191,9 +191,9 @@ angular.module('katGui.d3')
                     //calculate and save the projection data to display points in the same position as bigger circles
                     //and to group tooltip values for points in the same position
                     dataToDraw.forEach(function (d) {
-                        if (d.ap_actual_azim && d.ap_actual_elev) {
-                            d.proj_requested_az_x = Math.floor(x(d.ap_actual_azim.value) * pm) / pm;
-                            d.proj_requested_el_y = Math.floor(y(d.ap_actual_elev.value) * pm) / pm;
+                        if (d.pos_actual_pointm_azim && d.pos_actual_pointm_elev) {
+                            d.proj_requested_az_x = Math.floor(x(d.pos_actual_pointm_azim.value) * pm) / pm;
+                            d.proj_requested_el_y = Math.floor(y(d.pos_actual_pointm_elev.value) * pm) / pm;
                             d.proj_actual = round(d.proj_requested_az_x, 5) + ',' + round(d.proj_requested_el_y, 5);
                             if (!scope.positions[d.proj_actual]) {
                                 scope.positions[d.proj_actual] = [];
@@ -201,8 +201,8 @@ angular.module('katGui.d3')
                             scope.positions[d.proj_actual].push(d);
                         }
 
-                        if (d.ap_requested_azim && d.ap_requested_elev) {
-                            d.proj_requested = Math.floor(x(d.ap_requested_azim.value)) + ',' + Math.floor(y(d.ap_requested_elev.value));
+                        if (d.requested_azim && d.requested_elev) {
+                            d.proj_requested = Math.floor(x(d.requested_azim.value)) + ',' + Math.floor(y(d.requested_elev.value));
                             if (!scope.positions_requested[d.proj_requested]) {
                                 scope.positions_requested[d.proj_requested] = [];
                             }
@@ -219,11 +219,11 @@ angular.module('katGui.d3')
                             for (var i in items) {
 
                                 d.tooltipHtml += "<b>" + items[i].name + " </b>";
-                                if (items[i].ap_actual_azim && items[i].ap_actual_elev) {
-                                    d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_actual_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_actual_elev.value * pm) / pm;
+                                if (items[i].pos_actual_pointm_azim && items[i].pos_actual_pointm_elev) {
+                                    d.tooltipHtml += "<br/>az: " + Math.round(items[i].pos_actual_pointm_azim.value * pm) / pm + ", el: " + Math.round(items[i].pos_actual_pointm_elev.value * pm) / pm;
                                 }
-                                if (items[i].ap_requested_azim && items[i].ap_requested_elev) {
-                                    d.tooltipHtml += "<br/>az: " + Math.round(items[i].ap_requested_azim.value * pm) / pm + ", el: " + Math.round(items[i].ap_requested_elev.value * pm) / pm + " (requested)";
+                                if (items[i].requested_azim && items[i].requested_elev) {
+                                    d.tooltipHtml += "<br/>az: " + Math.round(items[i].requested_azim.value * pm) / pm + ", el: " + Math.round(items[i].requested_elev.value * pm) / pm + " (requested)";
                                 }
                                 if (items[i].pos_request_base_ra && items[i].pos_request_base_dec) {
                                     d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
@@ -251,7 +251,7 @@ angular.module('katGui.d3')
                         .attr("class", "requested-pos")
                         .attr("transform", function (d) {
                             if (d.proj_requested) {
-                                return "translate(" + (x(d.ap_requested_azim.value) - 8.3) + "," + (y(d.ap_requested_elev.value) + 6.7) + ")";
+                                return "translate(" + (x(d.requested_azim.value) - 8.3) + "," + (y(d.requested_elev.value) + 6.7) + ")";
                             } else {
                                 return 'translate(-100, -100)';
                             }
@@ -307,15 +307,15 @@ angular.module('katGui.d3')
                             }
                         })
                         .attr("cx", function (d) {
-                            if (d.ap_actual_azim) {
-                                return x(d.ap_actual_azim.value);
+                            if (d.pos_actual_pointm_azim) {
+                                return x(d.pos_actual_pointm_azim.value);
                             } else {
                                 return -1000;
                             }
                         })
                         .attr("cy", function (d) {
-                            if (d.ap_actual_elev) {
-                                return y(d.ap_actual_elev.value);
+                            if (d.pos_actual_pointm_elev) {
+                                return y(d.pos_actual_pointm_elev.value);
                             } else {
                                 return -1000;
                             }
