@@ -13,10 +13,12 @@
         vm.regexStrings = [];
         vm.guid = KatGuiUtil.generateUUID();
         vm.connectionLost = false;
+        vm.treeIDIncrement = 0;
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
+                    vm.initSensors();
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectionLost = false;
@@ -49,6 +51,17 @@
                 });
         };
 
+        vm.initSensors = function () {
+            if (vm.regexStrings) {
+                var regexString = '';
+                var regexToConnect = [];
+                vm.regexStrings.forEach(function (regex) {
+                    regexToConnect.push(regex.name);
+                });
+                SensorsService.setSensorStrategies(regexToConnect.join('|'), 'event-rate', 1, 360);
+            }
+        };
+
         vm.unbindSetSensorStrategy = $rootScope.$on('setSensorStrategyMessage', function (event, message) {
             for (var i = 0; i < vm.regexStrings.length; i++) {
                 var regex = new RegExp(vm.regexStrings[i]);
@@ -59,9 +72,12 @@
                                 name: vm.regexStrings[i].name,
                                 resource: vm.regexStrings[i].name,
                                 size: vm.regexStrings[i].size,
+                                offset: vm.regexStrings[i].offset,
                                 sensor: '',
+                                elementId: 'custom-tree-' + vm.treeIDIncrement,
                                 children: []
                             };
+                            vm.treeIDIncrement++;
                         }
                         if (!_.findWhere(vm.customStatusTrees[i].children, {name: vm.regexStrings[i].name})) {
                             vm.customStatusTrees[i].children.push({
@@ -127,27 +143,30 @@
             }
         };
 
-        vm.buildView = function (regex) {
+        vm.addView = function () {
+            vm.buildView(vm.regex, {left: 0, top: 0}, {width: parseInt(vm.selectedWidth), height: parseInt(vm.selectedHeight)});
+        };
+
+        vm.buildView = function (regex, offset, size) {
             var sensorRegex = {
                 name: regex,
-                size: {w: vm.selectedWidth, h: vm.selectedHeight},
-                sizeString: vm.selectedWidth + 'x' + vm.selectedHeight
+                size: {w: size.width, h: size.height},
+                offset: {left: offset.left, top: offset.top}
             };
             var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
             if (!existingItem) {
                 vm.regexStrings.push(sensorRegex);
-                SensorsService.setSensorStrategies(
-                    regex,
-                    $rootScope.sensorListStrategyType,
-                    $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval
-                );
+                if (SensorsService.connected) {
+                    SensorsService.setSensorStrategies(regex, 'event-rate', 1, 360);
+                }
+            } else {
+                NotifyService.showSimpleToast('Expression already exists, not adding ' + regex);
             }
         };
 
         //note: we dont unsubscribe from sensors here because if we have duplicates on the view,
-        //the duplicate will be in black and unsubscribing from that sensor would mean the other sensors with the same name
-        //will not get the updates any longer
+        //the duplicate will be in black and unsubscribing from that sensor would mean the other
+        //sensors with the same name will not get the updates any longer
         vm.removeStatusTree = function (tree) {
             var existingItem = _.findWhere(vm.regexStrings, {name: tree.name});
             if (existingItem) {
@@ -162,9 +181,12 @@
                 url = url.split('?')[0];
             }
             url += '?layout=';
-            vm.regexStrings.forEach(function (item) {
-                url += item.name + ',' + item.sizeString + ';';
-            });
+            var items = document.getElementsByTagName('status-single-level-tree-map');
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+                var regex = item.getElementsByClassName('status-top-label-text')[0].innerText;
+                url += encodeURI(regex) + ':' + item.offsetLeft + ',' + item.offsetTop + ',' + item.clientWidth + ',' + item.clientHeight + ';';
+            }
             NotifyService.showSimpleDialog('Exported URL', url);
         };
 
@@ -186,17 +208,15 @@
             var layouts = $stateParams.layout.split(';');
             layouts.forEach(function (layout) {
                 if (layout) {
-                    var regex = layout.split(',')[0];
-                    var size = layout.split(',')[1].split('x');
+                    var regex = layout.split(':')[0];
+                    //left,top,width,height
+                    var layoutParams = layout.split(':')[1].split(',');
+                    var offset = {left: parseInt(layoutParams[0]), top: parseInt(layoutParams[1])};
+                    var size = {width: parseInt(layoutParams[2]), height: parseInt(layoutParams[3])};
 
                     //todo possible timing issue between when we build the status trees
                     //and when getting multiple setSensorStrategyMessage on rootScope
-                    $timeout(function () {
-                        vm.selectedWidth = parseInt(size[0]);
-                        vm.selectedHeight = parseInt(size[1]);
-                        vm.buildView(regex);
-                    }, lastTimeout);
-                    lastTimeout += 500;
+                    vm.buildView(regex, offset, size);
                 }
             });
             if (!$scope.$$phase) {
