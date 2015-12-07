@@ -210,7 +210,7 @@
 
                 <div flex class="schedule-draft-data-list" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
                     <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedFields:vm.q3 track by item.id"
-                        class="schedule-draft-item" layout="column" style="height: 38px"
+                        class="schedule-draft-item" layout="column"
                         ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
                         ng-click="vm.setSelectedSchedule(item);$event.stopPropagation();">
 
@@ -228,8 +228,7 @@
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                   style="text-transform: uppercase; width: 100px">{{item.type}}</span>
                             <span style="width: 150px">{{item.desired_start_time}}</span>
-
-                            <md-menu>
+                            <md-menu style="padding: 0">
                                 <md-button class="md-icon-button inline-action-button"
                                            ng-click="$mdOpenMenu(); $event.stopPropagation()"
                                            style="margin: 0">
