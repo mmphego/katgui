@@ -228,10 +228,22 @@
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                   style="text-transform: uppercase; width: 100px">{{item.type}}</span>
                             <span style="width: 150px">{{item.desired_start_time}}</span>
-                            <md-button class="md-icon-button inline-action-button"
-                                       ng-click="vm.cloneSchedule(item);$event.stopPropagation();" title="Clone To Draft">
-                                <md-icon class="fa" md-font-icon="fa-copy"></md-icon>
-                            </md-button>
+
+                            <md-menu>
+                                <md-button class="md-icon-button inline-action-button"
+                                           ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                                           style="margin: 0">
+                                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
+                                </md-button>
+                                <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.cloneSchedule(item)">Clone SB</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
+                                    </md-menu-item>
+                                </md-menu-content>
+                            </md-menu>
                         </div>
                     </div>
                 </div>

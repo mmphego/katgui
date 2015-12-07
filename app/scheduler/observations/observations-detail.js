@@ -97,6 +97,10 @@
             ObsSchedService.cloneSchedule(item.id_code);
         };
 
+        vm.viewSBTasklog = function (sb) {
+            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code);
+        };
+
         vm.moveScheduleRowToFinished = function (item) {
             ObsSchedService.scheduleToComplete(vm.subarray_id, item.id_code);
         };
