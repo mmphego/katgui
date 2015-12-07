@@ -27,22 +27,8 @@
             hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator' &&
             $rootScope.currentUser.req_role !== 'control_authority'
         }, {
-            name: 'SBs',
-            textOffset: -10,
-            state: 'scheduler.subarrays',
-            title: 'Manage Subarrays Schedule Blocks',
-            hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator' &&
-            $rootScope.currentUser.req_role !== 'control_authority'
-        }, {
-            name: 'Set-up Subs',
-            textOffset: 0,
-            state: 'scheduler.resources',
-            title: 'Set-up Subarray',
-            hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator' &&
-            $rootScope.currentUser.req_role !== 'control_authority'
-        }, {
             name: 'Observations',
-            textOffset: 10,
+            textOffset: 0,
             state: 'scheduler.observations',
             title: 'Observations Overview'
         }, {

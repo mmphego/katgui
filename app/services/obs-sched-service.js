@@ -14,6 +14,7 @@
         api.subarrays = [];
         api.poolResourcesFree = [];
         api.configLabels = [];
+        api.resourceTemplates = [];
 
         api.handleRequestResponse = function (request, defer) {
             var deferred;
@@ -324,6 +325,70 @@
                     '   </div>' +
                     '</md-dialog>',
                     targetEvent: event
+                });
+        };
+
+        api.listResourceTemplates = function () {
+            api.resourceTemplates.splice(0, api.resourceTemplates.length);
+            $http.get(urlBase + '/subarray/template/list')
+                .then(function (result) {
+                    result.data.forEach(function (item) {
+                        api.resourceTemplates.push(item);
+                    });
+                }, function (error) {
+                    $log.error(error);
+                });
+        };
+
+        api.loadResourceTemplate = function (subarray, template) {
+            if (ConfigService.systemConfig.system.bands.indexOf(template.band) === -1) {
+                $log.error('Could not set band ' + template.band + '.');
+            } else if (subarray.band !== template.band) {
+                api.setBand(subarray.id, template.band);
+            }
+
+            if (subarray.product !== template.product) {
+                api.setProduct(subarray.id, template.product);
+            }
+
+            api.assignResourcesToSubarray(subarray.id, template.resources);
+        };
+
+        api.addResourceTemplate = function (template) {
+            $http(createRequest('post',
+                urlBase + '/subarray/template/add',
+                {
+                    name: template.name,
+                    owner: $rootScope.currentUser.email,
+                    resources: template.resources,
+                    band: template.band,
+                    product: template.product
+                }))
+                .then(function (result) {
+                    api.resourceTemplates.push(result.data);
+                    NotifyService.showSimpleToast("Created resource template");
+                }, function (result) {
+                    NotifyService.showSimpleDialog("Error creating resource template", result);
+                });
+        };
+
+        api.modifyResourceTemplate = function (template) {
+            $http(createRequest('post',
+                urlBase + '/subarray/template/modify/' + template.id,
+                {
+                    name: template.name,
+                    owner: $rootScope.currentUser.email,
+                    resources: template.resources,
+                    band: template.band,
+                    product: template.product,
+                    activated: template.activated
+                }))
+                .then(function (result) {
+                    var oldResource = _.findWhere(api.resourceTemplates, {id: template.id});
+                    oldResource = result.data;
+                    NotifyService.showSimpleToast("Modified resource template");
+                }, function (result) {
+                    NotifyService.showSimpleDialog("Error modifying resource template", result);
                 });
         };
 

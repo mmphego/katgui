@@ -1,4 +1,4 @@
-<div flex layout="column"  style="min-width: 1050px; min-height: 920px; margin-top: 4px;"
+<div flex layout="column"  style="min-width: 1220px; min-height: 400px; margin-top: 4px;"
      ng-controller="SubArrayResourcesCtrl as vm">
 
     <div layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}"
@@ -87,25 +87,37 @@
                                 <md-menu-item>
                                     <md-button ng-click="vm.openConfigLabelDialog(subarray.id, $event)"
                                                title="Select a Config Label">
-                                        <span>Select Config Label</span>
+                                        <span>Select Config Label...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
                                     <md-button ng-click="vm.openBandsDialog(subarray.id, $event)"
                                                title="Select a Band">
-                                        <span>Select Band</span>
+                                        <span>Select Band...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
                                     <md-button ng-click="vm.openProductsDialog(subarray.id, $event)"
                                                title="Select a Product">
-                                        <span>Select Product</span>
+                                        <span>Select Product...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item ng-if="$root.currentUser.req_role === 'lead_operator'">
                                     <md-button ng-click="vm.openCADialog(subarray.id, $event)"
                                                title="Select a Control Authority">
-                                        <span>Select Control Authority</span>
+                                        <span>Select Control Authority...</span>
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item>
+                                    <md-button ng-click="vm.saveTemplateDialog(subarray, $event)"
+                                               title="Select a Control Authority">
+                                        <span>Save Resource Template...</span>
+                                    </md-button>
+                                </md-menu-item>
+                                <md-menu-item ng-show="subarray.state === 'inactive'">
+                                    <md-button ng-click="vm.openTemplateListDialog(subarray, $event)"
+                                               title="Select a Control Authority">
+                                        <span>Load Resource Template...</span>
                                     </md-button>
                                 </md-menu-item>
                             </md-menu-content>
