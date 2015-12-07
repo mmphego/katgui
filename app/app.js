@@ -282,17 +282,17 @@
                 $event);
         };
         $rootScope.openSystemLogger = function () {
-            if (ConfigService.GetCentralLoggerURL()) {
-                window.open(ConfigService.GetCentralLoggerURL() + "/logfile/" + $rootScope.logNumberOfLines).focus();
+            if (ConfigService.GetKATLogFileServerURL()) {
+                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/" + $rootScope.logNumberOfLines).focus();
             } else {
-                NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no logger URL defined in config, please contact CAM support.');
+                NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
         $rootScope.openKatsnifferLogger = function (logFileName) {
-            if (ConfigService.GetCentralLoggerURL()) {
-                window.open(ConfigService.GetCentralLoggerURL() + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
+            if (ConfigService.GetKATLogFileServerURL()) {
+                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
             } else {
-                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no logger URL defined in config, please contact CAM support.');
+                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
 
