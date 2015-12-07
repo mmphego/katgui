@@ -11,10 +11,10 @@
         $rootScope.$on('alarmMessage', api.receivedAlarmMessage);
 
         api.tailAlarmsHistory = function () {
-            if (ConfigService.GetKATFileServerURL()) {
-                window.open(ConfigService.GetKATFileServerURL() + "/logfile/alarms.log").focus();
+            if (ConfigService.GetKATLogFileServerURL()) {
+                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/alarms.log").focus();
             } else {
-                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATObsPortal IP defined in config, please contact CAM support.');
+                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
 

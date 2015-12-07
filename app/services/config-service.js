@@ -62,9 +62,17 @@
             return deferred.promise;
         };
 
-        api.GetKATFileServerURL = function () {
+        api.GetKATTaskFileServerURL = function () {
             if (api.systemConfig) {
-                return 'http://' + api.systemConfig.katportal.katfileserver;
+                return 'http://' + api.systemConfig.katportal.kattaskfileserver;
+            } else {
+                return '';
+            }
+        };
+
+        api.GetKATLogFileServerURL = function () {
+            if (api.systemConfig) {
+                return 'http://' + api.systemConfig.katportal.katlogfileserver;
             } else {
                 return '';
             }
