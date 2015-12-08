@@ -205,7 +205,7 @@
                     '               <b>{{priority}}</b>' +
                     '           </div>' +
                     '       </div>' +
-                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '       <div layout="row" layout-align="end end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
                     '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
                     '       </div>' +
                     '   </div>' +
