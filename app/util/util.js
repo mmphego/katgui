@@ -103,63 +103,73 @@ angular.module('katGui.util')
             }
         };
     })
-    .directive('resizeable', function ($document) {
+    .directive('resizeable', function ($document, $timeout) {
         return {
             link: function (scope, element, attr) {
-                var targetElement = angular.element(document.querySelector(attr.resizeable));
-                var offset = targetElement.offset(),
-                    offsetX, offsetY;
-                var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
+                var timeout = 0;
+                if (attr.dynamicResizeElement) {
+                    timeout = 1000;
+                }
 
-                //targetElement.css({
-                //    position: 'fixed'
-                //});
+                $timeout(function () {
+                    var targetElement = angular.element(document.querySelector(attr.resizeable));
+                    var offset = targetElement.offset(),
+                        offsetX, offsetY;
+                    var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
 
-                element.on('mousedown', function(event) {
-                    // Prevent default dragging of selected content
-                    event.preventDefault();
-                    startX = event.pageX - x;
-                    startY = event.pageY - y;
-                    offsetX = element.innerWidth() - event.offsetX;
-                    offsetY = element.innerHeight() - event.offsetY;
+                    //targetElement.css({
+                    //    position: 'fixed'
+                    //});
 
-                    $document.on('mousemove', mousemove);
-                    $document.on('mouseup', mouseup);
-                });
+                    element.on('mousedown', function(event) {
+                        // Prevent default dragging of selected content
+                        event.preventDefault();
+                        startX = event.pageX - x;
+                        startY = event.pageY - y;
+                        offsetX = element.innerWidth() - event.offsetX;
+                        offsetY = element.innerHeight() - event.offsetY;
 
-                function mousemove(event) {
-                    if (targetElement.innerHeight() > 10) {
-                        y = event.pageY - startY;
-                        x = event.pageX - startX;
-                        var innerWidth = targetElement.innerWidth(),
-                            innerHeight = targetElement.innerHeight();
+                        $document.on('mousemove', mousemove);
+                        $document.on('mouseup', mouseup);
+                    });
 
-                        targetElement.css({
-                            width: innerWidth - (targetElement.offset().left + innerWidth - event.pageX) + offsetX,
-                            height: innerHeight - (targetElement.offset().top + innerHeight - event.pageY)  + offsetY
-                        });
+                    function mousemove(event) {
+                        event.preventDefault();
+                        if (targetElement.innerHeight() > 10) {
+                            y = event.pageY - startY;
+                            x = event.pageX - startX;
+                            var innerWidth = targetElement.innerWidth(),
+                                innerHeight = targetElement.innerHeight();
+
+                            targetElement.css({
+                                width: innerWidth - (targetElement.offset().left + innerWidth - event.pageX) + offsetX,
+                                height: innerHeight - (targetElement.offset().top + innerHeight - event.pageY)  + offsetY
+                            });
+                        }
                     }
 
-                }
-
-                function mouseup() {
-                    $document.off('mousemove', mousemove);
-                    $document.off('mouseup', mouseup);
-                }
+                    function mouseup() {
+                        $document.off('mousemove', mousemove);
+                        $document.off('mouseup', mouseup);
+                    }
+                }, timeout);
             }
         };
     })
     .directive('relativeDraggable', ['$document', function($document) {
         return {
             link: function(scope, element, attr) {
-                var startX = 0, startY = 0, x = 0, y = 0;
+                var startX = element[0].offsetLeft;
+                var startY = element[0].offsetTop;
+                var x = startX, y = startY;
 
-                element.css({
-                    position: 'relative',
+                var el = angular.element(element[0].getElementsByClassName(attr.relativeDraggable));
+
+                el.css({
                     cursor: 'pointer'
                 });
 
-                element.on('mousedown', function(event) {
+                el.on('mousedown', function(event) {
                     // Prevent default dragging of selected content
                     event.preventDefault();
                     startX = event.pageX - x;

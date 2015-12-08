@@ -1,34 +1,46 @@
 angular.module('katGui.d3')
 
-    .directive('statusSingleLevelTreeMap', function (StatusService, d3Util, $window) {
+    .directive('statusSingleLevelTreeMap', function (StatusService, d3Util, $window, $timeout) {
         return {
             restrict: 'EA',
             scope: {
                 data: '=',
                 height: '=',
                 width: '=',
+                offsetLeft: '=',
+                offsetTop: '=',
                 autoResize: '@',
                 layoutMode: '@'
             },
-            link: function (scope, element) {
+            link: function (scope, element, attr) {
 
                     var width = 220,
-                        height = element.parent()[0].clientHeight - 40,
+                        height = element.parent()[0].clientHeight,
                         root, dataDiv;
 
                     if (!scope.layoutMode) {
                         scope.layoutMode = 'dice';
                     } else if (scope.layoutMode === 'slice') {
                         height = 220;
-                        width = element.parent()[0].clientWidth - 40;
+                        width = element.parent()[0].clientWidth;
                     }
 
                     if (scope.height) {
-                        height = +scope.height;
+                        height = scope.height - 42;
+                        element.css({height: scope.height + "px"});
                     }
 
                     if (scope.width) {
-                        width = +scope.width;
+                        width = scope.width;
+                        element.css({width: scope.width + "px"});
+                    }
+
+                    if (scope.offsetLeft || scope.offsetLeft > -1) {
+                        element.css({left: scope.offsetLeft});
+                    }
+
+                    if (scope.offsetTop || scope.offsetTop > -1) {
+                        element.css({top: scope.offsetTop});
                     }
 
                     scope.ignoreList = [];
@@ -36,28 +48,48 @@ angular.module('katGui.d3')
                     var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]);
 
                     if (scope.autoResize) {
-                        var win = angular.element($window);
-                        var unbindResize = win.bind("resize", function () {
-                            if (scope.layoutMode === 'dice') {
-                                height = element.parent()[0].clientHeight - 40;
-                            } else if (scope.layoutMode === 'slice') {
-                                width = element.parent()[0].clientWidth - 40;
-                            }
-
-                            d3.select(element[0]).selectAll('md-toolbar').remove();
-                            d3.select(element[0]).selectAll('div').remove();
-                            drawTreemap(width, height);
-                        });
+                        var elementResizeTarget = element.parent();
+                        if (attr.relativeDraggable) {
+                            elementResizeTarget = element;
+                        }
+                        var unbindResize = scope.$watch(function () {
+                            return elementResizeTarget[0].clientHeight + ', ' + elementResizeTarget[0].clientWidth;
+                        }, resizeElement);
 
                         scope.$on('$destroy', function () {
-                            unbindResize.unbind();
+                            unbindResize();
                         });
                     }
 
                     drawTreemap(width, height);
 
-                    function drawTreemap(w, h) {
+                    $timeout(function () {
+                        resizeElement('force', 'draw');
+                    }, 750);
 
+                    function resizeElement(newVal, oldVal) {
+                        if (newVal !== oldVal && !scope.drawingSvg) {
+                            //allow for some time for the dom elements to complete resizing
+                            if (scope.resizeTimeout) {
+                                $timeout.cancel(scope.resizeTimeout);
+                                scope.resizeTimeout = null;
+                            }
+                            if (scope.layoutMode === 'dice') {
+                                height = elementResizeTarget[0].clientHeight - 42;
+                            } else if (scope.layoutMode === 'slice') {
+                                width = elementResizeTarget[0].clientWidth - 42;
+                            }
+
+                            scope.resizeTimeout = $timeout(function () {
+                                // d3.select(element[0]).selectAll('md-toolbar').remove();
+                                d3.select(element[0]).selectAll('.data-div').remove();
+                                drawTreemap(width, height);
+                            }, 750);
+                        }
+                    }
+
+                    function drawTreemap(w, h) {
+                        scope.drawingSvg = true;
                         var x = d3.scale.linear().range([0, w]),
                             y = d3.scale.linear().range([0, h]);
 
@@ -75,30 +107,32 @@ angular.module('katGui.d3')
 
                         root = scope.data;
 
-                        var labelDiv = d3.select(element[0]).append("md-toolbar")
-                            .attr("class", function () {
-                                var classStr = "status-top-label md-whiteframe-z2 ";
-                                classStr += angular.element(document.querySelector('md-content')).attr('class');
-                                return classStr;
-                            })
-                            .attr("title", root.name)
-                            .style("overflow", "hidden")
-                            .style("width", "100%")
-                            .style("max-height", "35px")
-                            .style("min-height", "35px");
+                        if (!scope.labelDiv) {
+                            scope.labelDiv = d3.select(element[0]).append("md-toolbar")
+                                .attr("class", function () {
+                                    var classStr = "status-top-label md-whiteframe-z2 ";
+                                    classStr += angular.element(document.querySelector('md-content')).attr('class');
+                                    return classStr;
+                                })
+                                .attr("title", root.name)
+                                .style("overflow", "hidden")
+                                .style("width", "100%")
+                                .style("max-height", "35px")
+                                .style("min-height", "35px");
 
-                        labelDiv
-                            .append("div")
-                            .attr("class", "status-top-label-text")
-                            .html(root.name);
-
+                            scope.labelDiv
+                                .append("div")
+                                .attr("class", "status-top-label-text")
+                                .html(root.name);
+                        }
                         drawData();
+                        scope.drawingSvg = false;
 
                         function drawData() {
                             dataDiv = d3.select(element[0]).append("div")
                                 .attr("class", "md-whiteframe-z2 data-div")
                                 .style("width", "100%")
-                                .style("height", h + "px");
+                                .style("height", "calc(100% - 38px)");
 
                             var svg = dataDiv.append("svg:svg")
                                 .attr("width", scope.autoResize ? "100%" : w)
@@ -198,7 +232,7 @@ angular.module('katGui.d3')
                                 .style("display", "none")
                                 .on("click", function (d) {
                                     scope.ignoreList.push(d.name);
-                                    labelDiv.remove();
+                                    scope.labelDiv.remove();
                                     dataDiv.remove();
                                     drawTreemap(w, h);
                                 })

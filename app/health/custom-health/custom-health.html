@@ -23,7 +23,7 @@
         <input type="text" style="width: 300px; height: 32px; color: #333333; margin-left: 8px" ng-model="vm.regex" placeholder="Enter Sensor Regex"/>
         <span style="margin-left: 8px;">Width:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedWidth" placeholder="View Width"/>
         <span style="margin-left: 8px;">Height:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedHeight" placeholder="View Height"/>
-        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.buildView(vm.regex)"
+        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.addView()"
                    class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">
             Add View
         </md-button>
@@ -33,13 +33,17 @@
         </md-button>
         <span flex></span>
     </md-toolbar>
-    <div flex style="margin-top: 4px; position: relative; display:inline-block; overflow: auto" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
-        <status-single-level-tree-map relative-draggable layout-mode="dice" height="tree.size.h" width="tree.size.w"
-                                      style="position: relative; display: inline-block; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
-                                      ng-repeat="tree in vm.customStatusTrees track by $index" data="tree">
-            <md-button md-theme="{{themePrimaryButtons}}" class="md-icon-button custom-health-hide-tree"
+    <div flex style="margin-top: 4px; position: relative; overflow: auto" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
+        <status-single-level-tree-map relative-draggable="status-top-label" auto-resize="true" layout-mode="dice" height="tree.size.h" width="tree.size.w"
+                                      offset-left="tree.offset.left" offset-top="tree.offset.top" ng-repeat="tree in vm.customStatusTrees track by $index" data="tree"
+                                      style="position: absolute; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
+                                      ng-class="tree.elementId">
+            <div resizeable="{{'.' + tree.elementId}}" class="resize-grip">
+                <span flex class="fa fa-arrows-v"></span>
+            </div>
+            <md-button md-theme="{{themePrimaryButtons}}" class="custom-health-hide-tree md-raised md-primary"
                        title="Remove Sensors" ng-click="vm.removeStatusTree(tree);">
-                <md-icon class="fa center-md-icon" md-font-icon="fa-eye-slash"></md-icon>
+                   <span class="fa fa-eye-slash"></span>
             </md-button>
         </status-single-level-tree-map>
     </div>
