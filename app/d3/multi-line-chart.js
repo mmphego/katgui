@@ -28,8 +28,12 @@ angular.module('katGui.d3')
                     return element[0].clientHeight + ', ' + element[0].clientWidth;
                 }, function (newVal, oldVal) {
                     if (newVal !== oldVal) {
+                        if (scope.resizeTimeout) {
+                            $timeout.cancel(scope.resizeTimeout);
+                            scope.resizeTimeout = null;
+                        }
                         //allow for some time for the dom elements to complete resizing
-                        $timeout(function () {
+                        scope.resizeTimeout = $timeout(function () {
                             drawSvg();
                             drawValues();
                         }, 750);
