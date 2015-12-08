@@ -267,7 +267,7 @@
             return Object.keys(obj);
         };
         $rootScope.openCentralLogger = function () {
-            window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + ':' + CENTRAL_LOGGER_PORT).focus();
+            window.open('http://' + ConfigService.systemConfig.katportal.katlogwebserver).focus();
         };
         $rootScope.openGangliaLink = function () {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
