@@ -76,7 +76,7 @@
             </md-toolbar>
             <md-virtual-repeat-container ng-click="showDatePicker = false" class="schedule-draft-data-list" style="direction: rtl; overflow: auto" flex>
                 <div
-                    md-virtual-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:'id_code')"
+                    md-virtual-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy:vm.draftsOrderBy.reverse)"
                      layout="column">
                     <div ng-click="vm.setSelectedScheduleDraft(item)"
                          ng-class="{'selected-draft-schedule-row': item.id_code === vm.selectedScheduleDraft.id_code}"

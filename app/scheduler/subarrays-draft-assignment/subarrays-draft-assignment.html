@@ -112,7 +112,7 @@
                                                  class="schedule-draft-data-list md-whiteframe-z1"
                                                  ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div
-                            md-virtual-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'}"
+                            md-virtual-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} | orderBy:id_code:true"
                             style="padding: 0 4px" flex layout="row" layout-align="start center"
                             ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                             ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}"

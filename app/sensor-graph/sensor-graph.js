@@ -224,9 +224,6 @@
             vm.removeSensorLine(sensor.name);
             vm.waitingForSearchResult = true;
             vm.showTips = false;
-            if (vm.liveData && !angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
-                vm.sensorNames.push({name: sensor.name, liveData: vm.liveData, sensor: sensor});
-            }
             var interval = null;
             if (vm.sensorType === 'numeric') {
                 interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
@@ -287,8 +284,7 @@
 
         vm.connectLiveFeed = function (sensor) {
             SensorsService.setSensorStrategy(
-                sensor.component,
-                sensor.name.replace(sensor.component + '_', ''),
+                sensor.name,
                 $rootScope.sensorListStrategyType,
                 $rootScope.sensorListStrategyInterval,
                 $rootScope.sensorListStrategyInterval);
