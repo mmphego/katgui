@@ -107,7 +107,7 @@
         vm.logsNavData = [{
             name: 'Central Logs',
             state: $rootScope.openCentralLogger,
-            textOffset: -10,
+            textOffset: -15,
             title: 'Open Central Logger in a new tab'
         }, {
             name: 'System Logs',
@@ -116,12 +116,19 @@
             title: 'Open System Logs in a new tab'
         }, {
             name: 'KATCP Logs',
-            textOffset: 5,
+            textOffset: 0,
             state: $rootScope.openKatsnifferLogger,
             stateParams: ['katcpmsgs.log'],
             title: 'Open KATCP Messages Log in a new tab'
         }, {
+            name: 'CAM Docs',
+            textOffset: 5,
+            state: $rootScope.openUrlInNewTab,
+            stateParams: ['https://drive.google.com/drive/folders/0B8fhAW5QnZQWVkdXYm1GTnZ2X1k'],
+            title: 'Open the CAM deployment docs'
+        }, {
             name: 'User Logs',
+            textOffset: 5,
             state: 'userlogs',
             title: 'User Defined Logs'
         }];
