@@ -36,13 +36,15 @@
 
             var foundAlarm = _.findWhere(api.alarmsData, {name: messageObj.name});
             if (foundAlarm) {
+                if (messageObj.priority !== foundAlarm.priority) {
+                    foundAlarm.selected = false;
+                }
                 foundAlarm.priority = messageObj.priority;
                 foundAlarm.severity = messageObj.severity;
                 foundAlarm.severity_value = severity_value;
                 foundAlarm.timestamp = messageObj.timestamp;
                 foundAlarm.date = messageObj.date;
                 foundAlarm.value = messageObj.value;
-                foundAlarm.selected = false;
             }
             if (!foundAlarm) {
                 api.alarmsData.push(messageObj);

@@ -1,4 +1,4 @@
-<div flex ng-controller="AlarmsCtrl as vm" layout="column" style="padding: 8px; min-width: 948px;">
+<div flex ng-controller="AlarmsCtrl as vm" layout="column" style="padding: 8px; min-width: 948px; max-height: 100%; min-height: 100%">
 
     <div flex class="md-whiteframe-z2" layout="column" style="min-height: 600px;">
         <md-toolbar class="md-whiteframe-z1" style="padding:0;">
@@ -17,7 +17,7 @@
                            title="Acknowledge Selected Alarms">Acknowledge</md-button>
                 <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.clearSelectedAlarms()"class="md-primary md-raised"
                            title="Clear Selected Alarms">Clear</md-button>
-                <md-checkbox class="md-primary" ng-model="vm.showClearedAlarms">Show Cleared Alarms
+                <md-checkbox class="md-primary" ng-model="vm.showClearedAlarms" style="font-size: 12px">Show Cleared Alarms
                 </md-checkbox>
                 <md-menu style="padding: 0">
                     <md-button class="md-icon-button inline-action-button" style="margin: 0 4px" ng-click="$mdOpenMenu()">
