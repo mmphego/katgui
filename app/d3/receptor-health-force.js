@@ -86,7 +86,7 @@ angular.module('katGui.d3')
                     gEnter.append("circle")
                         .attr("class", function (d) {
                             var prefix = d.prefix? d.prefix : '';
-                            var classStr = prefix + scope.dataMapName + '_' + d.sensor;
+                            var classStr = prefix + scope.dataMapName + '_' + d.sensor + ' health-full-item ';
                             classStr += ' ' + (StatusService.sensorValues[classStr] ?
                                 StatusService.sensorValues[classStr].status : 'inactive') + '-child';
                             return classStr;

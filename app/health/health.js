@@ -10,6 +10,14 @@
         vm.topStatusTrees = StatusService.topStatusTrees;
         vm.subscriptions = {};
 
+        ConfigService.getStatusTreeForReceptor()
+            .then(function (result) {
+                ConfigService.getReceptorList()
+                    .then(function (receptors) {
+                        StatusService.setReceptorsAndStatusTree(result.data, receptors);
+                    });
+            });
+
         ConfigService.getStatusTreesForTop()
             .then(function (result) {
                 StatusService.setTopStatusTrees(result.data);

@@ -6,11 +6,13 @@
 }
 
 .unknown-child {
-    stroke: #fff;
     background-color: #9E9E9E;
     fill: #9E9E9E;
     rect {
         fill: #9E9E9E;
+    }
+    rect.health-full-item {
+        stroke: #fff;
     }
     text {
         stroke: transparent;
@@ -28,9 +30,11 @@
 .nominal-child {
     background-color: #4CAF50;
     fill: #4CAF50;
-    stroke: #fff !important;
     rect {
         fill: #4CAF50;
+    }
+    rect.health-full-item {
+        stroke: #fff;
     }
     text {
         stroke: transparent;
@@ -46,13 +50,14 @@
 }
 
 .warn-child {
-    stroke: #fff;
     background-color: #FFC107;
     fill: #FFC107 !important;
     rect {
         fill: #FFC107;
     }
-
+    rect.health-full-item {
+        stroke: #fff;
+    }
     text {
         stroke: transparent;
         fill: black;
@@ -69,11 +74,12 @@
 .error-child {
     background-color: #F44336;
     fill: #F44336;
-    stroke: #fff !important;
     rect {
         fill: #F44336;
     }
-
+    rect.health-full-item {
+        stroke: #fff;
+    }
     text {
         stroke: transparent;
         fill: white;
@@ -88,13 +94,14 @@
 }
 
 .failure-child {
-    stroke: #fff;
     background-color: #3F51B5;
     fill: #3F51B5 !important;
     rect {
         fill: #3F51B5;
     }
-
+    rect.health-full-item {
+        stroke: #fff;
+    }
     text {
         stroke: transparent;
         fill: white;
@@ -109,13 +116,14 @@
 }
 
 .unreachable-child {
-    stroke: #fff;
     background-color: #EC407A;
     fill: #EC407A !important;
     rect {
         fill: #EC407A;
     }
-
+    rect.health-full-item {
+        stroke: #fff;
+    }
     text {
         stroke: transparent;
         fill: black;
@@ -129,16 +137,35 @@
     font-weight: bold;
 }
 
-.inactive-child {
-    stroke: #fff;
-    background-color: #aaa;
-    fill: #aaa !important;
+.in-maintenance-child {
+    background-color: #9C27B0 !important;
+    fill: #9C27B0 !important;
 
-    rect {
-        //        fill: #795548;
-        fill: #000;
+    .health-full-item.rect {
+        fill: #9C27B0 !important;
+        stroke: #fff !important;
     }
 
+    text {
+        stroke: transparent;
+        fill: white;
+        font-weight: bold;
+    }
+}
+
+.health-full-item {
+    stroke: #fff !important;
+}
+
+.inactive-child {
+    background-color: #000;
+    fill: #000 !important;
+    rect {
+        fill: #000;
+    }
+    rect.health-full-item {
+        stroke: #fff;
+    }
     text {
         stroke: transparent;
         fill: white;
@@ -570,4 +597,9 @@
 
 .no-fill {
     fill: none;
+}
+
+.in-maintenance-receptor {
+    // border: 10px solid #9C27B0;
+    background-color: #9C27B0;
 }
