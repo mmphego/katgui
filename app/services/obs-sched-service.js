@@ -189,8 +189,6 @@
         };
 
         api.receivedScheduleMessage = function (action, sb) {
-            $log.info(action);
-            $log.info(sb);
             if (action === 'sb_remove') {
                 //only drafts can be deleted in the db
                 var removedSB = null;
