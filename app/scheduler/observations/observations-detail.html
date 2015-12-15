@@ -112,6 +112,11 @@
                                                 md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; opacity: 0.8;">
                             </md-progress-linear>
+                            <md-progress-linear ng-if="item.verification_state === 'VERIFYING'"
+                                                class="md-primary progress-bar-fill"
+                                                md-mode="indeterminate"
+                                                style="position: absolute; left: 0; right: 0;">
+                            </md-progress-linear>
                             <span title="{{item.priority}}" style="min-width: 14px; font-size: 14px" class="fa" ng-class="{'fa-arrow-circle-up dark-blue-grey-color': item.priority === 'HIGH', 'fa-arrow-circle-down light-grey-color': item.priority === 'LOW'}"></span>
                             <div layout="column" layout-align="start" style="width: 120px">
                                 <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"

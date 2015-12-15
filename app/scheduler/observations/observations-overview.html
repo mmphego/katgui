@@ -80,6 +80,11 @@
                                                     value="{{item.progress}}"
                                                     style="position: absolute; left: 0; right: 0;">
                                 </md-progress-linear>
+                                <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'"
+                                                    class="md-primary progress-bar-fill"
+                                                    md-mode="indeterminate"
+                                                    style="position: absolute; left: 0; right: 0;">
+                                </md-progress-linear>
                                 <div layout="column" layout-align="start" style="width: 130px">
                                 <span
                                     ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
