@@ -98,6 +98,9 @@ angular.module('katGui.d3')
                     }
 
                     scope.subarrayKeys = Object.keys(SensorsService.subarraySensorValues);
+                    if (scope.subarrayKeys.length === 0) {
+                        return;
+                    }
                     var previousRoot = root;
                     root = {children: [], name: 'root'};
                     scope.subarrayKeys.forEach(function (subarrayKey) {
@@ -187,7 +190,8 @@ angular.module('katGui.d3')
                     gEnter.append("circle")
                         .attr("class", function (d) {
                             var classString = "";
-                            var fullSensorName = d.parentName + '_' + d.sensor;
+                            var prefix = d.prefix? d.prefix : '';
+                            var fullSensorName = prefix + d.parentName + '_' + d.sensor + ' health-full-item ';
                             if (StatusService.sensorValues[fullSensorName]) {
                                 classString += StatusService.sensorValues[fullSensorName].status + '-child';
                             } else {

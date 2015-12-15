@@ -4,7 +4,7 @@ angular.module('katGui.d3')
     .directive('receptorHealthList', function ($rootScope, d3Util, $timeout, $interval, $log, StatusService) {
         return {
             restrict: 'E',
-            template: '<div ng-repeat="receptor in vm.receptorList track by receptor" ng-if="vm.receptorList.length > 0" ng-switch="vm.mapType" style="display: inline-block">' +
+            template: '<div ng-repeat="receptor in vm.receptorList track by receptor" ng-if="vm.receptorList.length > 0" ng-switch="vm.mapType" style="display: inline-block" ng-class="{\'in-maintenance-receptor\':getReceptorInMaintenance(receptor)}">' +
             '<receptor-health-tree-map class="treemap-container" receptor="receptor" ng-switch-when="Treemap"></receptor-health-tree-map>' +
             '<receptor-health-pack-map class="treemap-container" receptor="receptor" ng-switch-when="Pack"></receptor-health-pack-map>' +
             '<receptor-health-partition-map class="treemap-container" receptor="receptor" ng-switch-when="Partition"></receptor-health-partition-map>' +
@@ -16,6 +16,10 @@ angular.module('katGui.d3')
 
                 scope.vm.redrawCharts = function () {
                     $rootScope.$emit('redrawChartMessage', {size: scope.vm.treeChartSize});
+                };
+
+                scope.getReceptorInMaintenance = function (receptor) {
+                    return StatusService.resourcesInMaintenance.indexOf(receptor) > -1;
                 };
             }
         };

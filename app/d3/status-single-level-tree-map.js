@@ -152,26 +152,6 @@ angular.module('katGui.d3')
                             var cell = svg.selectAll("g")
                                 .data(nodes)
                                 .enter().append("svg:g")
-                                .attr("class", function (d) {
-                                    var classString = "";
-                                    if (angular.isDefined(d.objectValue)) {
-                                        classString += d.objectValue.status + '-child';
-                                    } else if (d.sensorValue) {
-                                        classString += d.sensorValue.status + '-child';
-                                    } else if (StatusService.sensorValues[d.sensor.replace('.', '_')]) {
-                                        classString += StatusService.sensorValues[d.sensor.replace('.', '_')].status + '-child';
-                                    } else {
-                                        classString += 'inactive-child';
-                                    }
-                                    classString += d.dx > 300 ? " child-big-text" : " child ";
-                                    if (angular.isDefined(d.objectValue)) {
-                                        classString += " " + d.objectValue.parent_name;
-                                        classString += "_" + d.sensor.replace(/\./g, "_");
-                                    } else {
-                                        classString += " " + d.sensor;
-                                    }
-                                    return classString;
-                                })
                                 .attr("transform", function (d) {
                                     return "translate(" + d.x + "," + d.y + ")";
                                 })
@@ -203,9 +183,66 @@ angular.module('katGui.d3')
                                         return 0;
                                     }
                                     return d.dy - 1;
+                                })
+                                .attr("class", function (d) {
+                                    var classString = "health-full-item ";
+                                    if (StatusService.resourcesInMaintenance.indexOf(d.sensor.replace('agg_', '').split('_')[0]) > -1) {
+                                        classString += ' in-maintenance-child ';
+                                    } else if (angular.isDefined(d.objectValue)) {
+                                       classString += d.objectValue.status + '-child ';
+                                    } else if (d.sensorValue) {
+                                       classString += d.sensorValue.status + '-child ';
+                                    } else if (StatusService.sensorValues[d.sensor.replace('.', '_')]) {
+                                       classString += StatusService.sensorValues[d.sensor.replace('.', '_')].status + '-child ';
+                                    } else {
+                                       classString += ' inactive-child ';
+                                    }
+                                    return classString + " " + d.sensor;
                                 });
 
-                            cell.append("svg:text")
+                            cell.append("svg:rect")
+                                .attr("x", "10%")
+                                .attr("y", "15")
+                                .attr("width", "80%")
+                                .attr("height", function (d) {
+                                    if (d.hidden) {
+                                        return 0;
+                                    }
+                                    if (d.dy - 30 > 0) {
+                                        return d.dy - 30;
+                                    } else {
+                                        return 0;
+                                    }
+                                })
+                                .attr("class", function (d) {
+                                    var classString = "text-bg-rect ";
+                                    if (angular.isDefined(d.objectValue)) {
+                                       classString += d.objectValue.status + '-child ';
+                                    } else if (d.sensorValue) {
+                                       classString += d.sensorValue.status + '-child ';
+                                    } else if (StatusService.sensorValues[d.sensor.replace('.', '_')]) {
+                                       classString += StatusService.sensorValues[d.sensor.replace('.', '_')].status + '-child ';
+                                    } else {
+                                       classString += ' inactive-child ';
+                                    }
+                                   return classString + " " + d.sensor;
+                                });
+
+                            cell.append("svg:g")
+                                .attr("class", function (d) {
+                                    var classString = "text-rect ";
+                                    if (angular.isDefined(d.objectValue)) {
+                                        classString += d.objectValue.status + '-child ';
+                                    } else if (d.sensorValue) {
+                                        classString += d.sensorValue.status + '-child ';
+                                    } else if (StatusService.sensorValues[d.sensor.replace('.', '_')]) {
+                                        classString += StatusService.sensorValues[d.sensor.replace('.', '_')].status + '-child ';
+                                    } else {
+                                        classString += ' inactive-child ';
+                                    }
+                                    return classString + " child-text " + d.sensor;
+                                })
+                                .append("svg:text")
                                 .attr("x", function (d) {
                                     if (scope.layoutMode === "dice") {
                                         return "50%";
@@ -216,9 +253,9 @@ angular.module('katGui.d3')
                                 .attr("y", function (d) {
                                     return d.dy / 2;
                                 })
-                                //.attr("class", "inactive-child-text")
                                 .attr("dy", ".35em")
                                 .attr("text-anchor", "middle")
+
                                 .text(function (d) {
                                     return d.name ? d.name : d.sensor;
                                 });
@@ -227,8 +264,6 @@ angular.module('katGui.d3')
                                 .attr("id", function (d) {
                                     return d.sensor.replace(".", "_") + "hideButton";
                                 })
-                                //.style("width", 26)
-                                //.style("height", 26)
                                 .style("display", "none")
                                 .on("click", function (d) {
                                     scope.ignoreList.push(d.name);

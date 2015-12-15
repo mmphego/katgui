@@ -59,7 +59,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
-                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout) {
+                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -131,6 +131,7 @@
 
             ConfigService.getSystemConfig().then(function (systemConfig) {
                 $rootScope.systemConfig = systemConfig;
+                StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
             });
 
             vm.utcTime = '';

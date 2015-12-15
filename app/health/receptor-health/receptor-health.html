@@ -24,7 +24,7 @@
                 <md-button class="md-icon-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'health-menu-content')">
                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                 </md-button>
-                <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;" id="health-menu-content" md-menu-disable-close>
+                <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px; height: 180px" id="health-menu-content" md-menu-disable-close>
                     <md-menu-item>
                         <md-select ng-model="vm.mapType" style="margin: 0; padding: 0" ng-click="$event.stopPropagation()"
                                    class="md-primary" md-theme="{{themePrimaryButtons}}" ng-change="vm.mapTypeChanged()">
@@ -33,9 +33,9 @@
                     </md-menu-item>
                     <md-menu-item>
                         <div layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
-                             style="margin-right: 8px; margin-bottom: 8px; padding: 0">
+                             style="margin:0; padding: 0">
                             <label style="width: 82px; font-weight: normal; margin-top: 4px;">Chart Width:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Chart Width for each Tree View">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.treeChartSize.width"
                                        ng-change="vm.chartSizeChanged()" type="number"
@@ -45,9 +45,9 @@
                     </md-menu-item>
                     <md-menu-item>
                         <div layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
-                             style="margin-right: 8px; margin-bottom: 8px; padding: 0">
+                             style="margin:0; padding: 0">
                             <label style="width: 82px; font-weight: normal; margin-top: 4px;">Chart Height:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Chart Height for each Tree View">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.treeChartSize.height"
                                        ng-change="vm.chartSizeChanged()" type="number"

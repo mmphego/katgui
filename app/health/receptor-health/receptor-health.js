@@ -51,17 +51,20 @@
             vm.redrawCharts();
         };
 
-        ConfigService.getStatusTreeForReceptor()
-            .then(function (result) {
-                ConfigService.getReceptorList()
-                    .then(function (receptors) {
-                        StatusService.setReceptorsAndStatusTree(result.data, receptors);
-                        for (var receptor in StatusService.statusData) {
-                            //recursively populate children
-                            vm.populateTree(StatusService.statusData[receptor], receptor);
-                        }
-                        vm.redrawCharts();
-                    });
-            });
+        ConfigService.getSystemConfig().then(function (systemConfig) {
+            StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
+            ConfigService.getStatusTreeForReceptor()
+                .then(function (result) {
+                    ConfigService.getReceptorList()
+                        .then(function (receptors) {
+                            StatusService.setReceptorsAndStatusTree(result.data, receptors);
+                            StatusService.receptors.forEach(function (receptor) {
+                                vm.populateTree(StatusService.statusData[receptor], receptor);
+                            });
+                            vm.redrawCharts();
+                        });
+                });
+        });
+
     }
 })();

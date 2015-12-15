@@ -1,4 +1,4 @@
-<div flex layout="column" style="min-width: 1015px; min-height: 920px; margin-top: 8px;"
+<div flex layout="column" style="min-width: 1015px; min-height: 860px; margin-top: 8px;"
      ng-controller="SubArrayExecutorOverview as vm">
 
     <div layout="row" layout-align="center center" style="margin: 0 8px" md-theme="{{themePrimaryButtons}}">
@@ -78,6 +78,11 @@
                                 <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
                                                     md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}"
                                                     value="{{item.progress}}"
+                                                    style="position: absolute; left: 0; right: 0;">
+                                </md-progress-linear>
+                                <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'"
+                                                    class="md-primary progress-bar-fill"
+                                                    md-mode="indeterminate"
                                                     style="position: absolute; left: 0; right: 0;">
                                 </md-progress-linear>
                                 <div layout="column" layout-align="start" style="width: 130px">

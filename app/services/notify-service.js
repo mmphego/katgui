@@ -143,7 +143,7 @@
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
                     "<pre ng-bind-html='sb | prettifyJSON'></pre>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "<md-button class='md-primary' style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
+                    "<md-button class='md-primary md-raised' style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +
                     "</div>" +
                     "</md-content></md-dialog>",
                     targetEvent: event
@@ -207,7 +207,7 @@
 
                         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
                             var strList = sensor.name.split(':');
-                            var sensorName = strList[1].replace(/\./g, '_');
+                            var sensorName = strList[1].replace(/\./g, '_').trim();
                             $scope.sensors[sensorName].value = sensor.value.value;
                             $scope.sensors[sensorName].status = sensor.value.status;
                             $scope.sensors[sensorName].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);

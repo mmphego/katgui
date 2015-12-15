@@ -134,8 +134,8 @@
                     "<input placeholder='New Password' type='password' focus ng-model='password'>" +
                     "</md-input-container>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' class='md-primary' ng-click='cancel()'>Cancel</md-button>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' class='md-primary' ng-click='answer(password)'><span>Reset</span></md-button>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' class='md-primary md-raised' ng-click='cancel()'>Cancel</md-button>" +
+                    "<md-button style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' class='md-primary md-raised' ng-click='answer(password)'><span>Reset</span></md-button>" +
                     "</div>" +
                     "</md-content></md-dialog>",
                     targetEvent: event

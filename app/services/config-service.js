@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ConfigService', ConfigService);
 
-    function ConfigService($q, $http, SERVER_URL, $rootScope, $log, $timeout) {
+    function ConfigService($q, $http, SERVER_URL, StatusService, $rootScope, $log, $timeout) {
 
         var urlBase = SERVER_URL + '/katconf';
         var api = {};

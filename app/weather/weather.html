@@ -4,7 +4,7 @@
             <span style="margin-top: -10px" flex>Sensor Values</span>
             <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" style="font-size: 14px">
                 <span style="margin-right: 8px;">Historic values at a</span>
-                <md-input-container md-no-float style="margin-left: 8px; padding: 0; width: 40px"
+                <md-input-container md-no-float style="margin: 8px 0px; padding: 0; height: 30px"
                                     class="" title="Data Interval Grouping">
                     <input flex style="color: inherit;" placeholder="Interval" ng-model="vm.sensorGroupingInterval" type="number"
                            ng-model-options="{ debounce: 750 }" ng-change="vm.historicalRangeChanged()" min="0" max="1800">
@@ -25,7 +25,7 @@
                 <span style="margin-left: 25px; min-width: 158px; max-width: 158px;" class="subheader-text">
                     Wind Direction ({{vm.latestWindDirection | number:1}}°)
                 </span>
-                <span style="width: 120px;" class="subheader-text">
+                <span style="width: 140px;" class="subheader-text">
                     Sensor
                 </span>
                 <span style="width: 88px;" class="subheader-text">
@@ -46,7 +46,7 @@
                 <div ng-repeat="sensor in vm.ancResource.sensorList track by $index" title="{{sensor.description}}"
                      class="resource-sensor-item" ng-if="sensor.name !== 'wind direction'"
                      layout="row" class="unselectable">
-                    <span style="min-width: 120px" ng-class="vm.classNameFromPythonID(sensor)">{{sensor.name}}</span>
+                    <span style="min-width: 140px" ng-class="vm.classNameFromPythonID(sensor)">{{sensor.name}}</span>
                     <span class="resource-sensor-value-item" style="width: 80px"
                           ng-show="sensor.sensorValue">{{sensor.value | number:1}}</span>
                     <span style="margin-left: 8px; width: 60px" ng-if="vm.maxSensorValue[sensor.name]">
@@ -88,8 +88,8 @@
                     <md-menu-item ng-if="vm.useFixedWindYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Y-Axis Minimum Value">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.yAxisWindMinValue"
                                        ng-change="vm.showWindOptionsChanged()" type="number"
@@ -100,8 +100,8 @@
                     <md-menu-item ng-if="vm.useFixedWindYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;  height: 30px"
                                                 class="md-primary" title="Set the desired Y-Axis Maximum Value">
                                 <input flex style="" placeholder="Maximum" ng-model="vm.yAxisWindMaxValue"
                                        ng-change="vm.showWindOptionsChanged()" type="number"
@@ -143,8 +143,8 @@
                     <md-menu-item ng-if="vm.useFixedRightYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Right Y-Axis Minimum Value">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.yAxisRightMinValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
@@ -155,8 +155,8 @@
                     <md-menu-item ng-if="vm.useFixedRightYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Right Y-Axis Maximum Value">
                                 <input flex style="" placeholder="Maximum" ng-model="vm.yAxisRightMaxValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
@@ -172,8 +172,8 @@
                     <md-menu-item ng-if="vm.useFixedYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Y-Axis Minimum Value">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
@@ -184,8 +184,8 @@
                     <md-menu-item ng-if="vm.useFixedYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center" ng-click="$event.stopPropagation()"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Y-Axis Maximum Value">
                                 <input flex style="" placeholder="Maximum" ng-model="vm.yAxisMaxValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
