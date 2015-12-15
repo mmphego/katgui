@@ -194,13 +194,13 @@
                         '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be logged out.</p>' +
                         '  </md-dialog-content>' +
                         '  <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">' +
-                        '    <md-button ng-click="cancel()" class="md-primary">' +
+                        '    <md-button ng-click="cancel()" class="md-primary md-raised">' +
                         '      Cancel' +
                         '    </md-button>' +
-                        '    <md-button ng-click="readOnlyLogin()" class="md-primary">' +
+                        '    <md-button ng-click="readOnlyLogin()" class="md-primary md-raised">' +
                         '      Read Only Login' +
                         '    </md-button>' +
-                        '    <md-button ng-click="proceed()" class="md-primary">' +
+                        '    <md-button ng-click="proceed()" class="md-primary md-raised">' +
                         '      Proceed' +
                         '    </md-button>' +
                         '  </div>' +
