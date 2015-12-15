@@ -132,6 +132,8 @@
                                             api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
                                         $rootScope.logout();
                                     }
+                                } else if (messageObj.msg_channel === 'auth:katpool_resources_in_maintenance') {
+                                    StatusService.receptorMaintenanceMessageReceived(messageObj);
                                 } else if (messageChannel[0] === 'sched') {
                                     ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {

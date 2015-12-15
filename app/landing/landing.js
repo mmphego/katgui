@@ -17,15 +17,16 @@
                                 title: "Navigation Controls"
                             }
                         ]
-                    }, {
-                       widgets: [
-                           {
-                               type: "ApodWidget",
-                               config: {},
-                               title: "APOD"
-                           }
-                       ]
                     }
+                    // , {
+                    //    widgets: [
+                    //        {
+                    //            type: "ApodWidget",
+                    //            config: {},
+                    //            title: "APOD"
+                    //        }
+                    //    ]
+                    // }
                 ]
             }
         ]

@@ -69,7 +69,7 @@
 
         api.onSockJSMessage = function (e) {
             api.connection.send($rootScope.currentUser.email);
-            $log.info('Received: ' + e.data);
+            $log.debug('Received: ' + e.data);
         };
 
         api.connectListener = function (skipDeferObject) {
