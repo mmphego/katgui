@@ -37,27 +37,27 @@
                             ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(newDate)"></datetimepicker>
 
-            <div layout="row">
-                <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
+            <div layout="row" style="margin-top: 4px">
+                <md-input-container md-no-float style="margin: 0; padding: 0; width: 135px; height: 30px">
                     <input type="text" ng-change="vm.startTimeChange()" class=""
                            ng-model="vm.sensorStartDateReadable" placeholder="Start Date (UTC)"
                            ng-class="{'input-error':vm.dateTimeError}" title="Start Date 'HH:mm:ss yyyy-MM-dd' UTC"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
-                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
+                <md-button class="md-icon-button" style="margin: 0; padding: 0; width: 32px; max-height: 32px; min-height: 32px;"
                            ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
             </div>
 
-            <div layout="row" layout="center center" style="margin-top: -10px;" ng-show="vm.showRelativeTime">
+            <div layout="row" layout="center center" style="margin: 0; padding: 4px" ng-show="vm.showRelativeTime">
                 <md-switch ng-init="vm.plusMinus = false" class="md-primary" ng-model="vm.plusMinus"
-                           style="font-size: 34px; min-width: 65px; margin-right: -10px; margin-top: 12px">
+                           style="font-size: 34px; min-width: 65px; margin-right: -10px; margin-top: 18px">
                     {{vm.plusMinus? '+' : '-'}}
                 </md-switch>
-                <md-input-container md-no-float style="padding: 0; vertical-align: middle">
+                <md-input-container md-no-float style="padding: 0; vertical-align: middle; margin: 0">
                     <input ng-init="vm.unitLength = 1" type="number" min="1" max="999"
-                           style="font-size: 16px; background: transparent; width: 45px; text-align: end; max-height: 30px; margin-top:21px;"
+                           style="font-size: 16px; background: transparent; width: 45px; text-align: end; max-height: 30px; margin-top:2px;"
                            placeholder="" ng-model="vm.unitLength" title="Range Unit Length">
                 </md-input-container>
 
@@ -70,14 +70,14 @@
                 </md-select>
             </div>
 
-            <div layout="row" layout="center center" style="margin-top: -10px;" ng-show="!vm.showRelativeTime">
-                <md-input-container md-no-float style="margin-top: 3px; padding: 0; width: 135px;">
+            <div layout="row" layout="center center" style="margin: 0px; padding: 4px" ng-show="!vm.showRelativeTime">
+                <md-input-container md-no-float style="margin: 0; padding: 0; width: 135px; height: 30px">
                     <input type="text" ng-change="vm.endTimeChange()" class=""
                            ng-model="vm.sensorEndDateReadable" placeholder="End Date (UTC)"
                            ng-class="{'input-error':vm.endDateTimeError}" title="End Date 'HH:mm:ss yyyy-MM-dd' (UTC)"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
-                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
+                <md-button class="md-icon-button" style="margin: 0; padding: 0; width: 32px; max-height: 32px; min-height: 32px;"
                            ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
@@ -86,7 +86,7 @@
             <div layout="row" layout-align="center center" style="margin-left: 16px; margin-right:16px; width: 130px;">
                 <!--<span style="margin-right: 8px;">Sensor Type:</span>-->
                 <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'"
-                           ng-model="vm.sensorType" style="padding: 8px"
+                           ng-model="vm.sensorType" style="margin: 0"
                            title="Sensor Type" ng-change="vm.sensorTypeChanged()">
                     <md-option value="numeric">Numeric</md-option>
                     <!--<md-option value="text">Text</md-option>-->
@@ -235,8 +235,8 @@
                     <md-menu-item ng-if="vm.useFixedYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Min:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Min:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Y-Axis Minimum Value">
                                 <input flex style="" placeholder="Minimum" ng-model="vm.yAxisMinValue"
                                        ng-change="vm.showOptionsChanged()" type="number"
@@ -247,8 +247,8 @@
                     <md-menu-item ng-if="vm.useFixedYAxis">
                         <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
                              style="margin-left: 8px; margin-right: 8px; margin-bottom: 8px;">
-                            <label style="width: 43px; font-weight: normal; margin-top: 4px;">Y Max:</label>
-                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
+                            <label style="width: 53px; font-weight: normal; margin-top: 4px;">Y Max:</label>
+                            <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Y-Axis Maximum Value">
                                 <input flex style="" placeholder="Maximum" ng-model="vm.yAxisMaxValue"
                                        ng-change="vm.showOptionsChanged()" type="number"

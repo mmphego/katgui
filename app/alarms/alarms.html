@@ -17,7 +17,7 @@
                            title="Acknowledge Selected Alarms">Acknowledge</md-button>
                 <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.clearSelectedAlarms()"class="md-primary md-raised"
                            title="Clear Selected Alarms">Clear</md-button>
-                <md-checkbox class="md-primary" ng-model="vm.showClearedAlarms" style="font-size: 12px">Show Cleared Alarms
+                <md-checkbox class="md-primary" ng-model="vm.showClearedAlarms" style="font-size: 13px; margin: 0">Show Cleared Alarms
                 </md-checkbox>
                 <md-menu style="padding: 0">
                     <md-button class="md-icon-button inline-action-button" style="margin: 0 4px" ng-click="$mdOpenMenu()">
@@ -146,7 +146,7 @@
                     <md-button ng-disabled="!vm.canOperateAlarms" ng-click="vm.cancelKnowSelectedAlarms()" class="md-primary md-raised"
                                style="font-size: 14px">Cancel Known
                     </md-button>
-                    <div layout="column" style="font-size: 12px;">
+                    <div layout="column" style="font-size: 13px;">
                         <md-checkbox style="margin-top: 2px; margin-bottom: 2px;"
                                      class="md-primary alarms-tools-checkbox" ng-model="vm.showKnownNominalAlarms">Show
                             Nominal
