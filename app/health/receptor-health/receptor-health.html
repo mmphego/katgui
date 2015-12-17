@@ -18,7 +18,7 @@
         </div>
     </div>
     <div style="padding-left:16px; padding-right:16px; padding-top:8px;">
-        <div md-theme="{{themePrimaryButtons}}" class="" layout="row" layout-align="start center"
+        <div md-theme="{{themePrimaryButtons}}" layout="row" layout-align="start center"
             style="position: absolute; right: 0; top: 0">
             <md-menu style="padding: 0">
                 <md-button class="md-icon-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'health-menu-content')">
@@ -37,7 +37,7 @@
                             <label style="width: 82px; font-weight: normal; margin-top: 4px;">Chart Width:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Chart Width for each Tree View">
-                                <input flex style="" placeholder="Minimum" ng-model="vm.treeChartSize.width"
+                                <input flex placeholder="Minimum" ng-model="vm.treeChartSize.width"
                                        ng-change="vm.chartSizeChanged()" type="number"
                                        ng-model-options="{ debounce: 300 }">
                             </md-input-container>
@@ -49,7 +49,7 @@
                             <label style="width: 82px; font-weight: normal; margin-top: 4px;">Chart Height:</label>
                             <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0; height: 30px"
                                                 class="md-primary" title="Set the desired Chart Height for each Tree View">
-                                <input flex style="" placeholder="Minimum" ng-model="vm.treeChartSize.height"
+                                <input flex placeholder="Minimum" ng-model="vm.treeChartSize.height"
                                        ng-change="vm.chartSizeChanged()" type="number"
                                        ng-model-options="{ debounce: 300 }">
                             </md-input-container>

@@ -1,6 +1,6 @@
 <div ng-controller="SchedulerHomeCtrl as vm" flex layout-fill layout="column"
      ng-class="{'connection-lost-bg':vm.connectionLost}" md-theme="{{themePrimary}}"
-     style="min-width: 1220px; min-height: 600px;">
+     style="min-width: 1280px; min-height: 600px;">
 
     <div ng-if="$root.iAmLO || $root.iAmCA" ng-show="!vm.childStateShowing" layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}"
          style="margin: 11px 8px" md-theme="{{themePrimaryButtons}}">

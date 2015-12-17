@@ -37,7 +37,7 @@
             <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 1; border: 0;"
                  layout="row" layout-align="start center">
                 <span style="width: 60px;" class="subheader-text" ng-click="vm.setAlarmsOrderBy('severity_value')">
-                    <span style="">Severity</span>
+                    <span>Severity</span>
                     <span class="fa"
                           ng-class="{'fa-caret-up': vm.alarmsOrderBy.value === 'severity_value' && !vm.alarmsOrderBy.reverse, 'fa-caret-down': vm.alarmsOrderBy.value === 'severity_value' && vm.alarmsOrderBy.reverse}"></span>
                 </span>
@@ -66,8 +66,7 @@
         </md-toolbar>
         <div flex class="alarms-list alarms-list-large" ng-click="vm.selectAllAlarms = false">
             <div
-                ng-repeat="item in filteredAlarms = ($root.alarmsData | alarmsFilter:vm.showClearedAlarms | regexSearch:vm.alarmsOrderByFields:vm.q | orderBy:'timestamp':true | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse) track by $index"
-                class="">
+                ng-repeat="item in filteredAlarms = ($root.alarmsData | alarmsFilter:vm.showClearedAlarms | regexSearch:vm.alarmsOrderByFields:vm.q | orderBy:'timestamp':true | orderBy:vm.alarmsOrderBy.value:vm.alarmsOrderBy.reverse) track by $index">
                 <div ng-click="item.selected = !item.selected;" class="alarm-row-item"
                      ng-switch="item.severity" layout="row" layout-align="start center"
                      ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
@@ -170,10 +169,10 @@
 
             <div ng-show="vm.showKnownAlarmsList" flex class="unselectable list-subheader-title"
                  style="padding-top: 8px; z-index: 1; border: 0;" layout="row" layout-align="start center">
-                 <span style="width: 26px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('severity')">
-                    <span style="padding: 8px"></span>
+                 <span style="width: 60px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('severity_value')">
+                    <span>Severity</span>
                     <span class="fa"
-                          ng-class="{'fa-caret-up': vm.knownAlarmsOrderBy.value === 'severity' && !vm.knownAlarmsOrderBy.reverse, 'fa-caret-down': vm.knownAlarmsOrderBy.value === 'severity' && vm.knownAlarmsOrderBy.reverse}"></span>
+                          ng-class="{'fa-caret-up': vm.knownAlarmsOrderBy.value === 'severity_value' && !vm.knownAlarmsOrderBy.reverse, 'fa-caret-down': vm.knownAlarmsOrderBy.value === 'severity_value' && vm.knownAlarmsOrderBy.reverse}"></span>
                 </span>
                 <span style="width: 168px;" class="subheader-text" ng-click="vm.setKnownAlarmsOrderBy('timestamp')">
                     <span>Date Changed</span>
@@ -200,8 +199,7 @@
 
         <div ng-show="vm.showKnownAlarmsList" flex class="alarms-list" ng-click="vm.selectAllKnownAlarms = false">
             <div
-                ng-repeat="item in filteredKnownAlarms = ($root.alarmsData | alarmsKnownFilter:vm.showKnownNominalAlarms:vm.showKnownMaintenanceAlarms | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:'timestamp':true | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse) track by $index"
-                class="">
+                ng-repeat="item in filteredKnownAlarms = ($root.alarmsData | alarmsKnownFilter:vm.showKnownNominalAlarms:vm.showKnownMaintenanceAlarms | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:'timestamp':true | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse) track by $index">
                 <div ng-click="item.selected = !item.selected" flex class="alarm-row-item"
                      ng-switch="item.severity" layout="row" layout-align="start center"
                      ng-class="{'alarm-list-item-badge-warn': item.severity === 'warn',
