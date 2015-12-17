@@ -88,7 +88,7 @@
                         vm.subarrays['subarray_' + i] = {id: i.toString()};
                     }
                     receptorSensorsRegex += '|katpool_resources_in_maintenance';
-                    SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 10);
+                    SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 30);
                 });
         };
         vm.connectListeners();
