@@ -38,15 +38,18 @@ gulp.task('clean-tests', function () {
     rimraf.sync('test-results');
 });
 
-gulp.task('css', ['clean'], function () {
-    //todo use something like domSrc to pull this out of app.less
-    return gulp.src(['bower_components/angular-material/angular-material.min.css',
-        'bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
+gulp.task('cssMaterial', function () {
+    return gulp.src(['bower_components/angular-material/angular-material.min.css'])
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('cssMain', function () {
+
+    return gulp.src(['bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
         'bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
         'app/app.less'])
         .pipe(insert.prepend('@fa-font-path: "fonts";'))
         .pipe(less().on('error', util.log))
-        .pipe(concat('app.full.min.css'))
         .pipe(cssmin({
             keepSpecialComments: false,
             shorthandCompacting: false,
@@ -54,6 +57,13 @@ gulp.task('css', ['clean'], function () {
             aggressiveMerging: false,
             advanced: false
         }))
+        .pipe(concat('main.app.full.min.css'))
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('cssConcat', function () {
+    return gulp.src(['dist/angular-material.min.css', 'dist/main.app.full.min.css'])
+        .pipe(concat('app.full.min.css'))
         .pipe(gulp.dest('dist/'));
 });
 
@@ -142,4 +152,4 @@ gulp.task('webserver', function() {
         }));
 });
 
-gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'fonts', 'images', 'sounds']);
+gulp.task('build', ['clean', 'cssMaterial', 'cssMain', 'cssConcat', 'js', 'indexHtml', 'fonts', 'images', 'sounds']);
