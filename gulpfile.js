@@ -11,7 +11,6 @@ var ngannotate = require('gulp-ng-annotate');
 var htmlmin = require('gulp-htmlmin');
 var cssmin = require('gulp-cssmin');
 var streamqueue = require('streamqueue');
-var rimraf = require('rimraf');
 var jshint = require('gulp-jshint');
 var jasmine = require('gulp-jasmine');
 var stylish = require('jshint-stylish');
@@ -19,6 +18,7 @@ var domSrc = require('gulp-dom-src');
 var karma = require('gulp-karma');
 var util = require('gulp-util');
 var insert = require('gulp-insert');
+var del = require('del');
 
 var htmlminOptions = {
     collapseBooleanAttributes: true,
@@ -31,22 +31,29 @@ var htmlminOptions = {
 };
 
 gulp.task('clean', function () {
-    rimraf.sync('dist');
+    return del('dist');
 });
 
 gulp.task('clean-tests', function () {
-    rimraf.sync('test-results');
+    return del('test-results');
 });
 
-gulp.task('css', ['clean'], function () {
-    //todo use something like domSrc to pull this out of app.less
-    return gulp.src(['bower_components/angular-material/angular-material.min.css',
-        'bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
+gulp.task('clean:csstmp', ['css:material', 'css:main', 'css:concat', 'clean'], function (cb) {
+    return del(['dist/main.app.full.min.css', 'dist/angular-material.min.css']);
+});
+
+gulp.task('css:material', ['clean'], function () {
+    return gulp.src(['bower_components/angular-material/angular-material.min.css'])
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('css:main', ['clean'], function () {
+
+    return gulp.src(['bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
         'bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
         'app/app.less'])
         .pipe(insert.prepend('@fa-font-path: "fonts";'))
         .pipe(less().on('error', util.log))
-        .pipe(concat('app.full.min.css'))
         .pipe(cssmin({
             keepSpecialComments: false,
             shorthandCompacting: false,
@@ -54,6 +61,13 @@ gulp.task('css', ['clean'], function () {
             aggressiveMerging: false,
             advanced: false
         }))
+        .pipe(concat('main.app.full.min.css'))
+        .pipe(gulp.dest('dist/'));
+});
+
+gulp.task('css:concat', ['css:main', 'css:material', 'clean'], function () {
+    return gulp.src(['dist/angular-material.min.css', 'dist/main.app.full.min.css'])
+        .pipe(concat('app.full.min.css'))
         .pipe(gulp.dest('dist/'));
 });
 
@@ -142,4 +156,4 @@ gulp.task('webserver', function() {
         }));
 });
 
-gulp.task('build', ['clean', 'css', 'js', 'indexHtml', 'fonts', 'images', 'sounds']);
+gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds']);
