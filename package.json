@@ -43,7 +43,6 @@
         "negotiator": "^0.5.3",
         "phantomjs": "^1.9.17",
         "protractor": "^1.8.0",
-        "rimraf": "^2.3.4",
         "send": "^0.12.3",
         "streamqueue": "^0.1.3"
     },
