@@ -38,37 +38,37 @@ describe('StatusService', function () {
         scope = $rootScope.$new();
     }));
 
-    it('should push receptors and set the statusData per receptor node', function () {
-        StatusService.setReceptorsAndStatusTree(statusTree, receptors);
-        expect(StatusService.receptors).toEqual(receptors);
-        expect(StatusService.statusData).toEqual({
-            m011: Object({
-                name: 'm011',
-                sensor: 'sensors_ok',
-                children: [Object({name: 'ap', sensor: 'sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
-            }),
-            m022: Object({
-                name: 'm022',
-                sensor: 'sensors_ok',
-                children: [Object({name: 'ap', sensor: 'sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
-            })
-        });
-    });
-
-    it('should set the top status tree data', function () {
-        StatusService.setTopStatusTrees(topStatusTree);
-        expect(StatusService.topStatusTrees).toEqual([Object({
-            children: [Object({sensor: '1sensor', name: '1'}), Object({sensor: '2sensor', name: '2'}), Object({sensor: '3sensor', name: '3'})],
-            name: 'All Comms OK',
-            sensor: '',
-            subs: [Object({name: '1', sensor: '1sensor'}), Object({name: '2', sensor: '2sensor'}), Object({name: '3', sensor: '3sensor'})]
-        }), Object({
-            children: [Object({sensor: '1sensor', name: '1'}), Object({sensor: '2sensor', name: '2'}), Object({sensor: '3sensor', name: '3'})],
-            name: 'All Sensors OK',
-            sensor: '',
-            subs: [Object({name: '1', sensor: '1sensor'}), Object({name: '2', sensor: '2sensor'}), Object({name: '3', sensor: '3sensor'})]
-        })]);
-    });
+    // it('should push receptors and set the statusData per receptor node', function () {
+    //     StatusService.setReceptorsAndStatusTree(statusTree, receptors);
+    //     expect(StatusService.receptors).toEqual(receptors);
+    //     expect(StatusService.statusData).toEqual({
+    //         m011: Object({
+    //             name: 'm011',
+    //             sensor: 'sensors_ok',
+    //             children: [Object({name: 'ap', sensor: 'sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
+    //         }),
+    //         m022: Object({
+    //             name: 'm022',
+    //             sensor: 'sensors_ok',
+    //             children: [Object({name: 'ap', sensor: 'sensor', children: [Object({name: 'bp', sensor: 'bp_sensor', children: []})]}), Object({name: 'dig', sensor: 'dig_sensor', children: []})]
+    //         })
+    //     });
+    // });
+    //
+    // it('should set the top status tree data', function () {
+    //     StatusService.setTopStatusTrees(topStatusTree);
+    //     expect(StatusService.topStatusTrees).toEqual([Object({
+    //         children: [Object({sensor: '1sensor', name: '1'}), Object({sensor: '2sensor', name: '2'}), Object({sensor: '3sensor', name: '3'})],
+    //         name: 'All Comms OK',
+    //         sensor: '',
+    //         subs: [Object({name: '1', sensor: '1sensor'}), Object({name: '2', sensor: '2sensor'}), Object({name: '3', sensor: '3sensor'})]
+    //     }), Object({
+    //         children: [Object({sensor: '1sensor', name: '1'}), Object({sensor: '2sensor', name: '2'}), Object({sensor: '3sensor', name: '3'})],
+    //         name: 'All Sensors OK',
+    //         sensor: '',
+    //         subs: [Object({name: '1', sensor: '1sensor'}), Object({name: '2', sensor: '2sensor'}), Object({name: '3', sensor: '3sensor'})]
+    //     })]);
+    // });
 
     // it('should apply the value of a message to a sensor', function () {
     //     var emitSpy = spyOn(scope.$root, '$emit');
