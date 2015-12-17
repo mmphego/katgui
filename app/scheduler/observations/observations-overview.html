@@ -24,8 +24,7 @@
             <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
                  layout="row" flex
                  style="min-width: 650px;" md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
-
-                <div class="" style="margin-left: 0; margin-top: 8px;" layout="column" flex>
+                <div style="margin-left: 0; margin-top: 8px;" layout="column" flex>
 
                     <md-toolbar
                         ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
