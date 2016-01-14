@@ -19,11 +19,6 @@
             {label: 'Type', value: 'type'}
         ];
 
-        vm.limitTo = 5;
-        $scope.loadMore = function() {
-            vm.limitTo += 30;
-        };
-
         vm.setDraftsOrderBy = function (column) {
             var newOrderBy = _.findWhere(vm.draftsOrderByFields, {value: column});
             if ((vm.draftsOrderBy || {}).value === column) {
