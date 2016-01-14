@@ -91,10 +91,11 @@ angular.module('katGui.d3')
                                 if (dataLimit && existingDataLine.values.length > dataLimit) {
                                     existingDataLine.values.splice(0, 1);
                                 }
-                                existingDataLine.values.push(d);
-                                if (d.sample_ts < existingDataLine.values[0].sample_ts) {
+                                if (d.sample_ts < existingDataLine.values[0].sample_ts ||
+                                    d.sample_ts < existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
                                     doSort = true;
                                 }
+                                existingDataLine.values.push(d);
                                 if (existingDataLine.values.length > 1 &&
                                     existingDataLine.values[0].sample_ts === existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
