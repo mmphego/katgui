@@ -185,6 +185,10 @@
                 ], api.guid);
         };
 
+        api.removeSensorStrategies = function (pattern) {
+            api.sendSensorsCommand('set_sampling_strategies', [api.guid, pattern, 'none'], api.guid);
+        };
+
         api.listResources = function () {
             var deferred = $q.defer();
             $http.get(urlBase + '/resource')

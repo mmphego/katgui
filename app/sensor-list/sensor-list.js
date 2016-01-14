@@ -13,7 +13,6 @@
         vm.resourceSensorsBeingDisplayed = '';
         vm.sensorsPlotNames = [];
         vm.guid = KatGuiUtil.generateUUID();
-        vm.disconnectIssued = false;
         vm.connectInterval = null;
 
         vm.showTips = false;
@@ -43,9 +42,8 @@
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
-                        if (!vm.disconnectIssued) {
-                            NotifyService.showSimpleToast('Reconnected :)');
-                        }
+                        NotifyService.showSimpleToast('Reconnected :)');
+
                     }
                 }, function () {
                     $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
@@ -59,17 +57,13 @@
         vm.handleSocketTimeout = function () {
             SensorsService.getTimeoutPromise()
                 .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
+                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                        vm.connectListeners();
                     }
                 });
         };
-
-        vm.connectListeners();
 
         vm.initSensors = function () {
             if (vm.resourcesNames.length === 0) {
@@ -84,7 +78,7 @@
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 SensorsService.setSensorStrategies(
-                    '^' + vm.resourceSensorsBeingDisplayed + '*',
+                    '^' + vm.resourceSensorsBeingDisplayed + '_*',
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
                     10);
@@ -113,17 +107,13 @@
             if (vm.resourceSensorsBeingDisplayed === resourceName) {
                 return;
             }
-            // if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                // SensorsService.removeResourceListeners(vm.resourceSensorsBeingDisplayed);
-                // SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.*', vm.guid);
-                vm.resourceSensorsBeingDisplayed = resourceName;
-                vm.disconnectIssued = true;
-                SensorsService.disconnectListener();
-                vm.connectListeners();
-                vm.disconnectIssued = false;
-                vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
-                vm.clearChart();
-            // }
+
+            if (vm.resourceSensorsBeingDisplayed.length > 0) {
+                SensorsService.removeSensorStrategies('^' + vm.resourceSensorsBeingDisplayed + '*');
+            }
+            vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
+            vm.clearChart();
+
             if (ConfigService.sensorGroups && ConfigService.sensorGroups[resourceName]) {
                 // vm.resourceSensorsBeingDisplayed = resourceName;
                 // if (!vm.resources[resourceName]) {
@@ -166,17 +156,13 @@
                         if (!$scope.$$phase) {
                             $scope.$digest();
                         }
-
-                        //remove for now because we use disconnect to clear listeners
-                        //so initSensors will call setSensorStrategies
-                        // SensorsService.setSensorStrategies(
-                        //     '^' + resourceName + '_*',
-                        //     $rootScope.sensorListStrategyType,
-                        //     $rootScope.sensorListStrategyInterval,
-                        //     10);
                     });
             }
             vm.resourceSensorsBeingDisplayed = resourceName;
+            //allow for the removeSensorStrategies to complete before setting up new strategies
+            $timeout(function () {
+                vm.initSensors();
+            }, 350);
         };
 
         vm.sensorClass = function (status) {
@@ -325,9 +311,10 @@
             return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal';
         };
 
+        vm.connectListeners();
+
         $scope.$on('$destroy', function () {
             unbindUpdate();
-            vm.disconnectIssued = true;
             SensorsService.disconnectListener();
         });
     }

@@ -19,7 +19,6 @@
         };
         vm.resourcesHistoriesCount = 4;
         vm.guid = KatGuiUtil.generateUUID();
-        vm.disconnectIssued = false;
         vm.connectInterval = null;
 
         vm.showTips = false;
@@ -65,9 +64,7 @@
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
-                        if (!vm.disconnectIssued) {
-                            NotifyService.showSimpleToast('Reconnected :)');
-                        }
+                        NotifyService.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
                     $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
@@ -81,12 +78,10 @@
         vm.handleSocketTimeout = function () {
             SensorsService.getTimeoutPromise()
                 .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
+                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                        vm.connectListeners();
                     }
                 });
         };
@@ -300,7 +295,6 @@
                 SensorsService.unsubscribe(sensor.python_identifier, vm.guid);
             });
             unbindUpdate();
-            vm.disconnectIssued = true;
             SensorsService.disconnectListener();
         });
     }
