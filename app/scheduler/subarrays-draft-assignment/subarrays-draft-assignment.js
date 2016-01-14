@@ -40,17 +40,28 @@
         vm.subarrays = ObsSchedService.subarrays;
 
         vm.draftsOrderByFields = [
-            {label: 'ID', value: 'id_code'},
+            {label: 'ID', value: 'id_code', reverse: true},
             {label: 'Description', value: 'description'},
             {label: 'Date', value: 'desired_start_time'},
-            {label: 'State', value: 'state'},
+            {label: 'State', value: 'verification_state'},
+            {label: 'Expected Duration', value: 'expected_duration'},
             {label: 'Type', value: 'type'}
         ];
 
-        vm.limitTo = 5;
-        $scope.loadMore = function() {
-            vm.limitTo += 30;
+        vm.setDraftsOrderBy = function (column) {
+            var newOrderBy = _.findWhere(vm.draftsOrderByFields, {value: column});
+            if ((vm.draftsOrderBy || {}).value === column) {
+                if (newOrderBy.reverse === undefined) {
+                    newOrderBy.reverse = true;
+                } else if (newOrderBy.reverse) {
+                    newOrderBy.reverse = undefined;
+                    newOrderBy = null;
+                }
+            }
+            vm.draftsOrderBy = newOrderBy;
         };
+
+        vm.setDraftsOrderBy('id_code');
 
         vm.assignSelectedScheduleBlocks = function (subarray) {
             ObsSchedService.scheduleDraftData.forEach(function (item) {
