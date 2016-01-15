@@ -289,11 +289,13 @@
         };
 
         vm.connectLiveFeed = function (sensorRegex) {
-            SensorsService.setSensorStrategy(
-                sensorRegex,
-                $rootScope.sensorListStrategyType,
-                $rootScope.sensorListStrategyInterval,
-                $rootScope.sensorListStrategyInterval);
+            if (sensorRegex.length > 0) {
+                SensorsService.setSensorStrategies(
+                    sensorRegex,
+                    $rootScope.sensorListStrategyType,
+                    $rootScope.sensorListStrategyInterval,
+                    $rootScope.sensorListStrategyInterval);
+            }
         };
 
         vm.disconnectLiveFeed = function (sensorRegex) {
@@ -301,6 +303,7 @@
         };
 
         vm.sensorDataReceived = function (event, sensor) {
+
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
                 var newData = [];
@@ -316,15 +319,8 @@
                     });
                     newSensorNames[sensorName] = {};
                 }
-                var drawSensor = false;
-                var newSensorNamesKeys = Object.keys(newSensorNames);
-                for (var index in newSensorNamesKeys) {
-                    if (angular.isDefined(_.findWhere(vm.sensorNames, {name: newSensorNamesKeys[index]}))) {
-                        drawSensor = true;
-                        break;
-                    }
-                }
-                if (newData && drawSensor) {
+
+                if (newData) {
                     vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
                 }
             }
@@ -399,52 +395,6 @@
             } else {
                 vm.drawAllSensorNames();
             }
-        };
-
-        vm.drawAllSensorNames = function () {
-            NotifyService.showSimpleToast('Fetching ' + vm.sensorSearchNames.length + ' sensor(s) data, please wait...');
-            var searchSensorList = '';
-            for (var i = 0; i < vm.sensorSearchNames.length; i++) {
-                if (i === vm.sensorSearchNames.length - 1) {
-                    searchSensorList += vm.sensorSearchNames[i].name;
-                } else {
-                    searchSensorList += vm.sensorSearchNames[i].name + '|';
-                }
-            }
-            var startDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
-            var endDate = vm.sensorEndDatetime.getTime() - (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000);
-            if (vm.showRelativeTime) {
-                endDate = (vm.getMillisecondsDifference(
-                    vm.plusMinus,
-                    startDate,
-                    vm.unitLength,
-                    vm.unitType));
-            }
-
-            if (endDate < startDate) {
-                startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
-            }
-
-            vm.clearData();
-            vm.waitingForSearchResult = true;
-            vm.showTips = false;
-            var interval = null;
-            if (vm.sensorType === 'numeric') {
-                interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
-            }
-
-            DataService.sensorDataRegex(SensorsService.guid, searchSensorList, startDate, endDate, DATALIMIT, interval)
-                .then(function (result) {
-                    if (result.data instanceof Array) {
-                        vm.sensorDataReceived(null, {value: result.data});
-                    } else {
-                        $log.info('Waiting for ' + result.data.row_count + ' data points on websocket.');
-                    }
-                }, function (error) {
-                    vm.waitingForSearchResult = false;
-                    $log.info(error);
-                });
         };
 
         vm.chipRemoved = function (chip) {

@@ -155,16 +155,13 @@
                 <span ng-show="vm.sensorSearchNames.length === 0" style="margin-left: 4px;">There are no results.</span>
             </div>
 
-            <div layout="column" layout-align="start center" style="width: 100%;">
+            <div layout="column" layout-align="center center" style="width: 100%;">
                 <md-checkbox ng-if="$root.loggedIn" class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()"
-                    ng-disabled="vm.sensorServiceConnected">
+                    ng-disabled="vm.sensorServiceConnected" style="margin: 4px;">
                     Include Live Data
                 </md-checkbox>
                 <md-button class="md-primary md-raised" ng-click="vm.clearData()">
                     Clear Sensor Graph
-                </md-button>
-                <md-button class="md-primary md-raised" ng-click="vm.drawAllSensorNamesConfirm($event)">
-                    Draw All Sensors
                 </md-button>
             </div>
         </div>
