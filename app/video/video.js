@@ -9,12 +9,12 @@
                        SERVER_URL, NotifyService, USER_ROLES) {
 
         var vm = this;
-
         var urlBase = SERVER_URL + '/katcontrol/vds';
         //todo set the image source from katconfig
         //not implemented in katconfig yet
         vm.imageSource = 'http://monctl.devo.camlab.kat.ac.za:8083';
         vm.sensorValues = {};
+        vm.stepTimeValue = 1;
 
         vm.toggleFloodLights = function () {
             ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
@@ -26,11 +26,7 @@
         };
 
         vm.panLeft = function () {
-            var newPanValue = vm.sensorValues.vds_pan_position.value - 5;
-            if (newPanValue < 0) {
-                newPanValue = 0;
-            }
-            vm.vdsCommand('pan/to', newPanValue);
+            vm.vdsCommand('pan/left', vm.stepTimeValue);
         };
 
         vm.panFarLeft = function () {
@@ -38,11 +34,7 @@
         };
 
         vm.panRight = function () {
-            var newPanValue = vm.sensorValues.vds_pan_position.value + 5;
-            if (newPanValue > 270) {
-                newPanValue = 270;
-            }
-            vm.vdsCommand('pan/to', newPanValue);
+            vm.vdsCommand('pan/right', vm.stepTimeValue);
         };
 
         vm.panFarRight = function () {
@@ -50,11 +42,7 @@
         };
 
         vm.tiltUp = function () {
-            var newTiltValue = vm.sensorValues.vds_tilt_position.value + 5;
-            if (newTiltValue > 60) {
-                newTiltValue = 60;
-            }
-            vm.vdsCommand('tilt/to', newTiltValue);
+            vm.vdsCommand('tilt/up', vm.stepTimeValue);
         };
 
         vm.tiltFarUp = function () {
@@ -62,11 +50,7 @@
         };
 
         vm.tiltDown = function () {
-            var newTiltValue = vm.sensorValues.vds_tilt_position.value - 5;
-            if (newTiltValue < -1) {
-                newTiltValue = 0;
-            }
-            vm.vdsCommand('tilt/to', newTiltValue);
+            vm.vdsCommand('tilt/down', vm.stepTimeValue);
         };
 
         vm.tiltFarDown = function () {
