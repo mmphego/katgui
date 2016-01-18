@@ -33,15 +33,22 @@
                             <span class="fa fa-stop md-fab-fa-icon-small"></span>
                         </md-button>
                     </div>
-                    <div layout="row" layout-align="start center">
-                        <span style="margin-right: 6px;">Focus:</span>
+                    <div layout="row" layout-align="start center" style="margin-top: 8px; width: 268px;">
+                        <span style="margin-right: 6px; width: 100px">Focus:</span>
                         <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)">
                         </md-slider>
                     </div>
-                    <div layout="row" layout-align="start center" style="margin-top: 8px;">
-                        <span style="margin-right: 6px;">Zoom:</span>
+                    <div layout="row" layout-align="start center" style="margin-top: 8px; width: 268px;">
+                        <span style="margin-right: 6px; width: 100px">Zoom (in > out):</span>
                         <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)">
                         </md-slider>
+                    </div>
+                    <div layout="row" layout-align="start center" style="margin-top: 8px; width: 268px;">
+                        <span style="margin-right: 6px; width: 100px">Custom time step value</span>
+                        <md-input-container md-no-float class="md-primary" title="Set the desired step time value (default 1 second)"
+                            style="margin: 6px 0px; padding: 0; height: 25px;">
+                            <input flex ng-model="vm.stepTimeValue" type="number">
+                        </md-input-container>
                     </div>
                 </div>
 

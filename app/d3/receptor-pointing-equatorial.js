@@ -24,6 +24,7 @@ angular.module('katGui.d3')
                     }
                 });
 
+                var svg, x, y, path;
                 var color = d3.scale.category20();
                 scope.showGridLines = true;
                 var horizonMaskDsv = d3.dsv(" ", "text/plain");
@@ -77,7 +78,6 @@ angular.module('katGui.d3')
 
                 var margin = {top: 10, right: 20, bottom: 10, left: 10},
                     width, height, projection, ticksAzimuth, scale;
-                var svg, x, y, path;
 
                 drawSvg();
 

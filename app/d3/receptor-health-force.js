@@ -20,7 +20,7 @@ angular.module('katGui.d3')
                     scope.chartSize = {width: 480, height: 480};
                 }
 
-                $rootScope.$on('redrawChartMessage', function (event, message) {
+                var unbindRedraw = $rootScope.$on('redrawChartMessage', function (event, message) {
                     if (message.size.width) {
                         scope.chartSize.width = message.size.width;
                     }
@@ -30,6 +30,11 @@ angular.module('katGui.d3')
                     containerSvg.remove();
                     scope.redraw();
                 });
+
+                scope.$on('$destroy', function () {
+                    unbindRedraw();
+                });
+
                 var link, node, force, width, height, radius;
 
                 scope.redraw = function () {

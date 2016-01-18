@@ -105,18 +105,19 @@ angular.module('katGui.d3')
             var sensorValue;
             var pythonIdentifier = d.sensor.replace(/\./g, '_');
             var prefix = d.prefix? d.prefix : '';
+            var fullSensorName = prefix + (rootName? rootName + '_' : '') + d.sensor;
             if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
                 sensorValue = StatusService.sensorValues[pythonIdentifier];
             }
-            else if (StatusService.sensorValues && StatusService.sensorValues[prefix + (rootName? rootName + '_' : '') + d.sensor]) {
-                sensorValue = StatusService.sensorValues[prefix + (rootName? rootName + '_' : '') + d.sensor];
+            else if (StatusService.sensorValues && StatusService.sensorValues[fullSensorName]) {
+                sensorValue = StatusService.sensorValues[fullSensorName];
             } else  {
                 sensorValue = d.sensorValue;
             }
             if (sensorValue) {
                 tooltip.html(
                     "<div style='font-size: 14px'>" +
-                    "<div><b>" + sensorValue.name + "</b></div>" +
+                    "<div><b>" + fullSensorName + "</b></div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format(DATETIME_FORMAT) + "</div>" +

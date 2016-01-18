@@ -27,7 +27,6 @@
         vm.useFixedYAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
-        vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.sensorServiceConnected = SensorsService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
@@ -55,12 +54,10 @@
         vm.handleSocketTimeout = function () {
             SensorsService.getTimeoutPromise()
                 .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
+                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                        vm.connectListeners();
                     }
                 });
         };
@@ -75,9 +72,11 @@
 
         vm.initSensors = function () {
             if (vm.liveData) {
+                var sensorNames = [];
                 vm.sensorNames.forEach(function (sensor) {
-                    vm.connectLiveFeed(sensor);
+                    sensorNames.push(sensor.name);
                 });
+                vm.connectLiveFeed(sensorNames.join('|'));
             }
         };
 
@@ -154,18 +153,25 @@
         };
 
         vm.clearData = function () {
-            vm.sensorNames.forEach(function (item) {
-                item.liveData = false;
-            });
+            if (vm.liveData) {
+                vm.removeSensorStrategies();
+            }
             vm.sensorNames.splice(0, vm.sensorNames.length);
             vm.clearChart();
+        };
+
+        vm.removeSensorStrategies = function () {
+            var sensorNamesList = [];
+            vm.sensorNames.forEach(function (item) {
+                sensorNamesList.push(item.name);
+            });
+            vm.disconnectLiveFeed(sensorNamesList.join('|'));
         };
 
         vm.validateSearchInputLength = function (searchStr) {
             if (searchStr.length > 2) {
                 vm.sensorSearchFieldLengthError = false;
                 vm.sensorSearchFieldShowTooltip = false;
-
             } else {
                 vm.sensorSearchFieldLengthError = true;
                 vm.sensorSearchFieldShowTooltip = true;
@@ -179,7 +185,7 @@
             if (searchStr && searchStr.length > 2 && !vm.waitingForSearchResult) {
                 vm.sensorSearchNames = [];
                 vm.waitingForSearchResult = true;
-                DataService.sensorsInfo(searchStr, vm.sensorType, 1000)
+                DataService.sensorsInfo(searchStr.trim().replace(' ', '.'), vm.sensorType, 1000)
                     .then(function (result) {
                         vm.waitingForSearchResult = false;
                         if (result.data.error) {
@@ -243,7 +249,7 @@
                     }
                     vm.sensorNames.push(sensor);
                     if (vm.liveData) {
-                        vm.connectLiveFeed(sensor);
+                        vm.connectLiveFeed(sensor.name);
                     }
                 }, function (error) {
                     vm.waitingForSearchResult = false;
@@ -282,15 +288,22 @@
             vm.findSensorNames(vm.searchText); //simulate keypress
         };
 
-        vm.connectLiveFeed = function (sensor) {
-            SensorsService.setSensorStrategy(
-                sensor.name,
-                $rootScope.sensorListStrategyType,
-                $rootScope.sensorListStrategyInterval,
-                $rootScope.sensorListStrategyInterval);
+        vm.connectLiveFeed = function (sensorRegex) {
+            if (sensorRegex.length > 0) {
+                SensorsService.setSensorStrategies(
+                    sensorRegex,
+                    $rootScope.sensorListStrategyType,
+                    $rootScope.sensorListStrategyInterval,
+                    $rootScope.sensorListStrategyInterval);
+            }
+        };
+
+        vm.disconnectLiveFeed = function (sensorRegex) {
+            SensorsService.removeSensorStrategies(sensorRegex);
         };
 
         vm.sensorDataReceived = function (event, sensor) {
+
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
                 var newData = [];
@@ -306,15 +319,8 @@
                     });
                     newSensorNames[sensorName] = {};
                 }
-                var drawSensor = false;
-                var newSensorNamesKeys = Object.keys(newSensorNames);
-                for (var index in newSensorNamesKeys) {
-                    if (angular.isDefined(_.findWhere(vm.sensorNames, {name: newSensorNamesKeys[index]}))) {
-                        drawSensor = true;
-                        break;
-                    }
-                }
-                if (newData && drawSensor) {
+
+                if (newData) {
                     vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
                 }
             }
@@ -334,18 +340,11 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', vm.sensorDataReceived);
 
         vm.liveDataChanged = function () {
-            vm.sensorNames.forEach(function (item) {
-                if (!item.liveData) {
-                    vm.connectLiveFeed(item);
-                    item.liveData = true;
-                } else {
-                    item.liveData = false;
-                    vm.disconnectIssued = true;
-                    SensorsService.disconnectListener();
-                    vm.connectListeners();
-                    vm.disconnectIssued = false;
-                }
-            });
+            if (vm.liveData) {
+                vm.initSensors();
+            } else {
+                vm.removeSensorStrategies();
+            }
         };
 
         vm.querySearch = function (query) {
@@ -398,53 +397,8 @@
             }
         };
 
-        vm.drawAllSensorNames = function () {
-            NotifyService.showSimpleToast('Fetching ' + vm.sensorSearchNames.length + ' sensor(s) data, please wait...');
-            var searchSensorList = '';
-            for (var i = 0; i < vm.sensorSearchNames.length; i++) {
-                if (i === vm.sensorSearchNames.length - 1) {
-                    searchSensorList += vm.sensorSearchNames[i].name;
-                } else {
-                    searchSensorList += vm.sensorSearchNames[i].name + '|';
-                }
-            }
-            var startDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
-            var endDate = vm.sensorEndDatetime.getTime() - (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000);
-            if (vm.showRelativeTime) {
-                endDate = (vm.getMillisecondsDifference(
-                    vm.plusMinus,
-                    startDate,
-                    vm.unitLength,
-                    vm.unitType));
-            }
-
-            if (endDate < startDate) {
-                startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
-            }
-
-            vm.clearData();
-            vm.waitingForSearchResult = true;
-            vm.showTips = false;
-            var interval = null;
-            if (vm.sensorType === 'numeric') {
-                interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
-            }
-
-            DataService.sensorDataRegex(SensorsService.guid, searchSensorList, startDate, endDate, DATALIMIT, interval)
-                .then(function (result) {
-                    if (result.data instanceof Array) {
-                        vm.sensorDataReceived(null, {value: result.data});
-                    } else {
-                        $log.info('Waiting for ' + result.data.row_count + ' data points on websocket.');
-                    }
-                }, function (error) {
-                    vm.waitingForSearchResult = false;
-                    $log.info(error);
-                });
-        };
-
         vm.chipRemoved = function (chip) {
+            vm.disconnectLiveFeed(chip.name);
             vm.removeSensorLine(chip.name);
         };
 
@@ -459,9 +413,6 @@
 
         $scope.$on('$destroy', function () {
             unbindUpdate();
-            vm.liveData = false;
-            vm.liveDataChanged();
-            vm.disconnectIssued = true;
             SensorsService.disconnectListener();
             if (vm.undbindLoginSuccess) {
                 vm.undbindLoginSuccess();
