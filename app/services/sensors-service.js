@@ -168,21 +168,33 @@
         };
 
         api.setSensorStrategy = function (sensorName, strategyType, strategyIntervalMin, strategyIntervalMax) {
-            api.sendSensorsCommand('set_sampling_strategy',
-                [
-                    api.guid,
-                    sensorName,
-                    strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax
-                ], api.guid);
+            var params = [
+                api.guid,
+                sensorName
+            ];
+            if (strategyType === 'event') {
+                params.push(strategyType);
+            } else {
+                params.push(strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax);
+            }
+            api.sendSensorsCommand('set_sampling_strategy', params, api.guid);
         };
 
         api.setSensorStrategies = function (pattern, strategyType, strategyIntervalMin, strategyIntervalMax) {
-            api.sendSensorsCommand('set_sampling_strategies',
-                [
-                    api.guid,
-                    pattern,
-                    strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax
-                ], api.guid);
+            var params = [
+                api.guid,
+                pattern
+            ];
+            if (strategyType === 'event') {
+                params.push(strategyType);
+            } else {
+                params.push(strategyType + ' ' + strategyIntervalMin + ' ' + strategyIntervalMax);
+            }
+            api.sendSensorsCommand('set_sampling_strategies', params, api.guid);
+        };
+
+        api.removeSensorStrategies = function (pattern) {
+            api.sendSensorsCommand('set_sampling_strategies', [api.guid, pattern, 'none'], api.guid);
         };
 
         api.listResources = function () {

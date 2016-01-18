@@ -91,10 +91,11 @@ angular.module('katGui.d3')
                                 if (dataLimit && existingDataLine.values.length > dataLimit) {
                                     existingDataLine.values.splice(0, 1);
                                 }
-                                existingDataLine.values.push(d);
-                                if (d.sample_ts < existingDataLine.values[0].sample_ts) {
+                                if (d.sample_ts < existingDataLine.values[0].sample_ts ||
+                                    d.sample_ts < existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
                                     doSort = true;
                                 }
+                                existingDataLine.values.push(d);
                                 if (existingDataLine.values.length > 1 &&
                                     existingDataLine.values[0].sample_ts === existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
@@ -313,6 +314,10 @@ angular.module('katGui.d3')
                             .attr("class", "x axis")
                             .attr("transform", "translate(0," + height2 + ")");
 
+                        var brush = d3.svg.brush()
+                            .x(x2)
+                            .on("brush", scope.brushFunction);
+
                         scope.brushFunction = function () {
                             x.domain(brush.empty() ? x2.domain() : brush.extent());
                             focus.selectAll("path.line").attr("d", function (d) {
@@ -321,10 +326,6 @@ angular.module('katGui.d3')
                             focus.select(".x.axis").call(xAxis);
                             focus.select(".y.axis").call(yAxis);
                         };
-
-                        var brush = d3.svg.brush()
-                            .x(x2)
-                            .on("brush", scope.brushFunction);
 
                         context.append("g")
                             .attr("class", "x brush")

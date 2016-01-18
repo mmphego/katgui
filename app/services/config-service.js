@@ -86,7 +86,6 @@
             }
         };
 
-
         api.getStatusTreeForReceptor = function () {
             return $http(createRequest('get', urlBase + '/statustrees/receptors_view/receptors'));
         };

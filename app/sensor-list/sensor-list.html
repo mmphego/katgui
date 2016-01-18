@@ -19,7 +19,7 @@
             </div>
         </div>
         <div flex class="resource-sensors-list" layout="column" style="max-height: 100%; min-height: 100%">
-            <md-toolbar class="md-whiteframe-z1" style=" min-height: 80px">
+            <md-toolbar class="md-whiteframe-z1" style=" min-height: 60px">
                 <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
                     <span flex>Sensors {{' - ' + vm.resourceSensorsBeingDisplayed | uppercase}}</span>
                     <!-- <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.showSensorGroups()">
@@ -34,7 +34,7 @@
                 </div>
 
                 <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
-                     style="padding-left: 8px;">
+                     style="padding: 0px 8px; max-height: 17px">
                     <span class="subheader-text resource-sensor-name"
                           ng-click="vm.setSensorsOrderBy('name')">
                         <span>Name</span>

@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('subarrayHealthMap', function (SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util) {
+    .directive('subarrayHealthMap', function (SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util, DATETIME_FORMAT) {
         return {
             restrict: 'E',
             scope: {},
@@ -9,7 +9,8 @@ angular.module('katGui.d3')
                 var root, transitionDuration = 250;
                 var margin = {top: 8, right: 8, left: 8, bottom: 8};
                 var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]);
-                var svg;
+                var svg, container, zoom;
+                var color = d3.scale.category10();
 
                 scope.chartSize = {width: 0, height: 0};
                 scope.lastDrawnSize = scope.chartSize;
@@ -34,11 +35,11 @@ angular.module('katGui.d3')
                 });
 
                 $rootScope.$on('redrawChartMessage', function (event, message) {
-                    scope.redraw();
+                    scope.redraw(message);
                 });
                 var width, height, radius;
 
-                function clone(obj, parentName) {
+                function clone(obj, parentName, subarrayKey) {
                     var copy;
                     // Handle the 3 simple types, and null or undefined
                     if (null === obj || "object" !== typeof obj) {
@@ -48,17 +49,18 @@ angular.module('katGui.d3')
                     if (obj instanceof Array) {
                         copy = [];
                         for (var i = 0, len = obj.length; i < len; i++) {
-                            copy[i] = clone(obj[i], parentName);
+                            copy[i] = clone(obj[i], parentName, subarrayKey);
                         }
                         copy.parentName = parentName;
+                        copy.subarrayKey = subarrayKey;
                         return copy;
                     }
                     // Handle Object
                     if (obj instanceof Object) {
-                        copy = {parentName: parentName};
+                        copy = {parentName: parentName, subarrayKey: subarrayKey};
                         for (var attr in obj) {
                             if (attr !== 'parent' && obj.hasOwnProperty(attr)) {
-                                copy[attr] = clone(obj[attr], parentName);
+                                copy[attr] = clone(obj[attr], parentName, subarrayKey);
                             }
                         }
                         return copy;
@@ -67,8 +69,11 @@ angular.module('katGui.d3')
                 }
 
                 scope.redraw = function (force) {
-                    width = scope.chartSize.width - 10;
-                    height = scope.chartSize.height - 10;
+                    if (scope.chartSize.width === 0 && scope.chartSize.height === 0) {
+                        return;
+                    }
+                    width = 2800;
+                    height = 2800;
                     if (width < 0) {
                         width = 0;
                     }
@@ -77,23 +82,46 @@ angular.module('katGui.d3')
                     }
                     radius = height;
 
-                    if (force || !svg) {
-                        if (svg) {
-                            d3.selectAll("svg").remove();
+                    if (force || !container) {
+                        if (container) {
+                            container.remove();
                         }
 
-                        var zoom = d3.behavior.zoom()
-                            .scaleExtent([0.1, 10])
+                        d3.selectAll('g').remove();
+
+                        if (zoom) {
+                            scope.scaleBeforeResize = zoom.scale();
+                            scope.translateBeforeResize = zoom.translate();
+                        }
+
+                        zoom = d3.behavior.zoom()
+                            .scaleExtent([0.05, 1])
                             .on("zoom", zoomed);
 
-                        var container = d3.select(element[0]).append("svg")
+                        if (scope.scaleBeforeResize) {
+                            zoom.scale(scope.scaleBeforeResize);
+                        } else {
+                            zoom.scale(0.25);
+                        }
+                        if (scope.translateBeforeResize) {
+                            zoom.translate(scope.translateBeforeResize);
+                        } else if (scope.chartSize.width > 0 && scope.chartSize.height > 0) {
+                            zoom.translate([scope.chartSize.width/3, scope.chartSize.height/3]);
+                        }
+
+                        container = d3.select(element[0]).append("svg")
                             .style("cursor", "move")
                             .attr("width", width)
                             .attr("height", height)
                             .attr("class", "health-chart treemapHealthChartSubarray")
                             .call(zoom);
-                        svg = container.append("g");
 
+                        svg = container.append("g");
+                        svg.on("mouseup", function () {
+                            zoom.translate(scope.zoomBeforeDrag);
+                            zoom.on("zoom", zoomed);
+                            zoom.event(container);
+                        });
                         scope.lastDrawnSize = scope.chartSize;
                     }
 
@@ -110,11 +138,12 @@ angular.module('katGui.d3')
                         if (resourceList.length === 1 && resourceList[0] === "") {
                             resourceList = [];
                         }
-                        resourceList.forEach(function (resource) {
-                            children.push(clone(StatusService.statusData[resource], resource));
-                        });
+                        for (var i = 0; i < resourceList.length; i++) {
+                            children.push(clone(StatusService.statusData[resourceList[i]], resourceList[i], subarrayKey));
+                        }
                         root.children.push({
                             children: children,
+                            subarrayKey: subarrayKey,
                             sensor: '',
                             name: 'Subarray_' + subarray.id,
                             pool_resources: subarray.pool_resources.value
@@ -132,7 +161,10 @@ angular.module('katGui.d3')
                     } else {
                         updateForceLayout = true;
                     }
-                    if (updateForceLayout) {
+
+                    zoom.event(container);
+
+                    if (updateForceLayout || force) {
                         update();
                     }
                 };
@@ -149,11 +181,17 @@ angular.module('katGui.d3')
                     graphArea.selectAll("parent").remove();
                     // Update the links…
                     var link = graphArea.selectAll(".link").data(links, function(d) {
-                        return d.target.id;
+                        if (d.target) {
+                            return d.target.id;
+                        } else {
+                            return null;
+                        }
                     });
                     link.exit().remove();
                     link.enter().append("line")
-                      .attr("class", "link");
+                    .attr("class", function (d) {
+                        return "link " + d.source.subarrayKey;
+                    });
 
                     // Update the nodes…
                     var node = graphArea.selectAll('g').data(nodes);
@@ -162,92 +200,132 @@ angular.module('katGui.d3')
                     var force = d3.layout.force()
                         .size([width, height])
                         .on("tick", function () {
+                            var q = d3.geom.quadtree(nodes),
+                              i = 0,
+                              n = nodes.length;
+
+                            while (++i < n) {
+                                q.visit(collide(nodes[i]));
+                            }
+
                             link.attr("x1", function(d) { return d.source.x; })
                               .attr("y1", function(d) { return d.source.y; })
                               .attr("x2", function(d) { return d.target.x; })
                               .attr("y2", function(d) { return d.target.y; });
                             node.attr("transform", function(d, i) {
-                                    return "translate(" + d.x + "," + d.y + ")";
+                                return "translate(" + d.x + "," + d.y + ")";
                             });
                         });
-
-                    force.nodes(nodes)
-                        .links(links)
-                        .charge(-500)
-                        .start();
 
                     // Enter any new nodes.
                     var gEnter = node.enter()
                         .append("g")
-                        .attr("class", "parent");
-
-                        // .on("click", function (d) {
-                        //     if (!d.name.startsWith("Subarray_")) {
-                        //         click(d);
-                        //     }
-                        // });
+                        .attr("class", "parent")
+                        .on("mousedown", function () {
+                            zoom.on("zoom", null);
+                            scope.zoomBeforeDrag = zoom.translate();
+                        })
+                        .call(force.drag);
 
                     gEnter.append("circle")
                         .attr("class", function (d) {
                             var classString = "";
                             var prefix = d.prefix? d.prefix : '';
-                            var fullSensorName = prefix + d.parentName + '_' + d.sensor + ' health-full-item ';
-                            if (StatusService.sensorValues[fullSensorName]) {
-                                classString += StatusService.sensorValues[fullSensorName].status + '-child';
-                            } else {
-                                classString += 'no-fill';
-                            }
+                            var fullSensorName;
                             if (d.name.startsWith('Subarray')) {
-                                classString += " subarray-node";
+                                var styleTagName = d.name.toLowerCase();
+                                classString += " subarray-node no-fill " + styleTagName;
+                                fullSensorName = d.name;
+                                var c = color(styleTagName);
+                                var style = document.getElementById(styleTagName + '_style_tag');
+                                if (!style) {
+                                    style = document.createElement('style');
+                                    style.type = 'text/css';
+                                    style.id = styleTagName + '_style_tag';
+                                    style.innerHTML = '.' + styleTagName + ' {stroke:' + c + ';fill:' + c + '}';
+                                    document.getElementsByTagName('head')[0].appendChild(style);
+                                }
+                            } else {
+                                fullSensorName = prefix + d.parentName + '_' + d.sensor;
+                                if (StatusService.sensorValues[fullSensorName]) {
+                                    classString += StatusService.sensorValues[fullSensorName].status + '-child health-full-item ';
+                                }
                             }
+
                             classString += " " + fullSensorName;
                             return classString;
                         })
-                        .attr("r", function(d) {
-                          return d.name.startsWith('Subarray') ? 40 : 15;
-                        })
+                        .attr("r", "15")
                         .style("cursor", "default")
-                        .call(function (d) {
-                            d3Util.applyTooltipValues(d, tooltip, d.parentName + '_' + d.sensor);
+                        .on("mouseover", function (d) {
+                            if (!d.name.startsWith('Subarray_')) {
+                                tooltip.style("visibility", "visible");
+                            }
+                        }).on("mousemove", function (d) {
+                            if (d.name.startsWith('Subarray_')) {
+                                return;
+                            }
+                            var fullSensorName = (d.prefix? d.prefix: '') + (d.parentName + '_') + d.sensor;
+                            d.sensorValue = StatusService.sensorValues[fullSensorName];
+                            tooltip.html(
+                                "<div style='font-size: 14px'>" +
+                                "<div><b>" + d.sensorValue.name + "</b></div>" +
+                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + d.sensorValue.value + "</div>" +
+                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + d.sensorValue.status + "</div>" +
+                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(d.sensorValue.timestamp, 'X').format(DATETIME_FORMAT) + "</div>" +
+                                "</div>"
+                            );
+
+                            var uiViewDiv = document.querySelector('#ui-view-container-div');
+                            var offset = d3.mouse(uiViewDiv);
+                            var x = offset[0];
+                            var y = offset[1];
+
+                            if (window.innerWidth - x < 320) {
+                                x = window.innerWidth - 320;
+                            }
+                            if (window.innerHeight - y < 225) {
+                                y = window.innerHeight - 225;
+                            }
+                            tooltip
+                                .style("top", (y + 15 + angular.element(uiViewDiv).scrollTop()) + "px")
+                                .style("left", (x + 5 + angular.element(uiViewDiv).scrollLeft()) + "px");
+                        }).on("mouseout", function (d) {
+                            if (!d.name.startsWith('Subarray_')) {
+                                tooltip.style("visibility", "hidden");
+                            }
                         });
 
                     gEnter.append("text")
                         .style("font-size", function (d) {
-                            return d.name.startsWith('Subarray') ? 20 : 10;
+                            return d.name.startsWith('Subarray') ? 48 : 10;
                         })
                         .style("font-weight", function (d) {
                             return d.name.startsWith('Subarray') ? 800 : 400;
                         })
                         .attr("class", "node-text")
                         .attr("dy", ".35em")
-                        // .style("display", function (d) {
-                        //     if (StatusService.sensorValues[d.parentName + '_' + d.sensor] &&
-                        //         StatusService.sensorValues[d.parentName + '_' + d.sensor].status === 'nominal') {
-                        //             return 'none';
-                        //     } else {
-                        //         return null;
-                        //     }
-                        // })
                         .text(function(d) {
-                            return d.name;
+                            if (!d.sensorValue && !d.name.startsWith('Subarray')) {
+                                return (d.prefix? d.prefix : '') + d.parentName + '_' + d.sensor;
+                            }
+                            return d.name.startsWith('Subarray') ? d.name : d.sensorValue.name;
                         });
 
-                    graphArea.selectAll('subarray-node')
-                        .call(force.drag);
-                }
+                    gEnter.selectAll('circle')
+                        .attr("r", function(d) {
+                            d.radius = (this.parentNode.children[1].getBBox().width / 2) + 8;
+                            return d.radius;
+                        });
 
-                // Toggle children on click.
-                function click(d) {
-                  if (!d3.event.defaultPrevented) {
-                    if (d.children) {
-                      d._children = d.children;
-                      d.children = null;
-                    } else {
-                      d.children = d._children;
-                      d._children = null;
-                    }
-                    update();
-                  }
+                    var k = Math.sqrt(nodes.length / (width * height));
+
+                    force.nodes(nodes)
+                        .links(links)
+                        .friction(0.8)
+                        .charge(-100/k)
+                        .gravity(100*k)
+                        .start();
                 }
 
                 // Returns a list of all nodes under the root.
@@ -269,6 +347,30 @@ angular.module('katGui.d3')
 
                     recurse(root);
                     return nodes;
+                }
+
+                function collide(node) {
+                  var r = node.radius + 16,
+                      nx1 = node.x - r,
+                      nx2 = node.x + r,
+                      ny1 = node.y - r,
+                      ny2 = node.y + r;
+                  return function(quad, x1, y1, x2, y2) {
+                    if (quad.point && (quad.point !== node)) {
+                      var x = node.x - quad.point.x,
+                          y = node.y - quad.point.y,
+                          l = Math.sqrt(x * x + y * y),
+                          r = node.radius + quad.point.radius;
+                      if (l < r) {
+                        l = (l - r) / l * 0.5;
+                        node.x -= x *= l;
+                        node.y -= y *= l;
+                        quad.point.x += x;
+                        quad.point.y += y;
+                      }
+                    }
+                    return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+                  };
                 }
 
                 function zoomed() {

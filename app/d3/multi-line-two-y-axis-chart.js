@@ -48,9 +48,10 @@ angular.module('katGui.d3')
                 scope.showGridLines = false;
                 scope.currentBrush = {};
                 scope.nestedData = [];
-                scope.redrawFunction = function (newData, showGridLines, dataWindowDuration) {
+                scope.redrawFunction = function (newData, showGridLines, dataWindowDuration, forceRedraw) {
 
                     var doSort = false;
+                    var redrawSVG = scope.nestedData.length === 0 || forceRedraw;
                     if (newData) {
                         newData.forEach(function (d) {
                             d.date = new Date(parseFloat(d.sample_ts));
@@ -76,7 +77,6 @@ angular.module('katGui.d3')
                         });
                     }
 
-
                     if (doSort) {
                         scope.nestedData.forEach(function (d) {
                             d.values = _.sortBy(d.values, function (item) {
@@ -86,7 +86,7 @@ angular.module('katGui.d3')
                         $log.info('Sorting all two-axis data sets.');
                     }
 
-                    if (showGridLines !== scope.showGridLines) {
+                    if (showGridLines !== scope.showGridLines || redrawSVG) {
                         scope.showGridLines = showGridLines;
                         drawSvg();
                     }
