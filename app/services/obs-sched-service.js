@@ -366,7 +366,13 @@
                     api.resourceTemplates.push(result.data);
                     NotifyService.showSimpleToast("Created resource template");
                 }, function (result) {
-                    NotifyService.showSimpleDialog("Error creating resource template", result);
+                    if (result && result.data && result.data.err_code) {
+                        NotifyService.showSimpleDialog("Error creating resource template",
+                            result.data.err_code + ": " + result.data.err_msg);
+                    } else {
+                        NotifyService.showSimpleDialog("Error creating resource template", result);
+                    }
+
                 });
         };
 
