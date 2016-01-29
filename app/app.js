@@ -80,6 +80,7 @@
 
         vm.initApp = function () {
             vm.showNavbar = true;
+            $rootScope.showVideoLinks = false;
             $rootScope.showDate = $localStorage['showDate'];
             $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
             $rootScope.showJulianDate = $localStorage['showJulianDate'];
@@ -132,6 +133,9 @@
             ConfigService.getSystemConfig().then(function (systemConfig) {
                 $rootScope.systemConfig = systemConfig;
                 StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
+                if (systemConfig.vds && systemConfig.vds.vds_source) {
+                    $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
+                }
             });
 
             vm.utcTime = '';
