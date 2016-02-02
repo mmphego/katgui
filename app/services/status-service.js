@@ -81,7 +81,7 @@
                     return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
                 d3.selectAll('g.health-full-item.' + sensorName).attr('class', function (d) {
-                    return api.getClassesOfSensor(d, attributes[i], true);
+                    return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
             }
         };

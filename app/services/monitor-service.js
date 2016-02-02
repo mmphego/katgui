@@ -102,6 +102,10 @@
                     api.lastSyncedTime = messages.result.msg_data + 0.5;
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.result) {
+                        if (messages.result.msg_channel && messages.result.msg_channel === "sched:sched") {
+                            ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
+                            return;
+                        }
                         if (messages.id === 'redis-pubsub') {
                             var arrayResult = [];
                             arrayResult.push({
@@ -134,8 +138,6 @@
                                     }
                                 } else if (messageObj.msg_channel === 'auth:katpool_resources_in_maintenance') {
                                     StatusService.receptorMaintenanceMessageReceived(messageObj);
-                                } else if (messageChannel[0] === 'sched') {
-                                    ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
                                     if (messageChannel[1] === 'sys_interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;

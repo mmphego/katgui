@@ -17,7 +17,7 @@
         vm.sensorStartDateReadable = moment(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
         vm.sensorEndDatetime = new Date(new Date().getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000));
         vm.sensorEndDateReadable = moment(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
-        vm.sensorSearchNames = [];
+        vm.sensorSearchNames = null;
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
         vm.showTips = false;
@@ -381,19 +381,6 @@
             if (selectedAutocompleteItem && event.shiftKey &&
                 (event.keyCode === 8 || event.keyCode === 46)) {
                 vm.removeAutoCompleteItem(selectedAutocompleteItem.innerText.trim(), event);
-            }
-        };
-
-        vm.drawAllSensorNamesConfirm = function (event) {
-            if (vm.sensorSearchNames.length > 25) {
-                NotifyService.showConfirmDialog(event, 'Confirm Sensor Chart Drawing',
-                    'Drawing ' + vm.sensorSearchNames.length + ' sensors might take longer than expected, do you wish to continue?',
-                    'Yes', 'Cancel')
-                        .then(function () {
-                            vm.drawAllSensorNames();
-                        });
-            } else {
-                vm.drawAllSensorNames();
             }
         };
 

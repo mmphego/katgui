@@ -67,7 +67,7 @@
             }
             SensorsService.subarraySensorValues['subarray_' + sub_nr][sensorName.replace('subarray_' + sub_nr + '_', '')] = message.value;
             SensorsService.subarraySensorValues['subarray_' + sub_nr].id = sub_nr;
-            vm.scheduleRedraw(true);
+            vm.scheduleRedraw();
         };
 
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
@@ -111,8 +111,7 @@
                             vm.connectListeners();
                         });
                 });
-        }, 100);
-
+        }, 500);
 
         $scope.$on('$destroy', function () {
             if (vm.redrawInterval) {

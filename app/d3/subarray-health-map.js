@@ -1,12 +1,12 @@
 angular.module('katGui.d3')
 
-    .directive('subarrayHealthMap', function (SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util, DATETIME_FORMAT) {
+    .directive('subarrayHealthMap', function (ConfigService, SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util, DATETIME_FORMAT) {
         return {
             restrict: 'E',
             scope: {},
             link: function (scope, element) {
 
-                var root, transitionDuration = 250;
+                var root;
                 var margin = {top: 8, right: 8, left: 8, bottom: 8};
                 var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]);
                 var svg, container, zoom;
@@ -95,7 +95,7 @@ angular.module('katGui.d3')
                         }
 
                         zoom = d3.behavior.zoom()
-                            .scaleExtent([0.05, 1])
+                            .scaleExtent([0.05, 5])
                             .on("zoom", zoomed);
 
                         if (scope.scaleBeforeResize) {
@@ -139,7 +139,9 @@ angular.module('katGui.d3')
                             resourceList = [];
                         }
                         for (var i = 0; i < resourceList.length; i++) {
-                            children.push(clone(StatusService.statusData[resourceList[i]], resourceList[i], subarrayKey));
+                            if (ConfigService.systemConfig["katconn:arrays"].ants.indexOf(resourceList[i]) > -1) {
+                                children.push(clone(StatusService.statusData[resourceList[i]], resourceList[i], subarrayKey));
+                            }
                         }
                         root.children.push({
                             children: children,
@@ -249,6 +251,8 @@ angular.module('katGui.d3')
                                 fullSensorName = prefix + d.parentName + '_' + d.sensor;
                                 if (StatusService.sensorValues[fullSensorName]) {
                                     classString += StatusService.sensorValues[fullSensorName].status + '-child health-full-item ';
+                                } else {
+                                    classString += ' health-full-item';
                                 }
                             }
 
