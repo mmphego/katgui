@@ -134,14 +134,16 @@ angular.module('katGui.d3')
                     scope.subarrayKeys.forEach(function (subarrayKey) {
                         var children = [];
                         var subarray = SensorsService.subarraySensorValues[subarrayKey];
+                        if (!subarray.pool_resources) {
+                            //TODO get this from monitor service we dont have the sensor values we need yet
+                            return;
+                        }
                         var resourceList = subarray.pool_resources.value.split(',');
                         if (resourceList.length === 1 && resourceList[0] === "") {
                             resourceList = [];
                         }
                         for (var i = 0; i < resourceList.length; i++) {
-                            if (ConfigService.systemConfig["katconn:arrays"].ants.indexOf(resourceList[i]) > -1) {
-                                children.push(clone(StatusService.statusData[resourceList[i]], resourceList[i], subarrayKey));
-                            }
+                            children.push(clone(StatusService.statusData[resourceList[i]], resourceList[i], subarrayKey));
                         }
                         root.children.push({
                             children: children,
@@ -181,6 +183,7 @@ angular.module('katGui.d3')
                     nodes.pop();//root
                     var links = d3.layout.tree().links(nodes);
                     graphArea.selectAll("parent").remove();
+                    graphArea.selectAll("subarray-node").remove();
                     // Update the links…
                     var link = graphArea.selectAll(".link").data(links, function(d) {
                         if (d.target) {

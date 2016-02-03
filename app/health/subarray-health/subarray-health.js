@@ -55,7 +55,7 @@
             for (var i = 0; i < subarrays.length; i++) {
                 vm.subarrays['subarray_' + subarrays[i]] = {id: i.toString()};
             }
-            SensorsService.setSensorStrategies(receptorSensorsRegex, 'event', 0, 0);
+            SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 360);
         };
 
         vm.statusMessageReceived = function (event, message) {
@@ -67,7 +67,7 @@
             }
             SensorsService.subarraySensorValues['subarray_' + sub_nr][sensorName.replace('subarray_' + sub_nr + '_', '')] = message.value;
             SensorsService.subarraySensorValues['subarray_' + sub_nr].id = sub_nr;
-            vm.scheduleRedraw();
+            vm.scheduleRedraw(true);
         };
 
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);

@@ -71,6 +71,7 @@
                 api.subscribe('health');
                 api.subscribe('time');
                 api.subscribe('auth');
+                api.subscribe('resources');
             }
         };
 
@@ -144,6 +145,8 @@
                                     } else {
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
+                                } else if (messageChannel[0] === 'resources') {
+                                    ObsSchedService.receivedResourceMessage(message.msg_data);
                                 } else if (messageChannel[0] === 'health') {
                                     if ((messageChannel[1].endsWith('mode') || messageChannel[1].endsWith('inhibited') ||
                                         messageChannel[1].endsWith('vds_flood_lights_on'))) {

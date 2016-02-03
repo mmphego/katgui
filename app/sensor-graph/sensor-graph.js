@@ -91,7 +91,7 @@
         };
 
         vm.startTimeChange = function () {
-            var parsedDate = Date.parse(vm.sensorStartDateReadable);
+            var parsedDate = moment(vm.sensorStartDateReadable, DATETIME_FORMAT).toDate();
             if (parsedDate) {
                 vm.sensorStartDatetime = new Date(parsedDate);
                 vm.dateTimeError = false;
@@ -101,7 +101,7 @@
         };
 
         vm.endTimeChange = function () {
-            var parsedDate = Date.parse(vm.sensorEndDateReadable);
+            var parsedDate = moment(vm.sensorEndDateReadable, DATETIME_FORMAT).toDate();
             if (parsedDate) {
                 vm.sensorEndDatetime = new Date(parsedDate);
                 vm.endDateTimeError = false;

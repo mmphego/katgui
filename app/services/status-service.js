@@ -27,8 +27,12 @@
                     newStatusDataResource = api.statusData[resource];
                 }
                 newStatusDataResource.name = resource;
+
                 newStatusDataResource.sensor = statusTree.sensor.replace('.', '_').replace('-', '_');
-                newStatusDataResource.children = statusTree.children;
+                if (api.receptors.indexOf(resource) > -1) {
+                    newStatusDataResource.children = statusTree.children;
+                }
+
                 api.statusData[resource] = newStatusDataResource;
             });
         };

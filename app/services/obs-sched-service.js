@@ -198,6 +198,64 @@
             }));
         };
 
+        api.receivedResourceMessage = function (sensor) {
+            var sensorName = sensor.name;
+
+            if (sensorName.startsWith('subarray_')) {
+                var subarrayIndex = _.findIndex(api.subarrays, function (item) {
+                    return item.id === sensorName.split('_')[1];
+                });
+                if (subarrayIndex > -1) {
+                    var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
+                    if (sensorName.endsWith('allocations')) {
+                        var parsedAllocations = sensor.value !== "" ? JSON.parse(sensor.value) : [];
+                        if (!api.subarrays[subarrayIndex].allocations) {
+                            api.subarrays[subarrayIndex].allocations = [];
+                        } else {
+                           api.subarrays[subarrayIndex].allocations.splice(0, api.subarrays[subarrayIndex].allocations.length);
+                        }
+                        if (parsedAllocations.length > 0) {
+                            for (var m in parsedAllocations) {
+                                api.subarrays[subarrayIndex].allocations.push(
+                                    {name: parsedAllocations[m][0], allocation: parsedAllocations[m][1]});
+                            }
+                        }
+                    } else if (sensorName.endsWith('delegated_ca')) {
+                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                        var iAmCA;
+                        for (var idx in api.subarrays) {
+                            if (api.subarrays[idx]['delegated_ca'] === $rootScope.currentUser.email) {
+                                iAmCA = true;
+                            }
+                        }
+                        $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
+                    } else {
+                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                    }
+                } else {
+                    $log.error('Unknown subarray sensor value: ');
+                    $log.error(sensor.value);
+                }
+            } else if (sensorName.endsWith('pool_resources_free')) {
+                api.poolResourcesFree.splice(0, api.poolResourcesFree.length);
+                var resourcesList = sensor.value.split(',');
+                if (resourcesList.length > 0 && resourcesList[0] !== '') {
+                    for (var index in resourcesList) {
+                        api.poolResourcesFree.push({name: resourcesList[index]});
+                    }
+                }
+            } else if (sensorName.indexOf('mode_') > -1) {
+                var subarrayId = sensorName.split('_')[2];
+                var subarray = _.findWhere(api.subarrays, {id: subarrayId});
+                if (subarray) {
+                    subarray.mode = sensor.value;
+                }
+            } else {
+                var trimmed = sensorName.replace('katpool_', '');
+                api[trimmed] = sensor.value;
+            }
+        };
+
         api.receivedScheduleMessage = function (changes) {
             var scheduleDataToAdd = [];
             var draftDataToAdd = [];
