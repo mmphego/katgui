@@ -4,7 +4,7 @@
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
     function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
-                               ControlService, NotifyService, $state, USER_ROLES) {
+                               ControlService, NotifyService, $state, USER_ROLES, $timeout) {
 
         var vm = this;
 
@@ -71,7 +71,12 @@
                     }
 
                     SensorsService.setSensorStrategies(
-                        'version|build|katcpmsgs|sys_monitor_|config_label', 'event-rate', 1, 120);
+                        'sys_monitor_', 'event-rate', 1, 360);
+
+                    $timeout(function () {
+                        SensorsService.setSensorStrategies(
+                            'katcpmsgs|version|build', 'event-rate', 1, 360);
+                    }, 2000);
                 });
 
         };

@@ -10,7 +10,7 @@
             </span>
 
             <div ng-show="vm.showDetailedCamBuildInfo" layout="column" class="grow-height-animation"
-                 style="margin-top: 8px;">
+                 style="margin-top: 8px; min-height: 120px; overflow: auto">
                 <div layout="row" ng-repeat="(key, value) in $root.systemConfig.version">
                     <span style="width: 140px;">{{::key}}:</span>
                     <span style="margin-left: 8px;">{{::value}}</span>
