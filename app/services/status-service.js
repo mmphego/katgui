@@ -27,8 +27,12 @@
                     newStatusDataResource = api.statusData[resource];
                 }
                 newStatusDataResource.name = resource;
+
                 newStatusDataResource.sensor = statusTree.sensor.replace('.', '_').replace('-', '_');
-                newStatusDataResource.children = statusTree.children;
+                if (api.receptors.indexOf(resource) > -1) {
+                    newStatusDataResource.children = statusTree.children;
+                }
+
                 api.statusData[resource] = newStatusDataResource;
             });
         };
@@ -81,7 +85,7 @@
                     return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
                 d3.selectAll('g.health-full-item.' + sensorName).attr('class', function (d) {
-                    return api.getClassesOfSensor(d, attributes[i], true);
+                    return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
             }
         };

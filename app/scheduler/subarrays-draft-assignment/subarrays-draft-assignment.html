@@ -33,7 +33,7 @@
 
     <div flex layout="row" style="margin-top: 16px; max-height: 100%; min-height: 100%;">
 
-        <div flex layout="column" style="overflow: auto; padding-left: 8px; margin-right: 8px">
+        <div flex layout="column" style="overflow: auto; padding-left: 4px; margin-right: 4px">
             <div flex
                  ng-repeat="subarray in vm.subarrays | filter: (vm.subarray_id || '') && {id: vm.subarray_id} | orderBy:'id'"
                  class="subarray-container" layout="row"
@@ -107,16 +107,16 @@
                         </span>
                         </div>
                     </md-toolbar>
-                    <md-virtual-repeat-container md-theme="{{themePrimary}}" flex
+                    <div md-theme="{{themePrimary}}" flex
                                                  class="schedule-draft-data-list md-whiteframe-z1"
                                                  ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div
-                            md-virtual-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse"
+                            ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:subarray.id, state:'DRAFT'} | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse track by item.id_code"
                             style="padding: 0 4px" flex layout="row" layout-align="start center"
                             ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                             ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}"
                             class="schedule-draft-item" layout="column" ng-show="item">
-                            <md-progress-linear ng-if="item.verification_state === 'VERIFYING'"
+                            <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'"
                                                 class="md-primary progress-bar-fill"
                                                 md-mode="indeterminate"
                                                 style="position: absolute; left: 0; right: 0;">
@@ -163,7 +163,7 @@
                                 </md-menu-content>
                             </md-menu>
                         </div>
-                    </md-virtual-repeat-container>
+                    </div>
 
                     <md-toolbar ng-class="{'md-hue-2': subarray.state !== 'inactive'}" style="margin-top: 8px"
                                 class="md-whiteframe-z1 md-toolbar-tools-medium"
@@ -194,20 +194,23 @@
                         </div>
                     </md-toolbar>
 
-                    <md-virtual-repeat-container flex md-theme="{{themePrimaryButtons}}" class="schedule-draft-data-list md-whiteframe-z1"
+                    <div flex md-theme="{{themePrimaryButtons}}" class="schedule-draft-data-list md-whiteframe-z1"
                          style="padding: 0; overflow: auto; min-height: 200px; max-height: 300px"
                          ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div
-                            md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id})"
+                            ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id}) track by item.id_code"
                             ng-click="vm.setSelectedSchedule(item);" style="padding: 0 4px"
                             ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
                             class="schedule-draft-item" layout="row" layout-align="start center" ng-show="item">
 
-                            <md-progress-linear md-theme="green" ng-if="item.state === 'ACTIVE'"
-                                                class="md-primary progress-bar-fill"
-                                                md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}"
-                                                value="{{item.progress}}"
+                            <md-progress-linear md-theme="green" ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
+                                                md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; opacity: 0.8;">
+                            </md-progress-linear>
+                            <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'"
+                                                class="md-primary progress-bar-fill"
+                                                md-mode="indeterminate"
+                                                style="position: absolute; left: 0; right: 0;">
                             </md-progress-linear>
                             <div layout="column" layout-align="start" style="width: 120px">
                                 <span
@@ -259,7 +262,7 @@
                             <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
                             <span ng-show="item.pendingVerify" style="transition: 0s; width: 35px; height:48px;"></span>
                         </div>
-                    </md-virtual-repeat-container>
+                    </div>
                 </div>
 
                 <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised"
@@ -272,7 +275,7 @@
         </div>
 
         <div layout="row"
-             style="max-width: 385px; min-width: 385px; padding-right: 8px; padding-bottom: 8px;"
+             style="max-width: 385px; min-width: 385px; padding-right: 4px; padding-bottom: 4px;"
              class="md-whitespace-z1">
             <div class="md-whiteframe-z2" layout="column" flex>
                 <md-toolbar class="panel-toolbar-small md-whiteframe-z1">

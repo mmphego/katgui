@@ -55,7 +55,7 @@
             for (var i = 0; i < subarrays.length; i++) {
                 vm.subarrays['subarray_' + subarrays[i]] = {id: i.toString()};
             }
-            SensorsService.setSensorStrategies(receptorSensorsRegex, 'event', 0, 0);
+            SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 360);
         };
 
         vm.statusMessageReceived = function (event, message) {
@@ -111,8 +111,7 @@
                             vm.connectListeners();
                         });
                 });
-        }, 100);
-
+        }, 500);
 
         $scope.$on('$destroy', function () {
             if (vm.redrawInterval) {

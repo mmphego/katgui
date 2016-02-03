@@ -71,6 +71,7 @@
                 api.subscribe('health');
                 api.subscribe('time');
                 api.subscribe('auth');
+                api.subscribe('resources');
             }
         };
 
@@ -102,6 +103,10 @@
                     api.lastSyncedTime = messages.result.msg_data + 0.5;
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.result) {
+                        if (messages.result.msg_channel && messages.result.msg_channel === "sched:sched") {
+                            ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
+                            return;
+                        }
                         if (messages.id === 'redis-pubsub') {
                             var arrayResult = [];
                             arrayResult.push({
@@ -134,14 +139,14 @@
                                     }
                                 } else if (messageObj.msg_channel === 'auth:katpool_resources_in_maintenance') {
                                     StatusService.receptorMaintenanceMessageReceived(messageObj);
-                                } else if (messageChannel[0] === 'sched') {
-                                    ObsSchedService.receivedScheduleMessage(messageChannel[1].split('.')[0], messageObj.msg_data);
                                 } else if (messageChannel[0] === 'mon') {
                                     if (messageChannel[1] === 'sys_interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
                                     } else {
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
+                                } else if (messageChannel[0] === 'resources') {
+                                    ObsSchedService.receivedResourceMessage(message.msg_data);
                                 } else if (messageChannel[0] === 'health') {
                                     if ((messageChannel[1].endsWith('mode') || messageChannel[1].endsWith('inhibited') ||
                                         messageChannel[1].endsWith('vds_flood_lights_on'))) {

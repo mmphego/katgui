@@ -59,7 +59,7 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
-                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService) {
+                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
         var vm = this;
         SessionService.recoverLogin();
 
@@ -80,6 +80,7 @@
 
         vm.initApp = function () {
             vm.showNavbar = true;
+            $rootScope.showVideoLinks = false;
             $rootScope.showDate = $localStorage['showDate'];
             $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
             $rootScope.showJulianDate = $localStorage['showJulianDate'];
@@ -132,6 +133,13 @@
             ConfigService.getSystemConfig().then(function (systemConfig) {
                 $rootScope.systemConfig = systemConfig;
                 StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
+                if (systemConfig.vds && systemConfig.vds.vds_source) {
+                    $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
+                }
+                var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
+                subarray_nrs.forEach(function (sub_nr) {
+                    ObsSchedService.subarrays.push({id: sub_nr});
+                });
             });
 
             vm.utcTime = '';

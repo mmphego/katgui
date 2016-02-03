@@ -6,13 +6,24 @@
         .controller('VideoCtrl', VideoCtrl);
 
     function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog, ControlService, SensorsService,
-                       SERVER_URL, NotifyService, USER_ROLES) {
+                       SERVER_URL, NotifyService, USER_ROLES, ConfigService, KatGuiUtil, $state) {
 
         var vm = this;
         var urlBase = SERVER_URL + '/katcontrol/vds';
-        //todo set the image source from katconfig
-        //not implemented in katconfig yet
-        vm.imageSource = 'http://monctl.devo.camlab.kat.ac.za:8083';
+
+        ConfigService.getSystemConfig()
+            .then(function (systemConfig) {
+                if (systemConfig.vds && KatGuiUtil.isValidURL(systemConfig.vds.vds_source)) {
+                    vm.imageSource = systemConfig.vds.vds_source.replace(/"/g, '').replace(/'/g, "");
+                    if (!$scope.$$phase) {
+                        $scope.$digest();
+                    }
+                } else {
+                    $state.go('home');
+                    return;
+                }
+            });
+
         vm.sensorValues = {};
         vm.stepTimeValue = 1;
 
