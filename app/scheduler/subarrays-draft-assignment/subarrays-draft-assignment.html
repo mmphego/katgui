@@ -116,7 +116,7 @@
                             ng-click="item.confirmDelete = false; vm.setSelectedScheduleDraft(item)"
                             ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}"
                             class="schedule-draft-item" layout="column" ng-show="item">
-                            <md-progress-linear ng-if="item.verification_state === 'VERIFYING'"
+                            <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'"
                                                 class="md-primary progress-bar-fill"
                                                 md-mode="indeterminate"
                                                 style="position: absolute; left: 0; right: 0;">
@@ -207,7 +207,7 @@
                                                 md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
                                                 style="position: absolute; left: 0; right: 0; opacity: 0.8;">
                             </md-progress-linear>
-                            <md-progress-linear ng-if="item.verification_state === 'VERIFYING'"
+                            <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'"
                                                 class="md-primary progress-bar-fill"
                                                 md-mode="indeterminate"
                                                 style="position: absolute; left: 0; right: 0;">

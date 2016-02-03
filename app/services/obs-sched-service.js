@@ -451,11 +451,13 @@
         };
 
         api.progressInterval = $interval(function () {
-            api.scheduleData.forEach(function (sb) {
-                if (sb.expected_duration_seconds && sb.actual_start_time) {
-                    sb.progress = api.sbProgress(sb);
-                }
-            });
+            if (api.scheduleData.length > 0) {
+                api.scheduleData.forEach(function (sb) {
+                    if (sb.state === 'ACTIVE' && sb.expected_duration_seconds && sb.actual_start_time) {
+                        sb.progress = api.sbProgress(sb);
+                    }
+                });
+            }
         }, 3000);
 
         function createRequest(method, url, data) {
