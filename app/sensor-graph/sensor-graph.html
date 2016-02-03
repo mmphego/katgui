@@ -1,6 +1,6 @@
 <div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}" flex
      ng-click="vm.showDatePicker = false;vm.showEndDatePicker = false;"
-     style="cursor: auto; max-height: 100%; min-height: 100%">
+     style="cursor: auto; min-height: 640px">
 
     <div layout="column" style="margin: 8px; min-width: 366px; max-width: 366px; min-height: 100%;">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
@@ -37,7 +37,7 @@
                             ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(newDate)"></datetimepicker>
 
-            <div layout="row" style="margin-top: 4px">
+            <div layout="row" style="margin-top: 4px; min-height: 32px">
                 <md-input-container md-no-float style="margin: 0; padding: 0; width: 135px; height: 30px">
                     <input type="text" ng-change="vm.startTimeChange()"
                            ng-model="vm.sensorStartDateReadable" placeholder="Start Date (UTC)"
@@ -50,7 +50,7 @@
                 </md-button>
             </div>
 
-            <div layout="row" layout="center center" style="margin: 0; padding: 4px" ng-show="vm.showRelativeTime">
+            <div layout="row" layout="center center" style="margin: 0; padding: 4px; min-height: 32px" ng-show="vm.showRelativeTime">
                 <md-switch ng-init="vm.plusMinus = false" class="md-primary" ng-model="vm.plusMinus"
                            style="font-size: 34px; min-width: 65px; margin-right: -10px; margin-top: 18px">
                     {{vm.plusMinus? '+' : '-'}}
@@ -70,7 +70,7 @@
                 </md-select>
             </div>
 
-            <div layout="row" layout="center center" style="margin: 0px; padding: 4px" ng-show="!vm.showRelativeTime">
+            <div layout="row" layout="center center" style="margin: 0px; padding: 4px; min-height: 32px" ng-show="!vm.showRelativeTime">
                 <md-input-container md-no-float style="margin: 0; padding: 0; width: 135px; height: 30px">
                     <input type="text" ng-change="vm.endTimeChange()"
                            ng-model="vm.sensorEndDateReadable" placeholder="End Date (UTC)"
@@ -147,15 +147,14 @@
                 </div>
             </div>
 
-            <div style="width: 100%; margin-top: 4px;" layout="row" layout-align="center center">
+            <div style="width: 100%; margin-top: 4px; max-height: 22px" layout="row" layout-align="center center">
                 <span ng-show="vm.sensorSearchNames.length === 1000" title="Refine the search to see more sensors"
                       class="fa fa-warning"></span>
-                <span ng-show="vm.sensorSearchNames.length > 1" style="margin-left: 4px;"><i>Displaying {{vm.sensorSearchNames.length}} result(s)</i></span>
-                <span ng-show="vm.sensorSearchNames.length === 1" style="margin-left: 4px;">There is 1 result.</span>
-                <span ng-show="vm.sensorSearchNames.length === 0" style="margin-left: 4px;">There are no results.</span>
+                <span ng-show="vm.sensorSearchNames.length > 0" style="margin-left: 4px;"><i>Displaying {{vm.sensorSearchNames.length}} result(s)</i></span>
+                <span ng-show="vm.sensorSearchNames && vm.sensorSearchNames.length === 0" style="margin-left: 4px;">There are no results.</span>
             </div>
 
-            <div layout="column" layout-align="center center" style="width: 100%;">
+            <div layout="column" layout-align="center center" style="width: 100%; min-height: 77px;">
                 <md-checkbox ng-if="$root.loggedIn" class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()"
                     ng-disabled="vm.sensorServiceConnected" style="margin: 4px;">
                     Include Live Data

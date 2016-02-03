@@ -4,7 +4,7 @@
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
     function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
-                               ControlService, NotifyService, $state, USER_ROLES) {
+                               ControlService, NotifyService, $state, USER_ROLES, $timeout) {
 
         var vm = this;
 
@@ -12,14 +12,6 @@
         vm.guid = KatGuiUtil.generateUUID();
         vm.disconnectIssued = false;
         vm.connectInterval = null;
-
-        if (!$rootScope.systemConfig) {
-            ConfigService.getSystemConfig().then(function (systemConfig) {
-                $rootScope.systemConfig = systemConfig;
-            });
-        }
-
-        var sensorNameList = ['version', 'build'];
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -71,7 +63,12 @@
                     }
 
                     SensorsService.setSensorStrategies(
-                        'version|build|katcpmsgs|sys_monitor_|config_label', 'event-rate', 1, 120);
+                        'sys_monitor_', 'event-rate', 1, 360);
+
+                    $timeout(function () {
+                        SensorsService.setSensorStrategies(
+                            'katcpmsgs|version|build', 'event-rate', 1, 360);
+                    }, 2000);
                 });
 
         };
@@ -103,19 +100,22 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
             var sensorName = strList[1];
-            $scope.$apply(function () {
-                if (sensorName.indexOf('monitor_') > -1) {
-                    var resource = sensorName.split('monitor_')[1];
+            if (sensorName.indexOf('monitor_') > -1) {
+                var resource = sensorName.split('monitor_')[1];
+                if (vm.resourcesNames[resource]) {
                     vm.resourcesNames[resource].connected = sensor.value.value;
-                } else {
-                    var parentName = KatGuiUtil.getParentNameFromSensor(sensorName);
-                    sensorName = sensorName.replace(parentName + '_', '');
-                    vm.resourcesNames[parentName].sensors[sensorName] = {
-                        name: sensorName,
-                        value: sensor.value.value
-                    };
                 }
-            });
+            } else {
+                var parentName = KatGuiUtil.getParentNameFromSensor(sensorName);
+                sensorName = sensorName.replace(parentName + '_', '');
+                vm.resourcesNames[parentName].sensors[sensorName] = {
+                    name: sensorName,
+                    value: sensor.value.value
+                };
+            }
+            if (!$scope.$$phase) {
+                $scope.$digest();
+            }
         });
 
         vm.collapseAll = function () {

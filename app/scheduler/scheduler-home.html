@@ -1,9 +1,8 @@
-<div ng-controller="SchedulerHomeCtrl as vm" flex layout-fill layout="column"
-     ng-class="{'connection-lost-bg':vm.connectionLost}" md-theme="{{themePrimary}}"
-     style="min-width: 1280px; min-height: 600px;">
+<div ng-controller="SchedulerHomeCtrl as vm" flex layout="column"
+     ng-class="{'connection-lost-bg':vm.connectionLost}" md-theme="{{themePrimary}}">
 
     <div ng-if="$root.iAmLO || $root.iAmCA" ng-show="!vm.childStateShowing" layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}"
-         style="margin: 11px 8px" md-theme="{{themePrimaryButtons}}">
+         style="margin: 11px 8px; min-height: 36px;" md-theme="{{themePrimaryButtons}}">
         <md-button style="margin: 0;" title="Schedule Block Drafts"
                    ng-click="$root.stateGo('scheduler.drafts')">
             <span>SB Drafts</span>
@@ -16,7 +15,7 @@
     </div>
 
     <div ng-if="$root.iAmLO || $root.iAmCA" ng-show="!vm.childStateShowing" layout="column" layout-align="center center" class="md-whiteframe-z4"
-         style="margin: 8px;">
+         style="margin: 8px; min-height: 700px;">
         <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
             <span>Subarray Workflow</span>
         </md-toolbar>
@@ -79,5 +78,5 @@
         </md-button>
     </div>
 
-    <div ng-if="$root.iAmLO || $root.iAmCA || $root.currentStateName() === 'scheduler.observations'" ng-show="vm.childStateShowing" ui-view flex layout="column" style="min-height: 100%"></div>
+    <div ng-if="$root.iAmLO || $root.iAmCA || $root.currentStateName() === 'scheduler.observations'" ng-show="vm.childStateShowing" ui-view flex layout="column"></div>
 </div>

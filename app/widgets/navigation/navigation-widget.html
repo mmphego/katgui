@@ -14,7 +14,7 @@
     </div>
 
     <div layout="row" layout-align="center center" md-theme="{{$root.themePrimaryButtons}}">
-        <md-button class="md-raised md-primary" ng-click="$root.stateGo('video')">Video</md-button>
+        <md-button ng-show="$root.showVideoLinks" class="md-raised md-primary" ng-click="$root.stateGo('video')">Video</md-button>
         <md-button class="md-raised md-primary" ng-click="$root.stateGo('instrumental-config')">Instrumental Configuration</md-button>
         <md-button class="md-raised md-primary" ng-click="$root.stateGo('admin')">User Administration</md-button>
         <md-button class="md-raised md-primary" ng-click="$root.stateGo('config')">KATGUI Configuration</md-button>

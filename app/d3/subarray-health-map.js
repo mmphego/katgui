@@ -1,12 +1,12 @@
 angular.module('katGui.d3')
 
-    .directive('subarrayHealthMap', function (SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util, DATETIME_FORMAT) {
+    .directive('subarrayHealthMap', function (ConfigService, SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util, DATETIME_FORMAT) {
         return {
             restrict: 'E',
             scope: {},
             link: function (scope, element) {
 
-                var root, transitionDuration = 250;
+                var root;
                 var margin = {top: 8, right: 8, left: 8, bottom: 8};
                 var tooltip = d3.select(angular.element(document.querySelector('.treemap-tooltip'))[0]);
                 var svg, container, zoom;
@@ -95,7 +95,7 @@ angular.module('katGui.d3')
                         }
 
                         zoom = d3.behavior.zoom()
-                            .scaleExtent([0.05, 1])
+                            .scaleExtent([0.05, 5])
                             .on("zoom", zoomed);
 
                         if (scope.scaleBeforeResize) {
@@ -134,6 +134,10 @@ angular.module('katGui.d3')
                     scope.subarrayKeys.forEach(function (subarrayKey) {
                         var children = [];
                         var subarray = SensorsService.subarraySensorValues[subarrayKey];
+                        if (!subarray.pool_resources) {
+                            //TODO get this from monitor service we dont have the sensor values we need yet
+                            return;
+                        }
                         var resourceList = subarray.pool_resources.value.split(',');
                         if (resourceList.length === 1 && resourceList[0] === "") {
                             resourceList = [];
@@ -179,6 +183,7 @@ angular.module('katGui.d3')
                     nodes.pop();//root
                     var links = d3.layout.tree().links(nodes);
                     graphArea.selectAll("parent").remove();
+                    graphArea.selectAll("subarray-node").remove();
                     // Update the links…
                     var link = graphArea.selectAll(".link").data(links, function(d) {
                         if (d.target) {
@@ -249,6 +254,8 @@ angular.module('katGui.d3')
                                 fullSensorName = prefix + d.parentName + '_' + d.sensor;
                                 if (StatusService.sensorValues[fullSensorName]) {
                                     classString += StatusService.sensorValues[fullSensorName].status + '-child health-full-item ';
+                                } else {
+                                    classString += ' health-full-item';
                                 }
                             }
 

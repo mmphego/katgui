@@ -3,13 +3,18 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService, $log, $q, $mdDialog, NotifyService) {
+    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService,
+                             $log, $q, $mdDialog, NotifyService, $timeout, $interval) {
 
         var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
         api.scheduleData = [];
         api.scheduleDraftData = [];
         api.scheduleCompletedData = [];
+
+        api.scheduleDataCache = [];
+        api.scheduleDraftDataCache = [];
+        api.scheduleCompletedDataCache = [];
 
         api.subarrays = [];
         api.poolResourcesFree = [];
@@ -33,7 +38,12 @@
                         deferred.resolve();
                     }
                 }, function (error) {
-                    NotifyService.showSimpleDialog('Error sending request', error);
+                    if (error && error.data && error.data.err_code) {
+                        NotifyService.showSimpleDialog("Error sending request",
+                            error.data.err_code + ": " + error.data.err_msg);
+                    } else {
+                        NotifyService.showSimpleDialog("Error sending request", error);
+                    }
                     if (deferred) {
                         deferred.resolve();
                     }
@@ -188,57 +198,147 @@
             }));
         };
 
-        api.receivedScheduleMessage = function (action, sb) {
-            if (action === 'sb_remove') {
-                //only drafts can be deleted in the db
-                var removedSB = null;
-                for (var i in api.scheduleDraftData) {
-                    if (api.scheduleDraftData[i].id === sb.id) {
-                        removedSB = api.scheduleDraftData[i];
-                        api.scheduleDraftData.splice(i, 1);
-                        break;
+        api.receivedResourceMessage = function (sensor) {
+            var sensorName = sensor.name;
+
+            if (sensorName.startsWith('subarray_')) {
+                var subarrayIndex = _.findIndex(api.subarrays, function (item) {
+                    return item.id === sensorName.split('_')[1];
+                });
+                if (subarrayIndex > -1) {
+                    var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
+                    if (sensorName.endsWith('allocations')) {
+                        var parsedAllocations = sensor.value !== "" ? JSON.parse(sensor.value) : [];
+                        if (!api.subarrays[subarrayIndex].allocations) {
+                            api.subarrays[subarrayIndex].allocations = [];
+                        } else {
+                           api.subarrays[subarrayIndex].allocations.splice(0, api.subarrays[subarrayIndex].allocations.length);
+                        }
+                        if (parsedAllocations.length > 0) {
+                            for (var m in parsedAllocations) {
+                                api.subarrays[subarrayIndex].allocations.push(
+                                    {name: parsedAllocations[m][0], allocation: parsedAllocations[m][1]});
+                            }
+                        }
+                    } else if (sensorName.endsWith('delegated_ca')) {
+                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                        var iAmCA;
+                        for (var idx in api.subarrays) {
+                            if (api.subarrays[idx]['delegated_ca'] === $rootScope.currentUser.email) {
+                                iAmCA = true;
+                            }
+                        }
+                        $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
+                    } else {
+                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                    }
+                } else {
+                    $log.error('Unknown subarray sensor value: ');
+                    $log.error(sensor.value);
+                }
+            } else if (sensorName.endsWith('pool_resources_free')) {
+                api.poolResourcesFree.splice(0, api.poolResourcesFree.length);
+                var resourcesList = sensor.value.split(',');
+                if (resourcesList.length > 0 && resourcesList[0] !== '') {
+                    for (var index in resourcesList) {
+                        api.poolResourcesFree.push({name: resourcesList[index]});
                     }
                 }
-                if (removedSB) {
-                    NotifyService.showSimpleToast('SB ' + removedSB.id_code + ' has been removed');
+            } else if (sensorName.indexOf('mode_') > -1) {
+                var subarrayId = sensorName.split('_')[2];
+                var subarray = _.findWhere(api.subarrays, {id: subarrayId});
+                if (subarray) {
+                    subarray.mode = sensor.value;
                 }
-            } else if (action === 'sb_update') {
-
-                var draftIndex = _.findLastIndex(api.scheduleDraftData, {id_code: sb.id_code});
-                var scheduledIndex = _.findLastIndex(api.scheduleData, {id_code: sb.id_code});
-
-                if (draftIndex > -1 && sb.state !== 'DRAFT') {
-                    api.scheduleDraftData.splice(draftIndex, 1);
-                } else if (draftIndex > -1 && sb.state === 'DRAFT') {
-                    api.scheduleDraftData[draftIndex] = sb;
-                } else if (draftIndex === -1 && sb.state === 'DRAFT'){
-                    api.scheduleDraftData.push(sb);
-                }
-                if (scheduledIndex > -1 && (sb.state !== 'SCHEDULED' && sb.state !== 'ACTIVE')) {
-                    api.scheduleData.splice(scheduledIndex, 1);
-                } else if (scheduledIndex > -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
-                    api.scheduleData[scheduledIndex] = sb;
-                } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
-                    api.scheduleData.push(sb);
-                }
-            } else if (action === 'sb_add') {
-                if (sb.state === 'DRAFT') {
-                    api.scheduleDraftData.push(sb);
-                } else if (sb.state === 'ACTIVE' || sb.state === 'SCHEDULED') {
-                    api.scheduleData.push(sb);
-                } else {
-                    api.scheduleCompletedData.push(sb);
-                }
-                NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
-            } else if (action === 'sb_order_change') {
-                NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
-                api.getScheduledScheduleBlocks();
-            } else if (action === 'sb_completed_change') {
-                $rootScope.$emit('sb_completed_change', '');
             } else {
-                $log.error('Dangling ObsSchedService ' + action + ' message for:');
-                $log.error(sb);
+                var trimmed = sensorName.replace('katpool_', '');
+                api[trimmed] = sensor.value;
             }
+        };
+
+        api.receivedScheduleMessage = function (changes) {
+            var scheduleDataToAdd = [];
+            var draftDataToAdd = [];
+            var completedDataToAdd = [];
+            var orderChangeCall = false;
+
+            for (var i = 0; i < changes.length; i++) {
+                var sb = changes[i].value;
+                var action = changes[i].command;
+                if (action.startsWith('sb_remove')) {
+                    //only drafts can be deleted in the db
+                    var index = _.findLastIndex(api.scheduleDraftData, {id: parseInt(action.split('.')[1])});
+                    if (index > -1) {
+                        NotifyService.showSimpleToast('SB ' + api.scheduleDraftData[index].id_code + ' has been removed');
+                        api.scheduleDraftData.splice(index, 1);
+                    }
+                } else if (action.startsWith('sb_update')) {
+                    var draftIndex = _.findLastIndex(api.scheduleDraftData, {id: sb.id});
+                    var scheduledIndex = _.findLastIndex(api.scheduleData, {id: sb.id});
+
+                    if (draftIndex > -1 && sb.state === 'DRAFT') {
+                        api.scheduleDraftData[draftIndex] = sb;
+                    } else if (draftIndex === -1 && sb.state === 'DRAFT'){
+                        if (scheduledIndex > -1) {
+                            api.scheduleData.splice(scheduledIndex, 1);
+                        }
+                        draftDataToAdd.push(sb);
+                        // api.scheduleDraftData.push(sb);
+                    }
+
+                    if (scheduledIndex > -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
+                        api.scheduleData[scheduledIndex] = sb;
+                    } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
+                        if (draftIndex > -1) {
+                            api.scheduleDraftData.splice(draftIndex, 1);
+                        }
+                        // api.scheduleData.push(sb);
+                        scheduleDataToAdd.push(sb);
+                    }
+                } else if (action.startsWith('sb_add')) {
+                    if (sb.state === 'DRAFT') {
+                        // api.scheduleDraftData.push(sb);
+                        draftDataToAdd.push(sb);
+                    } else if (sb.state === 'ACTIVE' || sb.state === 'SCHEDULED') {
+                        // api.scheduleData.push(sb);
+                        scheduleDataToAdd.push(sb);
+                    } else {
+                        // api.scheduleCompletedData.push(sb);
+                        completedDataToAdd.push(sb);
+                    }
+                    NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
+                } else if (action.startsWith('sb_order_change')) {
+                    orderChangeCall = true;
+                } else if (action.startsWith('sb_completed_change')) {
+                    $rootScope.$emit('sb_completed_change', '');
+                } else {
+                    $log.error('Dangling ObsSchedService ' + action + ' message for:');
+                    $log.error(sb);
+                }
+            }
+            if (scheduleDataToAdd.length) {
+                Array.prototype.push.apply(api.scheduleData, scheduleDataToAdd);
+            }
+            if (draftDataToAdd.length) {
+                Array.prototype.push.apply(api.scheduleDraftData, draftDataToAdd);
+            }
+            if (completedDataToAdd.length) {
+                Array.prototype.push.apply(api.scheduleCompletedData, completedDataToAdd);
+            }
+            if (orderChangeCall) {
+                NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
+                api.scheduleGetScheduledScheduleBlocksWithTimeout();
+            }
+        };
+
+        api.scheduleGetScheduledScheduleBlocksWithTimeout = function () {
+            if (api.getScheduledScheduleBlocksTimeout) {
+                $timeout.cancel(api.getScheduledScheduleBlocksTimeout);
+            }
+            api.getScheduledScheduleBlocksTimeout = $timeout(function () {
+                api.getScheduledScheduleBlocks();
+                api.getScheduleBlocks();
+            }, 1000);
         };
 
         api.listConfigLabels = function () {
@@ -372,7 +472,6 @@
                     } else {
                         NotifyService.showSimpleDialog("Error creating resource template", result);
                     }
-
                 });
         };
 
@@ -392,9 +491,32 @@
                     oldResource = result.data;
                     NotifyService.showSimpleToast("Modified resource template");
                 }, function (result) {
-                    NotifyService.showSimpleDialog("Error modifying resource template", result);
+                    if (result && result.data && result.data.err_code) {
+                        NotifyService.showSimpleDialog("Error creating resource template",
+                            result.data.err_code + ": " + result.data.err_msg);
+                    } else {
+                        NotifyService.showSimpleDialog("Error modifying resource template", result);
+                    }
                 });
         };
+
+        api.sbProgress = function (sb) {
+            var startDate = moment.utc(sb.actual_start_time);
+            var startDateTime = startDate.toDate().getTime();
+            var endDate = moment.utc(startDate).add(sb.expected_duration_seconds, 'seconds');
+            var now = moment.utc(new Date());
+            return (now.toDate().getTime() - startDateTime) / (endDate.toDate().getTime() - startDateTime) * 100;
+        };
+
+        api.progressInterval = $interval(function () {
+            if (api.scheduleData.length > 0) {
+                api.scheduleData.forEach(function (sb) {
+                    if (sb.state === 'ACTIVE' && sb.expected_duration_seconds && sb.actual_start_time) {
+                        sb.progress = api.sbProgress(sb);
+                    }
+                });
+            }
+        }, 3000);
 
         function createRequest(method, url, data) {
             var req = {
