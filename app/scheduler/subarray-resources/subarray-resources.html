@@ -2,7 +2,7 @@
      ng-controller="SubArrayResourcesCtrl as vm">
 
     <div layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}"
-        style="margin: 0 8px" md-theme="{{themePrimaryButtons}}">
+        style="margin: 0 8px; min-height: 50px" md-theme="{{themePrimaryButtons}}">
         <md-button style="margin: 0" title="Schedule Block Drafts"
                    ng-click="$root.stateGo('scheduler.drafts')">
             <span>SB Drafts</span>
