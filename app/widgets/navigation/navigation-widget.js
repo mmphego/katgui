@@ -91,12 +91,10 @@
             name: 'Components',
             state: 'cam-components',
             title: 'CAM Components & Versions',
-            hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator'
         }, {
             name: 'Processes',
             state: 'process-control',
             title: 'CAM Processes Control',
-            hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator'
         }, {
             name: 'Operator',
             state: 'operator-control',

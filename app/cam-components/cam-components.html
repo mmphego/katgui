@@ -29,7 +29,7 @@
             <span>View KATCP Messages Log</span>
         </md-button>
 
-        <md-button ng-click="vm.disableAllKATCPMessageLogging()" title="Turn off all KATCP Message logging" class="inline-action-button no-margin-no-padding"
+        <md-button ng-show="vm.lead_op" ng-click="vm.disableAllKATCPMessageLogging()" title="Turn off all KATCP Message logging" class="inline-action-button no-margin-no-padding"
                    style="font-size: 16px; position: absolute; top: 0; right: 0; margin-right: 64px;">
             <i class="fa fa-power-off"></i>
         </md-button>
@@ -56,7 +56,7 @@
                 Build State
             </span>
         </div>
-        <span style="position: absolute; right: 44px; bottom: 0;" class="subheader-text">
+        <span ng-show="vm.lead_op" style="position: absolute; right: 44px; bottom: 0;" class="subheader-text">
                 KATCP Logging</br>
             Devices | Proxy
             </span>
@@ -84,19 +84,19 @@
                 <span flex><i>{{vm.resourcesNames[key].sensors.build_state.value}}</i></span>
 
                 <div layout="row">
-                    <md-switch ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled"
+                    <md-switch ng-if="vm.lead_op && vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled"
                                ng-click="$event.stopPropagation()"
                                ng-change="vm.toggleKATCPMessageDevices(key, vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled.value)"
                                ng-model="vm.resourcesNames[key].sensors.logging_katcpmsgs_devices_enabled.value"
                                style="margin: 0 10px 0 0">
                     </md-switch>
-                    <md-switch ng-if="vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled"
+                    <md-switch ng-if="vm.lead_op && vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled"
                                ng-click="$event.stopPropagation()"
                                ng-change="vm.toggleKATCPMessageProxy(key, vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled.value);"
                                ng-model="vm.resourcesNames[key].sensors.logging_katcpmsgs_proxy_enabled.value"
                                style="margin: 0">
                     </md-switch>
-                    <md-menu style="padding: 0">
+                    <md-menu style="padding: 0" ng-if="vm.lead_op">
                         <md-button class="md-icon-button" ng-click="$mdOpenMenu(); $event.stopPropagation()"
                             style="height: 32px; width: 32px; margin: 0">
                             <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
