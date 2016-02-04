@@ -79,6 +79,7 @@
         $rootScope.themePrimaryButtons = theme.primaryButtons;
 
         $rootScope.getSystemConfig = function () {
+            ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
             ConfigService.getSystemConfig().then(function (systemConfig) {
                 $rootScope.systemConfig = systemConfig;
                 StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
