@@ -1,23 +1,27 @@
 <div class="md-whiteframe-z4 login-form" ng-controller="LoginFormCtrl as vm" layout="column"
      layout-align="center center">
     <md-toolbar class="md-tall md-whiteframe-z1" layout-align="center center">
-        <h1>katGUI</h1>
+        <h1>KATGUI <b>{{$root.systemType? ' - ' + $root.systemType : ''}}</b></h1>
     </md-toolbar>
-    <form style="padding-top: 24px;" flex name="form" layout="column" layout-align="center center" layout-padding md-theme="{{themePrimaryButtons}}">
+    <form ng-submit="vm.verify(vm.credentials, vm.loginAs)" style="padding-top: 24px;" flex name="form" layout="column" layout-align="center center" layout-padding md-theme="{{themePrimaryButtons}}">
         <md-input-container md-no-float required class="long-input">
             <input focus ng-model="vm.credentials.username" placeholder="Email">
         </md-input-container>
         <md-input-container  md-no-float required class="long-input">
             <input type="password" ng-model="vm.credentials.password" placeholder="Password">
         </md-input-container>
-        <md-select placeholder="Login As..." ng-model="vm.loginAs" style="width: 155px" ng-init="vm.loginAs = 'read_only'">
-            <md-option value="lead_operator">Lead Operator</md-option>
-            <md-option value="control_authority">Control Authority</md-option>
-            <md-option value="operator">Operator</md-option>
-            <md-option value="read_only">Monitor Only</md-option>
-        </md-select>
-        <md-button style="margin: 8px;" ng-click="vm.verify(vm.credentials, vm.loginAs)"
-                   class="md-raised md-primary">Login
+        <div layout="row" layout-align="center center">
+            <label style="margin: -8px 12px 0 0">Login as</label>
+            <md-select placeholder="Login As..." ng-model="vm.loginAs" style="width: 155px">
+                <md-option value="lead_operator">Lead Operator</md-option>
+                <md-option value="control_authority">Control Authority</md-option>
+                <md-option value="operator">Operator</md-option>
+                <md-option value="read_only">Monitor Only</md-option>
+            </md-select>
+        </div>
+        <md-button type="submit" style="margin: 8px;" class="md-raised md-primary">Login
         </md-button>
     </form>
+    <label style="color: #F44336; height: 35px; margin-top: 8px; font-size: 18px;"
+        ng-show="$root.confConnectionError">{{$root.confConnectionError}}</label>
 </div>
