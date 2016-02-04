@@ -140,11 +140,8 @@
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                if ($rootScope.currentUser.req_role !== USER_ROLES.lead_operator) {
-                    $state.go('home');
-                } else {
-                    vm.connectListeners();
-                }
+                vm.lead_op = $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
+                vm.connectListeners();
             } else {
                 vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }

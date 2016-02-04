@@ -68,8 +68,8 @@
         };
 
         api.onSockJSMessage = function (e) {
+            //we got a ping for LO so send a pong with our email
             api.connection.send($rootScope.currentUser.email);
-            $log.debug('Received: ' + e.data);
         };
 
         api.connectListener = function (skipDeferObject) {
@@ -134,7 +134,6 @@
                         api.login(payload.session_id);
                     }
                 } else {
-                    $log.info('No token, off to login');
                     api.login(result.data.session_id);
                 }
             } else {
@@ -215,7 +214,6 @@
 
         function loginSuccess(result, session_id) {
             if (session_id) {
-                $log.info('Found session id');
                 var a = session_id.split(".");
                 $rootScope.session_id = session_id;
                 var payload = JSON.parse(CryptoJS.enc.Base64.parse(a[1]).toString(CryptoJS.enc.Utf8));

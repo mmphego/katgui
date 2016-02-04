@@ -96,7 +96,9 @@ angular.module('katGui.d3')
                     }
 
                     //remove because we are redrawing the entire svg
-                    d3.select('svg').remove();
+                    if (svg) {
+                        svg.remove();
+                    }
                     svg = d3.select(element[0]).append("svg")
                         .attr("width", width + margin.left + margin.right)
                         .attr("height", height + margin.top + margin.bottom);

@@ -58,7 +58,7 @@
         .controller('ApplicationCtrl', ApplicationCtrl);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
-                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
+                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService, SERVER_URL,
                              CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
         var vm = this;
         SessionService.recoverLogin();
@@ -77,6 +77,32 @@
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
+
+        $rootScope.getSystemConfig = function () {
+            ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
+            ConfigService.getSystemConfig().then(function (systemConfig) {
+                $rootScope.systemConfig = systemConfig;
+                StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
+                if (systemConfig.vds && systemConfig.vds.vds_source) {
+                    $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
+                }
+                $rootScope.systemType = systemConfig.system.system_conf.replace('systems/', '').replace('.conf', '');
+                var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
+                subarray_nrs.forEach(function (sub_nr) {
+                    ObsSchedService.subarrays.push({id: sub_nr});
+                });
+                $rootScope.confConnectionError = null;
+            }, function (error) {
+                $rootScope.confConnectionError = 'Could not connect to ' + SERVER_URL + '/katconf.';
+                //retry every 10 seconds to get the system config
+                if (vm.getSystemConfigTimeout) {
+                    $timeout.cancel(vm.getSystemConfigTimeout);
+                }
+                vm.getSystemConfigTimeout = $timeout(function () {
+                    $rootScope.getSystemConfig();
+                }, 10000);
+            });
+        };
 
         vm.initApp = function () {
             vm.showNavbar = true;
@@ -130,18 +156,6 @@
             $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
             $rootScope.interlockState = MonitorService.interlockState;
 
-            ConfigService.getSystemConfig().then(function (systemConfig) {
-                $rootScope.systemConfig = systemConfig;
-                StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
-                if (systemConfig.vds && systemConfig.vds.vds_source) {
-                    $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
-                }
-                var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
-                subarray_nrs.forEach(function (sub_nr) {
-                    ObsSchedService.subarrays.push({id: sub_nr});
-                });
-            });
-
             vm.utcTime = '';
             vm.localTime = '';
 
@@ -160,6 +174,9 @@
                 });
 
             $rootScope.showSBDetails = NotifyService.showSBDetails;
+            if (!ConfigService.systemConfig) {
+                $rootScope.getSystemConfig();
+            }
         };
 
         vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
@@ -346,8 +363,14 @@
         if (window.location.host !== 'localhost:8000') {
             $compileProvider.debugInfoEnabled(false);
         } else {
+            if (!$httpProvider.defaults.headers.get) {
+                $httpProvider.defaults.headers.common = {};
+            }
             $httpProvider.defaults.useXDomain = true;
             delete $httpProvider.defaults.headers.common['X-Requested-With'];
+            $httpProvider.defaults.headers.common["Cache-Control"] = "no-cache";
+            $httpProvider.defaults.headers.common.Pragma = "no-cache";
+            $httpProvider.defaults.headers.common["If-Modified-Since"] = "0";
         }
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode

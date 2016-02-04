@@ -85,7 +85,9 @@ angular.module('katGui.d3')
 
                     scope.redrawSkyPlot = true;
                     //remove because we are redrawing the entire svg
-                    d3.select('svg').remove();
+                    if (svg) {
+                        svg.remove();
+                    }
 
                     width = element[0].clientWidth - margin.left - margin.right;
                     height = element[0].clientHeight - margin.top - margin.bottom - 5;
