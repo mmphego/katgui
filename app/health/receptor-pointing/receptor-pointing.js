@@ -4,7 +4,7 @@
         .controller('ReceptorPointingCtrl', ReceptorPointingCtrl);
 
     function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $interval, $log,
-                                  NotifyService, $timeout) {
+                                  NotifyService, $timeout, ObsSchedService) {
 
         var vm = this;
         vm.receptorsData = [];
@@ -86,12 +86,21 @@
                             }
                             sensorsRegexToConnect += '^' + item + '_' + vm.sensorsToConnect[i];
                         }
-                        vm.receptorsData.push({name: item, showHorizonMask: false, skyPlot: false,
-                            subarrayColor: "#d7d7d7"});
+                        var receptor = {name: item, showHorizonMask: false, skyPlot: false, subarrayColor: "#d7d7d7"};
+                        for (var k = 0; k < ObsSchedService.subarrays.length; k++) {
+                            if (ObsSchedService.subarrays[k].pool_resources &&
+                                ObsSchedService.subarrays[k].pool_resources.indexOf(receptor.name) > -1) {
+                                receptor.sub_nr = parseInt(ObsSchedService.subarrays[k].id);
+                                receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
+                                vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
+                                break;
+                            }
+                        }
+                        vm.receptorsData.push(receptor);
                     });
-                    sensorsRegexToConnect += '|subarray_._pool_resources';
                     SensorsService.setSensorStrategies(sensorsRegexToConnect, 'event-rate', 1, 360);
                 });
+
         };
 
         vm.getSources = function () {
@@ -171,16 +180,6 @@
             vm.receptorsData.forEach(function (receptor) {
                 if (sensor.startsWith(receptor.name)) {
                     receptor[sensor.replace(receptor.name + '_', '')] = message.value;
-                } else if (sensor.endsWith('_pool_resources')) {
-                    if (message.value.value.indexOf(receptor.name) > -1) {
-                        receptor.sub_nr = parseInt(sensor.split('_')[1]);
-                        receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
-                        vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
-                    } else if (receptor.sub_nr === parseInt(sensor.split('_')[1])) {
-                        receptor.sub_nr = null;
-                        receptor.subarrayColor = "#d7d7d7";
-                        vm.sensorValues[receptor.name + '_sub_nr'] = null;
-                    }
                 }
             });
 
@@ -192,6 +191,27 @@
                 }, 1000);
             }
         };
+
+        vm.poolResourcesSensorUpdate = function (event, sensor) {
+            vm.receptorsData.forEach(function (receptor) {
+               if (sensor.value.indexOf(receptor.name) > -1) {
+                   receptor.sub_nr = parseInt(sensor.name.split('_')[1]);
+                   receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
+                   vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
+               } else if (receptor.sub_nr === parseInt(sensor.name.split('_')[1])) {
+                   receptor.sub_nr = null;
+                   receptor.subarrayColor = "#d7d7d7";
+                   vm.sensorValues[receptor.name + '_sub_nr'] = null;
+               }
+           });
+           if (!vm.stopUpdating) {
+               vm.stopUpdating = $interval(function () {
+                   vm.redraw(false);
+                   $interval.cancel(vm.stopUpdating);
+                   vm.stopUpdating = null;
+               }, 1000);
+           }
+       };
 
         vm.redraw = function (horizonMaskToggled) {
             vm.redrawChart(vm.receptorsData, vm.showNames, vm.showTrails, vm.showGridLines, vm.trailDots, horizonMaskToggled);
@@ -228,9 +248,11 @@
         angular.element(document.querySelector(".sky-plot-options-containter")).css({'background-color': bgColor});
 
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
+        vm.cancelListeningToPoolResources = $rootScope.$on('subarrayPoolResourcesSensorUpdate', vm.poolResourcesSensorUpdate);
 
         $scope.$on('$destroy', function () {
             vm.cancelListeningToSensorMessages();
+            vm.cancelListeningToPoolResources();
             $interval.cancel(vm.stopUpdating);
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();

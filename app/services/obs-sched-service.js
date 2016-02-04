@@ -231,6 +231,9 @@
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
                     } else {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                        if (sensorName.endsWith('pool_resources')) {
+                            $rootScope.$emit('subarrayPoolResourcesSensorUpdate', sensor);
+                        }
                     }
                 } else {
                     $log.error('Unknown subarray sensor value: ');
