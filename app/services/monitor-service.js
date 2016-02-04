@@ -137,8 +137,6 @@
                                             api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
                                         $rootScope.logout();
                                     }
-                                } else if (messageObj.msg_channel === 'auth:katpool_resources_in_maintenance') {
-                                    StatusService.receptorMaintenanceMessageReceived(messageObj);
                                 } else if (messageChannel[0] === 'mon') {
                                     if (messageChannel[1] === 'sys_interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
@@ -146,6 +144,9 @@
                                         StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
                                     }
                                 } else if (messageChannel[0] === 'resources') {
+                                    if (messageChannel[1].endsWith('katpool_resources_in_maintenance')) {
+                                        StatusService.receptorMaintenanceMessageReceived(messageObj);
+                                    }
                                     ObsSchedService.receivedResourceMessage(message.msg_data);
                                 } else if (messageChannel[0] === 'health') {
                                     if ((messageChannel[1].endsWith('mode') || messageChannel[1].endsWith('inhibited') ||

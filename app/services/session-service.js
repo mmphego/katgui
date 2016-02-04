@@ -68,8 +68,8 @@
         };
 
         api.onSockJSMessage = function (e) {
+            //we got a ping for LO so send a pong with our email
             api.connection.send($rootScope.currentUser.email);
-            $log.debug('Received: ' + e.data);
         };
 
         api.connectListener = function (skipDeferObject) {
