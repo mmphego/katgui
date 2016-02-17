@@ -19,6 +19,7 @@
             {"name": "Control Authority", value: "control_authority"},
             {"name": "Lead Operator", value: "lead_operator"},
             {"name": "Operator", value: "operator"},
+            {"name": "Expert", value: "expert"},
             {"name": "Read Only", value: "read_only"}
         ];
         vm.userData = UserService.users;

@@ -23,7 +23,6 @@
         var vm = this;
 
         vm.orderByFields = [
-            {label: 'Type', value: 'userlog_type'},
             {label: 'Start Time', value: 'start_time'},
             {label: 'Timestamp', value: 'timestamp'},
             {label: 'End Time', value: 'end_time'},
@@ -31,7 +30,6 @@
         ];
 
         vm.orderByUserLogsFields = [
-            {label: 'Type', value: 'userlog_type'},
             {label: 'Start Time', value: 'start_time'},
             {label: 'Timestamp', value: 'timestamp'},
             {label: 'Name', value: 'name'},
@@ -57,7 +55,6 @@
         vm.blank_ulog = {
             id: "",
             user: "",
-            userlog_type: "",
             start_time: "",
             end_time: "",
             userlog_content: "",
@@ -65,7 +62,6 @@
         };
 
         vm.blank_query = {
-            userlog_type: "",
             start_time: "",
             end_time: ""
         };
@@ -76,14 +72,12 @@
 
         vm.activity_logs = UserLogService.activity_logs;
         vm.include_activity_logs = false;
-        vm.exportPdf = function(reportStart, reportEnd, logtypes){
+        vm.exportPdf = function(reportStart, reportEnd){
             var pdf = new jsPDF('l', 'mm', 'a4');
             var export_time = $filter('date')(new Date(), "yyyy-MM-dd_HH'h'mm");
             var start_time = $filter('date')(reportStart, 'yyyy-MM-dd HH:mm');
             var end_time = $filter('date')(reportEnd, 'yyyy-MM-dd HH:mm');
             var a_query = "?";
-            var included_types = "All";
-            if (logtypes) {a_query += "log_type=" + logtypes + "&";}
             if (start_time) {a_query += "start_time=" + start_time + "&";}
             if (end_time) {a_query += "end_time=" + end_time + "&";}
 
@@ -91,7 +85,6 @@
                 var report_markup = '<table id=basic-table border="1px" style="width:100%; font-family:verdana,arial,sans-serif;">' +
                 '<thead>' +
                     '<tr>' +
-                        '<th>Userlog Type</th>' +
                         '<th>Log Timestamp</th>' +
                         '<th>User</th>' +
                         '<th>Event Started</th>' +
@@ -102,7 +95,6 @@
 
                 vm.filtered_report_userlogs.forEach(function (item) {
                     report_markup += '<tr>' +
-                    '<td>' + item.userlog_type + '</td>' +
                     '<td>' + item.timestamp + '</td>' +
                     '<td>' + item.name + '</td>' +
                     '<td>' + item.start_time + '</td>' +
@@ -116,10 +108,6 @@
                 pdf.setFontSize(20);
                 pdf.text('Userlog Report - ' + export_time, 20, 25);
                 pdf.setFontSize(12);
-                if (logtypes) {
-                    included_types = logtypes;
-                }
-                pdf.text(('Included log types: ' + included_types), 20, 35);
                 pdf.setFontSize(12);
                 pdf.text(('From: ' + reportStart + '     To: ' + reportEnd), 20, 45);
                 var report_element = document.createElement('div');
@@ -173,7 +161,7 @@
         vm.my_userlogs = UserLogService.my_userlogs;
         vm.getMyUserLogs = function () {
             if ($rootScope.currentUser) {
-                UserLogService.listMyUserLogs($rootScope.currentUser.id);
+                UserLogService.listUserLogs();
             } else {
                 $timeout(vm.getMyUserLogs, 1000);
             }
@@ -222,11 +210,9 @@
 
         vm.queryUserlogs = function (event, b_query) {
             var query = "?";
-            var log_type = b_query.userlog_type;
             var start_time = $filter('date')(b_query.start_time, 'yyyy-MM-dd HH:mm');
             var end_time = $filter('date')(b_query.end_time, 'yyyy-MM-dd HH:mm');
             vm.chipsToList();
-            if (log_type) {query += "log_type=" + log_type + "&";}
             if (start_time) {query += "start_time=" + start_time + "&";}
             if (end_time) {query += "end_time=" + end_time + "&";}
             if (vm.chosen_tags.length > 0) {query += "tags=" + vm.chosen_tags + "&";}
@@ -261,7 +247,6 @@
                     vm.blank_ulog = {
                         id: "",
                         user: "",
-                        userlog_type: "",
                         start_time: "",
                         end_time: "",
                         userlog_content: "",
@@ -278,15 +263,16 @@
                         $scope.metadata_to_del = [];
                         $scope.toggle = function (item, list) {
                             var idx = list.indexOf(item);
-                            if (idx > -1) list.splice(idx, 1);
-                            else list.push(item);
+                            if (idx > -1) {
+                                list.splice(idx, 1);
+                            }
+                            else {
+                                list.push(item);
+                            }
                         };
                         $scope.exists = function (item, list) {
                             return list.indexOf(item) > -1;
                         };
-                        if (!$scope.ulog.userlog_type) {
-                            $scope.ulog.userlog_type = 'shift_log';
-                        }
                         $log.info('Updated focus log: ' + JSON.stringify(ulog));
                         $scope.tags = tags;
                         $scope.selectedItem = null;
@@ -315,7 +301,6 @@
                             var userlog_entry = {
                                 id: ulog.id,
                                 user: $rootScope.currentUser.id,
-                                userlog_type: ulog.userlog_type,
                                 start_time: $filter('date')(ulog.start_time, 'yyyy-MM-dd HH:mm'),
                                 end_time: $filter('date')(ulog.end_time, 'yyyy-MM-dd HH:mm'),
                                 userlog_content: ulog.userlog_content,
@@ -394,7 +379,6 @@
                     vm.blank_ulog = {
                         id: "",
                         user: "",
-                        userlog_type: "",
                         start_time: "",
                         end_time: "",
                         userlog_content: "",

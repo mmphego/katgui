@@ -15,15 +15,6 @@
                 </md-button>
                 <div class="unselectable list-subheader-title" layout="row" layout-align="start center"
                      style="position: absolute; left: 8px; bottom: 0; width: 700px">
-                    <span class="subheader-text" style="width: 120px" ng-click="vm.setOrderBy('userlog_type')">
-                        <span>Log Type</span>
-                        <span class="fa"
-                              ng-class="{'fa-caret-up': vm.orderBy.value === 'userlog_type' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'userlog_type' && vm.orderBy.reverse}"
-                              style="margin-right: 4px;"></span>
-                    </span>
-                    <span class="subheader-text" style="width: 180px">
-                        <span>Log Timestamp</span>
-                    </span>
                     <span class="subheader-text" style="width: 155px" ng-click="vm.setOrderBy('start_time')">
                         <span>Start Time (UTC)</span>
                         <span class="fa"
@@ -47,8 +38,6 @@
             <div flex style="overflow: auto">
                 <div ng-repeat="e_ulog in vm.my_userlogs | regexSearch:vm.orderByFields:vm.q | orderBy:vm.orderBy.value:vm.orderBy.reverse"
                               flex layout="row" layout-align="start center" class="user-log-row" ng-dblclick="vm.getCompleteUserLog(e_ulog, vm.my_userlogs, $event); $event.stopPropagation();">
-                    <span style="width: 120px">{{e_ulog.userlog_type}}</span>
-                    <span style="width: 180px">{{e_ulog.timestamp}}</span>
                     <span style="width: 155px" ng-style="{'background': ulog.scolor}">
                         {{e_ulog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
                     </span>
@@ -57,7 +46,7 @@
                     </span>
                     <span flex>{{e_ulog.userlog_content}}</span>
                     <span class="md-caption" ng-show="e_ulog.attachment_count>0">
-                        {{e_ulog.attachment_count}} 
+                        {{e_ulog.attachment_count}}
                         <md-icon class="fa" md-font-icon="fa-paperclip"></md-icon>
                     </span>
                     <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
@@ -80,16 +69,6 @@
                             <span style="margin-left: 8px" flex>Report Parameters</span>
 
                             <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
-                                <md-select placeholder="Select User Log Type" ng-model="vm.blank_query.userlog_type"
-                                           title="{{vm.blank_query.userlog_type}}"
-                                           style="width: 150px; margin: 0 8px" multiple="true">
-                                    <md-option value="shift_log">Shift Log</md-option>
-                                    <md-option value="time_loss">Time-loss Log</md-option>
-                                    <md-option value="observation">Observation Log</md-option>
-                                    <md-option value="status_log">Status Log</md-option>
-                                    <md-option value="maintenance">Maintenance</md-option>
-                                    <md-option value="alarm_log">Alarm Log</md-option>
-                                </md-select>
                                 <div layout="row" layout-align="center center" style="min-width: 220px; position: relative">
                                     <md-input-container flex md-no-float style="padding: 0;">
                                         <input flex type="text"
@@ -134,7 +113,7 @@
                                 <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event, vm.blank_query)"
                                            style="margin-right: 0;">Preview Report
                                 </md-button>
-                                <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time, vm.blank_query.userlog_type)"
+                                <md-button class="add-tab md-primary md-raised" ng-click="vm.exportPdf(vm.blank_query.start_time, vm.blank_query.end_time)"
                                            style="margin-right: 0;">Export PDF
                                 </md-button>
                             </div>
@@ -177,8 +156,6 @@
                     <md-list>
                         <md-list-item style="padding: 0 8px">
                             <div class="md-list-item-text" style="font-size: 18px; font-weight: bold;" layout="row" flex>
-                                <span style="width: 130px">Userlog Type</span>
-                                <span style="width: 180px">Log Timestamp</span>
                                 <span style="width: 130px">User</span>
                                 <span style="width: 150px">Event Started</span>
                                 <span style="width: 150px">Event Ended</span>
@@ -190,14 +167,12 @@
                             <md-divider></md-divider>
                             <div class="md-list-item-text" style="font-size:small" flex
                                  layout="row" ng-click="vm.getCompleteUserLogView(rlog, vm.filtered_report_userlogs, $event); $event.stopPropagation();">
-                                <span style="width: 130px">{{rlog.userlog_type}}</span>
-                                <span style="width: 180px">{{rlog.timestamp}}</span>
                                 <span style="width: 130px">{{rlog.name}}</span>
                                 <span style="width: 150px">{{rlog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 <span style="width: 150px">{{rlog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                                 <span flex>{{rlog.userlog_content}}</span>
                                 <span class="md-caption" ng-show="rlog.attachment_count > 0">
-                                    {{rlog.attachment_count}} 
+                                    {{rlog.attachment_count}}
                                     <md-icon class="fa" md-font-icon="fa-paperclip"></md-icon>
                                     <md-tooltip md-direction="left">
                                             {{rlog.attachments}}
@@ -211,4 +186,3 @@
         </md-tab>
     </md-tabs>
 </div>
-

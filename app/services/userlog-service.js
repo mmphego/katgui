@@ -35,7 +35,7 @@
 
         api.listUserLogs = function () {
 
-            var def = $q.defer();
+            var deferred = $q.defer();
             $http(createRequest('get', api.urlBase + '/logs')).then(
                 function (result) {
 
@@ -44,13 +44,20 @@
                         result.data.forEach(function (userlog) {
                             api.userlogs.push(userlog);
                         });
-                        def.resolve();
+                        deferred.resolve();
                     } else {
                         $log.error('Could not retrieve any users.');
-                        def.reject();
+                        deferred.reject();
                     }
+                }, function (error) {
+                    if (error && error.data && error.data.err_code) {
+                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error.data.err_code + ': ' + error.data.err_msg);
+                    } else {
+                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error);
+                    }
+                    deferred.reject();
                 });
-            return def.promise;
+            return deferred.promise;
         };
 
         api.listMyUserLogs = function (user) {
@@ -63,8 +70,12 @@
                         api.my_userlogs.push(userlog);
                     });
                     defer.resolve();
-                }, function (result) {
-                    NotifyService.showSimpleDialog("Could not retrieve any userlogs", result);
+                }, function (error) {
+                    if (error && error.data && error.data.err_code) {
+                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error.data.err_code + ': ' + error.data.err_msg);
+                    } else {
+                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error);
+                    }
                     defer.reject();
                 });
             return defer.promise;
@@ -197,7 +208,6 @@
                 api.urlBase + '/logs',
                 {
                     user: ulog.user,
-                    log_type: ulog.userlog_type,
                     start_time: ulog.start_time,
                     end_time: ulog.end_time,
                     content: ulog.userlog_content,
@@ -205,7 +215,7 @@
                 }))
                 .then(function (result) {
                     ulog.id = result.data.id;
-                    NotifyService.showSimpleToast("New " + result.data.userlog_type + " added! ");
+                    NotifyService.showSimpleToast("Log Created. ");
                     defer.resolve();
                 }, function (result) {
                     NotifyService.showSimpleDialog("Error creating userlog", result);
@@ -220,7 +230,6 @@
             $http(createRequest('put',
                 api.urlBase + '/logs/' + ulog.id,
                 {
-                    log_type: ulog.userlog_type,
                     start_time: ulog.start_time,
                     end_time: ulog.end_time,
                     content: ulog.userlog_content,

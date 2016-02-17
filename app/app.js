@@ -541,6 +541,11 @@
             templateUrl: 'app/userlogs/userlogs.html',
             title: 'User Logging'
         });
+        $stateProvider.state('userlog-tags', {
+            url: '/userlog-tags',
+            templateUrl: 'app/userlogs/userlog-tags.html',
+            title: 'User Log Tag Management'
+        });
         /* Add New States Above */
         $urlRouterProvider.otherwise('/login');
     }
