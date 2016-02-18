@@ -181,13 +181,19 @@
 
         api.connectListener = function () {
             api.deferredMap['connectDefer'] = $q.defer();
-            $log.info('Monitor Connecting...');
-            api.connection = new SockJS(urlBase + '/portal');
-            api.connection.onopen = api.onSockJSOpen;
-            api.connection.onmessage = api.onSockJSMessage;
-            api.connection.onclose = api.onSockJSClose;
-            api.connection.onheartbeat = api.onSockJSHeartbeat;
-            api.lastHeartBeat = new Date();
+            if (!api.connection) {
+                $log.info('Monitor Connecting...');
+                api.connection = new SockJS(urlBase + '/portal');
+                api.connection.onopen = api.onSockJSOpen;
+                api.connection.onmessage = api.onSockJSMessage;
+                api.connection.onclose = api.onSockJSClose;
+                api.connection.onheartbeat = api.onSockJSHeartbeat;
+                api.lastHeartBeat = new Date();
+            } else {
+                $timeout(function () {
+                    api.deferredMap['connectDefer'].resolve();
+                }, 1);
+            }
             if (!api.checkAliveInterval) {
                 api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
             }

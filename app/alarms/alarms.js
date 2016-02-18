@@ -189,11 +189,10 @@
             if ($rootScope.currentUser) {
                 vm.canOperateAlarms = $rootScope.currentUser.req_role === USER_ROLES.operator ||
                 $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
         };
 
+        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);

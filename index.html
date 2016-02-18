@@ -311,12 +311,26 @@
 
                 <span flex style="font-size: 30px; cursor: pointer;" title="Click to Navigate to Parent Display" ng-click="vm.navigateToParentState()">{{$root.currentStateTitle()}}</span>
                 <div layout="column" layout-align="start center" style="margin-right: 8px">
-                    <md-menu style="padding: 0">
+                    <md-menu style="padding: 0;">
                         <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdOpenMenu()">
-                            <span>{{$root.currentUser.email}}</span><i style="font-size: 12px"> ({{$root.currentUser.req_role}})</i>
+                            <span>{{$root.currentUser.email}}</span><i style="font-size: 12px"> ({{$root.rolesMap[$root.currentUser.req_role]}})</i>
                             <span style="font-size: 14px" class="fa fa-caret-down"></span>
                         </md-button>
-                        <md-menu-content width="3" style="padding: 8px">
+                        <md-menu-content width="3" style="padding: 8px; max-height: 800px">
+                            <md-menu-item>
+                                <label style="margin-top: 12px">Login As...</label>
+                            </md-menu-item>
+                            <md-item>
+                                <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
+                                </md-item-content>
+                            </md-item>
+                            <md-menu-item ng-repeat="role in $root.possibleRoles track by $index" ng-if="role !== $root.currentUser.req_role">
+                                <md-button ng-click="vm.loginAs(role)">{{$root.rolesMap[role]}}</md-button>
+                            </md-menu-item>
+                            <md-item>
+                                <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
+                                </md-item-content>
+                            </md-item>
                             <md-menu-item>
                                 <md-button ng-click="$root.logout()">Logout</md-button>
                             </md-menu-item>

@@ -249,11 +249,10 @@
                     vm.canOperateVDS = true;
                     vm.connectListeners();
                 }
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
         };
 
+        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {

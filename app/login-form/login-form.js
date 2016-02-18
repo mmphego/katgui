@@ -16,6 +16,7 @@
 
         vm.verify = function () {
             $localStorage.loginAs = vm.loginAs;
+            $rootScope.credentials = vm.credentials;
             SessionService.verify(vm.credentials.username, vm.credentials.password, vm.loginAs);
         };
 

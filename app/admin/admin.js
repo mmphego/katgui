@@ -177,11 +177,10 @@
                 if (vm.isUserAdmin) {
                     vm.listUsers();
                 }
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
         };
 
+        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         $scope.$on('$destroy', function () {

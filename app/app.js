@@ -79,6 +79,15 @@
         $rootScope.themePrimaryButtons = theme.primaryButtons;
         $rootScope.expertUser = false;
 
+        $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
+        $rootScope.rolesMap = {
+            lead_operator: 'Lead Operator',
+            expert: 'Expert User',
+            control_authority: 'Control Authority',
+            operator: 'Operator',
+            read_only: 'Monitor Only'
+        };
+
         $rootScope.getSystemConfig = function () {
             ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
             ConfigService.getSystemConfig().then(function (systemConfig) {
@@ -258,6 +267,9 @@
             } else {
                 $state.go('home');
             }
+        };
+        vm.loginAs = function (role) {
+            SessionService.verifyAs(role);
         };
         $rootScope.displayPromiseResult = function (result) {
             if (result.result === 'ok') {

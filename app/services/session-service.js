@@ -23,11 +23,53 @@
             var msg = window.btoa(JSON.stringify(jwtHeader)) + "." + window.btoa(JSON.stringify(jwtPayload));
             msg = msg.replace(/=/g , "");
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
-            $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
+            $rootScope.auth_jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
+            $rootScope.jwt = $rootScope.auth_jwt;
             $http(createRequest('get', urlBase + '/user/verify/' + role))
                 .then(verifySuccess, verifyError);
         };
 
+        api.verifyAs = function (role) {
+            var req = {
+                method: 'get',
+                url: urlBase + '/user/verify/' + role,
+                headers: {
+                    'Authorization': 'CustomJWT ' + $rootScope.auth_jwt
+                }
+            };
+            $http(req).then(function (result) {
+                if (result.data.session_id) {
+                    if (result.data.confirmation_token) {
+                        $log.info('Found confirmation token');
+                        var b = result.data.confirmation_token.split(".");
+                        var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
+                        if (payload.req_role === 'lead_operator' &&
+                            payload.current_lo &&
+                            payload.current_lo !== payload.requester) {
+                            confirmRole(result.data.confirmation_token, payload);
+                        } else {
+                            api.login(payload.session_id);
+                        }
+                    } else {
+                        $http(createRequest('post', urlBase + '/user/logout',{}))
+                            .then(function () {
+                                if (api.connection) {
+                                    api.disconnectListener();
+                                }
+                                $rootScope.currentUser = null;
+                                $rootScope.loggedIn = false;
+                                $localStorage['currentUserToken'] = null;
+                                $rootScope.jwt = $rootScope.auth_jwt;
+                                $http(createRequest('get', urlBase + '/user/verify/' + role))
+                                    .then(verifySuccess, verifyError);
+                            });
+                    }
+                }
+            }, function (error) {
+                $log.error(error);
+            });
+
+        };
 
         api.login = function (session_id) {
             $rootScope.jwt = session_id;
@@ -123,13 +165,13 @@
         function verifySuccess(result) {
             if (result.data.session_id) {
                 if (result.data.confirmation_token) {
-                    $log.info('Found confirmation token');
+                    $log.debug('Found confirmation token');
                     var b = result.data.confirmation_token.split(".");
                     var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
                     if (payload.req_role === 'lead_operator' &&
                         payload.current_lo &&
                         payload.current_lo !== payload.requester) {
-                        confirmRole(result.data.session_id, payload);
+                        confirmRole(result.data.confirmation_token, payload, true);
                     } else {
                         api.login(payload.session_id);
                     }
@@ -164,7 +206,7 @@
             }
         }
 
-        function confirmRole(session_id, payload) {
+        function confirmRole(session_id, payload, doLogout) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
@@ -207,7 +249,14 @@
                         })
                 .then(function() {
                     if (session_id) {
-                        api.login(session_id);
+                        if (doLogout) {
+                            api.logout().then(function () {
+                                api.login(session_id);
+                            });
+                        } else {
+                            api.login(session_id);
+                        }
+
                     }
                 });
         }
@@ -228,8 +277,10 @@
                     NotifyService.showSimpleToast('Login successful, welcome ' + payload.name + '.');
                     $rootScope.$emit('loginSuccess', true);
                     $rootScope.connectEvents();
-                    if (payload.req_role === 'lead_operator') {
+                    if (payload.req_role === 'lead_operator' && !api.connection) {
                         api.connectListener(false);
+                    } else if (api.connection){
+                        api.disconnectListener();
                     }
                     $rootScope.expertUser = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
                 }

@@ -142,11 +142,10 @@
             if ($rootScope.currentUser) {
                 vm.lead_op = $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
                 vm.connectListeners();
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
         };
 
+        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
