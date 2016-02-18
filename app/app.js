@@ -77,6 +77,7 @@
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
+        $rootScope.expertUser = false;
 
         $rootScope.getSystemConfig = function () {
             ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);

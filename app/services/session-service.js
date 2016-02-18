@@ -231,6 +231,7 @@
                     if (payload.req_role === 'lead_operator') {
                         api.connectListener(false);
                     }
+                    $rootScope.expertUser = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
                 }
             } else {
                 //User's session expired, we got a message

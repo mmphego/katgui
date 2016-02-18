@@ -225,7 +225,6 @@
         };
 
         api.modifyUserLog = function (ulog) {
-
             var defer = $q.defer();
             $http(createRequest('put',
                 api.urlBase + '/logs/' + ulog.id,
@@ -243,6 +242,48 @@
                 }, function (result) {
                     NotifyService.showSimpleDialog("Error creating userlog", result);
                     defer.reject();
+                });
+            return defer.promise;
+        };
+
+        api.modifyTag = function (tag) {
+            var defer = $q.defer();
+            $http(createRequest('post',
+                api.urlBase + '/tags/modify/' + tag.tag_id,
+                {
+                    name: tag.tag_name,
+                    slug: tag.tag_slug,
+                    activated: tag.activated
+                }))
+                .then(function (result) {
+                    NotifyService.showSimpleToast("Modified tag " + tag.tag_id + ".");
+                    defer.resolve(result);
+                }, function (result) {
+                    NotifyService.showSimpleDialog("Error modifying tag", result);
+                    defer.reject(result);
+                });
+            return defer.promise;
+        };
+
+        api.createTag = function (tag) {
+            var defer = $q.defer();
+            $http(createRequest('post',
+                api.urlBase + '/tags/add',
+                {
+                    name: tag.tag_name,
+                    slug: tag.tag_slug,
+                    activated: tag.activated
+                }))
+                .then(function (result) {
+                    tag.id = result.data.tag_id;
+                    tag.name = tag.tag_name;
+                    tag.slug = tag.tag_slug;
+                    api.tags.push(tag);
+                    NotifyService.showSimpleToast("Created tag " + tag.name + " id:" + result.data.tag_id + ".");
+                    defer.resolve(result);
+                }, function (result) {
+                    NotifyService.showSimpleDialog("Error creating tag", result);
+                    defer.reject(result);
                 });
             return defer.promise;
         };
