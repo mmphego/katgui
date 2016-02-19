@@ -324,7 +324,7 @@
                                 <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
                                 </md-item-content>
                             </md-item>
-                            <md-menu-item ng-repeat="role in $root.possibleRoles track by $index" ng-if="role !== $root.currentUser.req_role">
+                            <md-menu-item ng-repeat="role in $root.currentUser.roles | filter:vm.checkAllowedRole track by $index">
                                 <md-button ng-click="vm.loginAs(role)">{{$root.rolesMap[role]}}</md-button>
                             </md-menu-item>
                             <md-item>

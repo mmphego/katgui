@@ -237,6 +237,9 @@
         vm.toggleRightSidenav = function () {
             $mdSidenav('right-sidenav').toggle();
         };
+        vm.checkAllowedRole = function (role) {
+            return role !== 'user_admin' && role !== $rootScope.currentUser.req_role;
+        };
         $rootScope.logout = function () {
             vm.disconnectIssued = true;
             MonitorService.disconnectListener();

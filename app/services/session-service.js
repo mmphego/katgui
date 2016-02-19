@@ -34,7 +34,7 @@
                 method: 'get',
                 url: urlBase + '/user/verify/' + role,
                 headers: {
-                    'Authorization': 'CustomJWT ' + $rootScope.auth_jwt
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
             };
             $http(req).then(function (result) {
@@ -51,18 +51,7 @@
                             api.login(payload.session_id);
                         }
                     } else {
-                        $http(createRequest('post', urlBase + '/user/logout',{}))
-                            .then(function () {
-                                if (api.connection) {
-                                    api.disconnectListener();
-                                }
-                                $rootScope.currentUser = null;
-                                $rootScope.loggedIn = false;
-                                $localStorage['currentUserToken'] = null;
-                                $rootScope.jwt = $rootScope.auth_jwt;
-                                $http(createRequest('get', urlBase + '/user/verify/' + role))
-                                    .then(verifySuccess, verifyError);
-                            });
+                        api.login(result.data.session_id);
                     }
                 }
             }, function (error) {
@@ -229,7 +218,7 @@
                         };
                     },
                     template: '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">' +
-                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{requested_role}}</md-toolbar>' +
+                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>' +
                         '  <md-dialog-content class="md-padding" layout="column">' +
                         '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
                         '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be logged out.</p>' +
@@ -238,7 +227,7 @@
                         '    <md-button ng-click="cancel()" class="md-primary md-raised">' +
                         '      Cancel' +
                         '    </md-button>' +
-                        '    <md-button ng-click="readOnlyLogin()" class="md-primary md-raised">' +
+                        '    <md-button ng-click="readOnlyLogin()" class="md-primary md-raised" ng-if="$root.currentUser.req_role !== \'read_only\'">' +
                         '      Read Only Login' +
                         '    </md-button>' +
                         '    <md-button ng-click="proceed()" class="md-primary md-raised">' +
