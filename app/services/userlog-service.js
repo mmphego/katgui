@@ -8,7 +8,6 @@
         var api = {};
         api.urlBase = SERVER_URL + '/katcontrol';
         api.userlogs = [];
-        api.my_userlogs = [];
         api.report_userlogs = [];
         api.activity_logs = [];
         api.focus_ulog = {};
@@ -60,25 +59,32 @@
             return deferred.promise;
         };
 
-        api.listMyUserLogs = function (user) {
-            var defer = $q.defer();
-            $http(createRequest('get', api.urlBase + '/logs/query?user=' + user))
-                .then(function (result) {
-                    api.my_userlogs.splice(0, api.my_userlogs.length);
-                    result.data.forEach(function (userlog) {
-                        userlog.timestamp = moment(userlog.timestamp).format('YYYY-DD-MM HH:mm:ss.SSS');
-                        api.my_userlogs.push(userlog);
-                    });
-                    defer.resolve();
+        api.listUserLogsForToday = function () {
+
+            var deferred = $q.defer();
+            var query = '?start_time=2016-02-19 00:00&end_time=2016-02-19 23:59:59';
+            $http(createRequest('get', api.urlBase + '/logs/query' + query)).then(
+                function (result) {
+
+                    if (result && result.data) {
+                        api.userlogs.splice(0, api.userlogs.length);
+                        result.data.forEach(function (userlog) {
+                            api.userlogs.push(userlog);
+                        });
+                        deferred.resolve();
+                    } else {
+                        $log.error('Could not retrieve any users.');
+                        deferred.reject();
+                    }
                 }, function (error) {
                     if (error && error.data && error.data.err_code) {
                         NotifyService.showSimpleDialog('Could not retrieve any userlogs', error.data.err_code + ': ' + error.data.err_msg);
                     } else {
                         NotifyService.showSimpleDialog('Could not retrieve any userlogs', error);
                     }
-                    defer.reject();
+                    deferred.reject();
                 });
-            return defer.promise;
+            return deferred.promise;
         };
 
         api.listTags = function () {
@@ -201,25 +207,34 @@
                 });
         };
 
-        api.addUserLog = function (ulog) {
-
+        api.addUserLog = function (log) {
             var defer = $q.defer();
             $http(createRequest('post',
                 api.urlBase + '/logs',
                 {
-                    user: ulog.user,
-                    start_time: ulog.start_time,
-                    end_time: ulog.end_time,
-                    content: ulog.userlog_content,
-                    tags: ulog.tags
+                    user: log.user,
+                    start_time: log.start_time,
+                    end_time: log.end_time,
+                    content: log.userlog_content,
+                    tags: log.tags
                 }))
                 .then(function (result) {
-                    ulog.id = result.data.id;
+                    log.id = result.data.id;
+                    // populate with tag objects, because we sent a string of tag names when saving
+                    var newTagList = [];
+                    for (var i = 0; i < log.tags.length; i++) {
+                        var foundTag = _.findWhere(api.tags, {name: log.tags[i]});
+                        if (foundTag) {
+                            newTagList.push(foundTag);
+                        }
+                    }
+                    log.tags = newTagList;
+                    api.userlogs.push(log);
                     NotifyService.showSimpleToast("Log Created. ");
-                    defer.resolve();
+                    defer.resolve(result);
                 }, function (result) {
                     NotifyService.showSimpleDialog("Error creating userlog", result);
-                    defer.reject();
+                    defer.reject(result);
                 });
             return defer.promise;
         };

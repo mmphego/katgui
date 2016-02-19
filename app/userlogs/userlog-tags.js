@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('UserlogTagsCtrl', UserlogTagsCtrl);
 
-        function UserlogTagsCtrl(UserLogService, $scope, $mdDialog, $log) {
+        function UserlogTagsCtrl(UserLogService, NotifyService, $scope, $mdDialog, $log) {
 
             var vm = this;
 
@@ -49,6 +49,10 @@
                                 $mdDialog.hide();
                             };
                             $scope.saveTag = function () {
+                                if (_.findIndex(vm.tags, {name: $scope.name}) > -1) {
+                                    NotifyService.showSimpleDialog('Error creating tag', 'Could not create tag because tag "' + $scope.name + '" already exists');
+                                    return;
+                                }
                                 if (tag.id) {
                                     UserLogService.modifyTag({
                                         tag_id: tag.id,
@@ -100,10 +104,6 @@
                             '</md-dialog>'].join(' '),
                         targetEvent: event
                     });
-            };
-
-            vm.deactivateTag = function (tag) {
-
             };
 
             UserLogService.listTags();

@@ -285,6 +285,12 @@
             if (MonitorService.lastSyncedTime && vm.showNavbar) {
                 var utcTime = moment.utc(MonitorService.lastSyncedTime, 'X');
                 var localTime = moment(MonitorService.lastSyncedTime, 'X');
+                if (!$rootScope.utcDateTime) {
+                    $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
+                    $rootScope.$emit('utcDateTimeSet', $rootScope.utcDateTime);
+                } else {
+                    $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
+                }
                 $rootScope.utcTime = utcTime.format('HH:mm:ss');
                 $rootScope.localTime = localTime.format('HH:mm:ss');
                 $rootScope.currentDate = utcTime.format('YYYY-MM-DD');

@@ -16,8 +16,7 @@
                 <md-option ng-repeat="role in $root.possibleRoles track by $index" ng-value="role">{{$root.rolesMap[role]}}</md-option>
             </md-select>
         </div>
-        <md-button type="submit" style="margin: 8px;" class="md-raised md-primary">Login
-        </md-button>
+        <md-button type="submit" style="margin: 8px;" class="md-raised md-primary">Login</md-button>
     </form>
     <label style="color: #F44336; height: 35px; margin-top: 8px; font-size: 18px;"
         ng-show="$root.confConnectionError">{{$root.confConnectionError}}</label>
