@@ -1,5 +1,5 @@
 <div flex style="padding: 8px; min-width: 1200px" ng-controller="UserlogCtrl as vm" layout="column">
-    <md-toolbar layout="row" class="md-whiteframe-z1" style="height: 80px">
+    <md-toolbar layout="row" class="md-whiteframe-z1" style="min-height: 80px; max-height: 80px">
         <!-- <input class="search-input-box" type="search"
                ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Userlogs..."/> -->
         <md-chips ng-model="vm.filterTags" style="margin-bottom: 24px; padding: 0 8px" md-autocomplete-snap md-require-match="true" flex
@@ -58,7 +58,7 @@
             <span style="width: 125px; font-size: 12px">
                 {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
             </span>
-            <span flex>{{userLog.userlog_content}}</span>
+            <span flex>{{userLog.content}}</span>
             <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
             <span class="md-caption" ng-show="userLog.attachment_count>0">
                 {{userLog.attachment_count}}
@@ -89,7 +89,7 @@
             <span style="width: 125px; font-size: 12px">
                 {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
             </span>
-            <span flex>{{userLog.userlog_content}}</span>
+            <span flex>{{userLog.content}}</span>
             <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
             <span class="md-caption" ng-show="userLog.attachment_count>0">
                 {{userLog.attachment_count}}

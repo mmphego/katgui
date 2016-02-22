@@ -38,12 +38,7 @@
                         deferred.resolve();
                     }
                 }, function (error) {
-                    if (error && error.data && error.data.err_code) {
-                        NotifyService.showSimpleDialog("Error sending request",
-                            error.data.err_code + ": " + error.data.err_msg);
-                    } else {
-                        NotifyService.showSimpleDialog("Error sending request", error);
-                    }
+                    NotifyService.showHttpErrorDialog('Error sending request', error);
                     if (deferred) {
                         deferred.resolve();
                     }
@@ -468,13 +463,8 @@
                 .then(function (result) {
                     api.resourceTemplates.push(result.data);
                     NotifyService.showSimpleToast("Created resource template");
-                }, function (result) {
-                    if (result && result.data && result.data.err_code) {
-                        NotifyService.showSimpleDialog("Error creating resource template",
-                            result.data.err_code + ": " + result.data.err_msg);
-                    } else {
-                        NotifyService.showSimpleDialog("Error creating resource template", result);
-                    }
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog('Error creating resource template', error);
                 });
         };
 
@@ -493,13 +483,8 @@
                     var oldResource = _.findWhere(api.resourceTemplates, {id: template.id});
                     oldResource = result.data;
                     NotifyService.showSimpleToast("Modified resource template");
-                }, function (result) {
-                    if (result && result.data && result.data.err_code) {
-                        NotifyService.showSimpleDialog("Error creating resource template",
-                            result.data.err_code + ": " + result.data.err_msg);
-                    } else {
-                        NotifyService.showSimpleDialog("Error modifying resource template", result);
-                    }
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog('Error modifying resource template', error);
                 });
         };
 

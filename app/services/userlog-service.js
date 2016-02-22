@@ -49,11 +49,7 @@
                         deferred.reject();
                     }
                 }, function (error) {
-                    if (error && error.data && error.data.err_code) {
-                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error.data.err_code + ': ' + error.data.err_msg);
-                    } else {
-                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error);
-                    }
+                    NotifyService.showHttpErrorDialog('Could not retrieve any userlogs', error);
                     deferred.reject();
                 });
             return deferred.promise;
@@ -62,7 +58,9 @@
         api.listUserLogsForToday = function () {
 
             var deferred = $q.defer();
-            var query = '?start_time=2016-02-19 00:00&end_time=2016-02-19 23:59:59';
+            var start = moment.utc().format('YYYY-MM-DD 00:00:00');
+            var end = moment.utc().format('YYYY-MM-DD 23:59:59');
+            var query = '?start_time=' + start + '&end_time=' + end;
             $http(createRequest('get', api.urlBase + '/logs/query' + query)).then(
                 function (result) {
 
@@ -77,11 +75,7 @@
                         deferred.reject();
                     }
                 }, function (error) {
-                    if (error && error.data && error.data.err_code) {
-                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error.data.err_code + ': ' + error.data.err_msg);
-                    } else {
-                        NotifyService.showSimpleDialog('Could not retrieve any userlogs', error);
-                    }
+                    NotifyService.showHttpErrorDialog('Could not retrieve any userlogs', error);
                     deferred.reject();
                 });
             return deferred.promise;
@@ -159,8 +153,8 @@
                         api.activity_logs.push(activitylog);
                     });
                     defer.resolve();
-                }, function (result) {
-                    NotifyService.showSimpleDialog("Could not retrieve any activity logs", result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Could not retrieve any activity logs", error);
                     defer.reject();
                 });
             return defer.promise;
@@ -215,26 +209,15 @@
                     user: log.user,
                     start_time: log.start_time,
                     end_time: log.end_time,
-                    content: log.userlog_content,
-                    tags: log.tags
+                    content: log.content,
+                    tag_ids: log.tag_ids
                 }))
                 .then(function (result) {
-                    log.id = result.data.id;
-                    // populate with tag objects, because we sent a string of tag names when saving
-                    var newTagList = [];
-                    for (var i = 0; i < log.tags.length; i++) {
-                        var foundTag = _.findWhere(api.tags, {name: log.tags[i]});
-                        if (foundTag) {
-                            newTagList.push(foundTag);
-                        }
-                    }
-                    log.tags = newTagList;
-                    api.userlogs.push(log);
                     NotifyService.showSimpleToast("Log Created. ");
                     defer.resolve(result);
-                }, function (result) {
-                    NotifyService.showSimpleDialog("Error creating userlog", result);
-                    defer.reject(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Error creating user log", error);
+                    defer.reject(error);
                 });
             return defer.promise;
         };
@@ -246,17 +229,17 @@
                 {
                     start_time: ulog.start_time,
                     end_time: ulog.end_time,
-                    content: ulog.userlog_content,
+                    content: ulog.content,
                     tags: ulog.tags,
                     metadata_to_del: ulog.metadata_to_del
                 }))
                 .then(function (result) {
                     ulog.id = result.data.id;
                     NotifyService.showSimpleToast("Edited userlog " + result.data.id);
-                    defer.resolve();
-                }, function (result) {
-                    NotifyService.showSimpleDialog("Error creating userlog", result);
-                    defer.reject();
+                    defer.resolve(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Error editing user log", error);
+                    defer.reject(error);
                 });
             return defer.promise;
         };
@@ -264,14 +247,14 @@
         api.modifyTag = function (tag) {
             var defer = $q.defer();
             $http(createRequest('post',
-                api.urlBase + '/tags/modify/' + tag.tag_id,
+                api.urlBase + '/tags/modify/' + tag.id,
                 {
-                    name: tag.tag_name,
-                    slug: tag.tag_slug,
+                    name: tag.name,
+                    slug: tag.slug,
                     activated: tag.activated
                 }))
                 .then(function (result) {
-                    NotifyService.showSimpleToast("Modified tag " + tag.tag_id + ".");
+                    NotifyService.showSimpleToast("Modified tag " + tag.id + ".");
                     defer.resolve(result);
                 }, function (result) {
                     NotifyService.showSimpleDialog("Error modifying tag", result);
@@ -285,16 +268,16 @@
             $http(createRequest('post',
                 api.urlBase + '/tags/add',
                 {
-                    name: tag.tag_name,
-                    slug: tag.tag_slug,
+                    name: tag.name,
+                    slug: tag.slug,
                     activated: tag.activated
                 }))
                 .then(function (result) {
-                    tag.id = result.data.tag_id;
-                    tag.name = tag.tag_name;
-                    tag.slug = tag.tag_slug;
+                    tag.id = result.data.id;
+                    tag.name = tag.name;
+                    tag.slug = tag.slug;
                     api.tags.push(tag);
-                    NotifyService.showSimpleToast("Created tag " + tag.name + " id:" + result.data.tag_id + ".");
+                    NotifyService.showSimpleToast("Created tag " + tag.name + " id:" + result.data.id + ".");
                     defer.resolve(result);
                 }, function (result) {
                     NotifyService.showSimpleDialog("Error creating tag", result);
@@ -317,6 +300,24 @@
             }
             return req;
         }
+
+        api.receivedUserlogMessage = function (messageChannel, messageData) {
+            $log.info(messageData);
+            if (messageChannel === 'userlogs:add') {
+                $rootScope.$apply(function () {
+                    api.userlogs.push(messageData);
+                });
+            } else if (messageChannel === 'userlogs:modify') {
+                debugger;
+                var userlog = _.findWhere(api.userlogs, {id: messageData.id});
+                if (userlog) {
+                    debugger;
+                    userlog.content = messageData.content;
+                }
+            } else {
+                $log.error('Dangling Userlogs message: ' + messageData);
+            }
+        };
 
         return api;
     }

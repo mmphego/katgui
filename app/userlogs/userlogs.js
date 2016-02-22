@@ -18,7 +18,7 @@
         }])
         .controller('UserlogCtrl', UserlogCtrl);
 
-    function UserlogCtrl($localStorage, $interval, $mdDialog, $scope, $rootScope, $filter, $log, $timeout, UserLogService) {
+    function UserlogCtrl(MonitorService, $localStorage, $interval, $mdDialog, $scope, $rootScope, $filter, $log, $timeout, UserLogService) {
 
         var vm = this;
         var datetime_format = 'yyyy-MM-dd HH:mm:ss';
@@ -35,6 +35,15 @@
         vm.include_activity_logs = false;
         vm.newLogStartTimeText = '';
 
+        MonitorService.subscribe('userlogs', '*');
+        vm.subscribeToUserlogs = function () {
+            if (MonitorService.connection) {
+
+            } else {
+                $timeout(vm.subscribeToUserlogs, 2000);
+            }
+        };
+
         vm.onTimeSet = function (value, target, attribute) {
             target[attribute] = $filter('date')(value, datetime_format);
         };
@@ -47,16 +56,16 @@
             if (!vm.newLogStartTime) {
                 vm.newLogStartTime = $rootScope.utcDateTime;
             }
-            var tagList = [];
+            var tagIdList = [];
             vm.filterTags.forEach(function (tag) {
-                tagList.push(tag.name);
+                tagIdList.push(tag.id);
             });
             var newLog = {
                 user: $rootScope.currentUser.id,
                 start_time: $filter('date')(vm.newLogStartTime, datetime_format),
                 end_time: $filter('date')(vm.newLogEndTime, datetime_format),
-                userlog_content: vm.newLogContent,
-                tags: tagList
+                content: vm.newLogContent,
+                tag_ids: tagIdList
             };
             UserLogService.addUserLog(newLog).then(function (result) {
                 vm.newLogStartTime = $rootScope.utcDateTime;
@@ -93,7 +102,7 @@
                     '<td>' + item.name + '</td>' +
                     '<td>' + item.start_time + '</td>' +
                     '<td>' + item.end_time + '</td>' +
-                    '<td>' + item.userlog_content + '</td>' +
+                    '<td>' + item.content + '</td>' +
                     '</tr>';
                 });
 
@@ -227,7 +236,7 @@
                         $scope.tags = vm.tags;
                         $scope.start_time = log.start_time;
                         $scope.end_time = log.end_time;
-                        $scope.userlog_content = log.userlog_content;
+                        $scope.content = log.content;
                         $scope.selectedTags = log.tags;
 
                         $scope.addTagFromList = function (listed_tag) {
@@ -241,16 +250,14 @@
                         $scope.add = function () {
                             var newTagList = [];
                             $scope.selectedTags.forEach(function (tag) {
-                                if (tag.name) {
-                                    newTagList.push(tag.name);
-                                }
+                                newTagList.push(tag);
                             });
                             var newLog = {
                                 id: log.id,
                                 user: $rootScope.currentUser.id,
                                 start_time: $filter('date')($scope.start_time, datetime_format),
                                 end_time: $filter('date')($scope.end_time, datetime_format),
-                                userlog_content: $scope.userlog_content,
+                                content: $scope.content,
                                 tags: newTagList,
                                 metadata_to_del: $scope.metadata_to_del
                             };
@@ -310,10 +317,8 @@
         };
 
         vm.afterInit = function() {
-            if ($rootScope.currentUser) {
-                UserLogService.listUserLogsForToday();
-                UserLogService.listTags();
-            }
+            UserLogService.listUserLogsForToday();
+            UserLogService.listTags();
         };
 
         $interval(function () {
@@ -326,15 +331,22 @@
             vm.chatMode = _.findIndex(vm.filterTags, {name: 'chat'}) > -1;
         });
 
-        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.undbindutcDateTimeSet = $rootScope.$on('utcDateTimeSet', function (event, value) {
             vm.newLogStartTimeText = value;
         });
-        vm.afterInit();
+
+        if ($rootScope.currentUser) {
+            vm.afterInit();
+        } else {
+            vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+        }
 
         $scope.$on('$destroy', function () {
-            vm.undbindLoginSuccess();
+            if (vm.undbindLoginSuccess) {
+                vm.undbindLoginSuccess();
+            }
             vm.undbindutcDateTimeSet();
+            MonitorService.unsubscribe('userlogs', '*');
         });
 
         //TODO fix uploads, realtime updates from katportal, update log correctly after edit, keyboard shortcuts, fixup reports display, fetch future and past userlogs

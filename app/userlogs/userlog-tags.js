@@ -55,9 +55,9 @@
                                 }
                                 if (tag.id) {
                                     UserLogService.modifyTag({
-                                        tag_id: tag.id,
-                                        tag_name: $scope.name,
-                                        tag_slug: $scope.slug,
+                                        id: tag.id,
+                                        name: $scope.name,
+                                        slug: $scope.slug,
                                         activated: $scope.activated
                                     }).then(function (result) {
                                         if (result.data && result.data.success) {
@@ -70,8 +70,8 @@
                                     });
                                 } else {
                                     UserLogService.createTag({
-                                        tag_name: $scope.name,
-                                        tag_slug: $scope.slug,
+                                        name: $scope.name,
+                                        slug: $scope.slug,
                                         activated: $scope.activated
                                     });
                                 }

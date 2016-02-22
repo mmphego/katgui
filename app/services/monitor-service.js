@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
-                            $rootScope, $q, $log, ReceptorStateService, NotifyService) {
+                            $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -94,6 +94,7 @@
         };
 
         api.onSockJSMessage = function (e) {
+            // TODO refactor this function better, its getting out of hand
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {
@@ -105,6 +106,9 @@
                     if (messages.result) {
                         if (messages.result.msg_channel && messages.result.msg_channel === "sched:sched") {
                             ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
+                            return;
+                        } else if (messages.result.msg_channel && messages.result.msg_channel.startsWith("userlogs")) {
+                            UserLogService.receivedUserlogMessage(messages.result.msg_channel, messages.result.msg_data);
                             return;
                         }
                         if (messages.id === 'redis-pubsub') {
