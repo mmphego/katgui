@@ -32,6 +32,8 @@ var htmlminOptions = {
     removeStyleLinkTypeAttributes: true
 };
 
+var buildDate = (new Date()).getTime();
+
 gulp.task('clean', function () {
     return del('dist');
 });
@@ -92,6 +94,7 @@ gulp.task('js', ['clean'], function () {
 
     return combined.done()
         .pipe(concat('app.full.min.js'))
+        .pipe(insert.append('document.katguiBuildDate = ' + buildDate))
         .pipe(ngannotate())
         .pipe(uglify())
         .pipe(gulp.dest('dist/'));
@@ -160,7 +163,7 @@ gulp.task('webserver', function() {
 
 
 gulp.task('version:file', function () {
-    fs.writeFileSync('dist/version.txt', '{"version": "' + pkg.version + '", "buildDate": "' + (new Date()).getTime() + '"}\n');
+    fs.writeFileSync('dist/version.txt', '{"version": "' + pkg.version + '", "buildDate": "' + buildDate + '"}\n');
 });
 
 gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds', 'version:file']);
