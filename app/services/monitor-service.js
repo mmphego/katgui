@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
-                            $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService) {
+                            $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -72,6 +72,7 @@
                 api.subscribe('time');
                 api.subscribe('auth');
                 api.subscribe('resources');
+                ConfigService.checkOutOfDateVersion();
             }
         };
 

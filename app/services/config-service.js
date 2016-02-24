@@ -201,6 +201,8 @@
                         $log.info('This is the latest KATGUI build, built on: ' + latestBuildDate);
                     }
                 });
+            } else {
+                $log.warn('There\'s no cached katgui build date! This could be because katgui is being served uncompiled.');
             }
         };
 

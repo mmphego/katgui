@@ -288,7 +288,6 @@
                 if (!$rootScope.utcDateTime) {
                     $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
                     $rootScope.$emit('utcDateTimeSet', $rootScope.utcDateTime);
-                    ConfigService.checkOutOfDateVersion();
                 } else {
                     $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
                 }
