@@ -203,8 +203,8 @@ angular.module('katGui.d3')
                             scope.positions[d.proj_actual].push(d);
                         }
 
-                        if (d.pos_request_pointm_azim && d.pos_request_pointm_azim) {
-                            d.proj_requested = Math.floor(x(d.pos_request_pointm_azim.value)) + ',' + Math.floor(y(d.pos_request_pointm_azim.value));
+                        if (d.pos_request_pointm_azim && d.pos_request_pointm_elev) {
+                            d.proj_requested = Math.floor(x(d.pos_request_pointm_azim.value)) + ',' + Math.floor(y(d.pos_request_pointm_elev.value));
                             if (!scope.positions_requested[d.proj_requested]) {
                                 scope.positions_requested[d.proj_requested] = [];
                             }
@@ -224,8 +224,8 @@ angular.module('katGui.d3')
                                 if (items[i].pos_actual_pointm_azim && items[i].pos_actual_pointm_elev) {
                                     d.tooltipHtml += "<br/>az: " + Math.round(items[i].pos_actual_pointm_azim.value * pm) / pm + ", el: " + Math.round(items[i].pos_actual_pointm_elev.value * pm) / pm;
                                 }
-                                if (items[i].pos_request_pointm_azim && items[i].pos_request_pointm_azim) {
-                                    d.tooltipHtml += "<br/>az: " + Math.round(items[i].pos_request_pointm_azim.value * pm) / pm + ", el: " + Math.round(items[i].pos_request_pointm_azim.value * pm) / pm + " (requested)";
+                                if (items[i].pos_request_pointm_azim && items[i].pos_request_pointm_elev) {
+                                    d.tooltipHtml += "<br/>az: " + Math.round(items[i].pos_request_pointm_azim.value * pm) / pm + ", el: " + Math.round(items[i].pos_request_pointm_elev.value * pm) / pm + " (requested)";
                                 }
                                 if (items[i].pos_request_base_ra && items[i].pos_request_base_dec) {
                                     d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
@@ -253,7 +253,7 @@ angular.module('katGui.d3')
                         .attr("class", "requested-pos")
                         .attr("transform", function (d) {
                             if (d.proj_requested) {
-                                return "translate(" + (x(d.pos_request_pointm_azim.value) - 8.3) + "," + (y(d.pos_request_pointm_azim.value) + 6.7) + ")";
+                                return "translate(" + (x(d.pos_request_pointm_azim.value) - 8.3) + "," + (y(d.pos_request_pointm_elev.value) + 6.7) + ")";
                             } else {
                                 return 'translate(-100, -100)';
                             }
