@@ -197,6 +197,8 @@
                                 "</md-dialog>",
                                 targetEvent: event
                             });
+                    } else {
+                        $log.info('This is the latest KATGUI build, built on: ' + latestBuildDate);
                     }
                 });
             }
