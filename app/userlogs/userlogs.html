@@ -1,8 +1,8 @@
-<div flex style="padding: 8px; min-width: 1200px" ng-controller="UserlogCtrl as vm" layout="column">
+<div flex style="padding: 8px; min-width: 1200px; min-height: 700px;" ng-controller="UserlogCtrl as vm" layout="column">
     <md-toolbar layout="row" class="md-whiteframe-z1" style="min-height: 80px; max-height: 80px">
         <!-- <input class="search-input-box" type="search"
                ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Userlogs..."/> -->
-        <md-chips ng-model="vm.filterTags" style="margin-bottom: 24px; padding: 0 8px" md-autocomplete-snap md-require-match="true" flex
+        <md-chips md-theme="{{$root.themePrimaryButtons}}" ng-model="vm.filterTags" style="margin-bottom: 24px; padding: 0 8px" md-autocomplete-snap md-require-match="true" flex
             md-on-add="vm.tagFilterChanged()"
             md-on-remove="vm.tagFilterChanged()">
             <md-autocomplete
@@ -26,15 +26,23 @@
                 <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
             </md-button>
         </md-chips>
-        <md-input-container md-theme="{{$root.themePrimaryButtons}}" md-no-float class="md-primary" title="Selected Time" style="font-size: 12px; width: 125px; padding-right: 8px;">
+        <md-input-container md-theme="{{$root.themePrimaryButtons}}" md-no-float class="md-primary" style="font-size: 12px; width: 125px; padding-right: 8px;">
+            <md-tooltip>The current time to add an inline log</md-tooltip>
             <input ng-disabled="vm.chatMode" style="color: white" flex placeholder="Selected Time" ng-model="vm.newLogStartTimeText" ng-model-options="{ debounce: 300 }">
         </md-input-container>
         <md-button ng-click="vm.newLogStartTimeText = $root.utcDateTime"
             style="height: 36px; max-width: 42px; min-width: 42px; margin-top: 16px; margin-left: 0; padding: 0;">
             Now
         </md-button>
+        <md-button md-theme="{{$root.themePrimaryButtons}}" class="md-icon-button md-raised md-primary" ng-click="vm.addUserLog()"
+            style="margin-top: 12px">
+            <span class="fa fa-plus md-fab-fa-icon-small"></span>
+        </md-button>
         <div class="unselectable list-subheader-title" layout="row" layout-align="start center"
              style="position: absolute; left: 8px; bottom: 0; right: 0;">
+             <span class="subheader-text userlog-user-name">
+                 <span>User</span>
+             </span>
             <span class="subheader-text" style="width: 125px">
                 <span>Start Time (UTC)</span>
             </span>
@@ -44,61 +52,83 @@
             <span flex class="subheader-text">
                 <span>Content</span>
             </span>
-            <span class="subheader-text" style="margin-right: 58px">
+            <span class="subheader-text" style="width: 50px">
                 Tags
+            </span>
+            <span class="subheader-text" style="margin-right: 50px">
+                <span class="fa fa-paperclip"></span>
             </span>
         </div>
     </md-toolbar>
+    <md-button style="border-bottom: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()">Fetch Logs for {{vm.lastFutureQueryDayText}}</md-button>
     <div flex class="md-whiteframe-z1" style="overflow: auto">
-        <div ng-repeat="userLog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true"
-            flex layout="row" layout-align="start center" class="user-log-row">
-            <span style="width: 125px; font-size: 12px">
-                {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
-            </span>
-            <span style="width: 125px; font-size: 12px">
-                {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
-            </span>
-            <span flex>{{userLog.content}}</span>
-            <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
-            <span class="md-caption" ng-show="userLog.attachment_count>0">
-                {{userLog.attachment_count}}
-                <md-icon class="fa" md-font-icon="fa-paperclip"></md-icon>
-            </span>
-            <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
-                       ng-click="vm.editUserLog(userLog, $event)">
-                <span style="display: inherit" class="fa fa-edit"></span>
-            </md-button>
+        <div ng-repeat="userLog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true track by userLog.id"
+            flex layout="column" class="user-log-row">
+            <md-divider></md-divider>
+            <div layout="row" layout-align="start center">
+                <i class="userlog-user-name">
+                    {{userLog.user.name}}
+                </i>
+                <span style="width: 125px; font-size: 12px">
+                    {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                </span>
+                <span style="width: 125px; font-size: 12px">
+                    {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                </span>
+                <span flex>{{userLog.content}}</span>
+                <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
+                <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
+                    <span ng-show="userLog.attachment_count>0">({{userLog.attachment_count}}
+                    <span class="fa fa-paperclip"></span>)
+                    </span>
+                </span>
+                <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
+                           ng-click="vm.editUserLog(userLog, $event)">
+                    <span style="display: inherit" ng-class="{'fa fa-edit': userLog.user_id === $root.currentUser.id, 'fa fa-eye': userLog.user_id !== $root.currentUser.id}"></span>
+                </md-button>
+            </div>
         </div>
         <form ng-submit="vm.addNewInlineLog()" md-theme="{{$root.themePrimaryButtons}}" layout="row" layout-align="start center" class="userlog-new-log-row">
+            <i class="userlog-user-name" style="margin-top: 6px; margin-left: 8px; margin-right: 0">
+                {{$root.currentUser.name}}
+            </i>
             <md-input-container md-no-float class="md-primary" title="Start Time" style="font-size: 12px; width: 125px">
                 <input ng-disabled="vm.chatMode" flex placeholder="Start Time" ng-model="vm.newLogStartTimeText" ng-model-options="{ debounce: 300 }">
             </md-input-container>
             <md-input-container md-no-float class="md-primary" title="End Time" style="font-size: 12px; width: 125px">
-                <input flex placeholder="End Time" ng-model="vm.newLogEndTime" ng-model-options="{ debounce: 300 }">
+                <input flex placeholder="End Time" ng-model="vm.newLogEndTimeText" ng-model-options="{ debounce: 300 }">
             </md-input-container>
             <md-input-container flex md-no-float class="md-primary" title="Content">
                 <input focus flex placeholder="Content" ng-model="vm.newLogContent" ng-model-options="{ debounce: 300 }">
             </md-input-container>
-            <md-button ng-show="false" type="submit" style="margin: 8px;" class="">+</md-button>
+            <md-button ng-show="false" type="submit" style="margin: 8px;" class=""></md-button>
         </form>
         <div ng-repeat="userLog in vm.userLogs | filter:vm.filterBeforeNow | filter:vm.filterByTag | orderBy:'start_time':true"
-            flex layout="row" layout-align="start center" class="user-log-row">
-            <span style="width: 125px; font-size: 12px">
-                {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
-            </span>
-            <span style="width: 125px; font-size: 12px">
-                {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
-            </span>
-            <span flex>{{userLog.content}}</span>
-            <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
-            <span class="md-caption" ng-show="userLog.attachment_count>0">
-                {{userLog.attachment_count}}
-                <md-icon class="fa" md-font-icon="fa-paperclip"></md-icon>
-            </span>
-            <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
-                       ng-click="vm.editUserLog(userLog, $event)">
-                <span style="display: inherit" class="fa fa-edit"></span>
-            </md-button>
+            flex layout="column" class="user-log-row">
+            <md-divider></md-divider>
+            <div layout="row" layout-align="start center">
+                <i class="userlog-user-name">
+                    {{userLog.user.name}}
+                </i>
+                <span style="width: 125px; font-size: 12px">
+                    {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                </span>
+                <span style="width: 125px; font-size: 12px">
+                    {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                </span>
+                <span flex>{{userLog.content}}</span>
+                <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
+                <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
+                    <span ng-show="userLog.attachment_count>0">({{userLog.attachment_count}}
+                    <span class="fa fa-paperclip"></span>)
+                    </span>
+                </span>
+                <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
+                           ng-click="vm.editUserLog(userLog, $event)">
+                    <span style="display: inherit" ng-class="{'fa fa-edit': userLog.user_id === $root.currentUser.id, 'fa fa-eye': userLog.user_id !== $root.currentUser.id}"></span>
+                </md-button>
+            </div>
         </div>
+        <md-button style="border-top: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreLogs()">Fetch Logs for {{vm.lastQueryDayText}}</md-button>
     </div>
 </div>

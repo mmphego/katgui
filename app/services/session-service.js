@@ -69,10 +69,8 @@
         };
 
         api.logout = function () {
-            if ($rootScope.loggedIn) {
-                $http(createRequest('post', urlBase + '/user/logout',{}))
-                    .then(logoutResultSuccess, logoutResultError);
-            }
+            return $http(createRequest('post', urlBase + '/user/logout',{}))
+                .then(logoutResultSuccess, logoutResultError);
         };
 
         api.recoverLogin = function () {
@@ -195,7 +193,7 @@
             }
         }
 
-        function confirmRole(session_id, payload, doLogout) {
+        function confirmRole(session_id, payload) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
@@ -203,12 +201,9 @@
                         var requested_session_id = payload.session_id;
                         $scope.current_lo = payload.current_lo;
                         $scope.requested_role = payload.req_role;
-                        $scope.readOnlyLogin = function () {
-                            session_id = readonly_session_id;
-                            $mdDialog.hide();
-                        };
+
                         $scope.proceed = function () {
-                            session_id = requested_session_id;
+                            api.login(requested_session_id);
                             $mdDialog.hide();
                         };
 
@@ -223,31 +218,16 @@
                         '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
                         '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be logged out.</p>' +
                         '  </md-dialog-content>' +
-                        '  <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">' +
+                        '  <md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">' +
                         '    <md-button ng-click="cancel()" class="md-primary md-raised">' +
                         '      Cancel' +
-                        '    </md-button>' +
-                        '    <md-button ng-click="readOnlyLogin()" class="md-primary md-raised" ng-if="$root.currentUser.req_role !== \'read_only\'">' +
-                        '      Read Only Login' +
                         '    </md-button>' +
                         '    <md-button ng-click="proceed()" class="md-primary md-raised">' +
                         '      Proceed' +
                         '    </md-button>' +
-                        '  </div>' +
+                        '  </md-dialog-actions>' +
                         '</md-dialog>'
-                        })
-                .then(function() {
-                    if (session_id) {
-                        if (doLogout) {
-                            api.logout().then(function () {
-                                api.login(session_id);
-                            });
-                        } else {
-                            api.login(session_id);
-                        }
-
-                    }
-                });
+                    });
         }
 
         function loginSuccess(result, session_id) {

@@ -43,7 +43,7 @@
 <script src="bower_components/d3/d3.js"></script>
 <script src="bower_components/jspdf/dist/jspdf.min.js"></script>
 <script src="bower_components/html2canvas/build/html2canvas.js"></script>
-<script src="bower_components/jspdf-autotable/jspdf.plugin.autotable.js"></script>
+<script src="bower_components/jspdf-autotable/dist/jspdf.plugin.autotable.js"></script>
 <!--<script src="bower_components/angular-gantt/assets/angular-gantt.js"></script>-->
 <!-- Add New Bower Component JS Above -->
 
@@ -115,6 +115,7 @@
 <script src="app/scheduler/observations/observations-overview.js"></script>
 <script src="app/userlogs/userlogs.js"></script>
 <script src="app/userlogs/userlog-tags.js"></script>
+<script src="app/userlogs/userlog-reports.js"></script>
 <script src="app/process-control/process-control.js"></script>
 <script src="app/cam-components/cam-components.js"></script>
 <script src="app/device-status/device-status.js"></script>
@@ -236,6 +237,11 @@
                 <md-item ng-show="$root.expertUser">
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlog-tags')">
                         <md-button flex><span class="fa fa-tag"></span><span>User Log Tags</span></md-button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlog-reports')">
+                        <md-button flex><span class="fa fa-file-pdf-o"></span><span>User Log Reports</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
