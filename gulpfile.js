@@ -162,7 +162,7 @@ gulp.task('webserver', function() {
 });
 
 
-gulp.task('version:file', function () {
+gulp.task('version:file', ['clean', 'js'], function () {
     fs.writeFileSync('dist/version.txt', '{"version": "' + pkg.version + '", "buildDate": "' + buildDate + '"}\n');
 });
 
