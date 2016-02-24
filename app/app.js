@@ -391,9 +391,6 @@
             }
             $httpProvider.defaults.useXDomain = true;
             delete $httpProvider.defaults.headers.common['X-Requested-With'];
-            $httpProvider.defaults.headers.common["Cache-Control"] = "no-cache";
-            $httpProvider.defaults.headers.common.Pragma = "no-cache";
-            $httpProvider.defaults.headers.common["If-Modified-Since"] = "0";
         }
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
