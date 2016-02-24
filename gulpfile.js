@@ -160,7 +160,7 @@ gulp.task('webserver', function() {
 
 
 gulp.task('version:file', function () {
-    fs.writeFileSync('dist/version.txt', 'Version: ' + pkg.version + '\nBuild Date: ' + (new Date()).getTime() + '\n');
+    fs.writeFileSync('dist/version.txt', '{"version": "' + pkg.version + '", "buildDate": "' + (new Date()).getTime() + '"}\n');
 });
 
 gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds', 'version:file']);
