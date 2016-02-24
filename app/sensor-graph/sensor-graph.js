@@ -227,6 +227,10 @@
                 endDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
             }
 
+            var indexOfSensor = vm.sensorNames.indexOf(sensor);
+            if (indexOfSensor > -1) {
+                vm.sensorNames.splice(indexOfSensor, 1);
+            }
             vm.removeSensorLine(sensor.name);
             vm.waitingForSearchResult = true;
             vm.showTips = false;
