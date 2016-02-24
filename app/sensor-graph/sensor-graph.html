@@ -83,7 +83,7 @@
                 </md-button>
             </div>
 
-            <div layout="row" layout-align="center center" style="margin-left: 16px; margin-right:16px; width: 130px;">
+            <div layout="row" layout-align="center center" style="min-height: 30px; margin-left: 16px; margin-right:16px; width: 130px;">
                 <!--<span style="margin-right: 8px;">Sensor Type:</span>-->
                 <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'"
                            ng-model="vm.sensorType" style="margin: 0"
@@ -93,7 +93,7 @@
                     <md-option value="discrete">Discrete</md-option>
                 </md-select>
             </div>
-            <div layout="row" layout-align="center center" ng-show="vm.sensorType === 'numeric'">
+            <div layout="row" layout-align="center center" ng-show="vm.sensorType === 'numeric'" style="min-height: 46px">
                 <span style="margin-right: 8px;">Interval:</span>
                 <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalNum = 1" ng-model="vm.intervalNum"
                            style="margin: 0; padding: 8px">
@@ -114,7 +114,7 @@
                     <md-option value="d">Day(s)</md-option>
                 </md-select>
             </div>
-            <div layout="row">
+            <div layout="row" style="min-height: 40px">
                 <md-autocomplete style="min-width: 310px;"
                     md-no-cache="true"
                     ng-disabled="vm.waitingForSearchResult"
@@ -147,7 +147,7 @@
                 </div>
             </div>
 
-            <div style="width: 100%; margin-top: 4px; max-height: 22px" layout="row" layout-align="center center">
+            <div style="width: 100%; margin-top: 4px; min-height: 22px; max-height: 22px" layout="row" layout-align="center center">
                 <span ng-show="vm.sensorSearchNames.length === 1000" title="Refine the search to see more sensors"
                       class="fa fa-warning"></span>
                 <span ng-show="vm.sensorSearchNames.length > 0" style="margin-left: 4px;"><i>Displaying {{vm.sensorSearchNames.length}} result(s)</i></span>
