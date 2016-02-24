@@ -19,6 +19,8 @@ var karma = require('gulp-karma');
 var util = require('gulp-util');
 var insert = require('gulp-insert');
 var del = require('del');
+var fs = require('fs');
+var pkg = require('./package.json');
 
 var htmlminOptions = {
     collapseBooleanAttributes: true,
@@ -156,4 +158,9 @@ gulp.task('webserver', function() {
         }));
 });
 
-gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds']);
+
+gulp.task('version:file', function () {
+    fs.writeFileSync('dist/version.txt', 'Version: ' + pkg.version + '\nBuild Date: ' + (new Date()).getTime() + '\n');
+});
+
+gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds', 'version:file']);

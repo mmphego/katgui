@@ -161,6 +161,12 @@
             return $http(createRequest('get', urlBase + '/apod/' + formatedDate));
         };
 
+        api.checkOutOfDateVersion = function () {
+            $http(createRequest('get', urlBase + '/katgui-version')).then(function (result) {
+                $log.info(result);
+            });
+        };
+
         function createRequest(method, url) {
             return {
                 method: method,
