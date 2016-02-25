@@ -290,6 +290,9 @@
             vm.initSensors(true);
         };
 
+        //create it to be bound to, but we dont use it on this screen
+        vm.removeSensorLine = function () {};
+
         $scope.$on('$destroy', function () {
             vm.ancResource.sensorList.forEach(function (sensor) {
                 SensorsService.unsubscribe(sensor.python_identifier, vm.guid);
