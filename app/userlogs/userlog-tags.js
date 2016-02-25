@@ -49,10 +49,6 @@
                                 $mdDialog.hide();
                             };
                             $scope.saveTag = function () {
-                                if (_.findIndex(vm.tags, {name: $scope.name}) > -1) {
-                                    NotifyService.showSimpleDialog('Error creating tag', 'Could not create tag because tag "' + $scope.name + '" already exists');
-                                    return;
-                                }
                                 if (tag.id) {
                                     UserLogService.modifyTag({
                                         id: tag.id,
@@ -69,6 +65,10 @@
                                         }
                                     });
                                 } else {
+                                    if (_.findIndex(vm.tags, {name: $scope.name}) > -1) {
+                                        NotifyService.showSimpleDialog('Error creating tag', 'Could not create tag because tag "' + $scope.name + '" already exists');
+                                        return;
+                                    }
                                     UserLogService.createTag({
                                         name: $scope.name,
                                         slug: $scope.slug,

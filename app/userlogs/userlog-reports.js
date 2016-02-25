@@ -79,11 +79,8 @@
                     UserLogService.queryActivityLogs(query).then(function (result) {
                         pdf.autoTable(columns, result.data, {
                             startY: pdf.autoTableEndPosY() + 50,
-                            margins: {horizontal: 8, top: 8, bottom: 8},
-                            overflow: 'linebreak',
-                            padding: 2,
-                            lineHeight: 8,
-                            fontSize: 8});
+                            theme: 'striped',
+                            margin: {top: 8, bottom: 8}});
                         pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
                     });
                 } else {
