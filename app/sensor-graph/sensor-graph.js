@@ -313,13 +313,14 @@
                 var newData = [];
                 var newSensorNames = {};
                 for (var attr in sensor.value) {
-                    var sensorName = sensor.value[attr][3];
+                    var sensorName = sensor.value[attr][4];
 
                     newData.push({
-                        status: sensor.value[attr][4],
+                        status: sensor.value[attr][5],
                         sensor: sensorName,
-                        value: sensor.value[attr][2],
-                        sample_ts: sensor.value[attr][1] / 1000,
+                        value: sensor.value[attr][3],
+                        value_ts: sensor.value[attr][2] / 1000,
+                        sample_ts: sensor.value[attr][1] / 1000
                     });
                     newSensorNames[sensorName] = {};
                 }
@@ -400,6 +401,11 @@
             vm.sensorNames = vm.sensorNames.filter(function (item) {
                 return item.name && item.name.length > 0;
             });
+        };
+
+        vm.downloadCSV = function () {
+            //bound in multiLineChart
+            vm.downloadAsCSV(vm.useUnixTimestamps);
         };
 
         $scope.$on('$destroy', function () {

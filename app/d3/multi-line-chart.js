@@ -10,7 +10,8 @@ angular.module('katGui.d3')
                 hideContextZoom: '@hideContextZoom',
                 yMin: '=yMin',
                 yMax: '=yMax',
-                mouseOverTooltip: '@'
+                mouseOverTooltip: '@',
+                downloadCsv: '='
             },
             replace: false,
             link: function (scope, element) {
@@ -570,6 +571,31 @@ angular.module('katGui.d3')
                 scope.$on('$destroy', function () {
                     unbindResize();
                 });
+
+                scope.downloadCsv = function (useUnixTimestamps) {
+                    scope.nestedData.forEach(function(sensorValues, index){
+                        var csvContent = "data:text/csv;charset=utf-8,update_time,value_time,status,value\n";
+                        var dataString = '';
+                        var valuesArray = [];
+                        for (var i = 0; i < sensorValues.values.length; i++) {
+                            var sensorInfo = sensorValues.values[i];
+                            if (useUnixTimestamps) {
+                                dataString += (sensorInfo.sample_ts * 1000) + ',';
+                                dataString += (sensorInfo.value_ts * 1000) + ',';
+                            } else {
+                                dataString += moment.utc(sensorInfo.sample_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
+                                dataString += moment.utc(sensorInfo.value_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
+                            }
+                            dataString += sensorValues.values[i].status + ',';
+                            dataString += sensorValues.values[i].value + '\n';
+                        }
+                        var encodedUri = encodeURI(csvContent + dataString);
+                        var link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", sensorValues.key + ".csv");
+                        link.click();
+                    });
+                };
             }
         };
     });

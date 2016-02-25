@@ -154,14 +154,24 @@
                 <span ng-show="vm.sensorSearchNames && vm.sensorSearchNames.length === 0" style="margin-left: 4px;">There are no results.</span>
             </div>
 
-            <div layout="column" layout-align="center center" style="width: 100%; min-height: 77px;">
+            <div layout="column" layout-align="center center" style="width: 100%; min-height: 125px;">
                 <md-checkbox ng-if="$root.loggedIn" class="md-primary" ng-model="vm.liveData" ng-change="vm.liveDataChanged()"
                     ng-disabled="vm.sensorServiceConnected" style="margin: 4px;">
                     Include Live Data
                 </md-checkbox>
-                <md-button class="md-primary md-raised" ng-click="vm.clearData()">
+                <md-button style="margin-bottom: 16px" ng-disabled="vm.sensorNames.length === 0" class="md-primary md-raised" ng-click="vm.clearData()">
                     Clear Sensor Graph
                 </md-button>
+                <div class="menu-item-divider" style="width: 100%"></div>
+                <div layout="row" layout-align="start center">
+                    <md-checkbox class="md-primary" ng-model="vm.useUnixTimestamps" ng-init="vm.useUnixTimestamps = false"
+                        ng-disabled="vm.sensorNames.length === 0" style="margin: 4px;; padding: 0">
+                        Use Unix timestamps
+                    </md-checkbox>
+                    <md-button ng-disabled="vm.sensorNames.length === 0" class="md-primary md-raised" ng-click="vm.downloadCSV()">
+                        Download As CSV
+                    </md-button>
+                </div>
             </div>
         </div>
     </div>
@@ -199,7 +209,7 @@
             </div>
         </md-toolbar>
         <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart" clear-function="vm.clearChart"
-                          remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
+                          remove-sensor-function="vm.removeSensorLine" download-csv="vm.downloadAsCSV" y-max="vm.yAxisMaxValue"
                           y-min="vm.yAxisMinValue" mouse-over-tooltip="true"
                           style="max-height: 100%; min-height: 100%"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
