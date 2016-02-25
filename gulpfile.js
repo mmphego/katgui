@@ -19,6 +19,8 @@ var karma = require('gulp-karma');
 var util = require('gulp-util');
 var insert = require('gulp-insert');
 var del = require('del');
+var fs = require('fs');
+var pkg = require('./package.json');
 
 var htmlminOptions = {
     collapseBooleanAttributes: true,
@@ -29,6 +31,8 @@ var htmlminOptions = {
     removeScriptTypeAttributes: true,
     removeStyleLinkTypeAttributes: true
 };
+
+var buildDate = (new Date()).getTime();
 
 gulp.task('clean', function () {
     return del('dist');
@@ -90,6 +94,7 @@ gulp.task('js', ['clean'], function () {
 
     return combined.done()
         .pipe(concat('app.full.min.js'))
+        .pipe(insert.append('document.katguiBuildDate = ' + buildDate))
         .pipe(ngannotate())
         .pipe(uglify())
         .pipe(gulp.dest('dist/'));
@@ -156,4 +161,9 @@ gulp.task('webserver', function() {
         }));
 });
 
-gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds']);
+
+gulp.task('version:file', ['clean', 'js'], function () {
+    fs.writeFileSync('dist/version.txt', '{"version": "' + pkg.version + '", "buildDate": "' + buildDate + '"}\n');
+});
+
+gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds', 'version:file']);

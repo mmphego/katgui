@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ConfigService', ConfigService);
 
-    function ConfigService($q, $http, SERVER_URL, StatusService, $rootScope, $log, $timeout) {
+    function ConfigService($mdDialog, $q, $http, SERVER_URL, StatusService, $rootScope, $log, $timeout) {
 
         var urlBase = SERVER_URL + '/katconf';
         var api = {};
@@ -159,6 +159,51 @@
         api.getApodForDate = function (date) {
             var formatedDate = moment(date).format('YYYY/MM/DD');
             return $http(createRequest('get', urlBase + '/apod/' + formatedDate));
+        };
+
+        api.checkOutOfDateVersion = function () {
+            if (document.katguiBuildDate) {
+                $http(createRequest('get', urlBase + '/katgui-version')).then(function (result) {
+                    var cachedBuildDate = new Date(document.katguiBuildDate);
+                    var latestBuildDate = new Date(parseInt(result.data.buildDate));
+                    if (cachedBuildDate < latestBuildDate) {
+                        var textContent = '<b>You have loaded an older version of KATGUI than what is currently available!</b></br>' +
+                                     '</br>Your version was built on ' + cachedBuildDate + ', but the latest version was built on ' + latestBuildDate +
+                                     '</br></br>Click "Reload" to get the latest version.</p>';
+                        var confirmButton = 'Reload';
+                        var cancelButton = 'Cancel';
+                        $mdDialog
+                            .show({
+                                controller: function ($rootScope, $scope, $mdDialog, $sce) {
+                                    $scope.title = 'KATGUI is out of date!';
+                                    $scope.content = $sce.trustAsHtml(textContent);
+                                    $scope.resolve = function () {
+                                        window.location.reload(true);
+                                    };
+                                    $scope.reject = function () {
+                                        $mdDialog.hide();
+                                        $log.warn('User cancelled hard reload of KATGUI.');
+                                    };
+                                },
+                                template: "<md-dialog style='padding: 0;' md-theme='red' aria-label=''>" +
+                                "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
+                                "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span style='margin:8px'>{{title}}</span></md-toolbar>" +
+                                "<div flex><p ng-bind-html='content'></p></div>" +
+                                "</div>" +
+                                "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                                "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='' ng-click='reject()'>" + cancelButton + "</md-button>" +
+                                "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='red' aria-label='' ng-click='resolve()'>" + confirmButton + "</md-button>" +
+                                "</div>" +
+                                "</md-dialog>",
+                                targetEvent: event
+                            });
+                    } else {
+                        $log.info('This is the latest KATGUI build, built on: ' + latestBuildDate);
+                    }
+                });
+            } else {
+                $log.warn('There\'s no cached katgui build date! This could be because katgui is being served uncompiled.');
+            }
         };
 
         function createRequest(method, url) {

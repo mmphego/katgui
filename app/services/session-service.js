@@ -23,11 +23,42 @@
             var msg = window.btoa(JSON.stringify(jwtHeader)) + "." + window.btoa(JSON.stringify(jwtPayload));
             msg = msg.replace(/=/g , "");
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
-            $rootScope.jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
+            $rootScope.auth_jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
+            $rootScope.jwt = $rootScope.auth_jwt;
             $http(createRequest('get', urlBase + '/user/verify/' + role))
                 .then(verifySuccess, verifyError);
         };
 
+        api.verifyAs = function (role) {
+            var req = {
+                method: 'get',
+                url: urlBase + '/user/verify/' + role,
+                headers: {
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
+                }
+            };
+            $http(req).then(function (result) {
+                if (result.data.session_id) {
+                    if (result.data.confirmation_token) {
+                        $log.info('Found confirmation token');
+                        var b = result.data.confirmation_token.split(".");
+                        var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
+                        if (payload.req_role === 'lead_operator' &&
+                            payload.current_lo &&
+                            payload.current_lo !== payload.requester) {
+                            confirmRole(result.data.confirmation_token, payload);
+                        } else {
+                            api.login(payload.session_id);
+                        }
+                    } else {
+                        api.login(result.data.session_id);
+                    }
+                }
+            }, function (error) {
+                $log.error(error);
+            });
+
+        };
 
         api.login = function (session_id) {
             $rootScope.jwt = session_id;
@@ -38,10 +69,8 @@
         };
 
         api.logout = function () {
-            if ($rootScope.loggedIn) {
-                $http(createRequest('post', urlBase + '/user/logout',{}))
-                    .then(logoutResultSuccess, logoutResultError);
-            }
+            return $http(createRequest('post', urlBase + '/user/logout',{}))
+                .then(logoutResultSuccess, logoutResultError);
         };
 
         api.recoverLogin = function () {
@@ -123,13 +152,13 @@
         function verifySuccess(result) {
             if (result.data.session_id) {
                 if (result.data.confirmation_token) {
-                    $log.info('Found confirmation token');
+                    $log.debug('Found confirmation token');
                     var b = result.data.confirmation_token.split(".");
                     var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
                     if (payload.req_role === 'lead_operator' &&
                         payload.current_lo &&
                         payload.current_lo !== payload.requester) {
-                        confirmRole(result.data.session_id, payload);
+                        confirmRole(result.data.confirmation_token, payload, true);
                     } else {
                         api.login(payload.session_id);
                     }
@@ -172,12 +201,9 @@
                         var requested_session_id = payload.session_id;
                         $scope.current_lo = payload.current_lo;
                         $scope.requested_role = payload.req_role;
-                        $scope.readOnlyLogin = function () {
-                            session_id = readonly_session_id;
-                            $mdDialog.hide();
-                        };
+
                         $scope.proceed = function () {
-                            session_id = requested_session_id;
+                            api.login(requested_session_id);
                             $mdDialog.hide();
                         };
 
@@ -187,29 +213,21 @@
                         };
                     },
                     template: '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">' +
-                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{requested_role}}</md-toolbar>' +
+                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>' +
                         '  <md-dialog-content class="md-padding" layout="column">' +
                         '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
                         '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be logged out.</p>' +
                         '  </md-dialog-content>' +
-                        '  <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">' +
+                        '  <md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">' +
                         '    <md-button ng-click="cancel()" class="md-primary md-raised">' +
                         '      Cancel' +
-                        '    </md-button>' +
-                        '    <md-button ng-click="readOnlyLogin()" class="md-primary md-raised">' +
-                        '      Read Only Login' +
                         '    </md-button>' +
                         '    <md-button ng-click="proceed()" class="md-primary md-raised">' +
                         '      Proceed' +
                         '    </md-button>' +
-                        '  </div>' +
+                        '  </md-dialog-actions>' +
                         '</md-dialog>'
-                        })
-                .then(function() {
-                    if (session_id) {
-                        api.login(session_id);
-                    }
-                });
+                    });
         }
 
         function loginSuccess(result, session_id) {
@@ -228,9 +246,12 @@
                     NotifyService.showSimpleToast('Login successful, welcome ' + payload.name + '.');
                     $rootScope.$emit('loginSuccess', true);
                     $rootScope.connectEvents();
-                    if (payload.req_role === 'lead_operator') {
+                    if (payload.req_role === 'lead_operator' && !api.connection) {
                         api.connectListener(false);
+                    } else if (api.connection){
+                        api.disconnectListener();
                     }
+                    $rootScope.expertUser = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
                 }
             } else {
                 //User's session expired, we got a message

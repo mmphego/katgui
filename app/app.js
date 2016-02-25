@@ -77,6 +77,16 @@
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
+        $rootScope.expertUser = false;
+
+        $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
+        $rootScope.rolesMap = {
+            lead_operator: 'Lead Operator',
+            expert: 'Expert User',
+            control_authority: 'Control Authority',
+            operator: 'Operator',
+            read_only: 'Monitor Only'
+        };
 
         $rootScope.getSystemConfig = function () {
             ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
@@ -179,7 +189,7 @@
             }
         };
 
-        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
             vm.showNavbar = true;
             vm.initApp();
         });
@@ -227,6 +237,9 @@
         vm.toggleRightSidenav = function () {
             $mdSidenav('right-sidenav').toggle();
         };
+        vm.checkAllowedRole = function (role) {
+            return role !== 'user_admin' && role !== $rootScope.currentUser.req_role;
+        };
         $rootScope.logout = function () {
             vm.disconnectIssued = true;
             MonitorService.disconnectListener();
@@ -258,6 +271,9 @@
                 $state.go('home');
             }
         };
+        vm.loginAs = function (role) {
+            SessionService.verifyAs(role);
+        };
         $rootScope.displayPromiseResult = function (result) {
             if (result.result === 'ok') {
                 NotifyService.showSimpleToast(result.message);
@@ -269,6 +285,12 @@
             if (MonitorService.lastSyncedTime && vm.showNavbar) {
                 var utcTime = moment.utc(MonitorService.lastSyncedTime, 'X');
                 var localTime = moment(MonitorService.lastSyncedTime, 'X');
+                if (!$rootScope.utcDateTime) {
+                    $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
+                    $rootScope.$emit('utcDateTimeSet', $rootScope.utcDateTime);
+                } else {
+                    $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
+                }
                 $rootScope.utcTime = utcTime.format('HH:mm:ss');
                 $rootScope.localTime = localTime.format('HH:mm:ss');
                 $rootScope.currentDate = utcTime.format('YYYY-MM-DD');
@@ -347,7 +369,7 @@
 
         $scope.$on('$destroy', function () {
             MonitorService.disconnectListener();
-            vm.undbindLoginSuccess();
+            vm.unbindLoginSuccess();
             if (vm.updateTimeDisplayInterval) {
                 $interval.cancel(vm.updateTimeDisplayInterval);
             }
@@ -368,9 +390,6 @@
             }
             $httpProvider.defaults.useXDomain = true;
             delete $httpProvider.defaults.headers.common['X-Requested-With'];
-            $httpProvider.defaults.headers.common["Cache-Control"] = "no-cache";
-            $httpProvider.defaults.headers.common.Pragma = "no-cache";
-            $httpProvider.defaults.headers.common["If-Modified-Since"] = "0";
         }
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
@@ -540,6 +559,16 @@
             url: '/userlogs',
             templateUrl: 'app/userlogs/userlogs.html',
             title: 'User Logging'
+        });
+        $stateProvider.state('userlog-tags', {
+            url: '/userlog-tags',
+            templateUrl: 'app/userlogs/userlog-tags.html',
+            title: 'User Log Tag Management'
+        });
+        $stateProvider.state('userlog-reports', {
+            url: '/userlog-reports',
+            templateUrl: 'app/userlogs/userlog-reports.html',
+            title: 'User Log Reports'
         });
         /* Add New States Above */
         $urlRouterProvider.otherwise('/login');

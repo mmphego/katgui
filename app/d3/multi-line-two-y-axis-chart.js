@@ -359,17 +359,18 @@ angular.module('katGui.d3')
                     if (tooltipValues.length > 0) {
                         var html = "";
                         for (var i in tooltipValues) {
-                            html += "<div class='" + tooltipValues[i].sensor + "' layout='column'>";
-                            html += "<span layout='row'><i flex>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
-                            html += "<span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span>";
+                            html += "<div class='" + tooltipValues[i].sensor + "' style='display: flex'>";
+                            html += "<i style='flex: 1 100%'>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + "</i>";
+                            html += "<div><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></div>";
+                            html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span></div>";
                             html += "</div>";
                         }
                         html += "";
                         tooltip.html(html);
                         var xTranslate = (x(tooltipValues[0].date) + margin.left + 15);
 
-                        if (xTranslate + 350 > width) {
-                            xTranslate -= 350;
+                        if (xTranslate + tooltip[0][0].clientWidth > width) {
+                            xTranslate -= tooltip[0][0].clientWidth + 20;
                         }
 
                         tooltip.style("transform", "translate(" + (xTranslate ) + "px,  0)");

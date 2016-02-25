@@ -74,16 +74,15 @@
                     $rootScope.currentUser.req_role !== USER_ROLES.operator) {
                     $state.go('home');
                 }
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
         };
 
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         $scope.$on('$destroy', function () {
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
         });
     }

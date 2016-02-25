@@ -65,7 +65,7 @@
         if ($rootScope.loggedIn) {
             vm.connectListeners();
         } else {
-            vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
                 vm.connectListeners();
             });
         }
@@ -227,6 +227,10 @@
                 endDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
             }
 
+            var indexOfSensor = vm.sensorNames.indexOf(sensor);
+            if (indexOfSensor > -1) {
+                vm.sensorNames.splice(indexOfSensor, 1);
+            }
             vm.removeSensorLine(sensor.name);
             vm.waitingForSearchResult = true;
             vm.showTips = false;
@@ -309,13 +313,14 @@
                 var newData = [];
                 var newSensorNames = {};
                 for (var attr in sensor.value) {
-                    var sensorName = sensor.value[attr][3];
+                    var sensorName = sensor.value[attr][4];
 
                     newData.push({
-                        status: sensor.value[attr][4],
+                        status: sensor.value[attr][5],
                         sensor: sensorName,
-                        value: sensor.value[attr][2],
-                        sample_ts: sensor.value[attr][1] / 1000,
+                        value: sensor.value[attr][3],
+                        value_ts: sensor.value[attr][2] / 1000,
+                        sample_ts: sensor.value[attr][1] / 1000
                     });
                     newSensorNames[sensorName] = {};
                 }
@@ -398,11 +403,16 @@
             });
         };
 
+        vm.downloadCSV = function () {
+            //bound in multiLineChart
+            vm.downloadAsCSV(vm.useUnixTimestamps);
+        };
+
         $scope.$on('$destroy', function () {
             unbindUpdate();
             SensorsService.disconnectListener();
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
         });
     }

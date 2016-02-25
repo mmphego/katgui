@@ -18,180 +18,75 @@
         }])
         .controller('UserlogCtrl', UserlogCtrl);
 
-    function UserlogCtrl($mdDialog, $rootScope, $filter, $log, $timeout, UserLogService) {
+    function UserlogCtrl(MonitorService, $localStorage, $interval, $mdDialog, $scope, $rootScope, $filter, $log, $timeout, UserLogService) {
 
         var vm = this;
+        var datetime_format = 'yyyy-MM-dd HH:mm:ss';
+        UserLogService.userlogs = [];
+        vm.userLogs = UserLogService.userlogs;
+        vm.tags = UserLogService.tags;
+        if ($localStorage.filterTags) {
+            vm.filterTags = $localStorage.filterTags;
+        } else {
+            vm.filterTags = [];
+        }
 
-        vm.orderByFields = [
-            {label: 'Type', value: 'userlog_type'},
-            {label: 'Start Time', value: 'start_time'},
-            {label: 'Timestamp', value: 'timestamp'},
-            {label: 'End Time', value: 'end_time'},
-            {label: 'Content', value: 'userlog_content'}
-        ];
+        vm.chosen_tags = [];
+        vm.includeActivityLogs = false;
+        vm.newLogStartTimeText = '';
+        vm.lastQueryDay = moment.utc();
+        vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
+        vm.lastFutureQueryDay = moment.utc();
+        vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+        vm.validInlineStartTime = true;
+        vm.validInlineEndTime = true;
 
-        vm.orderByUserLogsFields = [
-            {label: 'Type', value: 'userlog_type'},
-            {label: 'Start Time', value: 'start_time'},
-            {label: 'Timestamp', value: 'timestamp'},
-            {label: 'Name', value: 'name'},
-            {label: 'End Time', value: 'end_time'},
-            {label: 'Content', value: 'userlog_content'}
-        ];
-
-        vm.setOrderBy = function (column) {
-            var newOrderBy = _.findWhere(vm.orderByFields, {value: column});
-            if ((vm.orderBy || {}).value === column) {
-                if (newOrderBy.reverse === undefined) {
-                    newOrderBy.reverse = true;
-                } else if (newOrderBy.reverse) {
-                    newOrderBy.reverse = undefined;
-                    newOrderBy = null;
-                }
-            }
-            vm.orderBy = newOrderBy;
-        };
-
-        vm.setOrderBy('start_time');
-
-        vm.blank_ulog = {
-            id: "",
-            user: "",
-            userlog_type: "",
-            start_time: "",
-            end_time: "",
-            userlog_content: "",
-            tags: []
-        };
-
-        vm.blank_query = {
-            userlog_type: "",
-            start_time: "",
-            end_time: ""
-        };
+        MonitorService.subscribe('userlogs', '*');
 
         vm.onTimeSet = function (value, target, attribute) {
-            target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm');
+            target[attribute] = $filter('date')(value, datetime_format);
         };
 
-        vm.activity_logs = UserLogService.activity_logs;
-        vm.include_activity_logs = false;
-        vm.exportPdf = function(reportStart, reportEnd, logtypes){
-            var pdf = new jsPDF('l', 'mm', 'a4');
-            var export_time = $filter('date')(new Date(), "yyyy-MM-dd_HH'h'mm");
-            var start_time = $filter('date')(reportStart, 'yyyy-MM-dd HH:mm');
-            var end_time = $filter('date')(reportEnd, 'yyyy-MM-dd HH:mm');
-            var a_query = "?";
-            var included_types = "All";
-            if (logtypes) {a_query += "log_type=" + logtypes + "&";}
-            if (start_time) {a_query += "start_time=" + start_time + "&";}
-            if (end_time) {a_query += "end_time=" + end_time + "&";}
-
-            UserLogService.queryUserLogs(a_query).then(function (result) {
-                var report_markup = '<table id=basic-table border="1px" style="width:100%; font-family:verdana,arial,sans-serif;">' +
-                '<thead>' +
-                    '<tr>' +
-                        '<th>Userlog Type</th>' +
-                        '<th>Log Timestamp</th>' +
-                        '<th>User</th>' +
-                        '<th>Event Started</th>' +
-                        '<th>Event Ended</th>' +
-                        '<th>Userlog Content</th>' +
-                    '</tr>' +
-                '</thead>';
-
-                vm.filtered_report_userlogs.forEach(function (item) {
-                    report_markup += '<tr>' +
-                    '<td>' + item.userlog_type + '</td>' +
-                    '<td>' + item.timestamp + '</td>' +
-                    '<td>' + item.name + '</td>' +
-                    '<td>' + item.start_time + '</td>' +
-                    '<td>' + item.end_time + '</td>' +
-                    '<td>' + item.userlog_content + '</td>' +
-                    '</tr>';
-                });
-
-                report_markup += '</table>';
-
-                pdf.setFontSize(20);
-                pdf.text('Userlog Report - ' + export_time, 20, 25);
-                pdf.setFontSize(12);
-                if (logtypes) {
-                    included_types = logtypes;
-                }
-                pdf.text(('Included log types: ' + included_types), 20, 35);
-                pdf.setFontSize(12);
-                pdf.text(('From: ' + reportStart + '     To: ' + reportEnd), 20, 45);
-                var report_element = document.createElement('div');
-                report_element.innerHTML = report_markup;
-                var res = pdf.autoTableHtmlToJson(report_element.firstChild, true);
-                pdf.autoTable(res.columns, res.data, {
-                    startY: 60,
-                    margins: {horizontal: 15, top: 25, bottom: 20},
-                    overflow: 'linebreak',
-                    padding: 2,
-                    lineHeight: 10,
-                    fontSize: 8
-                    }
-                );
-            }).then(function (result) {
-                if (vm.include_activity_logs) {
-                    var columns = [{title: "System Activity Logs", key: "msg"}];
-
-                    UserLogService.queryActivityLogs(a_query).then(function (result) {
-                        pdf.autoTable(columns, vm.activity_logs, {
-                            startY: pdf.autoTableEndPosY() + 50,
-                            margins: {horizontal: 15, top: 25, bottom: 20},
-                            overflow: 'linebreak',
-                            padding: 1,
-                            lineHeight: 9,
-                            fontSize: 7
-                            }
-                        );
-                        pdf.save('Userlog_Report_' + export_time + '.pdf');
-                    });
-                } else {
-                    pdf.save('Userlog_Report_' + export_time + '.pdf');
-                }
-            });
+        vm.verifyDateTimeString = function (input) {
+            return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
         };
 
-        vm.getCompleteUserLog = function (ulog, userlogs, event) {
-            UserLogService.getUserLog(ulog.id).then(function () {
-                vm.focused_ulog = UserLogService.focus_ulog;
-                vm.editUserLog(vm.focused_ulog, userlogs, vm.tags, event);
-            });
+        vm.verifyInlineInputs = function () {
+            vm.validInlineStartTime = vm.verifyDateTimeString(vm.newLogStartTimeText);
+            vm.validInlineEndTime = vm.verifyDateTimeString(vm.newLogEndTimeText) || vm.newLogEndTimeText === '';
+            return vm.validInlineStartTime && vm.validInlineEndTime;
         };
 
-        vm.getCompleteUserLogView = function (ulog, userlogs, event) {
-            UserLogService.getUserLog(ulog.id).then(function () {
-                vm.focused_ulog = UserLogService.focus_ulog;
-                vm.viewUserLog(vm.focused_ulog, userlogs, vm.tags, event);
-            });
-        };
-
-        vm.my_userlogs = UserLogService.my_userlogs;
-        vm.getMyUserLogs = function () {
-            if ($rootScope.currentUser) {
-                UserLogService.listMyUserLogs($rootScope.currentUser.id);
-            } else {
-                $timeout(vm.getMyUserLogs, 1000);
+        vm.addNewInlineLog = function () {
+            if (!vm.newLogContent) {
+                return;
             }
-        };
-        vm.getMyUserLogs();
 
-        vm.tags = UserLogService.tags;
-        vm.getTags = function () {
-            UserLogService.listTags();
-        };
-        vm.getTags();
+            if (!vm.newLogStartTimeText) {
+                vm.newLogStartTime = $rootScope.utcDateTime;
+                vm.newLogStartTimeText = $filter('date')(vm.newLogStartTime, datetime_format);
+            }
 
-        vm.selectedItem = null;
-        vm.searchText = null;
-        vm.tagChips = [];
-        vm.chosen_tags = [];
-        vm.add_tag_from_list = function (listed_tag) {
-            vm.tagChips.push(listed_tag);
+            if (!vm.verifyInlineInputs()) {
+                return;
+            }
+
+            var tagIdList = [];
+            vm.filterTags.forEach(function (tag) {
+                tagIdList.push(tag.id);
+            });
+            var newLog = {
+                user: $rootScope.currentUser.id,
+                start_time: vm.newLogStartTimeText,
+                end_time: vm.newLogEndTimeText,
+                content: vm.newLogContent,
+                tag_ids: tagIdList
+            };
+            UserLogService.addUserLog(newLog).then(function (result) {
+                vm.newLogStartTime = $rootScope.utcDateTime;
+                vm.newLogEndTime = '';
+                vm.newLogContent = '';
+            });
         };
 
         vm.querySearch = function (query) {
@@ -201,206 +96,118 @@
 
         vm.createFilterFor = function (query) {
             return function filterFn(tag) {
-                return (tag.name.indexOf(query) === 0);
+                return (tag.name.indexOf(query) === 0 && tag.activated);
             };
         };
 
-        vm.chipsToList = function () {
-            vm.chosen_tags.splice(0, vm.chosen_tags.length);
-            vm.tagChips.forEach(function (tag) {
-                $log.info('tag: ' + JSON.stringify(tag));
-                if (tag.name) {
-                    vm.chosen_tags.push(tag.name);
+        vm.tagFilterChanged = function () {
+            $localStorage.filterTags = vm.filterTags;
+        };
+
+        vm.filterByTag = function (userlog) {
+            if (vm.filterTags.length === 0) {
+                return true;
+            }
+            var matchCount = 0;
+            for (var i = 0; i < userlog.tags.length; i++) {
+                if (_.findIndex(vm.filterTags, {name: userlog.tags[i].name}) > -1) {
+                    matchCount++;
                 }
+            }
+            return matchCount > 0 && matchCount === vm.filterTags.length;
+        };
+
+        vm.filterAfterNow = function (userlog) {
+            return userlog.start_time > vm.newLogStartTimeText || (!vm.newLogStartTimeText || vm.newLogStartTimeText.length === 0);
+        };
+
+        vm.filterBeforeNow = function (userlog) {
+            return userlog.start_time <= vm.newLogStartTimeText;
+        };
+
+        vm.addUserLog = function (event) {
+            var newUserLog = {
+                start_time: vm.newLogStartTimeText,
+                end_time: '',
+                tags: vm.filterTags,
+                user_id: $rootScope.currentUser.id,
+                content: '',
+                attachments: []
+            };
+            vm.editUserLog(newUserLog, event);
+        };
+
+        vm.editUserLog = function (userlog, event) {
+            UserLogService.editUserLog(userlog, $rootScope.currentUser.id === userlog.user_id, event);
+        };
+
+        vm.afterInit = function() {
+            UserLogService.listTags().then(function () {
+                var start = vm.lastQueryDay.format('YYYY-MM-DD 00:00:00');
+                var end = vm.lastQueryDay.format('YYYY-MM-DD 23:59:59');
+                UserLogService.listUserLogsForTimeRange(start, end);
+                vm.lastQueryDay = vm.lastQueryDay.subtract(1, 'd');
+                vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
+                vm.lastFutureQueryDay = vm.lastFutureQueryDay.add(1, 'd');
+                vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
             });
         };
 
-        vm.taxonomies = UserLogService.taxonomies;
-        vm.getTaxonomies = function () {
-            UserLogService.listTaxonomies();
-        };
+        $interval(function () {
+            if (vm.chatMode) {
+                vm.newLogStartTimeText = $rootScope.utcDateTime;
+            }
+        }, 1000);
 
-        vm.queryUserlogs = function (event, b_query) {
-            var query = "?";
-            var log_type = b_query.userlog_type;
-            var start_time = $filter('date')(b_query.start_time, 'yyyy-MM-dd HH:mm');
-            var end_time = $filter('date')(b_query.end_time, 'yyyy-MM-dd HH:mm');
-            vm.chipsToList();
-            if (log_type) {query += "log_type=" + log_type + "&";}
-            if (start_time) {query += "start_time=" + start_time + "&";}
-            if (end_time) {query += "end_time=" + end_time + "&";}
-            if (vm.chosen_tags.length > 0) {query += "tags=" + vm.chosen_tags + "&";}
-            UserLogService.queryUserLogs(query).then(function (result) {
-                vm.report_userlogs = UserLogService.report_userlogs;
-                $log.info('User log query result length: ' + vm.report_userlogs.length);
+        $scope.$watchCollection('vm.filterTags', function (newValue) {
+            vm.chatMode = _.findIndex(vm.filterTags, {name: 'chat'}) > -1;
+        });
+
+        if ($rootScope.utcDateTime) {
+            vm.newLogStartTimeText = $rootScope.utcDateTime;
+        } else {
+            vm.undbindutcDateTimeSet = $rootScope.$on('utcDateTimeSet', function (event, value) {
+                vm.newLogStartTimeText = value;
+            });
+        }
+
+        if ($rootScope.currentUser) {
+            vm.afterInit();
+        } else {
+            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+        }
+
+        vm.fetchMoreLogs = function () {
+            vm.fetchingPastLogs = true;
+            var start = vm.lastQueryDay.format('YYYY-MM-DD 00:00:00');
+            var end = vm.lastQueryDay.format('YYYY-MM-DD 23:59:59');
+            UserLogService.listUserLogsForTimeRange(start, end).then(function () {
+                vm.lastQueryDay = vm.lastQueryDay.subtract(1, 'd');
+                vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
+                vm.fetchingPastLogs = false;
             });
         };
 
-        vm.viewUserLog = function (ulog, userlogs, tags, event) {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog, $filter, UserLogService, $log) {
-                        $scope.ulog = ulog;
-                        $scope.readonly = true;
-                        $log.info('Updated focus log: ' + JSON.stringify(ulog));
-                        $scope.tags = tags;
-                        $scope.selectedTags = ulog.tags;
-                        $log.info('Tags already on log: ' + JSON.stringify(ulog.tags));
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                        $scope.file_url = UserLogService.file_url;
-                        $scope.getFile = function(downloadPath, name, ulog_id) {
-                            UserLogService.getFileFromUrl(downloadPath, name, ulog_id);
-                        };
-                    },
-                    templateUrl: 'app/userlogs/userlogpreview.tmpl.html',
-                    targetEvent: event
-                })
-                .then(function() {
-                    vm.blank_ulog = {
-                        id: "",
-                        user: "",
-                        userlog_type: "",
-                        start_time: "",
-                        end_time: "",
-                        userlog_content: "",
-                        tags: []
-                    };
-                });
+        vm.fetchMoreFutureLogs = function () {
+            vm.fetchingFutureLogs = true;
+            var start = vm.lastFutureQueryDay.format('YYYY-MM-DD 00:00:00');
+            var end = vm.lastFutureQueryDay.format('YYYY-MM-DD 23:59:59');
+            UserLogService.listUserLogsForTimeRange(start, end).then(function () {
+                vm.lastFutureQueryDay = vm.lastFutureQueryDay.add(1, 'd');
+                vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+                vm.fetchingFutureLogs = false;
+            });
         };
 
-        vm.editUserLog = function (ulog, userlogs, tags, event) {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog, $filter, UserLogService, $log) {
-                        $scope.ulog = ulog;
-                        $scope.metadata_to_del = [];
-                        $scope.toggle = function (item, list) {
-                            var idx = list.indexOf(item);
-                            if (idx > -1) list.splice(idx, 1);
-                            else list.push(item);
-                        };
-                        $scope.exists = function (item, list) {
-                            return list.indexOf(item) > -1;
-                        };
-                        if (!$scope.ulog.userlog_type) {
-                            $scope.ulog.userlog_type = 'shift_log';
-                        }
-                        $log.info('Updated focus log: ' + JSON.stringify(ulog));
-                        $scope.tags = tags;
-                        $scope.selectedItem = null;
-                        $scope.searchText = null;
-                        $scope.selectedTags = ulog.tags;
-                        $log.info('Tags already on log: ' + JSON.stringify(ulog.tags));
-                        $scope.chosen_tags = [];
-                        $scope.add_tag_from_list = function (listed_tag) {
-                            $scope.selectedTags.push(listed_tag);
-                        };
-                        $scope.unbindTagWatch = $scope.$watchCollection('selectedTags', function (newVal, oldVal) {
-                            if (newVal !== oldVal) {
-                                $scope.selectedTags = $scope.selectedTags.filter(function (item) {
-                                    return item.name && item.name.length > 0;
-                                });
-                                $scope.selectedTags = _.uniq($scope.selectedTags, function (item) {
-                                   return item.name;
-                                });
-                            }
-                        });
-
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                        $scope.add = function () {
-                            var userlog_entry = {
-                                id: ulog.id,
-                                user: $rootScope.currentUser.id,
-                                userlog_type: ulog.userlog_type,
-                                start_time: $filter('date')(ulog.start_time, 'yyyy-MM-dd HH:mm'),
-                                end_time: $filter('date')(ulog.end_time, 'yyyy-MM-dd HH:mm'),
-                                userlog_content: ulog.userlog_content,
-                                tags: $scope.chosen_tags,
-                                metadata_to_del: $scope.metadata_to_del
-                            };
-                            $scope.tagFix();
-                            var file = $scope.myFile;
-                            ulog = userlog_entry;
-                            if (ulog.id) {
-                                $log.info('Tag list sent to server: ' + $scope.chosen_tags);
-                                UserLogService.modifyUserLog(ulog).then(function () {
-                                    if (file) {
-                                        $log.info('File is: ' + JSON.stringify(file));
-                                        UserLogService.uploadFileToUrl(file, ulog.id);
-                                    }
-                                    UserLogService.listMyUserLogs(ulog.user);
-                                });
-                            } else {
-                                $log.info('Tag list sent to server: ' + $scope.chosen_tags);
-                                UserLogService.addUserLog(ulog).then(function () {
-                                    if (file) {
-                                        $log.info('File is: ' + JSON.stringify(file));
-                                        UserLogService.uploadFileToUrl(file, ulog.id);
-                                    }
-                                    UserLogService.listMyUserLogs(ulog.user);
-                                });
-                            }
-                            $log.info('Posted log: ' + JSON.stringify(ulog));
-                            $scope.hide();
-                        };
-                        $scope.querySearch = function (query) {
-                            var results = query ? $scope.tags.filter($scope.createFilterFor(query)) : [];
-                            return results;
-                        };
-                        $scope.createFilterFor = function (query) {
-                            return function filterFn(tag) {
-                                return (tag.name.indexOf(query) === 0);
-                            };
-                        };
-                        $scope.tagFix = function () {
-                            $scope.selectedTags.forEach(function (tag) {
-                                $log.info('tag: ' + JSON.stringify(tag));
-                                if (tag.name) {
-                                    $scope.chosen_tags.push(tag.name);
-                                }
-                            });
-                        };
-                        $scope.onTimeSet = function (value, target, attribute) {
-                            target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm');
-                                if (ulog.start_time <= ulog.end_time) {
-                                    $scope.endDateTimeError = false;
-                                } else {
-                                    $scope.endDateTimeError = true;
-                                }
-                        };
-                        $scope.onTimeChange = function () {
-                            if (ulog.start_time <= ulog.end_time) {
-                                $scope.endDateTimeError = false;
-                            } else {
-                                $scope.endDateTimeError = true;
-                            }
-                        };
-                        $scope.file_url = UserLogService.file_url;
-                        $scope.getFile = function(downloadPath, name, ulog_id) {
-                            UserLogService.getFileFromUrl(downloadPath, name, ulog_id);
-                        };
-                        $scope.$on('destroy', function () {
-                            $scope.unbindTagWatch();
-                        });
-                    },
-                    templateUrl: 'app/userlogs/userlogdialog.tmpl.html',
-                    targetEvent: event
-                })
-                .then(function() {
-                    vm.blank_ulog = {
-                        id: "",
-                        user: "",
-                        userlog_type: "",
-                        start_time: "",
-                        end_time: "",
-                        userlog_content: "",
-                        tags: []
-                    };
-                });
-        };
+        $scope.$on('$destroy', function () {
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
+            }
+            if (vm.undbindutcDateTimeSet) {
+                vm.undbindutcDateTimeSet();
+            }
+            MonitorService.unsubscribe('userlogs', '*');
+        });
+        //TODO keyboard shortcuts
     }
 })();

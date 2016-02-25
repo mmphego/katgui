@@ -4,7 +4,7 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
-                            $rootScope, $q, $log, ReceptorStateService, NotifyService) {
+                            $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -72,6 +72,7 @@
                 api.subscribe('time');
                 api.subscribe('auth');
                 api.subscribe('resources');
+                ConfigService.checkOutOfDateVersion();
             }
         };
 
@@ -94,6 +95,7 @@
         };
 
         api.onSockJSMessage = function (e) {
+            // TODO refactor this function better, its getting out of hand
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {
@@ -105,6 +107,9 @@
                     if (messages.result) {
                         if (messages.result.msg_channel && messages.result.msg_channel === "sched:sched") {
                             ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
+                            return;
+                        } else if (messages.result.msg_channel && messages.result.msg_channel.startsWith("userlogs")) {
+                            UserLogService.receivedUserlogMessage(messages.result.msg_channel, messages.result.msg_data);
                             return;
                         }
                         if (messages.id === 'redis-pubsub') {
@@ -181,13 +186,19 @@
 
         api.connectListener = function () {
             api.deferredMap['connectDefer'] = $q.defer();
-            $log.info('Monitor Connecting...');
-            api.connection = new SockJS(urlBase + '/portal');
-            api.connection.onopen = api.onSockJSOpen;
-            api.connection.onmessage = api.onSockJSMessage;
-            api.connection.onclose = api.onSockJSClose;
-            api.connection.onheartbeat = api.onSockJSHeartbeat;
-            api.lastHeartBeat = new Date();
+            if (!api.connection) {
+                $log.info('Monitor Connecting...');
+                api.connection = new SockJS(urlBase + '/portal');
+                api.connection.onopen = api.onSockJSOpen;
+                api.connection.onmessage = api.onSockJSMessage;
+                api.connection.onclose = api.onSockJSClose;
+                api.connection.onheartbeat = api.onSockJSHeartbeat;
+                api.lastHeartBeat = new Date();
+            } else {
+                $timeout(function () {
+                    api.deferredMap['connectDefer'].resolve();
+                }, 1);
+            }
             if (!api.checkAliveInterval) {
                 api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
             }

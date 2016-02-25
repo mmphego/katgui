@@ -239,7 +239,22 @@ function regexSearchFilter() {
             }
             for (var i = 0; i < inputArray.length; i++) {
                 for (var idx in fields) {
-                    if (pattern.test(inputArray[i][fields[idx].value])) {
+                    var fieldValue = fields[idx].value;
+                    var testResult = false;
+                    //split on the first period to get a nested value test
+                    //only one level deep for now
+                    if (fieldValue.indexOf('.') > -1) {
+                        var fieldValues = fieldValue.split('.');
+                        if (fieldValues.length === 2) {
+                            testResult = pattern.test(inputArray[i][fieldValues[0]][fieldValues[1]]);
+                        } else {
+                            console.error('Regex test for ' + fieldValue + ' has too many nested levels.');
+                        }
+                    } else {
+                        testResult = pattern.test(inputArray[i][fieldValue]);
+                    }
+
+                    if (testResult) {
                         if (objDict) {
                             out.push(inputArray[i]._key);
                         }

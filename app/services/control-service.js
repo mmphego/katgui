@@ -82,11 +82,7 @@
                 .then(function (result) {
                     NotifyService.showSimpleToast(result.data.result.replace(/\\_/g, ' '));
                 }, function (error) {
-                    if (error && error.data && error.data.err_code) {
-                        NotifyService.showSimpleDialog('Error sending request', error.data.err_code + ': ' + error.data.err_msg);
-                    } else {
-                        NotifyService.showSimpleDialog('Error sending request', error);
-                    }
+                    NotifyService.showHttpErrorDialog('Error sending request', error);
                 });
         };
 

@@ -13,14 +13,10 @@
         <div layout="row" layout-align="center center">
             <label style="margin: -8px 12px 0 0">Login as</label>
             <md-select placeholder="Login As..." ng-model="vm.loginAs" style="width: 155px">
-                <md-option value="lead_operator">Lead Operator</md-option>
-                <md-option value="control_authority">Control Authority</md-option>
-                <md-option value="operator">Operator</md-option>
-                <md-option value="read_only">Monitor Only</md-option>
+                <md-option ng-repeat="role in $root.possibleRoles track by $index" ng-value="role">{{$root.rolesMap[role]}}</md-option>
             </md-select>
         </div>
-        <md-button type="submit" style="margin: 8px;" class="md-raised md-primary">Login
-        </md-button>
+        <md-button type="submit" style="margin: 8px;" class="md-raised md-primary">Login</md-button>
     </form>
     <label style="color: #F44336; height: 35px; margin-top: 8px; font-size: 18px;"
         ng-show="$root.confConnectionError">{{$root.confConnectionError}}</label>

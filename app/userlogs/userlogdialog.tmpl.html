@@ -1,123 +1,114 @@
-<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 800px; overflow: visible"
-           ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false; toggleTags = false;">
+<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 800px; min-height: 626px; overflow: visible"
+           ng-click="showEndDatePicker = false; showDatePicker = false; toggleTags = false;">
     <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
-        <span>User Log Editor</span>
+        <span>{{!editMode? 'User Log Editor': 'User Log Viewer'}}</span>
     </md-toolbar>
-    <md-dialog-content style="padding: 12px;" layout="column" md-theme="{{$root.themePrimaryButtons}}">
+    <md-dialog-content style="padding: 12px; min-height: 510px" md-theme="{{$root.themePrimaryButtons}}" layout="column">
         <div layout="row">
-            <div layout="row" layout-align="center center" style="min-width: 220px;">
-                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
-                    <input flex type="text" ng-change="onTimeChange()"
-                           data-ng-model="ulog.start_time" placeholder="Start Date"
-                           title="Start Date 'HH:mm:ss yyyy-MM-dd'"
-                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()"/>
+            <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">
+                <md-input-container md-is-error="!validStartTime" flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
+                    <input focus ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
+                           data-ng-model="start_time" placeholder="Start Date"
+                           title="Start Date 'yyyy-MM-dd HH:mm:ss'"/>
                 </md-input-container>
-                <span>UTC</span>
-                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
-                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                <md-button ng-disabled="!editMode" class="md-icon-button" style="margin-left: 0; margin-right: 0; margin-top: 3px; width: 36px; height: 36px;"
+                           ng-click="showDatePicker = !showDatePicker; showEndDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
-                <datetimepicker ng-show="vm.showDatePicker" ng-init="vm.showDatePicker = false"
+                <md-button ng-click="start_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'"
+                    style="height: 36px; max-width: 42px; min-width: 42px; margin-left: 0; padding: 0;">
+                    Now
+                </md-button>
+                <datetimepicker ng-show="showDatePicker" ng-init="showDatePicker = false"
                                 class="datepickerMenu md-whiteframe-z1"
-                                data-ng-model="ulog.start_time" style="position: absolute; left: 16px; top: 122px"
+                                data-ng-model="start_time" style="position: absolute; left: 16px; top: 122px"
                                 data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
-                                data-on-set-time="vm.showDatePicker = false; onTimeSet(ulog.start_time, ulog, 'start_time')"></datetimepicker>
+                                data-on-set-time="showDatePicker = false; onTimeSet(start_time, 'start_time')"></datetimepicker>
             </div>
-            <div flex layout="row" layout-align="center center">TO</div>
-            <div layout="row" layout-align="center center" style="min-width: 220px;">
-                <md-input-container flex md-no-float style="margin-top: 3px; padding: 0;">
-                    <input flex type="text" ng-change="onTimeChange()"
-                           data-ng-model="ulog.end_time" placeholder="End Date"
-                           title="End Date 'HH:mm:ss yyyy-MM-dd'"
-                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()"/>
+            <div flex layout="row" layout-align="center center"></div>
+            <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">
+                <md-input-container md-is-error="!validEndTime" flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
+                    <input ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
+                           data-ng-model="end_time" placeholder="End Date"
+                           title="End Date 'yyyy-MM-dd HH:mm:ss'"/>
                 </md-input-container>
-                <span>UTC</span>
-                <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
-                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                <md-button ng-disabled="!editMode" class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 36px; height: 36px;"
+                           ng-click="showEndDatePicker = !showEndDatePicker; showDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
-                <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
-                                data-ng-model="ulog.end_time" style="position: absolute; right: 16px; top: 122px"
+                <md-button ng-click="end_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'"
+                    style="height: 36px; max-width: 42px; min-width: 42px; margin-left: 0; padding: 0;">
+                    Now
+                </md-button>
+                <datetimepicker ng-show="showEndDatePicker" ng-init="showEndDatePicker = false"
+                                data-ng-model="end_time" style="position: absolute; right: 16px; top: 122px"
                                 class="datepickerMenu md-whiteframe-z1"
                                 data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
-                                data-on-set-time="vm.showEndDatePicker = false; onTimeSet(ulog.end_time, ulog, 'end_time')"></datetimepicker>
+                                data-on-set-time="showEndDatePicker = false; onTimeSet(end_time, 'end_time')"></datetimepicker>
             </div>
         </div>
-        <div>
-        <md-select style="margin: 16px 0; width: 205px" placeholder="Select User Log Type" ng-model="ulog.userlog_type" style="width: 200px" name="testType">
-            <md-option value="alarm_log">Alarm Log</md-option>
-            <md-option value="maintenance">Maintenance</md-option>
-            <md-option value="observation">Observation Log</md-option>
-            <md-option value="shift_log">Shift Log</md-option>
-            <md-option value="status_log">Status Log</md-option>
-            <md-option value="time_loss">Time-loss Log</md-option>
-        </md-select>
-        </div>
-        <div layout="row">
-            <div layout="column" flex>
-                <md-input-container flex>
-                    <label>Log Message</label>
-                    <textarea rows="5" columns="1" ng-model="ulog.userlog_content"></textarea>
-                </md-input-container>
-            </div>
+        <div class="md-whiteframe-z1" style="margin: 8px 0" flex>
+            <md-input-container style="margin: 16px 0; min-height: 300px; max-height: 300px" class="md-block" flex>
+                <label>Log Content</label>
+                <textarea style="width: 100%; height: 300px;" ng-disabled="!editMode" md-select-on-focus rows="10" md-maxlength="1000" ng-model="content"></textarea>
+            </md-input-container>
         </div>
 
-        <div layout="row" layout-align="start center" flex>
-        <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match flex>
-            <md-autocomplete
-                md-search-text="searchText"
-                md-items="item in querySearch(searchText)"
-                md-item-text="item.name"
-                placeholder="Select tags">
-                <md-item-template>
-                    <span md-highlight-text="searchText" title="{{item.slug}}">{{item.name}}</span>
-                </md-item-template>
-                <md-not-found>
-                    No matches found
-                </md-not-found>
-            </md-autocomplete>
-            <md-chip-template>
+        <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 48px">
+            <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match="true" flex>
+                <md-autocomplete ng-disabled="!editMode"
+                    md-search-text="searchText"
+                    md-items="item in querySearch(searchText)"
+                    md-item-text="item.name"
+                    placeholder="Select tags">
+                    <md-item-template>
+                        <span md-highlight-text="searchText" title="{{item.slug}}">{{item.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found
+                    </md-not-found>
+                </md-autocomplete>
+                <md-chip-template>
                     <span style="overflow: auto; width: 100%;">
                         <strong>{{$chip.name}}</strong>
                     </span>
-            </md-chip-template>
-            <md-button class="md-fab" aria-label="Remove Tag">
-                <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
+                </md-chip-template>
+                <md-button class="md-fab" aria-label="Remove Tag">
+                    <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
+                </md-button>
+            </md-chips>
+            <md-button ng-disabled="!editMode" ng-click="toggleTags = !toggleTags; $event.stopPropagation()" style="margin: 0; padding: 0; min-height: 32px; min-width: 32px">
+                <span class="fa fa-tags"></span>
             </md-button>
-        </md-chips>
-        <md-button ng-click="toggleTags = !toggleTags; $event.stopPropagation()" style="margin: 0; padding: 0; min-height: 32px; min-width: 32px">
-            <span class="fa fa-tags"></span>
-        </md-button>
-        <div ng-init="toggleTags = false" ng-show="toggleTags" id="replyForm">
-            <div id="vertical-container" class="md-whiteframe-z3 tag-popup-list">
-                <div ng-repeat="listed_tag in tags track by $index" class="repeated-item" flex ng-click="add_tag_from_list(listed_tag)">
-                    {{listed_tag.name}}
+            <div ng-init="toggleTags = false" ng-show="toggleTags" id="replyForm">
+                <div id="vertical-container" class="md-whiteframe-z3 tag-popup-list">
+                    <div ng-repeat="tag in tags | orderBy:'name' track by $index" class="tag-popup-item" flex ng-click="addTagFromList(tag)">
+                        {{tag.name}}
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
-
-        <div layout="row" layout-align="start center" style="margin: 16px 0">
-            <span style="margin-right: 8px">Attachments:</span>
-            <input file-model="myFile" type="file" name="files[]" multiple/>
-        </div>
-        <div layout="column">
-            <div ng-repeat="attach in ulog.metadata" style="height: 32px" layout="row" layout-align="space-between center">
-                <span flex>{{attach.m_name}}</span>
-                <span flex="10" style="margin-left: 4px;" class="fa fa-download" ng-click="getFile(attach.m_val, attach.m_name, ulog.id)"></span>
-                <md-checkbox flex="10" ng-checked="exists(attach.m_name, metadata_to_del)" ng-click="toggle(attach.m_name, metadata_to_del)">del?</md-checkbox>
+        <div ng-show="attachments.length > 0" layout="column" class="md-whiteframe-z1" style="margin: 8px 0; overflow: auto; min-height: 100px; max-height: 100px" md-theme="{{$root.themePrimaryButtons}}">
+            <div ng-repeat="attachment in attachments" style="min-height: 32px" layout="row" layout-align="start center">
+                <span title="Download {{attachment.name}}" style="margin: 8px; 0" class="fa fa-download" ng-click="downloadFile(attachment)"></span>
+                <span flex>{{attachment.name}}</span>
+                <md-checkbox ng-disabled="!editMode" class="md-primary" ng-model="attachment.delete" style="margin: 0 8px">Delete?</md-checkbox>
             </div>
         </div>
-    </md-dialog-content>
-    <div class="md-actions" md-theme="{{$root.themePrimaryButtons}}">
-        <div ng-show ="endDateTimeError" style="color:red;">
-            End date cannot be before start date!
+        <div layout="row" layout-align="start center" style="margin: 16px 0">
+            <span style="margin-right: 8px">Attachments:</span>
+            <input ng-disabled="!editMode" style="font-size: 12px" file-model="filesToUpload" type="file" name="files[]" multiple/>
         </div>
-        <md-button ng-click="hide()" class="md-primary md-raised">
-            Cancel
-        </md-button>
-        <md-button ng-click="add()" class="md-primary md-raised" ng-disabled="endDateTimeError">
-            Submit Log
-        </md-button>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <span ng-show="endDateTimeError" style="color: #F44336">
+            End date cannot be before start date!
+        </span>
+        <span ng-show="uploadingFiles" style="font-weight: bold">
+            Uploading Files, please wait...
+        </span>
+        <md-button ng-click="hide()">{{!editMode? 'Close' : 'Cancel'}}</md-button>
+        <md-button ng-hide="!editMode" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime">Submit</md-button>
+    </md-dialog-actions>
     </div>
 </md-dialog>
