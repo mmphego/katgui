@@ -60,7 +60,7 @@
             </span>
         </div>
     </md-toolbar>
-    <md-button style="border-bottom: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()">Fetch Logs for {{vm.lastFutureQueryDayText}}</md-button>
+    <md-button style="border-bottom: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs">Fetch Logs for {{vm.lastFutureQueryDayText}}</md-button>
     <div flex class="md-whiteframe-z1" style="overflow: auto">
         <div ng-repeat="userLog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true track by userLog.id"
             flex layout="column" class="user-log-row">
@@ -92,14 +92,14 @@
             <i class="userlog-user-name" style="margin-top: 6px; margin-left: 8px; margin-right: 0">
                 {{$root.currentUser.name}}
             </i>
-            <md-input-container md-no-float class="md-primary" title="Start Time" style="font-size: 12px; width: 125px">
-                <input ng-disabled="vm.chatMode" flex placeholder="Start Time" ng-model="vm.newLogStartTimeText" ng-model-options="{ debounce: 300 }">
+            <md-input-container md-is-error="!vm.validInlineStartTime" md-no-float class="md-primary" title="Start Time" style="font-size: 12px; width: 125px">
+                <input ng-change="vm.verifyInlineInputs()" ng-disabled="vm.chatMode" flex placeholder="Start Time" ng-model="vm.newLogStartTimeText"  ng-change="vm.verifyInlineInputs()">
             </md-input-container>
-            <md-input-container md-no-float class="md-primary" title="End Time" style="font-size: 12px; width: 125px">
-                <input flex placeholder="End Time" ng-model="vm.newLogEndTimeText" ng-model-options="{ debounce: 300 }">
+            <md-input-container md-is-error="!vm.validInlineEndTime" md-no-float class="md-primary" title="End Time" style="font-size: 12px; width: 125px">
+                <input flex placeholder="End Time" ng-model="vm.newLogEndTimeText" ng-change="vm.verifyInlineInputs()">
             </md-input-container>
-            <md-input-container flex md-no-float class="md-primary" title="Content">
-                <input focus flex placeholder="Content" ng-model="vm.newLogContent" ng-model-options="{ debounce: 300 }">
+            <md-input-container md-is-error="vm.newLogContent.length === 0" flex md-no-float class="md-primary" title="Content">
+                <input focus flex placeholder="Content" ng-model="vm.newLogContent">
             </md-input-container>
             <md-button ng-show="false" type="submit" style="margin: 8px;" class=""></md-button>
         </form>
@@ -129,6 +129,6 @@
                 </md-button>
             </div>
         </div>
-        <md-button style="border-top: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreLogs()">Fetch Logs for {{vm.lastQueryDayText}}</md-button>
+        <md-button style="border-top: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreLogs()" ng-disabled="vm.fetchingPastLogs">Fetch Logs for {{vm.lastQueryDayText}}</md-button>
     </div>
 </div>

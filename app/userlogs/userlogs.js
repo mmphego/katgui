@@ -38,29 +38,39 @@
         vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
         vm.lastFutureQueryDay = moment.utc();
         vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+        vm.validInlineStartTime = true;
+        vm.validInlineEndTime = true;
 
         MonitorService.subscribe('userlogs', '*');
-        vm.subscribeToUserlogs = function () {
-            if (MonitorService.connection) {
-
-            } else {
-                $timeout(vm.subscribeToUserlogs, 2000);
-            }
-        };
 
         vm.onTimeSet = function (value, target, attribute) {
             target[attribute] = $filter('date')(value, datetime_format);
+        };
+
+        vm.verifyDateTimeString = function (input) {
+            return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
+        };
+
+        vm.verifyInlineInputs = function () {
+            vm.validInlineStartTime = vm.verifyDateTimeString(vm.newLogStartTimeText);
+            vm.validInlineEndTime = vm.verifyDateTimeString(vm.newLogEndTimeText) || vm.newLogEndTimeText === '';
+            return vm.validInlineStartTime && vm.validInlineEndTime;
         };
 
         vm.addNewInlineLog = function () {
             if (!vm.newLogContent) {
                 return;
             }
-            // TODO check datetime formats
+
             if (!vm.newLogStartTimeText) {
                 vm.newLogStartTime = $rootScope.utcDateTime;
                 vm.newLogStartTimeText = $filter('date')(vm.newLogStartTime, datetime_format);
             }
+
+            if (!vm.verifyInlineInputs()) {
+                return;
+            }
+
             var tagIdList = [];
             vm.filterTags.forEach(function (tag) {
                 tagIdList.push(tag.id);
@@ -168,19 +178,25 @@
         }
 
         vm.fetchMoreLogs = function () {
+            vm.fetchingPastLogs = true;
             var start = vm.lastQueryDay.format('YYYY-MM-DD 00:00:00');
             var end = vm.lastQueryDay.format('YYYY-MM-DD 23:59:59');
-            UserLogService.listUserLogsForTimeRange(start, end);
-            vm.lastQueryDay = vm.lastQueryDay.subtract(1, 'd');
-            vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
+            UserLogService.listUserLogsForTimeRange(start, end).then(function () {
+                vm.lastQueryDay = vm.lastQueryDay.subtract(1, 'd');
+                vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
+                vm.fetchingPastLogs = false;
+            });
         };
 
         vm.fetchMoreFutureLogs = function () {
+            vm.fetchingFutureLogs = true;
             var start = vm.lastFutureQueryDay.format('YYYY-MM-DD 00:00:00');
             var end = vm.lastFutureQueryDay.format('YYYY-MM-DD 23:59:59');
-            UserLogService.listUserLogsForTimeRange(start, end);
-            vm.lastFutureQueryDay = vm.lastFutureQueryDay.add(1, 'd');
-            vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+            UserLogService.listUserLogsForTimeRange(start, end).then(function () {
+                vm.lastFutureQueryDay = vm.lastFutureQueryDay.add(1, 'd');
+                vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+                vm.fetchingFutureLogs = false;
+            });
         };
 
         $scope.$on('$destroy', function () {

@@ -313,6 +313,17 @@
                             }
                         }
 
+                        $scope.verifyDateTimeString = function (input) {
+                            return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
+                        };
+
+                        $scope.verifyDateTimeInputs = function () {
+                            $scope.validStartTime = $scope.verifyDateTimeString($scope.start_time);
+                            $scope.validEndTime = $scope.verifyDateTimeString($scope.end_time) || $scope.end_time === '';
+                            return $scope.validStartTime && $scope.validEndTime;
+                        };
+                        $scope.verifyDateTimeInputs();
+
                         $scope.addTagFromList = function (listed_tag) {
                             $scope.selectedTags.push(listed_tag);
                         };
@@ -395,6 +406,7 @@
                             } else {
                                 $scope.endDateTimeError = true;
                             }
+                            $scope.verifyDateTimeInputs();
                         };
 
                         $scope.onTimeChange = function () {
@@ -403,6 +415,7 @@
                             } else {
                                 $scope.endDateTimeError = true;
                             }
+                            $scope.verifyDateTimeInputs();
                         };
 
                         $scope.downloadFile = function(attachment) {

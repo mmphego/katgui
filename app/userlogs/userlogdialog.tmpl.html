@@ -1,56 +1,56 @@
 <md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1" style="min-width: 800px; min-height: 626px; overflow: visible"
-           ng-click="vm.showEndDatePicker = false; vm.showDatePicker = false; toggleTags = false;">
+           ng-click="showEndDatePicker = false; showDatePicker = false; toggleTags = false;">
     <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
         <span>{{!editMode? 'User Log Editor': 'User Log Viewer'}}</span>
     </md-toolbar>
     <md-dialog-content style="padding: 12px; min-height: 510px" md-theme="{{$root.themePrimaryButtons}}" layout="column">
         <div layout="row">
             <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">
-                <md-input-container flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
-                    <input ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
+                <md-input-container md-is-error="!validStartTime" flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
+                    <input focus ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
                            data-ng-model="start_time" placeholder="Start Date"
-                           title="Start Date 'HH:mm:ss yyyy-MM-dd'"/>
+                           title="Start Date 'yyyy-MM-dd HH:mm:ss'"/>
                 </md-input-container>
                 <md-button ng-disabled="!editMode" class="md-icon-button" style="margin-left: 0; margin-right: 0; margin-top: 3px; width: 36px; height: 36px;"
-                           ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                           ng-click="showDatePicker = !showDatePicker; showEndDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
                 <md-button ng-click="start_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'"
                     style="height: 36px; max-width: 42px; min-width: 42px; margin-left: 0; padding: 0;">
                     Now
                 </md-button>
-                <datetimepicker ng-show="vm.showDatePicker" ng-init="vm.showDatePicker = false"
+                <datetimepicker ng-show="showDatePicker" ng-init="showDatePicker = false"
                                 class="datepickerMenu md-whiteframe-z1"
                                 data-ng-model="start_time" style="position: absolute; left: 16px; top: 122px"
                                 data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
-                                data-on-set-time="vm.showDatePicker = false; onTimeSet(start_time, 'start_time')"></datetimepicker>
+                                data-on-set-time="showDatePicker = false; onTimeSet(start_time, 'start_time')"></datetimepicker>
             </div>
             <div flex layout="row" layout-align="center center"></div>
             <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">
-                <md-input-container flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
+                <md-input-container md-is-error="!validEndTime" flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
                     <input ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
                            data-ng-model="end_time" placeholder="End Date"
-                           title="End Date 'HH:mm:ss yyyy-MM-dd'"/>
+                           title="End Date 'yyyy-MM-dd HH:mm:ss'"/>
                 </md-input-container>
                 <md-button ng-disabled="!editMode" class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 36px; height: 36px;"
-                           ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                           ng-click="showEndDatePicker = !showEndDatePicker; showDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
                 <md-button ng-click="end_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'"
                     style="height: 36px; max-width: 42px; min-width: 42px; margin-left: 0; padding: 0;">
                     Now
                 </md-button>
-                <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
+                <datetimepicker ng-show="showEndDatePicker" ng-init="showEndDatePicker = false"
                                 data-ng-model="end_time" style="position: absolute; right: 16px; top: 122px"
                                 class="datepickerMenu md-whiteframe-z1"
                                 data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
-                                data-on-set-time="vm.showEndDatePicker = false; onTimeSet(end_time, 'end_time')"></datetimepicker>
+                                data-on-set-time="showEndDatePicker = false; onTimeSet(end_time, 'end_time')"></datetimepicker>
             </div>
         </div>
         <div class="md-whiteframe-z1" style="margin: 8px 0" flex>
             <md-input-container style="margin: 16px 0; min-height: 300px; max-height: 300px" class="md-block" flex>
                 <label>Log Content</label>
-                <textarea style="width: 100%; height: 300px;" focus ng-disabled="!editMode" md-select-on-focus rows="10" md-maxlength="1000" ng-model="content"></textarea>
+                <textarea style="width: 100%; height: 300px;" ng-disabled="!editMode" md-select-on-focus rows="10" md-maxlength="1000" ng-model="content"></textarea>
             </md-input-container>
         </div>
 
@@ -108,7 +108,7 @@
             Uploading Files, please wait...
         </span>
         <md-button ng-click="hide()">{{!editMode? 'Close' : 'Cancel'}}</md-button>
-        <md-button ng-hide="!editMode" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0">Submit</md-button>
+        <md-button ng-hide="!editMode" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime">Submit</md-button>
     </md-dialog-actions>
     </div>
 </md-dialog>
