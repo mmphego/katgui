@@ -164,7 +164,7 @@
         if ($rootScope.currentUser) {
             vm.afterInit();
         } else {
-            vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         }
 
         vm.fetchMoreLogs = function () {
@@ -184,8 +184,8 @@
         };
 
         $scope.$on('$destroy', function () {
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
             if (vm.undbindutcDateTimeSet) {
                 vm.undbindutcDateTimeSet();

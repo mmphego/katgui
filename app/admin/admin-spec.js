@@ -147,11 +147,11 @@ describe('AdminCtrl', function () {
     it('should unbind keyboard shortcuts', inject(function () {
         //ctrl.unbindShortcuts = function() {};
         var unbindShortcutsSpy = spyOn(ctrl, "unbindShortcuts");
-        var undbindLoginSuccessSpy = spyOn(ctrl, "undbindLoginSuccess");
+        var unbindLoginSuccessSpy = spyOn(ctrl, "unbindLoginSuccess");
         scope.$emit("$destroy");
         scope.$digest();
         expect(unbindShortcutsSpy).toHaveBeenCalled();
-        expect(undbindLoginSuccessSpy).toHaveBeenCalled();
+        expect(unbindLoginSuccessSpy).toHaveBeenCalled();
     }));
 
     it('should run the afterInit function to lists users if the current user has the user_admin role', function () {

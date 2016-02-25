@@ -65,7 +65,7 @@
         if ($rootScope.loggedIn) {
             vm.connectListeners();
         } else {
-            vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
                 vm.connectListeners();
             });
         }
@@ -411,8 +411,8 @@
         $scope.$on('$destroy', function () {
             unbindUpdate();
             SensorsService.disconnectListener();
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
         });
     }

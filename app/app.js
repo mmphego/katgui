@@ -189,7 +189,7 @@
             }
         };
 
-        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
             vm.showNavbar = true;
             vm.initApp();
         });
@@ -369,7 +369,7 @@
 
         $scope.$on('$destroy', function () {
             MonitorService.disconnectListener();
-            vm.undbindLoginSuccess();
+            vm.unbindLoginSuccess();
             if (vm.updateTimeDisplayInterval) {
                 $interval.cancel(vm.updateTimeDisplayInterval);
             }

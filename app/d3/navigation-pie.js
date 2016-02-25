@@ -22,7 +22,7 @@ angular.module('katGui.d3')
                 var uiViewDiv = document.querySelector('#ui-view-container-div');
                 var svg;
 
-                scope.undbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+                scope.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
                     if (svg) {
                         svg.remove();
                     }
@@ -122,7 +122,7 @@ angular.module('katGui.d3')
                 scope.redraw();
 
                 scope.$on('$destroy', function () {
-                    scope.undbindLoginSuccess();
+                    scope.unbindLoginSuccess();
                 });
             }
         };

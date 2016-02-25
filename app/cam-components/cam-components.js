@@ -150,7 +150,7 @@
             }
         };
 
-        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         $scope.$on('$destroy', function () {
@@ -161,8 +161,8 @@
             unbindUpdate();
             vm.disconnectIssued = true;
             SensorsService.disconnectListener();
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
         });
     }

@@ -180,13 +180,13 @@
             }
         };
 
-        vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
         });
     }
