@@ -1,0 +1,42 @@
+<div flex style="padding: 16px; min-width: 600px" ng-controller="UserlogTagsCtrl as vm" layout="row">
+    <div flex layout="column">
+        <md-toolbar class="md-whiteframe-z1" style=" min-height: 60px">
+            <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px" md-theme="{{themePrimaryButtons}}">
+                <span flex>User Log Tags</span>
+                <md-checkbox class="md-primary" ng-model="vm.displayDeactivated" ng-click="$event.stopPropagation()"
+                    style="font-size: 16px; margin: 0 16px">
+                    Show Deactivated Tags
+                </md-checkbox>
+                <input class="fade-in search-input-box" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Tags..."/>
+                <md-button ng-click="vm.editTag(null, $event)" class="md-icon-button md-raised md-primary" title="Add Tag">
+                    <span class="fa fa-plus md-fab-fa-icon-small"></span>
+                </md-button>
+            </div>
+
+            <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
+                 style="max-height: 17px">
+                <span class="subheader-text tag-name"
+                      ng-click="vm.setTagsOrderBy('name')">
+                    <span style="padding-left: 8px">Name</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.tagsOrderBy.value === 'name' && !vm.tagsOrderBy.reverse, 'fa-caret-down': vm.tagsOrderBy.value === 'name' && vm.tagsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+                <span class="subheader-text resource-sensor-status-item" ng-click="vm.setTagsOrderBy('slug')">
+                    <span style="padding-left: -8px">Description</span>
+                    <span class="fa"
+                          ng-class="{'fa-caret-up': vm.tagsOrderBy.value === 'slug' && !vm.tagsOrderBy.reverse, 'fa-caret-down': vm.tagsOrderBy.value === 'slug' && vm.tagsOrderBy.reverse}"
+                          style="margin-right: 4px;"></span>
+                </span>
+            </div>
+        </md-toolbar>
+        <md-virtual-repeat-container flex style="padding-left: 16px; margin-bottom: 8px; min-height: 1100px; max-height: 1100px;" class="md-whiteframe-z1">
+            <div md-virtual-repeat="tag in vm.tags | filter:{'activated':!vm.displayDeactivated || tag.activated} | regexSearch:vm.tagsOrderByFields:vm.q | orderBy:vm.tagsOrderBy.value:vm.tagsOrderBy.reverse"
+                 class="tag-row-item" layout="row" layout-align="start center" ng-click="vm.editTag(tag, $event)" ng-class="{'deactivated-tag': !tag.activated}">
+                <span class="tag-name">{{tag.name}}</span>
+                <span flex>{{tag.slug}}</span>
+            </div>
+        </md-virtual-repeat-container>
+    </div>
+</div>

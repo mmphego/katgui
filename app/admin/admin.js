@@ -19,6 +19,7 @@
             {"name": "Control Authority", value: "control_authority"},
             {"name": "Lead Operator", value: "lead_operator"},
             {"name": "Operator", value: "operator"},
+            {"name": "Expert", value: "expert"},
             {"name": "Read Only", value: "read_only"}
         ];
         vm.userData = UserService.users;
@@ -176,17 +177,16 @@
                 if (vm.isUserAdmin) {
                     vm.listUsers();
                 }
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
         };
 
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
         });
     }

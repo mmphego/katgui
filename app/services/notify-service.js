@@ -20,6 +20,14 @@
             $log.info('Showing toast-message: ' + message);
         };
 
+        api.showHttpErrorDialog = function (title, httpResponse) {
+            if (httpResponse && httpResponse.data && httpResponse.data.err_code) {
+                api.showSimpleDialog(title, httpResponse.data.err_code + ': ' + httpResponse.data.err_msg);
+            } else {
+                api.showSimpleDialog(title, httpResponse.config.url);
+            }
+        };
+
         api.showSimpleDialog = function (title, message) {
             api.showDialog(title, message);
         };

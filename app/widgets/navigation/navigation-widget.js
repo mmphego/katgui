@@ -24,8 +24,7 @@
             textOffset: -10,
             state: 'scheduler.drafts',
             title: 'Manage Schedule Block Drafts',
-            hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator' &&
-            $rootScope.currentUser.req_role !== 'control_authority'
+            allowedRoles: ['lead_operator', 'control_authority', 'expert']
         }, {
             name: 'Observations',
             textOffset: 0,
@@ -36,8 +35,7 @@
             textOffset: 10,
             state: 'scheduler',
             title: 'View Schedule Block Workflow',
-            hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator' &&
-            $rootScope.currentUser.req_role !== 'control_authority'
+            allowedRoles: ['lead_operator', 'control_authority', 'expert']
         }];
 
         vm.receptorNavData = [{
@@ -99,7 +97,7 @@
             name: 'Operator',
             state: 'operator-control',
             title: 'Operator Controls',
-            hide: $rootScope.currentUser && $rootScope.currentUser.req_role !== 'lead_operator' && $rootScope.currentUser.req_role !== 'operator'
+            allowedRoles: ['lead_operator', 'operator']
         }];
 
         vm.logsNavData = [{

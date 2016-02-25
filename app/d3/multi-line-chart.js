@@ -10,7 +10,8 @@ angular.module('katGui.d3')
                 hideContextZoom: '@hideContextZoom',
                 yMin: '=yMin',
                 yMax: '=yMax',
-                mouseOverTooltip: '@'
+                mouseOverTooltip: '@',
+                downloadCsv: '='
             },
             replace: false,
             link: function (scope, element) {
@@ -161,7 +162,7 @@ angular.module('katGui.d3')
                     width, height, height2;
                 var margin2 = {top: 0, right: 10, bottom: 20, left: 60};
                 var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2,
-                    xAxisElement, yAxisElement, xAxisElement2, context, focus;
+                    xAxisElement, yAxisElement, xAxisElement2, context, focus, brush;
 
                 var formatTwoDecimals = d3.format(",.2f");
                 var limitOverlayElements = [];
@@ -314,10 +315,6 @@ angular.module('katGui.d3')
                             .attr("class", "x axis")
                             .attr("transform", "translate(0," + height2 + ")");
 
-                        var brush = d3.svg.brush()
-                            .x(x2)
-                            .on("brush", scope.brushFunction);
-
                         scope.brushFunction = function () {
                             x.domain(brush.empty() ? x2.domain() : brush.extent());
                             focus.selectAll("path.line").attr("d", function (d) {
@@ -326,6 +323,10 @@ angular.module('katGui.d3')
                             focus.select(".x.axis").call(xAxis);
                             focus.select(".y.axis").call(yAxis);
                         };
+
+                        brush = d3.svg.brush()
+                            .x(x2)
+                            .on("brush", scope.brushFunction);
 
                         context.append("g")
                             .attr("class", "x brush")
@@ -546,17 +547,19 @@ angular.module('katGui.d3')
                     if (tooltipValues.length > 0) {
                         var html = "";
                         for (var i in tooltipValues) {
-                            html += "<div class='" + tooltipValues[i].sensor + "' layout='column'>";
-                            html += "<span layout='row'><i flex>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + ": </i><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></span>";
-                            html += "<span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span>";
+                            html += "<div class='" + tooltipValues[i].sensor + "' style='display: flex'>";
+                            html += "<i style='flex: 1 100%'>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + "</i>";
+                            html += "<div><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></div>";
+                            html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span></div>";
                             html += "</div>";
                         }
                         html += "";
                         tooltip.html(html);
                         var xTranslate = (x(tooltipValues[0].date) + margin.left + 15);
+                        // var yTranslate = mouse[1];
 
-                        if (xTranslate + 350 > width) {
-                            xTranslate -= 350;
+                        if (xTranslate + tooltip[0][0].clientWidth > width) {
+                            xTranslate -= tooltip[0][0].clientWidth + 20;
                         }
                         tooltip.style("transform", "translate(" + (xTranslate ) + "px,  8px)");
                     }
@@ -568,6 +571,31 @@ angular.module('katGui.d3')
                 scope.$on('$destroy', function () {
                     unbindResize();
                 });
+
+                scope.downloadCsv = function (useUnixTimestamps) {
+                    scope.nestedData.forEach(function(sensorValues, index){
+                        var csvContent = "data:text/csv;charset=utf-8,update_time,value_time,status,value\n";
+                        var dataString = '';
+                        var valuesArray = [];
+                        for (var i = 0; i < sensorValues.values.length; i++) {
+                            var sensorInfo = sensorValues.values[i];
+                            if (useUnixTimestamps) {
+                                dataString += (sensorInfo.sample_ts * 1000) + ',';
+                                dataString += (sensorInfo.value_ts * 1000) + ',';
+                            } else {
+                                dataString += moment.utc(sensorInfo.sample_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
+                                dataString += moment.utc(sensorInfo.value_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
+                            }
+                            dataString += sensorValues.values[i].status + ',';
+                            dataString += sensorValues.values[i].value + '\n';
+                        }
+                        var encodedUri = encodeURI(csvContent + dataString);
+                        var link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", sensorValues.key + ".csv");
+                        link.click();
+                    });
+                };
             }
         };
     });

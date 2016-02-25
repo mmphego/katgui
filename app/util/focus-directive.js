@@ -10,7 +10,7 @@ angular.module('katGui.util', ['katGui.services'])
                     } else {
                         element[0].focus();
                     }
-                }, 100);
+                }, 300);
             }
         };
     });

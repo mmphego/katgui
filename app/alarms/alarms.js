@@ -189,17 +189,16 @@
             if ($rootScope.currentUser) {
                 vm.canOperateAlarms = $rootScope.currentUser.req_role === USER_ROLES.operator ||
                 $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
-            } else {
-                vm.undbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
         };
 
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
         $scope.$on('$destroy', function () {
-            if (vm.undbindLoginSuccess) {
-                vm.undbindLoginSuccess();
+            if (vm.unbindLoginSuccess) {
+                vm.unbindLoginSuccess();
             }
             vm.unbindShortcuts('keydown');
         });
