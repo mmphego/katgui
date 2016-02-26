@@ -34,10 +34,15 @@
         vm.chosen_tags = [];
         vm.includeActivityLogs = false;
         vm.newLogStartTimeText = '';
-        vm.lastQueryDay = moment.utc();
-        vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
-        vm.lastFutureQueryDay = moment.utc();
-        vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+        vm.newLogEndTimeText = '';
+        vm.lastQueryDayStart = moment.utc();
+        vm.lastQueryDayEnd = moment.utc();
+        vm.lastQueryDayTextStart = vm.lastQueryDayStart.format('YYYY-MM-DD');
+        vm.lastQueryDayTextEnd = vm.lastQueryDayEnd.format('YYYY-MM-DD');
+        vm.lastFutureQueryDayStart = moment.utc();
+        vm.lastFutureQueryDayTextStart = vm.lastFutureQueryDayStart.format('YYYY-MM-DD');
+        vm.lastFutureQueryDayEnd = moment.utc();
+        vm.lastFutureQueryDayTextEnd = vm.lastFutureQueryDayEnd.format('YYYY-MM-DD');
         vm.validInlineStartTime = true;
         vm.validInlineEndTime = true;
 
@@ -53,7 +58,7 @@
 
         vm.verifyInlineInputs = function () {
             vm.validInlineStartTime = vm.verifyDateTimeString(vm.newLogStartTimeText);
-            vm.validInlineEndTime = vm.verifyDateTimeString(vm.newLogEndTimeText) || vm.newLogEndTimeText === '';
+            vm.validInlineEndTime = vm.verifyDateTimeString(vm.newLogEndTimeText) || vm.newLogEndTimeText.length === 0;
             return vm.validInlineStartTime && vm.validInlineEndTime;
         };
 
@@ -143,13 +148,18 @@
 
         vm.afterInit = function() {
             UserLogService.listTags().then(function () {
-                var start = vm.lastQueryDay.format('YYYY-MM-DD 00:00:00');
-                var end = vm.lastQueryDay.format('YYYY-MM-DD 23:59:59');
-                UserLogService.listUserLogsForTimeRange(start, end);
-                vm.lastQueryDay = vm.lastQueryDay.subtract(1, 'd');
-                vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
-                vm.lastFutureQueryDay = vm.lastFutureQueryDay.add(1, 'd');
-                vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+                var start = vm.lastQueryDayStart.format('YYYY-MM-DD 00:00:00');
+                var end = vm.lastQueryDayEnd.format('YYYY-MM-DD 23:59:59');
+                UserLogService.listUserLogsForTimeRange(start, end).then(function () {
+                    vm.lastQueryDayStart = vm.lastQueryDayStart.subtract(1, 'w').subtract(1, 'd');
+                    vm.lastQueryDayEnd = vm.lastQueryDayEnd.subtract(1, 'd');
+                    vm.lastQueryDayTextStart = vm.lastQueryDayStart.format('YYYY-MM-DD');
+                    vm.lastQueryDayTextEnd = vm.lastQueryDayEnd.format('YYYY-MM-DD');
+                    vm.lastFutureQueryDayStart = vm.lastFutureQueryDayStart.add(1, 'd');
+                    vm.lastFutureQueryDayTextStart = vm.lastFutureQueryDayStart.format('YYYY-MM-DD');
+                    vm.lastFutureQueryDayEnd = vm.lastFutureQueryDayEnd.add(1, 'w').add(1, 'd');
+                    vm.lastFutureQueryDayTextEnd = vm.lastFutureQueryDayEnd.format('YYYY-MM-DD');
+                });
             });
         };
 
@@ -179,22 +189,30 @@
 
         vm.fetchMoreLogs = function () {
             vm.fetchingPastLogs = true;
-            var start = vm.lastQueryDay.format('YYYY-MM-DD 00:00:00');
-            var end = vm.lastQueryDay.format('YYYY-MM-DD 23:59:59');
+            var start = vm.lastQueryDayStart.format('YYYY-MM-DD 00:00:00');
+            var end = vm.lastQueryDayEnd.format('YYYY-MM-DD 23:59:59');
             UserLogService.listUserLogsForTimeRange(start, end).then(function () {
-                vm.lastQueryDay = vm.lastQueryDay.subtract(1, 'd');
-                vm.lastQueryDayText = vm.lastQueryDay.format('YYYY-MM-DD');
+                vm.lastQueryDayStart = vm.lastQueryDayStart.subtract(1, 'w');
+                vm.lastQueryDayEnd = vm.lastQueryDayEnd.subtract(1, 'w').subtract(1, 'd');
+                vm.lastQueryDayTextStart = vm.lastQueryDayStart.format('YYYY-MM-DD');
+                vm.lastQueryDayTextEnd = vm.lastQueryDayEnd.format('YYYY-MM-DD');
+                vm.fetchingPastLogs = false;
+            }, function () {
                 vm.fetchingPastLogs = false;
             });
         };
 
         vm.fetchMoreFutureLogs = function () {
             vm.fetchingFutureLogs = true;
-            var start = vm.lastFutureQueryDay.format('YYYY-MM-DD 00:00:00');
-            var end = vm.lastFutureQueryDay.format('YYYY-MM-DD 23:59:59');
+            var start = vm.lastFutureQueryDayStart.format('YYYY-MM-DD 00:00:00');
+            var end = vm.lastFutureQueryDayEnd.format('YYYY-MM-DD 23:59:59');
             UserLogService.listUserLogsForTimeRange(start, end).then(function () {
-                vm.lastFutureQueryDay = vm.lastFutureQueryDay.add(1, 'd');
-                vm.lastFutureQueryDayText = vm.lastFutureQueryDay.format('YYYY-MM-DD');
+                vm.lastFutureQueryDayStart = vm.lastFutureQueryDayStart.add(1, 'w').add(1, 'd');
+                vm.lastFutureQueryDayTextStart = vm.lastFutureQueryDayStart.format('YYYY-MM-DD');
+                vm.lastFutureQueryDayEnd = vm.lastFutureQueryDayEnd.add(1, 'w').add(1, 'd');
+                vm.lastFutureQueryDayTextEnd = vm.lastFutureQueryDayEnd.format('YYYY-MM-DD');
+                vm.fetchingFutureLogs = false;
+            }, function () {
                 vm.fetchingFutureLogs = false;
             });
         };

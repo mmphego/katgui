@@ -100,7 +100,7 @@
                     <span style="width: 130px">{{userlog.user.name}}</span>
                     <span style="width: 150px">{{userlog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
                     <span style="width: 150px">{{userlog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
-                    <span flex>{{userlog.content}}</span>
+                    <pre flex style="margin: 0; padding: 0; background: transparent">{{userlog.content}}</pre>
                     <i style="font-size: 12px; margin-right: 4px" ng-repeat="tag in userlog.tags | orderBy:'name' track by $index" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
                     <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                         <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}

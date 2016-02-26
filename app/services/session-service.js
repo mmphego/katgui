@@ -188,6 +188,7 @@
                     if (!window.location.hash.endsWith('sensor-graph')) {
                         NotifyService.showSimpleToast('Error connecting to KATPortal.');
                         $log.error(result);
+                        $state.go('login');
                     }
                 }
             }
