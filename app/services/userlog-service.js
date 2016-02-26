@@ -257,6 +257,10 @@
         api.receivedUserlogMessage = function (messageChannel, messageData) {
             var userlog;
             if (messageChannel === 'userlogs:add') {
+                var index = _.findIndex(api.userlogs, {id: parseInt(messageData.id)});
+                if (index > -1) {
+                    api.userlogs.splice(index, 1);
+                }
                 $rootScope.$apply(function () {
                     api.userlogs.push(api.populateUserlogTagsFromMap(messageData));
                 });
@@ -324,8 +328,10 @@
                         };
                         $scope.verifyDateTimeInputs();
 
-                        $scope.addTagFromList = function (listed_tag) {
-                            $scope.selectedTags.push(listed_tag);
+                        $scope.addTagFromList = function (listedTag) {
+                            if (!_.findWhere($scope.selectedTags, {id: listedTag.id})) {
+                                $scope.selectedTags.push(listedTag);
+                            }
                         };
 
                         $scope.hide = function () {

@@ -60,7 +60,7 @@
             </span>
         </div>
     </md-toolbar>
-    <md-button style="border-bottom: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs">Fetch Logs for {{vm.lastFutureQueryDayText}}</md-button>
+    <md-button style="border-bottom: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs">Fetch Logs for {{vm.lastFutureQueryDayTextStart}} to {{vm.lastFutureQueryDayTextEnd}}</md-button>
     <div flex class="md-whiteframe-z1" style="overflow: auto">
         <div ng-repeat="userLog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true track by userLog.id"
             flex layout="column" class="user-log-row">
@@ -75,7 +75,7 @@
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
-                <span flex>{{userLog.content}}</span>
+                <pre flex style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
                 <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
                 <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                     <span ng-show="userLog.attachment_count>0">({{userLog.attachment_count}}
@@ -116,7 +116,7 @@
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
-                <span flex>{{userLog.content}}</span>
+                <pre flex style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
                 <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
                 <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                     <span ng-show="userLog.attachment_count>0">({{userLog.attachment_count}}
@@ -129,6 +129,6 @@
                 </md-button>
             </div>
         </div>
-        <md-button style="border-top: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreLogs()" ng-disabled="vm.fetchingPastLogs">Fetch Logs for {{vm.lastQueryDayText}}</md-button>
+        <md-button style="border-top: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreLogs()" ng-disabled="vm.fetchingPastLogs">Fetch Logs for {{vm.lastQueryDayTextStart}} to {{vm.lastQueryDayTextEnd}}</md-button>
     </div>
 </div>
