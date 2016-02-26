@@ -401,7 +401,7 @@
 
                         $scope.createFilterFor = function (query) {
                             return function filterFn(tag) {
-                                return (tag.name.indexOf(query) === 0);
+                                return (tag.name.toLowerCase().indexOf(query.toLowerCase()) === 0);
                             };
                         };
 

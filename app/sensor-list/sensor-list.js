@@ -220,7 +220,7 @@
 
         vm.createFilterFor = function (query) {
             return function filterFn(item) {
-                return (item.name ? item.name.indexOf(query) > -1 : item.indexOf(query) > -1);
+                return (item.name ? item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 : item.indexOf(query) > -1);
             };
         };
 
