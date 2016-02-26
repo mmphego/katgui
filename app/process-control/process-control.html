@@ -20,7 +20,7 @@
                  class="process-control-container">
                 <div flex ng-click="vm.detailedProcesses[nm_key][key].showDetail = !vm.detailedProcesses[nm_key][key].showDetail" role="heading"
                      ng-init="vm.detailedProcesses[nm_key][key].showDetail = false" class="process-control-bg-transition md-whiteframe-z1"
-                     style="padding: 6px;" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.detailedProcesses[nm_key][key].showDetail}">
+                     style="padding: 6px; cursor: pointer" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.detailedProcesses[nm_key][key].showDetail}">
                     <span ng-show="!vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" class="red-color" style="width: 160px; margin: 0;"><b>{{key | uppercase}}</b></span>
                     <span ng-show="vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" class="green-color" style="width: 160px; margin: 0;"><b>{{key | uppercase}}</b></span>
 
@@ -40,10 +40,10 @@
                     </div>
                 </div>
                 <div ng-if="vm.detailedProcesses[nm_key][key].showDetail" class="grow-height-animation" style="cursor: auto;">
-                    <div ng-repeat="(key, sensor) in vm.detailedProcesses[nm_key][key].sensors | orderBy:'name' track by key"
-                         style="margin: 4px;" ng-if="key !== 'showDetail'" title="{{'Timestamp: ' + vm.sensorsToDisplay[key].date}}">
-                        <span>{{key}}:</span>
-                        <span style="margin-left: 4px"><b>{{vm.sensorsToDisplay[nm_key + '_' + key].value}}</b></span>
+                    <div ng-repeat="detailKey in $root.objectKeys(vm.detailedProcesses[nm_key][key].sensors) | orderBy:'name' track by detailKey"
+                         style="margin: 4px;" ng-if="detailKey !== 'showDetail'" title="{{'Timestamp: ' + vm.sensorsToDisplay[detailKey].date}}">
+                        <span>{{detailKey}}:</span>
+                        <span style="margin-left: 4px"><b>{{vm.sensorsToDisplay[nm_key + '_' + detailKey].value}}</b></span>
                     </div>
                 </div>
             </div>
