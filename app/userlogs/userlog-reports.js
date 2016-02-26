@@ -36,6 +36,7 @@
             };
 
             vm.exportPdf = function(){
+                vm.exportingPdf = true;
                 var pdf = new jsPDF('l', 'pt');
                 var exportTime = moment.utc().format('YYYY-MM-DD HH:mm:ss');
                 var query = "?start_time=" + vm.startTime + "&end_time=" + vm.endTime;
@@ -76,15 +77,21 @@
                 if (vm.includeActivityLogs) {
                     columns = [{title: "System Activity Logs", key: "msg"}];
 
-                    UserLogService.queryActivityLogs(query).then(function (result) {
-                        pdf.autoTable(columns, result.data, {
-                            startY: pdf.autoTableEndPosY() + 50,
-                            theme: 'striped',
-                            margin: {top: 8, bottom: 8}});
-                        pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
-                    });
+                    UserLogService.queryActivityLogs(query).then(
+                        function (result) {
+                            pdf.autoTable(columns, result.data, {
+                                startY: pdf.autoTableEndPosY() + 50,
+                                theme: 'striped',
+                                margin: {top: 8, bottom: 8}});
+                            pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
+                            vm.exportingPdf = false;
+                        }, function (error) {
+                            $log.error(error);
+                            vm.exportingPdf = false;
+                        });
                 } else {
                     pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
+                    vm.exportingPdf = false;
                 }
             };
 
