@@ -48,8 +48,8 @@
                     <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event)"
                                style="margin-right: 0;">Preview Report
                     </md-button>
-                    <md-button ng-disabled="vm.reportUserlogs.length === 0" class="add-tab md-primary md-raised" ng-click="vm.exportPdf()"
-                               style="margin-right: 0;">Export PDF
+                    <md-button ng-disabled="vm.reportUserlogs.length === 0 || vm.exportingPdf" class="add-tab md-primary md-raised" ng-click="vm.exportPdf()"
+                               style="margin-right: 0;">{{vm.exportingPdf? 'Exporting PDF...' : 'Export as PDF'}}
                     </md-button>
                 </div>
             </div>
