@@ -3,45 +3,24 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog, $stateParams, UserService,
-                                   NotifyService, ConfigService) {
+    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $mdDialog,
+                                   $stateParams, UserService, NotifyService, ConfigService) {
 
         var vm = this;
 
-        vm.checkCASubarrays = function () {
-            for (var i = 0; i < ObsSchedService.subarrays.length; i++) {
-                if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email &&
-                    $stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
-                    vm.subarray_id = parseInt(ObsSchedService.subarrays[i].id);
-                    $scope.subarray = ObsSchedService.subarrays[i];
-                }
-            }
-        };
-
-        if ($stateParams.subarray_id !== '' && $rootScope.iAmLO) {
-            vm.subarray_id = parseInt($stateParams.subarray_id);
-        } else {
-            vm.checkCASubarrays();
-        }
-        if (!vm.subarray_id) {
-            $state.go('scheduler');
-        } else {
-            vm.unbindDelegateWatch = $scope.$watch('subarray.delegated_ca', function (newVal) {
-                if (newVal !== $rootScope.currentUser.email && !$rootScope.iAmLO) {
-                    $state.go('scheduler');
-                }
-            });
-        }
-        vm.unbindIAmCA = $rootScope.$watch('iAmCA', function () {
-            vm.checkCASubarrays();
-        });
-
-        vm.subarrays = ObsSchedService.subarrays;
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;
         vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
         vm.bands = [];
         vm.products = [];
+        if (!$scope.$parent.vm.subarray) {
+            $scope.$parent.vm.waitForSubarrayToExist().then(function () {
+                vm.subarray = $scope.$parent.vm.subarray;
+            });
+        } else {
+            vm.subarray = $scope.$parent.vm.subarray;
+        }
+
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
                 if (systemConfig.system.bands && systemConfig.system.products) {
@@ -59,7 +38,7 @@
             });
         };
 
-        vm.assignSelectedResources = function (subarray) {
+        vm.assignSelectedResources = function () {
             var itemsAssigned = [];
             vm.poolResourcesFree.forEach(function (item) {
                 if (item.selected) {
@@ -68,33 +47,33 @@
             });
             if (itemsAssigned.length > 0) {
                 var itemsString = itemsAssigned.join(',');
-                ObsSchedService.assignResourcesToSubarray(subarray.id, itemsString);
+                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, itemsString);
             }
             vm.selectAll = false;
         };
 
-        vm.freeAssignedResource = function (subarray, resource) {
-            ObsSchedService.unassignResourcesFromSubarray(subarray.id, resource.name);
+        vm.freeAssignedResource = function (resource) {
+            ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resource.name);
         };
 
-        vm.freeSubarray = function (subarray) {
-            ObsSchedService.freeSubarray(subarray.id);
+        vm.freeSubarray = function () {
+            ObsSchedService.freeSubarray(vm.subarray.id);
         };
 
-        vm.activateSubarray = function (subarray) {
-            subarray.showProgress = true;
-            ObsSchedService.activateSubarray(subarray.id)
+        vm.activateSubarray = function () {
+            vm.subarray.showProgress = true;
+            ObsSchedService.activateSubarray(vm.subarray.id)
                 .then(function (result) {
                     NotifyService.showSimpleToast(result.data.result);
-                    subarray.showProgress = false;
+                    vm.subarray.showProgress = false;
                 }, function (error) {
                     NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
-                    subarray.showProgress = false;
+                    vm.subarray.showProgress = false;
                 });
         };
 
-        vm.setSubarrayInMaintenance = function (subarray) {
-            ObsSchedService.setSubarrayMaintenance(subarray.id, subarray.maintenance ? 'clear' : 'set');
+        vm.setSubarrayInMaintenance = function () {
+            ObsSchedService.setSubarrayMaintenance(vm.subarray.id, vm.subarray.maintenance ? 'clear' : 'set');
         };
 
         vm.markResourceFaulty = function (resource) {
@@ -105,8 +84,8 @@
             ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
         };
 
-        vm.listResourceMaintenanceDevicesDialog = function (subarray, resource, event) {
-            ObsSchedService.listResourceMaintenanceDevicesDialog(subarray.id, resource.name, event);
+        vm.listResourceMaintenanceDevicesDialog = function (resource, event) {
+            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resource.name, event);
         };
 
         vm.isResourceInMaintenance = function (resource) {
@@ -274,11 +253,11 @@
                 });
         };
 
-        vm.navigateToSchedulerDetails = function (subarray_id) {
-            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
+        vm.navigateToSchedulerDetails = function () {
+            $state.go('scheduler.observations.detail', {subarray_id: vm.subarray.id});
         };
 
-        vm.openTemplateListDialog = function (subarray, $event) {
+        vm.openTemplateListDialog = function ($event) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
@@ -291,7 +270,7 @@
                         };
                         $scope.templateSelected = function (template) {
                             $mdDialog.hide();
-                            ObsSchedService.loadResourceTemplate(subarray, template);
+                            ObsSchedService.loadResourceTemplate(vm.subarray, template);
                         };
                     },
                     template:
@@ -324,9 +303,9 @@
                 });
         };
 
-        vm.saveTemplateDialog = function (subarray, $event) {
+        vm.saveTemplateDialog = function ($event) {
             var resourceNames = [];
-            subarray.allocations.forEach(function (allocation) {
+            vm.subarray.allocations.forEach(function (allocation) {
                 resourceNames.push(allocation.name);
             });
             resourceNames = resourceNames.join(',');
@@ -339,8 +318,8 @@
                         $scope.template = {
                             name: "",
                             resources: resourceNames,
-                            band: subarray.band,
-                            product: subarray.product};
+                            band: vm.subarray.band,
+                            product: vm.subarray.product};
                         ObsSchedService.listResourceTemplates();
 
                         $scope.hide = function () {
@@ -353,8 +332,8 @@
                                     .then(function () {
                                         $scope.template = template;
                                         $scope.template.resources = resourceNames;
-                                        $scope.template.band = subarray.band;
-                                        $scope.template.product = subarray.product;
+                                        $scope.template.band = vm.subarray.band;
+                                        $scope.template.product = vm.subarray.product;
                                         ObsSchedService.modifyResourceTemplate($scope.template);
                                     });
                         };
@@ -427,7 +406,6 @@
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
-            vm.unbindIAmCA();
             if (vm.unbindDelegateWatch) {
                 vm.unbindDelegateWatch();
             }

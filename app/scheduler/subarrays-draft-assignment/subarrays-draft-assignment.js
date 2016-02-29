@@ -3,41 +3,22 @@
     angular.module('katGui.scheduler')
         .controller('SubArraysCtrl', SubArraysCtrl);
 
-    function SubArraysCtrl($rootScope, ObsSchedService, $scope, $state, $stateParams, $mdDialog, $log, NotifyService) {
+    function SubArraysCtrl($rootScope, ObsSchedService, $scope, $state, $stateParams, $mdDialog, $log,
+                           NotifyService) {
 
         var vm = this;
-        vm.checkCASubarrays = function () {
-            for (var i = 0; i < ObsSchedService.subarrays.length; i++) {
-                if (ObsSchedService.subarrays[i]['delegated_ca'] === $rootScope.currentUser.email &&
-                    $stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
-                    vm.subarray_id = parseInt(ObsSchedService.subarrays[i].id);
-                    $scope.subarray = ObsSchedService.subarrays[i];
-                }
-            }
-        };
-
-        if ($stateParams.subarray_id !== '' && $rootScope.iAmLO) {
-            vm.subarray_id = parseInt($stateParams.subarray_id);
-        } else {
-            vm.checkCASubarrays();
-        }
-        if (!vm.subarray_id) {
-            $state.go('scheduler');
-        } else {
-            vm.unbindDelegateWatch = $scope.$watch('subarray.delegated_ca', function (newVal) {
-                if (newVal !== $rootScope.currentUser.email && !$rootScope.iAmLO) {
-                    $state.go('scheduler');
-                }
-            });
-        }
-        vm.unbindIAmCA = $rootScope.$watch('iAmCA', function () {
-            vm.checkCASubarrays();
-        });
         vm.currentActionsMenuIndex = -1;
         vm.showVerifyMenuItem = false;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
         vm.scheduleData = ObsSchedService.scheduleData;
-        vm.subarrays = ObsSchedService.subarrays;
+
+        if (!$scope.$parent.vm.subarray) {
+            $scope.$parent.vm.waitForSubarrayToExist().then(function () {
+                vm.subarray = $scope.$parent.vm.subarray;
+            });
+        } else {
+            vm.subarray = $scope.$parent.vm.subarray;
+        }
 
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code', reverse: true},
@@ -63,17 +44,17 @@
 
         vm.setDraftsOrderBy('id_code');
 
-        vm.assignSelectedScheduleBlocks = function (subarray) {
+        vm.assignSelectedScheduleBlocks = function () {
             ObsSchedService.scheduleDraftData.forEach(function (item) {
                 if (item.selected) {
                     item.selected = false;
-                    ObsSchedService.assignScheduleBlock(subarray.id, item.id_code);
+                    ObsSchedService.assignScheduleBlock(vm.subarray.id, item.id_code);
                 }
             });
         };
 
-        vm.freeScheduleBlock = function (subarray, sb) {
-            ObsSchedService.unassignScheduleBlock(subarray.id, sb.id_code);
+        vm.freeScheduleBlock = function (sb) {
+            ObsSchedService.unassignScheduleBlock(vm.subarray.id, sb.id_code);
         };
 
         vm.scheduleDraft = function (sb) {
@@ -85,7 +66,7 @@
         };
 
         vm.verifySB = function (sb) {
-            ObsSchedService.verifyScheduleBlock(vm.subarray_id, sb.id_code);
+            ObsSchedService.verifyScheduleBlock(vm.subarray.id, sb.id_code);
         };
 
         vm.viewSBTasklog = function (sb, mode) {
@@ -93,7 +74,7 @@
         };
 
         vm.moveScheduleRowToDraft = function (item) {
-            ObsSchedService.scheduleToDraft(vm.subarray_id, item.id_code);
+            ObsSchedService.scheduleToDraft(vm.subarray.id, item.id_code);
         };
 
         vm.removeDraft = function (item) {
@@ -145,7 +126,6 @@
         };
 
         $scope.$on('$destroy', function () {
-            vm.unbindIAmCA();
             if (vm.unbindDelegateWatch) {
                 vm.unbindDelegateWatch();
             }

@@ -200,6 +200,10 @@
                 var subarrayIndex = _.findIndex(api.subarrays, function (item) {
                     return item.id === sensorName.split('_')[1];
                 });
+                if (subarrayIndex === -1) {
+                    api.subarrays.push({id: sensorName.split('_')[1]});
+                    subarrayIndex = api.subarrays.length - 1;
+                }
                 if (subarrayIndex > -1) {
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
                     if (sensorName.endsWith('allocations')) {

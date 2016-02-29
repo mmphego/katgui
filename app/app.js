@@ -98,9 +98,11 @@
                 }
                 $rootScope.systemType = systemConfig.system.system_conf.replace('systems/', '').replace('.conf', '');
                 var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
-                subarray_nrs.forEach(function (sub_nr) {
-                    ObsSchedService.subarrays.push({id: sub_nr});
-                });
+                if (ObsSchedService.subarrays.length === 0) {
+                    subarray_nrs.forEach(function (sub_nr) {
+                        ObsSchedService.subarrays.push({id: sub_nr});
+                    });
+                }
                 $rootScope.confConnectionError = null;
             }, function (error) {
                 $rootScope.confConnectionError = 'Could not connect to ' + SERVER_URL + '/katconf.';
