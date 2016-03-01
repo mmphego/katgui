@@ -117,7 +117,7 @@
                         }
                     });
                 } else if (messages.result) {
-                    $log.info('Subscribed to: ' + JSON.stringify(messages.result));
+                    $log.debug('Subscribed to: ' + JSON.stringify(messages.result));
                     $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else {
                     $log.error('Dangling sensors message...');

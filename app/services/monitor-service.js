@@ -172,7 +172,7 @@
                         });
                     }
                 } else if (messages.result) {
-                    $log.info('Subscribed to: ' + JSON.stringify(messages.result));
+                    $log.debug('Subscribed to: ' + JSON.stringify(messages.result));
                 } else {
                     $log.error('Dangling monitor message...');
                     $log.error(e);
