@@ -4,7 +4,7 @@
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
     function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval,
-                                        NotifyService) {
+                                        NotifyService, KatGuiUtil) {
 
         var vm = this;
 
@@ -106,9 +106,17 @@
         vm.activateSubarray = function () {
             ObsSchedService.activateSubarray(vm.subarray.id)
                 .then(function (result) {
-                    NotifyService.showSimpleToast(result.data.result);
+                    var splitMessage = result.data.result.split(' ');
+                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
+                        NotifyService.showPreDialog('Error activating subarray', message);
+                    } else {
+                        NotifyService.showSimpleToast(result.data.result);
+                    }
+                    vm.subarray.showProgress = false;
                 }, function (error) {
                     NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
+                    vm.subarray.showProgress = false;
                 });
         };
 
