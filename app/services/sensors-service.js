@@ -242,7 +242,6 @@
                             };
                         }
                     }
-
                     deferred.resolve(api.resources);
                 });
             return deferred.promise;
@@ -265,6 +264,17 @@
                         });
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);
+                }, function (result) {
+                    deferred.reject(result);
+                });
+            return deferred.promise;
+        };
+
+        api.listSensors = function (filter) {
+            var deferred = $q.defer();
+            $http.post(urlBase + '/sensor-list', {filter: filter})
+                .then(function (result) {
+                    deferred.resolve(result);
                 }, function (result) {
                     deferred.reject(result);
                 });

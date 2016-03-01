@@ -543,6 +543,11 @@
             templateUrl: 'app/sensor-list/sensor-list.html',
             title: 'Sensor List'
         });
+        $stateProvider.state('sensor-groups', {
+            url: '/sensor-groups',
+            templateUrl: 'app/sensor-groups/sensor-groups.html',
+            title: 'Sensor Groups'
+        });
         $stateProvider.state('about', {
             url: '/about',
             templateUrl: 'app/about/about.html',
