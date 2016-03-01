@@ -125,7 +125,7 @@
             var strList = sensor.name.split(':');
             var sensorName = strList[1];
             if (vm.sensorValues[sensorName]) {
-                vm.sensorValues[sensorName].name = sensorName;
+                vm.sensorValues[sensorName].name = sensor.name;
                 vm.sensorValues[sensorName].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
                 vm.sensorValues[sensorName].status = sensor.value.status;
                 vm.sensorValues[sensorName].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);

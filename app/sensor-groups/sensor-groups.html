@@ -2,14 +2,14 @@
     <div layout="column" style="min-width:240px; max-width:240px; min-height: 1300px; max-height: 1300px">
         <div layout="column" class="md-whiteframe-z1" style="margin-bottom: 8px; min-height: 350px">
             <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="center center">
-                <span>Sensor Groups</span>
+                <span>Sensor Group Names</span>
             </md-toolbar>
             <div style="overflow: auto; direction: rtl">
                 <div ng-class="{'active-sensor-list-resource':vm.sensorsGroupBeingDisplayed === sensorGroupName}"
                      ng-repeat="sensorGroupName in vm.sensorGroupList | orderBy:sensorGroupName track by $index"
                      style="position: relative">
                     <md-button class="resource-root-item" ng-click="vm.setSensorGroupStrategy(sensorGroupName)"
-                        style="text-align: right; width: auto">
+                        style="text-align: right; width: auto" title="{{vm.sensorGroups[sensorGroupName].sensors}}">
                         {{sensorGroupName}}
                     </md-button>
                 </div>

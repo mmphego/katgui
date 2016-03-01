@@ -144,14 +144,14 @@
                 var newWindData = [];
                 var newSensorNames = {};
                 for (var attr in sensor.value) {
-                    var sensorName = sensor.value[attr][3];
+                    var sensorName = sensor.value[attr][4];
                     var latestSensor = null;
                     if (sensorName.indexOf('wind_speed') === -1 &&
                         sensorName.indexOf('gust_speed') === -1) {
                         latestSensor = {
-                            status: sensor.value[attr][4],
+                            status: sensor.value[attr][5],
                             sensor: sensorName,
-                            value: sensor.value[attr][2],
+                            value: sensor.value[attr][3],
                             sample_ts: sensor.value[attr][1] / 1000,
                         };
                         if (sensorName.indexOf('pressure') !== -1) {
@@ -160,9 +160,9 @@
                         newData.push(latestSensor);
                     } else {
                         latestSensor = {
-                            status: sensor.value[attr][4],
+                            status: sensor.value[attr][5],
                             sensor: sensorName,
-                            value: sensor.value[attr][2],
+                            value: sensor.value[attr][3],
                             sample_ts: sensor.value[attr][1] / 1000,
                         };
                         newWindData.push(latestSensor);
@@ -292,6 +292,9 @@
 
         //create it to be bound to, but we dont use it on this screen
         vm.removeSensorLine = function () {};
+
+        //create to function to bind to, but dont do anything with it yet
+        vm.downloadAsCSV = function () {};
 
         $scope.$on('$destroy', function () {
             vm.ancResource.sensorList.forEach(function (sensor) {
