@@ -3,12 +3,6 @@
      ng-class="{'connection-lost-bg':vm.connectionLost}">
 
     <div class="md-whiteframe-z1">
-        <md-toolbar class="panel-toolbar md-whiteframe-z1">
-            <div class="md-toolbar-tools">
-                <span ng-show="!vm.connectionLost">Operator Controls</span>
-                <span ng-show="vm.connectionLost">Operator Controls (Connection Lost!)</span>
-            </div>
-        </md-toolbar>
         <div md-theme="{{themePrimaryButtons}}" class="operator-controls">
             <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene" ng-click="vm.inhibitAll()" class="md-raised md-primary">Inhibit All</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene" ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
