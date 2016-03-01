@@ -30,7 +30,13 @@
         vm.toggleFloodLights = function () {
             ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
                 .then(function (result) {
-                    NotifyService.showSimpleToast(result.data.result.replace(/\\_/g, ' '));
+                    var splitMessage = result.data.result.split(' ');
+                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
+                        NotifyService.showPreDialog('Error sending request', message);
+                    } else {
+                        NotifyService.showSimpleToast(message);
+                    }
                 }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });

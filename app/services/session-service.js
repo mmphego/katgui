@@ -248,7 +248,6 @@
                     }
                     $localStorage['currentUserToken'] = $rootScope.jwt;
                     NotifyService.showSimpleToast('Login successful, welcome ' + payload.name + '.');
-                    $rootScope.$emit('loginSuccess', true);
                     $rootScope.connectEvents();
                     if (payload.req_role === 'lead_operator' && !api.connection) {
                         api.connectListener(false);
@@ -256,6 +255,7 @@
                         api.disconnectListener();
                     }
                     $rootScope.expertOrLO = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
+                    $rootScope.$emit('loginSuccess', true);
                 }
             } else {
                 //User's session expired, we got a message

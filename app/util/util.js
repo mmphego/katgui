@@ -439,6 +439,10 @@ function katGuiUtil(SERVER_URL, $sce) {
         return pattern.test(str);
     };
 
+    this.sanitizeKATCPMessage = function (katcpMessage) {
+        return katcpMessage.replace(/\\_/g, ' ').replace(/\\n\\n/g, '\n').replace(/\\n/g, '\n');
+    };
+
     return this;
 }
 

@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService,
+    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService, KatGuiUtil,
                              $log, $q, $mdDialog, NotifyService, $timeout, $interval) {
 
         var urlBase = SERVER_URL + '/katcontrol';
@@ -29,8 +29,8 @@
             request
                 .then(function (result) {
                     if (!result.data.error) {
-                        var message = result.data.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
-                        if (message.split(' ')[1] === 'ok') {
+                        var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                        if (result.data.result.split(' ')[1] === 'ok') {
                             NotifyService.showSimpleToast(message);
                         } else {
                             NotifyService.showPreDialog('Error Processing Request', message);

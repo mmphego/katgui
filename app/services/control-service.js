@@ -4,7 +4,7 @@
         .constant('SERVER_URL', window.location.host === 'localhost:8000' ? 'http://monctl.devf.camlab.kat.ac.za' : window.location.origin)
         .service('ControlService', ControlService);
 
-    function ControlService($rootScope, $http, SERVER_URL, NotifyService) {
+    function ControlService($rootScope, $http, SERVER_URL, NotifyService, KatGuiUtil) {
 
         var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
@@ -80,7 +80,13 @@
         api.handleRequestResponse = function (request) {
             request
                 .then(function (result) {
-                    NotifyService.showSimpleToast(result.data.result.replace(/\\_/g, ' '));
+                    var splitMessage = result.data.result.split(' ');
+                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
+                        NotifyService.showPreDialog('Error sending request', message);
+                    } else {
+                        NotifyService.showSimpleToast(message);
+                    }
                 }, function (error) {
                     NotifyService.showHttpErrorDialog('Error sending request', error);
                 });
