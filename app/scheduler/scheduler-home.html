@@ -1,20 +1,46 @@
 <div ng-controller="SchedulerHomeCtrl as vm" flex layout="column"
      ng-class="{'connection-lost-bg':vm.connectionLost}" md-theme="{{themePrimary}}">
 
-    <div ng-show="!vm.childStateShowing" layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}"
-         style="margin: 11px 8px; min-height: 36px;" md-theme="{{themePrimaryButtons}}">
-        <md-button style="margin: 0;" title="Schedule Block Drafts"
-                   ng-click="$root.stateGo('scheduler.drafts')">
+     <div ng-if="vm.subarrays.length === 0" class="md-whiteframe-z5"
+          style="padding: 32px; margin: 32px auto; font-size: 18px"
+          layout="row" layout-align="center center">
+         <md-progress-circular md-theme="{{themePrimaryButtons}}" md-mode="indeterminate"></md-progress-circular>
+         <span style="margin-left: 16px">Loading Subarrays...</span>
+     </div>
+
+    <div ng-if="vm.subarrays.length > 0" layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}"
+     style="margin: 8px 8px 0 8px; min-height: 50px;" md-theme="{{themePrimaryButtons}}">
+        <md-button style="margin: 0" title="Schedule Block Drafts" ng-disabled="vm.currentState() === 'scheduler.drafts'"
+            ng-click="vm.stateGo('scheduler.drafts')">
             <span>SB Drafts</span>
         </md-button>
         <span flex></span>
-        <md-button style="margin: 0" title="All Subarrays Observations Overview"
-                   ng-click="$root.stateGo('scheduler.observations')">
+        <md-button ng-show="vm.subarray" class="md-primary md-raised" style="margin: 0"
+                    ng-click="vm.stateGo('scheduler.resources')" ng-disabled="vm.currentState() === 'scheduler.resources'">
+            <span>Set-up Subarray</span>
+        </md-button>
+        <div ng-show="vm.subarray" ng-include="'images/left-arrow.svg'" class="left-arrow-transform-small"></div>
+        <md-button ng-show="vm.subarray" class="md-primary md-raised inline-svg-button" style="margin: 0"
+                ng-click="vm.stateGo('scheduler.subarrays')" ng-disabled="vm.currentState() === 'scheduler.subarrays'">
+            <span>Manage Schedule Blocks</span>
+        </md-button>
+        <div ng-show="vm.subarray" ng-include="'images/left-arrow.svg'" class="left-arrow-transform-small"></div>
+        <md-button ng-show="vm.subarray" class="md-primary md-raised" style="margin: -1px"
+                ng-click="vm.stateGo('scheduler.observations.detail')" ng-disabled="vm.currentState() === 'scheduler.observations.detail'">
+            <span>Observations</span>
+        </md-button>
+        <md-button ng-show="!vm.subarray" class="md-primary md-raised" style="margin: 0"
+                   ng-click="vm.stateGo('scheduler')" ng-disabled="vm.currentState() === 'scheduler'">
+            <span>Subarrays Workflow</span>
+        </md-button>
+        <span flex></span>
+        <md-button style="margin: 0" title="All Subarrays Observations Overview" ng-disabled="vm.currentState() === 'scheduler.observations'"
+                    ng-click="vm.stateGo('scheduler.observations')">
             <span>Obs Overview</span>
         </md-button>
     </div>
 
-    <div ng-show="!vm.childStateShowing" layout="column" layout-align="center center" class="md-whiteframe-z4"
+    <div ng-show="!vm.childStateShowing && vm.subarrays.length > 0" layout="column" layout-align="center center" class="md-whiteframe-z4"
          style="margin: 8px; min-height: 700px;">
         <md-toolbar class="md-toolbar-tools md-whiteframe-z1">
             <span>Subarray Workflow</span>
@@ -37,19 +63,19 @@
                     </div>
                 </md-toolbar>
                 <div layout="row" layout-align="center center" ng-class="{'maintenance-bg':subarray.maintenance}">
-                    <md-button class="md-primary md-raised" ng-click="$root.stateGoWithSubId('scheduler.resources', subarray.id)"
+                    <md-button class="md-primary md-raised" ng-click="vm.stateGo('scheduler.resources', subarray.id)"
                                style="height: 79px; width: 225px;">
                         <div ng-include="'images/subarrays-resources.svg'" class="inline-svg-icon" style="top: 6px; left: 2px;"></div>
                         <span style="position: absolute; left: 74px; top: 22px;">Set-up Subarray</span>
                     </md-button>
                     <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>
-                    <md-button class="md-primary md-raised inline-svg-button" ng-click="$root.stateGoWithSubId('scheduler.subarrays', subarray.id)"
+                    <md-button class="md-primary md-raised inline-svg-button" ng-click="vm.stateGo('scheduler.subarrays', subarray.id)"
                                style="height: 79px; width: 290px;" ng-disabled="subarray.state !== 'active'">
                         <div ng-include="'images/scheduleblocks.svg'" class="inline-svg-icon" style="top: 2px; left: 2px;"></div>
                         <span style="position: absolute; left: 86px; top: 22px;">Manage Schedule Blocks</span>
                     </md-button>
                     <div ng-include="'images/left-arrow.svg'" class="left-arrow-transform"></div>
-                    <md-button class="md-primary md-raised" ng-click="$root.stateGoWithSubId('scheduler.observations.detail', subarray.id)"
+                    <md-button class="md-primary md-raised" ng-click="vm.stateGo('scheduler.observations.detail', subarray.id)"
                                style="height: 79px; width: 255px;" ng-disabled="subarray.state !== 'active'">
                         <div ng-include="'images/subarray.svg'" class="inline-svg-icon" style="top: 10px; left: 8px;"></div>
                         <span style="position: absolute; left: 74px; top: 22px;">Observations</span>
@@ -58,25 +84,6 @@
             </div>
         </div>
     </div>
-
-    <div ng-if="vm.subarrays.length === 0" class="md-whiteframe-z5"
-         style="padding: 32px; margin: 32px auto; font-size: 18px"
-         layout="row" layout-align="center center">
-        <md-progress-circular md-theme="{{themePrimaryButtons}}" md-mode="indeterminate"></md-progress-circular>
-        <span style="margin-left: 16px">Loading Subarrays...</span>
-    </div>
-
-    <!-- <div class="md-whiteframe-z5" ng-if="$root.currentStateName() !== 'scheduler.observations' && !$root.iAmLO && !$root.iAmCA && vm.subarrays.length > 0"
-         style="padding: 32px; margin: 32px; font-size: 18px"
-        layout="column" layout-align="center center" md-theme="{{themePrimaryButtons}}">
-        <span>You do not have permission to view Subarrays.</span>
-        <span>To get access to Subarrays, please contact the current Lead Operator and request Control Authority.</span>
-        <md-button class="md-primary md-raised" ng-click="$root.stateGo('scheduler.observations')"
-                   style="height: 95px; width: 285px; margin-top: 32px">
-            <div ng-include="'images/subarrays.svg'" class="inline-svg-icon" style="top: 10px; left: 8px;"></div>
-            <span style="position: absolute; left: 94px; top: 32px;">Observations Overview</span>
-        </md-button>
-    </div> -->
 
     <div ng-show="vm.childStateShowing && vm.subarrays.length > 0" ui-view flex layout="column"></div>
 </div>

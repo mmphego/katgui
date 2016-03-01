@@ -10,8 +10,8 @@
             'MANUAL'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService,
-                               NotifyService, MonitorService, ConfigService, $stateParams, $q) {
+    function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService, $timeout,
+                               NotifyService, MonitorService, ConfigService, $stateParams, $q, $mdDialog, UserService) {
 
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
@@ -21,10 +21,43 @@
         vm.connectionLost = false;
         vm.waitForSubarrayToExistDeferred = $q.defer();
         vm.subarray = null;
+        vm.products = [];
+        vm.bands = [];
+        vm.users = [];
+        vm.iAmCA = false;
 
-        $rootScope.stateGoWithSubId = function (newState, subarray_id) {
-            $state.go(newState, {subarray_id: subarray_id});
-            vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarray_id});
+        if (!$stateParams.subarray_id) {
+            $state.go($state.current.name, {subarray_id: '1'});
+        }
+
+        UserService.listUsers().then(function () {
+            for (var i = 0; i < UserService.users.length; i++) {
+                vm.users.push(UserService.users[i]);
+            }
+        });
+
+        ConfigService.getSystemConfig()
+            .then(function (systemConfig) {
+                if (systemConfig.system.bands && systemConfig.system.products) {
+                    vm.bands = systemConfig.system.bands.split(',');
+                    vm.products = systemConfig.system.products.split(',');
+                } else {
+                    NotifyService.showSimpleDialog('Error loading bands and products',
+                        'Bands and products were not found in the system\'s config.');
+                }
+            });
+
+        vm.stateGo = function (newState, subarray_id) {
+            if (subarray_id) {
+                $state.go(newState, {subarray_id: subarray_id});
+                vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarray_id});
+            } else if (vm.subarray) {
+                $state.go(newState, {subarray_id: vm.subarray.id});
+            } else if (newState === 'scheduler.observations' || newState === 'scheduler.drafts') {
+                $state.go(newState);
+            } else {
+                $state.go('scheduler');
+            }
         };
 
         vm.unbindStateChangeStart = $rootScope.$on('$stateChangeStart', function (event, toState) {
@@ -34,19 +67,26 @@
                 toState.name === 'scheduler.subarrays' ||
                 toState.name === 'scheduler.observations' ||
                 toState.name === 'scheduler.observations.detail');
+
+            if (toState.name === 'scheduler.observations' ||
+                toState.name === 'scheduler.drafts' ||
+                toState.name === 'scheduler') {
+                vm.subarray = null;
+            }
         });
+
+        vm.currentState = function () {
+            return $state.current.name;
+        };
 
         MonitorService.subscribe('sched');
         ObsSchedService.getScheduleBlocks();
         ObsSchedService.getScheduledScheduleBlocks();
 
         vm.checkCASubarrays = function () {
-            for (var i = 0; i < ObsSchedService.subarrays.length; i++) {
-                if ($stateParams.subarray_id === ObsSchedService.subarrays[i].id) {
-                    vm.subarray = ObsSchedService.subarrays[i];
-                    vm.waitForSubarrayToExistDeferred.resolve();
-                    vm.iAmCA = vm.subarray.delegated_ca === $rootScope.currentUser.email;
-                }
+            vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: $stateParams.subarray_id});
+            if (vm.subarray) {
+                vm.iAmCA = vm.subarray.delegated_ca === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'control_authority';
             }
         };
 
@@ -61,8 +101,324 @@
             vm.checkCASubarrays();
         });
 
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+            vm.checkCASubarrays();
+        });
+
         vm.waitForSubarrayToExist = function () {
+            if (vm.subarray) {
+                $timeout(function () {
+                    vm.waitForSubarrayToExistDeferred.resolve();
+                }, 1);
+            } else {
+                vm.waitForSubarrayToExistInterval = $interval(function () {
+                    if (!vm.subarray && $stateParams.subarray_id) {
+                        vm.checkCASubarrays();
+                    }
+                    if (vm.subarray) {
+                        vm.waitForSubarrayToExistDeferred.resolve();
+                        $interval.cancel(vm.waitForSubarrayToExistInterval);
+                        vm.waitForSubarrayToExistInterval = null;
+                    }
+                }, 150);
+            }
             return vm.waitForSubarrayToExistDeferred.promise;
+        };
+
+        vm.openConfigLabelDialog = function (event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Select a Config Label';
+                        $scope.configLabels = ObsSchedService.configLabels;
+                        ObsSchedService.listConfigLabels();
+                        $scope.configLabelsFields = [
+                            {label: 'date', value: 'date'},
+                            {label: 'name', value: 'name'}
+                        ];
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setConfigLabel = function (configLabel) {
+                            ObsSchedService.setConfigLabel(vm.subarray.id, configLabel);
+                        };
+                    },
+                    template:
+                        '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                        '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
+                        '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                        '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
+                        '           <input type="search" style="font-size: 14px; margin-left: 8px; width: 140px; background: transparent; border: 0" ng-model="q" placeholder="Search Labels..."/>' +
+                        '       </md-toolbar>' +
+                        '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
+                        '           <div style="text-align: center" class="config-label-list-item" ng-click="setConfigLabel(\'\');  hide()">Clear Config Label</div>' +
+                        '           <div layout="row" ng-repeat="configLabel in configLabels | regexSearch:configLabelsFields:q track by $index" ng-click="setConfigLabel(configLabel.name); hide()" class="config-label-list-item">' +
+                        '               <div style="min-width: 178px;">{{configLabel.date}}</div>' +
+                        '               <div>{{configLabel.name}}</div>' +
+                        '           </div>' +
+                        '       </div>' +
+                        '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.setBand = function (band) {
+            ObsSchedService.setBand(vm.subarray.id, band);
+        };
+
+        vm.openBandsDialog = function (event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Select a Band';
+                        $scope.bands = vm.bands;
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setBand = function (band) {
+                            vm.setBand(band);
+                        };
+                    },
+                    template:
+                        '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                        '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
+                        '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                        '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
+                        '       </md-toolbar>' +
+                        '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
+                        '           <div layout="row" layout-align="center center" ng-repeat="band in bands track by $index" ng-click="setBand(band); hide()" class="config-label-list-item">' +
+                        '               <b>{{band}}</b>' +
+                        '           </div>' +
+                        '       </div>' +
+                        '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.setProduct = function (product) {
+            ObsSchedService.setProduct(vm.subarray.id, product);
+        };
+
+        vm.openProductsDialog = function (event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Select a Product';
+                        $scope.products = vm.products;
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setProduct = function (product) {
+                            vm.setProduct(product);
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
+                    '           <div layout="row" layout-align="center center" ng-repeat="product in products track by $index" ng-click="setProduct(product); hide()" class="config-label-list-item">' +
+                    '               <b>{{product}}</b>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.openCADialog = function (event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Select a Control Authority';
+                        UserService.listUsers();
+                        $scope.users = UserService.users;
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setCA = function (userName) {
+                            ObsSchedService.delegateControl(vm.subarray.id, userName);
+                        };
+                        $scope.hasCARole = function (user) {
+                            return user.roles.indexOf('control_authority') > -1;
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
+                    '           <div layout="row" layout-align="center center" ng-click="setCA(\'lo\'); hide()" class="config-label-list-item">' +
+                    '               <b>Lead Operator</b>' +
+                    '           </div>' +
+                    '           <div ng-if="hasCARole(user)" layout="row" layout-align="center center" ng-repeat="user in users track by $index" ng-click="setCA(user.email); hide()" class="config-label-list-item">' +
+                    '               <b>{{user.email}}</b>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.delegateControl = function (email) {
+            ObsSchedService.delegateControl(vm.subarray.id, email);
+        };
+
+        vm.openTemplateListDialog = function ($event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Select a Template';
+                        $scope.templates = ObsSchedService.resourceTemplates;
+                        ObsSchedService.listResourceTemplates();
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.templateSelected = function (template) {
+                            $mdDialog.hide();
+                            ObsSchedService.loadResourceTemplate(vm.subarray, template);
+                        };
+                    },
+                    template:
+                        '<md-dialog style="padding: 0; min-width: 800px" md-theme="{{$root.themePrimary}}">' +
+                        '   <div style="padding: 0; margin: 0; overflow: hidden" layout="column">' +
+                        '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                        '           <span flex style="margin-left: 16px;">{{::title}}</span>' +
+                        '           <div layout="row" style="position: absolute; left: 8px; right: 0; bottom: 0; font-size: 12px">' +
+                        '               <span style="min-width: 300px; max-width: 300px;">Name</span>' +
+                        '               <span style="min-width: 35px; max-width: 35px;">Band</span>' +
+                        '               <span style="min-width: 100px; max-width: 100px;">Product</span>' +
+                        '               <span style="min-width: 350px; max-width: 350px;">Resources</span>' +
+                        '           </div>' +
+                        '       </md-toolbar>' +
+                        '       <div flex layout="column" layout-align="center center" style="overflow: auto;">' +
+                        '           <div flex layout="row" layout-align="center center" ng-repeat="template in displayedTemplates = (templates | filter:{activated: true} | orderBy:name:true) track by $index" ng-click="templateSelected(template); hide()" class="config-label-list-item span-text-overflow-hidden-ellipsis">' +
+                        '               <span style="min-width: 300px; max-width: 300px;" title="{{template.name}}">{{template.name}}</span>' +
+                        '               <span style="min-width: 35px; max-width: 35px;">{{template.band}}</span>' +
+                        '               <span style="min-width: 100px; max-width: 100px;" title="{{template.product}}">{{template.product}}</span>' +
+                        '               <span style="min-width: 350px; max-width: 350px;" title="{{template.resources}}">{{template.resources}}</span>' +
+                        '           </div>' +
+                        '           <i flex ng-show="displayedTemplates.length === 0">No templates found, create one first.</i>' +
+                        '       </div>' +
+                        '       <div layout="row" layout-align="end end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Cancel</md-button>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.saveTemplateDialog = function ($event) {
+            var resourceNames = [];
+            vm.subarray.allocations.forEach(function (allocation) {
+                resourceNames.push(allocation.name);
+            });
+            resourceNames = resourceNames.join(',');
+
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Update an Existing Template...';
+                        $scope.templates = ObsSchedService.resourceTemplates;
+                        $scope.template = {
+                            name: "",
+                            resources: resourceNames,
+                            band: vm.subarray.band,
+                            product: vm.subarray.product};
+                        ObsSchedService.listResourceTemplates();
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.templateSelected = function (template) {
+                            NotifyService.showImportantConfirmDialog(event, 'Confirm Overwrite',
+                                'Are you sure you want to overwrite the template?',
+                                'Yes', 'Cancel')
+                                    .then(function () {
+                                        $scope.template = template;
+                                        $scope.template.resources = resourceNames;
+                                        $scope.template.band = vm.subarray.band;
+                                        $scope.template.product = vm.subarray.product;
+                                        ObsSchedService.modifyResourceTemplate($scope.template);
+                                    });
+                        };
+                        $scope.createNewTemplate = function () {
+                            ObsSchedService.addResourceTemplate($scope.template);
+                            $mdDialog.hide();
+                        };
+                        $scope.deactivateResourceTemplate = function (template) {
+                            NotifyService.showImportantConfirmDialog(event, 'Confirm Delete',
+                                'Are you sure you want to delete the template ' + template.name + '?',
+                                'Yes', 'Cancel')
+                                    .then(function () {
+                                        $scope.template = template;
+                                        $scope.template.activated = false;
+                                        ObsSchedService.modifyResourceTemplate($scope.template);
+                                    });
+                        };
+                    },
+                    template:
+                        '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                        '   <div style="padding: 0; margin: 0; overflow: hidden" layout="column">' +
+                        '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                        '           <span flex style="margin-left: 16px;">{{::title}}</span>' +
+                        '           <div layout="row" style="position: absolute; left: 8px; right: 0; bottom: 0; font-size: 12px">' +
+                        '               <span style="min-width: 300px; max-width: 300px;">Name</span>' +
+                        '               <span style="min-width: 35px; max-width: 35px;">Band</span>' +
+                        '               <span style="min-width: 100px; max-width: 100px;">Product</span>' +
+                        '               <span style="min-width: 350px; max-width: 350px;">Resources</span>' +
+                        '           </div>' +
+                        '       </md-toolbar>' +
+                        '       <div flex layout="column" style="overflow: auto;">' +
+                        '           <div layout="row" layout-align="center center" ng-repeat="template in templates | filter:{activated: true} | orderBy:name:true track by $index" ng-click="templateSelected(template); hide()" class="config-label-list-item">' +
+                        '               <span style="min-width: 300px; max-width: 300px;" title="{{template.name}}">{{template.name}}</span>' +
+                        '               <span style="min-width: 35px; max-width: 35px;">{{template.band}}</span>' +
+                        '               <span style="min-width: 100px; max-width: 100px;" title="{{template.product}}">{{template.product}}</span>' +
+                        '               <span style="min-width: 350px; max-width: 350px;" title="{{template.resources}}">{{template.resources}}</span>' +
+                        '               <md-button ng-if="$root.expertOrLO" class="md-icon-button inline-action-button"' +
+                        '                   ng-click="deactivateResourceTemplate(template); $event.stopPropagation()"' +
+                        '                   title="Delete Template" style="margin: 0;padding: 0;max-height: 20px;min-height: 20px;width: 20px;">' +
+                        '                   <md-icon class="fa" md-font-icon="fa-trash"></md-icon>' +
+                        '               </md-button>' +
+                        '           </div>' +
+                        '       </div>' +
+                        '       <div layout="row" layout-align="center center" style="margin: 0px 8px; min-height: 40px; border-top: 1px dashed #d7d7d7;border-bottom: 1px dashed #d7d7d7;">' +
+                        '           <i style="font-size: 18px;">OR create a new template...</i>' +
+                        '       </div>' +
+                        '       <div layout="row" layout-align="end center" style="margin-top: 0px; min-height: 40px;">' +
+                        '           <md-input-container md-no-float md-theme="{{themePrimary}}" flex style="margin: 4px 8px; min-width: 300px;"><input placeholder="Template Name..." ng-model="template.name"></md-input-container>' +
+                        '           <md-button ng-disabled="template.name.length < 3" style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="createNewTemplate()">Create New</md-button>' +
+                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Cancel</md-button>' +
+                        '       </div>' +
+                        '   </div>' +
+                        '</md-dialog>',
+                    targetEvent: event
+                });
         };
 
         $scope.$on('$destroy', function () {
@@ -74,6 +430,9 @@
             }
             if (vm.unbindWatchSubarrays) {
                 vm.unbindWatchSubarrays();
+            }
+            if (vm.waitForSubarrayToExistInterval) {
+                $interval.cancel(vm.waitForSubarrayToExistInterval);
             }
             SensorsService.disconnectListener();
             vm.disconnectIssued = true;

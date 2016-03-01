@@ -26,7 +26,8 @@
             control_authority: "control_authority",
             lead_operator: "lead_operator",
             operator: "operator",
-            read_only: "read_only"
+            read_only: "read_only",
+            expert: "expert"
         })
         .constant('THEMES', [
             {
@@ -77,7 +78,7 @@
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
-        $rootScope.expertUser = false;
+        $rootScope.expertOrLO = false;
 
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {

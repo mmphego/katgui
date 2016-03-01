@@ -28,11 +28,15 @@
             }
             request
                 .then(function (result) {
-                    var message = result.data.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
-                    if (message.split(' ')[1] === 'ok') {
-                        NotifyService.showSimpleToast(message);
+                    if (!result.data.error) {
+                        var message = result.data.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
+                        if (message.split(' ')[1] === 'ok') {
+                            NotifyService.showSimpleToast(message);
+                        } else {
+                            NotifyService.showPreDialog('Error Processing Request', message);
+                        }
                     } else {
-                        NotifyService.showPreDialog('Error Processing Request', message);
+                        NotifyService.showPreDialog('Error Processing Request', result.data.error);
                     }
                     if (deferred) {
                         deferred.resolve();
@@ -84,9 +88,8 @@
             $http(createRequest('post', urlBase + '/sb/' + id_code + '/priority/' + priority))
                 .then(function (result) {
                     NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
-                    $log.info(result);
                 }, function (error) {
-                    $log.error(error);
+                    NotifyService.showHttpErrorDialog('Error setting SB priority', error);
                 });
         };
 

@@ -10,7 +10,7 @@
         api.toastHideDelay = 3500;
 
         api.showSimpleToast = function (message) {
-            $mdToast.hide();
+            // $mdToast.hide();
             var simpleToast = $mdToast.simple()
                 .content(message)
                 .highlightAction(true)

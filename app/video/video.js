@@ -244,7 +244,7 @@
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                if ($rootScope.currentUser.req_role === USER_ROLES.lead_operator ||
+                if ($rootScope.expertOrLO ||
                     $rootScope.currentUser.req_role === USER_ROLES.operator) {
                     vm.canOperateVDS = true;
                     vm.connectListeners();

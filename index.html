@@ -157,7 +157,7 @@
                         </div>
                     </md-item-content>
                 </md-item>
-                <md-item ng-if="$root.currentUser.req_role === 'operator' || $root.currentUser.req_role === 'lead_operator'">
+                <md-item>
                     <md-item-content style="padding-bottom: 8px;" ng-click="vm.sideNavStateGo('operator-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
                             <md-button flex><span class="fa fa-cogs"></span><span>Operator Control</span></md-button>
@@ -188,16 +188,13 @@
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
                             <md-button flex><span class="fa fa-list"></span><span>Subarrays Workflow</span></md-button>
                         </div>
-                        <div ng-if="$root.currentUser.req_role === 'lead_operator' || $root.currentUser.req_role === 'control_authority'"
-                             class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
                             <md-button flex><span class="fa fa-pencil"></span><span>Schedule Block Drafts</span></md-button>
                         </div>
-                        <div ng-if="$root.currentUser.req_role === 'lead_operator' || $root.currentUser.req_role === 'control_authority'"
-                             class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
                             <md-button flex><span class="fa fa-asterisk"></span><span>Subarray Schedule Blocks</span></md-button>
                         </div>
-                        <div ng-if="$root.currentUser.req_role === 'lead_operator' || $root.currentUser.req_role === 'control_authority'"
-                             class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.resources')">
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.resources')">
                             <md-button flex><span class="fa fa-sitemap"></span><span>Set-up Subarray</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.observations')">
@@ -232,7 +229,7 @@
                         <md-button flex><span class="fa fa-pencil-square-o"></span><span>User Logs</span></md-button>
                     </md-item-content>
                 </md-item>
-                <md-item ng-show="$root.expertUser">
+                <md-item ng-show="$root.expertOrLO">
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlog-tags')">
                         <md-button flex><span class="fa fa-tag"></span><span>User Log Tags</span></md-button>
                     </md-item-content>

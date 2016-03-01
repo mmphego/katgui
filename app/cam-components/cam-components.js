@@ -145,7 +145,6 @@
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                vm.lead_op = $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
                 vm.connectListeners();
             }
         };

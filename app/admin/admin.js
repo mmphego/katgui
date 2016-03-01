@@ -173,7 +173,7 @@
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1 || $rootScope.iAmLO;
+                vm.isUserAdmin = $rootScope.currentUser.roles.indexOf('user_admin') !== -1 || $rootScope.expertOrLO;
                 if (vm.isUserAdmin) {
                     vm.listUsers();
                 }

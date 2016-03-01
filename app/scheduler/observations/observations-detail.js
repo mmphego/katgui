@@ -16,14 +16,17 @@
 
         vm.scheduleData = ObsSchedService.scheduleData;
         vm.scheduleCompletedData = ObsSchedService.scheduleCompletedData;
-        vm.subarrays = ObsSchedService.subarrays;
+        vm.subarray = $scope.$parent.vm.subarray;
+        $scope.parentScope = $scope.$parent;
 
         if (!$scope.$parent.vm.subarray) {
             $scope.$parent.vm.waitForSubarrayToExist().then(function () {
                 vm.subarray = $scope.$parent.vm.subarray;
+                ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 30);
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;
+            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 30);
         }
 
         vm.completedFields = [
@@ -36,16 +39,20 @@
             {label: 'Type', value: 'type'}
         ];
 
+        vm.stateGo = function (state) {
+            $state.go(state, {subarray_id: vm.subarray.id});
+        };
+
         vm.executeSchedule = function (item) {
-            ObsSchedService.executeSchedule(vm.subarray_id, item.id_code);
+            ObsSchedService.executeSchedule(vm.subarray.id, item.id_code);
         };
 
         vm.stopExecuteSchedule = function (item) {
-            ObsSchedService.stopSchedule(vm.subarray_id, item.id_code);
+            ObsSchedService.stopSchedule(vm.subarray.id, item.id_code);
         };
 
         vm.cancelExecuteSchedule = function (item) {
-            ObsSchedService.cancelExecuteSchedule(vm.subarray_id, item.id_code);
+            ObsSchedService.cancelExecuteSchedule(vm.subarray.id, item.id_code);
         };
 
         vm.cloneSchedule = function (item) {
@@ -57,11 +64,11 @@
         };
 
         vm.moveScheduleRowToFinished = function (item) {
-            ObsSchedService.scheduleToComplete(vm.subarray_id, item.id_code);
+            ObsSchedService.scheduleToComplete(vm.subarray.id, item.id_code);
         };
 
         vm.moveScheduleRowToDraft = function (item) {
-            ObsSchedService.scheduleToDraft(vm.subarray_id, item.id_code);
+            ObsSchedService.scheduleToDraft(vm.subarray.id, item.id_code);
         };
 
         vm.setSelectedSchedule = function (selectedSchedule, dontDeselectOnSame) {
@@ -81,7 +88,7 @@
         };
 
         vm.setSchedulerMode = function (mode) {
-            ObsSchedService.setSchedulerModeForSubarray(vm.subarray_id, mode);
+            ObsSchedService.setSchedulerModeForSubarray(vm.subarray.id, mode);
         };
 
         vm.viewSBTaskLog = function (sb) {
@@ -89,15 +96,15 @@
         };
 
         vm.verifySB = function (sb) {
-            ObsSchedService.verifyScheduleBlock(vm.subarray_id, sb.id_code);
+            ObsSchedService.verifyScheduleBlock(vm.subarray.id, sb.id_code);
         };
 
         vm.freeSubarray = function () {
-            ObsSchedService.freeSubarray(vm.subarray_id);
+            ObsSchedService.freeSubarray(vm.subarray.id);
         };
 
         vm.activateSubarray = function () {
-            ObsSchedService.activateSubarray(vm.subarray_id)
+            ObsSchedService.activateSubarray(vm.subarray.id)
                 .then(function (result) {
                     NotifyService.showSimpleToast(result.data.result);
                 }, function (error) {
@@ -116,7 +123,7 @@
         };
 
         vm.setSubarrayMaintenance = function (maintenance) {
-            ObsSchedService.setSubarrayMaintenance(vm.subarray_id, maintenance ? 'set' : 'clear');
+            ObsSchedService.setSubarrayMaintenance(vm.subarray.id, maintenance ? 'set' : 'clear');
         };
 
         vm.setPriority = function (sb, event) {
@@ -154,10 +161,8 @@
         };
 
         vm.cancelListeningToCompletedUpdates = $rootScope.$on('sb_completed_change',function () {
-            ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
+            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 30);
         });
-
-        ObsSchedService.getCompletedScheduleBlocks(vm.subarray_id, 30);
 
         $scope.$on('$destroy', function () {
             if (vm.progressInterval) {

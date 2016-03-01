@@ -10,6 +10,7 @@
         vm.receptorsData = ReceptorStateService.receptorsData;
         vm.sensorValues = ReceptorStateService.sensorValues;
         vm.waitingForRequestResult = false;
+        vm.canIntervene = false;
 
         ReceptorStateService.getReceptorList();
 
@@ -70,10 +71,7 @@
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                if ($rootScope.currentUser.req_role !== USER_ROLES.lead_operator &&
-                    $rootScope.currentUser.req_role !== USER_ROLES.operator) {
-                    $state.go('home');
-                }
+                vm.canIntervene = $rootScope.expertOrLO || $rootScope.currentUser.req_role === USER_ROLES.operator;
             }
         };
 

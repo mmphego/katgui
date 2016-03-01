@@ -19,6 +19,7 @@
         } else {
             vm.subarray = $scope.$parent.vm.subarray;
         }
+        $scope.parentScope = $scope.$parent;
 
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code', reverse: true},
@@ -80,7 +81,7 @@
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code)
                 .then(function (result) {
-                    $log.info(result.data);
+                    // $log.info(result.data);
                 }, function (result) {
                     NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
                 });
@@ -121,8 +122,8 @@
                 });
         };
 
-        vm.navigateToSchedulerDetails = function (subarray_id) {
-            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
+        vm.stateGo = function (state) {
+            $state.go(state, {subarray_id: vm.subarray.id});
         };
 
         $scope.$on('$destroy', function () {

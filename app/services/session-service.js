@@ -188,6 +188,9 @@
                     if (!window.location.hash.endsWith('sensor-graph')) {
                         NotifyService.showSimpleToast('Error connecting to KATPortal.');
                         $log.error(result);
+                        if (result.data && result.data.startsWith('<html')) {
+                            document.body.html(result.data.html);
+                        }
                         $state.go('login');
                     }
                 }
@@ -252,7 +255,7 @@
                     } else if (api.connection){
                         api.disconnectListener();
                     }
-                    $rootScope.expertUser = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
+                    $rootScope.expertOrLO = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
                 }
             } else {
                 //User's session expired, we got a message
