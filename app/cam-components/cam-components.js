@@ -10,7 +10,6 @@
 
         vm.resourcesNames = {};
         vm.guid = KatGuiUtil.generateUUID();
-        vm.disconnectIssued = false;
         vm.connectInterval = null;
 
         vm.connectListeners = function () {
@@ -21,9 +20,7 @@
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
-                        if (!vm.disconnectIssued) {
-                            NotifyService.showSimpleToast('Reconnected :)');
-                        }
+                        NotifyService.showSimpleToast('Reconnected :)');
                     }
                 }, function () {
                     $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
@@ -37,12 +34,10 @@
         vm.handleSocketTimeout = function () {
             SensorsService.getTimeoutPromise()
                 .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
+                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                        vm.connectListeners();
                     }
                 });
         };
@@ -66,9 +61,11 @@
                         'sys_monitor_', 'event-rate', 1, 360);
 
                     $timeout(function () {
-                        SensorsService.setSensorStrategies(
-                            'katcpmsgs|version|build', 'event-rate', 1, 360);
-                    }, 2000);
+                        if (SensorsService.connection) {
+                            SensorsService.setSensorStrategies(
+                                'katcpmsgs|version|build', 'event-rate', 1, 360);
+                        }
+                    }, 1000);
                 });
 
         };
@@ -102,11 +99,15 @@
             var sensorName = strList[1];
             if (sensorName.indexOf('monitor_') > -1) {
                 var resource = sensorName.split('monitor_')[1];
-                if (vm.resourcesNames[resource]) {
-                    vm.resourcesNames[resource].connected = sensor.value.value;
+                if (!vm.resourcesNames[resource]) {
+                    vm.resourcesNames[resource] = {sensors: {}};
                 }
+                vm.resourcesNames[resource].connected = sensor.value.value;
             } else {
                 var parentName = KatGuiUtil.getParentNameFromSensor(sensorName);
+                if (!vm.resourcesNames[parentName]) {
+                    vm.resourcesNames[parentName] = {sensors: {}};
+                }
                 sensorName = sensorName.replace(parentName + '_', '');
                 vm.resourcesNames[parentName].sensors[sensorName] = {
                     name: sensorName,
@@ -144,25 +145,18 @@
         };
 
         vm.afterInit = function() {
-            if ($rootScope.currentUser) {
-                vm.connectListeners();
-            }
+            vm.connectListeners();
         };
 
         vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
         vm.afterInit();
 
         $scope.$on('$destroy', function () {
-            for (var key in SensorsService.resources) {
-                SensorsService.removeResourceListeners(key);
-            }
-            SensorsService.unsubscribe('*', vm.guid);
             unbindUpdate();
-            vm.disconnectIssued = true;
-            SensorsService.disconnectListener();
             if (vm.unbindLoginSuccess) {
                 vm.unbindLoginSuccess();
             }
+            SensorsService.disconnectListener();
         });
     }
 })();

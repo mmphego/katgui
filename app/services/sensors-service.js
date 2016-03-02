@@ -131,6 +131,7 @@
 
         api.connectListener = function (skipDeferObject) {
             if (api.connection) {
+                api.disconnectListener();
                 $timeout(function () {
                     api.connectListener(true);
                 }, 500);
