@@ -1,24 +1,6 @@
 <div flex layout="column" style="min-width: 1260px; min-height: 500px; max-height: 100%; margin: 8px 0"
      ng-controller="SbDraftsCtrl as vm">
 
-    <div layout="row" layout-align="center center" style="margin: 0 8px; min-height: 50px;" md-theme="{{themePrimaryButtons}}">
-        <md-button style="border: 8px solid #4CAF50; border-radius: 4px; margin: -1px"
-                   title="Schedule Block Drafts"
-                   ng-click="$root.stateGo('scheduler.drafts')">
-            <span>SB Drafts</span>
-        </md-button>
-        <span flex></span>
-        <md-button class="md-primary md-raised" style="margin: 0"
-                   ng-click="$root.stateGo('scheduler')">
-            <span>Subarrays Workflow</span>
-        </md-button>
-        <span flex></span>
-        <md-button style="margin: 0" title="All Subarrays Observations Overview"
-                   ng-click="$root.stateGo('scheduler.observations')">
-            <span>Obs Overview</span>
-        </md-button>
-    </div>
-
     <div flex layout="row" style="margin: 8px; max-height: 100%; min-height: 100%;">
         <div class="md-whiteframe-z2" layout="column" flex>
             <md-toolbar class="md-whiteframe-z1">
@@ -122,7 +104,7 @@
                                    style="margin: 0">
                             <span style="display: inherit" class="fa fa-check"></span>
                         </md-button>
-                        <md-button ng-if="!item.editing" class="inline-action-button"
+                        <md-button ng-disabled="!$root.expertOrLO && $root.currentUser.req_role !== 'control_authority'" ng-if="!item.editing" class="inline-action-button"
                                    ng-click="vm.removeDraft(item); $event.stopPropagation()" style="margin: 0"
                                    title="Delete Draft">
                             <span style="display: inherit" class="fa fa-remove"></span>
@@ -135,10 +117,10 @@
                             </md-button>
                             <md-menu-content style="padding: 8px;">
                                 <md-menu-item>
-                                    <md-button ng-click="item.editing = true">Edit Draft</md-button>
+                                    <md-button ng-disabled="!$root.expertOrLO && $root.currentUser.req_role !== 'control_authority'" ng-click="item.editing = true">Edit Draft</md-button>
                                 </md-menu-item>
                                 <md-menu-item ng-show="item.type == 'OBSERVATION'">
-                                    <md-button ng-disabled="!item.sub_nr"
+                                    <md-button ng-disabled="!item.sub_nr && (!$root.expertOrLO && $root.currentUser.req_role !== 'control_authority')"
                                                title="{{!item.sub_nr ? 'Assign to a Subarray before verifying' : ''}}"
                                                ng-click="vm.verifyDraft(item)">Verify Draft
                                     </md-button>

@@ -3,13 +3,15 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $state, USER_ROLES, ReceptorStateService, ControlService, NotifyService) {
+    function OperatorControlCtrl($rootScope, $scope, $state, USER_ROLES, ReceptorStateService,
+                                 KatGuiUtil, ControlService, NotifyService) {
 
         var vm = this;
 
         vm.receptorsData = ReceptorStateService.receptorsData;
         vm.sensorValues = ReceptorStateService.sensorValues;
         vm.waitingForRequestResult = false;
+        vm.canIntervene = false;
 
         ReceptorStateService.getReceptorList();
 
@@ -61,20 +63,21 @@
             request
                 .then(function (result) {
                     vm.waitingForRequestResult = false;
-                    NotifyService.showSimpleToast(result.data.result.replace(/\\_/g, ' '));
+                    var splitMessage = result.data.result.split(' ');
+                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
+                        NotifyService.showPreDialog('Error sending request', message);
+                    } else {
+                        NotifyService.showSimpleToast(message);
+                    }
                 }, function (error) {
                     vm.waitingForRequestResult = false;
-                    NotifyService.showSimpleDialog('Error sending request', error);
+                    NotifyService.showHttpErrorDialog('Error sending request', error);
                 });
         };
 
         vm.afterInit = function() {
-            if ($rootScope.currentUser) {
-                if ($rootScope.currentUser.req_role !== USER_ROLES.lead_operator &&
-                    $rootScope.currentUser.req_role !== USER_ROLES.operator) {
-                    $state.go('home');
-                }
-            }
+            vm.canIntervene = $rootScope.expertOrLO || $rootScope.currentUser.req_role === USER_ROLES.operator;
         };
 
         vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);

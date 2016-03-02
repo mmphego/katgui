@@ -132,7 +132,6 @@
                                 var messageChannel = messageObj.msg_channel.split(":");
                                 if (messageObj.msg_channel === 'auth:current_lo') {
                                     api.currentLeadOperator.name = messageObj.msg_data.lo;
-                                    $rootScope.iAmLO = api.currentLeadOperator.name === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'lead_operator';
                                     if ($rootScope.currentUser &&
                                         $rootScope.currentUser.req_role === 'lead_operator' &&
                                         api.currentLeadOperator.name.length > 0 &&
@@ -173,7 +172,7 @@
                         });
                     }
                 } else if (messages.result) {
-                    $log.info('Subscribed to: ' + JSON.stringify(messages.result));
+                    $log.debug('Subscribed to: ' + JSON.stringify(messages.result));
                 } else {
                     $log.error('Dangling monitor message...');
                     $log.error(e);

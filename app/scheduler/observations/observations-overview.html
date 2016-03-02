@@ -1,24 +1,6 @@
 <div flex layout="column" style="min-width: 1015px; min-height: 860px; margin-top: 8px;"
      ng-controller="SubArrayExecutorOverview as vm">
 
-    <div layout="row" layout-align="center center" style="margin: 0 8px; min-height: 50px;" md-theme="{{themePrimaryButtons}}">
-        <md-button style="margin: 0"
-                   title="Schedule Block Drafts"
-                   ng-click="$root.stateGo('scheduler.drafts')">
-            <span>SB Drafts</span>
-        </md-button>
-        <span flex></span>
-        <md-button class="md-primary md-raised" style="margin: 0"
-                   ng-click="$root.stateGo('scheduler')">
-            <span>Subarrays Workflow</span>
-        </md-button>
-        <span flex></span>
-        <md-button style="border: 8px solid #4CAF50; border-radius: 4px; margin: -1px" title="All Subarrays Observations Overview"
-                   ng-click="$root.stateGo('scheduler.observations')">
-            <span>Obs Overview</span>
-        </md-button>
-    </div>
-
     <div flex layout="row" style="margin-top: 8px">
         <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 8px;">
             <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
@@ -30,7 +12,7 @@
                         ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                         layout="row" layout-align="center center" title="{{subarray.description}}"
                         style="max-height: 64px; min-height: 64px; position: relative; margin-top: -7px"
-                        ng-click="$root.stateGoWithSubId('scheduler.observations.detail', subarray.id)">
+                        ng-click="parentScope.vm.stateGo('scheduler.observations.detail', subarray.id)">
                         <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
                             <span><b>{{subarray.state}}</b></span>
                             <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>

@@ -92,26 +92,18 @@
             var startDate = vm.getTimestampFromHistoricalRange();
             vm.dataTimeWindow = new Date().getTime() - startDate;
 
-            var dataRegexSearch = '';
-            var samplingRegexSearch = '';
+            var dataRegexSearch = [];
+            var samplingRegexSearch = [];
             for (var i = 0; i < vm.ancResource.sensorList.length; i++) {
                 var sensor = vm.ancResource.sensorList[i];
                 var sensorName = sensor.python_identifier;
                 if (!sensor.skipHistory) {
-                    if (i < vm.ancResource.sensorList.length - 1) {
-                        dataRegexSearch += sensorName + '|';
-                    } else {
-                        dataRegexSearch += sensorName;
-                    }
+                    dataRegexSearch.push(sensorName);
                 }
-                if (i < vm.ancResource.sensorList.length - 1) {
-                    samplingRegexSearch += sensorName + '|';
-                } else {
-                    samplingRegexSearch += sensorName;
-                }
+                samplingRegexSearch.push(sensorName);
             }
 
-            DataService.sensorDataRegex(SensorsService.guid, dataRegexSearch, startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
+            DataService.sensorDataRegex(SensorsService.guid, dataRegexSearch.join('|'), startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
                 .then(function (result) {
                     if (result.data.error) {
                         NotifyService.showPreDialog('Error retrieving historical weather data', result.data.error);
@@ -129,7 +121,7 @@
             if (!skipConnectSensorListeners) {
                 $timeout(function () {
                     SensorsService.setSensorStrategies(
-                        samplingRegexSearch,
+                        samplingRegexSearch.join('|'),
                         $rootScope.sensorListStrategyType,
                         $rootScope.sensorListStrategyInterval,
                         $rootScope.sensorListStrategyInterval);
@@ -144,14 +136,14 @@
                 var newWindData = [];
                 var newSensorNames = {};
                 for (var attr in sensor.value) {
-                    var sensorName = sensor.value[attr][3];
+                    var sensorName = sensor.value[attr][4];
                     var latestSensor = null;
                     if (sensorName.indexOf('wind_speed') === -1 &&
                         sensorName.indexOf('gust_speed') === -1) {
                         latestSensor = {
-                            status: sensor.value[attr][4],
+                            status: sensor.value[attr][5],
                             sensor: sensorName,
-                            value: sensor.value[attr][2],
+                            value: sensor.value[attr][3],
                             sample_ts: sensor.value[attr][1] / 1000,
                         };
                         if (sensorName.indexOf('pressure') !== -1) {
@@ -160,9 +152,9 @@
                         newData.push(latestSensor);
                     } else {
                         latestSensor = {
-                            status: sensor.value[attr][4],
+                            status: sensor.value[attr][5],
                             sensor: sensorName,
-                            value: sensor.value[attr][2],
+                            value: sensor.value[attr][3],
                             sample_ts: sensor.value[attr][1] / 1000,
                         };
                         newWindData.push(latestSensor);
@@ -292,6 +284,9 @@
 
         //create it to be bound to, but we dont use it on this screen
         vm.removeSensorLine = function () {};
+
+        //create to function to bind to, but dont do anything with it yet
+        vm.downloadAsCSV = function () {};
 
         $scope.$on('$destroy', function () {
             vm.ancResource.sensorList.forEach(function (sensor) {

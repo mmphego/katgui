@@ -117,7 +117,7 @@
                         }
                     });
                 } else if (messages.result) {
-                    $log.info('Subscribed to: ' + JSON.stringify(messages.result));
+                    $log.debug('Subscribed to: ' + JSON.stringify(messages.result));
                     $rootScope.$emit('setSensorStrategyMessage', messages.result);
                 } else {
                     $log.error('Dangling sensors message...');
@@ -131,6 +131,7 @@
 
         api.connectListener = function (skipDeferObject) {
             if (api.connection) {
+                api.disconnectListener();
                 $timeout(function () {
                     api.connectListener(true);
                 }, 500);
@@ -242,7 +243,6 @@
                             };
                         }
                     }
-
                     deferred.resolve(api.resources);
                 });
             return deferred.promise;
@@ -265,6 +265,17 @@
                         });
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);
+                }, function (result) {
+                    deferred.reject(result);
+                });
+            return deferred.promise;
+        };
+
+        api.listSensors = function (filter) {
+            var deferred = $q.defer();
+            $http.post(urlBase + '/sensor-list', {filter: filter})
+                .then(function (result) {
+                    deferred.resolve(result);
                 }, function (result) {
                     deferred.reject(result);
                 });

@@ -26,7 +26,8 @@
             control_authority: "control_authority",
             lead_operator: "lead_operator",
             operator: "operator",
-            read_only: "read_only"
+            read_only: "read_only",
+            expert: "expert"
         })
         .constant('THEMES', [
             {
@@ -77,7 +78,7 @@
         $rootScope.themePrimary = theme.primary;
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
-        $rootScope.expertUser = false;
+        $rootScope.expertOrLO = false;
 
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {
@@ -98,9 +99,11 @@
                 }
                 $rootScope.systemType = systemConfig.system.system_conf.replace('systems/', '').replace('.conf', '');
                 var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
-                subarray_nrs.forEach(function (sub_nr) {
-                    ObsSchedService.subarrays.push({id: sub_nr});
-                });
+                if (ObsSchedService.subarrays.length === 0) {
+                    subarray_nrs.forEach(function (sub_nr) {
+                        ObsSchedService.subarrays.push({id: sub_nr});
+                    });
+                }
                 $rootScope.confConnectionError = null;
             }, function (error) {
                 $rootScope.confConnectionError = 'Could not connect to ' + SERVER_URL + '/katconf.';
@@ -539,6 +542,11 @@
             url: '/sensor-list',
             templateUrl: 'app/sensor-list/sensor-list.html',
             title: 'Sensor List'
+        });
+        $stateProvider.state('sensor-groups', {
+            url: '/sensor-groups',
+            templateUrl: 'app/sensor-groups/sensor-groups.html',
+            title: 'Sensor Groups'
         });
         $stateProvider.state('about', {
             url: '/about',

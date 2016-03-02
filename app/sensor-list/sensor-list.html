@@ -23,9 +23,6 @@
             <md-toolbar class="md-whiteframe-z1" style=" min-height: 60px">
                 <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
                     <span flex>Sensors {{' - ' + vm.resourceSensorsBeingDisplayed | uppercase}}</span>
-                    <!-- <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.showSensorGroups()">
-                        Select a Sensor Groups
-                    </md-button> -->
                     <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-click="$event.stopPropagation()"
                                  md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0px 16px; padding: 0">
                         Hide Nominal Sensors
@@ -183,7 +180,7 @@
             </md-chip-template>
         </md-chips>
         <multi-line-chart ng-show="vm.showChart" flex redraw-function="vm.redrawChart" hide-context-zoom="true"
-                          clear-function="vm.clearChart" class="sensor-list-multi-line-chart"
+                          clear-function="vm.clearChart" class="sensor-list-multi-line-chart" download-csv="vm.downloadAsCSV"
                           remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
                           y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
         <div resizeable=".sensor-list-chart-container" class="resize-grip">
