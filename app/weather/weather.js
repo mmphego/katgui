@@ -92,26 +92,18 @@
             var startDate = vm.getTimestampFromHistoricalRange();
             vm.dataTimeWindow = new Date().getTime() - startDate;
 
-            var dataRegexSearch = '';
-            var samplingRegexSearch = '';
+            var dataRegexSearch = [];
+            var samplingRegexSearch = [];
             for (var i = 0; i < vm.ancResource.sensorList.length; i++) {
                 var sensor = vm.ancResource.sensorList[i];
                 var sensorName = sensor.python_identifier;
                 if (!sensor.skipHistory) {
-                    if (i < vm.ancResource.sensorList.length - 1) {
-                        dataRegexSearch += sensorName + '|';
-                    } else {
-                        dataRegexSearch += sensorName;
-                    }
+                    dataRegexSearch.push(sensorName);
                 }
-                if (i < vm.ancResource.sensorList.length - 1) {
-                    samplingRegexSearch += sensorName + '|';
-                } else {
-                    samplingRegexSearch += sensorName;
-                }
+                samplingRegexSearch.push(sensorName);
             }
 
-            DataService.sensorDataRegex(SensorsService.guid, dataRegexSearch, startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
+            DataService.sensorDataRegex(SensorsService.guid, dataRegexSearch.join('|'), startDate, new Date().getTime(), 0, vm.sensorGroupingInterval? vm.sensorGroupingInterval : 30)
                 .then(function (result) {
                     if (result.data.error) {
                         NotifyService.showPreDialog('Error retrieving historical weather data', result.data.error);
@@ -129,7 +121,7 @@
             if (!skipConnectSensorListeners) {
                 $timeout(function () {
                     SensorsService.setSensorStrategies(
-                        samplingRegexSearch,
+                        samplingRegexSearch.join('|'),
                         $rootScope.sensorListStrategyType,
                         $rootScope.sensorListStrategyInterval,
                         $rootScope.sensorListStrategyInterval);

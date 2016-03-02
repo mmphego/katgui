@@ -75,16 +75,10 @@
             vm.receptorsData.splice(0, vm.receptorsData.length);
             ConfigService.getReceptorList()
                 .then(function (result) {
-                    var sensorsRegexToConnect = '';
+                    var sensorsRegexToConnect = [];
                     result.forEach(function (item, index) {
-                        if (index > 0) {
-                            sensorsRegexToConnect += '|';
-                        }
                         for (var i = 0; i < vm.sensorsToConnect.length; i++) {
-                            if (i > 0) {
-                                sensorsRegexToConnect += '|';
-                            }
-                            sensorsRegexToConnect += '^' + item + '_' + vm.sensorsToConnect[i];
+                            sensorsRegexToConnect.push('^' + item + '_' + vm.sensorsToConnect[i]);
                         }
                         var receptor = {name: item, showHorizonMask: false, skyPlot: false, subarrayColor: "#d7d7d7"};
                         for (var k = 0; k < ObsSchedService.subarrays.length; k++) {
@@ -98,7 +92,7 @@
                         }
                         vm.receptorsData.push(receptor);
                     });
-                    SensorsService.setSensorStrategies(sensorsRegexToConnect, 'event-rate', 1, 360);
+                    SensorsService.setSensorStrategies(sensorsRegexToConnect.join('|'), 'event-rate', 1, 360);
                 });
 
         };

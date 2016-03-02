@@ -29,11 +29,16 @@
                         </md-menu>
                         <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 7px; left: 0; right: 0; font-size: 12px">
                             <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO && !parentScope.iAmCA" class="subarray-config-menu-button" title="Control Authority" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Control Authority" ng-click="$mdOpenMenu()"
                                     style="color: currentColor !important">
                                     <i>CA: </i><b>{{vm.subarray.delegated_ca}}</b>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="parentScope.vm.delegateControl('lo')">
+                                            <span>Lead Operator</span>
+                                        </md-button>
+                                    </md-menu-item>
                                     <md-menu-item ng-repeat="user in parentScope.vm.users | orderBy:'email' track by $index">
                                         <md-button ng-click="parentScope.vm.delegateControl(user.email)">
                                             <span>{{user.email}}</span>
@@ -42,7 +47,7 @@
                                 </md-menu-content>
                             </md-menu>
                             <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO && !parentScope.iAmCA" class="subarray-config-menu-button" title="Selected Band" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Band" ng-click="$mdOpenMenu(); $event.stopPropagation()"
                                     style="color: currentColor !important">
                                     <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
                                 </md-button>
@@ -55,11 +60,16 @@
                                 </md-menu-content>
                             </md-menu>
                             <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO && !parentScope.iAmCA" class="subarray-config-menu-button" title="Selected Product" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Product" ng-click="$mdOpenMenu(); $event.stopPropagation()"
                                     style="color: currentColor !important">
                                     <i>Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="parentScope.vm.setProduct('')">
+                                            <span>None</span>
+                                        </md-button>
+                                    </md-menu-item>
                                     <md-menu-item ng-repeat="product in parentScope.vm.products | orderBy:product:true track by $index">
                                         <md-button ng-click="parentScope.vm.setProduct(product)">
                                             <span>{{product}}</span>

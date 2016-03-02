@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div ng-repeat="(key, subarray) in vm.subarrays | orderBy:'id'" ng-if="vm.sortBySubarrays"
+        <div ng-repeat="(key, subarray) in vm.subarrays" ng-if="vm.sortBySubarrays"
              class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
              style="min-width: 650px;" flex>
             <div layout="column" layout-align="start" flex>

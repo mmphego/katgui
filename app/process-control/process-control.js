@@ -97,7 +97,6 @@
                             }
                         }
                     });
-                    console.log(vm.sensorsToDisplay);
                     if (runningSensorNamesToSetStrategies.length > 0) {
                         SensorsService.setSensorStrategies(runningSensorNamesToSetStrategies.join('|'), 'event-rate', 1, 120);
                     }

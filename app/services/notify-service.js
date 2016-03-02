@@ -197,16 +197,13 @@
                                     }
                                 });
 
-                                var sensorsRegex = '';
+                                var sensorsRegex = [];
                                 $scope.sensorNameList.forEach(function (sensor, index) {
                                     $scope.sensors[sensor] = {name: sensor};
-                                    if (index !== 0) {
-                                        sensorsRegex += '|';
-                                    }
-                                    sensorsRegex += '^' + sensor;
+                                    sensorsRegex.push('^' + sensor);
                                 });
                                 if (sensorsRegex.length > 0) {
-                                    SensorsService.setSensorStrategies(sensorsRegex, 'event-rate', 1, 360);
+                                    SensorsService.setSensorStrategies(sensorsRegex.join('|'), 'event-rate', 1, 360);
                                 }
 
                             }, function () {

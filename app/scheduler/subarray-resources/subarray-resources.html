@@ -38,11 +38,16 @@
 
                         <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 0; left: 0; right: 0; font-size: 12px">
                             <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO && !parentScope.iAmCA" class="subarray-config-menu-button" title="Control Authority" ng-click="$mdOpenMenu()"
+                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Control Authority" ng-click="$mdOpenMenu()"
                                     style="color: currentColor !important">
                                     <i>CA: </i><b>{{vm.subarray.delegated_ca}}</b>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="parentScope.vm.delegateControl('lo')">
+                                            <span>Lead Operator</span>
+                                        </md-button>
+                                    </md-menu-item>
                                     <md-menu-item ng-repeat="user in parentScope.vm.users | orderBy:'email' track by $index">
                                         <md-button ng-click="parentScope.vm.delegateControl(user.email)">
                                             <span>{{user.email}}</span>
@@ -51,7 +56,7 @@
                                 </md-menu-content>
                             </md-menu>
                             <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO && !parentScope.iAmCA" class="subarray-config-menu-button" title="Selected Band" ng-click="$mdOpenMenu()"
+                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Band" ng-click="$mdOpenMenu()"
                                     style="color: currentColor !important">
                                     <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
                                 </md-button>
@@ -64,11 +69,16 @@
                                 </md-menu-content>
                             </md-menu>
                             <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO && !parentScope.iAmCA" class="subarray-config-menu-button" title="Selected Product" ng-click="$mdOpenMenu()"
+                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Product" ng-click="$mdOpenMenu()"
                                     style="color: currentColor !important">
                                     <i>Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="parentScope.vm.setProduct('')">
+                                            <span>None</span>
+                                        </md-button>
+                                    </md-menu-item>
                                     <md-menu-item ng-repeat="product in parentScope.vm.products | orderBy:product:true track by $index">
                                         <md-button ng-click="parentScope.vm.setProduct(product)">
                                             <span>{{product}}</span>
@@ -106,13 +116,13 @@
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-if="$root.expertOrLO || parentScope.iAmCA" ng-click="parentScope.vm.openBandsDialog($event)"
+                                    <md-button ng-if="$root.expertOrLO || parentScope.vm.iAmCA" ng-click="parentScope.vm.openBandsDialog($event)"
                                                title="Select a Band">
                                         <span>Select Band...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-if="$root.expertOrLO || parentScope.iAmCA" ng-click="parentScope.vm.openProductsDialog($event)"
+                                    <md-button ng-if="$root.expertOrLO || parentScope.vm.iAmCA" ng-click="parentScope.vm.openProductsDialog($event)"
                                                title="Select a Product">
                                         <span>Select Product...</span>
                                     </md-button>
@@ -124,12 +134,12 @@
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-if="$root.expertOrLO || parentScope.iAmCA" ng-click="vm.saveTemplateDialog($event)"
+                                    <md-button ng-if="$root.expertOrLO || parentScope.vm.iAmCA" ng-click="vm.saveTemplateDialog($event)"
                                                title="Select a Control Authority">
                                         <span>Save Resource Template...</span>
                                     </md-button>
                                 </md-menu-item>
-                                <md-menu-item ng-if="$root.expertOrLO || parentScope.iAmCA" ng-show="vm.subarray.state === 'inactive'">
+                                <md-menu-item ng-if="$root.expertOrLO || parentScope.vm.iAmCA" ng-show="vm.subarray.state === 'inactive'">
                                     <md-button ng-click="vm.openTemplateListDialog($event)"
                                                title="Select a Control Authority">
                                         <span>Load Resource Template...</span>
@@ -208,7 +218,7 @@
                     <div class="resource-item" layout="row" layout-align="start center"
                          ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
                          ng-class="{'selected-resource-item': resource.selected}"
-                         ng-click="resource.selected = !resource.selected;">
+                         ng-click="resource.selected = !resource.selected && $root.expertOrLO;">
                     <span style="min-width: 22px;">
                         <span class="fa fa-wrench maintenance-text" ng-if="vm.isResourceInMaintenance(resource)"
                               title="Resource in Maintenance" style="font-size: 18px; margin-left: 4px;"></span>
