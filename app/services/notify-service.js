@@ -10,7 +10,7 @@
         api.toastHideDelay = 3500;
 
         api.showSimpleToast = function (message) {
-            $mdToast.hide();
+            // $mdToast.hide();
             var simpleToast = $mdToast.simple()
                 .content(message)
                 .highlightAction(true)
@@ -95,9 +95,9 @@
                         };
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='red' aria-label=''>" +
-                    "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
+                    "<div style='padding:0; margin:0;' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span style='margin:8px'>{{title}}</span></md-toolbar>" +
-                    "<div flex><p>{{content}}</p></div>" +
+                    "<div flex style='overflow: auto'><p>{{content}}</p></div>" +
                     "</div>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
                     "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='' ng-click='reject()'>" + cancelButton + "</md-button>" +
@@ -197,16 +197,13 @@
                                     }
                                 });
 
-                                var sensorsRegex = '';
+                                var sensorsRegex = [];
                                 $scope.sensorNameList.forEach(function (sensor, index) {
                                     $scope.sensors[sensor] = {name: sensor};
-                                    if (index !== 0) {
-                                        sensorsRegex += '|';
-                                    }
-                                    sensorsRegex += '^' + sensor;
+                                    sensorsRegex.push('^' + sensor);
                                 });
                                 if (sensorsRegex.length > 0) {
-                                    SensorsService.setSensorStrategies(sensorsRegex, 'event-rate', 1, 360);
+                                    SensorsService.setSensorStrategies(sensorsRegex.join('|'), 'event-rate', 1, 360);
                                 }
 
                             }, function () {

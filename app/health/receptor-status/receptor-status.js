@@ -68,27 +68,21 @@
             vm.receptorsData.splice(0, vm.receptorsData.length);
             ConfigService.getReceptorList()
                 .then(function (result) {
-                    var receptorSensorsRegex = '';
+                    var receptorSensorsRegex = [];
                     result.forEach(function (item, index) {
-                        if (index > 0) {
-                            receptorSensorsRegex += '|';
-                        }
                         vm.receptorsData.push({name: item, subarray: 'free'});
                         for (var i = 0; i < vm.receptorSensorsToConnect.length; i++) {
-                            if (i > 0) {
-                                receptorSensorsRegex += '|';
-                            }
-                            receptorSensorsRegex += item + '_' + vm.receptorSensorsToConnect[i];
+                            receptorSensorsRegex.push(item + '_' + vm.receptorSensorsToConnect[i]);
                         }
                     });
-                    receptorSensorsRegex += '|subarray_._state';
-                    receptorSensorsRegex += '|subarray_._allocations';
-                    receptorSensorsRegex += '|subarray_._maintenance';
+                    receptorSensorsRegex.push('subarray_._state');
+                    receptorSensorsRegex.push('subarray_._allocations');
+                    receptorSensorsRegex.push('subarray_._maintenance');
                     for (var i = 1; i <= 4; i++) {
                         vm.subarrays['subarray_' + i] = {id: i.toString()};
                     }
-                    receptorSensorsRegex += '|katpool_resources_in_maintenance';
-                    SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 30);
+                    receptorSensorsRegex.push('katpool_resources_in_maintenance');
+                    SensorsService.setSensorStrategies(receptorSensorsRegex.join('|'), 'event-rate', 1, 30);
                 });
         };
         vm.connectListeners();

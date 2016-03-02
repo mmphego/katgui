@@ -13,14 +13,19 @@
         api.systemConfig = null;
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
+        api.sensorGroups = {};
 
         api.loadSensorGroups = function () {
+            var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/sensor-groups'))
                 .then(function (result) {
                     api.sensorGroups = result.data;
+                    deferred.resolve(api.sensorGroups);
                 }, function (message) {
                     $log.error(message);
+                    deferred.reject();
                 });
+            return deferred.promise;
         };
 
         api.loadAggregateSensorDetail = function () {

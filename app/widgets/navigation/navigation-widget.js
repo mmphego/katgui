@@ -23,8 +23,7 @@
             name: 'SB Drafts',
             textOffset: -10,
             state: 'scheduler.drafts',
-            title: 'Manage Schedule Block Drafts',
-            allowedRoles: ['lead_operator', 'control_authority', 'expert']
+            title: 'Manage Schedule Block Drafts'
         }, {
             name: 'Observations',
             textOffset: 0,
@@ -34,8 +33,7 @@
             name: 'Workflow',
             textOffset: 10,
             state: 'scheduler',
-            title: 'View Schedule Block Workflow',
-            allowedRoles: ['lead_operator', 'control_authority', 'expert']
+            title: 'View Schedule Block Workflow'
         }];
 
         vm.receptorNavData = [{
@@ -97,7 +95,6 @@
             name: 'Operator',
             state: 'operator-control',
             title: 'Operator Controls',
-            allowedRoles: ['lead_operator', 'operator']
         }];
 
         vm.logsNavData = [{

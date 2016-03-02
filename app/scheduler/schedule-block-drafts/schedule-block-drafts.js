@@ -9,6 +9,8 @@
         vm.selectedScheduleDraft = null;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
+        $scope.$parent.vm.subarray = null;
+
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code'},
             {label: 'Description', value: 'description'},
@@ -38,7 +40,6 @@
             item.editing = false;
             ObsSchedService.updateScheduleDraft(item)
                 .then(function (result) {
-                    $log.info(result.data);
                     item.isDirty = false;
                     item.editing = false;
                 }, function (result) {

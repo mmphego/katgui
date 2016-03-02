@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService,
+    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService, KatGuiUtil,
                              $log, $q, $mdDialog, NotifyService, $timeout, $interval) {
 
         var urlBase = SERVER_URL + '/katcontrol';
@@ -28,11 +28,15 @@
             }
             request
                 .then(function (result) {
-                    var message = result.data.result.replace(/\\_/g, ' ').replace(/\\n/, '\n');
-                    if (message.split(' ')[1] === 'ok') {
-                        NotifyService.showSimpleToast(message);
+                    if (!result.data.error) {
+                        var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                        if (result.data.result.split(' ')[1] === 'ok') {
+                            NotifyService.showSimpleToast(message);
+                        } else {
+                            NotifyService.showPreDialog('Error Processing Request', message);
+                        }
                     } else {
-                        NotifyService.showPreDialog('Error Processing Request', message);
+                        NotifyService.showPreDialog('Error Processing Request', result.data.error);
                     }
                     if (deferred) {
                         deferred.resolve();
@@ -84,9 +88,8 @@
             $http(createRequest('post', urlBase + '/sb/' + id_code + '/priority/' + priority))
                 .then(function (result) {
                     NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
-                    $log.info(result);
                 }, function (error) {
-                    $log.error(error);
+                    NotifyService.showHttpErrorDialog('Error setting SB priority', error);
                 });
         };
 
@@ -200,6 +203,10 @@
                 var subarrayIndex = _.findIndex(api.subarrays, function (item) {
                     return item.id === sensorName.split('_')[1];
                 });
+                if (subarrayIndex === -1) {
+                    api.subarrays.push({id: sensorName.split('_')[1]});
+                    subarrayIndex = api.subarrays.length - 1;
+                }
                 if (subarrayIndex > -1) {
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
                     if (sensorName.endsWith('allocations')) {

@@ -188,6 +188,9 @@
                     if (!window.location.hash.endsWith('sensor-graph')) {
                         NotifyService.showSimpleToast('Error connecting to KATPortal.');
                         $log.error(result);
+                        if (result.data && result.data.startsWith('<html')) {
+                            document.body.html(result.data.html);
+                        }
                         $state.go('login');
                     }
                 }
@@ -245,14 +248,14 @@
                     }
                     $localStorage['currentUserToken'] = $rootScope.jwt;
                     NotifyService.showSimpleToast('Login successful, welcome ' + payload.name + '.');
-                    $rootScope.$emit('loginSuccess', true);
                     $rootScope.connectEvents();
                     if (payload.req_role === 'lead_operator' && !api.connection) {
                         api.connectListener(false);
                     } else if (api.connection){
                         api.disconnectListener();
                     }
-                    $rootScope.expertUser = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
+                    $rootScope.expertOrLO = payload.req_role === 'expert' || payload.req_role === 'lead_operator';
+                    $rootScope.$emit('loginSuccess', true);
                 }
             } else {
                 //User's session expired, we got a message

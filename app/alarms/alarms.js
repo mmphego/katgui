@@ -187,8 +187,7 @@
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
-                vm.canOperateAlarms = $rootScope.currentUser.req_role === USER_ROLES.operator ||
-                $rootScope.currentUser.req_role === USER_ROLES.lead_operator;
+                vm.canOperateAlarms = $rootScope.currentUser.req_role === USER_ROLES.operator || $rootScope.expertOrLO;
             }
         };
 

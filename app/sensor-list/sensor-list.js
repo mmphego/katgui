@@ -23,10 +23,6 @@
         vm.hideNominalSensors = false;
         vm.sensorValues = {};
 
-        // if (!ConfigService.sensorGroups) {
-        //     ConfigService.loadSensorGroups();
-        // }
-
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
             {label: 'Timestamp', value: 'timestamp'},
@@ -110,59 +106,30 @@
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 SensorsService.removeSensorStrategies('^' + vm.resourceSensorsBeingDisplayed + '*');
+                vm.sensorsToDisplay = [];
             }
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
 
-            if (ConfigService.sensorGroups && ConfigService.sensorGroups[resourceName]) {
-                // vm.resourceSensorsBeingDisplayed = resourceName;
-                // if (!vm.resources[resourceName]) {
-                //     vm.resources[resourceName] = {};
-                // }
-                // vm.resources[resourceName].sensorsList = [];
-                // vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
-                // var sensorNameList = ConfigService.sensorGroups[resourceName].sensors.split('|');
-                // sensorNameList.forEach(function (sensor) {
-                //     var resource = '';
-                //     var sensorName = '';
-                //     var firstPart = sensor.split('_', 1)[0];
-                //     if (firstPart === 'mon' || firstPart === 'nm') {
-                //         var secondPart = sensor.substring(sensor.indexOf('_') + 1);
-                //         resource = firstPart + '_' + secondPart;
-                //         sensorName = secondPart;
-                //     } else {
-                //         resource = firstPart;
-                //         sensorName = sensor.substring(sensor.indexOf('_') + 1);
-                //     }
-                //     sensorName = sensorName.replace(/\\_/g, '_');
-                //     SensorsService.setSensorStrategies(
-                //         vm.resourceSensorsBeingDisplayed + '*',
-                //         $rootScope.sensorListStrategyType,
-                //         $rootScope.sensorListStrategyInterval,
-                //         10);
-                // });
-
-            } else {
-                SensorsService.listResourceSensors(resourceName)
-                    .then(function (result) {
-                        vm.resources[resourceName].sensorsList = result;
-                        vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
-                        vm.sensorsToDisplay.forEach(function (item) {
-                            item.timestamp = moment.utc(item.timestamp, 'X').format(DATETIME_FORMAT);
-                            item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(DATETIME_FORMAT);
-                            vm.sensorValues[resourceName + '_' + item.python_identifier] = item;
-                            item.parentName = resourceName;
-                        });
-                        if (!$scope.$$phase) {
-                            $scope.$digest();
-                        }
+            SensorsService.listResourceSensors(resourceName)
+                .then(function (result) {
+                    vm.resources[resourceName].sensorsList = result;
+                    vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
+                    vm.sensorsToDisplay.forEach(function (item) {
+                        item.timestamp = moment.utc(item.timestamp, 'X').format(DATETIME_FORMAT);
+                        item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(DATETIME_FORMAT);
+                        vm.sensorValues[resourceName + '_' + item.python_identifier] = item;
+                        item.parentName = resourceName;
                     });
-            }
+                    if (!$scope.$$phase) {
+                        $scope.$digest();
+                    }
+                });
             vm.resourceSensorsBeingDisplayed = resourceName;
             //allow for the removeSensorStrategies to complete before setting up new strategies
             $timeout(function () {
                 vm.initSensors();
-            }, 350);
+            }, 500);
         };
 
         vm.sensorClass = function (status) {
@@ -273,43 +240,12 @@
             vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
         };
 
-        vm.showSensorGroups = function () {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog, ConfigService) {
-                        $scope.title = 'Select a Sensor Group';
-                        $scope.sensorGroups = ConfigService.sensorGroups;
-
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-
-                        $scope.setSensorGroup = function (key) {
-                            vm.listResourceSensors(key);
-                        };
-                    },
-                    template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
-                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
-                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
-                    '           <span flex style="margin: 8px;">{{::title}}</span>' +
-                    '       </md-toolbar>' +
-                    '       <div flex layout="column">' +
-                    '           <div layout="row" layout-align="center center" ng-repeat="key in $root.objectKeys(sensorGroups) | orderBy:key track by $index" ng-click="setSensorGroup(key); hide()" class="config-label-list-item">' +
-                    '               <b>{{key}}</b>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Cancel</md-button>' +
-                    '       </div>' +
-                    '   </div>' +
-                    '</md-dialog>',
-                    targetEvent: event
-                });
-        };
-
         $scope.filterByNotNominal = function (sensor) {
             return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal';
         };
+
+        //create to function to bind to, but dont do anything with it yet
+        vm.downloadAsCSV = function () {};
 
         vm.connectListeners();
 
