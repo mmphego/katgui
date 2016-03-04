@@ -134,7 +134,7 @@
                 </md-toolbar>
 
                 <md-virtual-repeat-container flex class="schedule-draft-data-list" style="padding: 0; direction: rtl" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
-                    <div md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray_id})"
+                    <div md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray.id})"
                          ng-click="vm.setSelectedSchedule(item);" style="padding: 0 2px"
                          ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
                          class="schedule-draft-item" layout="row" layout-align="start center">
@@ -246,7 +246,7 @@
                 </md-toolbar>
 
                 <md-virtual-repeat-container flex class="schedule-draft-data-list" style="padding: 0; direction: rtl; min-height: 45px;" ng-show="completedScheduleBlockListVisible">
-                    <div md-virtual-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray_id} | regexSearch:vm.completedFields:vm.q3"
+                    <div md-virtual-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray.id} | regexSearch:vm.completedFields:vm.q3"
                         class="schedule-draft-item" layout="column"
                         ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
                         ng-click="vm.setSelectedSchedule(item);$event.stopPropagation();">
