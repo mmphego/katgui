@@ -106,7 +106,7 @@
          layout="column" layout-align="start">
         <span ng-if="vm.receptorHoverName.length > 0" class="{{vm.receptorHoverName+ '_actual'}}" style="width: 100%; text-align: center"><b>{{vm.receptorHoverName}}</b></span>
         <span>azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_actual_pointm_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_actual_pointm_elev'].value | number:2}}</b></span>
-        <span>azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_pointm_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_pointm_azim'].value | number:2}}</b> (requested)</span>
+        <span>azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_pointm_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_pointm_elev'].value | number:2}}</b> (requested)</span>
         <span>ra: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_base_ra'].value | number:2}}</b>, dec: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_base_dec'].value | number:2}}</b> (requested)</span>
         <span>Delta sky: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_sky'].value | number:2}}</b></span>
         <span>Delta azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_azim'].value | number:2}}</b>, Delta elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_elev'].value | number:2}}</b></span>
