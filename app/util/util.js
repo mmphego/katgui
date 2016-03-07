@@ -193,7 +193,34 @@ angular.module('katGui.util')
                 }
             }
         };
-    }]);
+    }])
+    .directive('mouseWheelDown', function() {
+        return function(scope, element, attrs) {
+            element.bind("DOMMouseScroll mousewheel onmousewheel", function() {
+                var event = window.event;
+                var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+
+                if(delta < 0) {
+                    scope.$apply(function(){
+                        scope.$eval(attrs.mouseWheelDown);
+                    });
+                }
+            });
+        };
+    }).directive('mouseWheelUp', function() {
+        return function(scope, element, attrs) {
+            element.bind("DOMMouseScroll mousewheel onmousewheel", function() {
+                var event = window.event;
+                var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+
+                if(delta > 0) {
+                    scope.$apply(function(){
+                        scope.$eval(attrs.mouseWheelUp);
+                    });
+                }
+            });
+        };
+    });
 
 //to suppress warnings about missing aria-labels (ARIA - Accessible Rich Internet Applications)
 //our application does not implement any accessibility features

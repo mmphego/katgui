@@ -1,13 +1,15 @@
 <div flex style="padding: 8px; min-width: 1200px; min-height: 700px;" ng-controller="UserlogCtrl as vm" layout="column">
-    <md-toolbar layout="row" class="md-whiteframe-z1" style="min-height: 80px; max-height: 80px">
+    <md-toolbar layout="row" class="md-whiteframe-z1" style="min-height: 80px; max-height: 80px;">
         <!-- <input class="search-input-box" type="search"
                ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Userlogs..."/> -->
-        <md-chips md-theme="{{$root.themePrimaryButtons}}" ng-model="vm.filterTags" style="margin-bottom: 24px; padding: 0 8px" md-autocomplete-snap md-require-match="true" flex
+        <md-chips md-theme="{{$root.themePrimaryButtons}}" ng-model="vm.filterTags" style="margin-bottom: 24px; padding: 0 8px; max-height: 58px; overflow: auto" md-autocomplete-snap md-require-match="true" flex
             md-on-add="vm.tagFilterChanged()"
             md-on-remove="vm.tagFilterChanged()">
             <md-autocomplete
+                md-no-cache="true"
+                md-autoselect="true"
                 md-search-text="searchText"
-                md-items="item in vm.querySearch(searchText)"
+                md-items="item in vm.querySearch(searchText, vm.filterTags)"
                 md-item-text="item.name"
                 placeholder="Select tags to filter by">
                 <md-item-template>
@@ -33,6 +35,11 @@
         <md-button ng-click="vm.newLogStartTimeText = $root.utcDateTime"
             style="height: 36px; max-width: 42px; min-width: 42px; margin-top: 16px; margin-left: 0; padding: 0;">
             Now
+        </md-button>
+        <md-button ng-init="vm.expandEntries = true" ng-click="vm.expandEntries = !vm.expandEntries" title="{{vm.expandEntries? 'Collapse All' : 'Expand All'" class="inline-action-button"
+            style="margin-top: 16px">
+            <i ng-show="vm.expandEntries" class="fa fa-plus-square-o"></i>
+            <i ng-show="!vm.expandEntries" class="fa fa-minus-square-o"></i>
         </md-button>
         <md-button md-theme="{{$root.themePrimaryButtons}}" class="md-icon-button md-raised md-primary" ng-click="vm.addUserLog()"
             style="margin-top: 12px">
@@ -61,13 +68,17 @@
         </div>
     </md-toolbar>
     <md-button style="border-bottom: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs">Fetch Logs for {{vm.lastFutureQueryDayTextStart}} to {{vm.lastFutureQueryDayTextEnd}}</md-button>
-    <div flex class="md-whiteframe-z1" style="overflow: auto">
+    <div flex class="md-whiteframe-z1" style="overflow: auto" id="userlogsContainer">
         <div ng-repeat="userLog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true track by userLog.id"
-            flex layout="column" class="user-log-row">
+            ng-mouseenter="userLog.showInlineEditButton = true" ng-mouseleave="userLog.showInlineEditButton = false" flex layout="column" class="user-log-row">
             <md-divider></md-divider>
-            <div layout="row" layout-align="start center">
+            <div layout="row" layout-align="start center" style="position: relative">
+                <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userLog); userLog.showInlineEditButton = false"
+                    style="font-size: 16px">+</div>
+                <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userLog); userLog.showInlineEditButton = false"
+                    style="font-size: 16px">+</div>
                 <i class="userlog-user-name">
-                    {{userLog.user.name}}
+                    <b>{{userLog.user.name}}</b>
                 </i>
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
@@ -75,8 +86,10 @@
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
-                <pre flex style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
-                <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
+                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
+                <div class="tags-list-container" title="{{userLog.tagsListText}}" ng-class="{'tags-list-compressed-container': vm.expandEntries}">
+                    <i style="font-size: 11px">{{userLog.tagsListText}}</i>
+                </div>
                 <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                     <span ng-show="userLog.attachment_count>0">({{userLog.attachment_count}}
                     <span class="fa fa-paperclip"></span>)
@@ -88,9 +101,10 @@
                 </md-button>
             </div>
         </div>
-        <form ng-submit="vm.addNewInlineLog()" md-theme="{{$root.themePrimaryButtons}}" layout="row" layout-align="start center" class="userlog-new-log-row">
+        <form ng-submit="vm.addNewInlineLog()" md-theme="{{$root.themePrimaryButtons}}" layout="row" layout-align="start center" ng-class="{'userlog-new-log-row': !vm.chatMode, 'userlog-new-chat-log-row': vm.chatMode}"
+            style="min-height: 72px; max-height: 72px">
             <i class="userlog-user-name" style="margin-top: 6px; margin-left: 8px; margin-right: 0">
-                {{$root.currentUser.name}}
+                <b>{{$root.currentUser.name}}</b>
             </i>
             <md-input-container md-is-error="!vm.validInlineStartTime" md-no-float class="md-primary" title="Start Time" style="font-size: 12px; width: 125px">
                 <input ng-change="vm.verifyInlineInputs()" ng-disabled="vm.chatMode" flex placeholder="Start Time" ng-model="vm.newLogStartTimeText"  ng-change="vm.verifyInlineInputs()">
@@ -99,16 +113,48 @@
                 <input flex placeholder="End Time" ng-model="vm.newLogEndTimeText" ng-change="vm.verifyInlineInputs()">
             </md-input-container>
             <md-input-container md-is-error="vm.newLogContent.length === 0" flex md-no-float class="md-primary" title="Content">
-                <input focus flex placeholder="Content" ng-model="vm.newLogContent">
+                <input id="inlineContentInput" focus flex placeholder="Content" ng-model="vm.newLogContent" ng-focus="vm.setNewLogStartTimeAfterFocus()">
             </md-input-container>
+            <md-chips ng-model="vm.inlineTags" style="margin: 0; padding: 0; max-width: 450px; max-height: 48px; overflow: auto" md-autocomplete-snap="true" md-require-match="true" flex
+                secondary-placeholder="+"
+                md-on-add="vm.tagFilterChanged()"
+                md-on-remove="vm.tagFilterChanged()"
+                class="small-chips">
+                <md-autocomplete
+                    md-no-cache="true"
+                    md-autoselect="true"
+                    md-search-text="searchText"
+                    md-items="item in vm.querySearch(searchText, vm.inlineTags)"
+                    md-item-text="item.name"
+                    placeholder="Select tags for log" secondary-placeholder="+">
+                    <md-item-template>
+                        <span md-highlight-text="searchText" title="{{item.slug}}">{{item.name}}</span>
+                    </md-item-template>
+                    <md-not-found>
+                        No matches found
+                    </md-not-found>
+                </md-autocomplete>
+                <md-chip-template>
+                    <span style="overflow: auto; width: 100%; font-size: 10px">
+                        <strong>{{$chip.name}}</strong>
+                    </span>
+                </md-chip-template>
+                <md-button class="md-fab" aria-label="Remove Tag" style="font-size:10px; max-width: 12px">
+                    <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
+                </md-button>
+            </md-chips>
             <md-button ng-show="false" type="submit" style="margin: 8px;" class=""></md-button>
         </form>
         <div ng-repeat="userLog in vm.userLogs | filter:vm.filterBeforeNow | filter:vm.filterByTag | orderBy:'start_time':true"
-            flex layout="column" class="user-log-row">
-            <md-divider></md-divider>
-            <div layout="row" layout-align="start center">
+                ng-mouseenter="userLog.showInlineEditButton = true" ng-mouseleave="userLog.showInlineEditButton = false" flex layout="column" class="user-log-row">
+        <md-divider></md-divider>
+        <div layout="row" layout-align="start center" style="position: relative" title="{{userLog.content}}">
+            <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userLog); userLog.showInlineEditButton = false"
+                style="font-size: 16px"><span>+</span></div>
+            <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userLog); userLog.showInlineEditButton = false"
+                style="font-size: 16px"><span>+</span></div>
                 <i class="userlog-user-name">
-                    {{userLog.user.name}}
+                    <b>{{userLog.user.name}}</b>
                 </i>
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
@@ -116,8 +162,10 @@
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
-                <pre flex style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
-                <i style="font-size: 12px" ng-repeat="tag in userLog.tags" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
+                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
+                <div class="tags-list-container" title="{{userLog.tagsListText}}" ng-class="{'tags-list-compressed-container': vm.expandEntries}">
+                    <i style="font-size: 11px">{{userLog.tagsListText}}</i>
+                </div>
                 <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                     <span ng-show="userLog.attachment_count>0">({{userLog.attachment_count}}
                     <span class="fa fa-paperclip"></span>)

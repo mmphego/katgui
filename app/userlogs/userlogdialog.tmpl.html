@@ -57,6 +57,7 @@
         <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 48px">
             <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match="true" flex>
                 <md-autocomplete ng-disabled="!editMode"
+                    md-autoselect="true"
                     md-search-text="searchText"
                     md-items="item in querySearch(searchText)"
                     md-item-text="item.name"

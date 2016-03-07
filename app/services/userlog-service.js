@@ -19,6 +19,11 @@
                 userlog.tags.push(api.tagsMap[tagIds[i]]);
             }
             userlog.tags = _.sortBy(userlog.tags, 'name');
+            if (userlog.tags) {
+                userlog.tagsListText = userlog.tags.map(function (tag) {
+                    return tag.name;
+                }).join(',');
+            }
             return userlog;
         };
 

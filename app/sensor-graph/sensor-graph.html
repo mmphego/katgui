@@ -189,6 +189,7 @@
                     delete-hint="Remove from Sensor Graph"
                     title="Filter on Sensor List Results">
                     <md-autocomplete
+                        md-autoselect="true"
                         md-search-text="vm.chipsSearchText"
                         md-items="item in vm.chipsQuerySearch(vm.chipsSearchText)"
                         md-item-text="item.name">
