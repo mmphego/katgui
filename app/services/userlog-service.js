@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService, $mdDialog) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService, $mdDialog, $sce) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katcontrol';
@@ -12,6 +12,7 @@
         api.tagsMap = {};
         api.taxonomies = [];
 
+        //TODO rename this method to something better
         api.populateUserlogTagsFromMap = function (userlog) {
             var tagIds = JSON.parse(userlog.tags);
             userlog.tags = [];

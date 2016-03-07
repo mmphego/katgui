@@ -86,7 +86,7 @@
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
-                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
+                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent" ng-bind-html="userLog.content | linkify | toTrustedHtml"></pre>
                 <div class="tags-list-container" title="{{userLog.tagsListText}}" ng-class="{'tags-list-compressed-container': vm.expandEntries}">
                     <i style="font-size: 11px">{{userLog.tagsListText}}</i>
                 </div>
@@ -162,7 +162,7 @@
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
-                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent">{{userLog.content}}</pre>
+                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent" ng-bind-html="userLog.content | linkify | toTrustedHtml"></pre>
                 <div class="tags-list-container" title="{{userLog.tagsListText}}" ng-class="{'tags-list-compressed-container': vm.expandEntries}">
                     <i style="font-size: 11px">{{userLog.tagsListText}}</i>
                 </div>
