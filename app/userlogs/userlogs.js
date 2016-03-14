@@ -238,13 +238,19 @@
         };
 
         vm.setInlineStartTimeBeforeLog = function (userlog) {
+            var userlogsContainer = document.querySelector('#userlogsContainer');
+            var scrollTopToKeep = userlogsContainer.scrollTop;
             vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
             document.getElementById("inlineContentInput").focus();
+            userlogsContainer.scrollTop = scrollTopToKeep;
         };
 
         vm.setInlineStartTimeAfterLog = function (userlog) {
+            var userlogsContainer = document.querySelector('#userlogsContainer');
+            var scrollTopToKeep = userlogsContainer.scrollTop;
             vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
             document.getElementById("inlineContentInput").focus();
+            userlogsContainer.scrollTop = scrollTopToKeep;
         };
 
         $scope.$on('$destroy', function () {

@@ -71,25 +71,24 @@
     <div flex class="md-whiteframe-z1" style="overflow: auto" id="userlogsContainer">
         <div ng-repeat="userLog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true track by userLog.id"
             ng-mouseenter="userLog.showInlineEditButton = true" ng-mouseleave="userLog.showInlineEditButton = false" flex layout="column" class="user-log-row">
-            <md-divider></md-divider>
-            <div layout="row" layout-align="start center" style="position: relative">
-                <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userLog); userLog.showInlineEditButton = false"
-                    style="font-size: 16px">+</div>
-                <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userLog); userLog.showInlineEditButton = false"
-                    style="font-size: 16px">+</div>
-                <i class="userlog-user-name">
-                    <b>{{userLog.user.name}}</b>
-                </i>
-                <span style="width: 125px; font-size: 12px">
-                    {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
-                </span>
-                <span style="width: 125px; font-size: 12px">
-                    {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
-                </span>
-                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent" ng-bind-html="userLog.content | linkify | toTrustedHtml"></pre>
-                <div class="tags-list-container" title="{{userLog.tagsListText}}" ng-class="{'tags-list-compressed-container': vm.expandEntries}">
-                    <i style="font-size: 11px">{{userLog.tagsListText}}</i>
-                </div>
+            <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userLog.content}}">
+                <div title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userLog); userLog.showInlineEditButton = false"
+                    style="font-size: 16px"><span ng-show="userLog.showInlineEditButton && !vm.chatMode" >+</span></div>
+                <div title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userLog); userLog.showInlineEditButton = false"
+                    style="font-size: 16px"><span ng-show="userLog.showInlineEditButton && !vm.chatMode">+</span></div>
+                    <i class="userlog-user-name">
+                        <b>{{userLog.user.name}}</b>
+                    </i>
+                    <span style="width: 125px; font-size: 12px">
+                        {{userLog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                    </span>
+                    <span style="width: 125px; font-size: 12px">
+                        {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
+                    </span>
+                    <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userLog.content | linkify | toTrustedHtml"></pre>
+                    <div class="tags-list-container" title="{{userLog.tagsListText}}" ng-class="{'tags-list-compressed-container': vm.expandEntries}">
+                        <i style="font-size: 11px">{{userLog.tagsListText}}</i>
+                    </div>
                 <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                     <span ng-show="userLog.attachment_count>0">({{userLog.attachment_count}}
                     <span class="fa fa-paperclip"></span>)
@@ -147,12 +146,11 @@
         </form>
         <div ng-repeat="userLog in vm.userLogs | filter:vm.filterBeforeNow | filter:vm.filterByTag | orderBy:'start_time':true"
                 ng-mouseenter="userLog.showInlineEditButton = true" ng-mouseleave="userLog.showInlineEditButton = false" flex layout="column" class="user-log-row">
-        <md-divider></md-divider>
-        <div layout="row" layout-align="start center" style="position: relative" title="{{userLog.content}}">
-            <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userLog); userLog.showInlineEditButton = false"
-                style="font-size: 16px"><span>+</span></div>
-            <div ng-show="userLog.showInlineEditButton && !vm.chatMode" title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userLog); userLog.showInlineEditButton = false"
-                style="font-size: 16px"><span>+</span></div>
+        <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userLog.content}}">
+            <div title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userLog); userLog.showInlineEditButton = false"
+                style="font-size: 16px"><span ng-show="userLog.showInlineEditButton && !vm.chatMode" >+</span></div>
+            <div title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userLog); userLog.showInlineEditButton = false"
+                style="font-size: 16px"><span ng-show="userLog.showInlineEditButton && !vm.chatMode">+</span></div>
                 <i class="userlog-user-name">
                     <b>{{userLog.user.name}}</b>
                 </i>
@@ -162,7 +160,7 @@
                 <span style="width: 125px; font-size: 12px">
                     {{userLog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}
                 </span>
-                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent" ng-bind-html="userLog.content | linkify | toTrustedHtml"></pre>
+                <pre flex ng-class="{'compressed-userlog': vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userLog.content | linkify | toTrustedHtml"></pre>
                 <div class="tags-list-container" title="{{userLog.tagsListText}}" ng-class="{'tags-list-compressed-container': vm.expandEntries}">
                     <i style="font-size: 11px">{{userLog.tagsListText}}</i>
                 </div>
