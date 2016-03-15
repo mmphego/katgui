@@ -34,8 +34,11 @@
         if (!vm.inlineTags) {
             vm.inlineTags = [];
         }
+
         vm.chatMode = _.findIndex(vm.inlineTags, {name: 'chat'}) > -1;
         vm.mandatoryTagsList = ['shift', 'time-loss', 'observation', 'status', 'mantenance'];
+        vm.mandatoryTagsListString = vm.mandatoryTagsList.join(', ');
+        vm.containsInvalidInlineTagSelection = false;
 
         vm.chosen_tags = [];
         vm.includeActivityLogs = false;
@@ -69,7 +72,8 @@
         };
 
         vm.addNewInlineLog = function () {
-            if (!vm.newLogContent) {
+            vm.inlineTagFilterChanged();
+            if (!vm.newLogContent || !vm.verifyInlineInputs() || vm.containsInvalidInlineTagSelection) {
                 return;
             }
 
@@ -80,14 +84,11 @@
                 vm.newLogEndTimeText = $rootScope.utcDateTime;
             }
 
-            if (!vm.verifyInlineInputs()) {
-                return;
-            }
-
             var tagIdList = [];
             vm.inlineTags.forEach(function (tag) {
                 tagIdList.push(tag.id);
             });
+
             var newLog = {
                 user: $rootScope.currentUser.id,
                 start_time: vm.newLogStartTimeText,
@@ -121,7 +122,11 @@
 
         vm.tagFilterChanged = function () {
             $localStorage.filterTags = vm.filterTags;
+        };
+
+        vm.inlineTagFilterChanged = function () {
             $localStorage.inlineTags = vm.inlineTags;
+            vm.containsInvalidInlineTagSelection = !vm.checkForMandatoryInlineTag();
         };
 
         vm.filterByTag = function (userlog) {
@@ -253,6 +258,20 @@
             document.getElementById("inlineContentInput").focus();
             userlogsContainer.scrollTop = scrollTopToKeep;
         };
+
+        vm.checkForMandatoryInlineTag = function () {
+            var containsMandatoryTags = false;
+            vm.inlineTags.forEach(function (tag) {
+                if (vm.mandatoryTagsList.indexOf(tag.name.toLowerCase()) > -1) {
+                    containsMandatoryTags = true;
+                }
+            });
+            return containsMandatoryTags;
+        };
+
+        $timeout(function () {
+            vm.inlineTagFilterChanged();
+        }, 5000);
 
         $scope.$on('$destroy', function () {
             if (vm.unbindLoginSuccess) {
