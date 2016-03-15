@@ -36,9 +36,8 @@
         }
 
         vm.chatMode = _.findIndex(vm.inlineTags, {name: 'chat'}) > -1;
-        vm.mandatoryTagsList = ['shift', 'time-loss', 'observation', 'status', 'mantenance'];
-        vm.mandatoryTagsListString = vm.mandatoryTagsList.join(', ');
         vm.containsInvalidInlineTagSelection = false;
+        vm.mandatoryTagsListString = UserLogService.mandatoryTagsListString;
 
         vm.chosen_tags = [];
         vm.includeActivityLogs = false;
@@ -263,7 +262,7 @@
         vm.checkForMandatoryInlineTag = function () {
             var containsMandatoryTags = false;
             vm.inlineTags.forEach(function (tag) {
-                if (vm.mandatoryTagsList.indexOf(tag.name.toLowerCase()) > -1) {
+                if (UserLogService.mandatoryTagsList.indexOf(tag.name.toLowerCase()) > -1) {
                     containsMandatoryTags = true;
                 }
             });
