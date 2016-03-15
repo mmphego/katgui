@@ -2,7 +2,7 @@
     <div flex layout="column" ng-click="vm.showEndDatePicker = false; vm.showDawtePicker = false;"
         style="cursor: inherit">
         <md-toolbar md-theme="{{themePrimary}}" class="md-whiteframe-z1" layout="column" style="min-height: 144px">
-            <md-button ng-init="vm.expandEntries = true" ng-click="vm.expandEntries = !vm.expandEntries" title="{{vm.expandEntries? 'Collapse All' : 'Expand All'" class="inline-action-button"
+            <md-button ng-init="vm.expandEntries = false" ng-click="vm.expandEntries = !vm.expandEntries" title="{{vm.expandEntries? 'Collapse All' : 'Expand All'}}" class="inline-action-button"
                 style="margin-top: 16px; position: absolute; bottom: -8px; right: -8px">
                 <i ng-show="!vm.expandEntries" class="fa fa-plus-square-o"></i>
                 <i ng-show="vm.expandEntries" class="fa fa-minus-square-o"></i>
@@ -112,7 +112,7 @@
                     </span>
                     <pre flex ng-class="{'compressed-userlog': !vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userlog.content | linkify | toTrustedHtml"></pre>
                     <div class="tags-list-container" title="{{userlog.tagsListText}}" ng-class="{'tags-list-compressed-container': !vm.expandEntries}">
-                        <i style="font-size: 11px">{{userlog.tagsListText}}</i>
+                        <i style="font-size: 11px; padding-right: 2px">{{userlog.tagsListText}}</i>
                     </div>
                     <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                         <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}

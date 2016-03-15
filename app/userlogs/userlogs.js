@@ -127,6 +127,7 @@
         vm.inlineTagFilterChanged = function () {
             $localStorage.inlineTags = vm.inlineTags;
             vm.containsInvalidInlineTagSelection = !vm.checkForMandatoryInlineTag();
+            vm.showMandatoryTooltip = vm.containsInvalidInlineTagSelection;
         };
 
         vm.filterByTag = function (userlog) {

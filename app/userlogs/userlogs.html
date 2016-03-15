@@ -61,17 +61,17 @@
                 <span class="fa fa-paperclip"></span>
             </span>
         </div>
-        <md-button ng-init="vm.expandEntries = true" ng-click="vm.expandEntries = !vm.expandEntries" title="{{vm.expandEntries? 'Collapse All' : 'Expand All'" class="inline-action-button"
+        <md-button ng-init="vm.expandEntries = false" ng-click="vm.expandEntries = !vm.expandEntries" title="{{vm.expandEntries? 'Collapse All' : 'Expand All'}}" class="inline-action-button"
             style="margin-top: 16px; position: absolute; bottom: -8px; right: -8px">
             <i ng-show="!vm.expandEntries" class="fa fa-plus-square-o"></i>
             <i ng-show="vm.expandEntries" class="fa fa-minus-square-o"></i>
         </md-button>
     </md-toolbar>
-    <md-button style="border-bottom: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs">Fetch Logs for {{vm.lastFutureQueryDayTextStart}} to {{vm.lastFutureQueryDayTextEnd}}</md-button>
+    <md-button style="border-bottom: 1px solid #d7d7d7" class="md-raised fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs"><i class="fa fa-caret-up" style="margin: 0 4px"></i>Fetch Logs for {{vm.lastFutureQueryDayTextStart}} to {{vm.lastFutureQueryDayTextEnd}}<i class="fa fa-caret-up" style="margin: 0 4px"></i></md-button>
     <div flex class="md-whiteframe-z1" style="overflow: auto" id="userlogsContainer">
         <div ng-repeat="userlog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true track by userlog.id"
             ng-mouseenter="userlog.showInlineEditButton = true" ng-mouseleave="userlog.showInlineEditButton = false" flex layout="column" class="user-log-row">
-            <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userlog.content}}">
+            <div layout="row" layout-align="start center" style="position: relative; border-bottom: 1px solid #d7d7d7" title="{{userlog.content}}">
                 <div title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userlog); userlog.showInlineEditButton = false"
                     style="font-size: 16px"><span ng-show="userlog.showInlineEditButton && !vm.chatMode" >+</span></div>
                 <div title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userlog); userlog.showInlineEditButton = false"
@@ -87,7 +87,7 @@
                     </span>
                     <pre flex ng-class="{'compressed-userlog': !vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userlog.content | linkify | toTrustedHtml"></pre>
                     <div class="tags-list-container" title="{{userlog.tagsListText}}" ng-class="{'tags-list-compressed-container': !vm.expandEntries}">
-                        <i style="font-size: 11px">{{userlog.tagsListText}}</i>
+                        <i style="font-size: 11px; padding-right: 2px">{{userlog.tagsListText}}</i>
                     </div>
                 <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                     <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}
@@ -114,8 +114,8 @@
             <md-input-container md-is-error="vm.newLogContent.length === 0" flex md-no-float class="md-primary" title="Content">
                 <input id="inlineContentInput" focus flex placeholder="Content" ng-model="vm.newLogContent" ng-focus="vm.setNewLogStartTimeAfterFocus()">
             </md-input-container>
-            <div flex style="max-width: 450px; max-height: 48px; overflow: auto" ng-class="{'chips-tag-input-error': vm.containsInvalidInlineTagSelection}">
-                <md-tooltip md-visible="vm.containsInvalidInlineTagSelection" md-autohide="false">
+            <div flex style="max-width: 450px; max-height: 48px; overflow: auto; margin-right: 4px" ng-class="{'chips-tag-input-error': vm.containsInvalidInlineTagSelection}">
+                <md-tooltip md-visible="vm.showMandatoryTooltip" md-autohide="false">
                     Select at least one of the mandatory tags: {{vm.mandatoryTagsListString}}
                 </md-tooltip>
                 <md-chips ng-model="vm.inlineTags" style="margin: 0; padding: 0; max-width: 450px; max-height: 48px;" md-autocomplete-snap="true" md-require-match="true" flex
@@ -151,7 +151,7 @@
         </form>
         <div ng-repeat="userlog in vm.userLogs | filter:vm.filterBeforeNow | filter:vm.filterByTag | orderBy:'start_time':true"
                 ng-mouseenter="userlog.showInlineEditButton = true" ng-mouseleave="userlog.showInlineEditButton = false" flex layout="column" class="user-log-row">
-        <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userlog.content}}">
+        <div layout="row" layout-align="start center" style="position: relative; border-bottom: 1px solid #d7d7d7" title="{{userlog.content}}">
             <div title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userlog); userlog.showInlineEditButton = false"
                 style="font-size: 16px"><span ng-show="userlog.showInlineEditButton && !vm.chatMode" >+</span></div>
             <div title="Insert user log below this one" style="position: absolute; left: -5px; bottom: -5px;" ng-click="vm.setInlineStartTimeBeforeLog(userlog); userlog.showInlineEditButton = false"
@@ -167,7 +167,7 @@
                 </span>
                 <pre flex ng-class="{'compressed-userlog': !vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userlog.content | linkify | toTrustedHtml"></pre>
                 <div class="tags-list-container" title="{{userlog.tagsListText}}" ng-class="{'tags-list-compressed-container': !vm.expandEntries}">
-                    <i style="font-size: 11px">{{userlog.tagsListText}}</i>
+                    <i style="font-size: 11px; padding-right: 2px">{{userlog.tagsListText}}</i>
                 </div>
                 <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                     <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}
@@ -180,6 +180,6 @@
                 </md-button>
             </div>
         </div>
-        <md-button style="border-top: 1px solid #d7d7d7" class="fetch-more-logs-button" ng-click="vm.fetchMoreLogs()" ng-disabled="vm.fetchingPastLogs">Fetch Logs for {{vm.lastQueryDayTextStart}} to {{vm.lastQueryDayTextEnd}}</md-button>
     </div>
+    <md-button class="md-raised fetch-more-logs-button" ng-click="vm.fetchMoreLogs()" ng-disabled="vm.fetchingPastLogs"><i class="fa fa-caret-down" style="margin: 0 4px"></i>Fetch Logs for {{vm.lastQueryDayTextStart}} to {{vm.lastQueryDayTextEnd}}<i class="fa fa-caret-down" style="margin: 0 4px"></i></md-button>
 </div>
