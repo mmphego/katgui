@@ -69,10 +69,11 @@
                     theme: 'striped',
                     margin: {top: 8, bottom: 8},
                     columnStyles: {
-                        userName: {columnWidth: 80},
+                        userName: {columnWidth: 80, overflow: 'linebreak'},
                         start_time: {columnWidth: 120},
                         end_time: {columnWidth: 120},
-                        content: {overflow: 'linebreak'}}});
+                        content: {overflow: 'linebreak'},
+                        tag_list: {overflow: 'linebreak'}}});
 
                 if (vm.includeActivityLogs) {
                     columns = [{title: "System Activity Logs", key: "msg"}];

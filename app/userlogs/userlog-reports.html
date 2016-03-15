@@ -2,6 +2,11 @@
     <div flex layout="column" ng-click="vm.showEndDatePicker = false; vm.showDawtePicker = false;"
         style="cursor: inherit">
         <md-toolbar md-theme="{{themePrimary}}" class="md-whiteframe-z1" layout="column" style="min-height: 144px">
+            <md-button ng-init="vm.expandEntries = true" ng-click="vm.expandEntries = !vm.expandEntries" title="{{vm.expandEntries? 'Collapse All' : 'Expand All'" class="inline-action-button"
+                style="margin-top: 16px; position: absolute; bottom: -8px; right: -8px">
+                <i ng-show="!vm.expandEntries" class="fa fa-plus-square-o"></i>
+                <i ng-show="vm.expandEntries" class="fa fa-minus-square-o"></i>
+            </md-button>
             <div md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools" layout="row" layout-align="start center" style="padding: 0">
                 <span style="margin-left: 8px" flex>Report Parameters</span>
                 <input class="fade-in search-input-box" style="width: 200px; max-width: 200px" type="search"
@@ -94,14 +99,21 @@
                 <span flex>Content</span>
                 <span>Tags</span>
             </div>
-            <div ng-repeat="userlog in vm.filteredReportUserlogs = (vm.reportUserlogs | regexSearch:vm.userLogsFields:vm.q2 | filter:vm.filterByTag) track by $index" ng-click="vm.editUserLog(userlog, $event)">
-                <md-divider></md-divider>
-                <div style="padding: 8px" class="md-list-item-text" flex layout="row" layout-align="start center">
-                    <span style="width: 130px">{{userlog.user.name}}</span>
-                    <span style="width: 150px">{{userlog.start_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
-                    <span style="width: 150px">{{userlog.end_time | date:'yyyy-MM-dd HH:mm:ss'}}</span>
-                    <pre flex style="margin: 0; padding: 0; background: transparent">{{userlog.content}}</pre>
-                    <i style="font-size: 12px; margin-right: 4px" ng-repeat="tag in userlog.tags | orderBy:'name' track by $index" ng-style="{'deactivated-tag': !tag.activated}">{{tag.name}}{{$last? '' : ','}}</i>
+            <div ng-repeat="userlog in vm.filteredReportUserlogs = (vm.reportUserlogs | regexSearch:vm.userLogsFields:vm.q2 | filter:vm.filterByTag) track by $index" ng-click="vm.editUserLog(userlog, $event)" class="user-log-row">
+                <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userlog.content}}">
+                    <i class="userlog-user-name" title="{{userlog.user.name}}">
+                        <b>{{userlog.user.name}}</b>
+                    </i>
+                    <span style="width: 125px; font-size: 12px">
+                        {{userlog.start_time}}
+                    </span>
+                    <span style="width: 125px; font-size: 12px">
+                        {{userlog.end_time}}
+                    </span>
+                    <pre flex ng-class="{'compressed-userlog': !vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userlog.content | linkify | toTrustedHtml"></pre>
+                    <div class="tags-list-container" title="{{userlog.tagsListText}}" ng-class="{'tags-list-compressed-container': !vm.expandEntries}">
+                        <i style="font-size: 11px">{{userlog.tagsListText}}</i>
+                    </div>
                     <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                         <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}
                         <span class="fa fa-paperclip"></span>)

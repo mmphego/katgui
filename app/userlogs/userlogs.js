@@ -35,6 +35,7 @@
             vm.inlineTags = [];
         }
         vm.chatMode = _.findIndex(vm.inlineTags, {name: 'chat'}) > -1;
+        vm.mandatoryTagsList = ['shift', 'time-loss', 'observation', 'status', 'mantenance'];
 
         vm.chosen_tags = [];
         vm.includeActivityLogs = false;
