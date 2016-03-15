@@ -262,7 +262,5 @@
             }
             MonitorService.unsubscribe('userlogs', '*');
         });
-        //TODO keyboard shortcuts
-        //scroll jumping around when trying to insert a log inline
     }
 })();
