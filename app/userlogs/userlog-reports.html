@@ -10,13 +10,13 @@
             <div md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools" layout="row" layout-align="start center" style="padding: 0">
                 <span style="margin-left: 8px" flex>Report Parameters</span>
                 <input class="fade-in search-input-box" style="width: 200px; max-width: 200px" type="search"
-                       ng-model-options="{ debounce: 300 }" ng-model="vm.q2" placeholder="Filter Userlogs..."/>
+                       ng-model-options="{ debounce: 300 }" ng-model="vm.searchInputText" placeholder="Filter Userlogs..."/>
                 <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
                     <div layout="row" layout-align="center center" style="min-width: 180px; position: relative">
                         <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
                             <input flex type="text" style="color: white"
                                    data-ng-model="vm.startTime" placeholder="Start Date"
-                                   title="Start Date 'HH:mm:ss yyyy-MM-dd'"/>
+                                   title="Start Date 'yyyy-MM-dd HH:mm:ss'"/>
                         </md-input-container>
                         <span></span>
                         <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
@@ -33,7 +33,7 @@
                         <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
                             <input flex type="text" style="color: white"
                                    data-ng-model="vm.endTime" placeholder="End Date"
-                                   title="End Date 'HH:mm:ss yyyy-MM-dd'"/>
+                                   title="End Date 'yyyy-MM-dd HH:mm:ss'"/>
                         </md-input-container>
                         <span></span>
                         <md-button class="md-icon-button" style="margin-left: 0;width: 40px; height: 40px;"
@@ -100,7 +100,7 @@
                 <span flex>Content</span>
                 <span>Tags</span>
             </div>
-            <div ng-repeat="userlog in vm.filteredReportUserlogs = (vm.reportUserlogs | regexSearch:vm.userLogsFields:vm.q2 | filter:vm.filterByTag) track by $index" ng-click="vm.editUserLog(userlog, $event)" class="user-log-row">
+            <div ng-repeat="userlog in vm.filteredReportUserlogs = (vm.reportUserlogs | regexSearch:vm.userLogsFields:vm.searchInputText | filter:vm.filterByTag) track by $index" ng-click="vm.editUserLog(userlog, $event)" class="user-log-row">
                 <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userlog.content}}">
                     <i class="userlog-user-name" title="{{userlog.user.name}}">
                         <b>{{userlog.user.name}}</b>

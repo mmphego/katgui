@@ -22,7 +22,6 @@
 
         var vm = this;
         var momentjsFormat = 'YYYY-MM-DD HH:mm:ss';
-        var datetime_format = 'yyyy-MM-dd HH:mm:ss';
         UserLogService.userlogs = [];
         vm.userLogs = UserLogService.userlogs;
         vm.tags = UserLogService.tags;
@@ -57,7 +56,7 @@
         MonitorService.subscribe('userlogs', '*');
 
         vm.onTimeSet = function (value, target, attribute) {
-            target[attribute] = $filter('date')(value, datetime_format);
+            target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm:ss');
         };
 
         vm.verifyDateTimeString = function (input) {

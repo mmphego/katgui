@@ -574,8 +574,15 @@
             title: 'User Log Tag Management'
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}',
             templateUrl: 'app/userlogs/userlog-reports.html',
+            //makes the params optional
+            params: {
+                startTime: { value: null, squash: true },
+                endTime: { value: null, squash: true },
+                tagIds: { value: null, squash: true },
+                filter: { value: null, squash: true }
+            },
             title: 'User Log Reports'
         });
         /* Add New States Above */
