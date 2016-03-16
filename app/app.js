@@ -79,6 +79,7 @@
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
         $rootScope.expertOrLO = false;
+        $rootScope.showVideoLinks = false;
 
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {
@@ -119,7 +120,6 @@
 
         vm.initApp = function () {
             vm.showNavbar = true;
-            $rootScope.showVideoLinks = false;
             $rootScope.showDate = $localStorage['showDate'];
             $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
             $rootScope.showJulianDate = $localStorage['showJulianDate'];
