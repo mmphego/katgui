@@ -28,11 +28,7 @@
                 <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
             </md-button>
         </md-chips>
-        <md-input-container md-theme="{{$root.themePrimaryButtons}}" md-no-float class="md-primary" style="font-size: 12px; width: 125px; padding-right: 8px;">
-            <md-tooltip>The current time to add an inline log</md-tooltip>
-            <input ng-disabled="vm.chatMode" style="color: white" flex placeholder="Selected Time" ng-model="vm.newLogStartTimeText" ng-model-options="{ debounce: 300 }">
-        </md-input-container>
-        <md-button ng-click="vm.newLogStartTimeText = $root.utcDateTime"
+        <md-button ng-click="vm.newLogStartTimeText = $root.utcDateTime; vm.focusInlineContentInput()"
             style="height: 36px; max-width: 42px; min-width: 42px; margin-top: 16px; margin-left: 0; padding: 0;">
             Now
         </md-button>
@@ -112,7 +108,7 @@
                 <input flex placeholder="End Time" ng-model="vm.newLogEndTimeText" ng-change="vm.verifyInlineInputs()">
             </md-input-container>
             <md-input-container md-is-error="vm.newLogContent.length === 0" flex md-no-float class="md-primary" title="Content">
-                <input id="inlineContentInput" focus flex placeholder="Content" ng-model="vm.newLogContent" ng-focus="vm.setNewLogStartTimeAfterFocus()">
+                <input id="inlineContentInput" focus flex placeholder="Content" ng-model="vm.newLogContent" ng-click="vm.setNewLogStartTimeAfterFocus()">
             </md-input-container>
             <div flex style="max-width: 450px; max-height: 48px; overflow: auto; margin-right: 4px" ng-class="{'chips-tag-input-error': vm.containsInvalidInlineTagSelection}">
                 <md-tooltip md-visible="vm.showMandatoryTooltip" md-autohide="false">

@@ -195,9 +195,11 @@
 
         if ($rootScope.utcDateTime) {
             vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+            vm.verifyInlineInputs();
         } else {
             vm.undbindutcDateTimeSet = $rootScope.$on('utcDateTimeSet', function (event, value) {
                 vm.newLogStartTimeText = moment(value, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                vm.verifyInlineInputs();
             });
         }
 
@@ -212,7 +214,7 @@
             var start = vm.lastQueryDayStart.format('YYYY-MM-DD 00:00:00');
             var end = vm.lastQueryDayEnd.format('YYYY-MM-DD 23:59:59');
             UserLogService.listUserLogsForTimeRange(start, end).then(function () {
-                vm.lastQueryDayStart = vm.lastQueryDayStart.subtract(1, 'M');
+                vm.lastQueryDayStart = vm.lastQueryDayStart.subtract(1, 'M').subtract(1, 'd');
                 vm.lastQueryDayEnd = vm.lastQueryDayEnd.subtract(1, 'M').subtract(1, 'd');
                 vm.lastQueryDayTextStart = vm.lastQueryDayStart.format('YYYY-MM-DD');
                 vm.lastQueryDayTextEnd = vm.lastQueryDayEnd.format('YYYY-MM-DD');
@@ -238,8 +240,9 @@
         };
 
         vm.setNewLogStartTimeAfterFocus = function () {
-            if (!vm.chatMode && !vm.newLogStartTimeText) {
+            if (!vm.chatMode && !vm.newLogContent) {
                 vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                vm.verifyInlineInputs();
             }
         };
 
@@ -247,7 +250,7 @@
             var userlogsContainer = document.querySelector('#userlogsContainer');
             var scrollTopToKeep = userlogsContainer.scrollTop;
             vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
-            document.getElementById("inlineContentInput").focus();
+            vm.focusInlineContentInput();
             userlogsContainer.scrollTop = scrollTopToKeep;
         };
 
@@ -255,8 +258,12 @@
             var userlogsContainer = document.querySelector('#userlogsContainer');
             var scrollTopToKeep = userlogsContainer.scrollTop;
             vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
-            document.getElementById("inlineContentInput").focus();
+            vm.focusInlineContentInput();
             userlogsContainer.scrollTop = scrollTopToKeep;
+        };
+
+        vm.focusInlineContentInput = function () {
+            document.getElementById("inlineContentInput").focus();
         };
 
         vm.checkForMandatoryInlineTag = function () {
