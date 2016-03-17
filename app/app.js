@@ -533,9 +533,16 @@
             .state(observationsOverview)
             .state(observationsDetail);
         $stateProvider.state('sensor-graph', {
-            url: '/sensor-graph',
+            url: '/sensor-graph/{startTime}/{endTime}/{interval}/{sensors}',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
             title: 'Sensor Graph',
+            //makes the params optional
+            params: {
+                startTime: { value: null, squash: true },
+                endTime: { value: null, squash: true },
+                interval: { value: null, squash: true },
+                sensors: { value: null, squash: true }
+            },
             noAuth: true
         });
         $stateProvider.state('sensor-list', {

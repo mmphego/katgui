@@ -110,7 +110,8 @@
                         startTime: vm.startTime,
                         endTime: vm.endTime,
                         tagIds: filterTagsList? filterTagsList : ',',
-                        filter: vm.searchInputText});
+                        filter: vm.searchInputText},
+                        { notify: false, reload: false });
                 vm.reportUserlogs = [];
                 var query = "?";
                 query += "start_time=" + vm.startTime + "&";
@@ -163,7 +164,7 @@
                         });
                     } else if ($stateParams.startTime && $stateParams.endTime) {
                         NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
-                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '.');
+                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be YYYY-MM-DD HH:mm:ss.');
                     }
                 }, 1000);
             };
