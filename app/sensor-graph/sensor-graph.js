@@ -478,13 +478,15 @@
                     }
                     sensors.forEach(function (sensor) {
                         var requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
-                        DataService.sensorData.apply(this, requestParams)
-                            .then(function (result) {
-                                vm.sensorNames.push(sensor);
-                            }, function (error) {
-                                vm.waitingForSearchResult = false;
-                                $log.info(error);
-                            });
+                        $timeout(function () {
+                            DataService.sensorData.apply(this, requestParams)
+                                .then(function (result) {
+                                    vm.sensorNames.push(sensor);
+                                }, function (error) {
+                                    vm.waitingForSearchResult = false;
+                                    $log.info(error);
+                                });
+                        }, 100);
                     });
                 });
 
