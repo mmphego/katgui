@@ -182,6 +182,9 @@
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
                                     <md-menu-item>
+                                        <md-button ng-click="vm.viewSBDryrun(item)" title="View Dryrun results in a New Tab">View Dryrun</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
                                         <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
                                     </md-menu-item>
                                     <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION' && ($root.expertOrLO || parentScope.vm.iAmCA)">
@@ -276,7 +279,10 @@
                                         <md-button ng-click="vm.cloneSchedule(item)">Clone SB</md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="vm.viewSBTasklog(item)">View Tasklog</md-button>
+                                        <md-button ng-click="vm.viewSBDryrun(item)" title="View Dryrun results in a New Tab">View Dryrun</md-button>
+                                    </md-menu-item>
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.viewSBTasklog(item)" title="View Tasklog in a New Tab">View Tasklog</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>

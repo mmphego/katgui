@@ -106,6 +106,7 @@ gulp.task('indexHtml', ['clean'], function () {
             $('script[data-remove!="exclude"]').remove();
             $('link').remove();
             $('body').append('<script src="app.full.min.js"></script>');
+            $('head').append('<link rel="icon" type="image/png" href="images/favicon.ico" sizes="32x32">');
             $('head').append('<link rel="stylesheet" href="app.full.min.css">');
         }))
         .pipe(htmlmin(htmlminOptions))

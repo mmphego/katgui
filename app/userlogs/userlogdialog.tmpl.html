@@ -48,15 +48,21 @@
             </div>
         </div>
         <div class="md-whiteframe-z1" style="margin: 8px 0" flex>
-            <md-input-container md-is-error="content.length === 0" style="margin: 16px 0; min-height: 300px; max-height: 300px" class="md-block" flex>
+            <md-input-container md-is-error="content.length === 0" style="margin: 16px 0; min-height: 280px; max-height: 280px" class="md-block" flex>
                 <label>Log Content</label>
-                <textarea style="overflow-y: scroll; resize: none; width: 100%; min-height: 300px; max-height: 300px; height: 300px" ng-disabled="!editMode" md-select-on-focus rows="10" md-maxlength="10000" ng-model="content"></textarea>
+                <textarea style="overflow-y: scroll; resize: none; width: 100%; min-height: 280px; max-height: 280px; height: 280px" ng-disabled="!editMode" md-select-on-focus rows="10" md-maxlength="10000" ng-model="content"></textarea>
             </md-input-container>
         </div>
 
-        <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 48px">
-            <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match="true" flex>
+        <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 48px" ng-class="{'chips-tag-input-error': !validTags}">
+            <md-tooltip md-visible="showInvalidTagsTooltip" md-autohide="false">
+                Select at least one of the mandatory tags: {{mandatoryTagsListString}}
+            </md-tooltip>
+            <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match="true" flex
+                md-on-add="tagsChanged()"
+                md-on-remove="tagsChanged()">
                 <md-autocomplete ng-disabled="!editMode"
+                    md-autoselect="true"
                     md-search-text="searchText"
                     md-items="item in querySearch(searchText)"
                     md-item-text="item.name"
@@ -108,7 +114,7 @@
             Uploading Files, please wait...
         </span>
         <md-button ng-click="hide()">{{!editMode? 'Close' : 'Cancel'}}</md-button>
-        <md-button ng-hide="!editMode" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime || !content">Submit</md-button>
+        <md-button ng-hide="!editMode" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime || !content || !validTags">Submit</md-button>
     </md-dialog-actions>
     </div>
 </md-dialog>

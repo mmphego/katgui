@@ -4,7 +4,8 @@
         .service('MonitorService', MonitorService);
 
     function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
-                            $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService) {
+                            $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService,
+                            SessionService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -137,9 +138,11 @@
                                         api.currentLeadOperator.name.length > 0 &&
                                         api.currentLeadOperator.name !== $rootScope.currentUser.email) {
                                         NotifyService.showDialog(
-                                            'You are logged out.', 'You have been logged out because ' +
+                                            'You have been logged in as the Monitor Role', 'You have lost the Lead Operator Role because ' +
                                             api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
-                                        $rootScope.logout();
+                                        //$rootScope.logout();
+                                        //Do not logout, just loging as a demoted monitor only use
+                                        SessionService.verifyAs('read_only');
                                     }
                                 } else if (messageChannel[0] === 'mon') {
                                     if (messageChannel[1] === 'sys_interlock_state') {

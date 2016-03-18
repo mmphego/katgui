@@ -3,15 +3,21 @@
     angular.module('katGui')
         .controller('UserlogReportsCtrl', UserlogReportsCtrl);
 
-        function UserlogReportsCtrl($rootScope, $scope, $localStorage, $filter, UserLogService, $log) {
+        function UserlogReportsCtrl($rootScope, $scope, $localStorage, $filter, UserLogService,
+                                    $log, $stateParams, NotifyService, $timeout, $state) {
 
             var vm = this;
-            var datetime_format = 'yyyy-MM-dd HH:mm:ss';
             vm.startTime = moment.utc().format('YYYY-MM-DD 00:00:00');
             vm.endTime = moment.utc().format('YYYY-MM-DD 23:59:59');
             vm.tags = UserLogService.tags;
             vm.filterTags = [];
             vm.reportUserlogs = [];
+            var startTimeParam = $stateParams.startTime;
+            var endTimeParam = $stateParams.endTime;
+
+            if ($stateParams.filter) {
+                vm.searchInputText = $stateParams.filter;
+            }
 
             vm.userLogsFields = [
                 {label: 'Start Time', value: 'start_time'},
@@ -69,10 +75,11 @@
                     theme: 'striped',
                     margin: {top: 8, bottom: 8},
                     columnStyles: {
-                        userName: {columnWidth: 80},
+                        userName: {columnWidth: 80, overflow: 'linebreak'},
                         start_time: {columnWidth: 120},
                         end_time: {columnWidth: 120},
-                        content: {overflow: 'linebreak'}}});
+                        content: {overflow: 'linebreak'},
+                        tag_list: {overflow: 'linebreak'}}});
 
                 if (vm.includeActivityLogs) {
                     columns = [{title: "System Activity Logs", key: "msg"}];
@@ -95,11 +102,20 @@
                 }
             };
 
-            vm.queryUserlogs = function (event, b_query) {
+            vm.queryUserlogs = function () {
+                var filterTagsList = vm.filterTags.map(function (tag) {
+                    return tag.id;
+                }).join(',');
+                $state.go('userlog-reports', {
+                        startTime: vm.startTime,
+                        endTime: vm.endTime,
+                        tagIds: filterTagsList? filterTagsList : ',',
+                        filter: vm.searchInputText},
+                        { notify: false, reload: false });
                 vm.reportUserlogs = [];
                 var query = "?";
                 query += "start_time=" + vm.startTime + "&";
-                query += "end_time=" +  vm.endTime + "&";
+                query += "end_time=" +  vm.endTime;
                 UserLogService.queryUserLogs(query).then(function (result) {
                     if (result.data) {
                         result.data.forEach(function (userlog) {
@@ -123,7 +139,34 @@
             };
 
             vm.afterInit = function() {
-                UserLogService.listTags();
+                UserLogService.listTags().then(function () {
+                    if ($stateParams.tagIds) {
+                        var tagIdsList = $stateParams.tagIds.split(',');
+                        vm.filterTags = UserLogService.tags.filter(function (tag) {
+                            return tagIdsList.indexOf(tag.id.toString()) > -1;
+                        });
+                    }
+                });
+                $timeout(function () {
+                    if (moment.utc($stateParams.startTime, 'YYYY-MM-DD HH:mm:ss', true).isValid() &&
+                        moment.utc($stateParams.endTime, 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
+                        vm.startTime = $stateParams.startTime;
+                        vm.endTime = $stateParams.endTime;
+                        var query = "?";
+                        query += "start_time=" + vm.startTime + "&";
+                        query += "end_time=" +  vm.endTime;
+                        UserLogService.queryUserLogs(query).then(function (result) {
+                            if (result.data) {
+                                result.data.forEach(function (userlog) {
+                                    vm.reportUserlogs.push(UserLogService.populateUserlogTagsFromMap(userlog));
+                                });
+                            }
+                        });
+                    } else if ($stateParams.startTime && $stateParams.endTime) {
+                        NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
+                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be YYYY-MM-DD HH:mm:ss.');
+                    }
+                }, 1000);
             };
 
             if ($rootScope.currentUser) {

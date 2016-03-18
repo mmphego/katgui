@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService, $mdDialog) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService, $mdDialog, $sce) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katcontrol';
@@ -11,7 +11,10 @@
         api.tags = [];
         api.tagsMap = {};
         api.taxonomies = [];
+        api.mandatoryTagsList = ['shift', 'time-loss', 'observation', 'status', 'maintenance'];
+        api.mandatoryTagsListString = api.mandatoryTagsList.join(', ');
 
+        //TODO rename this method to something better
         api.populateUserlogTagsFromMap = function (userlog) {
             var tagIds = JSON.parse(userlog.tags);
             userlog.tags = [];
@@ -19,6 +22,11 @@
                 userlog.tags.push(api.tagsMap[tagIds[i]]);
             }
             userlog.tags = _.sortBy(userlog.tags, 'name');
+            if (userlog.tags) {
+                userlog.tagsListText = userlog.tags.map(function (tag) {
+                    return tag.name;
+                }).join(',');
+            }
             return userlog;
         };
 
@@ -307,6 +315,8 @@
                         $scope.selectedTags = [];
                         $scope.attachments = log.attachments;
                         $scope.uploadingFiles = false;
+                        $scope.validTags = false;
+                        $scope.mandatoryTagsListString = api.mandatoryTagsListString;
 
                         for (var i = 0; i < log.tags.length; i++) {
                             var existingTag = _.findWhere(api.tags, {id: log.tags[i].id});
@@ -316,6 +326,21 @@
                                 $log.error('Could not find existing tag for ' + log.tags[i]);
                             }
                         }
+
+                        $scope.tagsChanged = function () {
+                            var containsMandatoryTags = false;
+                            for (var i = 0; i < $scope.selectedTags.length; i++) {
+                                if (api.mandatoryTagsList.indexOf($scope.selectedTags[i].name.toLowerCase()) > -1) {
+                                    containsMandatoryTags = true;
+                                    break;
+                                }
+                            }
+                            $scope.validTags = containsMandatoryTags;
+                            if ($scope.validTags) {
+                                $scope.showInvalidTagsTooltip = true;
+                            }
+                        };
+                        $scope.tagsChanged();
 
                         $scope.verifyDateTimeString = function (input) {
                             return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
@@ -364,8 +389,8 @@
                                     api.modifyUserLog(newLog).then(function (result) {
                                             var modified_userlog_id = result.data.id;
                                             api.uploadFileToUrl($scope.filesToUpload, modified_userlog_id).then(function () {
-                                                    $scope.uploadingFiles = false;
-                                                    $mdDialog.hide();
+                                                $scope.uploadingFiles = false;
+                                                $mdDialog.hide();
                                             });
                                         });
 
@@ -381,8 +406,8 @@
                                     api.addUserLog(newLog).then(function (result) {
                                             var new_userlog_id = result.data.id;
                                             api.uploadFileToUrl($scope.filesToUpload, new_userlog_id).then(function () {
-                                                    $scope.uploadingFiles = false;
-                                                    $mdDialog.hide();
+                                                $scope.uploadingFiles = false;
+                                                $mdDialog.hide();
                                             });
                                         });
 

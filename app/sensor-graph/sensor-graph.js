@@ -3,8 +3,8 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService,
-                             SensorsService, $interval, $log, NotifyService) {
+    function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q,
+                             SensorsService, $interval, $log, NotifyService, $stateParams, $state) {
 
         var vm = this;
         var DATETIME_FORMAT = 'HH:mm:ss DD-MM-YYYY';
@@ -158,6 +158,7 @@
             }
             vm.sensorNames.splice(0, vm.sensorNames.length);
             vm.clearChart();
+            vm.updateGraphUrl();
         };
 
         vm.removeSensorStrategies = function () {
@@ -179,6 +180,7 @@
         };
 
         vm.findSensorNames = function (searchStr, event) {
+            var deferred = $q.defer();
             if (event) {
                 event.stopPropagation();
             }
@@ -203,12 +205,15 @@
                                 $localStorage['sensorGraphAutoCompleteList'].push(searchStr);
                             }
                         }
+                        deferred.resolve(vm.sensorSearchNames);
                     }, function (error) {
                         vm.waitingForSearchResult = false;
                         $log.error(error);
                         NotifyService.showPreDialog('Error Finding Sensors', error);
+                        deferred.reject([]);
                     });
             }
+            return deferred.promise;
         };
 
         vm.findSensorData = function (sensor, suppressToast) {
@@ -246,6 +251,7 @@
             } else {
                 requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT, interval];
             }
+
             DataService.sensorData.apply(this, requestParams)
                 .then(function (result) {
                     if (result.data instanceof Array) {
@@ -255,10 +261,32 @@
                     if (vm.liveData) {
                         vm.connectLiveFeed(sensor.name);
                     }
+                    vm.updateGraphUrl();
                 }, function (error) {
                     vm.waitingForSearchResult = false;
                     $log.info(error);
                 });
+        };
+
+        vm.updateGraphUrl = function () {
+            var sensorNames = vm.sensorNames.map(function (sensor) {
+                return sensor.name;
+            }).join(',');
+            if (sensorNames) {
+                $state.go('sensor-graph', {
+                        startTime: vm.sensorStartDateReadable,
+                        endTime: vm.sensorEndDateReadable,
+                        sensors: sensorNames,
+                        interval: vm.unitLength + ',' + vm.unitType},
+                        { notify: false, reload: false });
+            } else {
+                $state.go('sensor-graph', {
+                        startTime: null,
+                        endTime: null,
+                        sensors: null,
+                        interval: null},
+                        { notify: false, reload: false });
+            }
         };
 
         vm.setLineStrokeWidth = function (chipName) {
@@ -392,6 +420,7 @@
         vm.chipRemoved = function (chip) {
             vm.disconnectLiveFeed(chip.name);
             vm.removeSensorLine(chip.name);
+            vm.updateGraphUrl();
         };
 
         vm.chipAppended = function (chip) {
@@ -407,6 +436,65 @@
             //bound in multiLineChart
             vm.downloadAsCSV(vm.useUnixTimestamps);
         };
+
+        $timeout(function () {
+            if (moment.utc($stateParams.startTime, 'HH:mm:ss DD-MM-YYYY', true).isValid() &&
+                moment.utc($stateParams.endTime, 'HH:mm:ss DD-MM-YYYY', true).isValid() &&
+                $stateParams.sensors) {
+                vm.sensorStartDatetime = moment.utc($stateParams.startTime, 'HH:mm:ss DD-MM-YYYY', true).toDate();
+                vm.sensorEndDatetime = moment.utc($stateParams.endTime, 'HH:mm:ss DD-MM-YYYY', true).toDate();
+                vm.sensorStartDatetime = new Date((vm.sensorStartDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000)));
+                vm.sensorEndDatetime = new Date(vm.sensorEndDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000));
+                vm.onTimeSet();
+                vm.onEndTimeSet();
+                var startDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
+                var endDate = vm.sensorEndDatetime.getTime() - (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000);
+                var intervalParams = $stateParams.interval.split(',');
+                if (!intervalParams) {
+                    intervalParams = [1, 'm'];
+                }
+                var intervalTime = parseInt(intervalParams[0]);
+                if (intervalParams.length > 1 &&
+                    intervalTime > 0 && intervalTime < 10000 &&
+                    ['s', 'm', 'h', 'd'].indexOf(intervalParams[1]) > -1) {
+                    vm.intervalNum = intervalTime.toString();
+                    vm.unitType = intervalParams[1];
+                } else {
+                    vm.intervalNum = 1;
+                    vm.unitType = 'm';
+                }
+                var sensorNames = $stateParams.sensors.split(',');
+                vm.findSensorNames(sensorNames.join('|')).then(function (sensors) {
+                    var sensorTypes = [];
+                    sensors.forEach(function (sensor) {
+                        if (sensorTypes.indexOf(sensor.type) === -1) {
+                            sensorTypes.push(sensor.type);
+                        }
+                    });
+                    if (sensorTypes.length > 1) {
+                        NotifyService.showSimpleDialog('Cannot mix sensor types',
+                            'Cannot mix sensor types: ' + sensorTypes);
+                        return;
+                    }
+                    sensors.forEach(function (sensor) {
+                        var requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                        $timeout(function () {
+                            DataService.sensorData.apply(this, requestParams)
+                                .then(function (result) {
+                                    vm.sensorNames.push(sensor);
+                                }, function (error) {
+                                    vm.waitingForSearchResult = false;
+                                    $log.info(error);
+                                });
+                        }, 100);
+                    });
+                });
+
+            } else if ($stateParams.startTime && $stateParams.endTime) {
+                NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
+                    'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be HH:mm:ss DD-MM-YYYY.');
+            }
+        }, 1000);
 
         $scope.$on('$destroy', function () {
             unbindUpdate();
