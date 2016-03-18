@@ -163,6 +163,7 @@
         <md-chips flex class="custom-chips" ng-model="vm.sensorsPlotNames" md-theme="{{themePrimaryButtons}}"
                 md-on-remove="vm.chipRemoved($chip)" md-on-add="vm.chipAppended($chip)" style="margin: 2px">
                 <md-autocomplete
+                    md-autoselect="true"
                     md-search-text="vm.chipsSearchText"
                     md-items="item in vm.chipsQuerySearch(vm.chipsSearchText)"
                     md-item-text="item.name">

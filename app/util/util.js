@@ -193,7 +193,51 @@ angular.module('katGui.util')
                 }
             }
         };
-    }]);
+    }])
+    .directive('mouseWheelDown', function() {
+        return function(scope, element, attrs) {
+            element.bind("DOMMouseScroll mousewheel onmousewheel", function() {
+                var event = window.event;
+                var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+
+                if(delta < 0) {
+                    scope.$apply(function(){
+                        scope.$eval(attrs.mouseWheelDown);
+                    });
+                }
+            });
+        };
+    }).directive('mouseWheelUp', function() {
+        return function(scope, element, attrs) {
+            element.bind("DOMMouseScroll mousewheel onmousewheel", function() {
+                var event = window.event;
+                var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
+
+                if(delta > 0) {
+                    scope.$apply(function(){
+                        scope.$eval(attrs.mouseWheelUp);
+                    });
+                }
+            });
+        };
+    }).filter('toTrustedHtml', function($sce){
+        return function(text) {
+            if (_.isString(text)) {
+                return $sce.trustAsHtml(text);
+            } else {
+                return text;
+            }
+
+        };
+    }).filter('linkify', function(){
+        return function(text) {
+            if (text.linkify) {
+                return text.linkify();
+            } else {
+                return text;
+            }
+        };
+    });
 
 //to suppress warnings about missing aria-labels (ARIA - Accessible Rich Internet Applications)
 //our application does not implement any accessibility features
@@ -451,3 +495,22 @@ var objToString = Object.prototype.toString;
 _.isString = function (obj) {
     return objToString.call(obj) === '[object String]';
 };
+
+if(!String.linkify) {
+    String.prototype.linkify = function() {
+
+        // http://, https://, ftp://
+        var urlPattern = /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
+
+        // www. sans http:// or https://
+        var pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+
+        // Email addresses
+        var emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
+
+        return this
+            .replace(urlPattern, '<a href="$&" target="_blank">$&</a>')
+            .replace(pseudoUrlPattern, '$1<a href="http://$2" target="_blank">$2</a>')
+            .replace(emailAddressPattern, '<a href="mailto:$&" target="_blank">$&</a>');
+    };
+}

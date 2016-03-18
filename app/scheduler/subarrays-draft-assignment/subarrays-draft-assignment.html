@@ -179,7 +179,7 @@
                                         <md-button ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
                                     </md-menu-item>
                                     <md-menu-item>
-                                        <md-button ng-click="vm.viewSBTasklog(item, 'dryrun')">View Tasklog</md-button>
+                                        <md-button ng-click="vm.viewSBTasklog(item, 'dryrun')">View Dryrun</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
                             </md-menu>
@@ -258,6 +258,11 @@
                                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
+                                    <md-menu-item>
+                                        <md-button ng-click="vm.viewSBTasklog(item, 'dryrun')"
+                                                   title="View Dryrun result in a New Tab">View Dryrun
+                                        </md-button>
+                                    </md-menu-item>
                                     <md-menu-item>
                                         <md-button ng-click="vm.viewSBTasklog(item, 'progress')"
                                                    title="View Progress in a New Tab">View Progress

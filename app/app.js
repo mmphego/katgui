@@ -79,6 +79,7 @@
         $rootScope.themeSecondary = theme.secondary;
         $rootScope.themePrimaryButtons = theme.primaryButtons;
         $rootScope.expertOrLO = false;
+        $rootScope.showVideoLinks = false;
 
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {
@@ -119,7 +120,6 @@
 
         vm.initApp = function () {
             vm.showNavbar = true;
-            $rootScope.showVideoLinks = false;
             $rootScope.showDate = $localStorage['showDate'];
             $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
             $rootScope.showJulianDate = $localStorage['showJulianDate'];
@@ -533,9 +533,16 @@
             .state(observationsOverview)
             .state(observationsDetail);
         $stateProvider.state('sensor-graph', {
-            url: '/sensor-graph',
+            url: '/sensor-graph/{startTime}/{endTime}/{interval}/{sensors}',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
             title: 'Sensor Graph',
+            //makes the params optional
+            params: {
+                startTime: { value: null, squash: true },
+                endTime: { value: null, squash: true },
+                interval: { value: null, squash: true },
+                sensors: { value: null, squash: true }
+            },
             noAuth: true
         });
         $stateProvider.state('sensor-list', {
@@ -574,8 +581,15 @@
             title: 'User Log Tag Management'
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}',
             templateUrl: 'app/userlogs/userlog-reports.html',
+            //makes the params optional
+            params: {
+                startTime: { value: null, squash: true },
+                endTime: { value: null, squash: true },
+                tagIds: { value: null, squash: true },
+                filter: { value: null, squash: true }
+            },
             title: 'User Log Reports'
         });
         /* Add New States Above */

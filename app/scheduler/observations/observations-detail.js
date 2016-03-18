@@ -63,6 +63,10 @@
             ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, "progress");
         };
 
+        vm.viewSBDryrun = function (sb) {
+            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, "dryrun");
+        };
+
         vm.moveScheduleRowToFinished = function (item) {
             ObsSchedService.scheduleToComplete(vm.subarray.id, item.id_code);
         };

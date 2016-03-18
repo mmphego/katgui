@@ -55,13 +55,13 @@
                            style="font-size: 34px; min-width: 65px; margin-right: -10px; margin-top: 18px">
                     {{vm.plusMinus? '+' : '-'}}
                 </md-switch>
-                <md-input-container md-no-float style="padding: 0; vertical-align: middle; margin: 0">
+                <md-input-container md-no-float style="padding: 0; vertical-align: middle; margin: 20px 0 26px">
                     <input ng-init="vm.unitLength = 1" type="number" min="1" max="999"
                            style="font-size: 16px; background: transparent; width: 45px; text-align: end; max-height: 30px; margin-top:2px;"
                            placeholder="" ng-model="vm.unitLength" title="Range Unit Length">
                 </md-input-container>
 
-                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.unitType = 'h'" ng-model="vm.unitType"
+                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.unitType = 'm'" ng-model="vm.unitType"
                            style="min-width: 105px;">
                     <md-option value="s">Second(s)</md-option>
                     <md-option value="m">Minute(s)</md-option>
@@ -189,6 +189,7 @@
                     delete-hint="Remove from Sensor Graph"
                     title="Filter on Sensor List Results">
                     <md-autocomplete
+                        md-autoselect="true"
                         md-search-text="vm.chipsSearchText"
                         md-items="item in vm.chipsQuerySearch(vm.chipsSearchText)"
                         md-item-text="item.name">
@@ -211,7 +212,7 @@
         <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart" clear-function="vm.clearChart"
                           remove-sensor-function="vm.removeSensorLine" download-csv="vm.downloadAsCSV" y-max="vm.yAxisMaxValue"
                           y-min="vm.yAxisMinValue" mouse-over-tooltip="true"
-                          style="max-height: 100%; min-height: 100%"></multi-line-chart>
+                          style="max-height: 100%; min-height: 100%; overflow: hidden"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
             <md-button class="md-icon-button"
                        ng-click="vm.clearData()" title="Clear Data">
