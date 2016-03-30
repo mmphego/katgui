@@ -53,6 +53,28 @@
         vm.validInlineStartTime = true;
         vm.validInlineEndTime = true;
 
+        vm.orderByFields = [
+            { value: 'start_time', reverse: true },
+            { value: 'end_time', reverse: false },
+        ];
+        vm.orderBy = vm.orderByFields[0];
+
+        vm.setOrderBy = function (name) {
+            var index = _.findIndex(vm.orderByFields, {value: name});
+            if (index > -1) {
+                vm.orderByFields[index].reverse = vm.orderBy.value === name ? !vm.orderBy.reverse : vm.orderBy.reverse;
+                vm.orderBy = vm.orderByFields[index];
+                if (vm.orderBy.value === 'end_time' && !vm.newLogEndTimeText) {
+                    vm.newLogEndTimeText = $rootScope.utcDateTime;
+                }
+            }
+        };
+
+        vm.orderByValueFunction = function (userlog) {
+            //if there is no end time, we sort it as if it is in the future
+            return userlog[vm.orderBy.value] ? userlog[vm.orderBy.value] : '9999-01-01 00:00:00';
+        };
+
         MonitorService.subscribe('userlogs', '*');
 
         vm.onTimeSet = function (value, target, attribute) {
@@ -83,9 +105,13 @@
             }
 
             var tagIdList = [];
+            vm.filterTags.forEach(function (tag) {
+                tagIdList.push(tag.id);
+            });
             vm.inlineTags.forEach(function (tag) {
                 tagIdList.push(tag.id);
             });
+            tagIdList = _.uniq(tagIdList);
 
             var newLog = {
                 user: $rootScope.currentUser.id,
@@ -120,6 +146,8 @@
 
         vm.tagFilterChanged = function () {
             $localStorage.filterTags = vm.filterTags;
+            vm.containsInvalidInlineTagSelection = !vm.checkForMandatoryInlineTag();
+            vm.showMandatoryTooltip = vm.containsInvalidInlineTagSelection;
         };
 
         vm.inlineTagFilterChanged = function () {
@@ -142,11 +170,27 @@
         };
 
         vm.filterAfterNow = function (userlog) {
-            return userlog.start_time > vm.newLogStartTimeText || (!vm.newLogStartTimeText || vm.newLogStartTimeText.length === 0);
+            if (vm.orderBy.value === 'start_time' && vm.orderBy.reverse) {
+                return userlog.start_time > vm.newLogStartTimeText || (!vm.newLogStartTimeText || vm.newLogStartTimeText.length === 0);
+            } else if (vm.orderBy.value === 'start_time') {
+                return userlog.start_time <= vm.newLogStartTimeText || (!vm.newLogStartTimeText || vm.newLogStartTimeText.length === 0);
+            } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
+                return userlog.end_time > vm.newLogEndTimeText || userlog.end_time.length === 0;
+            } else if (vm.orderBy.value === 'end_time') {
+                return userlog.end_time && userlog.end_time <= vm.newLogEndTimeText;
+            }
         };
 
         vm.filterBeforeNow = function (userlog) {
-            return userlog.start_time <= vm.newLogStartTimeText;
+            if (vm.orderBy.value === 'start_time' && vm.orderBy.reverse) {
+                return userlog.start_time <= vm.newLogStartTimeText;
+            } else if (vm.orderBy.value === 'start_time'){
+                return userlog.start_time > vm.newLogStartTimeText;
+            } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
+                return userlog.end_time && userlog.end_time <= vm.newLogEndTimeText || (!vm.newLogEndTimeText || vm.newLogEndTimeText.length === 0);
+            } else if (vm.orderBy.value === 'end_time') {
+                return userlog.end_time > vm.newLogEndTimeText || userlog.end_time.length === 0;
+            }
         };
 
         vm.addUserLog = function (event) {
@@ -248,7 +292,20 @@
         vm.setInlineStartTimeBeforeLog = function (userlog) {
             var userlogsContainer = document.querySelector('#userlogsContainer');
             var scrollTopToKeep = userlogsContainer.scrollTop;
-            vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+            if (vm.orderBy.value === 'start_time' && vm.orderBy.reverse) {
+                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+            } else if (vm.orderBy.value === 'start_time'){
+                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+            } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
+                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+            } else if (vm.orderBy.value === 'end_time') {
+                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+            }
+            if (vm.orderBy.value === 'start_time' && !vm.verifyDateTimeString(vm.newLogStartTimeText)) {
+                vm.newLogStartTimeText = $rootScope.utcDateTime;
+            } else if (vm.orderBy.value === 'end_time' && !vm.verifyDateTimeString(vm.newLogEndTimeText)) {
+                vm.newLogEndTimeText = $rootScope.utcDateTime;
+            }
             vm.focusInlineContentInput();
             userlogsContainer.scrollTop = scrollTopToKeep;
         };
@@ -256,7 +313,20 @@
         vm.setInlineStartTimeAfterLog = function (userlog) {
             var userlogsContainer = document.querySelector('#userlogsContainer');
             var scrollTopToKeep = userlogsContainer.scrollTop;
-            vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+            if (vm.orderBy.value === 'start_time' && vm.orderBy.reverse) {
+                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+            } else if (vm.orderBy.value === 'start_time'){
+                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+            } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
+                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+            } else if (vm.orderBy.value === 'end_time') {
+                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+            }
+            if (vm.orderBy.value === 'start_time' && !vm.verifyDateTimeString(vm.newLogStartTimeText)) {
+                vm.newLogStartTimeText = $rootScope.utcDateTime;
+            } else if (vm.orderBy.value === 'end_time' && !vm.verifyDateTimeString(vm.newLogEndTimeText)) {
+                vm.newLogEndTimeText = $rootScope.utcDateTime;
+            }
             vm.focusInlineContentInput();
             userlogsContainer.scrollTop = scrollTopToKeep;
         };
@@ -267,11 +337,18 @@
 
         vm.checkForMandatoryInlineTag = function () {
             var containsMandatoryTags = false;
-            vm.inlineTags.forEach(function (tag) {
+            vm.filterTags.forEach(function (tag) {
                 if (UserLogService.mandatoryTagsList.indexOf(tag.name.toLowerCase()) > -1) {
                     containsMandatoryTags = true;
                 }
             });
+            if (!containsMandatoryTags) {
+                vm.inlineTags.forEach(function (tag) {
+                    if (UserLogService.mandatoryTagsList.indexOf(tag.name.toLowerCase()) > -1) {
+                        containsMandatoryTags = true;
+                    }
+                });
+            }
             return containsMandatoryTags;
         };
 
