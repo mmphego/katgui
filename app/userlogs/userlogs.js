@@ -123,11 +123,15 @@
             UserLogService.addUserLog(newLog).then(function (result) {
                 if (vm.chatMode) {
                     vm.newLogStartTimeText = $rootScope.utcDateTime;
-                } else {
+                    vm.newLogEndTimeText = '';
+                } else if (vm.orderBy.value === 'start_time') {
                     vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                    vm.newLogEndTimeText = '';
+                } else if (vm.orderBy.value === 'end_time') {
+                    vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                    vm.newLogEndTimeText = $rootScope.utcDateTime;
                 }
 
-                vm.newLogEndTimeText = '';
                 vm.newLogContent = '';
             });
         };
@@ -297,13 +301,16 @@
             } else if (vm.orderBy.value === 'start_time'){
                 vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
             } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
+                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
                 vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
             } else if (vm.orderBy.value === 'end_time') {
+                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
                 vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).add(1, 's').format(momentjsFormat);
             }
-            if (vm.orderBy.value === 'start_time' && !vm.verifyDateTimeString(vm.newLogStartTimeText)) {
+            if (!vm.verifyDateTimeString(vm.newLogStartTimeText)) {
                 vm.newLogStartTimeText = $rootScope.utcDateTime;
-            } else if (vm.orderBy.value === 'end_time' && !vm.verifyDateTimeString(vm.newLogEndTimeText)) {
+            }
+            if (vm.orderBy.value === 'end_time' && !vm.verifyDateTimeString(vm.newLogEndTimeText)) {
                 vm.newLogEndTimeText = $rootScope.utcDateTime;
             }
             vm.focusInlineContentInput();
@@ -318,13 +325,16 @@
             } else if (vm.orderBy.value === 'start_time'){
                 vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
             } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
+                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
                 vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).add(1, 's').format(momentjsFormat);
             } else if (vm.orderBy.value === 'end_time') {
+                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
                 vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
             }
-            if (vm.orderBy.value === 'start_time' && !vm.verifyDateTimeString(vm.newLogStartTimeText)) {
+            if (!vm.verifyDateTimeString(vm.newLogStartTimeText)) {
                 vm.newLogStartTimeText = $rootScope.utcDateTime;
-            } else if (vm.orderBy.value === 'end_time' && !vm.verifyDateTimeString(vm.newLogEndTimeText)) {
+            }
+            if (vm.orderBy.value === 'end_time' && !vm.verifyDateTimeString(vm.newLogEndTimeText)) {
                 vm.newLogEndTimeText = $rootScope.utcDateTime;
             }
             vm.focusInlineContentInput();
