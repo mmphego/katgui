@@ -99,12 +99,6 @@
                     $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
                 }
                 $rootScope.systemType = systemConfig.system.system_conf.replace('systems/', '').replace('.conf', '');
-                var subarray_nrs = systemConfig.system.subarray_nrs.split(',');
-                if (ObsSchedService.subarrays.length === 0) {
-                    subarray_nrs.forEach(function (sub_nr) {
-                        ObsSchedService.subarrays.push({id: sub_nr});
-                    });
-                }
                 $rootScope.confConnectionError = null;
             }, function (error) {
                 $rootScope.confConnectionError = 'Could not connect to ' + SERVER_URL + '/katconf.';
