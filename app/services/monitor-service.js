@@ -5,7 +5,7 @@
 
     function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
                             $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService,
-                            SessionService) {
+                            SessionService, SensorsService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -67,14 +67,18 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Monitor Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe('mon');
-                api.subscribe('alarms');
-                api.subscribe('health');
-                api.subscribe('time');
-                api.subscribe('auth');
-                api.subscribe('resources');
+                api.subscribeToDefaultChannels();
                 ConfigService.checkOutOfDateVersion();
             }
+        };
+
+        api.subscribeToDefaultChannels = function () {
+            api.subscribe('mon');
+            api.subscribe('alarms');
+            api.subscribe('health');
+            api.subscribe('time');
+            api.subscribe('auth');
+            api.subscribe('resources');
         };
 
         api.checkAlive = function () {
@@ -104,6 +108,11 @@
                     $log.error(messages);
                 } else if (messages.result.msg_channel === 'time:time') {
                     api.lastSyncedTime = messages.result.msg_data + 0.5;
+                } else if (messages.id === 'redis-reconnect') {
+                    api.subscribeToDefaultChannels();
+                    if (SensorsService.connected) {
+                        SensorsService.subscribe('*');
+                    }
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.result) {
                         if (messages.result.msg_channel && messages.result.msg_channel === "sched:sched") {
