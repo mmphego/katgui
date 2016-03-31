@@ -38,22 +38,28 @@
         </md-button>
         <div class="unselectable list-subheader-title" layout="row" layout-align="start center"
              style="position: absolute; left: 8px; bottom: 0; right: 0;">
-             <span class="subheader-text userlog-user-name">
+             <span class="subheader-text userlog-user-name" style="cursor: default">
                  <span>User</span>
              </span>
-            <span class="subheader-text" style="width: 125px">
+            <span class="subheader-text" style="width: 125px" ng-click="vm.setOrderBy('start_time')">
                 <span>Start Time (UTC)</span>
+                <span class="fa"
+                      ng-class="{'fa-caret-up': vm.orderBy.value === 'start_time' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'start_time' && vm.orderBy.reverse}"
+                      style="margin-right: 4px;"></span>
             </span>
-            <span class="subheader-text" style="width: 125px">
+            <span class="subheader-text" style="width: 125px" ng-click="vm.setOrderBy('end_time')">
                 <span>End Time (UTC)</span>
+                <span class="fa"
+                      ng-class="{'fa-caret-up': vm.orderBy.value === 'end_time' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'end_time' && vm.orderBy.reverse}"
+                      style="margin-right: 4px;"></span>
             </span>
-            <span flex class="subheader-text">
+            <span flex class="subheader-text" style="cursor: default">
                 <span>Content</span>
             </span>
-            <span class="subheader-text" style="width: 50px">
+            <span class="subheader-text" style="cursor: default; width: 50px">
                 Tags
             </span>
-            <span class="subheader-text" style="margin-right: 50px">
+            <span class="subheader-text" style="cursor: default; margin-right: 50px">
                 <span class="fa fa-paperclip"></span>
             </span>
         </div>
@@ -65,7 +71,7 @@
     </md-toolbar>
     <md-button style="border-bottom: 1px solid #d7d7d7" class="md-raised fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs"><i class="fa fa-caret-up" style="margin: 0 4px"></i>Fetch Logs for {{vm.lastFutureQueryDayTextStart}} to {{vm.lastFutureQueryDayTextEnd}}<i class="fa fa-caret-up" style="margin: 0 4px"></i></md-button>
     <div flex class="md-whiteframe-z1" style="overflow: auto" id="userlogsContainer">
-        <div ng-repeat="userlog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:'start_time':true track by userlog.id"
+        <div ng-repeat="userlog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:vm.orderByValueFunction:vm.orderBy.reverse track by userlog.id"
             ng-mouseenter="userlog.showInlineEditButton = true" ng-mouseleave="userlog.showInlineEditButton = false" flex layout="column" class="user-log-row">
             <div layout="row" layout-align="start center" style="position: relative; border-bottom: 1px solid #d7d7d7" title="{{userlog.content}}">
                 <div title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userlog); userlog.showInlineEditButton = false"
@@ -125,7 +131,7 @@
                         md-search-text="searchText"
                         md-items="item in vm.querySearch(searchText, vm.inlineTags)"
                         md-item-text="item.name"
-                        placeholder="Select tags for log" secondary-placeholder="+">
+                        placeholder="Additional tags" secondary-placeholder="+">
                         <md-item-template>
                             <span md-highlight-text="searchText" title="{{item.slug}}">{{item.name}}</span>
                         </md-item-template>
@@ -145,7 +151,7 @@
             </div>
             <md-button ng-show="false" type="submit" style="margin: 8px;" class=""></md-button>
         </form>
-        <div ng-repeat="userlog in vm.userLogs | filter:vm.filterBeforeNow | filter:vm.filterByTag | orderBy:'start_time':true"
+        <div ng-repeat="userlog in vm.userLogs | filter:vm.filterBeforeNow | filter:vm.filterByTag | orderBy:vm.orderByValueFunction:vm.orderBy.reverse track by userlog.id"
                 ng-mouseenter="userlog.showInlineEditButton = true" ng-mouseleave="userlog.showInlineEditButton = false" flex layout="column" class="user-log-row">
         <div layout="row" layout-align="start center" style="position: relative; border-bottom: 1px solid #d7d7d7" title="{{userlog.content}}">
             <div title="Insert user log above this one" style="position: absolute; left: -5px; top: -5px;" ng-click="vm.setInlineStartTimeAfterLog(userlog); userlog.showInlineEditButton = false"
