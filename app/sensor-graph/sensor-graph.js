@@ -347,8 +347,8 @@
                         status: sensor.value[attr][5],
                         sensor: sensorName,
                         value: sensor.value[attr][3],
-                        value_ts: sensor.value[attr][2] / 1000,
-                        sample_ts: sensor.value[attr][1] / 1000
+                        value_ts: sensor.value[attr][2],
+                        sample_ts: sensor.value[attr][1]
                     });
                     newSensorNames[sensorName] = {};
                 }
@@ -362,8 +362,8 @@
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
                     vm.redrawChart([{
                         sensor: realSensorName,
-                        value_ts: sensor.value.timestamp * 1000,
-                        sample_ts: sensor.value.received_timestamp * 1000,
+                        value_ts: sensor.value.timestamp,
+                        sample_ts: sensor.value.received_timestamp,
                         value: sensor.value.value
                     }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 }
@@ -497,6 +497,7 @@
         }, 1000);
 
         vm.unbindKatstoreErrorMessage = $rootScope.$on('sensorServiceMessageError', function (event, message) {
+            vm.waitingForSearchResult = false;
             NotifyService.showPreDialog(message.msg_data.err_code + ': Error retrieving katstore data', message.msg_data.err_msg);
         });
 
