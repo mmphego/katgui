@@ -496,12 +496,17 @@
             }
         }, 1000);
 
+        vm.unbindKatstoreErrorMessage = $rootScope.$on('sensorServiceMessageError', function (event, message) {
+            NotifyService.showPreDialog(message.msg_data.err_code + ': Error retrieving katstore data', message.msg_data.err_msg);
+        });
+
         $scope.$on('$destroy', function () {
             unbindUpdate();
             SensorsService.disconnectListener();
             if (vm.unbindLoginSuccess) {
                 vm.unbindLoginSuccess();
             }
+            vm.unbindKatstoreErrorMessage();
         });
     }
 })();
