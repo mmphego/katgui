@@ -3,7 +3,8 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http, ConfigService) {
+    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http,
+                            ConfigService) {
 
         var urlBase = SERVER_URL + '/katmonitor';
         var api = {};
@@ -92,6 +93,8 @@
                 if (messages.error) {
                     $log.error('There was an error sending a jsonrpc request:');
                     $log.error(messages);
+                } else if (messages.result.msg_channel && messages.result.msg_channel.endsWith('katstore_error')) {
+                    $rootScope.$emit('sensorServiceMessageError', messages.result);
                 } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
                     if (messages.id === 'redis-pubsub') {
                         var arrayResult = [];
