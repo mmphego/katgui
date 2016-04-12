@@ -144,7 +144,7 @@
                             status: sensor.value[attr][5],
                             sensor: sensorName,
                             value: sensor.value[attr][3],
-                            sample_ts: sensor.value[attr][1] / 1000,
+                            sample_ts: sensor.value[attr][1],
                         };
                         if (sensorName.indexOf('pressure') !== -1) {
                             latestSensor.rightAxis = true;
@@ -155,7 +155,7 @@
                             status: sensor.value[attr][5],
                             sensor: sensorName,
                             value: sensor.value[attr][3],
-                            sample_ts: sensor.value[attr][1] / 1000,
+                            sample_ts: sensor.value[attr][1],
                         };
                         newWindData.push(latestSensor);
                     }
