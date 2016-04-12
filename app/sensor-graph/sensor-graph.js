@@ -12,11 +12,10 @@
         vm.showGridLines = false;
         vm.dateTimeError = false;
         vm.sensorNames = [];
-        vm.sensorStartDatetime = new Date();
-        vm.sensorStartDatetime = new Date((vm.sensorStartDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000)) - (60000 * 60)); //one hour earlier
-        vm.sensorStartDateReadable = moment(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
-        vm.sensorEndDatetime = new Date(new Date().getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000));
-        vm.sensorEndDateReadable = moment(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
+        vm.sensorStartDatetime = new Date(new Date().getTime() - (60000 * 60)); //one hour earlier
+        vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
+        vm.sensorEndDatetime = new Date(new Date().getTime());
+        vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
         vm.sensorSearchNames = null;
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
@@ -81,17 +80,19 @@
         };
 
         vm.onTimeSet = function () {
-            vm.sensorStartDateReadable = moment(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
+            vm.sensorStartDatetime = moment.utc(vm.sensorStartDatetime.getTime() - vm.sensorStartDatetime.getTimezoneOffset() * 60000).toDate();
+            vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
             vm.dateTimeError = false;
         };
 
         vm.onEndTimeSet = function () {
-            vm.sensorEndDateReadable = moment(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
+            vm.sensorEndDatetime = moment.utc(vm.sensorEndDatetime.getTime() - vm.sensorEndDatetime.getTimezoneOffset() * 60000).toDate();
+            vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
             vm.endDateTimeError = false;
         };
 
         vm.startTimeChange = function () {
-            var parsedDate = moment(vm.sensorStartDateReadable, DATETIME_FORMAT).toDate();
+            var parsedDate = moment.utc(vm.sensorStartDateReadable, DATETIME_FORMAT).toDate();
             if (parsedDate) {
                 vm.sensorStartDatetime = new Date(parsedDate);
                 vm.dateTimeError = false;
@@ -101,7 +102,7 @@
         };
 
         vm.endTimeChange = function () {
-            var parsedDate = moment(vm.sensorEndDateReadable, DATETIME_FORMAT).toDate();
+            var parsedDate = moment.utc(vm.sensorEndDateReadable, DATETIME_FORMAT).toDate();
             if (parsedDate) {
                 vm.sensorEndDatetime = new Date(parsedDate);
                 vm.endDateTimeError = false;
@@ -217,8 +218,8 @@
         };
 
         vm.findSensorData = function (sensor, suppressToast) {
-            var startDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
-            var endDate = vm.sensorEndDatetime.getTime() - (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000);
+            var startDate = vm.sensorStartDatetime.getTime();
+            var endDate = vm.sensorEndDatetime.getTime();
             if (vm.showRelativeTime) {
                 endDate = (vm.getMillisecondsDifference(
                     vm.plusMinus,
@@ -229,7 +230,7 @@
 
             if (endDate < startDate) {
                 startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
+                endDate = vm.sensorStartDatetime.getTime();
             }
 
             var indexOfSensor = vm.sensorNames.indexOf(sensor);
@@ -277,7 +278,7 @@
                         startTime: vm.sensorStartDateReadable,
                         endTime: vm.sensorEndDateReadable,
                         sensors: sensorNames,
-                        interval: vm.unitLength + ',' + vm.unitType},
+                        interval: vm.intervalNum + ',' + vm.intervalType},
                         { notify: false, reload: false });
             } else {
                 $state.go('sensor-graph', {
@@ -362,8 +363,8 @@
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
                     vm.redrawChart([{
                         sensor: realSensorName,
-                        value_ts: sensor.value.timestamp,
-                        sample_ts: sensor.value.received_timestamp,
+                        value_ts: sensor.value.timestamp * 1000,
+                        sample_ts: sensor.value.received_timestamp * 1000,
                         value: sensor.value.value
                     }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
                 }
@@ -443,12 +444,10 @@
                 $stateParams.sensors) {
                 vm.sensorStartDatetime = moment.utc($stateParams.startTime, 'HH:mm:ss DD-MM-YYYY', true).toDate();
                 vm.sensorEndDatetime = moment.utc($stateParams.endTime, 'HH:mm:ss DD-MM-YYYY', true).toDate();
-                vm.sensorStartDatetime = new Date((vm.sensorStartDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000)));
-                vm.sensorEndDatetime = new Date(vm.sensorEndDatetime.getTime() + (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000));
-                vm.onTimeSet();
-                vm.onEndTimeSet();
-                var startDate = vm.sensorStartDatetime.getTime() - (vm.sensorStartDatetime.getTimezoneOffset() * 60 * 1000);
-                var endDate = vm.sensorEndDatetime.getTime() - (vm.sensorEndDatetime.getTimezoneOffset() * 60 * 1000);
+                vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
+                vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
+                var startDate = vm.sensorStartDatetime.getTime();
+                var endDate = vm.sensorEndDatetime.getTime();
                 var intervalParams = $stateParams.interval.split(',');
                 if (!intervalParams) {
                     intervalParams = [1, 'm'];
