@@ -19,7 +19,7 @@
             </md-menu>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" layout="column" layout-align="start center"
-             md-theme="{{themePrimaryButtons}}" style="overflow: auto;">
+             md-theme="{{themePrimaryButtons}}">
 
             <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3"
                             ng-init="vm.showDatePicker = false"
@@ -37,14 +37,14 @@
                             ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(newDate)"></datetimepicker>
 
-            <div layout="row" style="margin-top: 4px; min-height: 32px">
+            <div layout="row" style="margin-top: 4px; min-height: 32px; max-height: 32px">
                 <md-input-container md-no-float style="margin: 0; padding: 0; width: 135px; height: 30px">
                     <input type="text" ng-change="vm.startTimeChange()"
                            ng-model="vm.sensorStartDateReadable" placeholder="Start Date (UTC)"
                            ng-class="{'input-error':vm.dateTimeError}" title="Start Date 'HH:mm:ss yyyy-MM-dd' UTC"
                            ng-click="$event.stopPropagation()"/>
                 </md-input-container>
-                <md-button class="md-icon-button" style="margin: 0; padding: 0; width: 32px; max-height: 32px; min-height: 32px;"
+                <md-button class="md-icon-button" style="margin: 0; padding: 0; width: 32px; max-height: 32px; min-height: 32px; max-height: 32px"
                            ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
@@ -70,7 +70,7 @@
                 </md-select>
             </div>
 
-            <div layout="row" layout="center center" style="margin: 0px; padding: 4px; min-height: 32px" ng-show="!vm.showRelativeTime">
+            <div layout="row" layout="center center" style="margin: 0px; padding: 4px; min-height: 32px; max-height: 32px" ng-show="!vm.showRelativeTime">
                 <md-input-container md-no-float style="margin: 0; padding: 0; width: 135px; height: 30px">
                     <input type="text" ng-change="vm.endTimeChange()"
                            ng-model="vm.sensorEndDateReadable" placeholder="End Date (UTC)"
@@ -83,7 +83,7 @@
                 </md-button>
             </div>
 
-            <div layout="row" layout-align="center center" style="min-height: 30px; margin-left: 16px; margin-right:16px; width: 130px;">
+            <div layout="row" layout-align="center center" style="max-height: 38px; min-height: 38px; margin-left: 16px; margin-right:16px; width: 130px;">
                 <!--<span style="margin-right: 8px;">Sensor Type:</span>-->
                 <md-select flex md-theme="{{themePrimaryButtons}}" ng-init="vm.sensorType = 'numeric'"
                            ng-model="vm.sensorType" style="margin: 0"
@@ -93,7 +93,7 @@
                     <md-option value="discrete">Discrete</md-option>
                 </md-select>
             </div>
-            <div layout="row" layout-align="center center" ng-show="vm.sensorType === 'numeric'" style="min-height: 46px">
+            <div layout="row" layout-align="center center" ng-show="vm.sensorType === 'numeric'" style="min-height: 46px; max-height: 46px">
                 <span style="margin-right: 8px;">Interval:</span>
                 <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalNum = 1" ng-model="vm.intervalNum"
                            style="margin: 0; padding: 8px">
@@ -159,11 +159,11 @@
                     ng-disabled="vm.sensorServiceConnected" style="margin: 4px;">
                     Include Live Data
                 </md-checkbox>
-                <md-button style="margin-bottom: 16px" ng-disabled="vm.sensorNames.length === 0" class="md-primary md-raised" ng-click="vm.clearData()">
+                <md-button style="margin-bottom: 16px" class="md-primary md-raised" ng-click="vm.clearData()">
                     Clear Sensor Graph
                 </md-button>
                 <div class="menu-item-divider" style="width: 100%"></div>
-                <div layout="row" layout-align="start center">
+                <div layout="row" layout-align="start center" style="min-height: 48px">
                     <md-checkbox class="md-primary" ng-model="vm.useUnixTimestamps" ng-init="vm.useUnixTimestamps = false"
                         ng-disabled="vm.sensorNames.length === 0" style="margin: 4px;; padding: 0">
                         Use Unix timestamps
