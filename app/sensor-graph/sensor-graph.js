@@ -348,8 +348,8 @@
                         status: sensor.value[attr][5],
                         sensor: sensorName,
                         value: sensor.value[attr][3],
-                        value_ts: sensor.value[attr][2],
-                        sample_ts: sensor.value[attr][1]
+                        value_ts: sensor.value[attr][1],
+                        sample_ts: sensor.value[attr][0]
                     });
                     newSensorNames[sensorName] = {};
                 }
