@@ -75,7 +75,8 @@
                 vm.sensorNames.forEach(function (sensor) {
                     sensorNames.push(sensor.name);
                 });
-                vm.connectLiveFeed(sensorNames.join('|'));
+                //remove leading and trailing | characters
+                vm.connectLiveFeed(sensorNames.join('|').replace(/(^\|)|(\|$)/g, ''));
             }
         };
 
@@ -247,7 +248,6 @@
 
             var requestParams;
             if (sensor.type === 'discrete') {
-                vm.clearData();
                 requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT];
             } else {
                 requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT, interval];
@@ -318,6 +318,7 @@
 
         vm.sensorTypeChanged = function () {
             vm.clearData();
+            vm.sensorSearchNames = [];
             vm.findSensorNames(vm.searchText); //simulate keypress
         };
 
@@ -349,7 +350,9 @@
                         sensor: sensorName,
                         value: sensor.value[attr][3],
                         value_ts: sensor.value[attr][1],
-                        sample_ts: sensor.value[attr][0]
+                        sample_ts: sensor.value[attr][0],
+                        minValue: sensor.value[attr][6],
+                        maxValue: sensor.value[attr][7]
                     });
                     newSensorNames[sensorName] = {};
                 }
