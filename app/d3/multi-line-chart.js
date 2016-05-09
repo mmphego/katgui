@@ -161,12 +161,11 @@ angular.module('katGui.d3')
                 var margin = {top: 10, right: 10, bottom: 110, left: 60},
                     width, height, height2;
                 var margin2 = {top: 0, right: 10, bottom: 20, left: 60};
-                var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2,
+                var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2, minline, maxline,
                     xAxisElement, yAxisElement, xAxisElement2, context, focus, brush;
 
                 var formatTwoDecimals = d3.format(",.2f");
                 var limitOverlayElements = [];
-
                 drawSvg();
                 drawValues();
 
@@ -269,7 +268,6 @@ angular.module('katGui.d3')
                         yAxis.tickSize(-width);
                     }
 
-                    // define the line
                     line = d3.svg.line()
                         .interpolate("cubic")
                         .x(function (d) {
@@ -277,6 +275,30 @@ angular.module('katGui.d3')
                         })
                         .y(function (d) {
                             return y(d.value);
+                        });
+
+                    minline = d3.svg.line()
+                        .interpolate("cubic")
+                        .defined(function (d) {
+                            return angular.isDefined(d.minValue) && d.minValue !== null;
+                        })
+                        .x(function (d) {
+                            return x(d.date);
+                        })
+                        .y(function (d) {
+                            return y(d.minValue);
+                        });
+
+                    maxline = d3.svg.line()
+                        .interpolate("cubic")
+                        .defined(function (d) {
+                            return angular.isDefined(d.maxValue) && d.maxValue !== null;
+                        })
+                        .x(function (d) {
+                            return x(d.date);
+                        })
+                        .y(function (d) {
+                            return y(d.maxValue);
                         });
 
                     xAxisElement = focus.append("g")
@@ -320,6 +342,12 @@ angular.module('katGui.d3')
                             focus.selectAll("path.line").attr("d", function (d) {
                                 return line(d.values);
                             });
+                            focus.selectAll("path.minline").attr("d", function (d) {
+                                return minline(d.values);
+                            });
+                            focus.selectAll("path.maxline").attr("d", function (d) {
+                                return maxline(d.values);
+                            });
                             focus.select(".x.axis").call(xAxis);
                             focus.select(".y.axis").call(yAxis);
                         };
@@ -350,6 +378,12 @@ angular.module('katGui.d3')
 
                 function drawValues() {
 
+                    focus.selectAll(".path-container").remove();
+
+                    if (scope.nestedData.length === 0) {
+                        return;
+                    }
+
                     // scale the range of the data
                     x.domain([
                         d3.min(scope.nestedData, function (sensors) {
@@ -366,25 +400,26 @@ angular.module('katGui.d3')
                         var yExtent = [
                             d3.min(scope.nestedData, function (sensors) {
                                 return d3.min(sensors.values, function (d) {
+                                    if (d.minValue) {
+                                        return d.minValue;
+                                    }
                                     return d.value;
                                 });
                             }),
                             d3.max(scope.nestedData, function (sensors) {
                                 return d3.max(sensors.values, function (d) {
+                                    if (d.maxValue) {
+                                        return d.maxValue;
+                                    }
                                     return d.value;
                                 });
                             })
                         ];
-                        if (yExtent[0] === yExtent[1]) {
-                            yExtent[0] = yExtent[0] - 1;
-                            yExtent[1] = yExtent[1] + 1;
-                        }
                         y.domain(yExtent);
                     } else {
                         y.domain(scope.yAxisValues);
                     }
 
-                    focus.selectAll(".path-container").remove();
                     var focuslineGroups = focus.selectAll("svg")
                         .data(scope.nestedData)
                         .enter()
@@ -414,6 +449,38 @@ angular.module('katGui.d3')
                         .attr("d", function (d) {
                             return line(d.values);
                         }).attr("clip-path", "url(#clip)");
+
+                    if (scope.nestedData.length > 0 &&
+                        scope.nestedData[0].values.length > 0 &&
+                        scope.nestedData[0].values[0].maxValue) {
+                        //add min/max dashed paths
+                        var focusMinLines = focuslineGroups.append("path")
+                            .attr("id", function (d) {
+                                return d.key + 'minLine';
+                            })
+                            .attr("class", function (d) {
+                                return "line " + d.key + " path-line minline";
+                            })
+                            .style("opacity", "0.5")
+                            .style("stroke-dasharray", "20, 10")
+                            .attr("d", function (d) {
+                                return minline(d.values);
+                            }).attr("clip-path", "url(#clip)");
+
+                        var focusMaxLines = focuslineGroups.append("path")
+                            .attr("id", function (d) {
+                                return d.key + 'maxLine';
+                            })
+                            .attr("class", function (d) {
+                                return "line " + d.key + " path-line maxline";
+                            })
+                            .style("opacity", "0.5")
+                            .style("stroke-dasharray", "20, 10")
+                            .attr("d", function (d) {
+                                return maxline(d.values);
+                            }).attr("clip-path", "url(#clip)");
+                    }
+
 
                     if (scope.mouseOverTooltip) {
                         scope.nestedData.forEach(function (data) {
@@ -476,7 +543,6 @@ angular.module('katGui.d3')
 
                     }
                     //context zoom element stop
-
                     if (limitOverlayElements) {
                         limitOverlayElements.forEach(function (limitElement, index) {
                             limitElement.attr("x1", "0")
@@ -484,7 +550,6 @@ angular.module('katGui.d3')
                                 .attr("y1", y(scope.limitOverlayValues[index]))
                                 .attr("y2", y(scope.limitOverlayValues[index]));
                         });
-
                     }
                 }
 
