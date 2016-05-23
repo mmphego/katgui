@@ -350,10 +350,9 @@
             api.configLabels.splice(0, api.configLabels.length);
             $http(createRequest('get', urlBase + '/config-labels'))
                 .then(function (result) {
-                    result.data.forEach(function (item) {
-                        var configLabel = JSON.parse(item);
-                        configLabel.date = moment.utc(configLabel.date).format('YYYY-MM-DD hh:mm:ss');
-                        api.configLabels.push(configLabel);
+                    var configLabels = JSON.parse(result.data);
+                    configLabels.forEach(function (item) {
+                        api.configLabels.push(item);
                     });
                 }, function (error) {
                     $log.error(error);
