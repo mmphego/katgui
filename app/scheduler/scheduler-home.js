@@ -152,9 +152,8 @@
                         '       </md-toolbar>' +
                         '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
                         '           <div style="text-align: center" class="config-label-list-item" ng-click="setConfigLabel(\'\');  hide()">Clear Config Label</div>' +
-                        '           <div layout="row" ng-repeat="configLabel in configLabels | regexSearch:configLabelsFields:q track by $index" ng-click="setConfigLabel(configLabel.name); hide()" class="config-label-list-item">' +
-                        '               <div style="min-width: 178px;">{{configLabel.date}}</div>' +
-                        '               <div>{{configLabel.name}}</div>' +
+                        '           <div layout="row" ng-repeat="configLabel in configLabels | regexSearch:configLabelsFields:q track by $index" ng-click="setConfigLabel(configLabel); hide()" class="config-label-list-item">' +
+                        '               <div>{{configLabel}}</div>' +
                         '           </div>' +
                         '       </div>' +
                         '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
