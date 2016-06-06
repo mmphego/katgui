@@ -77,6 +77,10 @@
             api.handleRequestResponse($http(createRequest('post', urlBase + '/logging/' + resource + '/katcpmsgs-proxy/' + newValue)));
         };
 
+        api.tailProcess = function (nodeman, process, lines) {
+            return $http(createRequest('get', urlBase + '/tail/process/' + nodeman + '/' + process + '/' + lines));
+        };
+
         api.handleRequestResponse = function (request) {
             request
                 .then(function (result) {

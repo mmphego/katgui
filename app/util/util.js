@@ -484,7 +484,8 @@ function katGuiUtil(SERVER_URL, $sce) {
     };
 
     this.sanitizeKATCPMessage = function (katcpMessage) {
-        return katcpMessage.replace(/\\_/g, ' ').replace(/\\n\\n/g, '\n').replace(/\\n/g, '\n');
+        // remove all katcp formatting as well as ANSI colour codes
+        return katcpMessage.replace(/\\_/g, ' ').replace(/\\n\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\\e\[[0-9;]*m/g, '');
     };
 
     return this;

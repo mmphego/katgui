@@ -25,6 +25,9 @@
                     <span ng-show="vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value" class="green-color" style="width: 160px; margin: 0;"><b>{{key | uppercase}}</b></span>
 
                     <div layout="row" style="position: absolute; right: 0; top: 0">
+                        <md-button ng-show="key !== 'None'" ng-click="vm.tailProcess(nm_key, key); $event.stopPropagation()" title="Tail last 30 lines of process log">
+                            <i class="fa fa-file-text-o"></i>
+                        </md-button>
                         <md-button ng-show="$root.expertOrLO && !vm.sensorsToDisplay[nm_key + '_' + key + '_running'].value && key !== 'None'" ng-click="vm.startProcess(nm_key, key); $event.stopPropagation()" title="Start Process">
                             <i class="fa fa-play"></i>
                         </md-button>

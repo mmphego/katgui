@@ -128,6 +128,20 @@
             ControlService.killProcess(nm, resource);
         };
 
+        vm.tailProcess = function (nm, resource) {
+            ControlService.tailProcess(nm, resource, 30).then(function (result) {
+                var splitMessage = result.data.result.split(' ');
+                var message = KatGuiUtil.sanitizeKATCPMessage(splitMessage[2]);
+                if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
+                    NotifyService.showPreDialog('Error tailing file', message);
+                } else {
+                    NotifyService.showPreDialog('Tail of ' + nm + '_' + resource, message);
+                }
+            }, function (error) {
+                NotifyService.showPreDialog('Error displaying Sensor Group', error.data.err_msg);
+            });
+        };
+
         vm.afterInit = function() {
             vm.connectListeners();
         };
