@@ -98,7 +98,7 @@
                 if (systemConfig.vds && systemConfig.vds.vds_source) {
                     $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
                 }
-                $rootScope.systemType = systemConfig.system.system_conf.replace('systems/', '').replace('.conf', '');
+                $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
                 $rootScope.confConnectionError = null;
             }, function (error) {
                 $rootScope.confConnectionError = 'Could not connect to ' + SERVER_URL + '/katconf.';
