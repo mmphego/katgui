@@ -95,6 +95,8 @@
                             $rootScope.sensorListStrategyInterval,
                             10);
                     }
+                }, function (error) {
+                    NotifyService.showPreDialog('Error displaying Sensor Group', error.data.err_msg);
                 });
             }, 500);
         };
