@@ -17,7 +17,7 @@
             .then(function(result) {
                 result.data.forEach(function (sourceCatalogue) {
                     vm.sourceCatalogues.push({
-                        fileName: sourceCatalogue.replace('user/catalogues/', ''),
+                        fileName: sourceCatalogue.replace('katconfig/user/catalogues/', ''),
                         filePath: sourceCatalogue
                     });
                 });
@@ -27,7 +27,7 @@
             .then(function(result) {
                 result.data.forEach(function (noiseDiodeModel) {
                     vm.noiseDiodeModels.push({
-                        fileName: noiseDiodeModel.replace('user/noise-diode-models/', ''),
+                        fileName: noiseDiodeModel.replace('katconfig/user/noise-diode-models/', ''),
                         filePath: noiseDiodeModel
                     });
                 });
@@ -38,7 +38,7 @@
             .then(function(result) {
                 result.data.forEach(function (delayModel) {
                     vm.delayModels.push({
-                        fileName: delayModel.replace('user/delay-models/', ''),
+                        fileName: delayModel.replace('katconfig/user/delay-models/', ''),
                         filePath: delayModel
                     });
                 });
@@ -49,7 +49,7 @@
             .then(function(result) {
                 result.data.forEach(function (pointingModel) {
                     vm.pointingModels.push({
-                        fileName: pointingModel.replace('user/pointing-models/', ''),
+                        fileName: pointingModel.replace('katconfig/user/pointing-models/', ''),
                         filePath: pointingModel
                     });
                 });
@@ -59,7 +59,7 @@
             .then(function(result) {
                 result.data.forEach(function (correlator) {
                     vm.correlators.push({
-                        fileName: correlator.replace('user/correlators/', ''),
+                        fileName: correlator.replace('katconfig/user/correlators/', ''),
                         filePath: correlator
                     });
                 });
@@ -69,7 +69,7 @@
             .then(function(result) {
                 result.data.forEach(function (cam2spead) {
                     vm.cam2speadList.push({
-                        fileName: cam2spead.replace('user/cam2spead/', ''),
+                        fileName: cam2spead.replace('katconfig/user/cam2spead/', ''),
                         filePath: cam2spead
                     });
                 });

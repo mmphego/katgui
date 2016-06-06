@@ -138,27 +138,27 @@
         };
 
         api.getSourceCataloguesList = function () {
-            return $http(createRequest('get', urlBase + '/config-file/user/catalogues'));
+            return $http(createRequest('get', urlBase + '/config-file/katconfig/user/catalogues'));
         };
 
         api.getNoiseDiodeModelsList = function () {
-            return $http(createRequest('get', urlBase + '/config-file/user/noise-diode-models'));
+            return $http(createRequest('get', urlBase + '/config-file/katconfig/user/noise-diode-models'));
         };
 
         api.getDelayModelsList = function () {
-            return $http(createRequest('get', urlBase + '/config-file/user/delay-models'));
+            return $http(createRequest('get', urlBase + '/config-file/katconfig/user/delay-models'));
         };
 
         api.getPointingModelsList = function () {
-            return $http(createRequest('get', urlBase + '/config-file/user/pointing-models'));
+            return $http(createRequest('get', urlBase + '/config-file/katconfig/user/pointing-models'));
         };
 
         api.getCam2SpeadList = function () {
-            return $http(createRequest('get', urlBase + '/config-file/user/cam2spead'));
+            return $http(createRequest('get', urlBase + '/config-file/katconfig/user/cam2spead'));
         };
 
         api.getCorrelatorsList = function () {
-            return $http(createRequest('get', urlBase + '/config-file/user/correlators'));
+            return $http(createRequest('get', urlBase + '/config-file/katconfig/user/correlators'));
         };
 
         api.getApodForDate = function (date) {
