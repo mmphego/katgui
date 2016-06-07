@@ -6,14 +6,14 @@
             <span flex style="text-align: center; font-size: 16px; cursor: pointer;"
                   ng-click="vm.showDetailedCamBuildInfo = !vm.showDetailedCamBuildInfo"
                   ng-init="vm.showDetailedCamBuildInfo = false">
-                Current Build: <b>{{::$root.systemConfig.version.description}}</b>
+                Current Build: <b>{{$root.systemConfig.version.description}}</b>
             </span>
 
             <div ng-show="vm.showDetailedCamBuildInfo" layout="column" class="grow-height-animation"
                  style="margin-top: 8px; min-height: 120px; overflow: auto">
                 <div layout="row" ng-repeat="(key, value) in $root.systemConfig.version">
-                    <span style="width: 140px;">{{::key}}:</span>
-                    <span style="margin-left: 8px;">{{::value}}</span>
+                    <span style="width: 140px;">{{key}}:</span>
+                    <span style="margin-left: 8px;">{{value}}</span>
                 </div>
             </div>
         </div>
@@ -75,11 +75,11 @@
                  style="padding: 6px; height: 32px" layout="row" layout-align="start center"
                  ng-class="{'bg-light-grey-0-3': vm.resourcesNames[key].showDetails}">
                 <span style="width: 160px; margin: 0; text-align: left" ng-click="vm.resourcesNames[key].showDetails = !vm.resourcesNames[key].showDetails">
-                    <span ng-show="!vm.resourcesNames[key].connected" class="red-color"><b>{{::key | uppercase}}</b></span>
-                    <span ng-show="vm.resourcesNames[key].connected" class="green-color"><b>{{::key | uppercase}}</b></span>
+                    <span ng-show="!vm.resourcesNames[key].connected" class="red-color"><b>{{key | uppercase}}</b></span>
+                    <span ng-show="vm.resourcesNames[key].connected" class="green-color"><b>{{key | uppercase}}</b></span>
                 </span>
-                <span>{{::vm.resourcesNames[key].host}}</span>
-                <span style="width: 58px; margin: 0">:{{::vm.resourcesNames[key].port}}</span>
+                <span>{{vm.resourcesNames[key].host}}</span>
+                <span style="width: 58px; margin: 0">:{{vm.resourcesNames[key].port}}</span>
                 <span style="width: 180px;"><i>{{vm.resourcesNames[key].sensors.api_version.value}}</i></span>
                 <span flex><i>{{vm.resourcesNames[key].sensors.build_state.value}}</i></span>
 

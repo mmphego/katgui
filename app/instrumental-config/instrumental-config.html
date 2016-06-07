@@ -8,7 +8,7 @@
         <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
             <div flex ng-repeat="pointingModel in vm.pointingModels | orderBy:'fileName' track by $index"
                  ng-click="vm.getFileContents(pointingModel.filePath)">
-                <span>{{::pointingModel.fileName}}</span>
+                <span>{{pointingModel.fileName}}</span>
             </div>
         </div>
     </div>
@@ -21,7 +21,7 @@
         <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
             <div flex ng-repeat="sourceCatalogue in vm.sourceCatalogues | orderBy:'fileName' track by $index"
                  ng-click="vm.getFileContents(sourceCatalogue.filePath)">
-                <span>{{::sourceCatalogue.fileName}}</span>
+                <span>{{sourceCatalogue.fileName}}</span>
             </div>
         </div>
     </div>
@@ -34,7 +34,7 @@
         <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
             <div flex ng-repeat="noiseDiodeModel in vm.noiseDiodeModels | orderBy:'fileName' track by $index"
                  ng-click="vm.getFileContents(noiseDiodeModel.filePath)">
-                <span>{{::noiseDiodeModel.fileName}}</span>
+                <span>{{noiseDiodeModel.fileName}}</span>
             </div>
         </div>
     </div>
@@ -47,7 +47,7 @@
         <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
             <div flex ng-repeat="delayModel in vm.delayModels | orderBy:'fileName' track by $index"
                 ng-click="vm.getFileContents(delayModel.filePath)">
-                <span>{{::delayModel.fileName}}</span>
+                <span>{{delayModel.fileName}}</span>
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
         <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
             <div flex ng-repeat="corr in vm.correlators | orderBy:'fileName' track by $index"
                  ng-click="vm.getFileContents(corr.filePath)">
-                <span>{{::corr.fileName}}</span>
+                <span>{{corr.fileName}}</span>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
         <div flex class="md-whiteframe-z1 files-list-container" md-theme="{{themePrimaryButtons}}">
             <div flex ng-repeat="cam2spead in vm.cam2speadList | orderBy:'fileName' track by $index"
                  ng-click="vm.getFileContents(cam2spead.filePath)">
-                <span>{{::cam2spead.fileName}}</span>
+                <span>{{cam2spead.fileName}}</span>
             </div>
         </div>
     </div>

@@ -2,15 +2,15 @@
 
     <div class="md-whiteframe-z1" layout="column" layout-align="start center" style="margin-bottom: 16px; position: relative; min-height: 269px;">
         <md-toolbar class="panel-toolbar md-whiteframe-z1" layout="row" layout-align="center">
-            <span class="md-toolbar-tools" flex>{{::currentUser.name}}'s Account Details</span>
+            <span class="md-toolbar-tools" flex>{{currentUser.name}}'s Account Details</span>
         </md-toolbar>
         <div style="width: 100%; height: auto;">
             <div class="md-whiteframe-z3" flex layout="row" layout-align="start center" style="margin: 32px; height: 80px; overflow: auto;">
                 <div flex style="max-width: 265px; min-width: 265px; text-align: center; display: inline-block;" layout="row">
-                    <span class="cell-span">{{::currentUser.name}}<md-tooltip>My Name</md-tooltip></span>
+                    <span class="cell-span">{{currentUser.name}}<md-tooltip>My Name</md-tooltip></span>
                 </div>
                 <div flex style="max-width: 335px; min-width: 335px; text-align: center; display: inline-block;" layout="row">
-                    <span class="cell-span">{{::currentUser.email}}<md-tooltip>My Email Address</md-tooltip></span>
+                    <span class="cell-span">{{currentUser.email}}<md-tooltip>My Email Address</md-tooltip></span>
                 </div>
                 <div flex layout-align="start center" style="text-align: center; display: inline-block;" layout="row">
                     <span class="cell-span" ng-if="currentUser.roles.length > 0" ng-repeat="role in currentUser.roles | orderBy:role">{{role}},<md-tooltip>My Roles</md-tooltip></span>
