@@ -23,7 +23,13 @@
         vm.selectAllUnassignedResources = function (selected) {
             vm.poolResourcesFree.forEach(function (item) {
                 item.selected = selected;
+                if (selected && vm.selectedResources.indexOf(item) === -1) {
+                    vm.selectedResources.push(item);
+                }
             });
+            if (!selected) {
+                vm.selectedResources = [];
+            }
         };
 
         vm.assignSelectedResources = function () {
@@ -42,7 +48,6 @@
                 var itemsString = itemsAssigned.join(',');
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, itemsString);
             }
-            vm.selectAll = false;
         };
 
         vm.assignResource = function (resource) {
@@ -261,7 +266,7 @@
                 ObsSchedService.poolResourcesFree.forEach(function (item) {
                     item.selected = false;
                 });
-                vm.selectAll = false;
+                vm.selectedResources = [];
             }
             if (!$scope.$$phase) {
                 $scope.$apply();

@@ -189,7 +189,7 @@
 
         <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary"
                    style="min-height: 100%; max-width: 31px; min-width: 31px;"
-                   ng-show="$root.expertOrLO" ng-disabled="vm.selectedResources.length === 0 || vm.selectAll"
+                   ng-show="$root.expertOrLO" ng-disabled="vm.selectedResources.length === 0"
                    ng-click="vm.assignSelectedResources();" title="Assign Resources to Subarray">
             <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
         </md-button>
@@ -197,12 +197,12 @@
         <div flex layout="column" style="max-width:400px; min-height: 500px; margin-right: 8px">
 
             <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
-                <md-toolbar ng-init="vm.selectAll = false" class="md-whiteframe-z1" layout="row"
+                <md-toolbar class="md-whiteframe-z1" layout="row"
                             layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">
                 <span flex class="md-toolbar-tools unselectable"
                       style="cursor: pointer; max-height: 32px; padding: 0 4px"
-                      ng-click="vm.selectAllUnassignedResources(vm.selectAll = !vm.selectAll)">Free Resources</span>
-                    <input class="search-input-box" type="search" style="width: 110px;"
+                      ng-click="vm.selectAllUnassignedResources(true);">Free Resources</span>
+                    <input class="search-input-box" type="search" style="width: 140px;"
                            ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Resources..."/>
                 </md-toolbar>
 
