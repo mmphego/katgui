@@ -7,6 +7,7 @@
                                    NotifyService, ConfigService, KatGuiUtil, $mdDialog) {
 
         var vm = this;
+        vm.selectedResources = [];
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;
         vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
@@ -30,6 +31,11 @@
             vm.poolResourcesFree.forEach(function (item) {
                 if (item.selected) {
                     itemsAssigned.push(item.name);
+                    item.selected = false;
+                    var indexOfSelected = vm.selectedResources.indexOf(item);
+                    if (indexOfSelected > -1) {
+                        vm.selectedResources.splice(indexOfSelected, 1);
+                    }
                 }
             });
             if (itemsAssigned.length > 0) {
@@ -37,6 +43,15 @@
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, itemsString);
             }
             vm.selectAll = false;
+        };
+
+        vm.assignResource = function (resource) {
+            resource.selected = false;
+            var indexOfSelected = vm.selectedResources.indexOf(resource);
+            if (indexOfSelected > -1) {
+                vm.selectedResources.splice(indexOfSelected, 1);
+            }
+            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resource.name);
         };
 
         vm.freeAssignedResource = function (resource) {
@@ -94,6 +109,16 @@
         vm.isResourceFaulty = function (resource) {
             resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
             return resource.faulty;
+        };
+
+        vm.toggleResourceSelect = function (resource) {
+            resource.selected = !resource.selected;
+            var indexOfSelected = vm.selectedResources.indexOf(resource);
+            if (indexOfSelected > -1 && !resource.selected) {
+                vm.selectedResources.splice(indexOfSelected, 1);
+            } else {
+                vm.selectedResources.push(resource);
+            }
         };
 
         vm.openTemplateListDialog = function ($event) {

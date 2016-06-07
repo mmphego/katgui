@@ -102,9 +102,8 @@
 
 .selected-resource-item {
     background: #B3E5FC !important;
-    border-bottom: 1px solid darken(@item-border-bottom, 10%) !important;
-    color: #333333;
-    span {
+    // color: #333333;
+    span.resource-name {
         color: #333333;
     }
 }
@@ -497,31 +496,6 @@
     fill: currentColor !important;
 }
 
-.subarray_in_maintenance_bg {
-    background-color: rgb(94, 53, 177);
-    color: white;
-}
-
-.opaque-fade-in {
-    opacity: 1.0 !important;
-    transition: all linear 0.2s !important;
-}
-
-/* Initial state when showing */
-.opaque-fade-in.opaque-fade-in-remove {
-    opacity: 0.2 !important;
-}
-
-/* Will transition towards this state */
-.opaque-fade-in.opaque-fade-in-add.opaque-fade-in-active {
-    opacity: 1 !important;
-}
-
-/* Will transition towards this state */
-.opaque-fade-in.opaque-fade-in-remove.opaque-fade-in-remove-active {
-    opacity: 0.2 !important;
-}
-
 .scheduler-inline-button {
     transition: 0s;
     width: 35px;
@@ -538,9 +512,13 @@
 }
 
 .maintenance-bg {
-    background-color: rgba(206, 147, 216, 0.5);
+    background-color: rgba(206, 147, 216, 0.3);
+}
+
+.maintenance-bg-hover {
+    background-color: rgba(206, 147, 216, 0.3);
     &:hover {
-        background-color: rgba(206, 147, 216, 0.6);
+        background-color: rgba(206, 147, 216, 0.5);
     }
 }
 

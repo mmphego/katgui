@@ -55,7 +55,7 @@
                     </span>
                     <span class="subheader-text resource-sensor-time-item"
                           ng-click="vm.setSensorsOrderBy('received_timestamp')">
-                        <span>Received Timestamp</span>
+                        <span style="font-style: italic">Received Timestamp</span>
                         <span class="fa"
                               ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'received_timestamp' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'received_timestamp' && vm.sensorsOrderBy.reverse}"
                               style="margin-right: 4px;"></span>
@@ -77,7 +77,7 @@
                     <span title="{{sensor.description}}" class="resource-sensor-name">{{sensor.name}}</span>
                     <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
                     <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
-                    <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
+                    <span style="font-size: 12px; font-style: italic" class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
                     <span title="{{sensor.value}}" class="resource-sensor-value-item">{{sensor.value}}</span>
                 </div>
             </md-virtual-repeat-container>

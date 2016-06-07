@@ -77,7 +77,7 @@
                     '^' + vm.resourceSensorsBeingDisplayed + '_*',
                     $rootScope.sensorListStrategyType,
                     $rootScope.sensorListStrategyInterval,
-                    10);
+                    360);
             }
         };
 
