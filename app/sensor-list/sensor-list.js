@@ -210,6 +210,10 @@
             element.css({top: 'auto', left: 'auto', right: '20px', bottom: '20px', width: '500px', height: '500px'});
         };
 
+        vm.displaySensorValue = function ($event, sensor) {
+            NotifyService.showPreDialog(sensor.name + ' (' + status + ') at ' + sensor.timestamp, sensor.value, $event);
+        };
+
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
             if (vm.sensorValues[strList[1]]) {

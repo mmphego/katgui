@@ -77,7 +77,7 @@
                     <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
                     <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
                     <span style="font-size: 12px; font-style: italic" class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
-                    <span title="{{sensor.value}}" class="resource-sensor-value-item">{{sensor.value}}</span>
+                    <span title="{{sensor.value}}" class="resource-sensor-value-item" ng-click="vm.displaySensorValue($event, sensor); $event.stopPropagation();">{{sensor.value}}</span>
                 </div>
             </md-virtual-repeat-container>
         </div>

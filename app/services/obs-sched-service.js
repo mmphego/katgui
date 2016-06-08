@@ -240,6 +240,20 @@
                         if (sensorName.endsWith('pool_resources')) {
                             $rootScope.$emit('subarrayPoolResourcesSensorUpdate', sensor);
                         }
+                        if (sensorName.endsWith('state')) {
+                            //wait a while to make sure on initial load that we get all the subarray sensor values
+                            $timeout(function () {
+                                if (api.subarrays[subarrayIndex].state !== 'inactive') {
+                                    $localStorage.lastKnownSubarrayConfig['subarray_' + api.subarrays[subarrayIndex].id] = {
+                                        allocations: api.subarrays[subarrayIndex].allocations.map(function (resource) {
+                                            return resource.name;
+                                        }).join(","),
+                                        band: api.subarrays[subarrayIndex].band,
+                                        product: api.subarrays[subarrayIndex].product
+                                    };
+                                }
+                            }, 1000);
+                        }
                     }
                 } else {
                     $log.error('Unknown subarray sensor value: ');
@@ -258,19 +272,6 @@
                 var subarray = _.findWhere(api.subarrays, {id: subarrayId});
                 if (subarray) {
                     subarray.mode = sensor.value;
-
-                    //wait a while to make sure on initial load that we get all the subarray sensor values
-                    $timeout(function () {
-                        if (subarray.state === 'active') {
-                            $localStorage.lastKnownSubarrayConfig['subarray_' + subarrayId] = {
-                                allocations: subarray.allocations.map(function (resource) {
-                                    return resource.name;
-                                }).join(","),
-                                band: subarray.band,
-                                product: subarray.product
-                            };
-                        }
-                    }, 1000);
                 }
             } else {
                 var trimmed = sensorName.replace('katpool_', '');
