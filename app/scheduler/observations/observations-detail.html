@@ -305,7 +305,7 @@
                     </div>
                 </md-toolbar>
                 <div flex style="padding: 0"; layout="row">
-                    <md-virtual-repeat-container flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; max-width: 360px; overflow: auto;" layout="column">
+                    <md-virtual-repeat-container md-auto-shrink flex class="schedule-block-resource-window md-whiteframe-z1" style="z-index: 1; max-width: 360px; overflow: auto;" layout="column">
                         <div md-virtual-repeat="resource in vm.subarray.allocations" layout-align="center center"
                              class="resource-pool-item" layout="row">
                             <span style="min-width: 22px; margin-left: 4px;">

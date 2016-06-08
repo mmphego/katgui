@@ -1,20 +1,19 @@
 <div layout="column" flex ng-controller="SensorListCtrl as vm">
 
-    <div flex layout="row" style="margin: 8px;">
-        <div layout="column" style="min-width:170px;max-width:170px; min-height: 1300px; max-height: 1300px">
+    <div flex layout="row" style="margin: 8px">
+        <div layout="column" style="width: 220px">
             <div layout="column" ng-repeat="node in vm.nodes | orderBy:node:true track by $index"
-                class="md-whiteframe-z1" style="margin-bottom: 8px; min-height: 350px;">
+                class="md-whiteframe-z1" style="margin-bottom: 8px;"
+                ng-class="{'at-least-400-high': node === 'Proxies'}">
                 <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="center center">
                     <span>{{node}}</span>
                 </md-toolbar>
-                <div style="overflow: auto; direction: rtl">
-                    <div ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
+                <div style="overflow: auto" layout-wrap layout="row" layout-align="start">
+                    <div flex="50" ng-class="{'active-sensor-list-resource':vm.resourceSensorsBeingDisplayed === resource.name}"
                          ng-repeat="resource in vm.resourcesNames | filter:{'node':node} | orderBy:'name' track by $index"
-                         style="position: relative">
-                        <md-button class="resource-root-item" ng-click="vm.listResourceSensors(resource.name);"
-                            style="text-align: right">
+                         ng-click="vm.listResourceSensors(resource.name)"
+                         class="resource-root-item md-button" md-ink-ripple>
                             {{resource.name}}
-                        </md-button>
                     </div>
                 </div>
             </div>
@@ -69,7 +68,7 @@
                     </span>
                 </div>
             </md-toolbar>
-            <md-virtual-repeat-container flex style="padding: 8px 0; min-height: 1300px; max-height: 1300px; margin-bottom: 8px" class="md-whiteframe-z1">
+            <md-virtual-repeat-container md-auto-shrink flex style="padding: 8px 0; margin-bottom: 8px" class="md-whiteframe-z1">
                 <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)"
                      class="resource-sensor-item"
                     ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
@@ -86,7 +85,7 @@
 
     <div class="md-whiteframe-z5 sensor-list-chart-container" layout="column" ng-init="vm.showChart = false"
          inherit-body-bg target-color-inherit="md-content"
-         ng-class="{'small-hidden-sensor-graph-container': !vm.showChart}">
+         ng-class="{'small-hidden-sensor-graph-container hover-opacity': !vm.showChart}">
         <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="center center">
             <span draggable=".sensor-list-chart-container" flex style="margin-left: 8px; cursor: move;">
                 Sensor Graph</span>
