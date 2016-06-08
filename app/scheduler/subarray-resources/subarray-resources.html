@@ -87,18 +87,18 @@
                             <span ng-show="vm.subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b></span>
                         </div>
 
-                        <span class="fa fa-power-off subarray-action-icon" md-ink-ripple
+                        <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple
                             ng-if="$root.expertOrLO && vm.subarray.state === 'inactive'"
                             title="Activate Subarray"
                             ng-click="vm.activateSubarray()"></span>
 
-                        <span class="fa fa-recycle subarray-action-icon" md-ink-ripple
+                        <span class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple
                             ng-if="$root.expertOrLO || parentScope.vm.iAmCA"
                             title="Free Subarray"
                             ng-click="vm.freeSubarray()"></span>
 
                         <md-menu ng-if="$root.expertOrLO || parentScope.vm.iAmCA" md-theme="{{themePrimary}}">
-                            <md-button style="padding: 0; font-size: 24px" class="md-icon-button inline-action-button"
+                            <md-button style="padding: 0; font-size: 24px" class="md-icon-button inline-action-button hover-opacity"
                                 ng-click="vm.initLastKnownConfig();$mdOpenMenu()">
                                 <span class="fa fa-ellipsis-v"></span>
                             </md-button>
@@ -198,7 +198,7 @@
         </div>
 
         <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary"
-                   style="min-height: 100%; max-width: 31px; min-width: 31px;"
+                   style="min-height: 100%; max-width: 31px; min-width: 31px; margin: 2px 4px 8px 0;"
                    ng-show="$root.expertOrLO" ng-disabled="vm.selectedResources.length === 0"
                    ng-click="vm.assignSelectedResources();" title="Assign Resources to Subarray">
             <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
@@ -228,15 +228,18 @@
                         <span md-ink-ripple
                             class="icon-button fa fa-chevron-left"
                             title="Assign to Subarray"
+                            ng-mousedown="$event.stopPropagation()"
                             ng-click="vm.assignResource(resource); $event.stopPropagation()"></span>
                         <span flex style="font-size:18px; margin-left: 4px;" class="resource-name"
                             ng-class="{'maintenance-text': resource.maintenance}">{{resource.name}}</span>
                         <span class="icon-button fa fa-wrench" md-ink-ripple
                             title="Mark Resource in Maintenance"
                             ng-class="{'maintenance-text opaque': resource.maintenance}"
+                            ng-mousedown="$event.stopPropagation()"
                             ng-click="vm.markResourceInMaintenance(resource); $event.stopPropagation()"></span>
                         <span class="icon-button fa" md-ink-ripple
                             title="Mark Resource As Faulty"
+                            ng-mousedown="$event.stopPropagation()"
                             ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
                             ng-click="vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
                     </div>

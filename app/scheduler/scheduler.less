@@ -550,20 +550,15 @@
     }
 }
 
-.left-arrow-transform {
-    transform: scale(0.25) rotate(180deg);
-    width: 115px;
-    height: 40px;
-    stroke-width: 5;
-    svg {
-        transform: translate(-150px, -90px);
-    }
-}
-
 .arrow-nav-icon {
     margin: 4px;
     font-size: 14px;
     opacity: 0.5;
+}
+
+.arrow-nav-icon-big {
+    .arrow-nav-icon;
+    font-size: 28px;
 }
 
 .overlay-progress-circular {
@@ -620,5 +615,12 @@
     opacity: 0.1;
     &:hover {
         opacity: 0.7;
+    }
+}
+
+.hover-opacity {
+    opacity: 0.3;
+    &:hover {
+        opacity: 1.0;
     }
 }
