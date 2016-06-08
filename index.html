@@ -127,7 +127,7 @@
         <md-toolbar class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">katGUI</h1>
         </md-toolbar>
-        <md-content class="md-content-padding" style="margin-top: 16px;">
+        <md-content class="md-content-padding">
             <md-list>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('home')">
@@ -390,8 +390,8 @@
                     <md-tooltip>Current Interlock State</md-tooltip>
                 </span>
                 <div style="position: absolute; bottom: 0; left: 0; right: 0" layout="row" layout-align="center center">
-                    <span style="margin: 0 4px;">{{::$root.systemConfig.version.description}}</span>
-                    <span style="margin: 0 4px;">{{::$root.systemConfig.version.deployment_date}}</span>
+                    <span style="margin: 0 4px;">{{$root.systemConfig.version.description}}</span>
+                    <span style="margin: 0 4px;">{{$root.systemConfig.version.deployment_date}}</span>
                     <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
                 </div>
                 <span flex></span>

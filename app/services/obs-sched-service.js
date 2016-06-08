@@ -4,10 +4,14 @@
         .service('ObsSchedService', ObsSchedService);
 
     function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService, KatGuiUtil,
-                             $log, $q, $mdDialog, NotifyService, $timeout, $interval) {
+                             $log, $q, $mdDialog, NotifyService, $timeout, $interval, $localStorage) {
 
         var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
+        if (!$localStorage.lastKnownSubarrayConfig) {
+            $localStorage.lastKnownSubarrayConfig = {};
+        }
+        api.lastKnownSubarrayConfig = $localStorage.lastKnownSubarrayConfig;
         api.scheduleData = [];
         api.scheduleDraftData = [];
         api.scheduleCompletedData = [];
@@ -39,12 +43,12 @@
                         NotifyService.showPreDialog('Error Processing Request', result.data.error);
                     }
                     if (deferred) {
-                        deferred.resolve();
+                        deferred.resolve(true);
                     }
                 }, function (error) {
                     NotifyService.showHttpErrorDialog('Error sending request', error);
                     if (deferred) {
-                        deferred.resolve();
+                        deferred.resolve(false);
                     }
                 });
             if (deferred) {
@@ -122,7 +126,7 @@
         };
 
         api.assignResourcesToSubarray = function (sub_nr, resources) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/assign-resource/' + resources)));
+            return api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/assign-resource/' + resources)), true);
         };
 
         api.unassignResourcesFromSubarray = function (sub_nr, resources) {
@@ -138,7 +142,7 @@
         };
 
         api.freeSubarray = function (sub_nr) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/free')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/free')), true);
         };
 
         api.getScheduleBlocks = function () {
@@ -254,6 +258,19 @@
                 var subarray = _.findWhere(api.subarrays, {id: subarrayId});
                 if (subarray) {
                     subarray.mode = sensor.value;
+
+                    //wait a while to make sure on initial load that we get all the subarray sensor values
+                    $timeout(function () {
+                        if (subarray.state === 'active') {
+                            $localStorage.lastKnownSubarrayConfig['subarray_' + subarrayId] = {
+                                allocations: subarray.allocations.map(function (resource) {
+                                    return resource.name;
+                                }).join(","),
+                                band: subarray.band,
+                                product: subarray.product
+                            };
+                        }
+                    }, 1000);
                 }
             } else {
                 var trimmed = sensorName.replace('katpool_', '');
@@ -500,6 +517,36 @@
             var endDate = moment.utc(startDate).add(sb.expected_duration_seconds, 'seconds');
             var now = moment.utc(new Date());
             return (now.toDate().getTime() - startDateTime) / (endDate.toDate().getTime() - startDateTime) * 100;
+        };
+
+        api.getLastKnownSubarrayConfig = function (subarrayNumber) {
+            api.lastKnownSubarrayConfig['subarray_' + subarrayNumber] = $localStorage.lastKnownSubarrayConfig['subarray_' + subarrayNumber];
+            return api.lastKnownSubarrayConfig['subarray_' + subarrayNumber];
+        };
+
+        api.loadLastKnownSubarrayConfig = function (subarrayNumber) {
+            var lastKnownConfig = $localStorage.lastKnownSubarrayConfig['subarray_' + subarrayNumber];
+            if (lastKnownConfig) {
+                var subarray = _.find(api.subarrays, function (item) {
+                    return item.id === subarrayNumber;
+                });
+                if (lastKnownConfig.allocations) {
+                    var currentAllocations = subarray.allocations.map(function (resource) {
+                        return resource.name;
+                    });
+                    var resourcesToAllocate = lastKnownConfig.allocations.split(',');
+                    var resourcesGoingToAllocate = _.difference(resourcesToAllocate, currentAllocations);
+                    if (resourcesGoingToAllocate.length > 0) {
+                        api.assignResourcesToSubarray(subarrayNumber, resourcesGoingToAllocate.join(','));
+                    }
+                }
+                if (subarray.band !== lastKnownConfig.band) {
+                    api.setBand(subarrayNumber, lastKnownConfig.band);
+                }
+                if (subarray.product !== lastKnownConfig.product) {
+                    api.setProduct(subarrayNumber, lastKnownConfig.product);
+                }
+            }
         };
 
         api.progressInterval = $interval(function () {

@@ -1,9 +1,9 @@
-<div flex layout="column" style="min-width: 1220px; min-height: 500px; margin-top: 4px;"
+<div flex layout="column" style="min-width: 1220px; min-height: 500px"
      ng-controller="SubArraysCtrl as vm">
 
-    <div flex layout="row" style="margin-top: 16px; max-height: 100%; min-height: 100%;">
-        <div flex layout="column" style="overflow: auto; padding-left: 4px; margin-right: 4px">
-            <div flex class="subarray-container" layout="row"
+    <div flex layout="row" style="max-height: 100%; min-height: 100%;">
+        <div flex layout="column" style="overflow: auto; margin-right: 4px">
+            <div flex class="subarray-container" layout="row" style="margin-left: 8px"
                  md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}">
 
                 <div layout="column" flex>
@@ -242,7 +242,7 @@
                                 <span><i>{{item.owner}}</i></span>
                             </div>
                             <span flex style="overflow: hidden; text-overflow: ellipsis;"
-                                  title="{{::item.description}}">{{::item.description}}</span>
+                                  title="{{item.description}}">{{item.description}}</span>
 
                             <span style="width: 150px">{{item.verification_state}}</span>
                             <span style="width: 75px"
@@ -298,7 +298,7 @@
         </div>
 
         <div layout="row"
-             style="max-width: 385px; min-width: 385px; padding-right: 4px; padding-bottom: 4px;"
+             style="max-width: 385px; min-width: 385px; padding-bottom: 4px; margin-right: 8px"
              class="md-whitespace-z1">
             <div class="md-whiteframe-z2" layout="column" flex>
                 <md-toolbar class="panel-toolbar-small md-whiteframe-z1">

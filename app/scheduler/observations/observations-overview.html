@@ -1,8 +1,8 @@
-<div flex layout="column" style="min-width: 1015px; min-height: 860px; margin-top: 8px;"
+<div flex layout="column" style="min-width: 1015px; min-height: 860px;"
      ng-controller="SubArrayExecutorOverview as vm">
 
-    <div flex layout="row" style="margin-top: 8px">
-        <div flex layout="column" style="overflow: auto; padding-left: 8px; padding-right: 8px;">
+    <div flex layout="row">
+        <div flex layout="column" style="overflow: auto; padding: 0 8px">
             <div ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
                  layout="row" flex
                  style="min-width: 650px;" md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
@@ -75,7 +75,7 @@
                                     <span><i>{{item.owner}}</i></span>
                                 </div>
                                 <span flex style="overflow: hidden; text-overflow: ellipsis;"
-                                      title="{{::item.description}}">{{::item.description}}</span>
+                                      title="{{item.description}}">{{item.description}}</span>
 
                                 <span style="width: 150px">{{item.verification_state}}</span>
                                 <span style="width: 150px" ng-class="{'green-color': item.state === 'ACTIVE'}">{{item.state}}</span>

@@ -7,6 +7,8 @@
                                    NotifyService, ConfigService, KatGuiUtil, $mdDialog) {
 
         var vm = this;
+        vm.showDeselectTooltip = false;
+        vm.selectedResources = [];
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;
         vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
@@ -22,7 +24,14 @@
         vm.selectAllUnassignedResources = function (selected) {
             vm.poolResourcesFree.forEach(function (item) {
                 item.selected = selected;
+                if (selected && vm.selectedResources.indexOf(item) === -1) {
+                    vm.selectedResources.push(item);
+                }
             });
+            if (!selected) {
+                vm.selectedResources = [];
+            }
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
         };
 
         vm.assignSelectedResources = function () {
@@ -30,13 +39,28 @@
             vm.poolResourcesFree.forEach(function (item) {
                 if (item.selected) {
                     itemsAssigned.push(item.name);
+                    item.selected = false;
+                    var indexOfSelected = vm.selectedResources.indexOf(item);
+                    if (indexOfSelected > -1) {
+                        vm.selectedResources.splice(indexOfSelected, 1);
+                    }
                 }
             });
             if (itemsAssigned.length > 0) {
                 var itemsString = itemsAssigned.join(',');
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, itemsString);
             }
-            vm.selectAll = false;
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
+        };
+
+        vm.assignResource = function (resource) {
+            resource.selected = false;
+            var indexOfSelected = vm.selectedResources.indexOf(resource);
+            if (indexOfSelected > -1) {
+                vm.selectedResources.splice(indexOfSelected, 1);
+            }
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
+            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resource.name);
         };
 
         vm.freeAssignedResource = function (resource) {
@@ -44,7 +68,20 @@
         };
 
         vm.freeSubarray = function () {
-            ObsSchedService.freeSubarray(vm.subarray.id);
+            vm.subarray.showProgress = true;
+            var dataResource = _.find(vm.subarray.allocations, function(resource) {
+                return resource.name.startsWith('data_');
+            });
+
+            ObsSchedService.freeSubarray(vm.subarray.id).then(function (success) {
+                if (success && dataResource) {
+                    ObsSchedService.assignResourcesToSubarray(vm.subarray.id, dataResource.name).then(function () {
+                        vm.subarray.showProgress = false;
+                    });
+                } else {
+                    vm.subarray.showProgress = false;
+                }
+            });
         };
 
         vm.activateSubarray = function () {
@@ -94,6 +131,24 @@
         vm.isResourceFaulty = function (resource) {
             resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
             return resource.faulty;
+        };
+
+        vm.toggleResourceSelect = function (resource, selectedValue) {
+            if (angular.isDefined(resource.selected) && selectedValue === resource.selected) {
+                return;
+            }
+            var selected = selectedValue;
+            if (!angular.isDefined(selected)) {
+                selected = !resource.selected;
+            }
+            resource.selected = selected;
+            var indexOfSelected = vm.selectedResources.indexOf(resource);
+            if (indexOfSelected > -1 && !selected) {
+                vm.selectedResources.splice(indexOfSelected, 1);
+            } else if (selected) {
+                vm.selectedResources.push(resource);
+            }
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
         };
 
         vm.openTemplateListDialog = function ($event) {
@@ -236,12 +291,28 @@
                 ObsSchedService.poolResourcesFree.forEach(function (item) {
                     item.selected = false;
                 });
-                vm.selectAll = false;
+                if (vm.selectedResources.length > 0) {
+                    vm.selectedResources = [];
+                    vm.showDeselectTooltip = false;
+                } else {
+                    //clear filter search on free resources
+                    vm.q = '';
+                }
+            } else if (key === 13) {
+                vm.assignSelectedResources();
             }
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
         });
+
+        vm.initLastKnownConfig = function () {
+            vm.lastKnownSubarrayConfig = ObsSchedService.getLastKnownSubarrayConfig(vm.subarray.id);
+        };
+
+        vm.loadLastKnownSubarrayConfig = function () {
+            ObsSchedService.loadLastKnownSubarrayConfig(vm.subarray.id);
+        };
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');

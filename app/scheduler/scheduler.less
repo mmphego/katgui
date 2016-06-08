@@ -102,9 +102,8 @@
 
 .selected-resource-item {
     background: #B3E5FC !important;
-    border-bottom: 1px solid darken(@item-border-bottom, 10%) !important;
-    color: #333333;
-    span {
+    // color: #333333;
+    span.resource-name {
         color: #333333;
     }
 }
@@ -114,7 +113,7 @@
     min-height: 32px;
     padding: 4px;
     min-width: 200px;
-    border-bottom: 1px solid darken(@item-border-bottom, 10%);
+    border: 1px solid rgba(158, 158, 158, 0.3);
     overflow: hidden;
     //    background-color: @item-bg;
     &:hover {
@@ -497,31 +496,6 @@
     fill: currentColor !important;
 }
 
-.subarray_in_maintenance_bg {
-    background-color: rgb(94, 53, 177);
-    color: white;
-}
-
-.opaque-fade-in {
-    opacity: 1.0 !important;
-    transition: all linear 0.2s !important;
-}
-
-/* Initial state when showing */
-.opaque-fade-in.opaque-fade-in-remove {
-    opacity: 0.2 !important;
-}
-
-/* Will transition towards this state */
-.opaque-fade-in.opaque-fade-in-add.opaque-fade-in-active {
-    opacity: 1 !important;
-}
-
-/* Will transition towards this state */
-.opaque-fade-in.opaque-fade-in-remove.opaque-fade-in-remove-active {
-    opacity: 0.2 !important;
-}
-
 .scheduler-inline-button {
     transition: 0s;
     width: 35px;
@@ -538,7 +512,18 @@
 }
 
 .maintenance-bg {
-    background-color: rgba(206, 147, 216, 0.5);
+    background-color: rgba(206, 147, 216, 0.3);
+}
+
+.maintenance-bg-hover {
+    background-color: rgba(206, 147, 216, 0.3);
+    &:hover {
+        background-color: rgba(206, 147, 216, 0.5);
+    }
+}
+
+.faulty-border {
+    border: 1px solid #F44336 !important;
 }
 
 .inline-action-button {
@@ -565,24 +550,15 @@
     }
 }
 
-.left-arrow-transform {
-    transform: scale(0.25) rotate(180deg);
-    width: 115px;
-    height: 40px;
-    stroke-width: 5;
-    svg {
-        transform: translate(-150px, -90px);
-    }
+.arrow-nav-icon {
+    margin: 4px;
+    font-size: 14px;
+    opacity: 0.5;
 }
 
-.left-arrow-transform-small {
-    transform: scale(0.15) rotate(180deg);
-    width: 75px;
-    height: 40px;
-    stroke-width: 5;
-    svg {
-        transform: translate(-175px, -90px);
-    }
+.arrow-nav-icon-big {
+    .arrow-nav-icon;
+    font-size: 28px;
 }
 
 .overlay-progress-circular {
@@ -621,4 +597,30 @@
     min-width: auto;
     min-height: auto;
     line-height: normal;
+}
+
+.subarray-action-icon {
+    font-size: 30px;
+    height: 100%;
+    padding: 6px;
+    margin: 0 6px;
+    border-radius: 50%;
+}
+
+.subarray-select-chevron {
+    font-size: 12px;
+    position: absolute;
+    top: 12px;
+    left: 0;
+    opacity: 0.1;
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.hover-opacity {
+    opacity: 0.3;
+    &:hover {
+        opacity: 1.0;
+    }
 }
