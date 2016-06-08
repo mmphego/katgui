@@ -110,7 +110,7 @@
             }
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
-
+            vm.showProgress = true;
             SensorsService.listResourceSensors(resourceName)
                 .then(function (result) {
                     vm.resources[resourceName].sensorsList = result;
@@ -124,6 +124,9 @@
                     if (!$scope.$$phase) {
                         $scope.$digest();
                     }
+                    vm.showProgress = false;
+                }, function (error) {
+                    vm.showProgress = false;
                 });
             vm.resourceSensorsBeingDisplayed = resourceName;
             //allow for the removeSensorStrategies to complete before setting up new strategies
@@ -211,7 +214,7 @@
         };
 
         vm.displaySensorValue = function ($event, sensor) {
-            NotifyService.showPreDialog(sensor.name + ' (' + status + ') at ' + sensor.timestamp, sensor.value, $event);
+            NotifyService.showPreDialog(sensor.parentName + '_' + sensor.python_identifier + ' (' + sensor.status + ') at ' + sensor.timestamp, sensor.value, $event);
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {

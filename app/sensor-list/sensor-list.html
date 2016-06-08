@@ -68,8 +68,15 @@
                     </span>
                 </div>
             </md-toolbar>
-            <md-virtual-repeat-container md-auto-shrink flex style="padding: 8px 0; margin-bottom: 8px" class="md-whiteframe-z1">
-                <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)"
+            <!-- TODO until https://github.com/angular/material/pull/6021 is merged into angular material, we can't filter like we want to on the model -->
+            <div flex style="padding: 8px 0; margin-bottom: 8px; overflow: auto; position: relative" class="md-whiteframe-z1">
+                <div flex class="overlay-progress-circular" layout="row" layout-align="center center"
+                     ng-if="vm.showProgress">
+                    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                </div>
+            <!-- <md-virtual-repeat-container md-item-size="20" md-auto-shrink flex style="padding: 8px 0; margin-bottom: 8px" class="md-whiteframe-z1"> -->
+                <!-- <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)" -->
+                <div ng-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse) track by $index"
                      class="resource-sensor-item"
                     ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
                     ng-class="{'selected-for-chart-row': sensor.selectedForChart}" layout="row" layout-align="start center">
@@ -78,8 +85,10 @@
                     <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
                     <span style="font-size: 12px; font-style: italic" class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
                     <span title="{{sensor.value}}" class="resource-sensor-value-item" ng-click="vm.displaySensorValue($event, sensor); $event.stopPropagation();">{{sensor.value}}</span>
+                <!-- </div> -->
                 </div>
-            </md-virtual-repeat-container>
+            </div>
+            <!-- </md-virtual-repeat-container> -->
         </div>
     </div>
 
