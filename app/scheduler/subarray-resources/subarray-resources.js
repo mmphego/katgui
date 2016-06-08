@@ -7,6 +7,7 @@
                                    NotifyService, ConfigService, KatGuiUtil, $mdDialog) {
 
         var vm = this;
+        vm.showDeselectTooltip = false;
         vm.selectedResources = [];
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;
@@ -30,6 +31,7 @@
             if (!selected) {
                 vm.selectedResources = [];
             }
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
         };
 
         vm.assignSelectedResources = function () {
@@ -48,6 +50,7 @@
                 var itemsString = itemsAssigned.join(',');
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, itemsString);
             }
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
         };
 
         vm.assignResource = function (resource) {
@@ -56,6 +59,7 @@
             if (indexOfSelected > -1) {
                 vm.selectedResources.splice(indexOfSelected, 1);
             }
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resource.name);
         };
 
@@ -64,7 +68,20 @@
         };
 
         vm.freeSubarray = function () {
-            ObsSchedService.freeSubarray(vm.subarray.id);
+            vm.subarray.showProgress = true;
+            var dataResource = _.find(vm.subarray.allocations, function(resource) {
+                return resource.name.startsWith('data_');
+            });
+
+            ObsSchedService.freeSubarray(vm.subarray.id).then(function (success) {
+                if (success && dataResource) {
+                    ObsSchedService.assignResourcesToSubarray(vm.subarray.id, dataResource.name).then(function () {
+                        vm.subarray.showProgress = false;
+                    });
+                } else {
+                    vm.subarray.showProgress = false;
+                }
+            });
         };
 
         vm.activateSubarray = function () {
@@ -116,14 +133,22 @@
             return resource.faulty;
         };
 
-        vm.toggleResourceSelect = function (resource) {
-            resource.selected = !resource.selected;
+        vm.toggleResourceSelect = function (resource, selectedValue) {
+            if (angular.isDefined(resource.selected) && selectedValue === resource.selected) {
+                return;
+            }
+            var selected = selectedValue;
+            if (!angular.isDefined(selected)) {
+                selected = !resource.selected;
+            }
+            resource.selected = selected;
             var indexOfSelected = vm.selectedResources.indexOf(resource);
-            if (indexOfSelected > -1 && !resource.selected) {
+            if (indexOfSelected > -1 && !selected) {
                 vm.selectedResources.splice(indexOfSelected, 1);
-            } else {
+            } else if (selected) {
                 vm.selectedResources.push(resource);
             }
+            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
         };
 
         vm.openTemplateListDialog = function ($event) {
@@ -266,12 +291,28 @@
                 ObsSchedService.poolResourcesFree.forEach(function (item) {
                     item.selected = false;
                 });
-                vm.selectedResources = [];
+                if (vm.selectedResources.length > 0) {
+                    vm.selectedResources = [];
+                    vm.showDeselectTooltip = false;
+                } else {
+                    //clear filter search on free resources
+                    vm.q = '';
+                }
+            } else if (key === 13) {
+                vm.assignSelectedResources();
             }
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
         });
+
+        vm.initLastKnownConfig = function () {
+            vm.lastKnownSubarrayConfig = ObsSchedService.getLastKnownSubarrayConfig(vm.subarray.id);
+        };
+
+        vm.loadLastKnownSubarrayConfig = function () {
+            ObsSchedService.loadLastKnownSubarrayConfig(vm.subarray.id);
+        };
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
