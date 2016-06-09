@@ -1,4 +1,4 @@
-<div flex layout="column" style="min-width: 1220px; min-height: 400px"  class="unselectable"
+<div flex layout="column" style="min-width: 1000px; min-height: 600px"  class="unselectable"
      ng-controller="SubArrayResourcesCtrl as vm" ng-mouseup="vm.dragSelect = false">
 
     <div flex layout="row">
@@ -146,7 +146,7 @@
         </div>
 
         <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary"
-                   style="min-height: 100%; max-width: 31px; min-width: 31px; margin: 2px 4px 8px 0;"
+                   style="min-height: 100%; max-width: 41px; min-width: 41px; margin: 2px 4px 8px 0;"
                    ng-show="$root.expertOrLO" ng-disabled="vm.selectedResources.length === 0"
                    ng-click="vm.assignSelectedResources();" title="Assign Resources to Subarray">
             <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>

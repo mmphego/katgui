@@ -191,6 +191,16 @@
             vm.initApp();
         });
 
+        $rootScope.elementHasScrollbar = function (elementId, queryFirstChild) {
+            var element = document.querySelector(elementId);
+            if (queryFirstChild && element) {
+                element = element.children[0];
+            }
+            if (element) {
+                return element.offsetWidth - element.scrollWidth >= 8;
+            }
+            return false;
+        };
         $rootScope.isNavbarVisible = function () {
             return vm.showNavbar;
         };
