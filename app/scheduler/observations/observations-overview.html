@@ -11,14 +11,14 @@
                     <md-toolbar
                         ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                         layout="row" layout-align="center center" title="{{subarray.description}}"
-                        style="max-height: 64px; min-height: 64px; position: relative; margin-top: -7px"
+                        style="max-height: 64px; min-height: 64px; position: relative"
                         ng-click="parentScope.vm.stateGo('scheduler.observations.detail', subarray.id)">
                         <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
                             <span><b>{{subarray.state}}</b></span>
                             <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
                         </span>
                         <span flex></span>
-                        <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 7px; left: 0; right: 0; font-size: 12px">
+                        <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 0; left: 0; right: 0; font-size: 12px">
                             <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
                             <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ? subarray.band : 'None'}}</b></span>
                             <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product ? subarray.product : 'None'}}</b></span>

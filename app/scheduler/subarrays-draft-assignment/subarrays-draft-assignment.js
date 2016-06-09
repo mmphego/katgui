@@ -20,6 +20,7 @@
             vm.subarray = $scope.$parent.vm.subarray;
         }
         $scope.parentScope = $scope.$parent;
+        vm.iAmAtLeastCA = $scope.$parent.vm.iAmAtLeastCA;
 
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code', reverse: true},
@@ -45,6 +46,7 @@
 
         vm.setDraftsOrderBy('id_code');
 
+        //TODO we need a bulk assign schedule blocks function
         vm.assignSelectedScheduleBlocks = function () {
             ObsSchedService.scheduleDraftData.forEach(function (item) {
                 if (item.selected) {
@@ -52,6 +54,10 @@
                     ObsSchedService.assignScheduleBlock(vm.subarray.id, item.id_code);
                 }
             });
+        };
+
+        vm.assignScheduleBlock = function (sb) {
+            ObsSchedService.assignScheduleBlock(vm.subarray.id, sb.id_code);
         };
 
         vm.freeScheduleBlock = function (sb) {

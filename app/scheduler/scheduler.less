@@ -115,9 +115,7 @@
     min-width: 200px;
     border: 1px solid rgba(158, 158, 158, 0.3);
     overflow: hidden;
-    //    background-color: @item-bg;
     &:hover {
-        //        background-color: darken(@item-bg, 5%);
         background-color: rgba(158, 158, 158, 0.1);
     }
 }
@@ -129,8 +127,11 @@
     font-size: 12px;
     white-space: nowrap;
     direction: ltr;
-    border-bottom: 1px solid #9E9E9E;
-    overflow: hidden;
+    border: 1px solid rgba(158, 158, 158, 0.3);
+    &:hover {
+        background-color: rgba(158, 158, 158, 0.1);
+    }
+
 }
 
 .md-virtual-repeat-container .md-virtual-repeat-offsetter {
@@ -597,6 +598,9 @@
     min-width: auto;
     min-height: auto;
     line-height: normal;
+    &:hover span {
+        opacity: 1.0;
+    }
 }
 
 .subarray-action-icon {
@@ -610,7 +614,6 @@
 .subarray-select-chevron {
     font-size: 12px;
     position: absolute;
-    top: 12px;
     left: 0;
     opacity: 0.1;
     transition: opacity .25s ease-in-out;
@@ -624,5 +627,27 @@
     transition: opacity .25s ease-in-out;
     &:hover {
         opacity: 1.0;
+    }
+}
+
+.sb-wrapped-description {
+    white-space: normal;
+    word-break: break-all;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 100%;
+}
+
+.subarray-config-container {
+    position: absolute;
+    padding: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-size: 12px;
+    md-menu {
+        margin: 0 2px;
+        position: relative;
     }
 }

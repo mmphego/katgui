@@ -47,6 +47,10 @@
                 }
             });
 
+        vm.iAmAtLeastCA = function () {
+            return $rootScope.expertOrLO || vm.iAmCA;
+        };
+
         vm.stateGo = function (newState, subarray_id) {
             if (subarray_id) {
                 $state.go(newState, {subarray_id: subarray_id});

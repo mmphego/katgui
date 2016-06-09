@@ -18,6 +18,7 @@
         vm.scheduleCompletedData = ObsSchedService.scheduleCompletedData;
         vm.subarray = $scope.$parent.vm.subarray;
         $scope.parentScope = $scope.$parent;
+        vm.iAmAtLeastCA = $scope.$parent.vm.iAmAtLeastCA;
 
         if (!$scope.$parent.vm.subarray) {
             $scope.$parent.vm.waitForSubarrayToExist().then(function () {

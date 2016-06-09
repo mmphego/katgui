@@ -384,12 +384,12 @@ md-toast {
 }
 
 .list-subheader-title {
-    //    min-height: 30px;
-    //    max-height: 30px;
-    width: 100%;
-    padding: 2px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 8px;
     cursor: pointer;
-    vertical-align: bottom;
 }
 
 .animate-show-grow {
@@ -804,9 +804,15 @@ pre {
     padding: 6px;
     opacity: 0.2;
     transition: opacity .25s ease-in-out;
-    &:hover {
+    display: inline-block;
+    text-align: center;
+    &:hover:enabled {
         opacity: 0.7;
     }
+}
+
+*[disabled] {
+    cursor: not-allowed !important;
 }
 
 .opaque {
@@ -819,4 +825,22 @@ pre {
     min-height: 22px;
     font-size: 12px;
     line-height: 22px;
+}
+
+.text-overflow-ellipsis, .text-overflow-ellipsis * {
+     overflow: hidden;
+     text-overflow: ellipsis;
+}
+
+.fixed-width-18 {
+    min-width: 18px;
+    max-width: 18px;
+}
+
+.sb-time-and-type-div {
+    font-size: 10px;
+    min-width: 92px;
+    max-width: 92px;
+    text-overflow: clip;
+    overflow: hidden;
 }

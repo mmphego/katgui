@@ -13,11 +13,12 @@
                         ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                         layout="row" layout-align="center center" title="{{vm.subarray.description}}"
                         style="max-height: 56px; min-height: 56px; position: relative">
+                        <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                         <md-menu style="margin: 0; padding: 0;">
                             <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu(); $event.stopPropagation()"
-                                style="color: currentColor !important; font-size: 30px">
-                                <span class="fa fa-chevron-down subarray-select-chevron"></span>
-                                <span style="margin-left: 12px">
+                                style="font-size: 30px">
+                                <span class="fa fa-chevron-down subarray-select-chevron" style="top: 12px"></span>
+                                <span style="margin-left: 14px">
                                     SUBARRAY {{vm.subarray.id}} -
                                     <span><b>{{vm.subarray.state}}</b></span>
                                     <span ng-if="vm.subarray.maintenance">{{"- in maintenance"}}</span>
@@ -33,59 +34,6 @@
                         </md-menu>
 
                         <span flex></span>
-
-                        <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 0; left: 0; right: 0; font-size: 12px">
-                            <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Control Authority" ng-click="$mdOpenMenu()"
-                                    style="color: currentColor !important">
-                                    <i>CA: </i><b>{{vm.subarray.delegated_ca}}</b>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-click="parentScope.vm.delegateControl('lo')">
-                                            <span>Lead Operator</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item ng-repeat="user in parentScope.vm.users | orderBy:'email' track by $index">
-                                        <md-button ng-click="parentScope.vm.delegateControl(user.email)">
-                                            <span>{{user.email}}</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                            <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Band" ng-click="$mdOpenMenu()"
-                                    style="color: currentColor !important">
-                                    <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item ng-repeat="band in parentScope.vm.bands | orderBy:band track by $index">
-                                        <md-button ng-click="parentScope.vm.setBand(band)">
-                                            <span>{{band}}</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                            <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Product" ng-click="$mdOpenMenu()"
-                                    style="color: currentColor !important">
-                                    <i>Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-click="parentScope.vm.setProduct('')">
-                                            <span>None</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item ng-repeat="product in parentScope.vm.products | orderBy:product:true track by $index">
-                                        <md-button ng-click="parentScope.vm.setProduct(product)">
-                                            <span>{{product}}</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                            <span ng-show="vm.subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b></span>
-                        </div>
 
                         <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple
                             ng-if="$root.expertOrLO && vm.subarray.state === 'inactive'"

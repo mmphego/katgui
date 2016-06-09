@@ -20,6 +20,7 @@
             vm.subarray = $scope.$parent.vm.subarray;
         }
         $scope.parentScope = $scope.$parent;
+        vm.iAmAtLeastCA = $scope.$parent.vm.iAmAtLeastCA;
 
         vm.selectAllUnassignedResources = function (selected) {
             vm.poolResourcesFree.forEach(function (item) {
