@@ -80,7 +80,7 @@
         $rootScope.themePrimaryButtons = theme.primaryButtons;
         $rootScope.expertOrLO = false;
         $rootScope.showVideoLinks = false;
-        $rootScope.connectedToMonitor = false;
+        $rootScope.connectedToMonitor = true;
 
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {

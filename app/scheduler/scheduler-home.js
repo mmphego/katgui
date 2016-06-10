@@ -391,6 +391,10 @@
             });
         };
 
+        vm.listResourceMaintenanceDevicesDialog = function (resource, $event) {
+            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resource.name, $event);
+        };
+
         vm.delegateControl = function (email) {
             ObsSchedService.delegateControl(vm.subarray.id, email);
         };
@@ -416,11 +420,7 @@
         };
 
         vm.viewSBTasklog = function (sb, mode) {
-            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, "progress");
-        };
-
-        vm.viewSBDryrun = function (sb) {
-            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, "dryrun");
+            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, mode);
         };
 
         vm.moveScheduleRowToFinished = function (item) {

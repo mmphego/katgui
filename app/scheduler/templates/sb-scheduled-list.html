@@ -1,8 +1,8 @@
 <md-virtual-repeat-container id="scheduleDataRepeat" flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2"
     ng-class="{'maintenance-bg':vm.subarray.maintenance}">
     <div md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray.id})"
-        style="padding: 0 4px" ng-class="{'selected-schedule-row': item === vm.selectedSchedule}" class="schedule-draft-item"
-        layout="row" layout-align="start center">
+        style="padding: 0 4px; z-index: 0" ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedSchedule}" class="schedule-draft-item"
+        layout="row" layout-align="start center" ng-click='vm.setSelectedSchedule(item)'>
 
         <md-progress-linear md-theme="green" ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
             md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
@@ -11,6 +11,7 @@
         <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
             md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
         </md-progress-linear>
+        <span title="Priority: {{item.priority}}" style="min-width: 14px; font-size: 14px" class="fa" ng-class="{'fa-arrow-circle-up dark-blue-grey-color': item.priority === 'HIGH', 'fa-arrow-circle-down light-grey-color': item.priority === 'LOW'}"></span>
         <div layout="column" layout-align="start" style="width: 120px">
             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                 style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
@@ -28,11 +29,11 @@
         </div>
         <span ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && !item.ready" style="width: 26px"></span>
         <span class="icon-button fa fa-play green-color" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()"
-            ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && item.ready" title="Execute" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.executeSchedule(item)"></span>
+            ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && item.ready" title="Execute" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.executeSchedule(item); $event.stopPropagation()"></span>
         <span class="icon-button fa fa-stop red-color" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()"
-            ng-show="item.state === 'ACTIVE' && !item.pendingVerify" title="Stop Execution" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.stopExecuteSchedule(item)"></span>
+            ng-show="item.state === 'ACTIVE' && !item.pendingVerify" title="Stop Execution" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.stopExecuteSchedule(item); $event.stopPropagation()"></span>
         <md-menu md-theme="{{themePrimaryButtons}}">
-            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu()"></span>
+            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
             <md-menu-content style="max-height: 475px">
                 <md-menu-item>
                     <md-button ng-click="parent.vm.viewSBTasklog(item, 'progress')" title="View Progress in a New Tab">View Progress</md-button>

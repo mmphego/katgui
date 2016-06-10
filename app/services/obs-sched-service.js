@@ -428,7 +428,7 @@
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.title = 'Select a Device in ' + resource + ' to Restart';
+                        $scope.title = 'Select a device in ' + resource + ' to restart';
                         $scope.devices = [];
                         api.listResourceMaintenanceDevices(resource)
                             .then(function (result) {

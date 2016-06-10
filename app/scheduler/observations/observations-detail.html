@@ -1,4 +1,4 @@
-<div flex layout="row" style="min-width: 1000px; min-height: 600px; margin: 0 8px 8px 8px" ng-controller="SubArrayObservationsDetail as vm">
+<div flex layout="row" style="min-width: 1000px; min-height: 600px; padding: 0 8px 8px 8px" ng-controller="SubArrayObservationsDetail as vm">
 
     <div flex layout="column">
         <div flex style="min-height: 150px;" layout="column">
@@ -7,8 +7,9 @@
                 layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 76px; min-height: 76px; position: relative">
                 <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                 <md-menu style="margin: 0; padding: 0;">
-                    <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu()" style="color: currentColor !important; font-size: inherit">
-                        <span style="margin-left: 8px;">
+                    <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu()" style="color: currentColor !important; font-size: inherit; position: relative">
+                        <span class="fa fa-chevron-down subarray-select-chevron" style="top: 6px"></span>
+                        <span style="margin-left: 12px;">
                                     SUBARRAY {{vm.subarray.id}} -
                                     <span><b>{{vm.subarray.state}}</b></span>
                         <span ng-if="vm.subarray.maintenance">{{"- in maintenance"}}</span>
@@ -26,7 +27,10 @@
                 <span flex></span>
 
                 <md-menu style="margin-top: 16px; position: relative">
-                    <span md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu()">MODE: <b>{{vm.subarray.mode}}</b></span>
+                    <span md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu()" class="opaque-hover">
+                        <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
+                        <span style="margin-left: 6px">MODE: <b>{{vm.subarray.mode}}</b></span>                        </span>
+                    </span>
                     <md-menu-content>
                         <md-menu-item ng-repeat="type in vm.modeTypes">
                             <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.setSchedulerMode(type)">Set Mode to: {{type}}</md-button>
@@ -44,26 +48,23 @@
             <div layout="column" flex ng-include="'app/scheduler/templates/sb-scheduled-list.html'"></div>
         </div>
 
-        <div style="margin-top: 8px; overflow: hidden" layout="column" ng-class="{'schedule-block-complete-list-min-height': completedScheduleBlockListVisible}">
+        <div style="margin-top: 8px" layout="column">
             <md-toolbar class="panel-toolbar md-whiteframe-z1" style="min-height: 64px; max-height: 64px" layout="row"
                 layout-align="start center">
-                <span flex ng-init="completedScheduleBlockListVisible = false" style="margin-left: 8px; margin-top: -7px;"
-                    ng-click="completedScheduleBlockListVisible = !completedScheduleBlockListVisible;">
-                        Completed Schedule Blocks
-                    </span>
+                <span flex style="margin-left: 8px; margin-top: -7px;" ng-click="vm.showCompletedSBs = !vm.showCompletedSBs">Completed Schedule Blocks</span>
                 <input type="search" style="font-size: 14px; position: absolute; top: 8px; right: 28px; width: 140px; background: transparent; border: 0"
                     ng-model="vm.q3" placeholder="Search Schedules..." />
-                <span style="position: absolute; top: 4px; right: 4px" class="fa hover-opacity" ng-class="{'fa-chevron-down': completedScheduleBlockListVisible, 'fa-chevron-up': !completedScheduleBlockListVisible}"
-                    md-ink-ripple title="Hide completed schedule blocks" ng-click="completedScheduleBlockListVisible = !completedScheduleBlockListVisible"></span>
+                <span style="position: absolute; top: 4px; right: 4px" class="fa hover-opacity" ng-class="{'fa-chevron-down': vm.showCompletedSBs, 'fa-chevron-up': !vm.showCompletedSBs}"
+                    md-ink-ripple title="Hide completed schedule blocks" ng-click="vm.showCompletedSBs = !vm.showCompletedSBs"></span>
                 <div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end" ng-click="$event.stopPropagation()"
                     style="cursor: default">
                     <span style="width: 100px" class="subheader-text">ID</span>
                     <span flex>Description</span>
-                    <div style="width: 97px; font-size: 10px" layout="column">
+                    <div style="width: 100px; font-size: 10px" layout="column">
                         <span>State</span>
                         <span>Outcome</span>
                     </div>
-                    <div style="width: 135px; font-size: 10px" layout="column">
+                    <div style="width: 120px; font-size: 10px" layout="column">
                         <span>Type</span>
                         <span>Desired Time</span>
                     </div>
@@ -71,16 +72,16 @@
                 </div>
             </md-toolbar>
 
-            <div style="padding: 0; max-height: 250px; min-height: 250px; overflow: auto" ng-show="completedScheduleBlockListVisible"
+            <div style="padding: 0; max-height: 250px; min-height: 250px; overflow: auto" ng-show="vm.showCompletedSBs"
                 class="md-whiteframe-z1">
                 <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray.id} | regexSearch:vm.completedFields:vm.q3 track by $index"
-                    class="schedule-draft-item" layout="column" ng-click="vm.setSelectedSchedule(item);$event.stopPropagation();">
+                    class="schedule-draft-item" layout="column" ng-click="vm.setSelectedSchedule(item); $event.stopPropagation()"
+                    ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedSchedule}">
 
                     <div layout="row" layout-align="start center" style="padding: 0 4px">
-
                         <div layout="column" layout-align="start" style="width: 120px">
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
+                                style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event); $event.stopPropagation()">{{item.id_code}}</span>
                             <span><i>{{item.owner}}</i></span>
                         </div>
                         <span flex style="overflow: hidden; text-overflow: ellipsis" title="{{item.description}}">{{item.description}}</span>
@@ -94,13 +95,13 @@
                         </div>
 
                         <md-menu style="padding: 0">
-                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu()"></span>
+                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
                             <md-menu-content>
                                 <md-menu-item>
-                                    <md-button ng-click="vm.viewSBTasklog(item)" title="View Progress output in a New Tab">View Progress</md-button>
+                                    <md-button ng-click="parent.vm.viewSBTasklog(item, 'progress')" title="View Progress output in a New Tab">View Progress</md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-click="vm.viewSBDryrun(item)" title="View Dryrun results in a New Tab">View Dryrun</md-button>
+                                    <md-button ng-click="parent.vm.viewSBTasklog(item, 'dryrun')" title="View Dryrun results in a New Tab">View Dryrun</md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
@@ -118,20 +119,18 @@
     </div>
 
     <div layout="column" style="margin-left: 8px">
-        <md-toolbar style="width: 450px; max-height: 48px; min-height: 48px" class="md-whiteframe-z1"
-            layout="column" layout-align="center center">
-            <div flex style="margin-left: 8px;" layout="row" layout-align="center center">
-                <span flex>Resources</span>
-            </div>
+        <md-toolbar style="width: 450px; max-height: 35px; min-height: 35px" class="md-whiteframe-z1" layout="column"
+            layout-align="center start">
+            <span style="margin-left: 8px">Resources</span>
         </md-toolbar>
-        <div flex class="schedule-block-resource-window md-whiteframe-z1" style="max-width: 450px; min-height: 320px; overflow: auto"
-            layout="column" layout-wrap>
+        <div flex class="schedule-block-resource-window md-whiteframe-z1" style="max-width: 450px; min-height: 284px; overflow: auto"
+            layout="row" layout-wrap layout-align="start start">
             <div flex="25" ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': resource.maintenance}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
                 layout-align="start center">
                 <div flex layout="column">
                     <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resource), 'maintenance-text': parent.vm.isResourceInMaintenance(resource)}">{{resource.name}}</span>
-                    <i style="font-size: 10px">{{resource.allocation}}</i>
+                    <i title="Schedule Block allocated to resource" style="font-size: 10px">{{resource.allocation}}</i>
                 </div>
                 <span style="width: 18px; padding: 6px 0" class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO"
                     md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance" title="Restart Maintenance Device"
@@ -141,13 +140,14 @@
                     ng-click="parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
             </div>
         </div>
-        <!-- <md-toolbar style="margin-left: 0; width: 450px; position: relative; margin-top: 8px" class="panel-toolbar-small md-whiteframe-z1">
+        <md-toolbar style="margin-left: 0; width: 450px; position: relative; margin-top: 8px" class="panel-toolbar-small md-whiteframe-z1">
             <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
                 <span>Schedule Block Details</span>
             </div>
-            <span style="position: absolute; top: 4px; right: 4px" class="fa hover-opacity" ng-class="{'fa-chevron-down': vm.sbDetailsVisible, 'fa-chevron-up': !vm.sbDetailsVisible}"
-                md-ink-ripple title="Hide schedule block detail" ng-click="vm.sbDetailsVisible = !vm.sbDetailsVisible"></span>
+            <span style="position: absolute; top: 4px; right: 4px" class="fa hover-opacity" ng-class="{'fa-chevron-down': vm.showSchedSBDetails, 'fa-chevron-up': !vm.showSchedSBDetails}"
+                md-ink-ripple title="Hide schedule block detail" ng-click="vm.showSchedSBDetails = !vm.showSchedSBDetails"></span>
         </md-toolbar>
-        <pre flex style="min-height: 300px" ng-show="vm.sbDetailsVisible" class="sb-details-pre md-whiteframe-z1" ng-bind-html='vm.selectedSchedule | prettifyJSON'></pre> -->
+        <pre flex style="max-width: 450px; min-height: 278px" ng-show="vm.showSchedSBDetails" class="sb-details-pre md-whiteframe-z1"
+            ng-bind-html='vm.selectedSchedule | prettifyJSON'></pre>
     </div>
 </div>

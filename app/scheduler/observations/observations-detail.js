@@ -4,20 +4,35 @@
         .controller('SubArrayObservationsDetail', SubArrayObservationsDetail);
 
     function SubArrayObservationsDetail($rootScope, $scope, $state, ObsSchedService, $stateParams, $mdDialog, $interval,
-                                        NotifyService, KatGuiUtil) {
+                                        NotifyService, KatGuiUtil, $localStorage) {
 
         var vm = this;
 
         vm.draftListProcessingServerCall = false;
         vm.scheduleListProcessingServerCall = false;
         vm.selectedSchedule = null;
-        vm.showEditMenu = false;
-        vm.showSBDetails = true;
         vm.modeTypes = ['queue', 'manual'];
-
         vm.scheduleData = ObsSchedService.scheduleData;
         vm.scheduleCompletedData = ObsSchedService.scheduleCompletedData;
         vm.subarray = $scope.$parent.vm.subarray;
+
+        vm.showSchedSBDetails = $localStorage.showSchedSBDetails;
+        vm.showCompletedSBs = $localStorage.showCompletedSBs;
+        if (!angular.isDefined(vm.showSchedSBDetails)) {
+            vm.showSchedSBDetails = true;
+        }
+        if (!angular.isDefined(vm.showCompletedSBs)) {
+            vm.showCompletedSBs = true;
+        }
+
+        $scope.$watch('vm.showSchedSBDetails', function (newValue) {
+            $localStorage.showSchedSBDetails = newValue;
+        });
+
+        $scope.$watch('vm.showCompletedSBs', function (newValue) {
+            $localStorage.showCompletedSBs = newValue;
+        });
+
         $scope.parent = $scope.$parent;
         vm.iAmAtLeastCA = $scope.$parent.vm.iAmAtLeastCA;
 
