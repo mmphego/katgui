@@ -1,8 +1,8 @@
-<md-virtual-repeat-container id="scheduleDataRepeat" flex md-theme="{{themePrimaryButtons}}" class="schedule-draft-data-list md-whiteframe-z2"
-    style="padding: 0; overflow: auto; min-height: 200px; max-height: 350px" ng-class="{'maintenance-bg':vm.subarray.maintenance}">
+<md-virtual-repeat-container id="scheduleDataRepeat" flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2"
+    ng-class="{'maintenance-bg':vm.subarray.maintenance}">
     <div md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray.id})"
-        style="padding: 0 4px" ng-class="{'selected-schedule-row': item === vm.selectedSchedule}"
-        class="schedule-draft-item" layout="row" layout-align="start center">
+        style="padding: 0 4px" ng-class="{'selected-schedule-row': item === vm.selectedSchedule}" class="schedule-draft-item"
+        layout="row" layout-align="start center">
 
         <md-progress-linear md-theme="green" ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
             md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
@@ -27,10 +27,10 @@
             <span>{{item.desired_start_time}}</span>
         </div>
         <span ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && !item.ready" style="width: 26px"></span>
-        <span class="icon-button fa fa-play green-color" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()" ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && item.ready"
-            title="Execute" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.executeSchedule(item)"></span>
-        <span class="icon-button fa fa-stop red-color" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()" ng-show="item.state === 'ACTIVE' && !item.pendingVerify"
-            title="Stop Execution" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.stopExecuteSchedule(item)"></span>
+        <span class="icon-button fa fa-play green-color" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()"
+            ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && item.ready" title="Execute" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.executeSchedule(item)"></span>
+        <span class="icon-button fa fa-stop red-color" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()"
+            ng-show="item.state === 'ACTIVE' && !item.pendingVerify" title="Stop Execution" ng-click="parent.vm.iAmAtLeastCA() && parent.vm.stopExecuteSchedule(item)"></span>
         <md-menu md-theme="{{themePrimaryButtons}}">
             <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu()"></span>
             <md-menu-content style="max-height: 475px">
@@ -42,10 +42,12 @@
                 </md-menu-item>
                 <md-menu-divider></md-menu-divider>
                 <md-menu-item>
-                    <md-button ng-disabled="item.type !== 'OBSERVATION' || item.pendingVerify || !parent.vm.iAmAtLeastCA()" ng-click="parent.vm.verifySB(item)">Verify Schedule</md-button>
+                    <md-button ng-disabled="item.type !== 'OBSERVATION' || item.pendingVerify || !parent.vm.iAmAtLeastCA()"
+                        ng-click="parent.vm.verifySB(item)">Verify Schedule</md-button>
                 </md-menu-item>
                 <md-menu-item>
-                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToDraft(item)" title="Move Schedule Block to Draft">Move to Draft</md-button>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToDraft(item)"
+                        title="Move Schedule Block to Draft">Move to Draft</md-button>
                 </md-menu-item>
                 <md-menu-item>
                     <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToFinished(item)"
@@ -59,7 +61,8 @@
                     <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSchedule(item)" title="Clone Schedule Block">Clone Schedule</md-button>
                 </md-menu-item>
                 <md-menu-item>
-                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndAssignSchedule(item)" title="{{'Clone and Assign to Subarray ' + vm.subarray.id}}">Clone and Assign Schedule</md-button>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndAssignSchedule(item)"
+                        title="{{'Clone and Assign to Subarray ' + vm.subarray.id}}">Clone and Assign Schedule</md-button>
                 </md-menu-item>
                 <md-menu-divider></md-menu-divider>
                 <md-menu-item>

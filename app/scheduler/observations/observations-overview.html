@@ -51,7 +51,7 @@
                         </div>
 
                     </md-toolbar>
-                    <div flex class="schedule-draft-data-list" ng-class="{'maintenance-bg':subarray.maintenance}">
+                    <div flex ng-class="{'maintenance-bg':subarray.maintenance}">
                         <div style="padding: 0 4px"
                              ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id} track by item.id"
                              class="schedule-draft-item" layout="column">

@@ -12,6 +12,7 @@
         vm.scheduleListProcessingServerCall = false;
         vm.selectedSchedule = null;
         vm.showEditMenu = false;
+        vm.showSBDetails = true;
         vm.modeTypes = ['queue', 'manual'];
 
         vm.scheduleData = ObsSchedService.scheduleData;
@@ -23,11 +24,11 @@
         if (!$scope.$parent.vm.subarray) {
             $scope.$parent.vm.waitForSubarrayToExist().then(function () {
                 vm.subarray = $scope.$parent.vm.subarray;
-                ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 30);
+                ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;
-            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 30);
+            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
         }
 
         vm.completedFields = [
@@ -122,7 +123,7 @@
         };
 
         vm.cancelListeningToCompletedUpdates = $rootScope.$on('sb_completed_change',function () {
-            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 30);
+            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
         });
 
         $scope.$on('$destroy', function () {

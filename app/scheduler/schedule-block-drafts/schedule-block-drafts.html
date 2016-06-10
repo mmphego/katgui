@@ -56,7 +56,7 @@
                 </span>
                 </div>
             </md-toolbar>
-            <md-virtual-repeat-container ng-click="showDatePicker = false" class="schedule-draft-data-list" style="direction: rtl; overflow: auto" flex>
+            <md-virtual-repeat-container ng-click="showDatePicker = false" style="direction: rtl; overflow: auto" flex>
                 <div
                     md-virtual-repeat="item in filteredDraftItems = (vm.scheduleDraftData | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:vm.draftsOrderBy:vm.draftsOrderBy.reverse)"
                      layout="column">
@@ -135,8 +135,7 @@
             </md-virtual-repeat-container>
         </div>
 
-        <div layout="column" style="max-width: 400px;min-width: 400px;" ng-click="showDatePicker = false"
-             ng-class="{'highlight-script-window-with-box-shadow': vm.selectedScheduleDraft !== null,'script-window-without-box-shadow': vm.selectedScheduleDraft === null}">
+        <div layout="column" style="max-width: 400px;min-width: 400px;" ng-click="showDatePicker = false">
             <md-toolbar class="panel-toolbar-small md-whiteframe-z1">
                 <div flex style="margin: 8px;" layout="row" layout-align="start center">
                     <span style="cursor: pointer;">Schedule Block Details</span>

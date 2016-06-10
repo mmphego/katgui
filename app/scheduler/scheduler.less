@@ -29,31 +29,6 @@
     padding: 0;
 }
 
-.schedule-list {
-    z-index: 1;
-    position: relative;
-    padding: 0;
-    margin-bottom: 5px;
-    margin-left: 8px;
-    overflow: auto;
-
-    input {
-        width: 100%;
-    }
-}
-
-.schedule-draft-data-list {
-    z-index: 0;
-    position: relative;
-    padding: 0;
-    overflow: auto !important;
-    min-height: 100%;
-
-    input {
-        width: 100%;
-    }
-}
-
 .schedule-block-id-text {
     font-size: 14px;
     font-weight: bold;
@@ -103,7 +78,7 @@
 .selected-resource-item {
     background: #B3E5FC !important;
     font-style: italic;
-    
+
     span.resource-name {
         color: #333333;
     }
@@ -308,29 +283,12 @@
     overflow: auto;
 }
 
-.schedule-block-completed-list {
-    z-index: 1;
-    position: relative;
-    padding: 0;
-    margin-left: 8px;
-    overflow: hidden;
-}
-
-.schedule-block-complete-list-min-height {
-    max-height: 450px;
-    min-height: 450px;
-}
-
 .scheduler-nav-home-item {
     margin: 32px !important;
     cursor: pointer;
     height: 100px;
     min-width: 100px;
     max-width: 100px;
-}
-
-.whiteframe-z1-left {
-    box-shadow: -6px 6px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
 .invalid-date-error {
@@ -650,4 +608,11 @@
         margin: 0 2px;
         position: relative;
     }
+}
+
+.sb-details-pre {
+    margin: 0;
+    overflow: auto;
+    white-space: pre-wrap;
+    border-radius: 0;
 }

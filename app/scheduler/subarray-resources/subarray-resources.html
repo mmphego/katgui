@@ -136,7 +136,7 @@
                     <input class="search-input-box unselectable" type="search" style="width: 140px;" ng-model-options="{ debounce: 300 }"
                         ng-model="vm.q" placeholder="Search Resources..." />
                 </md-toolbar>
-                <div flex style="overflow: auto" layout="column" layout-wrap style="overflow-y: auto">
+                <div flex style="overflow: auto" layout="column" layout-wrap>
                     <div style="max-height: 80px; position: relative; cursor: pointer" flex="25" class="resource-item" layout="row"
                         layout-align="start center" ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
                         ng-class="{'selected-resource-item': resource.selected, 'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource), 'faulty-border': parent.vm.isResourceFaulty(resource)}"

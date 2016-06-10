@@ -80,6 +80,7 @@
         $rootScope.themePrimaryButtons = theme.primaryButtons;
         $rootScope.expertOrLO = false;
         $rootScope.showVideoLinks = false;
+        $rootScope.connectedToMonitor = false;
 
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {
@@ -158,7 +159,6 @@
 
             vm.currentUser = null;
             vm.userRoles = USER_ROLES;
-            vm.connectionToMonitorLost = false;
             $rootScope.alarmsData = AlarmsService.alarmsData;
             $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
             $rootScope.interlockState = MonitorService.interlockState;
@@ -201,24 +201,17 @@
             }
             return false;
         };
-        $rootScope.isNavbarVisible = function () {
-            return vm.showNavbar;
-        };
         $rootScope.connectEvents = function () {
             MonitorService.connectListener()
                 .then(function () {
-                    if (vm.connectMonitorInterval) {
-                        $interval.cancel(vm.connectMonitorInterval);
-                        vm.connectMonitorInterval = null;
-                        vm.connectionToMonitorLost = false;
+                    if ($rootScope.connectedToMonitor) {
                         $log.info('Reconnected Monitor Connection.');
+                    } else {
+                        $timeout($rootScope.connectEvents, 3000);
                     }
                 }, function () {
-                    $log.error('Could not establish Monitor connection. Retrying every 10 seconds.');
-                    if (!vm.connectMonitorInterval) {
-                        vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
-                        vm.connectionToMonitorLost = true;
-                    }
+                    $log.error('Could not establish Monitor connection. Retrying again in 3 seconds.');
+                    $timeout($rootScope.connectEvents, 3000);
                 });
             vm.handleMonitorSocketTimeout();
         };
@@ -230,11 +223,7 @@
                 .then(function () {
                     if (!vm.disconnectIssued) {
                         $log.info('Monitor connection timeout! Attempting to reconnect...');
-                        if (!vm.connectMonitorInterval) {
-                            vm.connectMonitorInterval = $interval($rootScope.connectEvents, 10000);
-                            vm.connectionToMonitorLost = true;
-                            $rootScope.connectEvents();
-                        }
+                        $timeout($rootScope.connectEvents, 3000);
                     }
                 });
         };
