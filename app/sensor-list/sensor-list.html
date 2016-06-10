@@ -46,15 +46,8 @@
                               style="margin-right: 4px;"></span>
                     </span>
                     <span class="subheader-text resource-sensor-time-item"
-                          ng-click="vm.setSensorsOrderBy('timestamp')">
-                        <span>Timestamp</span>
-                        <span class="fa"
-                              ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'timestamp' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'timestamp' && vm.sensorsOrderBy.reverse}"
-                              style="margin-right: 4px;"></span>
-                    </span>
-                    <span class="subheader-text resource-sensor-time-item"
                           ng-click="vm.setSensorsOrderBy('received_timestamp')">
-                        <span style="font-style: italic">Received Timestamp</span>
+                        <span>Received Timestamp</span>
                         <span class="fa"
                               ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'received_timestamp' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'received_timestamp' && vm.sensorsOrderBy.reverse}"
                               style="margin-right: 4px;"></span>
@@ -82,8 +75,7 @@
                     ng-class="{'selected-for-chart-row': sensor.selectedForChart}" layout="row" layout-align="start center">
                     <span title="{{sensor.description}}" class="resource-sensor-name">{{sensor.name}}</span>
                     <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
-                    <span class="resource-sensor-time-item">{{sensor.timestamp}}</span>
-                    <span style="font-size: 12px; font-style: italic" class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
+                    <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
                     <span title="{{sensor.value}}" class="resource-sensor-value-item" ng-click="vm.displaySensorValue($event, sensor); $event.stopPropagation();">{{sensor.value}}</span>
                 <!-- </div> -->
                 </div>

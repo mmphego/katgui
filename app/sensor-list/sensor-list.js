@@ -214,7 +214,7 @@
         };
 
         vm.displaySensorValue = function ($event, sensor) {
-            NotifyService.showPreDialog(sensor.parentName + '_' + sensor.python_identifier + ' (' + sensor.status + ') at ' + sensor.timestamp, sensor.value, $event);
+            NotifyService.showHTMLPreSensorDialog(sensor.parentName + '_' + sensor.python_identifier + ' value at ' + sensor.received_timestamp, sensor, $event);
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {

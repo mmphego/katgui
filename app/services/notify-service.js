@@ -121,7 +121,7 @@
                             $mdDialog.hide();
                         };
                     },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label=''>" +
+                    template: "<md-dialog style='padding: 0; max-width: 95%; max-height: 95%' md-theme='{{$root.themePrimary}}' aria-label=''>" +
                     "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
                     "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span style='margin:8px'>{{title}}</span></md-toolbar>" +
                     "<div flex><pre>{{content}}</pre></div>" +
@@ -247,6 +247,43 @@
                 });
 
             $log.info('Showing dialog, title: ' + title + ', message: ' + content);
+        };
+
+        api.showHTMLPreSensorDialog = function (title, sensor, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = title;
+                        $scope.sensor = sensor;
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+
+                        $scope.sensorClass = function (status) {
+                            return status + '-sensor-list-item';
+                        };
+                    },
+                    template: [
+                        "<md-dialog style='padding: 0; max-width: 95%; max-height: 95%' md-theme='{{$root.themePrimary}}' aria-label=''>",
+                            "<div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >",
+                                "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>",
+                                "<pre flex style='text-align: center' title='Sensor value'>{{sensor.value}}</pre>",
+                                "<div flex layout='row' layout-align='start' class='resource-sensor-item' title='{{sensor.name}}'>",
+                                    "<span style='width: 310px; overflow: hidden; text-overflow: ellipsis'>{{sensor.parentName + '_' + sensor.python_identifier}}</span>",
+                                    "<span class='resource-sensor-status-item' ng-class='sensorClass(sensor.status)' title='Sensor status'>{{sensor.status}}</span>",
+                                    "<span class='resource-sensor-time-item' title='Received Timestamp)'>{{sensor.received_timestamp}}</span>",
+                                    "<span class='resource-sensor-time-item' title='Value Changed Timestamp)'>{{sensor.timestamp}}</span>",
+                                "</div>",
+                            "</div>",
+                                "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>",
+                                    "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>",
+                                "</div>",
+                            "</div>",
+                        "</md-dialog>"].join(''),
+                    targetEvent: event
+                });
+
+            $log.info('Showing dialog, title: ' + title + ', message: ' + sensor.value);
         };
 
         return api;
