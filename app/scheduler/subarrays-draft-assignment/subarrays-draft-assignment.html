@@ -17,9 +17,9 @@
                             <span ng-show="vm.subarray.maintenance">{{"- in maintenance"}}</span>
                             </span>
                         </md-button>
-                        <md-menu-content style="padding: 8px;">
+                        <md-menu-content>
                             <md-menu-item ng-repeat="subarray in parent.vm.subarrays | orderBy:'id' track by $index">
-                                <md-button ng-click="parent.vm.stateGo('scheduler.subarrays', subarray.id)">Subarray {{subarray.id}}></md-button>
+                                <md-button ng-click="parent.vm.stateGo('scheduler.subarrays', subarray.id)">Subarray {{subarray.id}}</md-button>
                             </md-menu-item>
                         </md-menu-content>
                     </md-menu>

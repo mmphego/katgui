@@ -1,4 +1,4 @@
-<div flex layout="row" style="min-width: 1000px; min-height: 600px; padding: 0 8px 8px 8px" ng-controller="SubArrayObservationsDetail as vm">
+<div flex layout="row" style="min-width: 1000px; min-height: 650px; padding: 0 8px 8px 8px" ng-controller="SubArrayObservationsDetail as vm">
 
     <div flex layout="column">
         <div flex style="min-height: 150px;" layout="column">
@@ -60,20 +60,20 @@
                     style="cursor: default">
                     <span style="width: 100px" class="subheader-text">ID</span>
                     <span flex>Description</span>
-                    <div style="width: 100px; font-size: 10px" layout="column">
+                    <div style="width: 99px; font-size: 10px" layout="column">
                         <span>State</span>
                         <span>Outcome</span>
                     </div>
-                    <div style="width: 120px; font-size: 10px" layout="column">
+                    <div style="width: 121px; font-size: 10px" layout="column">
                         <span>Type</span>
                         <span>Desired Time</span>
                     </div>
-                    <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleDataRepeat', true)"></div>
+                    <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleCompleteDataRepeat')"></div>
                 </div>
             </md-toolbar>
 
             <div style="padding: 0; max-height: 250px; min-height: 250px; overflow: auto" ng-show="vm.showCompletedSBs"
-                class="md-whiteframe-z1">
+                class="md-whiteframe-z1" id="scheduleCompleteDataRepeat">
                 <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray.id} | regexSearch:vm.completedFields:vm.q3 track by $index"
                     class="schedule-draft-item" layout="column" ng-click="vm.setSelectedSchedule(item); $event.stopPropagation()"
                     ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedSchedule}">

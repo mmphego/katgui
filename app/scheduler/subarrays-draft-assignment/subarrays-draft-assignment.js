@@ -13,8 +13,8 @@
         vm.scheduleData = ObsSchedService.scheduleData;
 
         if (!$scope.$parent.vm.subarray) {
-            $scope.$parent.vm.waitForSubarrayToExist().then(function () {
-                vm.subarray = $scope.$parent.vm.subarray;
+            $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
+                vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;

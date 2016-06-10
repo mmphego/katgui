@@ -37,8 +37,8 @@
         vm.iAmAtLeastCA = $scope.$parent.vm.iAmAtLeastCA;
 
         if (!$scope.$parent.vm.subarray) {
-            $scope.$parent.vm.waitForSubarrayToExist().then(function () {
-                vm.subarray = $scope.$parent.vm.subarray;
+            $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
+                vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
                 ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
             });
         } else {

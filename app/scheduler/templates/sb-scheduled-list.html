@@ -17,7 +17,7 @@
                 style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
             <span><i>{{item.owner}}</i></span>
         </div>
-        <span flex style="overflow: hidden; text-overflow: ellipsis;" title="{{item.description}}">{{item.description}}</span>
+        <span flex style="overflow: hidden; text-overflow: ellipsis; margin-right: 4px" title="{{item.description}}">{{item.description}}</span>
         <span style="width: 75px">{{item.state}}</span>
         <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin: 0 4px">
             <span style="width: 75px" ng-class="{'green-color': item.ready, 'red-color': !item.ready}">{{item.ready? 'READY' : 'NOT READY'}}</span>

@@ -13,8 +13,8 @@
         vm.resources_faulty = ObsSchedService.resources_faulty;
         vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
         if (!$scope.$parent.vm.subarray) {
-            $scope.$parent.vm.waitForSubarrayToExist().then(function () {
-                vm.subarray = $scope.$parent.vm.subarray;
+            $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
+                vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;

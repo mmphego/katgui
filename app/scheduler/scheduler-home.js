@@ -112,7 +112,7 @@
         vm.waitForSubarrayToExist = function () {
             if (vm.subarray) {
                 $timeout(function () {
-                    vm.waitForSubarrayToExistDeferred.resolve();
+                    vm.waitForSubarrayToExistDeferred.resolve($stateParams.subarray_id);
                 }, 1);
             } else {
                 vm.waitForSubarrayToExistInterval = $interval(function () {
@@ -120,7 +120,7 @@
                         vm.checkCASubarrays();
                     }
                     if (vm.subarray) {
-                        vm.waitForSubarrayToExistDeferred.resolve();
+                        vm.waitForSubarrayToExistDeferred.resolve($stateParams.subarray_id);
                         $interval.cancel(vm.waitForSubarrayToExistInterval);
                         vm.waitForSubarrayToExistInterval = null;
                     }
