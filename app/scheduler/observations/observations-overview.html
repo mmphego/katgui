@@ -12,7 +12,7 @@
                         ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
                         layout="row" layout-align="center center" title="{{subarray.description}}"
                         style="max-height: 64px; min-height: 64px; position: relative"
-                        ng-click="parentScope.vm.stateGo('scheduler.observations.detail', subarray.id)">
+                        ng-click="parent.vm.stateGo('scheduler.observations.detail', subarray.id)">
                         <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
                             <span><b>{{subarray.state}}</b></span>
                             <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>

@@ -1,4 +1,4 @@
-<div ng-controller="ProcessControlCtrl as vm" layout="column" layout-wrap layout-align="start center">
+<div ng-controller="ProcessControlCtrl as vm" layout="column" layout-wrap layout-align="start start">
     <div ng-repeat="nm_key in $root.objectKeys(vm.detailedProcesses) | orderBy:nm_key track by nm_key" style="margin: 8px; min-width: 320px; max-width: 320px">
         <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center"
                     ng-init="vm[nm_key + 'showDetails'] = true">

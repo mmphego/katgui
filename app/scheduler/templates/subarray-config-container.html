@@ -2,16 +2,16 @@
      <md-menu>
          <span ng-disabled="!$root.expertOrLO" title="Control Authority"
             ng-click="$root.expertOrLO && $mdOpenMenu()" md-ink-ripple>
-             <i>CA: </i><b>{{vm.subarray.delegated_ca}}</b>
+             <i>CA: </i><b>{{parent.vm.subarray.delegated_ca}}</b>
          </span>
          <md-menu-content>
              <md-menu-item>
-                 <md-button ng-click="parentScope.vm.delegateControl('lo')">
+                 <md-button ng-click="parent.vm.delegateControl('lo')">
                      Lead Operator
                  </md-button>
              </md-menu-item>
-             <md-menu-item ng-repeat="user in parentScope.vm.users | orderBy:'email' track by $index">
-                 <md-button ng-click="parentScope.vm.delegateControl(user.email)">
+             <md-menu-item ng-repeat="user in parent.vm.users | orderBy:'email' track by $index">
+                 <md-button ng-click="parent.vm.delegateControl(user.email)">
                      {{user.email}}
                  </md-button>
              </md-menu-item>
@@ -23,8 +23,8 @@
              <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
          </span>
          <md-menu-content>
-             <md-menu-item ng-repeat="band in parentScope.vm.bands | orderBy:band track by $index">
-                 <md-button ng-click="parentScope.vm.setBand(band)">
+             <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
+                 <md-button ng-click="parent.vm.setBand(band)">
                      {{band}}
                  </md-button>
              </md-menu-item>
@@ -37,12 +37,12 @@
          </span>
          <md-menu-content>
              <md-menu-item>
-                 <md-button ng-click="parentScope.vm.setProduct('')">
+                 <md-button ng-click="parent.vm.setProduct('')">
                      None
                  </md-button>
              </md-menu-item>
-             <md-menu-item ng-repeat="product in parentScope.vm.products | orderBy:product:true track by $index">
-                 <md-button ng-click="parentScope.vm.setProduct(product)">
+             <md-menu-item ng-repeat="product in parent.vm.products | orderBy:product:true track by $index">
+                 <md-button ng-click="parent.vm.setProduct(product)">
                      {{product}}
                  </md-button>
              </md-menu-item>

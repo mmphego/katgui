@@ -21,8 +21,8 @@
                                 </span>
                             </md-button>
                             <md-menu-content style="padding: 8px;">
-                                <md-menu-item ng-repeat="subarray in parentScope.vm.subarrays | orderBy:'id' track by $index">
-                                    <md-button ng-click="parentScope.vm.stateGo('scheduler.observations.detail', subarray.id)">
+                                <md-menu-item ng-repeat="subarray in parent.vm.subarrays | orderBy:'id' track by $index">
+                                    <md-button ng-click="parent.vm.stateGo('scheduler.observations.detail', subarray.id)">
                                         <span>Subarray {{subarray.id}}</span>
                                     </md-button>
                                 </md-menu-item>
@@ -30,7 +30,7 @@
                         </md-menu>
 
                         <span flex></span>
-                        <md-button ng-show="$root.expertOrLO || parentScope.vm.iAmCA" class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()"
+                        <md-button ng-show="$root.expertOrLO || parent.vm.iAmCA" class="md-icon-button inline-action-button" ng-click="vm.freeSubarray()"
                                    title="Free Subarray">
                             <md-icon class="fa" md-font-icon="fa-recycle"></md-icon>
                         </md-button>
@@ -40,7 +40,7 @@
                         </md-button>
                         <span style="font-size: 18px; margin-right: 4px">MODE: </span>
                         <span style="margin-right: 8px"><b>{{vm.subarray.mode}}</b></span>
-                        <md-menu ng-show="!item.pendingVerify && ($root.expertOrLO || parentScope.vm.iAmCA)" md-theme="{{themePrimaryButtons}}" style="padding: 0 4px; margin: 0">
+                        <md-menu ng-show="!item.pendingVerify && ($root.expertOrLO || parent.vm.iAmCA)" md-theme="{{themePrimaryButtons}}" style="padding: 0 4px; margin: 0">
                             <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu();"
                                        style="margin: 0">
                                 <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
@@ -114,13 +114,13 @@
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                   style="text-transform: uppercase; width: 105px">{{item.type}}</span>
                             <span style="width: 140px;">{{item.desired_start_time}}</span>
-                            <md-button md-theme="green" class="md-primary md-icon-button inline-action-button" ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && item.ready && ($root.expertOrLO || parentScope.vm.iAmCA)"
+                            <md-button md-theme="green" class="md-primary md-icon-button inline-action-button" ng-show="item.state !== 'ACTIVE' && !item.pendingVerify && item.ready && ($root.expertOrLO || parent.vm.iAmCA)"
                                        ng-click="vm.executeSchedule(item, $event)" style="margin: 0px 8px"
                                        title="Execute">
                                 <md-icon class="fa" md-font-icon="fa-play"></md-icon>
                             </md-button>
                             <span ng-show="(item.state !== 'ACTIVE' && !item.pendingVerify && !item.ready)" style="min-width: 48px"></span>
-                            <md-button md-theme="red" class="md-primary md-icon-button inline-action-button" ng-show="item.state === 'ACTIVE' && !item.pendingVerify && ($root.expertOrLO || parentScope.vm.iAmCA)"
+                            <md-button md-theme="red" class="md-primary md-icon-button inline-action-button" ng-show="item.state === 'ACTIVE' && !item.pendingVerify && ($root.expertOrLO || parent.vm.iAmCA)"
                                        ng-click="vm.stopExecuteSchedule(item)" style="margin: 0px 8px"
                                        title="Stop Execution">
                                 <md-icon class="fa" md-font-icon="fa-stop"></md-icon>
@@ -137,19 +137,19 @@
                                     <md-menu-item>
                                         <md-button ng-click="vm.viewSBTaskLog(item)" title="View Progress in a New Tab">View Progress</md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION' && ($root.expertOrLO || parentScope.vm.iAmCA)">
+                                    <md-menu-item ng-if="item.loadMenuContents && item.type == 'OBSERVATION' && ($root.expertOrLO || parent.vm.iAmCA)">
                                         <md-button ng-disabled="!item.sub_nr" ng-click="vm.verifySB(item)">Verify Schedule</md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="item.loadMenuContents && ($root.expertOrLO || parentScope.vm.iAmCA)">
+                                    <md-menu-item ng-if="item.loadMenuContents && ($root.expertOrLO || parent.vm.iAmCA)">
                                         <md-button ng-click="vm.moveScheduleRowToDraft(item)" title="Move Schedule Block to Draft">Move to Draft</md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="$root.expertOrLO || parentScope.vm.iAmCA">
+                                    <md-menu-item ng-if="$root.expertOrLO || parent.vm.iAmCA">
                                         <md-button ng-click="vm.setPriority(item, $event)" title="Set Schedule Block's Priority">Set Priority</md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="$root.expertOrLO || parentScope.vm.iAmCA">
+                                    <md-menu-item ng-if="$root.expertOrLO || parent.vm.iAmCA">
                                         <md-button ng-click="vm.moveScheduleRowToFinished(item)" title="Move Schedule Block to Complete">Move To Completed</md-button>
                                     </md-menu-item>
-                                    <md-menu-item ng-if="$root.expertOrLO || parentScope.vm.iAmCA">
+                                    <md-menu-item ng-if="$root.expertOrLO || parent.vm.iAmCA">
                                         <md-button ng-click="vm.cancelExecuteSchedule(item)" title="Cancel Schedule Block Execution">Cancel Execution</md-button>
                                     </md-menu-item>
                                 </md-menu-content>
@@ -225,7 +225,7 @@
                                     <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                                 </md-button>
                                 <md-menu-content style="padding: 8px;">
-                                    <md-menu-item ng-if="$root.expertOrLO || parentScope.vm.iAmCA">
+                                    <md-menu-item ng-if="$root.expertOrLO || parent.vm.iAmCA">
                                         <md-button ng-click="vm.cloneSchedule(item)">Clone SB</md-button>
                                     </md-menu-item>
                                     <md-menu-item>
@@ -266,11 +266,11 @@
                             </span>
                             <span flex style="font-size:18px; margin-left: 4px;"
                                   ng-class="{'error-text':resource.faulty, 'maintenance-text':resource.maintenance}">{{resource.name}}<i style="font-size: 12px;"> - {{resource.allocation}}</i></span>
-                            <md-button ng-show="vm.subarray.maintenance && resource.maintenance && ($root.expertOrLO || parentScope.vm.iAmCA)" class="md-icon-button inline-action-button" ng-click="vm.listResourceMaintenanceDevicesDialog(vm.subarray, resource, $event); $event.stopPropagation()"
+                            <md-button ng-show="vm.subarray.maintenance && resource.maintenance && ($root.expertOrLO || parent.vm.iAmCA)" class="md-icon-button inline-action-button" ng-click="vm.listResourceMaintenanceDevicesDialog(vm.subarray, resource, $event); $event.stopPropagation()"
                                        title="Restart Maintenance Device" style="margin: 0">
                                 <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
                             </md-button>
-                            <md-button ng-show="$root.expertOrLO || parentScope.vm.iAmCA" class="md-icon-button inline-action-button" ng-show="!item.pendingVerify" style="margin: 0"
+                            <md-button ng-show="$root.expertOrLO || parent.vm.iAmCA" class="md-icon-button inline-action-button" ng-show="!item.pendingVerify" style="margin: 0"
                                        ng-click="vm.markResourceFaulty(resource)" title="Mark Resource As Faulty">
                                 <md-icon class="fa" md-font-icon="fa-exclamation-circle"></md-icon>
                             </md-button>

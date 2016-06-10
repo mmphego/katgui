@@ -1,0 +1,15 @@
+<div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end" ng-click="$event.stopPropagation()"
+    style="cursor: default">
+    <span style="width: 100px" class="subheader-text">ID</span>
+    <span flex>Description</span>
+    <span style="width: 80px">State</span>
+    <div style="width: 97px; font-size: 10px" layout="column">
+        <span>Ready</span>
+        <span>Verification State</span>
+    </div>
+    <div style="width: 148px; font-size: 10px" layout="column">
+        <span>Type</span>
+        <span>Desired Time</span>
+    </div>
+    <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleDataRepeat', true)"></div>
+</div>

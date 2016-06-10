@@ -806,9 +806,14 @@ pre {
     transition: opacity .25s ease-in-out;
     display: inline-block;
     text-align: center;
-    &:hover:enabled {
+    &:hover {
         opacity: 0.7;
     }
+
+}
+
+.icon-button:hover[disabled] {
+    opacity: 0.2;
 }
 
 *[disabled] {
@@ -816,7 +821,7 @@ pre {
 }
 
 .opaque {
-    opacity: 1.0;
+    opacity: 1.0 !important;
 }
 
 .thin-nav-button {
