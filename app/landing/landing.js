@@ -44,6 +44,10 @@
         vm.dashboardModel = $localStorage[vm.name];
         vm.collapsible = false;
 
+        vm.dashboardWidgets = [{
+            templateUrl: 'app/widgets/navigation/navigation-widget-blocks.html'
+        }];
+
         $scope.$on('adfDashboardChanged', function (event, name, model) {
             $localStorage[name] = model;
             vm.dashboardModel = model;

@@ -1,4 +1,8 @@
-<div class="view-container" ng-controller="LandingCtrl as vm">
-    <a class="btn-delete-dashboard-pref" ng-click="vm.deleteDashboardLocalStorage()"><span class="fa fa-trash-o"></span></a>
-    <adf-dashboard name="{{name}}" adf-model="vm.dashboardModel"></adf-dashboard>
+<div ng-controller="LandingCtrl as vm" layout="column" layout-wrap layout-align="start center" flex>
+    <!-- <a class="btn-delete-dashboard-pref" ng-click="vm.deleteDashboardLocalStorage()"><span class="fa fa-trash-o"></span></a> -->
+    <!-- <adf-dashboard name="{{name}}" adf-model="vm.dashboardModel"></adf-dashboard> -->
+
+    <div flex ng-repeat="widget in vm.dashboardWidgets track by $index" style="padding-top: 8px; min-width: 100%">
+        <div ng-include="widget.templateUrl"></div>
+    </div>
 </div>
