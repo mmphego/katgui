@@ -232,12 +232,14 @@
 }
 
 .receptor-status-block {
-    min-width: 75px;
-    max-width: 75px;
-    min-height: 60px;
-    max-height: 60px;
+    min-width: 115px;
+    max-width: 115px;
+    min-height: 100px;
+    max-height: 100px;
     margin: 2px;
     display: inline-table;
+    position: relative;
+    border: 5px solid transparent;
     div {
         min-height: 20px;
     }
@@ -502,9 +504,9 @@
 .receptor-graphic-svg {
     display: -webkit-inline-box;
     max-width: 190px;
-    max-height: 220px;
     min-width: 190px;
     min-height: 220px;
+    max-height: 220px;
     svg {
         transform: scale(0.6) translate(-190px, -160px);
         pointer-events: none;
@@ -517,14 +519,19 @@
 
 .receptor-svg-container {
     border: 5px solid transparent;
+    overflow: hidden;
 }
 
 .receptor-svg-container-faulty {
     border: 5px solid #F44336;
+    overflow: hidden;
 }
 
 .receptor-graphic-sensors-nominal {
     color: #4CAF50;
+    .receptor-status-content {
+        background-color: #4CAF50;
+    }
     path {
         stroke: #4CAF50 !important; //green
     }
@@ -537,6 +544,9 @@
 
 .receptor-graphic-sensors-warn {
     color: #FFC107;
+    .receptor-status-content {
+        background-color: #FFC107;
+    }
     path {
         stroke: #4CAF50 !important; //green
     }
@@ -549,6 +559,9 @@
 
 .receptor-graphic-sensors-error {
     color: #F44336;
+    .receptor-status-content {
+        background-color: #F44336;
+    }
     path {
         stroke: #F44336 !important; //red
     }
@@ -581,6 +594,14 @@
     }
 }
 
+.receptor-status-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
 .receptor-graphic-name {
     position: absolute;
     top: 8px;
@@ -600,7 +621,6 @@
         padding: 0px 4px;
     }
 }
-
 
 .node {
   cursor: pointer;

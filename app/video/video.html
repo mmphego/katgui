@@ -11,8 +11,8 @@
          ng-class="{'transparent-legend':transparentButton && !showControls}">
         <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showControls = true" ng-click="showControls = !showControls"
                    ng-mouseenter="transparentButton = false" ng-mouseleave="transparentButton = true" class="md-fab md-mini md-primary">
-            <md-icon class="fa center-md-icon" ng-if="!showControls" md-font-icon="fa-caret-up"></md-icon>
-            <md-icon class="fa center-md-icon" ng-if="showControls" md-font-icon="fa-caret-down"></md-icon>
+            <md-icon class="fa" ng-if="!showControls" md-font-icon="fa-caret-up"></md-icon>
+            <md-icon class="fa" ng-if="showControls" md-font-icon="fa-caret-down"></md-icon>
         </md-button>
         <div class="md-whiteframe-z3" layout="column" ng-show="showControls" style="padding: 8px; background: rgba(255,255,255,0.5)">
             <div md-theme="{{themePrimaryButtons}}" class="video-pan-controls" layout="row">
