@@ -7,23 +7,6 @@
                     ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z1" layout="row"
                     layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 56px; min-height: 56px; position: relative;">
                     <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
-                    <md-menu style="margin: 0; padding: 0;">
-                        <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu(); $event.stopPropagation()"
-                            style="font-size: inherit">
-                            <span class="fa fa-chevron-down subarray-select-chevron" style="top: 6px"></span>
-                            <span style="margin-left: 14px;">
-                                SUBARRAY {{vm.subarray.id}} -
-                                <span><b>{{vm.subarray.state}}</b></span>
-                            <span ng-show="vm.subarray.maintenance">{{"- in maintenance"}}</span>
-                            </span>
-                        </md-button>
-                        <md-menu-content>
-                            <md-menu-item ng-repeat="subarray in parent.vm.subarrays | orderBy:'id' track by $index">
-                                <md-button ng-click="parent.vm.stateGo('scheduler.subarrays', subarray.id)">Subarray {{subarray.id}}</md-button>
-                            </md-menu-item>
-                        </md-menu-content>
-                    </md-menu>
-                    <span flex></span>
                     <div flex class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end">
                         <span style="width: 100px" ng-click="vm.setDraftsOrderBy('id_code')">
                             ID
@@ -55,6 +38,23 @@
                         </div>
                         <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleDraftDataRepeat', true)"></div>
                     </div>
+                    <md-menu>
+                        <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                            style="font-size: inherit">
+                            <span class="fa fa-chevron-down subarray-select-chevron" style="top: 6px"></span>
+                            <span style="margin-left: 14px;">
+                                SUBARRAY {{vm.subarray.id}} -
+                                <span><b>{{vm.subarray.state}}</b></span>
+                            <span ng-show="vm.subarray.maintenance">{{"- in maintenance"}}</span>
+                            </span>
+                        </md-button>
+                        <md-menu-content>
+                            <md-menu-item ng-repeat="subarray in parent.vm.subarrays | orderBy:'id' track by $index">
+                                <md-button ng-click="parent.vm.stateGo('scheduler.subarrays', subarray.id)">Subarray {{subarray.id}}</md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
+                    <span flex></span>
                 </md-toolbar>
                 <md-virtual-repeat-container id="scheduleDraftDataRepeat" md-theme="{{themePrimary}}" flex class="md-whiteframe-z2"
                     ng-class="{'maintenance-bg':vm.subarray.maintenance}">
@@ -85,7 +85,7 @@
                         <span class="icon-button fa fa-chevron-right" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()" title="Unassign Schedule Blocks"
                             ng-click="parent.vm.iAmAtLeastCA() && vm.freeScheduleBlock(item)"></span>
                         <md-menu>
-                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu()"></span>
+                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
                             <md-menu-content>
                                 <md-menu-item>
                                     <md-button ng-click="parent.vm.viewSBTasklog(item, 'dryrun')">View Dryrun</md-button>
@@ -101,15 +101,14 @@
             <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" style="min-height: 100%; max-width: 41px; min-width: 41px; margin: 2px 0 0 4px"
                 ng-disabled="!parent.vm.iAmAtLeastCA() || vm.selectedSBs.length === 0" ng-click="vm.assignSelectedScheduleBlocks()"
                 title="Assign Schedule Blocks to Subarray">
-                <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
+                <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto"></md-icon>
             </md-button>
         </div>
         <div layout="column" style="padding-right: 4px">
             <md-toolbar ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" style="margin-top: 8px" class="md-whiteframe-z1 md-toolbar-tools-medium"
-                layout="row" layout-align="center center" title="{{vm.subarray.description}}" ng-click="parent.vm.stateGo('scheduler.observations.detail')"
-                title="Click to view scheduling details">
-                <span flex style="margin-top: -5px;">Observations</span>
+                layout="row" layout-align="center center" title="{{vm.subarray.description}}">
                 <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'"></div>
+                <span md-ink-ripple flex title="Click to view scheduling details" style="margin-top: -5px;" ng-click="parent.vm.stateGo('scheduler.observations.detail')">Observations</span>
             </md-toolbar>
             <div layout="column" style="min-height: 200px" ng-include="'app/scheduler/templates/sb-scheduled-list.html'"></div>
         </div>

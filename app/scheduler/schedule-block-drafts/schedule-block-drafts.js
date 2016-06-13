@@ -3,13 +3,14 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, NotifyService) {
+    function SbDraftsCtrl($scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, NotifyService, $rootScope) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
         $scope.$parent.vm.subarray = null;
+        $scope.parent = $scope.$parent;
 
         vm.draftsOrderByFields = [
             {label: 'ID', value: 'id_code'},
@@ -40,8 +41,9 @@
             item.editing = false;
             ObsSchedService.updateScheduleDraft(item)
                 .then(function (result) {
-                    item.isDirty = false;
-                    item.editing = false;
+                    delete item.isDirty;
+                    delete item.editing;
+                    NotifyService.showSimpleToast('Saved SB ' + item.id_code);
                 }, function (result) {
                     NotifyService.showPreDialog('Error Saving SB ' + item.id_code, result.data);
                 });
@@ -64,7 +66,11 @@
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code)
                 .then(function (result) {
-                    $log.info(result);
+                    var index = ObsSchedService.scheduleDraftData.indexOf(item);
+                    if (index > -1) {
+                        ObsSchedService.scheduleDraftData.splice(index, 1);
+                    }
+                    NotifyService.showSimpleToast('Deleted SB ' + item.id_code);
                 }, function (result) {
                     NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code, result.data);
                 });
@@ -129,6 +135,21 @@
                 $scope.$apply();
             }
         };
+
+        vm.unbindShortcuts = $rootScope.$on("keydown", function (e, key) {
+            if (key === 27) {
+                //clear selection when pressing escape
+                vm.selectedScheduleDraft = null;
+            }
+
+            if (!$scope.$$phase) {
+                $scope.$apply();
+            }
+        });
+
+        $scope.$on('$destroy', function () {
+            vm.unbindShortcuts('keydown');
+        });
     }
 
 })();

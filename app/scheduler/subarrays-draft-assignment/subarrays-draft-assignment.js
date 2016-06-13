@@ -102,7 +102,6 @@
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code)
                 .then(function (result) {
-                    // $log.info(result.data);
                     var indexOfSelected = vm.selectedSBs.indexOf(item);
                     if (indexOfSelected > -1) {
                         vm.selectedSBs.splice(indexOfSelected, 1);

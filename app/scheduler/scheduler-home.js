@@ -19,7 +19,6 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
-        vm.waitForSubarrayToExistDeferred = $q.defer();
         vm.subarray = null;
         vm.products = [];
         vm.bands = [];
@@ -110,6 +109,7 @@
         });
 
         vm.waitForSubarrayToExist = function () {
+            vm.waitForSubarrayToExistDeferred = $q.defer();
             if (vm.subarray) {
                 $timeout(function () {
                     vm.waitForSubarrayToExistDeferred.resolve($stateParams.subarray_id);
@@ -124,7 +124,7 @@
                         $interval.cancel(vm.waitForSubarrayToExistInterval);
                         vm.waitForSubarrayToExistInterval = null;
                     }
-                }, 150);
+                }, 50);
             }
             return vm.waitForSubarrayToExistDeferred.promise;
         };

@@ -94,7 +94,7 @@
                             <span>{{item.desired_start_time}}</span>
                         </div>
 
-                        <md-menu style="padding: 0">
+                        <md-menu>
                             <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
                             <md-menu-content>
                                 <md-menu-item>
@@ -123,9 +123,9 @@
             layout-align="center start">
             <span style="margin-left: 8px">Resources</span>
         </md-toolbar>
-        <div flex class="schedule-block-resource-window md-whiteframe-z1" style="max-width: 450px; min-height: 284px; overflow: auto"
-            layout="row" layout-wrap layout-align="start start">
-            <div flex="25" ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': resource.maintenance}"
+        <div flex class="schedule-block-resource-window md-whiteframe-z1" style="max-width: 450px; min-height: 284px; overflow: auto; min-width: 150px"
+            layout="column" layout-wrap layout-align="start start">
+            <div ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': resource.maintenance}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
                 layout-align="start center">
                 <div flex layout="column">
