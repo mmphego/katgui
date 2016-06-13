@@ -4,7 +4,7 @@
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
     function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval, $log,
-                                NotifyService) {
+                                NotifyService, ObsSchedService) {
 
         var vm = this;
         vm.receptorsData = [];
@@ -82,7 +82,8 @@
                         vm.subarrays['subarray_' + i] = {id: i.toString()};
                     }
                     receptorSensorsRegex.push('katpool_resources_in_maintenance');
-                    SensorsService.setSensorStrategies(receptorSensorsRegex.join('|'), 'event-rate', 1, 30);
+                    receptorSensorsRegex.push('katpool_resources_faulty');
+                    SensorsService.setSensorStrategies(receptorSensorsRegex.join('|'), 'event-rate', 1, 360);
                 });
         };
         vm.connectListeners();
@@ -94,11 +95,20 @@
                 vm.receptorsData.forEach(function (receptor) {
                     if (sensor.startsWith('katpool')) {
                         if (sensor.endsWith('resources_in_maintenance')) {
-                            receptor.in_maintenance = false;
+                            receptor.maintenance = false;
                             var resourcesList = message.value.value.split(',');
                             resourcesList.forEach(function (res) {
                                 if (receptor.name === res) {
-                                    receptor.in_maintenance = true;
+                                    receptor.maintenance = true;
+                                }
+                            });
+                        }
+                        if (sensor.endsWith('resources_faulty')) {
+                            receptor.faulty = false;
+                            var resourcesList = message.value.value.split(',');
+                            resourcesList.forEach(function (res) {
+                                if (receptor.name === res) {
+                                    receptor.faulty = true;
                                 }
                             });
                         }
@@ -133,7 +143,6 @@
                                         receptor.subarray = 'free';
                                     }
                                 });
-
                             }
                         } else {
                             vm.subarrays[resource]['allocations'] = [];
@@ -183,6 +192,18 @@
                     $scope.$digest();
                 }
             }
+        };
+
+        vm.markResourceFaulty = function (resource) {
+            ObsSchedService.markResourceFaulty(resource.name, resource.faulty? 'clear' : 'set');
+        };
+
+        vm.markResourceInMaintenance = function (resource) {
+            ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
+        };
+
+        vm.listResourceMaintenanceDevicesDialog = function (resource, $event) {
+            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resource.name, $event);
         };
 
         vm.navigateToSchedulerDetails = function (subarray_id) {
