@@ -1,6 +1,6 @@
 (function () {
 
-angular.module('katGui.widgets.ganttWidget', ['adf.provider'])
+angular.module('katGui.widgets.ganttWidget')
     .config(configureGanttWidget)
     .controller('GanttWidgetCtrl', GanttWidgetCtrl);
 

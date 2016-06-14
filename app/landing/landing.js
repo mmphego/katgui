@@ -54,10 +54,10 @@
             templateUrl: 'app/widgets/apod/apod-widget.html'
         }];
 
-        $scope.$on('adfDashboardChanged', function (event, name, model) {
-            $localStorage[name] = model;
-            vm.dashboardModel = model;
-        });
+        // $scope.$on('adfDashboardChanged', function (event, name, model) {
+        //     $localStorage[name] = model;
+        //     vm.dashboardModel = model;
+        // });
 
         vm.deleteDashboardLocalStorage = function () {
 
