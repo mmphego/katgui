@@ -1,19 +1,7 @@
 (function () {
 
-    angular.module('katGui.widgets.navigationWidget', ['adf.provider', 'katGui.util'])
-        .config(configureNavigationWidget)
+    angular.module('katGui.widgets.navigationWidget', ['katGui.util'])
         .controller('NavigationWidgetCtrl', NavigationWidgetCtrl);
-
-    function configureNavigationWidget(dashboardProvider) {
-        dashboardProvider
-            .widget('NavigationWidget', {
-                title: 'Navigation',
-                description: 'Container for navigation controls/buttons',
-                templateUrl: 'app/widgets/navigation/navigation-widget.html',
-                controllerAs: 'vm',
-                controller: 'NavigationWidgetCtrl'
-            });
-    }
 
     function NavigationWidgetCtrl($rootScope, KatGuiUtil, CENTRAL_LOGGER_PORT) {
 

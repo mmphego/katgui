@@ -45,7 +45,13 @@
         vm.collapsible = false;
 
         vm.dashboardWidgets = [{
+            name: 'NavigationWidget',
+            order: 1,
             templateUrl: 'app/widgets/navigation/navigation-widget-blocks.html'
+        }, {
+            name: 'ApodWidget',
+            order: 2,
+            templateUrl: 'app/widgets/apod/apod-widget.html'
         }];
 
         $scope.$on('adfDashboardChanged', function (event, name, model) {
