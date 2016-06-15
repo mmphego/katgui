@@ -12,10 +12,10 @@
             md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
         </md-progress-linear>
         <span title="Priority: {{item.priority}}" style="min-width: 14px; font-size: 14px" class="fa" ng-class="{'fa-arrow-circle-up dark-blue-grey-color': item.priority === 'HIGH', 'fa-arrow-circle-down light-grey-color': item.priority === 'LOW'}"></span>
-        <div layout="column" layout-align="start" style="width: 120px">
+        <div layout="column" layout-align="start" style="width: 120px" class="text-overflow-ellipsis">
             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                 style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
-            <span><i>{{item.owner}}</i></span>
+            <i style="width: 110px">{{item.owner}}</i>
         </div>
         <span flex style="overflow: hidden; text-overflow: ellipsis; margin-right: 4px" title="{{item.description}}">{{item.description}}</span>
         <span style="width: 75px">{{item.state}}</span>
