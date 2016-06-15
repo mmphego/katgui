@@ -1,0 +1,18 @@
+<div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index" class="md-whiteframe-z1 receptor-svg-container"
+    style="display: -webkit-inline-box; position: relative; margin: 2px;" ng-class="{'maintenance-bg-hover': receptor.maintenance, 'receptor-svg-container-faulty': receptor.faulty, 'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW', 'receptor-graphic-stop': receptor.mode.value === 'STOP'}">
+    <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
+    <h2 class="receptor-graphic-name">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
+    <div class="receptor-graphic-labels" layout="column">
+        <span ng-class="{'stop-item': receptor.mode.value === 'STOP', 'nominal-item': receptor.mode.value === 'POINT', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
+        <span class="windstow-item">{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
+        <span class="inhibited-item">{{receptor.inhibited.value? 'INHIBITED' : ''}}</span>
+    </div>
+
+    <div style="position: absolute; top: 0; right: 0; width: 26px">
+        <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor in Maintenance"
+            ng-class="{'maintenance-text opaque': receptor.maintenance}" ng-click="vm.markResourceInMaintenance(receptor); $event.stopPropagation()"></span>
+        <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor As Faulty"
+            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !receptor.faulty, 'fa-warning error-text opaque': receptor.faulty}"
+            ng-click="vm.markResourceFaulty(receptor); $event.stopPropagation()"></span>
+    </div>
+</div>

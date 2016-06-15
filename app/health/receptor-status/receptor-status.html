@@ -15,29 +15,10 @@
     <div flex style="padding: 16px">
         <div ng-show="!vm.sortBySubarrays" layout="column" style="text-align: center">
             <div ng-show="vm.showGraphics">
-                <div ng-repeat="receptor in vm.receptorsData" class="md-whiteframe-z1" style="display: -webkit-inline-box; position: relative; margin: 2px;"
-                    ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-sensors-warn': receptor.sensors_ok.status === 'warn', 'receptor-graphic-stow': receptor.mode.value === 'STOW', 'receptor-graphic-stop': receptor.mode.value === 'STOP'}">
-                    <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
-                    <h2 class="receptor-graphic-name">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
-                    <div class="receptor-graphic-labels" layout="column">
-                        <span ng-class="{'stop-item': receptor.mode.value === 'STOP', 'nominal-item': receptor.mode.value === 'POINT'}">{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
-                        <span class="windstow-item">{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
-                        <span class="inhibited-item">{{receptor.inhibited.value? 'INHIBITED' : ''}}</span>
-                    </div>
-                </div>
+                <div ng-include="'app/health/templates/receptor-svg-container-repeat.html'"></div>
             </div>
             <div ng-show="!vm.showGraphics" flex style="margin: 4px">
-                <div ng-repeat="receptor in vm.receptorsData track by $index"
-                     class="receptor-status-block md-whiteframe-z1 unknown-item"
-                     ng-class="receptor.sensors_ok ? receptor.sensors_ok.status + '-item' : 'unknown-item'">
-                    <div>{{receptor.name}}<i style="font-size: 12px">{{(receptor.subarray !== 'free'? ' (' + receptor.subarray + ')' : '')}}</i></div>
-                    <div title="AP on Target" ng-if="receptor.windstow_active.value === false" class="nominal-item" ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
-                        <b>{{receptor.mode.value}}<span ng-show="receptor.lock.value" class="fa fa-asterisk"
-                            title="AP on Target"></span></b>
-                    </div>
-                    <div ng-if="receptor.windstow_active.value" class="windstow-item"><b>WINDSTOW</b></div>
-                    <div class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</div>
-                </div>
+                <div ng-include="'app/health/templates/receptor-block-container-repeat.html'"></div>
             </div>
         </div>
 
@@ -48,7 +29,7 @@
                 <md-toolbar
                     md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                     ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
-                    layout="row" layout-align="center center" title="{{subarray.description}}"
+                    layout="row" layout-align="center start" title="{{subarray.description}}"
                     style="max-height: 34px; min-height: 34px; position: relative;"
                     ng-click="$root.stateGoWithSubId('scheduler.observations.detail', vm.subarray_id)">
                     <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
@@ -70,29 +51,10 @@
                     </div>
                 </md-toolbar>
                 <div ng-show="vm.showGraphics">
-                    <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index"" class="md-whiteframe-z1" style="display: -webkit-inline-box; position: relative; margin: 2px;"
-                        ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW', 'receptor-graphic-stop': receptor.mode.value === 'STOP'}">
-                        <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
-                        <h2 class="receptor-graphic-name">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
-                        <div class="receptor-graphic-labels" layout="column">
-                            <span ng-class="{'stop-item': receptor.mode.value === 'STOP', 'nominal-item': receptor.mode.value === 'POINT'}">{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
-                            <span class="windstow-item">{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
-                            <span class="inhibited-item">{{receptor.inhibited.value? 'INHIBITED' : ''}}</span>
-                        </div>
-                    </div>
+                    <div ng-include="'app/health/templates/receptor-svg-container-repeat.html'"></div>
                 </div>
                 <div ng-show="!vm.showGraphics" flex style="padding: 4px; text-align: center" ng-class="{'maintenance-bg':subarray.maintenance}">
-                    <div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index"
-                         class="receptor-status-block md-whiteframe-z1"
-                         ng-class="vm.getReceptorBlockClass(receptor)">
-                        <div>{{receptor.name}}</div>
-                        <div title="AP on Target" ng-if="receptor.windstow_active.value === false" class="nominal-item" ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
-                            <b>{{receptor.mode.value}}<span ng-show="receptor.lock.value" class="fa fa-asterisk"
-                                title="AP on Target"></span></b>
-                        </div>
-                        <div ng-if="receptor.windstow_active.value" class="windstow-item"><b>WINDSTOW</b></div>
-                        <div class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</div>
-                    </div>
+                    <div ng-include="'app/health/templates/receptor-block-container-repeat.html'"></div>
                 </div>
             </div>
         </div>
@@ -102,8 +64,8 @@
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
                    ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true" class="md-fab md-mini md-primary">
-            <md-icon class="fa center-md-icon" ng-if="!showLegend" md-font-icon="fa-eye"></md-icon>
-            <md-icon class="fa center-md-icon" ng-if="showLegend" md-font-icon="fa-eye-slash"></md-icon>
+            <md-icon class="fa" ng-if="!showLegend" md-font-icon="fa-eye"></md-icon>
+            <md-icon class="fa" ng-if="showLegend" md-font-icon="fa-eye-slash"></md-icon>
         </md-button>
         <div class="md-whiteframe-z3" layout="column" ng-show="showLegend"
              style="background: white; padding: 8px;">
