@@ -1,4 +1,28 @@
-<div class="view-container" ng-controller="LandingCtrl as vm">
-    <a class="btn-delete-dashboard-pref" ng-click="vm.deleteDashboardLocalStorage()"><span class="fa fa-trash-o"></span></a>
-    <adf-dashboard name="{{name}}" adf-model="vm.dashboardModel"></adf-dashboard>
+<div ng-controller="LandingCtrl as vm" layout="column" layout-align="start center" style="position: relative">
+
+    <div ng-repeat="w in vm.dashboardWidgets | filter:{visible: true} | orderBy:'order' track by $index"
+        style="padding-top: 8px; min-width: 100%; position: relative" ng-include="w.templateUrl"></div>
+
+    <md-menu style="position: absolute; top: 0; right: 0" md-theme="{{themePrimaryButtons}}">
+        <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$root.openMenu($mdOpenMenu, $event, 'landing-menu-content')"></span>
+        <md-menu-content md-menu-disable-close id="landing-menu-content">
+            <md-menu-item ng-repeat="widget in vm.dashboardWidgets track by $index" style="padding: 0 16px">
+                <md-checkbox class="md-primary" ng-model="widget.visible">Show {{widget.name}}</md-checkbox>
+            </md-menu-item>
+            <md-menu-divider></md-menu-divider>
+            <md-menu-item ng-repeat="widget2 in vm.dashboardWidgets | filter:{visible: true} track by $index" style="padding: 0 16px">
+                <div layout="row" layout-align="start center" ng-click="$event.stopPropagation()" style="margin:0; padding: 0">
+                    <label style="width: 170px; font-weight: normal; margin-top: 4px;">{{widget2.name}} Order:</label>
+                    <md-input-container md-no-float style="width: 36px; margin-left: 8px;text-align: start; padding: 0; height: 30px"
+                        class="md-primary">
+                        <input flex placeholder="Order number" ng-model="widget2.order" type="number" ng-model-options="{ debounce: 300 }" max="10" min="0">
+                    </md-input-container>
+                </div>
+            </md-menu-item>
+            <md-menu-divider></md-menu-divider>
+            <md-menu-item>
+                <md-button ng-click="vm.resetDashboardLayout()">Reset dashboard to defaults</md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
 </div>

@@ -3,61 +3,44 @@
     angular.module('katGui.landing', ['ngStorage'])
         .controller('LandingCtrl', LandingCtrl);
 
-    var defaultDashboardConfig = {
-        title: " ",
-        structure: "12/4-4-4",
-        rows: [
-            {
-                columns: [
-                    {
-                        widgets: [
-                            {
-                                type: "NavigationWidget",
-                                config: {},
-                                title: "Navigation Controls"
-                            }
-                        ]
-                    }
-                    // , {
-                    //    widgets: [
-                    //        {
-                    //            type: "ApodWidget",
-                    //            config: {},
-                    //            title: "APOD"
-                    //        }
-                    //    ]
-                    // }
-                ]
-            }
-        ]
-    };
-
-    function LandingCtrl($scope, $localStorage, $window, $timeout) {
+    function LandingCtrl($scope, $localStorage, $timeout) {
 
         var vm = this;
-        vm.name = 'katGuiLandingDashboard';
+        vm.dashboardWidgetsOrder = [];
+        var localStorageName = 'katGuiDashboardLayout';
 
-        if (!$localStorage[vm.name]) {
-            $localStorage[vm.name] = defaultDashboardConfig;
-        }
+        $scope.$watch("vm.dashboardWidgets", _.debounce(function () {
+            vm.saveDashboardConfig();
+        }, 500), true);
 
-        vm.dashboardModel = $localStorage[vm.name];
-        vm.collapsible = false;
-
-        $scope.$on('adfDashboardChanged', function (event, name, model) {
-            $localStorage[name] = model;
-            vm.dashboardModel = model;
-        });
-
-        vm.deleteDashboardLocalStorage = function () {
-
-            delete $localStorage[vm.name];
-            vm.dashboardModel = defaultDashboardConfig;
-            //TODO: fix this dirty hack to reload the dashboard defaults
-            $timeout(function () {
-                $window.location.reload();
-            }, 500);
+        vm.saveDashboardConfig = function () {
+            $localStorage[localStorageName] = vm.dashboardWidgets;
         };
 
+        vm.resetDashboardLayout = function () {
+            vm.dashboardWidgets = [{
+                name: 'Navigation Widget',
+                order: 0,
+                templateUrl: 'app/widgets/navigation/navigation-widget-blocks.html',
+                visible: true
+            }, {
+                name: 'Apod Widget',
+                order: 1,
+                templateUrl: 'app/widgets/apod/apod-widget.html',
+                visible: true
+            }];
+            vm.dashboardWidgets.forEach(function (widget, index) {
+                vm.dashboardWidgetsOrder.push(index);
+            });
+        };
+
+        vm.dashboardWidgets = $localStorage[localStorageName];
+        if (!vm.dashboardWidgets) {
+            vm.resetDashboardLayout();
+        } else {
+            vm.dashboardWidgets.forEach(function (widget, index) {
+                vm.dashboardWidgetsOrder.push(index);
+            });
+        }
     }
 })();

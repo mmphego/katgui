@@ -3,7 +3,7 @@
 
     angular.module('katGui', ['ngMaterial',
         'ui.bootstrap', 'ui.utils', 'ui.router',
-        'adf', 'ngAnimate', 'katGui.services',
+        'ngAnimate', 'katGui.services',
         'katGui.admin',
         'katGui.alarms',
         'katGui.config',
@@ -11,8 +11,7 @@
         'katGui.health',
         'katGui.widgets.navigationWidget',
         'katGui.widgets.apodWidget',
-        'katGui.widgets.ganttWidget',
-        'katGui.dashboardStructure',
+        // 'katGui.widgets.ganttWidget',
         'katGui.landing',
         'katGui.util',
         'katGui.scheduler',

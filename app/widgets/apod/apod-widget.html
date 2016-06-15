@@ -1,19 +1,16 @@
-<div layout="column" layout-align="start center" md-theme="{{$root.themePrimary}}" style="overflow: auto">
+<div ng-controller="ApodWidgetCtrl as vm" layout="column" class="md-whiteframe-z1" layout-align="start center"
+    md-theme="{{$root.themePrimary}}" style="margin: 0 32px 32px 32px">
     <md-toolbar class="widget-toolbar md-whiteframe-z1" layout="row" layout-align="center center">
         <md-button ng-if="!vm.loadingApod && vm.selectedDateString > '1996-06-16'" title="Previous" ng-click="vm.loadPrevious()">
             <span class="fa fa-chevron-left"></span>
         </md-button>
         <span ng-if="vm.apodTitle" ng-click="vm.openSelectedDateApod()" title="Open on apod.nasa.gov">{{vm.apodTitle}}</span>
         <span ng-click="vm.showDatePicker = !vm.showDatePicker; $event.stopPropagation()" style="margin-left: 8px">({{vm.selectedDateString}})</span>
-        <datetimepicker id="apodDatePickerMenu" class="datepickerMenu md-whiteframe-z3"
-                        ng-init="vm.showDatePicker = false"
-                        style="color: #333; position: absolute; top: 40px; right: 220px"
-                        ng-show="vm.showDatePicker" data-ng-model="vm.selectedDate"
-                        ng-keypress="vm.showDatePicker = false"
-                        ng-click="$event.stopPropagation()"
-                        data-datetimepicker-config="{ minView:'day' }"
-                        data-before-render="vm.beforeDatePickerRender($view, $dates, $leftDate, $upDate, $rightDate)"
-                        data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(newDate)"></datetimepicker>
+        <datetimepicker id="apodDatePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showDatePicker = false"
+            style="color: #333; position: absolute; top: 40px; right: 220px" ng-show="vm.showDatePicker"
+            data-ng-model="vm.selectedDate" ng-keypress="vm.showDatePicker = false" ng-click="$event.stopPropagation()"
+            data-datetimepicker-config="{ minView:'day' }" data-before-render="vm.beforeDatePickerRender($view, $dates, $leftDate, $upDate, $rightDate)"
+            data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(newDate)"></datetimepicker>
         <md-button ng-if="!vm.loadingApod && vm.selectedDateString < vm.todayDateString" title="Next" ng-click="vm.loadNext()">
             <span class="fa fa-chevron-right"></span>
         </md-button>
@@ -22,8 +19,7 @@
         style="margin-top: 8px">
         <b>{{vm.errorText}}</b>
     </div>
-    <div ng-if="vm.loadingApod" style="padding: 32px; margin: 32px auto; font-size: 18px"
-         layout="row" layout-align="center center">
+    <div ng-if="vm.loadingApod" style="padding: 32px; margin: 32px auto; font-size: 18px" layout="row" layout-align="center center">
         <md-progress-circular md-theme="{{themePrimaryButtons}}" md-mode="indeterminate"></md-progress-circular>
         <span style="margin-left: 16px">Loading APOD Image...</span>
     </div>
@@ -33,7 +29,8 @@
     <div ng-if="!vm.loadingApod && !vm.youtubeVideo" class="md-whiteframe-z3" style="margin: 8px">
         <img ng-if="!vm.youtubeVideo" class="apod-image" ng-click="vm.openSelectedDateApod()" ng-src="{{vm.apodUrl}}">
     </div>
-    <iframe class="md-whiteframe-z3" style="margin: 8px; border: 0" width="640" height="360" ng-if="!vm.loadingApod && vm.youtubeVideo" ng-src="{{vm.apodUrl}}"></iframe>
+    <iframe class="md-whiteframe-z3" style="margin: 8px; border: 0" width="640" height="360" ng-if="!vm.loadingApod && vm.youtubeVideo"
+        ng-src="{{vm.apodUrl}}"></iframe>
     <div ng-if="!vm.loadingApod && vm.apodDescription" style="margin: 8px;">
         <p><b>Explanation:</b> {{" " + vm.apodDescription}}</p>
     </div>

@@ -211,8 +211,7 @@
         </md-toolbar>
         <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart" clear-function="vm.clearChart"
                           remove-sensor-function="vm.removeSensorLine" download-csv="vm.downloadAsCSV" y-max="vm.yAxisMaxValue"
-                          y-min="vm.yAxisMinValue" mouse-over-tooltip="true"
-                          style="max-height: 100%; min-height: 100%; overflow: hidden"></multi-line-chart>
+                          y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
             <md-button class="md-icon-button"
                        ng-click="vm.clearData()" title="Clear Data">

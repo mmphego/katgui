@@ -1,19 +1,7 @@
 (function () {
 
-    angular.module('katGui.widgets.apodWidget', ['adf.provider', 'katGui.util', 'katGui.services'])
-        .config(configureApodWidget)
+    angular.module('katGui.widgets.apodWidget', ['katGui.util', 'katGui.services'])
         .controller('ApodWidgetCtrl', ApodWidgetCtrl);
-
-    function configureApodWidget(dashboardProvider) {
-        dashboardProvider
-            .widget('ApodWidget', {
-                title: 'APOD',
-                description: 'Container for the Astronomy Picture of the Day from NASA',
-                templateUrl: 'app/widgets/apod/apod-widget.html',
-                controllerAs: 'vm',
-                controller: 'ApodWidgetCtrl'
-            });
-    }
 
     function ApodWidgetCtrl($scope, $rootScope, $http, $log, $sce, NotifyService, ConfigService) {
 
