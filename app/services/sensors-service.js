@@ -264,7 +264,9 @@
                             value: result.data[i].value,
                             timestamp: result.data[i].timestamp,
                             received_timestamp: result.data[i].received_timestamp,
-                            status: result.data[i].status
+                            status: result.data[i].status,
+                            units: result.data[i].units,
+                            type: result.data[i].type,
                         });
                     }
                     deferred.resolve(api.resources[resourceName].sensorsList);

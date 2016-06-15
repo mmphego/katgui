@@ -8,7 +8,7 @@
                     layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 56px; min-height: 56px; position: relative;">
                     <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                     <div flex class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end">
-                        <span style="width: 100px" ng-click="vm.setDraftsOrderBy('id_code')">
+                        <span style="width: 120px" ng-click="vm.setDraftsOrderBy('id_code')">
                             ID
                             <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'id_code' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'id_code' && vm.draftsOrderBy.reverse}" style="margin-right: 4px;"></span>
                         </span>
@@ -64,10 +64,10 @@
                         <md-progress-linear md-theme="grey" ng-show="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
                             md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
                         </md-progress-linear>
-                        <div layout="column" layout-align="center start" style="min-width: 100px; max-width: 100px; margin-left: 4px">
+                        <div layout="column" layout-align="center start" style="min-width: 120px; max-width: 120px; margin-left: 4px" class="text-overflow-ellipsis">
                             <span ng-click="$root.showSBDetails(item, $event); $event.stopPropagation()" ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                 style="font-size: 14px; font-weight: bold">{{item.id_code}}</span>
-                            <span><i>{{item.owner}}</i></span>
+                            <i style="width: 110px">{{item.owner}}</i>
                         </div>
                         <span flex style="overflow: hidden; text-overflow: ellipsis; margin-left: 4px" title="{{item.description}}">{{item.description}}</span>
                         <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin: 0 4px">
