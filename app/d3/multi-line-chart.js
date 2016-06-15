@@ -164,7 +164,6 @@ angular.module('katGui.d3')
                 var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2, minline, maxline,
                     xAxisElement, yAxisElement, xAxisElement2, context, focus, brush;
 
-                var formatTwoDecimals = d3.format(",.2f");
                 var limitOverlayElements = [];
                 drawSvg();
                 drawValues();
@@ -260,7 +259,7 @@ angular.module('katGui.d3')
                                 return scope.yAxisValues[i];
                             });
                     } else {
-                        yAxis = d3.svg.axis().scale(y).orient("left").ticks(10).tickFormat(d3.format(".00f"));
+                        yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
                     }
 
                     if (scope.showGridLines) {
@@ -507,7 +506,7 @@ angular.module('katGui.d3')
                     } else {
                         yAxisElement.selectAll(".y-axis text")
                             .each(function (d) {
-                                wrapText(this, formatTwoDecimals(d).toString(), margin.left);
+                                wrapText(this, d.toString(), margin.left);
                             });
                     }
 
@@ -601,11 +600,7 @@ angular.module('katGui.d3')
 
                             var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                             focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                            if (typeof(d.value) === 'number') {
-                                d.TooltipValue = formatTwoDecimals(d.value);
-                            } else {
-                                d.TooltipValue = d.value;
-                            }
+                            d.TooltipValue = d.value;
                             tooltipValues.push(d);
                         }
                     });
@@ -614,7 +609,7 @@ angular.module('katGui.d3')
                         for (var i in tooltipValues) {
                             html += "<div class='" + tooltipValues[i].sensor + "' style='display: flex'>";
                             html += "<i style='flex: 1 100%'>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + "</i>";
-                            html += "<div><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></div>";
+                            html += "<b style='margin-left: 8px; white-space: pre'> " + tooltipValues[i].TooltipValue + "</b>";
                             html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span></div>";
                             html += "</div>";
                         }
