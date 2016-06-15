@@ -10,7 +10,7 @@
             'MANUAL'])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService, $timeout,
+    function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService, $timeout, KatGuiUtil,
                                NotifyService, MonitorService, ConfigService, $stateParams, $q, $mdDialog, UserService) {
 
         var vm = this;
@@ -19,7 +19,6 @@
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
-        vm.waitForSubarrayToExistDeferred = $q.defer();
         vm.subarray = null;
         vm.products = [];
         vm.bands = [];
@@ -46,6 +45,10 @@
                         'Bands and products were not found in the system\'s config.');
                 }
             });
+
+        vm.iAmAtLeastCA = function () {
+            return $rootScope.expertOrLO || vm.iAmCA;
+        };
 
         vm.stateGo = function (newState, subarray_id) {
             if (subarray_id) {
@@ -106,9 +109,10 @@
         });
 
         vm.waitForSubarrayToExist = function () {
+            vm.waitForSubarrayToExistDeferred = $q.defer();
             if (vm.subarray) {
                 $timeout(function () {
-                    vm.waitForSubarrayToExistDeferred.resolve();
+                    vm.waitForSubarrayToExistDeferred.resolve($stateParams.subarray_id);
                 }, 1);
             } else {
                 vm.waitForSubarrayToExistInterval = $interval(function () {
@@ -116,11 +120,11 @@
                         vm.checkCASubarrays();
                     }
                     if (vm.subarray) {
-                        vm.waitForSubarrayToExistDeferred.resolve();
+                        vm.waitForSubarrayToExistDeferred.resolve($stateParams.subarray_id);
                         $interval.cancel(vm.waitForSubarrayToExistInterval);
                         vm.waitForSubarrayToExistInterval = null;
                     }
-                }, 150);
+                }, 50);
             }
             return vm.waitForSubarrayToExistDeferred.promise;
         };
@@ -282,8 +286,157 @@
                 });
         };
 
+        vm.setPriority = function (sb, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Set Priority - ' + sb.id_code + ' (current: ' + sb.priority + ')';
+                        $scope.priorities = ["LOW", "HIGH"];
+                        $scope.currentPriority = sb.priority;
+
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.setPriority = function (priority) {
+                            ObsSchedService.setSchedulePriority(sb.id_code, priority);
+                        };
+                    },
+                    template:
+                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
+                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
+                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
+                    '           <span flex style="margin: 8px;">{{::title}}</span>' +
+                    '       </md-toolbar>' +
+                    '       <div flex layout="column">' +
+                    '           <div layout="row" layout-align="center center" ng-repeat="priority in priorities track by $index" ng-click="setPriority(priority); hide()" class="config-label-list-item">' +
+                    '               <b>{{priority}}</b>' +
+                    '           </div>' +
+                    '       </div>' +
+                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
+                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
+                    '       </div>' +
+                    '   </div>' +
+                    '</md-dialog>',
+                    targetEvent: event
+                });
+        };
+
+        vm.setSubarrayInMaintenance = function () {
+            ObsSchedService.setSubarrayMaintenance(vm.subarray.id, vm.subarray.maintenance ? 'clear' : 'set');
+        };
+
+        vm.markResourceFaulty = function (resource) {
+            ObsSchedService.markResourceFaulty(resource.name, resource.faulty? 'clear' : 'set');
+        };
+
+        vm.markResourceInMaintenance = function (resource) {
+            ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
+        };
+
+        vm.isResourceInMaintenance = function (resource) {
+            if (ObsSchedService.resources_in_maintenance) {
+                resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
+                return resource.maintenance;
+            } else {
+                resource.maintenance = false;
+                return false;
+            }
+        };
+
+        vm.isResourceFaulty = function (resource) {
+            resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
+            return resource.faulty;
+        };
+
+        vm.activateSubarray = function () {
+            vm.subarray.showProgress = true;
+            ObsSchedService.activateSubarray(vm.subarray.id)
+                .then(function (result) {
+                    var splitMessage = result.data.result.split(' ');
+                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
+                        NotifyService.showPreDialog('Error activating subarray', message);
+                    } else {
+                        NotifyService.showSimpleToast(result.data.result);
+                    }
+                    vm.subarray.showProgress = false;
+                }, function (error) {
+                    NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
+                    vm.subarray.showProgress = false;
+                });
+        };
+
+        vm.freeSubarray = function () {
+            vm.subarray.showProgress = true;
+            // var dataResource = _.find(vm.subarray.allocations, function(resource) {
+            //     return resource.name.startsWith('data_');
+            // });
+            var dataResource = {name: 'data_' + vm.subarray.id};
+
+            ObsSchedService.freeSubarray(vm.subarray.id).then(function (success) {
+                if (dataResource) {
+                    $timeout(function () {
+                        if (vm.subarray.state === 'inactive') {
+                            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, dataResource.name).then(function () {
+                                vm.subarray.showProgress = false;
+                            });
+                        } else {
+                            $log.error('Could not assign ' + dataResource.name + ', because subarray_' + vm.subarray.id + ' was still in state: ' + vm.subarray.state);
+                        }
+                    }, 1000);
+                }
+                vm.subarray.showProgress = false;
+            }, function () {
+                vm.subarray.showProgress = false;
+            });
+        };
+
+        vm.listResourceMaintenanceDevicesDialog = function (resource, $event) {
+            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resource.name, $event);
+        };
+
         vm.delegateControl = function (email) {
             ObsSchedService.delegateControl(vm.subarray.id, email);
+        };
+
+        vm.executeSchedule = function (item) {
+            ObsSchedService.executeSchedule(vm.subarray.id, item.id_code);
+        };
+
+        vm.stopExecuteSchedule = function (item) {
+            ObsSchedService.stopSchedule(vm.subarray.id, item.id_code);
+        };
+
+        vm.cancelExecuteSchedule = function (item) {
+            ObsSchedService.cancelExecuteSchedule(vm.subarray.id, item.id_code);
+        };
+
+        vm.cloneSchedule = function (item) {
+            ObsSchedService.cloneSchedule(item.id_code);
+        };
+
+        vm.cloneAndAssignSchedule = function (item) {
+            ObsSchedService.cloneAndAssignSchedule(item.id_code, vm.subarray.id);
+        };
+
+        vm.viewSBTasklog = function (sb, mode) {
+            ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, mode);
+        };
+
+        vm.moveScheduleRowToFinished = function (item) {
+            ObsSchedService.scheduleToComplete(vm.subarray.id, item.id_code);
+        };
+
+        vm.moveScheduleRowToDraft = function (item) {
+            ObsSchedService.scheduleToDraft(vm.subarray.id, item.id_code);
+        };
+
+        vm.setSchedulerMode = function (mode) {
+            ObsSchedService.setSchedulerModeForSubarray(vm.subarray.id, mode);
+        };
+
+        vm.verifySB = function (sb) {
+            ObsSchedService.verifyScheduleBlock(vm.subarray.id, sb.id_code);
         };
 
         $scope.$on('$destroy', function () {

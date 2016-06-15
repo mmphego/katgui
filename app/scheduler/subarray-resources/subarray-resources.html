@@ -1,31 +1,27 @@
-<div flex layout="column" style="min-width: 1220px; min-height: 400px"  class="unselectable"
-     ng-controller="SubArrayResourcesCtrl as vm" ng-mouseup="vm.dragSelect = false">
-
+<div flex layout="column" style="min-width: 1000px; min-height: 600px" class="unselectable" ng-controller="SubArrayResourcesCtrl as vm"
+    ng-mouseup="vm.dragSelect = false">
     <div flex layout="row">
         <div flex layout="column" style="padding: 0 8px">
-            <div class="subarray-container" layout="row"
-                 style="min-width: 450px; position: relative" flex
-                 ng-class="{'maintenance-bg': vm.subarray.maintenance}">
+            <div class="subarray-container" layout="row" style="min-width: 450px; position: relative" flex ng-class="{'maintenance-bg': vm.subarray.maintenance}">
 
                 <div flex class="md-whiteframe-z2" layout="column">
-                    <md-toolbar
-                        md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
+                    <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                         ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z1"
-                        layout="row" layout-align="center center" title="{{vm.subarray.description}}"
-                        style="max-height: 56px; min-height: 56px; position: relative">
+                        layout="row" layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 56px; min-height: 56px; position: relative">
+                        <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                         <md-menu style="margin: 0; padding: 0;">
                             <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu(); $event.stopPropagation()"
-                                style="color: currentColor !important; font-size: 30px">
-                                <span class="fa fa-chevron-down subarray-select-chevron"></span>
-                                <span style="margin-left: 12px">
+                                style="font-size: 30px">
+                                <span class="fa fa-chevron-down subarray-select-chevron" style="top: 12px"></span>
+                                <span style="margin-left: 14px">
                                     SUBARRAY {{vm.subarray.id}} -
                                     <span><b>{{vm.subarray.state}}</b></span>
-                                    <span ng-if="vm.subarray.maintenance">{{"- in maintenance"}}</span>
+                                <span ng-show="vm.subarray.maintenance">{{"- in maintenance"}}</span>
                                 </span>
                             </md-button>
                             <md-menu-content>
-                                <md-menu-item ng-repeat="subarray in parentScope.vm.subarrays | orderBy:'id' track by $index">
-                                    <md-button ng-click="parentScope.vm.stateGo('scheduler.resources', subarray.id)">
+                                <md-menu-item ng-repeat="subarray in parent.vm.subarrays | orderBy:'id' track by $index">
+                                    <md-button ng-click="parent.vm.stateGo('scheduler.resources', subarray.id)">
                                         <span>Subarray {{subarray.id}}</span>
                                     </md-button>
                                 </md-menu-item>
@@ -34,134 +30,68 @@
 
                         <span flex></span>
 
-                        <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 0; left: 0; right: 0; font-size: 12px">
-                            <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Control Authority" ng-click="$mdOpenMenu()"
-                                    style="color: currentColor !important">
-                                    <i>CA: </i><b>{{vm.subarray.delegated_ca}}</b>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-click="parentScope.vm.delegateControl('lo')">
-                                            <span>Lead Operator</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item ng-repeat="user in parentScope.vm.users | orderBy:'email' track by $index">
-                                        <md-button ng-click="parentScope.vm.delegateControl(user.email)">
-                                            <span>{{user.email}}</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                            <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Band" ng-click="$mdOpenMenu()"
-                                    style="color: currentColor !important">
-                                    <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item ng-repeat="band in parentScope.vm.bands | orderBy:band track by $index">
-                                        <md-button ng-click="parentScope.vm.setBand(band)">
-                                            <span>{{band}}</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                            <md-menu style="margin: 0; padding: 0;">
-                                <md-button ng-disabled="!$root.expertOrLO" class="subarray-config-menu-button" title="Selected Product" ng-click="$mdOpenMenu()"
-                                    style="color: currentColor !important">
-                                    <i>Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
-                                </md-button>
-                                <md-menu-content>
-                                    <md-menu-item>
-                                        <md-button ng-click="parentScope.vm.setProduct('')">
-                                            <span>None</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                    <md-menu-item ng-repeat="product in parentScope.vm.products | orderBy:product:true track by $index">
-                                        <md-button ng-click="parentScope.vm.setProduct(product)">
-                                            <span>{{product}}</span>
-                                        </md-button>
-                                    </md-menu-item>
-                                </md-menu-content>
-                            </md-menu>
-                            <span ng-show="vm.subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b></span>
-                        </div>
+                        <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple ng-show="$root.expertOrLO && vm.subarray.state === 'inactive'"
+                            title="Activate Subarray" ng-click="parent.vm.activateSubarray()"></span>
+                        <span class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple ng-show="parent.vm.iAmAtLeastCA()"
+                            title="Free Subarray" ng-click="parent.vm.freeSubarray()"></span>
 
-                        <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple
-                            ng-if="$root.expertOrLO && vm.subarray.state === 'inactive'"
-                            title="Activate Subarray"
-                            ng-click="vm.activateSubarray()"></span>
-
-                        <span class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple
-                            ng-if="$root.expertOrLO || parentScope.vm.iAmCA"
-                            title="Free Subarray"
-                            ng-click="vm.freeSubarray()"></span>
-
-                        <md-menu ng-if="$root.expertOrLO || parentScope.vm.iAmCA" md-theme="{{themePrimary}}">
+                        <md-menu ng-show="$root.expertOrLO" md-theme="{{themePrimary}}">
                             <md-button style="padding: 0; font-size: 24px" class="md-icon-button inline-action-button hover-opacity"
-                                ng-click="vm.initLastKnownConfig();$mdOpenMenu()">
+                                ng-click="vm.initLastKnownConfig(); $mdOpenMenu()">
                                 <span class="fa fa-ellipsis-v"></span>
                             </md-button>
                             <md-menu-content style="min-height: 427px">
                                 <md-menu-item>
-                                    <md-button ng-click="parentScope.vm.openBandsDialog($event)"
-                                               title="Select a Band">
-                                       <span style="margin-right: 4px" class="fa fa-signal"></span>
-                                        Set Band...
+                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openBandsDialog($event)" title="Select a Band">
+                                        <span style="margin-right: 4px" class="fa fa-signal"></span>
+                                        <span>Set Band...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-click="parentScope.vm.openProductsDialog($event)"
-                                               title="Select a Product">
+                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openProductsDialog($event)" title="Select a Product">
                                         <span style="margin-right: 4px" class="fa fa-cube"></span>
-                                        Set Product...
+                                        <span>Set Product...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-click="parentScope.vm.openCADialog($event)"
-                                               title="Select a Control Authority"
-                                               ng-disabled="!$root.expertOrLO">
-                                       <span style="margin-right: 4px" class="fa fa-user"></span>
-                                        Set Control Authority...
+                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openCADialog($event)" title="Select a Control Authority">
+                                        <span style="margin-right: 4px" class="fa fa-user"></span>
+                                        <span>Set Control Authority...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-click="parentScope.vm.openConfigLabelDialog(vm.subarray.id, $event)"
-                                               ng-disabled="!$root.expertOrLO">
+                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openConfigLabelDialog(vm.subarray.id, $event)">
                                         <span style="margin-right: 4px" class="fa fa-at"></span>
-                                        Set Config Label...
+                                        <span>Set Config Label...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
-                                    <md-button ng-click="vm.setSubarrayInMaintenance()"
-                                               title="Toggle Subarray in Maintenance">
+                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.setSubarrayInMaintenance()" title="Toggle Subarray in Maintenance">
                                         <span style="margin-right: 4px" class="fa fa-wrench"></span>
-                                        {{vm.subarray.maintenance? 'Clear in Maintenance': 'Set in Maintenance'}}
+                                        <span>{{vm.subarray.maintenance? 'Clear in Maintenance': 'Set in Maintenance'}}</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
                                     <md-button ng-click="vm.saveTemplateDialog($event)">
-                                       <span style="margin-right: 4px" class="fa fa-save"></span>
-                                        Save Resource Template...
+                                        <span style="margin-right: 4px" class="fa fa-save"></span>
+                                        <span>Save Resource Template...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-click="vm.openTemplateListDialog($event)"
-                                               title="Load a resource template, requires subarray to be inactive"
-                                               ng-disabled="vm.subarray.state !== 'inactive'">
-                                       <span style="margin-right: 4px" class="fa fa-folder-open-o"></span>
-                                        Load Resource Template...
+                                    <md-button ng-click="vm.openTemplateListDialog($event)" title="Load a resource template, requires subarray to be inactive"
+                                        ng-disabled="vm.subarray.state !== 'inactive'">
+                                        <span style="margin-right: 4px" class="fa fa-folder-open-o"></span>
+                                        <span>Load Resource Template...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
-                                    <md-button ng-click="vm.loadLastKnownSubarrayConfig()"
-                                               title="{{vm.lastKnownSubarrayConfig? vm.lastKnownSubarrayConfig : 'Could not find the last known configuration for any subarrays'}}"
-                                               ng-disabled="!vm.lastKnownSubarrayConfig || vm.subarray.state !== 'inactive'">
-                                       <span style="margin-right: 4px" class="fa fa-cubes"></span>
-                                        Load Last Known Subarray Config
+                                    <md-button ng-click="vm.loadLastKnownSubarrayConfig()" title="{{vm.lastKnownSubarrayConfig? vm.lastKnownSubarrayConfig : 'Could not find the last known configuration for any subarrays'}}"
+                                        ng-disabled="!vm.lastKnownSubarrayConfig || vm.subarray.state !== 'inactive'">
+                                        <span style="margin-right: 4px" class="fa fa-cubes"></span>
+                                        <span>Load Last Known Subarray Config</span>
                                     </md-button>
                                 </md-menu-item>
                             </md-menu-content>
@@ -170,78 +100,57 @@
 
                     <div flex layout="column" layout-wrap style="overflow-y: auto">
                         <div style="max-height: 80px" flex="25" class="resource-item" layout="row" layout-align="start center"
-                             ng-repeat="resource in vm.subarray.allocations | orderBy:'name'"
-                             ng-class="{'maintenance-bg-hover': vm.isResourceInMaintenance(resource), 'faulty-border': vm.isResourceFaulty(resource)}">
-                            <span flex style="font-size: 18px; margin-left: 4px"
-                                  ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
-                            <span class="icon-button fa fa-refresh" md-ink-ripple
-                                ng-if="$root.expertOrLO" ng-show="vm.subarray.maintenance && resource.maintenance"
-                                title="Restart Maintenance Device"
-                                ng-click="vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
-                            <span class="icon-button fa" md-ink-ripple
-                                title="Mark Resource As Faulty"
+                            ng-repeat="resource in vm.subarray.allocations | orderBy:'name'" ng-class="{'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource), 'faulty-border': parent.vm.isResourceFaulty(resource)}">
+                            <span flex style="font-size: 18px; margin-left: 4px" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
+                            <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance"
+                                title="Restart Maintenance Device" ng-click="parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
+                            <span class="icon-button fa" ng-disabled="!$root.expertOrLO" md-ink-ripple title="Mark Resource As Faulty"
                                 ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
-                                ng-click="vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
-                            <span class="icon-button fa fa-chevron-right" md-ink-ripple
-                                ng-if="$root.expertOrLO"
-                                title="Free Assigned Resource"
+                                ng-click="parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                            <span class="icon-button fa fa-chevron-right" ng-disabled="!$root.expertOrLO" md-ink-ripple title="Free Assigned Resource"
                                 ng-click="vm.freeAssignedResource(resource); $event.stopPropagation()"></span>
                         </div>
                     </div>
                 </div>
 
-                <div flex class="overlay-progress-circular" layout="row" layout-align="center center"
-                     ng-if="vm.subarray.showProgress">
+                <div flex class="overlay-progress-circular" layout="row" layout-align="center center" ng-if="vm.subarray.showProgress">
                     <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                 </div>
             </div>
         </div>
 
-        <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary"
-                   style="min-height: 100%; max-width: 31px; min-width: 31px; margin: 2px 4px 8px 0;"
-                   ng-show="$root.expertOrLO" ng-disabled="vm.selectedResources.length === 0"
-                   ng-click="vm.assignSelectedResources();" title="Assign Resources to Subarray">
+        <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" style="min-height: 100%; max-width: 41px; min-width: 41px; margin: 2px 4px 8px 0;"
+            ng-disabled="!$root.expertOrLO || vm.selectedResources.length === 0" ng-click="vm.assignSelectedResources();"
+            title="Assign Resources to Subarray">
             <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
         </md-button>
 
         <div flex layout="column" style="max-width:400px; min-height: 500px; margin-right: 8px">
             <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
-                <md-toolbar class="md-whiteframe-z1" layout="row"
-                            layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">
+                <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">
                     <md-tooltip md-visible="vm.showDeselectTooltip" md-direction="top" md-autohide="false">
                         [esc] to clear selection, [enter] to assign resources
                     </md-tooltip>
-                    <span flex class="md-toolbar-tools"
-                        title="Click to select or deselect all free resources"
-                        style="cursor: pointer; max-height: 32px; padding: 0 4px"
+                    <span flex class="md-toolbar-tools" title="Click to select or deselect all free resources" style="cursor: pointer; max-height: 32px; padding: 0 4px"
                         ng-click="vm.selectAllUnassignedResources(vm.selectedResources.length === 0)">Free Resources</span>
-                    <input class="search-input-box unselectable" type="search" style="width: 140px;"
-                           ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Resources..."/>
+                    <input class="search-input-box unselectable" type="search" style="width: 140px;" ng-model-options="{ debounce: 300 }"
+                        ng-model="vm.q" placeholder="Search Resources..." />
                 </md-toolbar>
-                <div flex style="overflow: auto" layout="column" layout-wrap style="overflow-y: auto">
-                    <div style="max-height: 80px; position: relative; cursor: pointer" flex="25" class="resource-item" layout="row" layout-align="start center"
-                         ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
-                         ng-class="{'selected-resource-item': resource.selected, 'maintenance-bg-hover': vm.isResourceInMaintenance(resource), 'faulty-border': vm.isResourceFaulty(resource)}"
-                         ng-disabled="!$root.expertOrLO"
-                         ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = resource.selected; vm.toggleResourceSelect(resource)"
-                         ng-mouseover="vm.dragSelect && !vm.dragSelectUnselect? vm.toggleResourceSelect(resource, true) : vm.dragSelect && vm.dragSelectUnselect? vm.toggleResourceSelect(resource, false) : ''">
-                        <span md-ink-ripple
-                            class="icon-button fa fa-chevron-left"
-                            title="Assign to Subarray"
-                            ng-mousedown="$event.stopPropagation()"
-                            ng-click="vm.assignResource(resource); $event.stopPropagation()"></span>
-                        <span flex style="font-size:18px; margin-left: 4px;" class="resource-name"
-                            ng-class="{'maintenance-text': resource.maintenance}">{{resource.name}}</span>
-                        <span class="icon-button fa fa-wrench" md-ink-ripple
-                            title="Mark Resource in Maintenance"
-                            ng-class="{'maintenance-text opaque': resource.maintenance}"
-                            ng-mousedown="$event.stopPropagation()"
-                            ng-click="vm.markResourceInMaintenance(resource); $event.stopPropagation()"></span>
-                        <span class="icon-button fa" md-ink-ripple
-                            title="Mark Resource As Faulty"
-                            ng-mousedown="$event.stopPropagation()"
-                            ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
-                            ng-click="vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                <div flex style="overflow: auto" layout="column" layout-wrap>
+                    <div style="max-height: 80px; position: relative; cursor: pointer" flex="25" class="resource-item" layout="row"
+                        layout-align="start center" ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
+                        ng-class="{'selected-resource-item': resource.selected, 'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource), 'faulty-border': parent.vm.isResourceFaulty(resource)}"
+                        ng-disabled="!$root.expertOrLO" ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = resource.selected; vm.toggleResourceSelect(resource)"
+                        ng-mouseover="vm.dragSelect && !vm.dragSelectUnselect? vm.toggleResourceSelect(resource, true) : vm.dragSelect && vm.dragSelectUnselect? vm.toggleResourceSelect(resource, false) : ''">
+                        <span md-ink-ripple class="icon-button fa fa-chevron-left" ng-disabled="!$root.expertOrLO" title="Assign to Subarray"
+                            ng-mousedown="$event.stopPropagation()" ng-click="vm.assignResource(resource); $event.stopPropagation()"></span>
+                        <span flex style="font-size:18px; margin-left: 4px;" class="resource-name" ng-class="{'maintenance-text': resource.maintenance}">{{resource.name}}</span>
+                        <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource in Maintenance"
+                            ng-class="{'maintenance-text opaque': resource.maintenance}" ng-mousedown="$event.stopPropagation()"
+                            ng-click="parent.vm.markResourceInMaintenance(resource); $event.stopPropagation()"></span>
+                        <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource As Faulty"
+                            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
+                            ng-click="parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
                     </div>
                 </div>
             </div>

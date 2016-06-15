@@ -4,7 +4,7 @@
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
     function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $stateParams,
-                                   NotifyService, ConfigService, KatGuiUtil, $mdDialog) {
+                                   NotifyService, ConfigService, $mdDialog) {
 
         var vm = this;
         vm.showDeselectTooltip = false;
@@ -13,13 +13,14 @@
         vm.resources_faulty = ObsSchedService.resources_faulty;
         vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
         if (!$scope.$parent.vm.subarray) {
-            $scope.$parent.vm.waitForSubarrayToExist().then(function () {
-                vm.subarray = $scope.$parent.vm.subarray;
+            $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
+                vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;
         }
-        $scope.parentScope = $scope.$parent;
+
+        $scope.parent = $scope.$parent;
 
         vm.selectAllUnassignedResources = function (selected) {
             vm.poolResourcesFree.forEach(function (item) {
@@ -67,74 +68,8 @@
             ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resource.name);
         };
 
-        vm.freeSubarray = function () {
-            vm.subarray.showProgress = true;
-            var dataResource = _.find(vm.subarray.allocations, function(resource) {
-                return resource.name.startsWith('data_');
-            });
-
-            ObsSchedService.freeSubarray(vm.subarray.id).then(function (success) {
-                if (success && dataResource) {
-                    ObsSchedService.assignResourcesToSubarray(vm.subarray.id, dataResource.name).then(function () {
-                        vm.subarray.showProgress = false;
-                    });
-                } else {
-                    vm.subarray.showProgress = false;
-                }
-            });
-        };
-
-        vm.activateSubarray = function () {
-            vm.subarray.showProgress = true;
-            ObsSchedService.activateSubarray(vm.subarray.id)
-                .then(function (result) {
-                    var splitMessage = result.data.result.split(' ');
-                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
-                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
-                        NotifyService.showPreDialog('Error activating subarray', message);
-                    } else {
-                        NotifyService.showSimpleToast(result.data.result);
-                    }
-                    vm.subarray.showProgress = false;
-                }, function (error) {
-                    NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
-                    vm.subarray.showProgress = false;
-                });
-        };
-
-        vm.setSubarrayInMaintenance = function () {
-            ObsSchedService.setSubarrayMaintenance(vm.subarray.id, vm.subarray.maintenance ? 'clear' : 'set');
-        };
-
-        vm.markResourceFaulty = function (resource) {
-            ObsSchedService.markResourceFaulty(resource.name, resource.faulty? 'clear' : 'set');
-        };
-
-        vm.markResourceInMaintenance = function (resource) {
-            ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
-        };
-
-        vm.listResourceMaintenanceDevicesDialog = function (resource, event) {
-            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resource.name, event);
-        };
-
-        vm.isResourceInMaintenance = function (resource) {
-            if (ObsSchedService.resources_in_maintenance) {
-                resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
-                return resource.maintenance;
-            } else {
-                resource.maintenance = false;
-                return false;
-            }
-        };
-
-        vm.isResourceFaulty = function (resource) {
-            resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
-            return resource.faulty;
-        };
-
         vm.toggleResourceSelect = function (resource, selectedValue) {
-            if (angular.isDefined(resource.selected) && selectedValue === resource.selected) {
+            if (!$scope.parent.vm.iAmAtLeastCA() || angular.isDefined(resource.selected) && selectedValue === resource.selected) {
                 return;
             }
             var selected = selectedValue;

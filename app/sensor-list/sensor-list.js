@@ -110,7 +110,7 @@
             }
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
-
+            vm.showProgress = true;
             SensorsService.listResourceSensors(resourceName)
                 .then(function (result) {
                     vm.resources[resourceName].sensorsList = result;
@@ -124,6 +124,9 @@
                     if (!$scope.$$phase) {
                         $scope.$digest();
                     }
+                    vm.showProgress = false;
+                }, function (error) {
+                    vm.showProgress = false;
                 });
             vm.resourceSensorsBeingDisplayed = resourceName;
             //allow for the removeSensorStrategies to complete before setting up new strategies
@@ -208,6 +211,10 @@
         vm.restoreSensorGraphSize = function () {
             var element = angular.element(document.querySelector('.sensor-list-chart-container'));
             element.css({top: 'auto', left: 'auto', right: '20px', bottom: '20px', width: '500px', height: '500px'});
+        };
+
+        vm.displaySensorValue = function ($event, sensor) {
+            NotifyService.showHTMLPreSensorDialog(sensor.parentName + '_' + sensor.python_identifier + ' value at ' + sensor.received_timestamp, sensor, $event);
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {

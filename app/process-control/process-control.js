@@ -135,7 +135,7 @@
                 if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
                     NotifyService.showPreDialog('Error tailing file', message);
                 } else {
-                    NotifyService.showPreDialog('Tail of ' + nm + '_' + resource, message);
+                    NotifyService.showPreDialog('Tail of ' + nm + '_' + resource + ' (last 30 lines)', message);
                 }
             }, function (error) {
                 NotifyService.showPreDialog('Error displaying Sensor Group', error.data.err_msg);

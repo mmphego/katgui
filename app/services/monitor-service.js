@@ -70,6 +70,8 @@
                 api.subscribeToDefaultChannels();
                 ConfigService.checkOutOfDateVersion();
             }
+            api.lastHeartBeat = new Date();
+            $rootScope.connectedToMonitor = true;
         };
 
         api.subscribeToDefaultChannels = function () {
@@ -84,6 +86,8 @@
         api.checkAlive = function () {
             if (!api.lastHeartBeat || new Date().getTime() - api.lastHeartBeat.getTime() > api.heartbeatTimeOutLimit) {
                 $log.warn('Monitor Connection Heartbeat timeout!');
+                api.connection = null;
+                $rootScope.connectedToMonitor = false;
                 api.deferredMap['timeoutDefer'].resolve();
                 api.deferredMap['timeoutDefer'] = null;
             }
@@ -97,6 +101,7 @@
             $log.info('Disconnecting Monitor Connection.');
             api.connection = null;
             api.lastHeartBeat = null;
+            $rootScope.connectedToMonitor = false;
         };
 
         api.onSockJSMessage = function (e) {
@@ -207,8 +212,12 @@
                 api.lastHeartBeat = new Date();
             } else {
                 $timeout(function () {
-                    api.deferredMap['connectDefer'].resolve();
-                }, 1);
+                    if ($rootScope.connectedToMonitor) {
+                        api.deferredMap['connectDefer'].resolve();
+                    } else {
+                        api.deferredMap['connectDefer'].reject();
+                    }
+                }, 1000);
             }
             if (!api.checkAliveInterval) {
                 api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
