@@ -112,7 +112,11 @@
         };
 
         api.stopSchedule = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/stop')));
+            NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule', 'Are you sure you want to stop executing ' + id_code + '?', 'Yes', 'Cancel').then(function() {
+                api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/stop')));
+            }, function () {
+                NotifyService.showSimpleToast('Cancelled stop executing ' + id_code);
+            });
         };
 
         api.cancelExecuteSchedule = function (sub_nr, id_code) {
