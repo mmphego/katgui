@@ -268,7 +268,7 @@ angular.module('katGui.d3')
                     }
 
                     line = d3.svg.line()
-                        .interpolate("cubic")
+                        .interpolate(scope.yAxisValues ? "step-after" : "linear")
                         .x(function (d) {
                             return x(d.date);
                         })
@@ -277,7 +277,7 @@ angular.module('katGui.d3')
                         });
 
                     minline = d3.svg.line()
-                        .interpolate("cubic")
+                        .interpolate(scope.yAxisValues ? "step-after" : "linear")
                         .defined(function (d) {
                             return angular.isDefined(d.minValue) && d.minValue !== null;
                         })
@@ -289,7 +289,7 @@ angular.module('katGui.d3')
                         });
 
                     maxline = d3.svg.line()
-                        .interpolate("cubic")
+                        .interpolate(scope.yAxisValues ? "step-after" : "linear")
                         .defined(function (d) {
                             return angular.isDefined(d.maxValue) && d.maxValue !== null;
                         })
@@ -319,7 +319,7 @@ angular.module('katGui.d3')
                         }
 
                         line2 = d3.svg.line()
-                            .interpolate("cubic")
+                            .interpolate(scope.yAxisValues ? "step-after" : "linear")
                             .x(function (d) {
                                 return x2(d.date);
                             })
