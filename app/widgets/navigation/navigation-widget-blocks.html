@@ -3,6 +3,14 @@
     <div layout="column" class="nav-widget-container">
         <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Scheduler</span></md-toolbar>
         <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
+            <div flex layout="row">
+                <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 1})" layout="row"><span>Setup Subarray</span><span class="subarray-number">1</span></md-button>
+                <md-button flex style="margin-left: 2px" class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 3})" layout="row"><span >Setup Subarray</span><span class="subarray-number">3</span></md-button>
+            </div>
+            <div flex layout="row">
+                <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 2})" layout="row"><span>Setup Subarray</span><span class="subarray-number">2</span></md-button>
+                <md-button flex style="margin-left: 2px" class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 4})" layout="row"><span flex>Setup Subarray</span><span class="subarray-number">4</span></md-button>
+            </div>
             <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.drafts')" layout="row"><span class="fa fa-pencil"></span><span flex>Schedule Block Drafts</span></md-button>
             <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler')" layout="row"><span class="fa fa-list"></span><span flex>Observations Workflow</span></md-button>
             <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.observations')" layout="row"><span class="fa fa-binoculars"></span><span flex>Observations Overview</span></md-button>
