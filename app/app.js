@@ -242,8 +242,8 @@
             SessionService.logout();
             vm.showNavbar = false;
         };
-        $rootScope.stateGo = function (newState) {
-            $state.go(newState);
+        $rootScope.stateGo = function (newState, params) {
+            $state.go(newState, params);
         };
         vm.sideNavStateGo = function (newState) {
             $rootScope.stateGo(newState);
