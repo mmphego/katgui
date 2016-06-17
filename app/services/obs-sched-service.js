@@ -4,7 +4,8 @@
         .service('ObsSchedService', ObsSchedService);
 
     function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService, KatGuiUtil,
-                             $log, $q, $mdDialog, NotifyService, $timeout, $interval, $localStorage) {
+                             UserLogService, $log, $q, $mdDialog, NotifyService,
+                             $timeout, $interval, $localStorage) {
 
         var urlBase = SERVER_URL + '/katcontrol';
         var api = {};
@@ -64,10 +65,40 @@
 
         api.markResourceFaulty = function (resource, faulty) {
             api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/faulty/' + faulty)));
-        };
+	    var tags = [];
+	    tags.push(_.find(UserLogService.tags, function(item){return item.name === 'status'}));
+	    var tagresource = _.find(UserLogService.tags, function(item){return item.name === resource});
+	    if (tagresource) {
+		tags.push();
+	    }
+
+	    var newlog = {
+                start_time: $rootScope.utcDateTime,
+                end_time: '',
+                tags:tags,
+                user_id: $rootScope.currentUser.id,
+                content: 'Setting Resource ' + resource + ' to Faulty: ',
+            };
+            UserLogService.editUserLog(newlog, true)
+	 };
 
         api.markResourceInMaintenance = function (resource, maintenance) {
             api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/maintenance/' + maintenance)));
+	    var tags = [];
+            tags.push(_.find(UserLogService.tags, function(item){return item.name === 'maintenance'}));
+            var tagresource = _.find(UserLogService.tags, function(item){return item.name === resource});
+            if (tagresource) {
+                tags.push();
+            }
+
+	    var newlog = {
+                start_time: $rootScope.utcDateTime,
+                end_time: '',
+                tags: _.find(UserLogService.tags, function(item){return item.name === 'maintenance'}),
+                user_id: $rootScope.currentUser.id,
+                content: 'Setting Resource ' + resource + ' in Maintenance: ',
+            };
+            UserLogService.editUserLog(newlog, true)
         };
 
         api.restartMaintenanceDevice = function (sub_nr, resource, device) {

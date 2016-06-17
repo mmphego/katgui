@@ -11,7 +11,7 @@
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
     function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService, $timeout, KatGuiUtil,
-                               NotifyService, MonitorService, ConfigService, $stateParams, $q, $mdDialog, UserService) {
+                               UserLogService, NotifyService, MonitorService, ConfigService, $stateParams, $q, $mdDialog, UserService) {
 
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
@@ -34,6 +34,8 @@
                 vm.users.push(UserService.users[i]);
             }
         });
+
+	UserLogService.listTags()
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
