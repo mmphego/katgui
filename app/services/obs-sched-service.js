@@ -65,40 +65,40 @@
 
         api.markResourceFaulty = function (resource, faulty) {
             api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/faulty/' + faulty)));
-	    var tags = [];
-	    tags.push(_.find(UserLogService.tags, function(item){return item.name === 'status'}));
-	    var tagresource = _.find(UserLogService.tags, function(item){return item.name === resource});
-	    if (tagresource) {
-		tags.push();
-	    }
+            var tags = [];
+            tags.push(_.find(UserLogService.tags, function (item) {return item.name === 'status'; }));
+            var tagResource = _.find(UserLogService.tags, function (item) {return item.name === resource; });
+            if (tagResource) {
+                tags.push(tagResource);
+            }
 
-	    var newlog = {
+            var newlog = {
                 start_time: $rootScope.utcDateTime,
                 end_time: '',
                 tags:tags,
                 user_id: $rootScope.currentUser.id,
-                content: 'Setting Resource ' + resource + ' to Faulty: ',
+                content: 'Setting Resource ' + resource + ' to Faulty: '
             };
-            UserLogService.editUserLog(newlog, true)
-	 };
+            UserLogService.editUserLog(newlog, true);
+        };
 
         api.markResourceInMaintenance = function (resource, maintenance) {
             api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/maintenance/' + maintenance)));
-	    var tags = [];
-            tags.push(_.find(UserLogService.tags, function(item){return item.name === 'maintenance'}));
-            var tagresource = _.find(UserLogService.tags, function(item){return item.name === resource});
-            if (tagresource) {
-                tags.push();
+            var tags = [];
+            tags.push(_.find(UserLogService.tags, function (item) {return item.name === 'maintenance'; }));
+            var tagResource = _.find(UserLogService.tags, function (item) {return item.name === resource; });
+            if (tagResource) {
+                tags.push(tagResource);
             }
 
-	    var newlog = {
+            var newlog = {
                 start_time: $rootScope.utcDateTime,
                 end_time: '',
-                tags: _.find(UserLogService.tags, function(item){return item.name === 'maintenance'}),
+                tags: tags,
                 user_id: $rootScope.currentUser.id,
-                content: 'Setting Resource ' + resource + ' in Maintenance: ',
+                content: 'Setting Resource ' + resource + ' in Maintenance: '
             };
-            UserLogService.editUserLog(newlog, true)
+            UserLogService.editUserLog(newlog, true);
         };
 
         api.restartMaintenanceDevice = function (sub_nr, resource, device) {

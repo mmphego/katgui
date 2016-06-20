@@ -35,7 +35,7 @@
             }
         });
 
-	UserLogService.listTags()
+        UserLogService.listTags();
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
