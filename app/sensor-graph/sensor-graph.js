@@ -8,7 +8,6 @@
 
         var vm = this;
         var DATETIME_FORMAT = 'HH:mm:ss DD-MM-YYYY';
-        var DATALIMIT = 25000;
         vm.showGridLines = false;
         vm.dateTimeError = false;
         vm.sensorNames = [];
@@ -252,9 +251,9 @@
 
             var requestParams;
             if (sensor.type === 'discrete') {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT];
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 0];
             } else {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT, interval];
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 0, interval];
             }
 
             DataService.sensorData.apply(this, requestParams)
@@ -486,7 +485,7 @@
                         return;
                     }
                     sensors.forEach(function (sensor) {
-                        var requestParams = [SensorsService.guid, sensor.name, startDate, endDate, DATALIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                        var requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 0, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
                         $timeout(function () {
                             DataService.sensorData.apply(this, requestParams)
                                 .then(function (result) {
