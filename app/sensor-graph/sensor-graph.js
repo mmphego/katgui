@@ -8,7 +8,7 @@
 
         var vm = this;
         var DATETIME_FORMAT = 'HH:mm:ss DD-MM-YYYY';
-        var DATALIMIT = 5000;
+        var DATALIMIT = 25000;
         vm.showGridLines = false;
         vm.dateTimeError = false;
         vm.sensorNames = [];
@@ -116,7 +116,11 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
-            vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
+            vm.loadOptions({
+                showGridLines: vm.showGridLines,
+                hideContextZoom: !vm.showContextZoom,
+                useFixedYAxis: vm.useFixedYAxis,
+            });
         };
 
         vm.showHelp = function ($event) {
@@ -225,8 +229,8 @@
                 endDate = (vm.getMillisecondsDifference(
                     vm.plusMinus,
                     startDate,
-                    vm.unitLength,
-                    vm.unitType));
+                    vm.intervalNum,
+                    vm.intervalType));
             }
 
             if (endDate < startDate) {
@@ -338,6 +342,8 @@
 
         vm.sensorDataReceived = function (event, sensor) {
 
+            var hasMinMax = vm.intervalNum !== 1 && vm.intervalType !== 's';
+
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
                 var newData = [];
@@ -358,18 +364,19 @@
                 }
 
                 if (newData) {
-                    vm.redrawChart(newData, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null);
+                    vm.redrawChart(newData, hasMinMax);
                 }
             }
             else if (sensor.value) {
                 var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_').replace(/-/g, '_');
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
+
                     vm.redrawChart([{
                         sensor: realSensorName,
                         value_ts: sensor.value.timestamp * 1000,
                         sample_ts: sensor.value.received_timestamp * 1000,
                         value: sensor.value.value
-                    }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                    }], hasMinMax);
                 }
             }
         };
@@ -460,10 +467,10 @@
                     intervalTime > 0 && intervalTime < 10000 &&
                     ['s', 'm', 'h', 'd'].indexOf(intervalParams[1]) > -1) {
                     vm.intervalNum = intervalTime.toString();
-                    vm.unitType = intervalParams[1];
+                    vm.intervalType = intervalParams[1];
                 } else {
                     vm.intervalNum = 1;
-                    vm.unitType = 'm';
+                    vm.intervalType = 'm';
                 }
                 var sensorNames = $stateParams.sensors.split(',');
                 vm.findSensorNames(sensorNames.join('|')).then(function (sensors) {

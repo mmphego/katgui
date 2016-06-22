@@ -5,18 +5,6 @@
     <div layout="column" style="margin: 8px; min-width: 366px; max-width: 366px; min-height: 100%;">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
             <span flex>Sensor Graph Tools</span>
-            <md-menu md-theme="{{themePrimaryButtons}}" style="padding: 0">
-                <md-button class="md-icon-button inline-action-button" ng-click="$mdOpenMenu()" style="margin:0">
-                    <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
-                </md-button>
-                <md-menu-content width="4" style="padding-left: 16px;">
-                    <md-menu-item>
-                        <md-checkbox class="md-primary" ng-model="vm.showRelativeTime" ng-click="">
-                            Show Relative Date-Time Picker
-                        </md-checkbox>
-                    </md-menu-item>
-                </md-menu-content>
-            </md-menu>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" layout="column" layout-align="start center"
              md-theme="{{themePrimaryButtons}}">
@@ -50,27 +38,7 @@
                 </md-button>
             </div>
 
-            <div layout="row" layout="center center" style="margin: 0; padding: 4px; min-height: 32px" ng-show="vm.showRelativeTime">
-                <md-switch ng-init="vm.plusMinus = false" class="md-primary" ng-model="vm.plusMinus"
-                           style="font-size: 34px; min-width: 65px; margin-right: -10px; margin-top: 18px">
-                    {{vm.plusMinus? '+' : '-'}}
-                </md-switch>
-                <md-input-container md-no-float style="padding: 0; vertical-align: middle; margin: 20px 0 26px">
-                    <input ng-init="vm.unitLength = 1" type="number" min="1" max="999"
-                           style="font-size: 16px; background: transparent; width: 45px; text-align: end; max-height: 30px; margin-top:2px;"
-                           placeholder="" ng-model="vm.unitLength" title="Range Unit Length">
-                </md-input-container>
-
-                <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.unitType = 'm'" ng-model="vm.unitType"
-                           style="min-width: 105px;">
-                    <md-option value="s">Second(s)</md-option>
-                    <md-option value="m">Minute(s)</md-option>
-                    <md-option value="h">Hour(s)</md-option>
-                    <md-option value="d">Day(s)</md-option>
-                </md-select>
-            </div>
-
-            <div layout="row" layout="center center" style="margin: 0px; padding: 4px; min-height: 32px; max-height: 32px" ng-show="!vm.showRelativeTime">
+            <div layout="row" layout="center center" style="margin: 0px; padding: 4px; min-height: 32px; max-height: 32px">
                 <md-input-container md-no-float style="margin: 0; padding: 0; width: 135px; height: 30px">
                     <input type="text" ng-change="vm.endTimeChange()"
                            ng-model="vm.sensorEndDateReadable" placeholder="End Date (UTC)"
@@ -209,7 +177,7 @@
                 </md-chips>
             </div>
         </md-toolbar>
-        <multi-line-chart flex data="vm.sensorData" redraw-function="vm.redrawChart" clear-function="vm.clearChart"
+        <multi-line-chart flex data="vm.sensorData" load-options-function="vm.loadOptions" redraw-function="vm.redrawChart" clear-function="vm.clearChart"
                           remove-sensor-function="vm.removeSensorLine" download-csv="vm.downloadAsCSV" y-max="vm.yAxisMaxValue"
                           y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">

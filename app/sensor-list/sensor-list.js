@@ -235,7 +235,7 @@
                         value_ts: sensor.value.timestamp * 1000,
                         sample_ts: sensor.value.received_timestamp * 1000,
                         value: sensor.value.value
-                    }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                    }]);
                 }
             }
         });
@@ -244,7 +244,11 @@
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
-            vm.redrawChart(null, vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis);
+            vm.loadOptions({
+                showGridLines: vm.showGridLines,
+                hideContextZoom: !vm.showContextZoom,
+                useFixedYAxis: vm.useFixedYAxis,
+            });
         };
 
         $scope.filterByNotNominal = function (sensor) {
