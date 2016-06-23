@@ -28,6 +28,11 @@
                 order: 1,
                 templateUrl: 'app/widgets/apod/apod-widget.html',
                 visible: true
+            }, {
+                name: 'Activity Widget',
+                order: 1,
+                templateUrl: 'app/widgets/activity/activity-widget.html',
+                visible: true
             }];
             vm.dashboardWidgets.forEach(function (widget, index) {
                 vm.dashboardWidgetsOrder.push(index);
