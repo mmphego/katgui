@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui.widgets.activityWidget', ['katGui.util', 'katGui.services'])
+    angular.module('katGui.widgets')
         .controller('ActivityWidgetCtrl', ActivityWidgetCtrl);
 
     function ActivityWidgetCtrl($scope, $rootScope) {
