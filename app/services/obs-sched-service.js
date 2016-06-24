@@ -361,6 +361,7 @@
                         } else if (draftIndex === -1 && sb.state === 'DRAFT'){
                             if (scheduledIndex > -1) {
                                 api.scheduleData.splice(scheduledIndex, 1);
+                                $rootScope.$emit('sb_schedule_remove', sb);
                             }
                             draftDataToAdd.push(sb);
                             // api.scheduleDraftData.push(sb);
@@ -368,6 +369,7 @@
 
                         if (scheduledIndex > -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
                             api.scheduleData[scheduledIndex] = sb;
+                            $rootScope.$emit('sb_schedule_update', sb);
                         } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
                             if (draftIndex > -1) {
                                 api.scheduleDraftData.splice(draftIndex, 1);
@@ -389,6 +391,7 @@
                         NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
                     } else if (action.startsWith('sb_order_change')) {
                         orderChangeCall = true;
+                        $rootScope.$emit('sb_order_change', '');
                     } else if (action.startsWith('sb_completed_change')) {
                         $rootScope.$emit('sb_completed_change', '');
                     } else {
@@ -397,6 +400,7 @@
                     }
                 }
                 if (scheduleDataToAdd.length) {
+                    $rootScope.$emit('sb_schedule_add', scheduleDataToAdd);
                     Array.prototype.push.apply(api.scheduleData, scheduleDataToAdd);
                 }
                 if (draftDataToAdd.length) {

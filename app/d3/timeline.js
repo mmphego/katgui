@@ -1,10 +1,10 @@
 angular.module('katGui.d3')
 
-.directive('timeline', function($timeout) {
+.directive('timeline', function($timeout, ObsSchedService) {
     return {
         restrict: 'E',
         scope: {
-            updateFunction: '='
+            redrawFunction: '='
         },
         link: function(scope, element) {
 
@@ -24,7 +24,7 @@ angular.module('katGui.d3')
                     //allow for some time for the dom elements to complete resizing
                     scope.resizeTimeout = $timeout(function () {
                         scope.drawSvg();
-                        scope.drawValues(scope.data);
+                        scope.redrawFunction(scope.data);
                     }, 750);
                 }
             });
@@ -34,15 +34,20 @@ angular.module('katGui.d3')
                 d3.select(element[0]).select('svg').remove();
 
                 width = element[0].clientWidth - margin.right - margin.left;
+                height = element[0].clientHeight - margin.top - margin.bottom;
 
                 x = d3.time.scale.utc().range([0, width]);
                 y = d3.scale.linear().range([height, 0]);
 
+                var startDate = moment().subtract(30, 'm').toDate(),
+                    endDate = moment().add(30, 'm').toDate();
+
+                x.domain([startDate, endDate]);
+                y.domain([0, height]);
+
                 xAxis = d3.svg.axis().scale(x).orient("bottom");
-                yAxis = d3.svg.axis().scale(y).orient("left");
 
                 xAxis.tickSize(-height);
-                yAxis.tickSize(-width);
 
                 svg = d3.select(element[0])
                     .append("svg")
@@ -51,9 +56,10 @@ angular.module('katGui.d3')
                     .attr("class", "chart");
 
                 svg.append("defs").append("clipPath")
+                    .attr("id", "clip")
                     .append("rect")
-                    .attr("width", width)
-                    .attr("height", height);
+                    .attr("width", "100%")
+                    .attr("height", "100%");
 
                 maing = svg.append("g")
                     .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -64,25 +70,48 @@ angular.module('katGui.d3')
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")");
 
-                yAxisElement = maing.append("g")
-                    .attr("class", "y axis y-axis");
+                xAxisElement.call(xAxis);
             };
 
-            scope.drawValues = function(data) {
-                var startDate = moment().subtract(1, 'h').toDate(),
-                    endDate = new Date();
+            scope.redrawFunction = function(data) {
 
-                x.domain([startDate, endDate]);
-                y.domain([0, height]);
+                if (!data || data.length === 0) {
+                    return;
+                }
+                //TODO we might need to append to scope.data instead?
+                scope.data = data;
 
                 //update main item rects
-                var rects = maing.selectAll("rect")
+                var rects = maing.selectAll("rect.item-container")
                     .data(data)
                     .attr("x", function(d) {
                         return x(d.start);
                     })
                     .attr("width", function(d) {
                         return x(d.end) - x(d.start);
+                    })
+                    .style("stroke", function (d) {
+                        return d.strokeColor? d.strokeColor : "black";
+                    })
+                    .style("fill", function (d) {
+                        return d.fillColor? d.fillColor: "transparent";
+                    });
+
+                var texts = maing.selectAll("text.item-container")
+                    .data(data)
+                    .attr("x", function(d) {
+                        return x(d.start) + 4;
+                    })
+                    .attr("y", function(d) {
+                        return y(30 * d.lane) + 15;
+                    })
+                    .attr("width", function(d) {
+                        return x(d.end) - x(d.start);
+                    })
+                    .attr("fill", "black")
+                    .attr("font-size", "12px")
+                    .text(function (d) {
+                        return d.title;
                     });
 
                 rects.enter().append("rect")
@@ -95,31 +124,35 @@ angular.module('katGui.d3')
                     .attr("width", function(d) {
                         return x(d.end) - x(d.start);
                     })
-                    .attr("height", "20");
+                    .style("stroke", function (d) {
+                        return d.strokeColor? d.strokeColor : "black";
+                    })
+                    .style("fill", function (d) {
+                        return d.fillColor? d.fillColor: "transparent";
+                    })
+                    .attr("height", "20")
+                    .attr("class", "item-container");
+
+                texts.enter().append("text")
+                    .attr("x", function(d) {
+                        return x(d.start) + 4;
+                    })
+                    .attr("y", function(d) {
+                        return y(30 * d.lane) + 15;
+                    })
+                    .attr("width", function(d) {
+                        return x(d.end) - x(d.start);
+                    })
+                    .attr("fill", "black")
+                    .attr("font-size", "12px")
+                    .attr("class", "item-container")
+                    .text(function (d) {
+                        return d.title;
+                    });
 
                 rects.exit().remove();
-
-                xAxisElement.call(xAxis);
-                yAxisElement.call(yAxis);
+                texts.exit().remove();
             };
-
-            scope.data = [{
-                start: moment().subtract(20, 'm').toDate(),
-                end: moment().subtract(10, 'm').toDate(),
-                lane: 1
-            }, {
-                start: moment().subtract(40, 'm').toDate(),
-                end: moment().subtract(35, 'm').toDate(),
-                lane: 2
-            }, {
-                start: moment().subtract(40, 'm').toDate(),
-                end: moment().subtract(35, 'm').toDate(),
-                lane: 3
-            }, {
-                start: moment().subtract(40, 'm').toDate(),
-                end: moment().subtract(35, 'm').toDate(),
-                lane: 4
-            }];
         }
     };
 });
