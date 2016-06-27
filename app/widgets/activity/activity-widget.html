@@ -1,4 +1,4 @@
 <div ng-controller="ActivityWidgetCtrl as vm" layout="column" class="md-whiteframe-z1"
     md-theme="{{$root.themePrimary}}" style="margin: 16px" flex>
-    <timeline redraw-function="vm.redrawTimeline" flex style="height: 200px"></timeline>
+    <timeline load-options-function="vm.loadTimelineOptions" redraw-function="vm.redrawTimeline" update-function="vm.updateTimeline" flex style="height: 200px"></timeline>
 </div>
