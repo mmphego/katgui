@@ -138,17 +138,11 @@ angular.module('katGui.d3')
 
             scope.updateFunction = function(data) {
 
-                if (!data || data.length === 0) {
-                    return;
-                }
-
                 var startDate = moment().utc().subtract(30, 'm').toDate(),
                     endDate = moment().utc().add(30, 'm').toDate();
 
                 x.domain([startDate, endDate]);
                 y.domain([0, height]);
-
-                scope.data = data;
 
                 nowLine.attr("x1", function(d) {
                         return x(moment().utc().toDate());
@@ -165,6 +159,10 @@ angular.module('katGui.d3')
                     .style("font-size", "10px")
                     .attr("y", margin.top - 2);
 
+                xAxisElement.call(xAxis);
+
+                scope.data = data;
+
                 //update main item rects
                 var rects = maing.selectAll("rect.item-container")
                     .data(data)
@@ -172,7 +170,7 @@ angular.module('katGui.d3')
                         return x(d.start);
                     })
                     .attr("y", function(d) {
-                        return y(laneHeight * (scope.lanes.length - d.lane + 1)) + (laneHeight - (laneHeight * 0.9))/2;
+                        return y(laneHeight * (scope.lanes.length - d.lane + 1)) + (laneHeight - (laneHeight * 0.9)) / 2;
                     })
                     .attr("width", function(d) {
                         return x(d.end) - x(d.start);
@@ -206,7 +204,7 @@ angular.module('katGui.d3')
                         return x(d.start);
                     })
                     .attr("y", function(d) {
-                        return y(laneHeight * (scope.lanes.length - d.lane + 1)) + (laneHeight - (laneHeight * 0.9))/2;
+                        return y(laneHeight * (scope.lanes.length - d.lane + 1)) + (laneHeight - (laneHeight * 0.9)) / 2;
                     })
                     .attr("width", function(d) {
                         return x(d.end) - x(d.start);

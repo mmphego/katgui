@@ -402,6 +402,11 @@
             templateUrl: 'app/admin/admin.html',
             title: 'User Admin'
         });
+        $stateProvider.state('activity', {
+            url: '/activity',
+            templateUrl: 'app/activity/activity.html',
+            title: 'Activity'
+        });
         $stateProvider.state('alarms', {
             url: '/alarms',
             templateUrl: 'app/alarms/alarms.html',

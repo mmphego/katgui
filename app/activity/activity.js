@@ -1,9 +1,9 @@
 (function() {
 
-    angular.module('katGui.widgets')
-        .controller('ActivityWidgetCtrl', ActivityWidgetCtrl);
+    angular.module('katGui')
+        .controller('ActivityCtrl', ActivityCtrl);
 
-    function ActivityWidgetCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService) {
+    function ActivityCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService) {
 
         var vm = this;
         vm.timelineData = [];
