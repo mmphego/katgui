@@ -297,7 +297,6 @@
                     $rootScope.$apply(function () {
                         userlog.attachments = messageData;
                         userlog.attachment_count = messageData.length;
-                        $rootScope.$emit('userlogs_metadata_upload', userlog);
                     });
                 }
             } else {

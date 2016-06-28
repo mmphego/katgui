@@ -1,7 +1,9 @@
 <div ng-controller="ActivityCtrl as vm" layout="column" class="md-whiteframe-z1"
-    md-theme="{{$root.themePrimary}}" style="margin: 32px" flex>
-    <md-toolbar class="widget-toolbar md-whiteframe-z1" layout="row" layout-align="center center">
-        <span>User Activity</span>
+    md-theme="{{$root.themePrimary}}" style="margin: 8px" flex>
+    <md-toolbar class="widget-toolbar md-whiteframe-z1" layout="row" layout-align="center center" style="padding: 0 8px">
+        <span flex>User Activity</span>
+        <span ng-click="vm.addSensorTimeline()">Add</span>
     </md-toolbar>
     <timeline load-options-function="vm.loadTimelineOptions" redraw-function="vm.redrawTimeline" update-function="vm.updateTimeline" flex style="padding-top: 4px; height: 200px"></timeline>
+    <!-- <div ng-repeat="sensor in vm.sensorTimelines">{{sensor}}</div> -->
 </div>

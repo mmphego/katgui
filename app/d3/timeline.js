@@ -92,7 +92,7 @@ angular.module('katGui.d3')
                         .attr("class", "lane-label")
                         .attr("x", 8)
                         .attr("y", function(d) {
-                            return y(laneHeight * (scope.lanes.length - d.lane + 1)) + 20 + margin.top;
+                            return y(laneHeight * (scope.lanes.length - d.lane + 1)) + laneHeight/2 + 5 + margin.top;
                         })
                         .text(function(d) {
                             return d.title;
@@ -129,7 +129,8 @@ angular.module('katGui.d3')
                 xAxisElement.call(xAxis);
 
                 nowLine = maing.append("line")
-                    .style("stroke", "#2196F3");
+                    .style("stroke", "#2196F3")
+                    .style("stroke-dasharray", "10 5");
 
                 nowText = svg.append("text")
                     .style("stroke", "#2196F3")
@@ -266,9 +267,13 @@ angular.module('katGui.d3')
                 texts.exit().remove();
             };
 
-            $interval(function() {
+            scope.updateInterval = $interval(function() {
                 scope.updateFunction(scope.data);
             }, 10000);
+
+            scope.$on('$destroy', function() {
+                $interval.cancel(scope.updateInterval);
+            });
         }
     };
 });

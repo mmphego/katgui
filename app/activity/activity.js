@@ -24,10 +24,11 @@
             lane: 5
         }];
 
-        //TODO this needs a promise
-        ObsSchedService.getScheduledScheduleBlocks();
+        // vm.sensorTimelines = [];
+
         MonitorService.subscribe('sched');
         MonitorService.subscribe('userlogs');
+        //TODO we need some reconnect logic here to subscribe again
 
         vm.addSbsToTimeline = function(scheduleBlocks) {
             scheduleBlocks.forEach(function(sb) {
@@ -81,11 +82,10 @@
                     userlog.start = userlog.end;
                     userlog.end = newEnd;
                 }
-                //TODO should we put this at lane 1?
-                userlog.lane = 5; //subarrays takes lanes 1-4
+                userlog.lane = 5;
                 userlog.strokeColor = "#AB47BC";
                 userlog.fillColor = "rgba(171, 71, 187, 0.5)";
-                userlog.title = userlog.content.substring(0, 10) + '...';
+                userlog.title = userlog.content.substring(0, 15) + '...';
                 userlog.clickFunction = function() {
                     UserLogService.editUserLog(this, false);
                 };
@@ -100,11 +100,9 @@
         };
 
         var unbindOrderChangeAdd = $rootScope.$on('sb_order_change', function(event, sb) {
-            //TODO this needs a promise
-            ObsSchedService.getScheduledScheduleBlocks();
-            $timeout(function() {
-                vm.addSbsToTimeline(ObsSchedService.scheduleData);
-            }, 1500);
+            ObsSchedService.getScheduledScheduleBlocks().then(function (scheduleData) {
+                vm.addSbsToTimeline(scheduleData);
+            });
         });
 
         //This needs to run on the next digest because the timeline is not rendered yet
@@ -113,7 +111,9 @@
                 lanes: vm.timelineLanes
             });
             vm.redrawTimeline();
-            vm.addSbsToTimeline(ObsSchedService.scheduleData);
+            ObsSchedService.getScheduledScheduleBlocks().then(function (scheduleData) {
+                vm.addSbsToTimeline(scheduleData);
+            });
             var startDate = moment().utc().subtract(30, 'm').format('YYYY-MM-DD HH:mm:ss'),
                 endDate = moment().utc().add(30, 'm').format('YYYY-MM-DD HH:mm:ss');
             UserLogService.listTags().then(function() {
@@ -137,14 +137,28 @@
             vm.addSbsToTimeline([sb]);
         });
 
-        //TODO listen for other userlog messages
         var unbindUserlogAdd = $rootScope.$on('userlogs_add', function(event, userlog) {
             vm.addUserLogsToTimeline([userlog]);
         });
 
+        var unbindUserlogModify = $rootScope.$on('userlogs_modify', function(event, userlog) {
+            vm.addUserLogsToTimeline([userlog]);
+        });
+
+        vm.initSensorTimeline = function () {
+            debugger;
+        };
+
+        //TODO add a way to show any sensor timeline
+        // vm.addSensorTimeline = function () {
+            // vm.sensorTimelines.push({sensor: 'weather.wind.speed', initFunction: vm.initSensorTimeline});
+        // };
+
         $scope.$on('$destroy', function() {
             unbindScheduleUpdate();
             unbindOrderChangeAdd();
+            unbindUserlogModify();
+            unbindUserlogAdd();
             MonitorService.unsubscribe('sched', '*');
         });
     }
