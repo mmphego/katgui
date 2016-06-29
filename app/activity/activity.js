@@ -354,7 +354,9 @@
 
         vm.removeSensorTimeline = function(sensor) {
             SensorsService.removeSensorStrategies(sensor.name);
-            var sensorIndex = vm.sensorTimelines.indexOf(sensor);
+            var sensorIndex = _.findIndex(vm.sensorTimelines, function (item) {
+                return item.name === sensor.name;
+            });
             if (sensorIndex > -1) {
                 vm.sensorTimelines.splice(sensorIndex, 1);
                 vm.sensorData[sensor.name] = {};
