@@ -252,10 +252,21 @@ actions-button {
     stroke-width: 0;
 }
 
+
 .lane-label {
 }
 
 .lane-line {
     stroke: rgba(51, 51, 51, 0.5);
     stroke-width: 0.5px;
+}
+
+.context-line {
+    pointer-events: none;
+}
+
+.mouse-pos-line {
+    stroke: rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    stroke-dasharray: 10, 5;
 }

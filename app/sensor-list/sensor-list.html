@@ -135,7 +135,7 @@
                 </span>
             </md-chip-template>
         </md-chips>
-        <multi-line-chart ng-show="vm.showChart" flex redraw-function="vm.redrawChart" hide-context-zoom="true" clear-function="vm.clearChart" class="sensor-list-multi-line-chart" download-csv="vm.downloadAsCSV" remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
+        <multi-line-chart ng-show="vm.showChart" flex load-options-function="vm.loadOptions" redraw-function="vm.redrawChart" hide-context-zoom="true" clear-function="vm.clearChart" class="sensor-list-multi-line-chart" download-csv="vm.downloadAsCSV" remove-sensor-function="vm.removeSensorLine" y-max="vm.yAxisMaxValue"
             y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
         <div resizeable=".sensor-list-chart-container" class="resize-grip">
             <span flex class="fa fa-arrows-v"></span>

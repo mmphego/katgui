@@ -113,7 +113,7 @@
             </md-menu>
         </md-toolbar>
         <div class="md-whiteframe-z1" flex style="padding: 8px; min-height: 235px; margin-bottom: 8px" layout="column" ng-show="!vm.hideWindChart">
-            <multi-line-chart flex redraw-function="vm.redrawWindChart" y-max="vm.yAxisWindMaxValue" hide-context-zoom="true"
+            <multi-line-chart flex load-options-function="vm.loadWindOptions" redraw-function="vm.redrawWindChart" y-max="vm.yAxisWindMaxValue" hide-context-zoom="true"
                               y-min="vm.yAxisWindMinValue" mouse-over-tooltip="true" clear-function="vm.clearWindChart"
                               remove-sensor-function="vm.removeSensorLine" download-csv="vm.downloadAsCSV"></multi-line-chart>
         </div>
