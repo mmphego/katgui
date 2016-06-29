@@ -93,6 +93,12 @@
                     return "<i>Content:</i> <b>" + this.content + "</b><br/>" + "<i>Start:</i> " + this.start_time + "<br/><i>End:</i> " + this.end_time + "<br/><i>Tags:</i> " + this.tagsListText + "<br/><i>Attachments:</i> " + this.attachment_count;
                 };
                 if (userlog.start && userlog.end && userlog.lane) {
+                    var existingULIndex = _.findIndex(vm.timelineData, function(item) {
+                        return !item.id_code && item.id === userlog.id;
+                    });
+                    if (existingULIndex !== -1) {
+                        vm.timelineData.splice(existingULIndex, 1);
+                    }
                     vm.timelineData.push(userlog);
                 }
             });
@@ -160,6 +166,7 @@
             unbindUserlogModify();
             unbindUserlogAdd();
             MonitorService.unsubscribe('sched', '*');
+            MonitorService.unsubscribe('userlogs', '*');
         });
     }
 })();
