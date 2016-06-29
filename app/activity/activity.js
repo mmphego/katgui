@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('ActivityCtrl', ActivityCtrl);
 
-    function ActivityCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService) {
+    function ActivityCtrl($scope, $rootScope, $timeout, $log, $interval, ObsSchedService, MonitorService, UserLogService, SensorsService, NotifyService, DataService) {
 
         var vm = this;
         vm.timelineData = [];
@@ -24,11 +24,56 @@
             lane: 5
         }];
 
-        // vm.sensorTimelines = [];
+        vm.sensorTimelines = [];
+        vm.sensorData = {};
+        vm.redrawFunctions = {};
+        vm.clearFunctions = {};
+        vm.removeFunctions = {};
 
         MonitorService.subscribe('sched');
         MonitorService.subscribe('userlogs');
         //TODO we need some reconnect logic here to subscribe again
+
+        vm.connectListeners = function () {
+            SensorsService.connectListener()
+                .then(function () {
+                    vm.initSensors();
+                    if (vm.connectInterval) {
+                        $interval.cancel(vm.connectInterval);
+                        vm.connectInterval = null;
+                        NotifyService.showSimpleToast('Reconnected :)');
+                    }
+                }, function () {
+                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                    }
+                });
+            vm.handleSocketTimeout();
+        };
+
+        vm.handleSocketTimeout = function () {
+            SensorsService.getTimeoutPromise()
+                .then(function () {
+                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
+                    if (!vm.connectInterval) {
+                        vm.connectInterval = $interval(vm.connectListeners, 10000);
+                        vm.connectListeners();
+                    }
+                });
+        };
+
+        if ($rootScope.loggedIn) {
+            vm.connectListeners();
+        } else {
+            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+                vm.connectListeners();
+            });
+        }
+
+        vm.initSensors = function () {
+            //TODO reconnect to existing sensors
+        };
 
         vm.addSbsToTimeline = function(scheduleBlocks) {
             scheduleBlocks.forEach(function(sb) {
@@ -151,20 +196,106 @@
             vm.addUserLogsToTimeline([userlog]);
         });
 
-        vm.initSensorTimeline = function () {
-            debugger;
+        vm.initSensorTimeline = function (sensor) {
+            vm.findSensorData(sensor, true);
         };
 
         //TODO add a way to show any sensor timeline
-        // vm.addSensorTimeline = function () {
-            // vm.sensorTimelines.push({sensor: 'weather.wind.speed', initFunction: vm.initSensorTimeline});
-        // };
+        vm.addSensorTimeline = function () {
+            var sensor = {name: 'anc_weather_wind_speed'};
+            vm.sensorTimelines.push(sensor);
+            vm.initSensorTimeline(sensor);
+        };
+
+        vm.findSensorData = function (sensor, suppressToast) {
+            var startDate = moment().utc().subtract(30, 'm').toDate().getTime(),
+                endDate = moment().utc().toDate().getTime();
+
+            // var interval = null;
+            // if (vm.sensorType === 'numeric') {
+            //     interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
+            // }
+
+            var requestParams;
+            if (sensor.type === 'discrete') {
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 10000];
+            } else {
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 10000];
+            }
+
+            DataService.sensorData.apply(this, requestParams)
+                .then(function (result) {
+                    if (result.data.result === "success") {
+                        vm.connectLiveSensorFeed(sensor.name);
+                    }
+                }, function (error) {
+                    $log.error(error);
+                });
+        };
+
+        vm.sensorDataReceived = function (event, sensor) {
+
+            if (sensor.value && sensor.value instanceof Array) {
+                var newData = [];
+                var newSensorNames = {};
+                for (var attr in sensor.value) {
+                    var sensorName = sensor.value[attr][4];
+
+                    newData.push({
+                        status: sensor.value[attr][5],
+                        sensor: sensorName,
+                        value: sensor.value[attr][3],
+                        value_ts: sensor.value[attr][1],
+                        sample_ts: sensor.value[attr][0],
+                        minValue: sensor.value[attr][6],
+                        maxValue: sensor.value[attr][7]
+                    });
+                    newSensorNames[sensorName] = {};
+                }
+
+                if (newData && newData.length > 0) {
+                    vm.redrawFunctions[Object.keys(newSensorNames)[0]](newData, false, true, false, null);
+                }
+            }
+            else if (sensor.value) {
+                var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_').replace(/-/g, '_');
+                if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
+                    vm.redrawChart([{
+                        sensor: realSensorName,
+                        value_ts: sensor.value.timestamp * 1000,
+                        sample_ts: sensor.value.received_timestamp * 1000,
+                        value: sensor.value.value
+                    }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                }
+            }
+        };
+
+        vm.connectLiveSensorFeed = function (sensorRegex) {
+            if (sensorRegex.length > 0) {
+                SensorsService.setSensorStrategies(
+                    sensorRegex,
+                    'event-rate',
+                    1,
+                    10);
+            }
+        };
+
+        vm.disconnectLiveSensorFeed = function (sensorRegex) {
+            SensorsService.removeSensorStrategies(sensorRegex);
+        };
+
+        var unbindSensorUpdate = $rootScope.$on('sensorsServerUpdateMessage', vm.sensorDataReceived);
+
+        vm.downloadCSVDummy = function () {
+
+        };
 
         $scope.$on('$destroy', function() {
             unbindScheduleUpdate();
             unbindOrderChangeAdd();
             unbindUserlogModify();
             unbindUserlogAdd();
+            unbindSensorUpdate();
             MonitorService.unsubscribe('sched', '*');
             MonitorService.unsubscribe('userlogs', '*');
         });

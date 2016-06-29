@@ -4,6 +4,7 @@
         <span flex>User Activity</span>
         <span ng-click="vm.addSensorTimeline()">Add</span>
     </md-toolbar>
-    <timeline load-options-function="vm.loadTimelineOptions" redraw-function="vm.redrawTimeline" update-function="vm.updateTimeline" flex style="padding-top: 4px; height: 200px"></timeline>
-    <!-- <div ng-repeat="sensor in vm.sensorTimelines">{{sensor}}</div> -->
+    <timeline flex load-options-function="vm.loadTimelineOptions" redraw-function="vm.redrawTimeline" update-function="vm.updateTimeline"  style="padding-top: 4px; height: 200px"></timeline>
+    <multi-line-chart flex ng-repeat="sensor in vm.sensorTimelines track by $index" data="vm.sensorData[sensor.name]" redraw-function="vm.redrawFunctions[sensor.name]" clear-function="vm.clearFunctions[sensor.name]"
+                      remove-sensor-function="vm.removeFunctions[sensor.name]" mouse-over-tooltip="true" download-csv="vm.downloadCSVDummy" hide-context-zoom="true"></multi-line-chart>
 </div>
