@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-.directive('multiLineChart', function(DATETIME_FORMAT, $timeout, $log) {
+.directive('multiLineChart', function($rootScope, DATETIME_FORMAT, $timeout, $log, $interval) {
     return {
         restrict: 'EA',
         scope: {
@@ -28,21 +28,39 @@ angular.module('katGui.d3')
                 contextBrushColor = '#fff';
             }
 
-            var unbindResize = scope.$watch(function() {
-                return element[0].clientHeight + ', ' + element[0].clientWidth;
-            }, function(newVal, oldVal) {
-                if (newVal !== oldVal) {
-                    if (scope.resizeTimeout) {
-                        $timeout.cancel(scope.resizeTimeout);
-                        scope.resizeTimeout = null;
+            var margin = {
+                    top: 10,
+                    right: 10,
+                    bottom: 110,
+                    left: 60
+                },
+                width, height, height2;
+            var margin2 = {
+                top: 0,
+                right: 10,
+                bottom: 20,
+                left: 60
+            };
+            var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2, minline, maxline,
+                xAxisElement, yAxisElement, xAxisElement2, context, focus, brush, nowLine, nowText;
+
+            $timeout(function() {
+                scope.unbindResize = scope.$watch(function() {
+                    return element[0].clientHeight - margin.top - margin.bottom + ', ' + element[0].clientWidth;
+                }, function(newVal, oldVal) {
+                    if (newVal !== oldVal) {
+                        scope.lazyResize();
                     }
-                    //allow for some time for the dom elements to complete resizing
-                    scope.resizeTimeout = $timeout(function() {
-                        drawSvg();
-                        drawValues();
-                    }, 750);
-                }
-            });
+                });
+                scope.resizeChart();
+            }, 750);
+
+            scope.resizeChart = function() {
+                drawSvg();
+                drawValues();
+            };
+
+            scope.lazyResize = _.debounce(scope.resizeChart, 300);
 
             var color = d3.scale.category20();
             var bisectDate = d3.bisector(function(d) {
@@ -56,11 +74,16 @@ angular.module('katGui.d3')
                 showGridLines: false,
                 hideContextZoom: false,
                 useFixedYAxis: false,
+                useFixedXAxis: false,
                 yAxisValues: null,
+                xAxisValues: null,
                 dataLimit: null,
                 limitOverlayValues: null,
                 forceRedraw: false,
-                hasMinMax: true
+                hasMinMax: true,
+                scrollXAxisWindowBy: 0,
+                drawNowLine: false,
+                removeOutOfTimeWindowData: false
             };
 
             scope.loadOptionsFunction = function(options, forceRedraw) {
@@ -80,9 +103,28 @@ angular.module('katGui.d3')
                     });
                 }
 
+                if (scope.options.scrollXAxisWindowBy) {
+                    if (scope.scrollXAxisInterval) {
+                        $interval.cancel(scope.scrollXAxisInterval);
+                    }
+                    scope.scrollXAxisInterval = $interval(function() {
+                        var domain = x.domain();
+                        if (domain[0] !== domain[1] && domain[0].getTime() > 0 && domain[1].getTime() > 0) {
+                            var newStart = moment(domain[0]).add(scope.options.scrollXAxisWindowBy, 's').toDate();
+                            var newEnd = moment(domain[1]).add(scope.options.scrollXAxisWindowBy, 's').toDate();
+                            x.domain([newStart, newEnd]);
+                            updateAxis();
+                        } else if (scope.xAxisValues && scope.xAxisValues.length > 0 && scope.xAxisValues[0].getTime() > 0) {
+                            x.domain(scope.xAxisValues);
+                            updateAxis();
+                        }
+                        updateNowLine();
+                    }, scope.options.scrollXAxisWindowBy * 1000);
+                }
+
                 if (optionsChanged || forceRedraw) {
                     drawSvg();
-                    scope.redrawFunction();
+                    drawValues();
                 }
             };
 
@@ -122,7 +164,8 @@ angular.module('katGui.d3')
                         key: d.sensor
                     });
                     if (existingDataLine) {
-                        if (scope.options.dataLimit && existingDataLine.values.length > scope.options.dataLimit) {
+                        if ((scope.options.dataLimit && existingDataLine.values.length > scope.options.dataLimit) ||
+                            (scope.options.removeOutOfTimeWindowData && x.domain()[0].getTime() > 0 && existingDataLine.values[0].date < x.domain()[0])) {
                             existingDataLine.values.splice(0, 1);
                         }
                         if (d.sample_ts < existingDataLine.values[0].sample_ts ||
@@ -179,25 +222,7 @@ angular.module('katGui.d3')
             var tooltip = d3.select(element[0]).append("div")
                 .attr("class", "multi-line-tooltip");
 
-            var margin = {
-                    top: 10,
-                    right: 10,
-                    bottom: 110,
-                    left: 60
-                },
-                width, height, height2;
-            var margin2 = {
-                top: 0,
-                right: 10,
-                bottom: 20,
-                left: 60
-            };
-            var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2, minline, maxline,
-                xAxisElement, yAxisElement, xAxisElement2, context, focus, brush;
-
             var limitOverlayElements = [];
-            drawSvg();
-            drawValues();
 
             function drawSvg() {
 
@@ -418,25 +443,65 @@ angular.module('katGui.d3')
                             .attr("class", "limit-overlay-path"));
                     });
                 }
+
+                if (scope.options.drawNowLine) {
+                    nowLine = focus.append("line")
+                        .style("stroke", "#2196F3")
+                        .style("stroke-dasharray", "10 5");
+
+                    nowText = focus.append("text")
+                        .style("stroke", "#2196F3")
+                        .text("Now UTC");
+
+                    updateNowLine();
+                }
+            }
+
+            function updateNowLine() {
+                if (scope.options.drawNowLine) {
+                    nowLine.attr("x1", function(d) {
+                            return x($rootScope.utcDate);
+                        })
+                        .attr("x2", function(d) {
+                            return x($rootScope.utcDate);
+                        })
+                        .attr("y1", "0")
+                        .attr("y2", height);
+
+                    nowText.attr("x", function(d) {
+                            return x($rootScope.utcDate) - 22;
+                        })
+                        .style("font-size", "10px")
+                        .attr("y", margin.top - 2);
+                }
             }
 
             function drawValues() {
 
-                focus.selectAll(".path-container").remove();
+                svg.selectAll('.path-container').remove();
+
+                updateNowLine();
 
                 if (scope.nestedData.length === 0) {
                     return;
                 }
 
-                // scale the range of the data
-                x.domain([
-                    d3.min(scope.nestedData, function(sensors) {
-                        return sensors.values[0].date;
-                    }),
-                    d3.max(scope.nestedData, function(sensors) {
-                        return sensors.values[sensors.values.length - 1].date;
-                    })
-                ]);
+                if (scope.options.useFixedXAxis && scope.options.xAxisValues) {
+                    if (!scope.options.scrollXAxisWindowBy || x.domain()[0].getTime() === 0) {
+                        x.domain(scope.options.xAxisValues);
+                    }
+                } else {
+                    // scale the range of the data
+                    x.domain([
+                        d3.min(scope.nestedData, function(sensors) {
+                            return sensors.values[0].date;
+                        }),
+                        d3.max(scope.nestedData, function(sensors) {
+                            return sensors.values[sensors.values.length - 1].date;
+                        })
+                    ]);
+                }
+
 
                 if (scope.options.useFixedYAxis && !scope.options.yAxisValues) {
                     y.domain([scope.yMin, scope.yMax]);
@@ -447,7 +512,11 @@ angular.module('katGui.d3')
                                 if (d.minValue) {
                                     return d.minValue;
                                 }
-                                return d.value;
+                                var parsedValue = parseFloat(d.value);
+                                if (isNaN(parsedValue)) {
+                                    return d.value;
+                                }
+                                return parsedValue;
                             });
                         }),
                         d3.max(scope.nestedData, function(sensors) {
@@ -455,7 +524,11 @@ angular.module('katGui.d3')
                                 if (d.maxValue) {
                                     return d.maxValue;
                                 }
-                                return d.value;
+                                var parsedValue = parseFloat(d.value);
+                                if (isNaN(parsedValue)) {
+                                    return d.value;
+                                }
+                                return parsedValue;
                             });
                         })
                     ];
@@ -495,7 +568,8 @@ angular.module('katGui.d3')
                     })
                     .attr("d", function(d) {
                         return line(d.values);
-                    }).attr("clip-path", "url(#clip)");
+                    })
+                    .attr("clip-path", "url(#clip)");
 
                 focuslineGroups.exit().remove();
 
@@ -543,20 +617,7 @@ angular.module('katGui.d3')
                     mousemove(true);
                 }
 
-                xAxisElement.call(xAxis);
-                yAxisElement.call(yAxis);
-
-                if (scope.options.yAxisValues) {
-                    yAxisElement.selectAll(".y-axis text")
-                        .each(function(d, i) {
-                            wrapText(this, scope.options.yAxisValues[i], margin.left);
-                        });
-                } else {
-                    yAxisElement.selectAll(".y-axis text")
-                        .each(function(d) {
-                            wrapText(this, d.toString(), margin.left);
-                        });
-                }
+                updateAxis();
 
                 //context zoom element start
                 if (!scope.options.hideContextZoom) {
@@ -619,6 +680,23 @@ angular.module('katGui.d3')
 
             var lazyloadTooltipValues = _.debounce(loadTooltipValues, 150);
 
+            function updateAxis() {
+                xAxisElement.call(xAxis);
+                yAxisElement.call(yAxis);
+
+                if (scope.options.yAxisValues) {
+                    yAxisElement.selectAll(".y-axis text")
+                        .each(function(d, i) {
+                            wrapText(this, scope.options.yAxisValues[i], margin.left);
+                        });
+                } else {
+                    yAxisElement.selectAll(".y-axis text")
+                        .each(function(d) {
+                            wrapText(this, d.toString(), margin.left);
+                        });
+                }
+            }
+
             function mousemove(calledWithoutEvent) {
                 var mouse = null;
                 if (!calledWithoutEvent) {
@@ -664,7 +742,7 @@ angular.module('katGui.d3')
                 }
 
                 var tooltipValues = [];
-                scope.nestedData.forEach(function (data) {
+                scope.nestedData.forEach(function(data) {
 
                     var x0 = x.invert(mouse[0]),
                         i = bisectDate(data.values, x0, 1);
@@ -700,12 +778,15 @@ angular.module('katGui.d3')
                     if (xTranslate + tooltip[0][0].clientWidth > width) {
                         xTranslate -= tooltip[0][0].clientWidth + 20;
                     }
-                    tooltip.style("transform", "translate(" + (xTranslate ) + "px,  8px)");
+                    tooltip.style("transform", "translate(" + (xTranslate) + "px,  8px)");
                 }
             }
 
             scope.$on('$destroy', function() {
-                unbindResize();
+                scope.unbindResize();
+                if (scope.scrollXAxisInterval) {
+                    $interval.cancel(scope.scrollXAxisInterval);
+                }
             });
 
             scope.downloadCsv = function(useUnixTimestamps) {

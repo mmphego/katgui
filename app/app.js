@@ -284,6 +284,7 @@
                 } else {
                     $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
                 }
+                $rootScope.utcDate = utcTime.toDate();
                 $rootScope.utcTime = utcTime.format('HH:mm:ss');
                 $rootScope.localTime = localTime.format('HH:mm:ss');
                 $rootScope.currentDate = utcTime.format('YYYY-MM-DD');

@@ -3,7 +3,8 @@
     angular.module('katGui')
         .controller('ActivityCtrl', ActivityCtrl);
 
-    function ActivityCtrl($scope, $rootScope, $timeout, $log, $interval, ObsSchedService, MonitorService, UserLogService, SensorsService, NotifyService, DataService) {
+    function ActivityCtrl($scope, $rootScope, $timeout, $log, $interval, $mdDialog, ObsSchedService, MonitorService,
+        UserLogService, SensorsService, NotifyService, DataService) {
 
         var vm = this;
         vm.timelineData = [];
@@ -29,21 +30,22 @@
         vm.redrawFunctions = {};
         vm.clearFunctions = {};
         vm.removeFunctions = {};
+        vm.loadOptionsFunctions = {};
 
         MonitorService.subscribe('sched');
         MonitorService.subscribe('userlogs');
         //TODO we need some reconnect logic here to subscribe again
 
-        vm.connectListeners = function () {
+        vm.connectListeners = function() {
             SensorsService.connectListener()
-                .then(function () {
+                .then(function() {
                     vm.initSensors();
                     if (vm.connectInterval) {
                         $interval.cancel(vm.connectInterval);
                         vm.connectInterval = null;
                         NotifyService.showSimpleToast('Reconnected :)');
                     }
-                }, function () {
+                }, function() {
                     $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
                     if (!vm.connectInterval) {
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
@@ -52,9 +54,9 @@
             vm.handleSocketTimeout();
         };
 
-        vm.handleSocketTimeout = function () {
+        vm.handleSocketTimeout = function() {
             SensorsService.getTimeoutPromise()
-                .then(function () {
+                .then(function() {
                     NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
                     if (!vm.connectInterval) {
                         vm.connectInterval = $interval(vm.connectListeners, 10000);
@@ -66,12 +68,12 @@
         if ($rootScope.loggedIn) {
             vm.connectListeners();
         } else {
-            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function() {
                 vm.connectListeners();
             });
         }
 
-        vm.initSensors = function () {
+        vm.initSensors = function() {
             //TODO reconnect to existing sensors
         };
 
@@ -151,7 +153,7 @@
         };
 
         var unbindOrderChangeAdd = $rootScope.$on('sb_order_change', function(event, sb) {
-            ObsSchedService.getScheduledScheduleBlocks().then(function (scheduleData) {
+            ObsSchedService.getScheduledScheduleBlocks().then(function(scheduleData) {
                 vm.addSbsToTimeline(scheduleData);
             });
         });
@@ -162,11 +164,11 @@
                 lanes: vm.timelineLanes
             });
             vm.redrawTimeline();
-            ObsSchedService.getScheduledScheduleBlocks().then(function (scheduleData) {
+            ObsSchedService.getScheduledScheduleBlocks().then(function(scheduleData) {
                 vm.addSbsToTimeline(scheduleData);
             });
-            var startDate = moment().utc().subtract(30, 'm').format('YYYY-MM-DD HH:mm:ss'),
-                endDate = moment().utc().add(30, 'm').format('YYYY-MM-DD HH:mm:ss');
+            var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').format('YYYY-MM-DD HH:mm:ss'),
+                endDate = moment.utc($rootScope.utcDate).add(15, 'm').format('YYYY-MM-DD HH:mm:ss');
             UserLogService.listTags().then(function() {
                 UserLogService.listUserLogsForTimeRange(startDate, endDate).then(function(result) {
                     if (result) {
@@ -196,20 +198,85 @@
             vm.addUserLogsToTimeline([userlog]);
         });
 
-        vm.initSensorTimeline = function (sensor) {
+        vm.initSensorTimeline = function(sensor) {
             vm.findSensorData(sensor, true);
         };
 
         //TODO add a way to show any sensor timeline
-        vm.addSensorTimeline = function () {
-            var sensor = {name: 'anc_weather_wind_speed'};
-            vm.sensorTimelines.push(sensor);
-            vm.initSensorTimeline(sensor);
+        vm.addSensorTimeline = function(sensor) {
+            var existingSensor = _.find(vm.sensorTimelines, function(item) {
+                return item.name === sensor.name;
+            });
+            if (!existingSensor) {
+                vm.sensorTimelines.push(sensor);
+                $timeout(function() {
+                    var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate(),
+                        endDate = moment.utc($rootScope.utcDate).add(15, 'm').toDate();
+                    vm.loadOptionsFunctions[sensor.name]({
+                        showGridLines: true,
+                        hideContextZoom: true,
+                        useFixedYAxis: false,
+                        useFixedXAxis: true,
+                        xAxisValues: [startDate, endDate],
+                        scrollXAxisWindowBy: 10,
+                        drawNowLine: true,
+                        removeOutOfTimeWindowData: true
+                    });
+                    vm.initSensorTimeline(sensor);
+                });
+            }
         };
 
-        vm.findSensorData = function (sensor, suppressToast) {
-            var startDate = moment().utc().subtract(30, 'm').toDate().getTime(),
-                endDate = moment().utc().toDate().getTime();
+        vm.findSensorNames = function(event) {
+            $mdDialog
+                .show({
+                    controller: function($rootScope, $scope, $mdDialog) {
+                        $scope.title = 'Find sensor names';
+                        $scope.sensorNames = [];
+                        $scope.searchDiscrete = false;
+
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+
+                        $scope.findSensorData = function(sensor) {
+                            vm.addSensorTimeline(sensor);
+                        };
+
+                        $scope.findSensorNames = function(searchStr) {
+                            if (searchStr && searchStr.length > 2) {
+                                var sensorType = $scope.searchDiscrete ? 'discrete' : 'numeric';
+                                DataService.sensorsInfo(searchStr.replace(/ /g, '.'), sensorType, 10000)
+                                    .then(function(result) {
+                                        if (result.data.error) {
+                                            NotifyService.showPreDialog('Error retrieving sensors', result.data.error);
+                                        } else if (result.data) {
+                                            $scope.sensorNames = [];
+                                            result.data.forEach(function(sensor) {
+                                                $scope.sensorNames.push({
+                                                    name: sensor[0],
+                                                    component: sensor[1],
+                                                    attributes: sensor[2],
+                                                    type: sensorType
+                                                });
+                                            });
+                                        }
+                                    }, function(error) {
+                                        $log.error(error);
+                                        NotifyService.showPreDialog('Error Finding Sensors', error);
+                                    });
+                            }
+                        };
+                    },
+                    templateUrl: "app/activity/find-sensor-name.tmpl.html",
+                    targetEvent: event
+                });
+
+        };
+
+        vm.findSensorData = function(sensor) {
+            var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate().getTime(),
+                endDate = moment.utc($rootScope.utcDate).toDate().getTime();
 
             // var interval = null;
             // if (vm.sensorType === 'numeric') {
@@ -224,16 +291,16 @@
             }
 
             DataService.sensorData.apply(this, requestParams)
-                .then(function (result) {
+                .then(function(result) {
                     if (result.data.result === "success") {
                         vm.connectLiveSensorFeed(sensor.name);
                     }
-                }, function (error) {
+                }, function(error) {
                     $log.error(error);
                 });
         };
 
-        vm.sensorDataReceived = function (event, sensor) {
+        vm.sensorDataReceived = function(event, sensor) {
 
             if (sensor.value && sensor.value instanceof Array) {
                 var newData = [];
@@ -254,23 +321,22 @@
                 }
 
                 if (newData && newData.length > 0) {
-                    vm.redrawFunctions[Object.keys(newSensorNames)[0]](newData, false, true, false, null);
+                    vm.redrawFunctions[Object.keys(newSensorNames)[0]](newData);
                 }
-            }
-            else if (sensor.value) {
+            } else if (sensor.value) {
                 var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_').replace(/-/g, '_');
-                if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
-                    vm.redrawChart([{
+                if (vm.redrawFunctions[realSensorName]) {
+                    vm.redrawFunctions[realSensorName]([{
                         sensor: realSensorName,
                         value_ts: sensor.value.timestamp * 1000,
                         sample_ts: sensor.value.received_timestamp * 1000,
                         value: sensor.value.value
-                    }], vm.showGridLines, !vm.showContextZoom, vm.useFixedYAxis, null, 1000);
+                    }]);
                 }
             }
         };
 
-        vm.connectLiveSensorFeed = function (sensorRegex) {
+        vm.connectLiveSensorFeed = function(sensorRegex) {
             if (sensorRegex.length > 0) {
                 SensorsService.setSensorStrategies(
                     sensorRegex,
@@ -280,14 +346,23 @@
             }
         };
 
-        vm.disconnectLiveSensorFeed = function (sensorRegex) {
-            SensorsService.removeSensorStrategies(sensorRegex);
-        };
-
         var unbindSensorUpdate = $rootScope.$on('sensorsServerUpdateMessage', vm.sensorDataReceived);
 
-        vm.downloadCSVDummy = function () {
+        vm.downloadCSVDummy = function() {
 
+        };
+
+        vm.removeSensorTimeline = function(sensor) {
+            SensorsService.removeSensorStrategies(sensor.name);
+            var sensorIndex = vm.sensorTimelines.indexOf(sensor);
+            if (sensorIndex > -1) {
+                vm.sensorTimelines.splice(sensorIndex, 1);
+                vm.sensorData[sensor.name] = {};
+                vm.redrawFunctions[sensor.name] = {};
+                vm.clearFunctions[sensor.name] = {};
+                vm.removeFunctions[sensor.name] = {};
+                vm.loadOptionsFunctions[sensor.name] = {};
+            }
         };
 
         $scope.$on('$destroy', function() {
@@ -298,6 +373,7 @@
             unbindSensorUpdate();
             MonitorService.unsubscribe('sched', '*');
             MonitorService.unsubscribe('userlogs', '*');
+            SensorsService.disconnectListener();
         });
     }
 })();

@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-.directive('timeline', function($timeout, $interval, ObsSchedService) {
+.directive('timeline', function($rootScope, $timeout, $interval, ObsSchedService) {
     return {
         restrict: 'E',
         scope: {
@@ -21,6 +21,8 @@ angular.module('katGui.d3')
             var svg, maing, xAxis, yAxis, x, y, xAxisElement, yAxisElement, nowLine, nowText, laneHeight = 30;
             var tooltip = d3.select(element[0]).append("div")
                 .attr("class", "timeline-tooltip");
+
+            scope.data = [];
 
             var unbindResize = scope.$watch(function() {
                 return element[0].clientHeight + ', ' + element[0].clientWidth;
@@ -45,6 +47,13 @@ angular.module('katGui.d3')
             };
 
             scope.redrawFunction = function() {
+                if (!$rootScope.utcDate) {
+                    //wait until we have utc date time
+                    $timeout(function () {
+                        scope.redrawFunction();
+                    }, 100);
+                    return;
+                }
 
                 d3.select(element[0]).select('svg').remove();
 
@@ -57,8 +66,8 @@ angular.module('katGui.d3')
 
                 xAxis = d3.svg.axis().scale(x).orient("bottom");
 
-                var startDate = moment().utc().subtract(30, 'm').toDate(),
-                    endDate = moment().utc().add(30, 'm').toDate();
+                var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate(),
+                    endDate = moment.utc($rootScope.utcDate).add(15, 'm').toDate();
 
                 x.domain([startDate, endDate]);
                 y.domain([0, height]);
@@ -139,28 +148,40 @@ angular.module('katGui.d3')
 
             scope.updateFunction = function(data) {
 
-                var startDate = moment().utc().subtract(30, 'm').toDate(),
-                    endDate = moment().utc().add(30, 'm').toDate();
+                if (!$rootScope.utcDate || !maing) {
+                    //wait until we have utc date time
+                    $timeout(function () {
+                        scope.updateFunction(scope.data);
+                    }, 200);
+                    return;
+                }
+
+                var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate(),
+                    endDate = moment.utc($rootScope.utcDate).add(15, 'm').toDate();
 
                 x.domain([startDate, endDate]);
                 y.domain([0, height]);
 
                 nowLine.attr("x1", function(d) {
-                        return x(moment().utc().toDate());
+                        return x($rootScope.utcDate);
                     })
                     .attr("x2", function(d) {
-                        return x(moment().utc().toDate());
+                        return x($rootScope.utcDate);
                     })
                     .attr("y1", "0")
                     .attr("y2", height);
 
                 nowText.attr("x", function(d) {
-                        return x(moment().utc().toDate()) + margin.left - 22;
+                        return x($rootScope.utcDate) + margin.left - 22;
                     })
                     .style("font-size", "10px")
                     .attr("y", margin.top - 2);
 
                 xAxisElement.call(xAxis);
+
+                if (!data) {
+                    return;
+                }
 
                 scope.data = data;
 
