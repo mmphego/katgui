@@ -490,7 +490,7 @@ angular.module('katGui.d3')
                 if (scope.options.useFixedYAxis && !scope.options.yAxisValues) {
                     y.domain([scope.yMin, scope.yMax]);
                 } else if (!scope.options.yAxisValues) {
-                    var yExtent = [0, 1];
+                    var yExtent = [0, 0];
                     if (scope.nestedData.length > 0) {
                         yExtent = [
                             d3.min(scope.nestedData, function(sensors) {
@@ -523,6 +523,7 @@ angular.module('katGui.d3')
                 } else {
                     y.domain(scope.options.yAxisValues);
                 }
+                updateAxis();
             }
 
             function drawValues() {
@@ -684,17 +685,10 @@ angular.module('katGui.d3')
                 xAxisElement.call(xAxis);
                 yAxisElement.call(yAxis);
 
-                if (scope.options.yAxisValues) {
-                    yAxisElement.selectAll(".y-axis text")
-                        .each(function(d, i) {
-                            wrapText(this, scope.options.yAxisValues[i], margin.left);
-                        });
-                } else {
-                    yAxisElement.selectAll(".y-axis text")
-                        .each(function(d) {
-                            wrapText(this, d.toString(), margin.left);
-                        });
-                }
+                yAxisElement.selectAll(".y-axis text")
+                    .each(function(d) {
+                        wrapText(this, d.toString(), margin.left);
+                    });
             }
 
             function mousemove(calledWithoutEvent) {

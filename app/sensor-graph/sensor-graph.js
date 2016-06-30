@@ -350,7 +350,7 @@
 
         vm.sensorDataReceived = function (event, sensor) {
 
-            var hasMinMax = vm.intervalNum !== 1 && vm.intervalType !== 's' && !vm.searchDiscrete;
+            var hasMinMax = (vm.intervalNum !== 1 || vm.intervalType !== 's') && !vm.searchDiscrete;
 
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
@@ -372,7 +372,7 @@
                 }
 
                 if (newData) {
-                    vm.redrawChart(newData, hasMinMax);
+                    vm.redrawChart(newData, true);
                 }
             }
             else if (sensor.value) {
