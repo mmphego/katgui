@@ -39,13 +39,21 @@
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
-                if (systemConfig.system.bands && systemConfig.system.products) {
+                if (systemConfig.system.bands) {
                     vm.bands = systemConfig.system.bands.split(',');
-                    vm.products = systemConfig.system.products.split(',');
                 } else {
                     NotifyService.showSimpleDialog('Error loading bands and products',
                         'Bands and products were not found in the system\'s config.');
                 }
+            });
+
+        ConfigService.getProductConfig()
+            .then(function (productConfig) {
+                vm.products = [];
+                var productKeys = Object.keys(productConfig);
+                productKeys.forEach(function (product) {
+                    vm.products.push({name: product, sp_product: productConfig[product].sp_product, cbf_product: productConfig[product].cbf_product})
+                });
             });
 
         vm.iAmAtLeastCA = function () {

@@ -11,6 +11,7 @@
         api.receptorList = [];
         api.KATObsPortalURL = null;
         api.systemConfig = null;
+        api.productConfig = null;
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
         api.sensorGroups = {};
@@ -59,6 +60,25 @@
                     .then(function (result) {
                         api.systemConfig = result.data;
                         deferred.resolve(api.systemConfig);
+                    }, function (message) {
+                        $log.error(message);
+                        deferred.reject(message);
+                    });
+            }
+            return deferred.promise;
+        };
+
+        api.getProductConfig = function () {
+            var deferred = $q.defer();
+            if (api.productConfig) {
+                $timeout(function () {
+                    deferred.resolve(api.productConfig);
+                });
+            } else {
+                $http(createRequest('get', urlBase + '/array-config/product_conf'))
+                    .then(function (result) {
+                        api.productConfig = result.data;
+                        deferred.resolve(api.productConfig);
                     }, function (message) {
                         $log.error(message);
                         deferred.reject(message);
