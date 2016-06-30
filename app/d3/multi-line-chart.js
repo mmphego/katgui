@@ -96,14 +96,6 @@ angular.module('katGui.d3')
                     }
                 });
 
-                if (scope.options.yAxisValues) {
-                    scope.options.yAxisValues = scope.options.yAxisValues.replace(/\'/g, '"');
-                    scope.options.yAxisValues = JSON.parse(scope.options.yAxisValues);
-                    scope.options.yAxisValues = _.sortBy(scope.options.yAxisValues, function(d) {
-                        return d.toUpperCase();
-                    });
-                }
-
                 if (scope.options.scrollXAxisWindowBy) {
                     if (scope.scrollXAxisInterval) {
                         $interval.cancel(scope.scrollXAxisInterval);

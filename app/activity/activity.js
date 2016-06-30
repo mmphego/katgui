@@ -6,6 +6,8 @@
     function ActivityCtrl($scope, $rootScope, $timeout, $log, $interval, $mdDialog, ObsSchedService, MonitorService,
         UserLogService, SensorsService, NotifyService, DataService, $localStorage) {
 
+        //TODO refactor so that the x-axis is adjusted at the same time for all timelines
+
         var vm = this;
         vm.timelineData = [];
         vm.timelineLanes = [{
@@ -74,17 +76,23 @@
         }
 
         vm.initSensors = function() {
-            MonitorService.subscribe('sched');
-            MonitorService.subscribe('userlogs');
-
-            if (vm.sensorTimelines.length > 0) {
-                //TODO use a promise for when $rootScope.utcDate is set
+            //Stagger the inits because too many calls over the websocket breaks some of them
+            $timeout(function() {
+                MonitorService.subscribe('sched');
                 $timeout(function() {
-                    vm.sensorTimelines.forEach(function(sensor) {
-                        vm.addSensorTimeline(sensor, true);
-                    });
-                }, 1000);
-            }
+                    MonitorService.subscribe('userlogs');
+
+                    if (vm.sensorTimelines.length > 0) {
+                        var timeoutIncrement = 0;
+                        vm.sensorTimelines.forEach(function(sensor) {
+                            $timeout(function() {
+                                vm.addSensorTimeline(sensor, true);
+                            }, 100 + timeoutIncrement);
+                            timeoutIncrement += 500;
+                        });
+                    }
+                }, 300);
+            }, 300);
         };
 
         vm.addSbsToTimeline = function(scheduleBlocks) {
@@ -218,22 +226,20 @@
             }
             if (existingSensorIndex === -1) {
                 vm.sensorTimelines.push(sensor);
-                $timeout(function() {
-                    var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate(),
-                        endDate = moment.utc($rootScope.utcDate).add(15, 'm').toDate();
-                    vm.loadOptionsFunctions[sensor.name]({
-                        showGridLines: true,
-                        hideContextZoom: true,
-                        useFixedYAxis: false,
-                        useFixedXAxis: true,
-                        xAxisValues: [startDate, endDate],
-                        scrollXAxisWindowBy: 10,
-                        drawNowLine: true,
-                        removeOutOfTimeWindowData: true,
-                        discreteSensors: sensor.type === 'discrete'
-                    });
-                    vm.findSensorData(sensor);
+                var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate(),
+                    endDate = moment.utc($rootScope.utcDate).add(15, 'm').toDate();
+                vm.loadOptionsFunctions[sensor.name]({
+                    showGridLines: true,
+                    hideContextZoom: true,
+                    useFixedYAxis: false,
+                    useFixedXAxis: true,
+                    xAxisValues: [startDate, endDate],
+                    scrollXAxisWindowBy: 10,
+                    drawNowLine: true,
+                    removeOutOfTimeWindowData: true,
+                    discreteSensors: sensor.type === 'discrete'
                 });
+                vm.findSensorData(sensor);
             }
         };
 
@@ -297,9 +303,7 @@
 
             DataService.sensorData.apply(this, requestParams)
                 .then(function(result) {
-                    if (result.data.result === "success") {
-                        vm.connectLiveSensorFeed(sensor.name);
-                    }
+                    vm.connectLiveSensorFeed(sensor.name);
                 }, function(error) {
                     $log.error(error);
                 });

@@ -31,6 +31,8 @@
             $localStorage['sensorGraphAutoCompleteList'] = [];
         }
 
+        //TODO add an option to append to current data instead of deleting existing
+
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
