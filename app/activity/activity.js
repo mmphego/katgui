@@ -78,6 +78,7 @@
 
         vm.initSensors = function() {
             //Stagger the inits because too many calls over the websocket breaks some of them
+
             $timeout(function() {
                 MonitorService.subscribe('sched');
                 $timeout(function() {
@@ -88,10 +89,11 @@
                         vm.sensorTimelines.forEach(function(sensor) {
                             $timeout(function() {
                                 vm.addSensorTimeline(sensor, true);
-                            }, 100 + timeoutIncrement);
+                            }, 500 + timeoutIncrement);
                             timeoutIncrement += 500;
                         });
                     }
+                    // vm.updateTimeline(vm.timelineData);
                 }, 300);
             }, 300);
         };
@@ -193,6 +195,7 @@
                     if (result) {
                         vm.addUserLogsToTimeline(result);
                     }
+                    vm.updateTimeline(vm.timelineData);
                 }, function(error) {
                     $log.error(error);
                 });

@@ -150,6 +150,7 @@ angular.module('katGui.d3')
 
                 if (!$rootScope.utcDate || !maing) {
                     //wait until we have utc date time
+                    scope.data = data;
                     $timeout(function () {
                         scope.updateFunction(scope.data);
                     }, 200);
