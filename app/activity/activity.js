@@ -7,6 +7,7 @@
         UserLogService, SensorsService, NotifyService, DataService, $localStorage) {
 
         //TODO refactor so that the x-axis is adjusted at the same time for all timelines
+        //TODO include sensor names in url
 
         var vm = this;
         vm.timelineData = [];
@@ -226,20 +227,24 @@
             }
             if (existingSensorIndex === -1) {
                 vm.sensorTimelines.push(sensor);
-                var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate(),
-                    endDate = moment.utc($rootScope.utcDate).add(15, 'm').toDate();
-                vm.loadOptionsFunctions[sensor.name]({
-                    showGridLines: true,
-                    hideContextZoom: true,
-                    useFixedYAxis: false,
-                    useFixedXAxis: true,
-                    xAxisValues: [startDate, endDate],
-                    scrollXAxisWindowBy: 10,
-                    drawNowLine: true,
-                    removeOutOfTimeWindowData: true,
-                    discreteSensors: sensor.type === 'discrete'
+                //on next digest so that loadOptionsFunctions can be populated by angular
+                $timeout(function () {
+                    var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').toDate(),
+                        endDate = moment.utc($rootScope.utcDate).add(15, 'm').toDate();
+                    vm.loadOptionsFunctions[sensor.name]({
+                        showGridLines: true,
+                        hideContextZoom: true,
+                        useFixedYAxis: false,
+                        useFixedXAxis: true,
+                        xAxisValues: [startDate, endDate],
+                        scrollXAxisWindowBy: 10,
+                        drawNowLine: true,
+                        removeOutOfTimeWindowData: true,
+                        discreteSensors: sensor.type === 'discrete',
+                        overrideMargins: {left: 60, top: 10, bottom: 20, right: 10}
+                    });
+                    vm.findSensorData(sensor);
                 });
-                vm.findSensorData(sensor);
             }
         };
 

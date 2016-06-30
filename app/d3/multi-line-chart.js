@@ -84,7 +84,8 @@ angular.module('katGui.d3')
                 scrollXAxisWindowBy: 0,
                 drawNowLine: false,
                 removeOutOfTimeWindowData: false,
-                discreteSensors: false
+                discreteSensors: false,
+                overrideMargins: null
             };
 
             scope.loadOptionsFunction = function(options, forceRedraw) {
@@ -222,28 +223,32 @@ angular.module('katGui.d3')
 
             function drawSvg() {
 
-                if (scope.options.yAxisValues) {
-                    margin.left = 120;
-                    margin2 = {
-                        top: element[0].clientHeight - 80,
-                        right: 10,
-                        bottom: 20,
-                        left: 120
-                    };
+                if (scope.options.overrideMargins) {
+                    margin = scope.options.overrideMargins;
                 } else {
-                    margin.left = 60;
-                    margin2 = {
-                        top: element[0].clientHeight - 80,
-                        right: 10,
-                        bottom: 20,
-                        left: 60
-                    };
-                }
+                    if (scope.options.yAxisValues) {
+                        margin.left = 120;
+                        margin2 = {
+                            top: element[0].clientHeight - 80,
+                            right: 10,
+                            bottom: 20,
+                            left: 120
+                        };
+                    } else {
+                        margin.left = 60;
+                        margin2 = {
+                            top: element[0].clientHeight - 80,
+                            right: 10,
+                            bottom: 20,
+                            left: 60
+                        };
+                    }
 
-                if (scope.options.hideContextZoom) {
-                    margin.bottom = 35;
-                } else {
-                    margin.bottom = 110;
+                    if (scope.options.hideContextZoom) {
+                        margin.bottom = 35;
+                    } else {
+                        margin.bottom = 110;
+                    }
                 }
 
                 width = element[0].clientWidth - margin.left - margin.right;
@@ -490,7 +495,7 @@ angular.module('katGui.d3')
                 if (scope.options.useFixedYAxis && !scope.options.yAxisValues) {
                     y.domain([scope.yMin, scope.yMax]);
                 } else if (!scope.options.yAxisValues) {
-                    var yExtent = [0, 0];
+                    var yExtent = [0, 0 ];
                     if (scope.nestedData.length > 0) {
                         yExtent = [
                             d3.min(scope.nestedData, function(sensors) {
