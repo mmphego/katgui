@@ -41,9 +41,9 @@
                      None
                  </md-button>
              </md-menu-item>
-             <md-menu-item ng-repeat="product in parent.vm.products | orderBy:product:true track by $index">
-                 <md-button ng-click="parent.vm.setProduct(product)">
-                     {{product}}
+             <md-menu-item ng-repeat="product in parent.vm.products | orderBy:'name':true track by $index">
+                 <md-button ng-click="parent.vm.setProduct(product.name)" title="{{'SP Product: ' + product.sp_product + ', CBF Product: ' + product.cbf_product}}">
+                     {{product.name}}
                  </md-button>
              </md-menu-item>
          </md-menu-content>
