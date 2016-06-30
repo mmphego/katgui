@@ -7,7 +7,7 @@
         <div layout="row">
             <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">
                 <md-input-container md-is-error="!validStartTime" flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
-                    <input focus ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
+                    <input md-autofocus ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
                            data-ng-model="start_time" placeholder="Start Date"
                            title="Start Date 'yyyy-MM-dd HH:mm:ss'"/>
                 </md-input-container>

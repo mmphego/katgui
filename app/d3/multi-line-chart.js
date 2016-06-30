@@ -83,7 +83,8 @@ angular.module('katGui.d3')
                 hasMinMax: true,
                 scrollXAxisWindowBy: 0,
                 drawNowLine: false,
-                removeOutOfTimeWindowData: false
+                removeOutOfTimeWindowData: false,
+                discreteSensors: false
             };
 
             scope.loadOptionsFunction = function(options, forceRedraw) {
@@ -136,28 +137,23 @@ angular.module('katGui.d3')
                 scope.options.hasMinMax = hasMinMax;
                 var doSort = false;
 
+                var newYAxisValues = {};
+                if (scope.options.yAxisValues && scope.options.yAxisValues.length > 0) {
+                    scope.options.yAxisValues.forEach(function(yValue) {
+                        newYAxisValues[yValue] = {};
+                    });
+                }
+
                 newData.forEach(function(d) {
                     d.date = new Date(d.sample_ts);
-                    if (scope.options.yAxisValues) {
+                    if (typeof(d.value) === 'number' || !isNaN(d.value)) {
                         d.value = d.value;
                     } else {
-                        if (typeof(d.value) === 'boolean') {
-                            d.value = d.value ? 1 : 0;
-                        } else if (typeof(d.value) === 'number' || !isNaN(d.value)) {
-                            d.value = d.value;
-                        } else {
-                            d.value = d.value;
-                            if (!scope.options.yAxisValues) {
-                                scope.options.yAxisValues = [];
-                            }
-                            var yAxisValue = d.value.replace(/\'/g, '"');
-                            if (scope.options.yAxisValues.indexOf(yAxisValue) === -1) {
-                                scope.options.yAxisValues.push(yAxisValue);
-                                scope.options.yAxisValues = _.sortBy(scope.options.yAxisValues, function(d) {
-                                    return d.toUpperCase();
-                                });
-                            }
+                        d.value = d.value;
+                        if (!scope.options.yAxisValues) {
+                            scope.options.yAxisValues = [];
                         }
+                        newYAxisValues[d.value.replace(/\'/g, '"')] = {};
                     }
 
                     var existingDataLine = _.findWhere(scope.nestedData, {
@@ -185,6 +181,14 @@ angular.module('katGui.d3')
                         });
                     }
                 });
+
+                if (Object.keys(newYAxisValues).length > 0) {
+                    scope.options.yAxisValues = _.sortBy(Object.keys(newYAxisValues), function(d) {
+                        return d.toUpperCase();
+                    });
+                } else {
+                    scope.options.yAxisValues = null;
+                }
 
                 if (doSort) {
                     scope.nestedData.forEach(function(d) {
@@ -271,8 +275,9 @@ angular.module('katGui.d3')
                     svg.append("defs").append("clipPath")
                         .attr("id", "clip")
                         .append("rect")
+                        .attr("y", -2)
                         .attr("width", width)
-                        .attr("height", height);
+                        .attr("height", height + 2);
                 }
 
                 focus = svg.append("g")
@@ -306,7 +311,7 @@ angular.module('katGui.d3')
                 // set the ranges
                 x = d3.time.scale.utc().range([0, width]);
                 y = null;
-                if (scope.options.yAxisValues) {
+                if (scope.options.discreteSensors) {
                     y = d3.scale.ordinal().rangePoints([height, 0]);
                 } else {
                     y = d3.scale.linear().range([height, 0]);
@@ -316,13 +321,8 @@ angular.module('katGui.d3')
                 xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
 
                 yAxis = null;
-                if (scope.options.yAxisValues) {
-                    yAxis = d3.svg.axis()
-                        .scale(y).orient("left")
-                        .ticks(scope.options.yAxisValues.length)
-                        .tickFormat(function(d, i) {
-                            return scope.options.yAxisValues[i];
-                        });
+                if (scope.options.discreteSensors) {
+                    yAxis = d3.svg.axis().scale(y).orient("left");
                 } else {
                     yAxis = d3.svg.axis().scale(y).orient("left").ticks(10);
                 }
@@ -333,7 +333,7 @@ angular.module('katGui.d3')
                 }
 
                 line = d3.svg.line()
-                    .interpolate(scope.options.yAxisValues ? "step-after" : "linear")
+                    .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                     .x(function(d) {
                         return x(d.date);
                     })
@@ -342,7 +342,7 @@ angular.module('katGui.d3')
                     });
 
                 minline = d3.svg.line()
-                    .interpolate(scope.options.yAxisValues ? "step-after" : "linear")
+                    .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                     .defined(function(d) {
                         return angular.isDefined(d.minValue) && d.minValue !== null;
                     })
@@ -354,7 +354,7 @@ angular.module('katGui.d3')
                     });
 
                 maxline = d3.svg.line()
-                    .interpolate(scope.options.yAxisValues ? "step-after" : "linear")
+                    .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                     .defined(function(d) {
                         return angular.isDefined(d.maxValue) && d.maxValue !== null;
                     })
@@ -377,14 +377,14 @@ angular.module('katGui.d3')
                     y2 = null;
                     x2 = d3.time.scale.utc().range([0, width]);
 
-                    if (scope.options.yAxisValues) {
+                    if (scope.options.discreteSensors) {
                         y2 = d3.scale.ordinal().rangePoints([height2, 0]);
                     } else {
                         y2 = d3.scale.linear().range([height2, 0]);
                     }
 
                     line2 = d3.svg.line()
-                        .interpolate(scope.options.yAxisValues ? "step-after" : "linear")
+                        .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                         .x(function(d) {
                             return x2(d.date);
                         })
@@ -458,7 +458,7 @@ angular.module('katGui.d3')
             }
 
             function updateNowLine() {
-                if (scope.options.drawNowLine) {
+                if (scope.options.drawNowLine && $rootScope.utcDate) {
                     nowLine.attr("x1", function(d) {
                             return x($rootScope.utcDate);
                         })
@@ -476,15 +476,7 @@ angular.module('katGui.d3')
                 }
             }
 
-            function drawValues() {
-
-                svg.selectAll('.path-container').remove();
-
-                updateNowLine();
-
-                if (scope.nestedData.length === 0) {
-                    return;
-                }
+            function setupAxis() {
 
                 if (scope.options.useFixedXAxis && scope.options.xAxisValues) {
                     if (!scope.options.scrollXAxisWindowBy || x.domain()[0].getTime() === 0) {
@@ -506,36 +498,52 @@ angular.module('katGui.d3')
                 if (scope.options.useFixedYAxis && !scope.options.yAxisValues) {
                     y.domain([scope.yMin, scope.yMax]);
                 } else if (!scope.options.yAxisValues) {
-                    var yExtent = [
-                        d3.min(scope.nestedData, function(sensors) {
-                            return d3.min(sensors.values, function(d) {
-                                if (d.minValue) {
-                                    return d.minValue;
-                                }
-                                var parsedValue = parseFloat(d.value);
-                                if (isNaN(parsedValue)) {
-                                    return d.value;
-                                }
-                                return parsedValue;
-                            });
-                        }),
-                        d3.max(scope.nestedData, function(sensors) {
-                            return d3.max(sensors.values, function(d) {
-                                if (d.maxValue) {
-                                    return d.maxValue;
-                                }
-                                var parsedValue = parseFloat(d.value);
-                                if (isNaN(parsedValue)) {
-                                    return d.value;
-                                }
-                                return parsedValue;
-                            });
-                        })
-                    ];
+                    var yExtent = [0, 1];
+                    if (scope.nestedData.length > 0) {
+                        yExtent = [
+                            d3.min(scope.nestedData, function(sensors) {
+                                return d3.min(sensors.values, function(d) {
+                                    if (d.minValue) {
+                                        return d.minValue;
+                                    }
+                                    var parsedValue = parseFloat(d.value);
+                                    if (isNaN(parsedValue)) {
+                                        return d.value;
+                                    }
+                                    return parsedValue;
+                                });
+                            }),
+                            d3.max(scope.nestedData, function(sensors) {
+                                return d3.max(sensors.values, function(d) {
+                                    if (d.maxValue) {
+                                        return d.maxValue;
+                                    }
+                                    var parsedValue = parseFloat(d.value);
+                                    if (isNaN(parsedValue)) {
+                                        return d.value;
+                                    }
+                                    return parsedValue;
+                                });
+                            })
+                        ];
+                    }
                     y.domain(yExtent);
                 } else {
                     y.domain(scope.options.yAxisValues);
                 }
+            }
+
+            function drawValues() {
+
+                svg.selectAll('.path-container').remove();
+
+                setupAxis();
+                updateNowLine();
+
+                if (scope.nestedData.length === 0) {
+                    return;
+                }
+
                 // DATA JOIN
                 // Join new data with old elements, if any.
                 var focuslineGroups = focus.selectAll("svg")

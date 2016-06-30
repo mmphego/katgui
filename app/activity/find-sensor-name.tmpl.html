@@ -2,8 +2,8 @@
     <div style='padding:0; margin:0' layout='column' layout-padding>
         <md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>
         <div class="md-whiteframe-z1">
-            <md-input-container focus class="md-primary" md-theme="{{$root.themePrimaryButtons}}" title="Start typing to find sensors" style="padding: 2px; margin-bottom: 0; height: 40px">
-                <input placeholder="Find a sensor..." ng-model="sensorNameListSearchStr"
+            <md-input-container md-no-float class="md-primary" md-theme="{{$root.themePrimaryButtons}}" title="Start typing to find sensors" style="padding: 2px; margin-bottom: 0; height: 40px">
+                <input placeholder="Find a sensor..." ng-model="sensorNameListSearchStr" md-autofocus
                        ng-model-options="{ debounce: 500 }"
                        ng-change="findSensorNames(sensorNameListSearchStr)" maxlength="20">
             </md-input-container>

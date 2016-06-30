@@ -132,7 +132,7 @@
                     template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}'><md-content style='padding: 0; margin: 0; width: 396px;' layout='column' layout-padding>" +
                     "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span style='font-weight: bold;'>Password Reset</span></md-toolbar>" +
                     "<md-input-container md-no-float md-theme='{{$root.themePrimaryButtons}}' id='resetPasswordInput' type='password' class='long-input' style='padding: 16px'>" +
-                    "<input placeholder='New Password' type='password' focus ng-model='password'>" +
+                    "<input placeholder='New Password' type='password' md-autofocus ng-model='password'>" +
                     "</md-input-container>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
                     "<md-button style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' class='md-primary md-raised' ng-click='cancel()'>Cancel</md-button>" +

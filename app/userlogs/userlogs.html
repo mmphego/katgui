@@ -114,7 +114,7 @@
                 <input flex placeholder="End Time" ng-model="vm.newLogEndTimeText" ng-change="vm.verifyInlineInputs()">
             </md-input-container>
             <md-input-container md-is-error="vm.newLogContent.length === 0" flex md-no-float class="md-primary" title="Content">
-                <input id="inlineContentInput" focus flex placeholder="Content" ng-model="vm.newLogContent" ng-click="vm.setNewLogStartTimeAfterFocus()">
+                <input id="inlineContentInput" md-autofocus flex placeholder="Content" ng-model="vm.newLogContent" ng-click="vm.setNewLogStartTimeAfterFocus()">
             </md-input-container>
             <div flex style="max-width: 450px; max-height: 48px; overflow: auto; margin-right: 4px" ng-class="{'chips-tag-input-error': vm.containsInvalidInlineTagSelection}">
                 <md-tooltip md-visible="vm.showMandatoryTooltip" md-autohide="false">
