@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui.widgets.navigationWidget', ['katGui.util'])
+    angular.module('katGui.widgets', ['katGui.util', 'katGui.services'])
         .controller('NavigationWidgetCtrl', NavigationWidgetCtrl);
 
     function NavigationWidgetCtrl($rootScope, KatGuiUtil, CENTRAL_LOGGER_PORT) {

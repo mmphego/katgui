@@ -39,14 +39,14 @@
                         result.data.forEach(function (userlog) {
                             api.userlogs.push(api.populateUserlogTagsFromMap(userlog));
                         });
-                        deferred.resolve();
+                        deferred.resolve(result.data);
                     } else {
                         $log.error('Could not retrieve any users.');
-                        deferred.reject();
+                        deferred.reject(result);
                     }
                 }, function (error) {
                     NotifyService.showHttpErrorDialog('Could not retrieve any userlogs', error);
-                    deferred.reject();
+                    deferred.reject(error);
                 });
             return deferred.promise;
         };
@@ -271,6 +271,7 @@
                 }
                 $rootScope.$apply(function () {
                     api.userlogs.push(api.populateUserlogTagsFromMap(messageData));
+                    $rootScope.$emit('userlogs_add', api.userlogs[api.userlogs.length - 1]);
                 });
             } else if (messageChannel === 'userlogs:modify') {
                 var userlogIndex = _.findIndex(api.userlogs, {id: parseInt(messageData.parent_id)});
@@ -287,6 +288,7 @@
                         userlog.attachment_count = messageData.attachment_count;
                         api.userlogs.splice(userlogIndex, 1);
                         api.userlogs.push(api.populateUserlogTagsFromMap(messageData));
+                        $rootScope.$emit('userlogs_modify', api.userlogs[api.userlogs.length - 1]);
                     });
                 }
             } else if (messageChannel === 'userlogs:metadata_upload') {

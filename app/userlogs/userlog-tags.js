@@ -87,7 +87,7 @@
                                     '</md-toolbar>',
                                     '<div layout="column" md-theme="{{themePrimaryButtons}}">',
                                         '<md-input-container id="nameInput" md-no-float class="long-input" style="padding: 16px">',
-                                            '<input placeholder="Tag Name" focus ng-model="name">',
+                                            '<input placeholder="Tag Name" md-autofocus ng-model="name">',
                                         '</md-input-container>',
                                         '<md-input-container id="descriptionInput" md-no-float class="long-input" style="padding: 16px">',
                                             '<input placeholder="Tag Description" ng-model="slug">',

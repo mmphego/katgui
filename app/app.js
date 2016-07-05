@@ -9,9 +9,7 @@
         'katGui.config',
         'katGui.d3',
         'katGui.health',
-        'katGui.widgets.navigationWidget',
-        'katGui.widgets.apodWidget',
-        // 'katGui.widgets.ganttWidget',
+        'katGui.widgets',
         'katGui.landing',
         'katGui.util',
         'katGui.scheduler',
@@ -286,6 +284,7 @@
                 } else {
                     $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
                 }
+                $rootScope.utcDate = utcTime.toDate();
                 $rootScope.utcTime = utcTime.format('HH:mm:ss');
                 $rootScope.localTime = localTime.format('HH:mm:ss');
                 $rootScope.currentDate = utcTime.format('YYYY-MM-DD');
@@ -403,6 +402,11 @@
             url: '/admin',
             templateUrl: 'app/admin/admin.html',
             title: 'User Admin'
+        });
+        $stateProvider.state('activity', {
+            url: '/activity',
+            templateUrl: 'app/activity/activity.html',
+            title: 'Activity'
         });
         $stateProvider.state('alarms', {
             url: '/alarms',

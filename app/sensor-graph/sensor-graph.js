@@ -31,6 +31,8 @@
             $localStorage['sensorGraphAutoCompleteList'] = [];
         }
 
+        //TODO add an option to append to current data instead of deleting existing
+
         vm.connectListeners = function () {
             SensorsService.connectListener()
                 .then(function () {
@@ -119,6 +121,7 @@
                 showGridLines: vm.showGridLines,
                 hideContextZoom: !vm.showContextZoom,
                 useFixedYAxis: vm.useFixedYAxis,
+                discreteSensors: vm.searchDiscrete
             });
         };
 
@@ -192,7 +195,7 @@
             if (searchStr && searchStr.length > 2 && !vm.waitingForSearchResult) {
                 vm.sensorSearchNames = [];
                 vm.waitingForSearchResult = true;
-                DataService.sensorsInfo(searchStr.trim().replace(' ', '.'), vm.sensorType, 1000)
+                DataService.sensorsInfo(searchStr.trim().replace(' ', '.'), vm.searchDiscrete? 'discrete' : 'numeric', 1000)
                     .then(function (result) {
                         vm.waitingForSearchResult = false;
                         if (result.data.error) {
@@ -203,7 +206,7 @@
                                     name: sensor[0],
                                     component: sensor[1],
                                     attributes: sensor[2],
-                                    type: vm.sensorType
+                                    type: vm.searchDiscrete? 'discrete' : 'numeric'
                                 });
                             });
                             if ($localStorage['sensorGraphAutoCompleteList'].indexOf(searchStr) === -1) {
@@ -245,15 +248,15 @@
             vm.waitingForSearchResult = true;
             vm.showTips = false;
             var interval = null;
-            if (vm.sensorType === 'numeric') {
+            if (vm.searchDiscrete !== 'numeric') {
                 interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
             }
 
             var requestParams;
             if (sensor.type === 'discrete') {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 0];
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000];
             } else {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 0, interval];
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000, interval];
             }
 
             DataService.sensorData.apply(this, requestParams)
@@ -323,6 +326,12 @@
             vm.clearData();
             vm.sensorSearchNames = [];
             vm.findSensorNames(vm.searchText); //simulate keypress
+            vm.loadOptions({
+                showGridLines: vm.showGridLines,
+                hideContextZoom: !vm.showContextZoom,
+                useFixedYAxis: vm.useFixedYAxis,
+                discreteSensors: vm.searchDiscrete
+            });
         };
 
         vm.connectLiveFeed = function (sensorRegex) {
@@ -341,7 +350,7 @@
 
         vm.sensorDataReceived = function (event, sensor) {
 
-            var hasMinMax = vm.intervalNum !== 1 && vm.intervalType !== 's';
+            var hasMinMax = (vm.intervalNum !== 1 || vm.intervalType !== 's') && !vm.searchDiscrete;
 
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
@@ -363,7 +372,7 @@
                 }
 
                 if (newData) {
-                    vm.redrawChart(newData, hasMinMax);
+                    vm.redrawChart(newData, true);
                 }
             }
             else if (sensor.value) {

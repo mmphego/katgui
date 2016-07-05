@@ -215,17 +215,42 @@
         };
 
         api.getScheduledScheduleBlocks = function () {
-            //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
-            api.scheduleData.splice(0, api.scheduleData.length);
+            var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/sb/scheduled'))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
+                    var newScheduleDataIdCodes = [];
                     for (var i in jsonResult) {
+                        var existingSbIndex = _.findIndex(api.scheduleData, function (sb) {
+                            return sb.id_code === jsonResult[i].id_code;
+                        });
+                        if (existingSbIndex > -1) {
+                            //Update existing schedule blocks
+                            api.scheduleData.splice(existingSbIndex, 1);
+                        }
                         api.scheduleData.push(jsonResult[i]);
+                        newScheduleDataIdCodes.push(jsonResult[i].id_code);
                     }
+                    //Remove old schedule blocks that has had a state change
+                    var existingSbIdCodes = api.scheduleData.map(function (sb) {
+                        return sb.id_code;
+                    });
+                    var sbIdCodesToRemove = _.difference(existingSbIdCodes, newScheduleDataIdCodes);
+                    sbIdCodesToRemove.forEach(function (sbIdCode) {
+                        var existingSbIndex = _.findIndex(api.scheduleData, function (sb) {
+                            return sb.id_code === sbIdCode;
+                        });
+                        if (existingSbIndex > -1) {
+                            api.scheduleData.splice(existingSbIndex, 1);
+                        }
+                    });
+
+                    deferred.resolve(api.scheduleData);
                 }, function (error) {
                     $log.error(error);
+                    deferred.reject(error);
                 });
+            return deferred.promise;
         };
 
         api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
@@ -361,6 +386,7 @@
                         } else if (draftIndex === -1 && sb.state === 'DRAFT'){
                             if (scheduledIndex > -1) {
                                 api.scheduleData.splice(scheduledIndex, 1);
+                                $rootScope.$emit('sb_schedule_remove', sb);
                             }
                             draftDataToAdd.push(sb);
                             // api.scheduleDraftData.push(sb);
@@ -368,6 +394,7 @@
 
                         if (scheduledIndex > -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
                             api.scheduleData[scheduledIndex] = sb;
+                            $rootScope.$emit('sb_schedule_update', sb);
                         } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
                             if (draftIndex > -1) {
                                 api.scheduleDraftData.splice(draftIndex, 1);
@@ -389,6 +416,7 @@
                         NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
                     } else if (action.startsWith('sb_order_change')) {
                         orderChangeCall = true;
+                        $rootScope.$emit('sb_order_change', '');
                     } else if (action.startsWith('sb_completed_change')) {
                         $rootScope.$emit('sb_completed_change', '');
                     } else {
@@ -397,6 +425,7 @@
                     }
                 }
                 if (scheduleDataToAdd.length) {
+                    $rootScope.$emit('sb_schedule_add', scheduleDataToAdd);
                     Array.prototype.push.apply(api.scheduleData, scheduleDataToAdd);
                 }
                 if (draftDataToAdd.length) {
