@@ -242,7 +242,7 @@
                     '           <span flex style="margin-left: 8px;">{{::title}}</span>' +
                     '       </md-toolbar>' +
                     '       <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">' +
-                    '           <div layout="row" layout-align="center center" ng-repeat="product in products track by $index" ng-click="setProduct(product.name); hide()" class="config-label-list-item" title="{{\'SP Product: \' + product.sp_product + \', CBF Product: \' + product.cbf_product}}">' +
+                    '           <div layout="row" layout-align="center center" ng-repeat="product in products | orderBy:\'name\':true track by $index" ng-click="setProduct(product.name); hide()" class="config-label-list-item" title="{{\'SP Product: \' + product.sp_product + \', CBF Product: \' + product.cbf_product}}">' +
                     '               <b>{{product.name}}</b>' +
                     '           </div>' +
                     '       </div>' +
