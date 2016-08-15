@@ -497,6 +497,8 @@ function katGuiUtil(SERVER_URL, $sce) {
         return katcpMessage.replace(/\\_/g, ' ').replace(/\\n\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\\e\[[0-9;]*m/g, '');
     };
 
+    //accurately round a number to at most n decimal places
+    //javascript float precision is... not so precise
     this.roundToAtMostDecimal = function round(value, exp) {
         if (typeof exp === 'undefined' || +exp === 0) {
             return Math.round(value);
