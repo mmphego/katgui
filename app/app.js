@@ -276,8 +276,14 @@
         };
         vm.updateTimeDisplay = function () {
             if (MonitorService.lastSyncedTime && vm.showNavbar) {
+                //dont bother to update the gui if the diff is less than 0.66 seconds
+                //otherwise there can be stutter sometimes
+                if ($rootScope.lastSyncedTime && MonitorService.lastSyncedTime - $rootScope.lastSyncedTime < 0.66) {
+                    return;
+                }
                 var utcTime = moment.utc(MonitorService.lastSyncedTime, 'X');
                 var localTime = moment(MonitorService.lastSyncedTime, 'X');
+                $rootScope.lastSyncedTime = MonitorService.lastSyncedTime;
                 if (!$rootScope.utcDateTime) {
                     $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
                     $rootScope.$emit('utcDateTimeSet', $rootScope.utcDateTime);
