@@ -222,6 +222,9 @@
                         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
                             var strList = sensor.name.split(':');
                             var sensorName = strList[1].replace(/\./g, '_').trim();
+                            if (!$scope.sensors[sensorName]) {
+                                $scope.sensors[sensorName] = {name: sensorName};
+                            }
                             $scope.sensors[sensorName].value = sensor.value;
                             $scope.sensors[sensorName].status = sensor.status;
                             $scope.sensors[sensorName].timestamp = moment.utc(sensor.timestamp, 'X').format(DATETIME_FORMAT);

@@ -15,6 +15,7 @@
         api.resourcesInMaintenance = '';
         api.controlledResources = [];
         api.topStatusTreesSensors = [];
+        api.receptorTreesSensors = [];
 
         api.setReceptorsAndStatusTree = function (statusTree, receptors) {
             api.receptors.splice(0, api.receptors.length);
@@ -101,7 +102,7 @@
             api.resourcesInMaintenance = message.msg_data.value;
             var attributes = Object.keys(api.sensorValues);
             for (var i = 0; i < attributes.length; i++) {
-                var sensorName = api.sensorValues[attributes[i]].name;
+                var sensorName = attributes[i];
                 d3.selectAll('rect.health-full-item.' + sensorName).attr('class', function (d) {
                     return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
