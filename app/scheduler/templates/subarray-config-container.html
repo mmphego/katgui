@@ -1,54 +1,56 @@
 <div layout="row" layout-align="center" class="subarray-config-container">
-     <md-menu>
-         <span ng-disabled="!$root.expertOrLO" title="Control Authority"
-            ng-click="$root.expertOrLO && $mdOpenMenu()" md-ink-ripple>
+    <span md-ink-ripple ng-click="parent.vm.showSubarrayAndDataLogs()" class="icon-button fa fa-file-text-o" title="Show Subarray and Data Proxy logs"
+        style="font-size: 12px; height: 14px; padding: 2px 4px; opacity: 0.5"></span>
+    <md-menu>
+        <span ng-disabled="!$root.expertOrLO" title="Control Authority" ng-click="$root.expertOrLO && $mdOpenMenu()"
+            md-ink-ripple>
              <i>CA: </i><b>{{parent.vm.subarray.delegated_ca}}</b>
          </span>
-         <md-menu-content>
-             <md-menu-item>
-                 <md-button ng-click="parent.vm.delegateControl('lo')">
-                     Lead Operator
-                 </md-button>
-             </md-menu-item>
-             <md-menu-item ng-repeat="user in parent.vm.users | orderBy:'email' track by $index">
-                 <md-button ng-click="parent.vm.delegateControl(user.email)">
-                     {{user.email}}
-                 </md-button>
-             </md-menu-item>
-         </md-menu-content>
-     </md-menu>
-     <md-menu>
-         <span ng-disabled="!$root.expertOrLO" title="Selected Band"
-            ng-click="$root.expertOrLO && $mdOpenMenu()" md-ink-ripple>
+        <md-menu-content>
+            <md-menu-item>
+                <md-button ng-click="parent.vm.delegateControl('lo')">
+                    Lead Operator
+                </md-button>
+            </md-menu-item>
+            <md-menu-item ng-repeat="user in parent.vm.users | orderBy:'email' track by $index">
+                <md-button ng-click="parent.vm.delegateControl(user.email)">
+                    {{user.email}}
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+    <md-menu>
+        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdOpenMenu()"
+            md-ink-ripple>
              <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
          </span>
-         <md-menu-content>
-             <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
-                 <md-button ng-click="parent.vm.setBand(band)">
-                     {{band}}
-                 </md-button>
-             </md-menu-item>
-         </md-menu-content>
-     </md-menu>
-     <md-menu>
-         <span ng-disabled="!$root.expertOrLO" title="Selected Product"
-            ng-click="$root.expertOrLO && $mdOpenMenu()" md-ink-ripple>
+        <md-menu-content>
+            <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
+                <md-button ng-click="parent.vm.setBand(band)">
+                    {{band}}
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+    <md-menu>
+        <span ng-disabled="!$root.expertOrLO" title="Selected Product" ng-click="$root.expertOrLO && $mdOpenMenu()"
+            md-ink-ripple>
              <i>Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
          </span>
-         <md-menu-content>
-             <md-menu-item>
-                 <md-button ng-click="parent.vm.setProduct('')">
-                     None
-                 </md-button>
-             </md-menu-item>
-             <md-menu-item ng-repeat="product in parent.vm.products | orderBy:'name':true track by $index">
-                 <md-button ng-click="parent.vm.setProduct(product.name)" title="{{'SP Product: ' + product.sp_product + ', CBF Product: ' + product.cbf_product}}">
-                     {{product.name}}
-                 </md-button>
-             </md-menu-item>
-         </md-menu-content>
-     </md-menu>
-     <span ng-show="vm.subarray.config_label" title="Config Label" style="margin-left: 2px">
+        <md-menu-content>
+            <md-menu-item>
+                <md-button ng-click="parent.vm.setProduct('')">
+                    None
+                </md-button>
+            </md-menu-item>
+            <md-menu-item ng-repeat="product in parent.vm.products | orderBy:'name':true track by $index">
+                <md-button ng-click="parent.vm.setProduct(product.name)" title="{{'SP Product: ' + product.sp_product + ', CBF Product: ' + product.cbf_product}}">
+                    {{product.name}}
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+    <span ng-show="vm.subarray.config_label" title="Config Label" style="margin-left: 2px">
          <i>Config Label: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
      </span>
 </div>

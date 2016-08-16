@@ -5,18 +5,18 @@ angular.module('katGui.util')
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
     .filter('prettifyJSON', function() {
-        return function (input) {
+        return function(input) {
             return JSON.prettify.prettyPrint(input);
         };
     })
     .filter('utcDateFromUnix', function(DATETIME_FORMAT) {
-        return function (input) {
+        return function(input) {
             return moment.utc(input, 'X').format(DATETIME_FORMAT);
         };
     })
     .directive('postNgRepeatLoadMore', function($timeout) {
         return {
-            link: function (scope) {
+            link: function(scope) {
                 if (scope.$last) {
                     // iteration is complete, do whatever post-processing
                     // is necessary
@@ -25,20 +25,20 @@ angular.module('katGui.util')
             }
         };
     })
-    .directive('enterPressed', function () {
-        return function (scope, element, attrs) {
-            element.bind("keydown keypress", function (event) {
-                if(event.which === 13) {
+    .directive('enterPressed', function() {
+        return function(scope, element, attrs) {
+            element.bind("keydown keypress", function(event) {
+                if (event.which === 13) {
                     var fn = (function(command) {
                         var cmd = command;
                         return function() {
                             scope.$eval(cmd);
                         };
-                    })(attrs.enterPressed.replace('()', '("'+ event.target.value +'")' ));
+                    })(attrs.enterPressed.replace('()', '("' + event.target.value + '")'));
 
-                  // Apply function
-                  scope.$apply(fn);
-                  event.stopPropagation();
+                    // Apply function
+                    scope.$apply(fn);
+                    event.stopPropagation();
                 }
             });
         };
@@ -48,7 +48,10 @@ angular.module('katGui.util')
             link: function(scope, element, attr) {
                 var targetElement = angular.element(document.querySelector(attr.draggable));
                 var offset = targetElement.offset();
-                var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
+                var startX = offset.left,
+                    startY = offset.top,
+                    x = offset.left,
+                    y = offset.top;
 
                 targetElement.css({
                     position: 'fixed'
@@ -58,7 +61,8 @@ angular.module('katGui.util')
                     // Prevent default dragging of selected content
                     event.preventDefault();
                     offset = targetElement.offset();
-                    x = offset.left; y = offset.top;
+                    x = offset.left;
+                    y = offset.top;
                     startX = event.pageX - x;
                     startY = event.pageY - y;
                     $document.on('mousemove', mousemove);
@@ -90,12 +94,12 @@ angular.module('katGui.util')
             }
         };
     })
-    .directive('inheritBodyBg', function () {
+    .directive('inheritBodyBg', function() {
         return {
             scope: {
                 target: '@targetColorInherit'
             },
-            link: function (scope, element, attr) {
+            link: function(scope, element, attr) {
 
                 element.css({
                     'background-color': angular.element(document.querySelector(scope.target)).css('background-color')
@@ -103,19 +107,22 @@ angular.module('katGui.util')
             }
         };
     })
-    .directive('resizeable', function ($document, $timeout) {
+    .directive('resizeable', function($document, $timeout) {
         return {
-            link: function (scope, element, attr) {
+            link: function(scope, element, attr) {
                 var timeout = 0;
                 if (attr.dynamicResizeElement) {
                     timeout = 1000;
                 }
 
-                $timeout(function () {
+                $timeout(function() {
                     var targetElement = angular.element(document.querySelector(attr.resizeable));
                     var offset = targetElement.offset(),
                         offsetX, offsetY;
-                    var startX = offset.left, startY = offset.top, x = offset.left, y = offset.top;
+                    var startX = offset.left,
+                        startY = offset.top,
+                        x = offset.left,
+                        y = offset.top;
 
                     //targetElement.css({
                     //    position: 'fixed'
@@ -143,7 +150,7 @@ angular.module('katGui.util')
 
                             targetElement.css({
                                 width: innerWidth - (targetElement.offset().left + innerWidth - event.pageX) + offsetX,
-                                height: innerHeight - (targetElement.offset().top + innerHeight - event.pageY)  + offsetY
+                                height: innerHeight - (targetElement.offset().top + innerHeight - event.pageY) + offsetY
                             });
                         }
                     }
@@ -161,7 +168,8 @@ angular.module('katGui.util')
             link: function(scope, element, attr) {
                 var startX = element[0].offsetLeft;
                 var startY = element[0].offsetTop;
-                var x = startX, y = startY;
+                var x = startX,
+                    y = startY;
 
                 var el = angular.element(element[0].getElementsByClassName(attr.relativeDraggable));
 
@@ -183,7 +191,7 @@ angular.module('katGui.util')
                     x = event.pageX - startX;
                     element.css({
                         top: y + 'px',
-                        left:  x + 'px'
+                        left: x + 'px'
                     });
                 }
 
@@ -200,8 +208,8 @@ angular.module('katGui.util')
                 var event = window.event;
                 var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
 
-                if(delta < 0) {
-                    scope.$apply(function(){
+                if (delta < 0) {
+                    scope.$apply(function() {
                         scope.$eval(attrs.mouseWheelDown);
                     });
                 }
@@ -213,14 +221,14 @@ angular.module('katGui.util')
                 var event = window.event;
                 var delta = Math.max(-1, Math.min(1, (event.wheelDelta || -event.detail)));
 
-                if(delta > 0) {
-                    scope.$apply(function(){
+                if (delta > 0) {
+                    scope.$apply(function() {
                         scope.$eval(attrs.mouseWheelUp);
                     });
                 }
             });
         };
-    }).filter('toTrustedHtml', function($sce){
+    }).filter('toTrustedHtml', function($sce) {
         return function(text) {
             if (_.isString(text)) {
                 return $sce.trustAsHtml(text);
@@ -229,7 +237,7 @@ angular.module('katGui.util')
             }
 
         };
-    }).filter('linkify', function(){
+    }).filter('linkify', function() {
         return function(text) {
             if (text.linkify) {
                 return text.linkify();
@@ -242,7 +250,7 @@ angular.module('katGui.util')
 //to suppress warnings about missing aria-labels (ARIA - Accessible Rich Internet Applications)
 //our application does not implement any accessibility features
 angular.module('material.core')
-    .service('$mdAria', function(){
+    .service('$mdAria', function() {
         return {
             expect: function() {},
             expectAsync: function() {},
@@ -251,13 +259,12 @@ angular.module('material.core')
     });
 
 function regexSearchFilter() {
-    return function (input, fields, regex, objDict) {
+    return function(input, fields, regex, objDict) {
         if (regex) {
             var pattern;
             try {
                 pattern = new RegExp(regex, 'i');
-            }
-            catch(e) {
+            } catch (e) {
                 return input;
             }
 
@@ -301,8 +308,7 @@ function regexSearchFilter() {
                     if (testResult) {
                         if (objDict) {
                             out.push(inputArray[i]._key);
-                        }
-                        else if (input instanceof Array === false && angular.isObject(out)) {
+                        } else if (input instanceof Array === false && angular.isObject(out)) {
                             out[inputArray[i]._key] = inputArray[i];
                         } else {
                             out.push(inputArray[i]);
@@ -319,20 +325,20 @@ function regexSearchFilter() {
 }
 
 function autoGrow() {
-    return function (scope, element, attr) {
-        var update = function () {
+    return function(scope, element, attr) {
+        var update = function() {
             element.css("height", "auto");
             var height = element.parent()[0].clientHeight;
             if (height > 0) {
                 element.css("height", height + "px");
             }
         };
-        scope.$watch(attr.ngModel, function () {
+        scope.$watch(attr.ngModel, function() {
             update();
         });
-        scope.$watch(function () {
+        scope.$watch(function() {
             return element.parent()[0].clientHeight;
-        }, function () {
+        }, function() {
             update();
         });
         attr.$set("ngTrim", "false");
@@ -344,9 +350,9 @@ function autoGrow() {
 //they are not tested
 function katGuiUtil(SERVER_URL, $sce) {
 
-    this.generateUUID = function () {
+    this.generateUUID = function() {
         var d = new Date().getTime();
-        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             var r = (d + Math.random() * 16) % 16 | 0;
             d = Math.floor(d / 16);
             return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
@@ -354,7 +360,7 @@ function katGuiUtil(SERVER_URL, $sce) {
         return uuid;
     };
 
-    this.openRelativePath = function (path, port) {
+    this.openRelativePath = function(path, port) {
         if (window.location.host !== 'localhost:8000') {
             window.open("http://" + window.location.hostname + ":" + port + "/" + path).focus();
         } else {
@@ -402,15 +408,18 @@ function katGuiUtil(SERVER_URL, $sce) {
         return 6.697374558 + 1.0027379093 * ut + (8640184.812866 + (0.093104 - 0.0000062 * t_eph) * t_eph) * t_eph / 3600.0;
     }
 
-    this.localSiderealTime = function (jd, longitude) {
+    this.localSiderealTime = function(jd, longitude) {
         var GMST = generalSiderealTime(jd);
         var LMST = 24.0 * frac((GMST + longitude / 15.0) / 24.0);
         return hoursMinutesSecondsToString(LMST);
     };
 
     //UT as a fraction of hours
-    this.julianDay = function (day, month, year) {
-        var Y = year, M = month, D = day, A, B, C, E, F, JD;
+    this.julianDay = function(day, month, year) {
+        var Y = year,
+            M = month,
+            D = day,
+            A, B, C, E, F, JD;
         A = Math.floor(Y / 100);
         B = Math.floor(A / 4);
         C = 2 - A + B;
@@ -420,11 +429,11 @@ function katGuiUtil(SERVER_URL, $sce) {
         return JD;
     };
 
-    this.julianDayWithTime = function (day, month, year, UT) {
+    this.julianDayWithTime = function(day, month, year, UT) {
         return Math.floor(365.25 * (year + 4716)) + Math.floor(30.6001 * (month + 1)) + day - 13 - 1524.5 + UT / 24.0;
     };
 
-    this.degreesToFloat = function (degrees) {
+    this.degreesToFloat = function(degrees) {
         var latSplit = degrees.split(':');
         var deg = parseInt(latSplit[0]);
         var result = Math.abs(deg) + parseInt(latSplit[1]) / 60 + parseInt(latSplit[2]) / 3600;
@@ -461,7 +470,7 @@ function katGuiUtil(SERVER_URL, $sce) {
         }
     };
 
-    this.getParentNameFromSensor = function (sensorName) {
+    this.getParentNameFromSensor = function(sensorName) {
         var exceptions = ['nm', 'mon', 'subarray', 'data', 'katgui'];
         var sensorNameList = sensorName.split(/_(.+)?/);
         var firstPart = sensorNameList[0];
@@ -483,9 +492,32 @@ function katGuiUtil(SERVER_URL, $sce) {
         return pattern.test(str);
     };
 
-    this.sanitizeKATCPMessage = function (katcpMessage) {
+    this.sanitizeKATCPMessage = function(katcpMessage) {
         // remove all katcp formatting as well as ANSI colour codes
         return katcpMessage.replace(/\\_/g, ' ').replace(/\\n\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\\e\[[0-9;]*m/g, '');
+    };
+
+    //accurately round a number to at most n decimal places
+    //javascript float precision is... not so precise
+    this.roundToAtMostDecimal = function round(value, exp) {
+        if (typeof exp === 'undefined' || +exp === 0) {
+            return Math.round(value);
+        }
+
+        value = +value;
+        exp = +exp;
+
+        if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+            return NaN;
+        }
+
+        // Shift
+        value = value.toString().split('e');
+        value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
+
+        // Shift back
+        value = value.toString().split('e');
+        return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
     };
 
     return this;
@@ -493,11 +525,11 @@ function katGuiUtil(SERVER_URL, $sce) {
 
 var objToString = Object.prototype.toString;
 
-_.isString = function (obj) {
+_.isString = function(obj) {
     return objToString.call(obj) === '[object String]';
 };
 
-if(!String.linkify) {
+if (!String.linkify) {
     String.prototype.linkify = function() {
 
         // http://, https://, ftp://

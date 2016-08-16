@@ -433,6 +433,10 @@
             ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, mode);
         };
 
+        vm.showSubarrayAndDataLogs = function () {
+            ObsSchedService.showSubarrayAndDataLogs(vm.subarray.id);
+        };
+
         vm.moveScheduleRowToFinished = function (item) {
             ObsSchedService.scheduleToComplete(vm.subarray.id, item.id_code);
         };
