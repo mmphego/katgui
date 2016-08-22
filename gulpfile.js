@@ -18,6 +18,7 @@ var domSrc = require('gulp-dom-src');
 var karma = require('gulp-karma');
 var util = require('gulp-util');
 var insert = require('gulp-insert');
+var exec = require('child_process').exec;
 var del = require('del');
 var fs = require('fs');
 var pkg = require('./package.json');
@@ -162,9 +163,15 @@ gulp.task('webserver', function() {
         }));
 });
 
-
 gulp.task('version:file', ['clean', 'js'], function () {
     fs.writeFileSync('dist/version.txt', '{"version": "' + pkg.version + '", "buildDate": "' + buildDate + '"}\n');
+    exec('kat-get-version.py', function (error, stdout, stderr) {
+        if (error) {
+            console.error('exec error: ' + error);
+            throw error;
+        }
+        fs.writeFileSync('dist/kat-version.txt', stdout);
+    });
 });
 
 gulp.task('build', ['clean', 'css:material', 'css:main', 'css:concat', 'clean:csstmp', 'js', 'indexHtml', 'fonts', 'images', 'sounds', 'version:file']);
