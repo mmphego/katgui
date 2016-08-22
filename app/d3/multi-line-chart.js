@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-.directive('multiLineChart', function($rootScope, DATETIME_FORMAT, $timeout, $log, $interval) {
+.directive('multiLineChart', function($rootScope, KatGuiUtil, DATETIME_FORMAT, $timeout, $log, $interval) {
     return {
         restrict: 'EA',
         scope: {
@@ -495,7 +495,7 @@ angular.module('katGui.d3')
                 if (scope.options.useFixedYAxis && !scope.options.yAxisValues) {
                     y.domain([scope.yMin, scope.yMax]);
                 } else if (!scope.options.yAxisValues) {
-                    var yExtent = [0, 0 ];
+                    var yExtent = [0, 0];
                     if (scope.nestedData.length > 0) {
                         yExtent = [
                             d3.min(scope.nestedData, function(sensors) {
@@ -523,6 +523,13 @@ angular.module('katGui.d3')
                                 });
                             })
                         ];
+                    }
+                    if (yExtent[0] === yExtent[1] && yExtent[0] >= Math.abs(0.01)) {
+                        yExtent[0] -= 1;
+                        yExtent[1] += 1;
+                    } else {
+                        yExtent[0] -= 0.01;
+                        yExtent[1] += 0.01;
                     }
                     y.domain(yExtent);
                 } else {
@@ -671,6 +678,10 @@ angular.module('katGui.d3')
 
                 var el = d3.select(text);
                 var p = d3.select(text.parentNode);
+                var formattedText = d;
+                if (!scope.options.discreteSensors) {
+                    d = KatGuiUtil.roundToAtMostDecimal(d, 7);
+                }
                 p.append("foreignObject")
                     .attr('x', -width)
                     .attr('y', -10)
@@ -678,8 +689,7 @@ angular.module('katGui.d3')
                     .attr("height", 200)
                     .append("xhtml:p")
                     .attr('style', 'word-wrap: break-word; text-align:center;')
-
-                .html(d);
+                    .html(d);
 
                 el.remove();
             }

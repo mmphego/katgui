@@ -135,9 +135,9 @@
                             No matches found
                         </md-not-found>
                     </md-autocomplete>
-                    <md-chip-template title="{{$chip.name}}" ng-mouseenter="vm.setLineStrokeWidth($chip.name)" ng-mouseleave="vm.removeLineStrokeWidth($chip.name)">
+                    <md-chip-template title="{{$chip.name + ' - click to reload the sensor\'s data with the current search parameters'}}" ng-mouseenter="vm.setLineStrokeWidth($chip.name)" ng-mouseleave="vm.removeLineStrokeWidth($chip.name)">
                         <span class="{{$chip.name}}">
-                          <strong>{{$chip.name}}</strong>
+                          <strong ng-click="vm.findSensorData($chip)">{{$chip.name}}</strong>
                         </span>
                     </md-chip-template>
                 </md-chips>

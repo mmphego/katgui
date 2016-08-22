@@ -170,58 +170,76 @@
                         $scope.jsonContent = JSON.parse(content);
                         $scope.parentSensorNameList = $scope.jsonContent.sensors.split(',');
                         $scope.sensorNameList = [];
+                        $scope.sensorsRegex = [];
                         $scope.sensors = {};
 
                         $scope.sensorClass = function (status) {
                             return status + '-sensor-list-item';
                         };
 
-                        SensorsService.connectListener()
-                            .then(function () {
-                                $scope.parentSensorNameList.forEach(function (sensorName) {
-                                    getChildSensorsFromAgg(sensorName);
-                                    function getChildSensorsFromAgg (sensor) {
-                                        if (sensor.indexOf('agg_') === -1) {
-                                            $scope.sensorNameList.push(sensor);
-                                        } else {
-                                            var childSensors = ConfigService.aggregateSensorDetail[sensor].sensors.split(',');
-                                            childSensors.forEach(function (childSensor) {
-                                                if (sensor.indexOf('agg_') === -1) {
-                                                    $scope.sensorNameList.push(childSensor);
-                                                } else {
-                                                    getChildSensorsFromAgg(childSensor);
-                                                }
+                        if (!SensorsService.connection) {
+                            SensorsService.connectListener()
+                                .then(function () {
+                                    setAggSensorStrategies();
+                                }, function () {
+                                    $log.error('Could not establish sensor connection.');
+                                });
+                        } else {
+                            $scope.reusedSensorsServiceConnection = true;
+                            setAggSensorStrategies();
+                        }
 
-                                            });
-                                        }
+                        function setAggSensorStrategies() {
+                            $scope.parentSensorNameList.forEach(function (sensorName) {
+                                getChildSensorsFromAgg(sensorName);
+                                function getChildSensorsFromAgg (sensor) {
+                                    if (sensor.indexOf('agg_') === -1) {
+                                        $scope.sensorNameList.push(sensor);
+                                    } else {
+                                        var childSensors = ConfigService.aggregateSensorDetail[sensor].sensors.split(',');
+                                        childSensors.forEach(function (childSensor) {
+                                            if (sensor.indexOf('agg_') === -1) {
+                                                $scope.sensorNameList.push(childSensor);
+                                            } else {
+                                                getChildSensorsFromAgg(childSensor);
+                                            }
+
+                                        });
                                     }
-                                });
-
-                                var sensorsRegex = [];
-                                $scope.sensorNameList.forEach(function (sensor, index) {
-                                    $scope.sensors[sensor] = {name: sensor};
-                                    sensorsRegex.push('^' + sensor);
-                                });
-                                if (sensorsRegex.length > 0) {
-                                    SensorsService.setSensorStrategies(sensorsRegex.join('|'), 'event-rate', 1, 360);
                                 }
-
-                            }, function () {
-                                $log.error('Could not establish sensor connection.');
                             });
+
+                            $scope.sensorsRegex = [];
+                            $scope.sensorNameList.forEach(function (sensor, index) {
+                                $scope.sensors[sensor] = {name: sensor};
+                                $scope.sensorsRegex.push('^' + sensor);
+                            });
+                            if ($scope.sensorsRegex.length > 0) {
+                                SensorsService.setSensorStrategies($scope.sensorsRegex.join('|'), 'event-rate', 1, 360);
+                            }
+                        }
 
                         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
                             var strList = sensor.name.split(':');
                             var sensorName = strList[1].replace(/\./g, '_').trim();
-                            $scope.sensors[sensorName].value = sensor.value.value;
-                            $scope.sensors[sensorName].status = sensor.value.status;
-                            $scope.sensors[sensorName].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
-                            $scope.sensors[sensorName].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
+                            if (!$scope.sensors[sensorName]) {
+                                $scope.sensors[sensorName] = {name: sensorName};
+                            }
+                            $scope.sensors[sensorName].value = sensor.value;
+                            $scope.sensors[sensorName].status = sensor.status;
+                            $scope.sensors[sensorName].timestamp = moment.utc(sensor.timestamp, 'X').format(DATETIME_FORMAT);
+                            $scope.sensors[sensorName].received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(DATETIME_FORMAT);
                         });
 
                         $scope.$on('$destroy', function () {
                             unbindUpdate();
-                            SensorsService.disconnectListener();
+                            //TODO: Should we remove the sensor strategies? What if the sensor is also used on this connection for a different display?
+                            // if ($scope.sensorsRegex.length > 0) {
+                            //     SensorsService.removeSensorStrategies($scope.sensorsRegex.join('|'));
+                            // }
+                            if (!$scope.reusedSensorsServiceConnection) {
+                                SensorsService.disconnectListener();
+                            }
                         });
                     },
                     template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label=''>" +

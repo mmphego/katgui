@@ -14,6 +14,8 @@
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
         api.controlledResources = [];
+        api.topStatusTreesSensors = [];
+        api.receptorTreesSensors = [];
 
         api.setReceptorsAndStatusTree = function (statusTree, receptors) {
             api.receptors.splice(0, api.receptors.length);
@@ -39,6 +41,7 @@
 
         api.setTopStatusTrees = function (statusTrees) {
             api.topStatusTrees.splice(0, api.topStatusTrees.length);
+            var sensorsToSubscribe = [];
 
             for (var treeName in statusTrees) {
                 var tree = statusTrees[treeName];
@@ -47,8 +50,10 @@
                 tree.children = [];
                 tree.subs.forEach(function (sub) {
                     tree.children.push({sensor: sub.sensor, name: sub.name});
+                    sensorsToSubscribe.push(sub.sensor);
                 });
             }
+            api.topStatusTreesSensors = sensorsToSubscribe;
         };
 
         api.messageReceivedSensors = function (messageName, message) {
@@ -76,11 +81,28 @@
             $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
         };
 
+        function applyValueToSensor(node, sensorName, value, rootName) {
+            var prefix = node.prefix? node.prefix : '';
+            if (sensorName === prefix + rootName + '_' + node.sensor) {
+                if (!node.sensorValue) {
+                    node.sensorValue = {};
+                }
+                for (var attr in value) {
+                    node.sensorValue[attr] = value[attr];
+                }
+            }
+            else if (node.children && node.children.length > 0) {
+                for (var child in node.children) {
+                    applyValueToSensor(node.children[child], sensorName, value, rootName);
+                }
+            }
+        }
+
         api.receptorMaintenanceMessageReceived = function (message) {
             api.resourcesInMaintenance = message.msg_data.value;
             var attributes = Object.keys(api.sensorValues);
             for (var i = 0; i < attributes.length; i++) {
-                var sensorName = api.sensorValues[attributes[i]].name;
+                var sensorName = attributes[i];
                 d3.selectAll('rect.health-full-item.' + sensorName).attr('class', function (d) {
                     return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
@@ -94,12 +116,12 @@
             var attributes = Object.keys(api.itemsToUpdate);
             if (attributes.length > 0) {
                 for (var i = 0; i < attributes.length; i++) {
-                    var sensorName = api.sensorValues[attributes[i]].name;
+                    var sensorName = attributes[i];
                     d3.selectAll('.health-full-item.' + sensorName).attr('class', function (d) {
-                        return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
+                        return api.getClassesOfSensor(d, sensorName, true) + ' health-full-item';
                     });
                     d3.selectAll('.text-bg-rect.' + sensorName).attr('class', function (d) {
-                        return api.getClassesOfSensor(d, attributes[i], false) + ' text-bg-rect';
+                        return api.getClassesOfSensor(d, sensorName, false) + ' text-bg-rect';
                     });
                     delete api.itemsToUpdate[attributes[i]];
                 }
@@ -131,23 +153,6 @@
             statusClassResult += d.dx > 300 ? " child-big-text" : " child";
             return statusClassResult;
         };
-
-        function applyValueToSensor(node, sensorName, value, rootName) {
-            var prefix = node.prefix? node.prefix : '';
-            if (sensorName === prefix + rootName + '_' + node.sensor) {
-                if (!node.sensorValue) {
-                    node.sensorValue = {};
-                }
-                for (var attr in value) {
-                    node.sensorValue[attr] = value[attr];
-                }
-            }
-            else if (node.children && node.children.length > 0) {
-                for (var child in node.children) {
-                    applyValueToSensor(node.children[child], sensorName, value, rootName);
-                }
-            }
-        }
 
         return api;
     }
