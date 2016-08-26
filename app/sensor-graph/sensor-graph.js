@@ -284,14 +284,16 @@
                         startTime: vm.sensorStartDateReadable,
                         endTime: vm.sensorEndDateReadable,
                         sensors: sensorNames,
-                        interval: vm.intervalNum + ',' + vm.intervalType},
+                        interval: vm.intervalNum + ',' + vm.intervalType,
+                        discrete: vm.searchDiscrete? 'discrete' : null},
                         { notify: false, reload: false });
             } else {
                 $state.go('sensor-graph', {
                         startTime: null,
                         endTime: null,
                         sensors: null,
-                        interval: null},
+                        interval: null,
+                        discrete: null},
                         { notify: false, reload: false });
             }
         };
@@ -467,6 +469,11 @@
                 var startDate = vm.sensorStartDatetime.getTime();
                 var endDate = vm.sensorEndDatetime.getTime();
                 var intervalParams = $stateParams.interval.split(',');
+                var discreteParam = $stateParams.discrete;
+                if (discreteParam === 'discrete') {
+                    vm.searchDiscrete = true;
+                    vm.showOptionsChanged();
+                }
                 if (!intervalParams) {
                     intervalParams = [1, 'm'];
                 }
@@ -494,7 +501,13 @@
                         return;
                     }
                     sensors.forEach(function (sensor) {
-                        var requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 0, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                        var requestParams = [];
+                        if (vm.searchDiscrete) {
+                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000];
+                        } else {
+                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                        }
+
                         $timeout(function () {
                             DataService.sensorData.apply(this, requestParams)
                                 .then(function (result) {
