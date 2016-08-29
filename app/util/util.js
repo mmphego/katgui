@@ -248,13 +248,14 @@ angular.module('katGui.util')
     });
 
 //to suppress warnings about missing aria-labels (ARIA - Accessible Rich Internet Applications)
-//our application does not implement any accessibility features
+//our application does not implement any accessibility features - YET
 angular.module('material.core')
     .service('$mdAria', function() {
         return {
             expect: function() {},
             expectAsync: function() {},
-            expectWithText: function() {}
+            expectWithText: function() {},
+            expectWithoutText: function() {}
         };
     });
 
