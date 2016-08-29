@@ -1,6 +1,6 @@
 node('docker') {
     stage 'Cleanup workspace'
-    dir('dist') {
+    dir('katgui') {
         deleteDir()
     }
 
