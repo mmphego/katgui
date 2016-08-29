@@ -12,8 +12,8 @@ node('docker') {
         stage 'Install & Unit Tests'
             timeout(time: 30, unit: 'MINUTES') {
 	        sh './update.sh'
-                #sh 'gulp test'
-	        #step([$class: 'JUnitResultArchiver', testResults: 'nosetests.xml'])
+                //sh 'gulp test'
+	        //step([$class: 'JUnitResultArchiver', testResults: 'nosetests.xml'])
 	        }
 
         stage 'Build .whl & .deb'
