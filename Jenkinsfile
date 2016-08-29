@@ -4,7 +4,7 @@ node('docker') {
         deleteDir()
     }
 
-    docker.image('camguibuilder:latest').inside('-u root') {
+    docker.image('camguinode:latest').inside('-u root') {
         stage 'Checkout SCM'
             checkout scm
             sh "git checkout ${env.BRANCH_NAME}"
