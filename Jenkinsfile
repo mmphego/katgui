@@ -8,7 +8,7 @@ node('docker') {
     docker.image('camguinode:latest').inside('-u root') {
         stage 'Checkout SCM'
             checkout scm
-            sh "git checkout ${env.BRANCH_NAME}"
+            sh "git checkout ${env.BRANCH_NAME} && git pull"
 
         stage 'Install & Unit Tests'
             timeout(time: 30, unit: 'MINUTES') {
