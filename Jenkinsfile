@@ -11,20 +11,17 @@ node('docker') {
 
         stage 'Install & Unit Tests'
             timeout(time: 30, unit: 'MINUTES') {
-	        sh './update.sh'
-                //sh 'gulp test'
-	        //step([$class: 'JUnitResultArchiver', testResults: 'nosetests.xml'])
-	        }
+                sh './update.sh'
+            }
 
         stage 'Build .whl & .deb'
-            sh 'fpm -s python -t deb .'
-            sh 'python setup.py bdist_wheel'
-            sh 'mv *.deb dist/'
+            sh 'mv dist/ katgui'
             // chmod for cleanup stage
-            sh 'chmod 777 -R dist'
+            sh 'chmod 777 -R katgui'
+            sh 'fpm -s "dir" -t "deb" --name katgui --version $(kat-get-version.py) --description "The operator interface for SKA-SA" katgui=/var/www'
 
         stage 'Archive build artifact: .whl & .deb'
-            archive 'dist/*.whl,dist/*.deb'
+            archive '*.deb'
 
         stage 'Trigger downstream publish'
             build job: 'publish-local', parameters: [
