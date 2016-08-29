@@ -3,7 +3,7 @@ node('docker') {
     dir('katgui') {
         deleteDir()
     }
-    sh 'rm -rf *.deb *.gz'
+    sh 'rm -rf *.deb'
 
     docker.image('camguinode:latest').inside('-u root') {
         stage 'Checkout SCM'
@@ -19,7 +19,7 @@ node('docker') {
             sh 'mv dist/ katgui'
             sh 'fpm -s "dir" -t "deb" --name katgui --version $(kat-get-version.py) --description "The operator interface for SKA-SA" katgui=/var/www'
             // chmod for cleanup stage
-            sh 'chmod 777 -R katgui *.deb *.gz'
+            sh 'chmod 777 -R katgui *.deb'
 
         stage 'Archive build artifact: .whl & .deb'
             archive '*.deb'
