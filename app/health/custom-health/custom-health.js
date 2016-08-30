@@ -4,7 +4,7 @@
         .controller('CustomHealthCtrl', CustomHealthCtrl);
 
     function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams,
-                              $timeout, $log, NotifyService) {
+                              $timeout, $log, $mdDialog, $state, NotifyService) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -52,7 +52,7 @@
         };
 
         vm.initSensors = function () {
-            if (vm.regexStrings) {
+            if (vm.regexStrings && vm.regexStrings.length > 0) {
                 var regexString = '';
                 var regexToConnect = [];
                 vm.regexStrings.forEach(function (regex) {
@@ -64,7 +64,7 @@
 
         vm.unbindSetSensorStrategy = $rootScope.$on('setSensorStrategyMessage', function (event, message) {
             for (var i = 0; i < vm.regexStrings.length; i++) {
-                var regex = new RegExp(vm.regexStrings[i]);
+                var regex = new RegExp(vm.regexStrings[i].name);
                 for (var key in message) {
                     if (regex.test(key)) {
                         if (!vm.customStatusTrees[i]) {
@@ -143,14 +143,13 @@
             }
         };
 
-        vm.addView = function () {
-            vm.buildView(vm.regex, {left: 0, top: 0}, {width: parseInt(vm.selectedWidth), height: parseInt(vm.selectedHeight)});
-        };
-
         vm.buildView = function (regex, offset, size) {
+            if (!regex || regex.length === 0) {
+                return;
+            }
             var sensorRegex = {
                 name: regex,
-                size: {w: size.width, h: size.height},
+                size: {width: size.width, height: size.height},
                 offset: {left: offset.left, top: offset.top}
             };
             var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
@@ -172,6 +171,7 @@
             if (existingItem) {
                 vm.regexStrings.splice(vm.regexStrings.indexOf(existingItem), 1);
                 vm.customStatusTrees.splice(vm.customStatusTrees.indexOf(tree), 1);
+                vm.debounceUpdateUrl();
             }
         };
 
@@ -188,6 +188,97 @@
                 url += encodeURI(regex) + ':' + item.offsetLeft + ',' + item.offsetTop + ',' + item.clientWidth + ',' + item.clientHeight + ';';
             }
             NotifyService.showSimpleDialog('Exported URL', url);
+        };
+
+        vm.mouseUp = function () {
+            vm.debounceUpdateUrl();
+        };
+
+        vm.updateUrl = function () {
+            if (vm.regexStrings.length > 0) {
+                var url = '';
+                var items = document.getElementsByTagName('status-single-level-tree-map');
+                for (var i = 0; i < items.length; i++) {
+                    var regex = items[i].getElementsByClassName('status-top-label-text')[0].innerText;
+                    var newOffset = {top: items[i].offsetTop, left: items[i].offsetLeft};
+                    var newSize = {width: items[i].clientWidth, height: items[i].clientHeight};
+                    var existingItemIndex = _.findIndex(vm.regexStrings, {name: regex});
+                    if (existingItemIndex > -1) {
+                        vm.regexStrings[existingItemIndex].offset = newOffset;
+                        vm.regexStrings[existingItemIndex].size = newSize;
+                    }
+                    url += encodeURI(regex + ':' + newOffset.left + ',' + newOffset.top + ',' + newSize.width + ',' + newSize.height + ';');
+                }
+                if (vm.regexStrings.length > 0 && url.length > 0) {
+                    $state.go('customHealth', { layout: url }, { notify: false, reload: false });
+                } //else: this is the init step and dom elements are not created yet
+            }
+        };
+
+        vm.debounceUpdateUrl = _.debounce(vm.updateUrl, 500);
+
+        vm.showEnterSensorRegexDialog = function (event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = "Enter custom regex";
+                        $scope.regex = '';
+                        $scope.dimensions = [{
+                            height: 400, width: 200
+                        }, {
+                            height: 600, width: 200
+                        }, {
+                            height: 800, width: 200
+                        }, {
+                            height: 1000, width: 200
+                        }, {
+                            height: 1200, width: 200
+                        }, {
+                            height: 600, width: 400
+                        }, {
+                            height: 800, width: 400
+                        }, {
+                            height: 1000, width: 400
+                        }, {
+                            height: 1200, width: 400
+                        }];
+                        $scope.dimension = $scope.dimensions[1];
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.createView = function () {
+                            var offset = {top: 0, left: 0};
+                            if (vm.regexStrings.length > 0) {
+                                var lastViewItem = vm.regexStrings[vm.regexStrings.length - 1];
+                                offset = {top: lastViewItem.offset.top, left: lastViewItem.offset.left + lastViewItem.size.width + 8};
+                            }
+                            vm.buildView($scope.regex, offset, $scope.dimension);
+                            vm.debounceUpdateUrl();
+                            $mdDialog.hide();
+                        };
+                    },
+                    template: [
+                        '<md-dialog style="padding: 0; max-width: 95%; max-height: 95%" md-theme="{{$root.themePrimary}}" layout="column">',
+                            '<md-toolbar class="md-primary" layout="row" layout-align="center center"><span>{{title}}</span></md-toolbar>',
+                            '<div style="padding:0; margin: 8px; overflow: auto; width: 400px" layout="column" layout-padding layout-align="start center" md-theme="{{$root.themePrimaryButtons}}">',
+                                '<md-input-container class="md-primary" title="Start typing to find sensors" style="padding: 2px; margin-bottom: 0; height: 40px; width: 380px">',
+                                    '<input placeholder="Enter a regex..." ng-model="regex" md-autofocus maxlength="80">',
+                                '</md-input-container>',
+                                '<div layout="row" layout-align="space-between center" style="min-width: 100%">',
+                                    '<span flex>View Dimensions <i>(width x height)</i>:</span>',
+                                    '<md-select ng-model="dimension" placeholder="Select dimensions..." style="margin: 0">',
+                                        '<md-option ng-repeat="dimension in dimensions" ng-value="dimension">',
+                                          '{{dimension.width + "x" + dimension.height}}',
+                                    '</md-option>',
+                                '</div>',
+                            '</div>',
+                            '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;" md-theme="{{$root.themePrimaryButtons}}">',
+                                '<md-button style="margin-left: 8px;" class="md-primary" ng-click="hide()">Cancel</md-button>',
+                                '<md-button style="margin-left: 8px;" class="md-primary md-raised" ng-click="createView()">Create View</md-button>',
+                            '</div>',
+                        '</md-dialog>'].join(''),
+                    targetEvent: event
+                });
         };
 
         $scope.$on('$destroy', function () {
@@ -222,6 +313,7 @@
             if (!$scope.$$phase) {
                 $scope.$digest();
             }
+            vm.debounceUpdateUrl();
         }
 
         $timeout(vm.connectListeners, 500);
