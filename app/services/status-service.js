@@ -14,8 +14,13 @@
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
         api.controlledResources = [];
-        api.topStatusTreesSensors = [];
-        api.receptorTreesSensors = [];
+        api.topStatusTreesSensors = {};
+        api.receptorTreesSensors = {};
+        api.updateQueue = [];
+
+        api.addToUpdateQueue = function (sensor) {
+            api.updateQueue.push(sensor);
+        };
 
         api.setReceptorsAndStatusTree = function (statusTree, receptors) {
             api.receptors.splice(0, api.receptors.length);
@@ -41,7 +46,7 @@
 
         api.setTopStatusTrees = function (statusTrees) {
             api.topStatusTrees.splice(0, api.topStatusTrees.length);
-            var sensorsToSubscribe = [];
+            api.topStatusTreesSensors = {};
 
             for (var treeName in statusTrees) {
                 var tree = statusTrees[treeName];
@@ -50,35 +55,9 @@
                 tree.children = [];
                 tree.subs.forEach(function (sub) {
                     tree.children.push({sensor: sub.sensor, name: sub.name});
-                    sensorsToSubscribe.push(sub.sensor);
+                    api.topStatusTreesSensors[sub.sensor] = true;
                 });
             }
-            api.topStatusTreesSensors = sensorsToSubscribe;
-        };
-
-        api.messageReceivedSensors = function (messageName, message) {
-            if (messageName.indexOf('health:') === 0) {
-                messageName = messageName.split(':')[1];
-            }
-            message.name = messageName;
-
-            if (api.receptors.indexOf(messageName.split("_")[0]) > -1 ||
-                api.receptors.indexOf(messageName.split("_")[1]) > -1 ) {
-                for (var receptor in api.statusData) {
-                    if (messageName.indexOf(receptor) > -1) {
-                        applyValueToSensor(api.statusData[receptor], messageName, message, receptor);
-                        if (api.statusData[receptor + "treemapClone"]) {
-                            applyValueToSensor(api.statusData[receptor + "treemapClone"], messageName, message, receptor);
-                        }
-                    }
-                }
-            }
-            api.sensorValues[messageName] = message;
-            api.itemsToUpdate[messageName] = message;
-            if (!api.stopUpdating) {
-                api.stopUpdating = $interval(api.applyPendingUpdates, 500);
-            }
-            $rootScope.$emit('sensorUpdateReceived', {name: messageName, sensorValue: message});
         };
 
         function applyValueToSensor(node, sensorName, value, rootName) {
@@ -113,23 +92,14 @@
         };
 
         api.applyPendingUpdates = function () {
-            var attributes = Object.keys(api.itemsToUpdate);
-            if (attributes.length > 0) {
-                for (var i = 0; i < attributes.length; i++) {
-                    var sensorName = attributes[i];
-                    d3.selectAll('.health-full-item.' + sensorName).attr('class', function (d) {
-                        return api.getClassesOfSensor(d, sensorName, true) + ' health-full-item';
-                    });
-                    d3.selectAll('.text-bg-rect.' + sensorName).attr('class', function (d) {
-                        return api.getClassesOfSensor(d, sensorName, false) + ' text-bg-rect';
-                    });
-                    delete api.itemsToUpdate[attributes[i]];
-                }
-            } else {
-                if (angular.isDefined(api.stopUpdating)) {
-                    $interval.cancel(api.stopUpdating);
-                    api.stopUpdating = undefined;
-                }
+            while (api.updateQueue.length > 0) {
+                var sensorName = api.updateQueue.shift();
+                d3.selectAll('.health-full-item.' + sensorName).attr('class', function (d) {
+                    return api.getClassesOfSensor(d, sensorName, true) + ' health-full-item';
+                });
+                d3.selectAll('.text-bg-rect.' + sensorName).attr('class', function (d) {
+                    return api.getClassesOfSensor(d, sensorName, false) + ' text-bg-rect';
+                });
             }
         };
 
@@ -137,10 +107,7 @@
             if (!d) {
                 return;
             }
-            d.sensorValue = api.itemsToUpdate[sensorToUpdateName];
-            if (!d.sensorValue) {
-                d.sensorValue = api.sensorValues[sensorToUpdateName];
-            }
+            d.sensorValue = api.sensorValues[sensorToUpdateName];
             var statusClassResult = sensorToUpdateName;
             if (checkMaintenance && api.resourcesInMaintenance.indexOf(d.sensor.replace('agg_', '').split('_')[0]) > -1) {
                 statusClassResult += ' in-maintenance-child ';
