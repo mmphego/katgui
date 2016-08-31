@@ -49,12 +49,12 @@
         };
 
         vm.initSensors = function () {
-            if (StatusService.topStatusTreesSensors.length > 0) {
-                SensorsService.setSensorStrategies(
-                    StatusService.topStatusTreesSensors.join('|'),
-                    'event-rate', 1, 360);
+            if (StatusService.topStatusTreesSensors) {
+                SensorsService.setSensorStrategies(Object.keys(StatusService.topStatusTreesSensors).join('|'), 'event', 1, 360);
             }
         };
+
+        vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 150);
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var sensorName = sensor.name.split(':')[1];
@@ -62,16 +62,12 @@
             sensor.received_timestamp = sensor.value.received_timestamp;
             sensor.timestamp = sensor.value.timestamp;
             sensor.value = sensor.value.value;
-
             StatusService.sensorValues[sensorName] = sensor;
-            StatusService.itemsToUpdate[sensorName] = sensor;
-            if (!StatusService.stopUpdating) {
-                StatusService.stopUpdating = $interval(StatusService.applyPendingUpdates, 500);
-            }
-            $rootScope.$emit('sensorUpdateReceived', {name: sensor.name, sensorValue: sensor});
+            StatusService.addToUpdateQueue(sensorName);
         });
 
         $scope.$on('$destroy', function () {
+            $interval.cancel(vm.pendingUpdatesInterval);
             unbindUpdate();
             SensorsService.disconnectListener();
             StatusService.sensorValues = {};
