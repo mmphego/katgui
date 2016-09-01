@@ -28,7 +28,11 @@
                 <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
             </md-button>
         </md-chips>
-        <md-button ng-click="vm.newLogStartTimeText = $root.utcDateTime; vm.focusInlineContentInput()"
+        <md-checkbox ng-model="vm.andTagFiltering" class="md-primary" title="Match all tags in the filter"
+            style="padding: 20px 0; font-size: 16px; margin-right: 8px">
+            Match all tags
+        </md-checkbox>
+        <md-button md-theme="{{$root.themePrimaryButtons}}" class="md-primary md-raised" ng-click="vm.newLogStartTimeText = $root.utcDateTime; vm.focusInlineContentInput()"
             style="height: 36px; max-width: 42px; min-width: 42px; margin-top: 16px; margin-left: 0; padding: 0;">
             Now
         </md-button>

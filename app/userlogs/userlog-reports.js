@@ -7,13 +7,15 @@
                                     $log, $stateParams, NotifyService, $timeout, $state) {
 
             var vm = this;
-            vm.startTime = moment.utc().format('YYYY-MM-DD 00:00:00');
-            vm.endTime = moment.utc().format('YYYY-MM-DD 23:59:59');
+            var DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
+            vm.startTime = new Date();
+            vm.endTime = vm.startTime;
+            vm.startDatetimeReadable = moment(vm.startTime.getTime()).format('YYYY-MM-DD 00:00:00');
+            vm.endDatetimeReadable = moment(vm.endTime.getTime()).format('YYYY-MM-DD 23:59:59');
             vm.tags = UserLogService.tags;
             vm.filterTags = [];
             vm.reportUserlogs = [];
-            var startTimeParam = $stateParams.startTime;
-            var endTimeParam = $stateParams.endTime;
+            vm.andTagFiltering = false;
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -25,6 +27,14 @@
                 {label: 'End Time', value: 'end_time'},
                 {label: 'Content', value: 'content'}
             ];
+
+            vm.onStartTimeSet = function () {
+                vm.startDatetimeReadable = moment(vm.startTime.getTime()).format(DATETIME_FORMAT);
+            };
+
+            vm.onEndTimeSet = function () {
+                vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(DATETIME_FORMAT);
+            };
 
             vm.querySearch = function (query) {
                 var results = query ? vm.tags.filter(vm.createFilterFor(query)) : [];
@@ -44,8 +54,8 @@
             vm.exportPdf = function(){
                 vm.exportingPdf = true;
                 var pdf = new jsPDF('l', 'pt');
-                var exportTime = moment.utc().format('YYYY-MM-DD HH:mm:ss');
-                var query = "?start_time=" + vm.startTime + "&end_time=" + vm.endTime;
+                var exportTime = moment.utc().format(DATETIME_FORMAT);
+                var query = "?start_time=" + vm.startDatetimeReadable + "&end_time=" + vm.endDatetimeReadable;
 
                 vm.filteredReportUserlogs.forEach(function (userlog) {
                     userlog.userName = userlog.user.name;
@@ -68,7 +78,7 @@
                 pdf.text('Userlog Report - ' + exportTime + ' (UTC)', 20, 25);
                 pdf.setFontSize(12);
                 pdf.setFontSize(12);
-                pdf.text(('From: ' + vm.startTime + '     To: ' + vm.endTime), 20, 45);
+                pdf.text(('From: ' + vm.startDatetimeReadable + '     To: ' + vm.endDatetimeReadable), 20, 45);
 
                 pdf.autoTable(columns, vm.filteredReportUserlogs, {
                     startY: 55,
@@ -107,15 +117,15 @@
                     return tag.id;
                 }).join(',');
                 $state.go('userlog-reports', {
-                        startTime: vm.startTime,
-                        endTime: vm.endTime,
+                        startTime: vm.startDatetimeReadable,
+                        endTime: vm.endDatetimeReadable,
                         tagIds: filterTagsList? filterTagsList : ',',
                         filter: vm.searchInputText},
                         { notify: false, reload: false });
                 vm.reportUserlogs = [];
                 var query = "?";
-                query += "start_time=" + vm.startTime + "&";
-                query += "end_time=" +  vm.endTime;
+                query += "start_time=" + vm.startDatetimeReadable + "&";
+                query += "end_time=" +  vm.endDatetimeReadable;
                 UserLogService.queryUserLogs(query).then(function (result) {
                     if (result.data) {
                         result.data.forEach(function (userlog) {
@@ -135,7 +145,11 @@
                         matchCount++;
                     }
                 }
-                return matchCount > 0 && matchCount === vm.filterTags.length;
+                if (vm.andTagFiltering) { //and tag filtering, e.g. m011 && m012
+                    return matchCount > 0 && matchCount === vm.filterTags.length;
+                } else { //or tag filtering, e.g. m011 || m012
+                    return matchCount > 0;
+                }
             };
 
             vm.afterInit = function() {
@@ -148,13 +162,16 @@
                     }
                 });
                 $timeout(function () {
-                    if (moment.utc($stateParams.startTime, 'YYYY-MM-DD HH:mm:ss', true).isValid() &&
-                        moment.utc($stateParams.endTime, 'YYYY-MM-DD HH:mm:ss', true).isValid()) {
-                        vm.startTime = $stateParams.startTime;
-                        vm.endTime = $stateParams.endTime;
+                    var startTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
+                    var endTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
+                    if (startTimeParam.isValid() && endTimeParam.isValid()) {
+                        vm.startTime = startTimeParam.toDate();
+                        vm.endTime = endTimeParam.toDate();
+                        vm.startDatetimeReadable = $stateParams.startTime;
+                        vm.endDatetimeReadable = $stateParams.endTime;
                         var query = "?";
-                        query += "start_time=" + vm.startTime + "&";
-                        query += "end_time=" +  vm.endTime;
+                        query += "start_time=" + vm.startDatetimeReadable + "&";
+                        query += "end_time=" +  vm.endDatetimeReadable;
                         UserLogService.queryUserLogs(query).then(function (result) {
                             if (result.data) {
                                 result.data.forEach(function (userlog) {
@@ -164,7 +181,7 @@
                         });
                     } else if ($stateParams.startTime && $stateParams.endTime) {
                         NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
-                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be YYYY-MM-DD HH:mm:ss.');
+                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be ' + DATETIME_FORMAT);
                     }
                 }, 1000);
             };

@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, $rootScope, $window, $log, $filter, SERVER_URL, NotifyService, $mdDialog, $sce) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, SERVER_URL, NotifyService, $mdDialog, $sce) {
 
         var api = {};
         api.urlBase = SERVER_URL + '/katcontrol';
@@ -319,6 +319,9 @@
                         $scope.uploadingFiles = false;
                         $scope.validTags = false;
                         $scope.mandatoryTagsListString = api.mandatoryTagsListString;
+                        $scope.showInvalidTagsTooltip = false;
+                        $scope.openedWithoutEndTime = log.end_time !== null && log.end_time.length > 0;
+                        $scope.chipHasBeenAdded = false;
 
                         for (var i = 0; i < log.tags.length; i++) {
                             var existingTag = _.findWhere(api.tags, {id: log.tags[i].id});
@@ -329,7 +332,7 @@
                             }
                         }
 
-                        $scope.tagsChanged = function () {
+                        $scope.tagsChanged = function (initStep) {
                             var containsMandatoryTags = false;
                             for (var i = 0; i < $scope.selectedTags.length; i++) {
                                 if (api.mandatoryTagsList.indexOf($scope.selectedTags[i].name.toLowerCase()) > -1) {
@@ -338,11 +341,13 @@
                                 }
                             }
                             $scope.validTags = containsMandatoryTags;
-                            if ($scope.validTags) {
-                                $scope.showInvalidTagsTooltip = true;
+                            $scope.showInvalidTagsTooltip = !$scope.validTags;
+                            if (!initStep) {
+                                $scope.chipHasBeenAdded = true;
                             }
                         };
-                        $scope.tagsChanged();
+
+                        $scope.tagsChanged(true);
 
                         $scope.verifyDateTimeString = function (input) {
                             return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
