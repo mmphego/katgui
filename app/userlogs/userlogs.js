@@ -27,6 +27,7 @@
         vm.tags = UserLogService.tags;
         vm.filterTags = $localStorage.filterTags;
         vm.inlineTags = $localStorage.inlineTags;
+        vm.andTagFiltering = false;
         if (!vm.filterTags) {
             vm.filterTags = [];
         }
@@ -170,7 +171,11 @@
                     matchCount++;
                 }
             }
-            return matchCount > 0 && matchCount === vm.filterTags.length;
+            if (vm.andTagFiltering) { //and tag filtering, e.g. m011 && m012
+                return matchCount > 0 && matchCount === vm.filterTags.length;
+            } else { //or tag filtering, e.g. m011 || m012
+                return matchCount > 0;
+            }
         };
 
         vm.filterAfterNow = function (userlog) {

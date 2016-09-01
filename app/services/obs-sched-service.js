@@ -72,12 +72,14 @@
                 tags.push(tagResource);
             }
 
+            var content = faulty === 'set'? 'Marking resource ' + resource + ' as faulty.' : 'Clearing resource ' + resource + ' faulty flag.';
+
             var newlog = {
                 start_time: $rootScope.utcDateTime,
                 end_time: '',
                 tags:tags,
                 user_id: $rootScope.currentUser.id,
-                content: 'Setting Resource ' + resource + ' to Faulty: '
+                content: content
             };
             UserLogService.editUserLog(newlog, true);
         };
@@ -91,12 +93,14 @@
                 tags.push(tagResource);
             }
 
+            var content = maintenance === 'set'? 'Setting resource ' + resource + ' in maintenance.' : 'Clearing resource ' + resource + ' maintenance flag.';
+
             var newlog = {
                 start_time: $rootScope.utcDateTime,
                 end_time: '',
                 tags: tags,
                 user_id: $rootScope.currentUser.id,
-                content: 'Setting Resource ' + resource + ' in Maintenance: '
+                content: content
             };
             UserLogService.editUserLog(newlog, true);
         };

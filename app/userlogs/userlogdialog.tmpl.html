@@ -15,7 +15,7 @@
                            ng-click="showDatePicker = !showDatePicker; showEndDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
-                <md-button ng-click="start_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'"
+                <md-button ng-disabled="!editMode" ng-click="start_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'; onTimeChange()"
                     style="height: 36px; max-width: 42px; min-width: 42px; margin-left: 0; padding: 0;">
                     Now
                 </md-button>
@@ -28,15 +28,15 @@
             <div flex layout="row" layout-align="center center"></div>
             <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">
                 <md-input-container md-is-error="!validEndTime" flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
-                    <input ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
+                    <input ng-disabled="!editMode && openedWithoutEndTime" flex type="text" ng-change="onTimeChange()"
                            data-ng-model="end_time" placeholder="End Date"
                            title="End Date 'yyyy-MM-dd HH:mm:ss'"/>
                 </md-input-container>
-                <md-button ng-disabled="!editMode" class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 36px; height: 36px;"
+                <md-button ng-disabled="!editMode && openedWithoutEndTime" class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 36px; height: 36px;"
                            ng-click="showEndDatePicker = !showEndDatePicker; showDatePicker = false; $event.stopPropagation()">
                     <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                 </md-button>
-                <md-button ng-click="end_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'"
+                <md-button ng-disabled="!editMode && openedWithoutEndTime" ng-click="end_time = $root.utcDateTime | date:'yyyy-MM-dd HH:mm:ss'; onTimeChange()"
                     style="height: 36px; max-width: 42px; min-width: 42px; margin-left: 0; padding: 0;">
                     Now
                 </md-button>
@@ -58,10 +58,10 @@
             <md-tooltip md-visible="showInvalidTagsTooltip" md-autohide="false">
                 Select at least one of the mandatory tags: {{mandatoryTagsListString}}
             </md-tooltip>
-            <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match="true" flex
+            <md-chips ng-model="selectedTags" md-autocomplete-snap md-require-match="true" flex md-removable="editMode"
                 md-on-add="tagsChanged()"
                 md-on-remove="tagsChanged()">
-                <md-autocomplete ng-disabled="!editMode"
+                <md-autocomplete
                     md-autoselect="true"
                     md-search-text="searchText"
                     md-items="item in querySearch(searchText)"
@@ -83,7 +83,7 @@
                     <md-icon md-chip-remove md-font-icon="fa-close" style="color:white; fill:white;"></md-icon>
                 </md-button>
             </md-chips>
-            <md-button ng-disabled="!editMode" ng-click="toggleTags = !toggleTags; $event.stopPropagation()" style="margin: 0; padding: 0; min-height: 32px; min-width: 32px">
+            <md-button ng-click="toggleTags = !toggleTags; $event.stopPropagation()" style="margin: 0; padding: 0; min-height: 32px; min-width: 32px">
                 <span class="fa fa-tags"></span>
             </md-button>
             <div ng-init="toggleTags = false" ng-show="toggleTags" id="replyForm">
@@ -113,8 +113,8 @@
         <span ng-show="uploadingFiles" style="font-weight: bold">
             Uploading Files, please wait...
         </span>
-        <md-button ng-click="hide()">{{!editMode? 'Close' : 'Cancel'}}</md-button>
-        <md-button ng-hide="!editMode" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime || !content || !validTags">Submit</md-button>
+        <md-button ng-click="hide()">{{!editMode && openedWithoutEndTime? 'Close' : 'Cancel'}}</md-button>
+        <md-button ng-hide="!editMode && openedWithoutEndTime && !chipHasBeenAdded" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime || !content || !validTags">Submit</md-button>
     </md-dialog-actions>
     </div>
 </md-dialog>

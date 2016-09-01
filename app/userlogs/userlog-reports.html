@@ -12,27 +12,26 @@
                 <input class="fade-in search-input-box" style="width: 200px; max-width: 200px" type="search"
                        ng-model-options="{ debounce: 300 }" ng-model="vm.searchInputText" placeholder="Filter Userlogs..."/>
                 <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
-                    <div layout="row" layout-align="center center" style="min-width: 180px; position: relative">
-                        <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
-                            <input flex type="text" style="color: white"
-                                   data-ng-model="vm.startTime" placeholder="Start Date"
-                                   title="Start Date 'yyyy-MM-dd HH:mm:ss'"/>
+                    <div layout="row" layout-align="center center" style="min-width: 180px;">
+                        <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;" title="Start Date 'yyyy-MM-dd HH:mm:ss'">
+                            <input flex type="text" style="color: white" title="Start Date 'yyyy-MM-dd HH:mm:ss'"
+                                   data-ng-model="vm.startDatetimeReadable" placeholder="Start Date"/>
                         </md-input-container>
                         <span></span>
                         <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
                                    ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
                             <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                         </md-button>
-                        <datetimepicker ng-show="vm.showDatePicker" ng-init="vm.showDatePicker = false"
-                                        class="datepickerMenu md-whiteframe-z1"
-                                        data-ng-model="vm.startTime" style="position: absolute; left: 0; top: 34px; min-width: 220px"
-                                        data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown2&apos; }"
-                                        data-on-set-time="vm.showDatePicker = false; vm.onTimeSet(vm.startTime, vm.blank_query, 'start_time')"></datetimepicker>
+
+                        <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showDatePicker = false"
+                            style="position: absolute; right: 500px; top: 40px; color: #333333" ng-show="vm.showDatePicker"
+                            data-ng-model="vm.startTime" ng-keypress="vm.showDatePicker = false" ng-click="$event.stopPropagation()"
+                            data-on-set-time="vm.showDatePicker = false; vm.onStartTimeSet(vm.startTime)"></datetimepicker>
                     </div>
-                    <div layout="row" layout-align="center center" style="min-width: 180px; position: relative">
+                    <div layout="row" layout-align="center center" style="min-width: 180px">
                         <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
                             <input flex type="text" style="color: white"
-                                   data-ng-model="vm.endTime" placeholder="End Date"
+                                   data-ng-model="vm.endDatetimeReadable" placeholder="End Date"
                                    title="End Date 'yyyy-MM-dd HH:mm:ss'"/>
                         </md-input-container>
                         <span></span>
@@ -40,11 +39,10 @@
                                    ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
                             <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                         </md-button>
-                        <datetimepicker ng-show="vm.showEndDatePicker" ng-init="vm.showEndDatePicker = false"
-                                        data-ng-model="vm.endTime" style="position: absolute; left: 0; top: 34px; min-width: 220px"
-                                        class="datepickerMenu md-whiteframe-z1"
-                                        data-datetimepicker-config="{ dropdownSelector: &apos;#dropdown4&apos; }"
-                                        data-on-set-time="vm.showEndDatePicker = false; vm.onTimeSet(vm.endTime, vm.blank_query, 'end_time')"></datetimepicker>
+                        <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showEndDatePicker = false"
+                            style="position: absolute; right: 335px; top: 40px; color: #333333" ng-show="vm.showEndDatePicker"
+                            data-ng-model="vm.endTime" ng-keypress="vm.showEndDatePicker = false" ng-click="$event.stopPropagation()"
+                            data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(vm.endTime)"></datetimepicker>
                     </div>
                     <md-checkbox md-theme="{{$root.themePrimaryButtons}}" ng-model="vm.includeActivityLogs" class="md-primary"
                                  style="font-size: 12px; width: 120px; line-height: 1.3; margin: 0">
@@ -85,6 +83,10 @@
                 <md-button ng-click="toggleTags = !toggleTags; $event.stopPropagation()" style="margin: 0; padding: 0; min-height: 32px; min-width: 32px">
                     <span class="fa fa-tags"></span>
                 </md-button>
+                <md-checkbox ng-model="vm.andTagFiltering" class="md-primary" title="Match all tags in the filter"
+                    style="margin: 0; font-size: 16px">
+                    Match all tags
+                </md-checkbox>
                 <div ng-init="toggleTags = false" ng-show="toggleTags" class="md-whiteframe-z3 tag-popup-list" style="top: 120px; right: 0px">
                     <div ng-repeat="tag in vm.tags | orderBy:'name' track by $index" class="tag-popup-item" flex ng-click="vm.filterTags.push(tag)">
                         {{tag.name}}
@@ -94,11 +96,11 @@
         </md-toolbar>
         <div layout="column" class="md-whiteframe-z1" style="overflow: auto" ng-show="vm.reportUserlogs.length > 0">
             <div class="md-list-item-text" style="min-height: 42px; max-height: 42px; padding: 8px; border-bottom: 1px solid currentColor; font-size: 18px; font-weight: bold;" layout="row" flex>
-                <span style="width: 130px">User</span>
-                <span style="width: 150px">Start</span>
-                <span style="width: 150px">End</span>
+                <span style="width: 130px; margin: 0 4px">User</span>
+                <span style="width: 125px">Start</span>
+                <span style="width: 125px">End</span>
                 <span flex>Content</span>
-                <span>Tags</span>
+                <span style="margin-right: 32px">Tags</span>
             </div>
             <div ng-repeat="userlog in vm.filteredReportUserlogs = (vm.reportUserlogs | regexSearch:vm.userLogsFields:vm.searchInputText | filter:vm.filterByTag) track by $index" ng-click="vm.editUserLog(userlog, $event)" class="user-log-row">
                 <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userlog.content}}">
