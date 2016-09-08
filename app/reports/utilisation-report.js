@@ -9,21 +9,57 @@
             var vm = this;
             var DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
             vm.startTime = new Date();
-            vm.endTime = vm.startTime;
-            vm.startDatetimeReadable = moment(vm.startTime.getTime()).format('YYYY-MM-DD 00:00:00');
-            vm.endDatetimeReadable = moment(vm.endTime.getTime()).format('YYYY-MM-DD 23:59:59');
-            vm.reportItems = [];
+            vm.startTime.setHours(0);
+            vm.startTime.setMinutes(0);
+            vm.startTime.setSeconds(0);
+            vm.endTime = new Date();
+            vm.endTime.setHours(23);
+            vm.endTime.setMinutes(59);
+            vm.endTime.setSeconds(59);
+            vm.startDatetimeReadable = moment(vm.startTime.getTime()).format(DATETIME_FORMAT);
+            vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(DATETIME_FORMAT);
+            vm.reportTimeWindowMSDuration = 0;
+            vm.creatingReport = false;
+            vm.subarrayReportSensorsRegex = "subarray...state|subarray...maintenance|subarray...product|subarray...band|sched.mode..";
+            vm.receptorsReportSensorsRegex = "^(m0..|ant.).mode|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance";
+            vm.poolResourcesAssignedDurations = {};
+            vm.poolResourcesFreeDurations = {};
+            vm.poolResourcesFaultyDurations = {};
+            vm.poolResourcesMaintenanceDurations = {};
+
+            //TODO probably get from config
+            vm.poolResourcesAssignedToSubarraysDurations = {
+                subarray_1: {},
+                subarray_2: {},
+                subarray_3: {},
+                subarray_4: {}
+            };
+
+            vm.reportFields = [
+                {label: 'Sensor', value: 'sensorName'},
+                {label: 'Value', value: 'value'},
+                {label: 'Duration', value: 'duration'},
+                {label: '% of total', value: 'percentageOfTotal'}
+            ];
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
             }
 
-            vm.reportFields = [
-                {label: 'Start Time', value: 'start_time'},
-                {label: 'Name', value: 'user.name'},
-                {label: 'End Time', value: 'end_time'},
-                {label: 'Content', value: 'content'}
-            ];
+            vm.clearReportsData = function () {
+                vm.subarrayReportResults = [];
+                vm.receptorReportResults = [];
+                vm.poolResourcesAssignedDurations = {};
+                vm.poolResourcesFreeDurations = {};
+                vm.poolResourcesFaultyDurations = {};
+                vm.poolResourcesMaintenanceDurations = {};
+                vm.poolResourcesAssignedToSubarraysDurations = {
+                    subarray_1: {},
+                    subarray_2: {},
+                    subarray_3: {},
+                    subarray_4: {}
+                };
+            };
 
             vm.onStartTimeSet = function () {
                 vm.startDatetimeReadable = moment(vm.startTime.getTime()).format(DATETIME_FORMAT);
@@ -94,39 +130,173 @@
             //     }
             // };
 
-            vm.createReport = function () {
+            vm.createSubarraysReport = function () {
+                vm.creatingReport = true;
                 $state.go('utilisation-report', {
                         startTime: vm.startDatetimeReadable,
                         endTime: vm.endDatetimeReadable,
                         filter: vm.searchInputText},
                         { notify: false, reload: false });
-                vm.results = [];
+                vm.clearReportsData();
                 var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
                 var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
-                DataService.sampleValueDuration(vm.searchInputText, startDate, endDate).then(function (result) {
-                    $log.info(result);
+                DataService.sampleValueDuration(vm.subarrayReportSensorsRegex, startDate, endDate).then(function (result) {
+                    vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     if (result.data) {
-                        vm.results = result.data;
+                        result.data.forEach(function (item) {
+                            var duration = moment.duration(item[2], 's');
+                            var reportItem = {
+                                sensorName: item[0],
+                                value: item[1],
+                                durationSeconds: item[2],
+                                duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
+                            };
+
+                            if (reportItem.duration) {
+                                //convert to milliseconds and then to percentageOfTotal
+                                reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                            }
+                            vm.subarrayReportResults.push(reportItem);
+                        });
                     }
+                    vm.creatingReport = false;
+                }, function (result) {
+                    vm.creatingReport = false;
+                    NotifyService.showSimpleDialog('Error creating report', result.data);
+                    $log.error(result);
+                });
+            };
+
+            vm.createReceptorsReport = function () {
+                vm.creatingReport = true;
+                $state.go('utilisation-report', {
+                        startTime: vm.startDatetimeReadable,
+                        endTime: vm.endDatetimeReadable,
+                        filter: vm.searchInputText},
+                        { notify: false, reload: false });
+                vm.clearReportsData();
+                var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
+                var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
+                DataService.sampleValueDuration(vm.receptorsReportSensorsRegex, startDate, endDate).then(function (result) {
+                    vm.creatingReport = false;
+                    vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
+                    if (result.data) {
+                        result.data.forEach(function (item) {
+                            var duration = moment.duration(item[2], 's');
+                            var reportItem = {
+                                sensorName: item[0],
+                                value: item[1],
+                                durationSeconds: item[2],
+                                duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
+                            };
+
+                            if (reportItem.duration) {
+                                //convert to milliseconds and then to percentageOfTotal
+                                reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                            }
+                            var resources, subarray, i, value;
+                            if (reportItem.sensorName.search('subarray...pool.resources') > -1 && reportItem.value.length > 0) {
+                                resources = reportItem.value.split(',');
+                                subarray = reportItem.sensorName.split('_', 2).join('_');
+                                for (i = 0; i < resources.length; i++) {
+                                    if (!vm.poolResourcesAssignedDurations[resources[i]]) {
+                                        vm.poolResourcesAssignedDurations[resources[i]] = { value: 'assigned to a subarray', durationSeconds: 0, duration: '0:00:00'};
+                                    }
+                                    if (!vm.poolResourcesAssignedDurations[resources[i]][subarray]) {
+                                        vm.poolResourcesAssignedDurations[resources[i]][subarray] = { sensorName: resources[i], value: subarray, durationSeconds: 0, duration: '0:00:00'};
+                                    }
+                                    vm.poolResourcesAssignedDurations[resources[i]].durationSeconds += item[2];
+                                    vm.poolResourcesAssignedDurations[resources[i]][subarray].durationSeconds += item[2];
+                                }
+                            }
+                            else if (reportItem.sensorName.search('pool.resources.free') > -1 && reportItem.value.length > 0) {
+                                resources = reportItem.value.split(',');
+                                value = 'free';
+                                for (i = 0; i < resources.length; i++) {
+                                    if (!vm.poolResourcesFreeDurations[resources[i]]) {
+                                        vm.poolResourcesFreeDurations[resources[i]] = { value: value, durationSeconds: 0, duration: '0:00:00'};
+                                    }
+                                    vm.poolResourcesFreeDurations[resources[i]].durationSeconds += item[2];
+                                }
+                            }
+                            else if (reportItem.sensorName.search('resources.faulty') > -1 && reportItem.value.length > 0) {
+                                resources = reportItem.value.split(',');
+                                value = 'faulty';
+                                for (i = 0; i < resources.length; i++) {
+                                    if (!vm.poolResourcesFaultyDurations[resources[i]]) {
+                                        vm.poolResourcesFaultyDurations[resources[i]] = { value: value, durationSeconds: 0, duration: '0:00:00'};
+                                    }
+                                    vm.poolResourcesFaultyDurations[resources[i]].durationSeconds += item[2];
+                                }
+                            }
+                            else if (reportItem.sensorName.search('resources.in.maintenance') > -1 && reportItem.value.length > 0) {
+                                resources = reportItem.value.split(',');
+                                value = 'in_maintenance';
+                                for (i = 0; i < resources.length; i++) {
+                                    if (!vm.poolResourcesMaintenanceDurations[resources[i]]) {
+                                        vm.poolResourcesMaintenanceDurations[resources[i]] = { value: value, durationSeconds: 0, duration: '0:00:00'};
+                                    }
+                                    vm.poolResourcesMaintenanceDurations[resources[i]].durationSeconds += item[2];
+                                }
+                            }
+                            vm.receptorReportResults.push(reportItem);
+                        });
+                        Object.keys(vm.poolResourcesAssignedDurations).forEach(function (key) {
+                            var item = vm.poolResourcesAssignedDurations[key];
+                            var duration = moment.duration(item.durationSeconds, 's');
+                            vm.poolResourcesAssignedDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+                            vm.poolResourcesAssignedDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                            for (var j = 1; j <= 4; j++) {
+                                var subarrayItem = vm.poolResourcesAssignedDurations[key]['subarray_' + j];
+                                if (subarrayItem) {
+                                    duration = moment.duration(subarrayItem.durationSeconds, 's');
+                                    vm.poolResourcesAssignedDurations[key]['subarray_' + j].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+                                    vm.poolResourcesAssignedDurations[key]['subarray_' + j].percentageOfTotal = parseFloat(100 * subarrayItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + j][key] = vm.poolResourcesAssignedDurations[key]['subarray_' + j];
+                                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + j][key].resourceName = key;
+                                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + j][key].subarray = j;
+                                }
+                            }
+                        });
+                        Object.keys(vm.poolResourcesFreeDurations).forEach(function (key) {
+                            var item = vm.poolResourcesFreeDurations[key];
+                            var duration = moment.duration(item.durationSeconds, 's');
+                            vm.poolResourcesFreeDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+                            vm.poolResourcesFreeDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                        });
+                        Object.keys(vm.poolResourcesFaultyDurations).forEach(function (key) {
+                            var item = vm.poolResourcesFaultyDurations[key];
+                            var duration = moment.duration(item.durationSeconds, 's');
+                            vm.poolResourcesFaultyDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+                            vm.poolResourcesFaultyDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                        });
+                        Object.keys(vm.poolResourcesMaintenanceDurations).forEach(function (key) {
+                            var item = vm.poolResourcesMaintenanceDurations[key];
+                            var duration = moment.duration(item.durationSeconds, 's');
+                            vm.poolResourcesMaintenanceDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+                            vm.poolResourcesMaintenanceDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                        });
+                    }
+                }, function (result) {
+                    vm.creatingReport = false;
+                    NotifyService.showSimpleDialog('Error creating report', result.data);
+                    $log.error(result);
                 });
             };
 
             vm.afterInit = function() {
-                $timeout(function () {
-                    var startTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
-                    var endTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
-                    if (startTimeParam.isValid() && endTimeParam.isValid()) {
-                        vm.startTime = startTimeParam.toDate();
-                        vm.endTime = endTimeParam.toDate();
-                        vm.startDatetimeReadable = $stateParams.startTime;
-                        vm.endDatetimeReadable = $stateParams.endTime;
-
-                        // vm.createReport();
-                    } else if ($stateParams.startTime && $stateParams.endTime) {
-                        NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
-                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be ' + DATETIME_FORMAT);
-                    }
-                }, 1000);
+                var startTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
+                var endTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
+                if (startTimeParam.isValid() && endTimeParam.isValid()) {
+                    vm.startTime = startTimeParam.toDate();
+                    vm.endTime = endTimeParam.toDate();
+                    vm.startDatetimeReadable = $stateParams.startTime;
+                    vm.endDatetimeReadable = $stateParams.endTime;
+                    // vm.createReport();
+                } else if ($stateParams.startTime && $stateParams.endTime) {
+                    NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
+                        'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be ' + DATETIME_FORMAT);
+                }
             };
 
             if ($rootScope.currentUser) {
@@ -134,10 +304,6 @@
             } else {
                 vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
             }
-
-            vm.momentDuration = function (seconds) {
-                return moment.duration(seconds, 's').humanize();
-            };
 
             $scope.$on('$destroy', function () {
                 if (vm.unbindLoginSuccess) {

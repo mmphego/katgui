@@ -1,20 +1,20 @@
-<div flex style="padding: 16px; min-width: 600px" ng-controller="UtilisationReportCtrl as vm" layout="row">
-    <div flex layout="column" ng-click="vm.showEndDatePicker = false; vm.showDawtePicker = false;"
-        style="cursor: inherit">
+<div flex style="padding: 16px; min-width: 600px" ng-controller="UtilisationReportCtrl as vm">
+    <div layout="column" ng-click="vm.showEndDatePicker = false; vm.showDawtePicker = false;" style="cursor: inherit">
         <md-toolbar md-theme="{{themePrimary}}" class="md-whiteframe-z1" layout="column">
-            <div md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools" layout="row" layout-align="start center" style="padding: 0">
-                <span style="margin-left: 8px" flex>Report Parameters</span>
-                <input class="fade-in search-input-box" style="width: 200px; max-width: 200px" type="search"
-                       ng-model-options="{ debounce: 300 }" ng-model="vm.searchInputText" placeholder="Filter items..."/>
+            <div md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools" layout="row" layout-align="start center"
+                style="padding: 0">
+                <!-- <span style="margin-left: 8px" flex>Report Parameters</span> -->
+                <input class="fade-in search-input-box" style="margin-left: 8px; width: 200px; max-width: 200px" type="search" ng-model-options="{ debounce: 300 }"
+                    ng-model="vm.searchInputText" placeholder="Filter items..." />
                 <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
                     <div layout="row" layout-align="center center" style="min-width: 180px;">
                         <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;" title="Start Date 'yyyy-MM-dd HH:mm:ss'">
-                            <input flex type="text" style="color: white" title="Start Date 'yyyy-MM-dd HH:mm:ss'"
-                                   data-ng-model="vm.startDatetimeReadable" placeholder="Start Date"/>
+                            <input flex type="text" style="color: white" title="Start Date 'yyyy-MM-dd HH:mm:ss'" data-ng-model="vm.startDatetimeReadable"
+                                placeholder="Start Date" />
                         </md-input-container>
                         <span></span>
                         <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
-                                   ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                            ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
                             <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                         </md-button>
 
@@ -25,13 +25,11 @@
                     </div>
                     <div layout="row" layout-align="center center" style="min-width: 180px">
                         <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
-                            <input flex type="text" style="color: white"
-                                   data-ng-model="vm.endDatetimeReadable" placeholder="End Date"
-                                   title="End Date 'yyyy-MM-dd HH:mm:ss'"/>
+                            <input flex type="text" style="color: white" data-ng-model="vm.endDatetimeReadable" placeholder="End Date"
+                                title="End Date 'yyyy-MM-dd HH:mm:ss'" />
                         </md-input-container>
                         <span></span>
-                        <md-button class="md-icon-button" style="margin-left: 0;width: 40px; height: 40px;"
-                                   ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                        <md-button class="md-icon-button" style="margin-left: 0;width: 40px; height: 40px;" ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
                             <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
                         </md-button>
                         <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showEndDatePicker = false"
@@ -39,52 +37,98 @@
                             data-ng-model="vm.endTime" ng-keypress="vm.showEndDatePicker = false" ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(vm.endTime)"></datetimepicker>
                     </div>
-                    <md-button class="add-tab md-primary md-raised" ng-click="vm.createReport(event)"
-                               style="margin-right: 0;">Create Report
-                    </md-button>
-                    <md-button ng-disabled="vm.reportItems.length === 0 || vm.exportingPdf" class="add-tab md-primary md-raised" ng-click="vm.exportPdf()"
-                               style="margin-right: 0;">{{vm.exportingPdf? 'Exporting PDF...' : 'Export as PDF'}}
+                    <md-button class="add-tab md-primary md-raised" ng-click="vm.createSubarraysReport()" ng-disabled="vm.creatingReport"
+                        style="margin-right: 0;">Preview Subarrays Report</md-button>
+                    <md-button class="add-tab md-primary md-raised" ng-click="vm.createReceptorsReport()" ng-disabled="vm.creatingReport"
+                        style="margin-right: 0;">Preview Receptors Report</md-button>
+                    <md-button ng-disabled="vm.reportItems.length === 0 || vm.exportingPdf" class="add-tab md-primary md-raised"
+                        ng-click="vm.exportPdf()" style="margin-right: 0;">{{vm.exportingPdf? 'Exporting PDF...' : 'TODO: Generate Complete PDF'}}
                     </md-button>
                 </div>
             </div>
         </md-toolbar>
-        <div flex style="overflow: auto" layout="column" class="md-whiteframe-z1">
-            <div ng-repeat="result in vm.results" layout="row">
-                <span style="min-width: 400px">{{result[0]}}</span>
-                <span flex style="min-width: 200px; overflow: hidden; text-overflow: ellipsis">{{result[1]}}</span>
-                <span style="min-width: 200px">{{vm.momentDuration(result[2])}}</span>
+        <div flex layout="column" class="md-whiteframe-z1" ng-show="vm.subarrayReportResults.length > 0">
+            <div class="md-whiteframe-z1" style="min-height: 42px; max-height: 42px; padding: 8px; font-size: 18px; font-weight: bold;" layout="row">
+                <span style="width: 300px">Sensor</span>
+                <span style="width: 125px" flex>Value</span>
+                <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
+            </div>
+            <div flex style="overflow: auto" layout="column">
+                <div ng-repeat="item in vm.subarrayReportResults | regexSearch:vm.reportFields:vm.searchInputText track by $index"
+                    layout="row" class="report-item text-overflow-ellipsis">
+                    <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
+                    <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
+                    <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
+                </div>
             </div>
         </div>
-        <!-- <div layout="column" class="md-whiteframe-z1" style="overflow: auto" ng-show="vm.reportItems.length > 0">
-            <div class="md-list-item-text" style="min-height: 42px; max-height: 42px; padding: 8px; border-bottom: 1px solid currentColor; font-size: 18px; font-weight: bold;" layout="row" flex>
-                <span style="width: 130px; margin: 0 4px">User</span>
-                <span style="width: 125px">Start</span>
-                <span style="width: 125px">End</span>
-                <span flex>Content</span>
-                <span style="margin-right: 32px">Tags</span>
-            </div> -->
-            <!-- <div ng-repeat="userlog in vm.filteredReportUserlogs = (vm.reportUserlogs | regexSearch:vm.userLogsFields:vm.searchInputText | filter:vm.filterByTag) track by $index" ng-click="vm.editUserLog(userlog, $event)" class="user-log-row"> -->
-                <!-- <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userlog.content}}">
-                    <i class="userlog-user-name" title="{{userlog.user.name}}">
-                        <b>{{userlog.user.name}}</b>
-                    </i>
-                    <span style="width: 125px; font-size: 12px">
-                        {{userlog.start_time}}
-                    </span>
-                    <span style="width: 125px; font-size: 12px">
-                        {{userlog.end_time}}
-                    </span>
-                    <pre flex ng-class="{'compressed-userlog': !vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userlog.content | linkify | toTrustedHtml"></pre>
-                    <div class="tags-list-container" title="{{userlog.tagsListText}}" ng-class="{'tags-list-compressed-container': !vm.expandEntries}">
-                        <i style="font-size: 11px; padding-right: 2px">{{userlog.tagsListText}}</i>
-                    </div>
-                    <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
-                        <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}
-                        <span class="fa fa-paperclip"></span>)
-                        </span>
-                    </span>
-                </div> -->
-            <!-- </div> -->
-        <!-- </div> -->
+        <div layout="column" class="md-whiteframe-z1" ng-repeat="subarray in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations) track by $index">
+            <div class="md-whiteframe-z1" style="min-height: 42px; max-height: 42px; padding: 8px; font-size: 18px; font-weight: bold;" layout="row">
+                <span style="width: 300px">Resources assigned to {{subarray}}</span>
+            </div>
+            <div layout="column">
+                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations[subarray]) | orderBy:key"
+                    layout="row" class="report-item text-overflow-ellipsis">
+                    <span class="fixed-width-300" title="{{key}}">{{key}}</span>
+                    <span flex style="min-width: 200px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].value}}</span>
+                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].percentageOfTotal}}</span>
+                </div>
+            </div>
+
+        </div>
+        <!-- <div class="md-whiteframe-z1" style="min-height: 42px; max-height: 42px; padding: 8px; font-size: 18px; font-weight: bold;" layout="row">
+            <span style="width: 300px">Resources assigned to a subarray</span>
+            <span style="width: 125px" flex>Value</span>
+            <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
+            <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
+        </div>
+        <div layout="column">
+            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations)"
+                layout="row" class="report-item text-overflow-ellipsis">
+                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
+                <span flex style="min-width: 200px">{{vm.poolResourcesAssignedDurations[key].value}}</span>
+                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedDurations[key].duration}}</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedDurations[key].percentageOfTotal}}</span>
+            </div>
+        </div> -->
+        <div class="md-whiteframe-z1 report-section-title-div">
+            Free Resources
+        </div>
+        <div layout="column">
+            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFreeDurations)"
+                layout="row" class="report-item text-overflow-ellipsis">
+                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
+                <span flex style="min-width: 200px">{{vm.poolResourcesFreeDurations[key].value}}</span>
+                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].duration}}</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].percentageOfTotal}}</span>
+            </div>
+        </div>
+        <div class="md-whiteframe-z1 report-section-title-div">
+            Faulty Resources
+        </div>
+        <div layout="column">
+            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFaultyDurations)"
+                layout="row" class="report-item text-overflow-ellipsis">
+                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
+                <span flex style="min-width: 200px">{{vm.poolResourcesFaultyDurations[key].value}}</span>
+                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].duration}}</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].percentageOfTotal}}</span>
+            </div>
+        </div>
+        <div class="md-whiteframe-z1 report-section-title-div">
+            In Maintenance Resources
+        </div>
+        <div layout="column">
+            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesMaintenanceDurations)"
+                layout="row" class="report-item text-overflow-ellipsis">
+                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
+                <span flex style="min-width: 200px">{{vm.poolResourcesMaintenanceDurations[key].value}}</span>
+                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].duration}}</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].percentageOfTotal}}</span>
+            </div>
+        </div>
     </div>
 </div>
