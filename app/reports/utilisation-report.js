@@ -19,14 +19,15 @@
             vm.startDatetimeReadable = moment(vm.startTime.getTime()).format(DATETIME_FORMAT);
             vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(DATETIME_FORMAT);
             vm.reportTimeWindowMSDuration = 0;
-            vm.creatingReport = false;
-            vm.subarrayReportSensorsRegex = "subarray...state|subarray...maintenance|subarray...product|subarray...band|sched.mode..";
-            vm.receptorsReportSensorsRegex = "^(m0..|ant.).windstow.active|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance";
+            vm.creatingReceptorReport = false;
+            vm.creatingSubarrayReport = false;
+            vm.subarrayReportSensorsRegex = "sched.active.schedule..|subarray...state|subarray...maintenance|subarray...product|subarray...band|sched.mode..";
+            vm.receptorsReportSensorsRegex = "^(m0..|ant.).windstow.active|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance|sys.interlock.state";
             vm.poolResourcesAssignedDurations = {};
             vm.poolResourcesFreeDurations = {};
             vm.poolResourcesFaultyDurations = {};
             vm.poolResourcesMaintenanceDurations = {};
-            vm.windstowReceptorReportResults = [];
+            vm.interlockReceptorReportResults = [];
 
             //TODO probably get from config
             vm.poolResourcesAssignedToSubarraysDurations = {
@@ -54,7 +55,7 @@
                 vm.poolResourcesFreeDurations = {};
                 vm.poolResourcesFaultyDurations = {};
                 vm.poolResourcesMaintenanceDurations = {};
-                vm.windstowReceptorReportResults = [];
+                vm.interlockReceptorReportResults = [];
                 vm.poolResourcesAssignedToSubarraysDurations = {
                     subarray_1: {},
                     subarray_2: {},
@@ -71,69 +72,75 @@
                 vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(DATETIME_FORMAT);
             };
 
-            // vm.exportPdf = function(){
-            //     vm.exportingPdf = true;
-            //     var pdf = new jsPDF('l', 'pt');
-            //     var exportTime = moment.utc().format(DATETIME_FORMAT);
-            //     var query = "?start_time=" + vm.startDatetimeReadable + "&end_time=" + vm.endDatetimeReadable;
-            //
-            //     vm.filteredReportUserlogs.forEach(function (userlog) {
-            //         userlog.userName = userlog.user.name;
-            //         var tagNames = [];
-            //         userlog.tags.forEach(function (tag) {
-            //             tagNames.push(tag.name);
-            //         });
-            //         userlog.tag_list = tagNames.join(',');
-            //     });
-            //
-            //     var columns = [
-            //         {title: "User", dataKey: "userName"},
-            //         {title: "Start", dataKey: "start_time"},
-            //         {title: "End", dataKey: "end_time"},
-            //         {title: "Content", dataKey: "content"},
-            //         {title: "Tags", dataKey: "tag_list"}
-            //     ];
-            //
-            //     pdf.setFontSize(20);
-            //     pdf.text('Userlog Report - ' + exportTime + ' (UTC)', 20, 25);
-            //     pdf.setFontSize(12);
-            //     pdf.setFontSize(12);
-            //     pdf.text(('From: ' + vm.startDatetimeReadable + '     To: ' + vm.endDatetimeReadable), 20, 45);
-            //
-            //     pdf.autoTable(columns, vm.filteredReportUserlogs, {
-            //         startY: 55,
-            //         theme: 'striped',
-            //         margin: {top: 8, bottom: 8},
-            //         columnStyles: {
-            //             userName: {columnWidth: 80, overflow: 'linebreak'},
-            //             start_time: {columnWidth: 120},
-            //             end_time: {columnWidth: 120},
-            //             content: {overflow: 'linebreak'},
-            //             tag_list: {overflow: 'linebreak'}}});
-            //
-            //     if (vm.includeActivityLogs) {
-            //         columns = [{title: "System Activity Logs", key: "msg"}];
-            //
-            //         UserLogService.queryActivityLogs(query).then(
-            //             function (result) {
-            //                 pdf.autoTable(columns, result.data, {
-            //                     startY: pdf.autoTableEndPosY() + 50,
-            //                     theme: 'striped',
-            //                     margin: {top: 8, bottom: 8}});
-            //                 pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
-            //                 vm.exportingPdf = false;
-            //             }, function (error) {
-            //                 $log.error(error);
-            //                 vm.exportingPdf = false;
-            //             });
-            //     } else {
-            //         pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
-            //         vm.exportingPdf = false;
-            //     }
-            // };
+            vm.exportPdf = function(){
+                alert("UNIMPLEMENTED");
+                // vm.exportingPdf = true;
+                // var pdf = new jsPDF('l', 'pt');
+                // var exportTime = moment.utc().format(DATETIME_FORMAT);
+                // var query = "?start_time=" + vm.startDatetimeReadable + "&end_time=" + vm.endDatetimeReadable;
+                //
+                // vm.filteredReportUserlogs.forEach(function (userlog) {
+                //     userlog.userName = userlog.user.name;
+                //     var tagNames = [];
+                //     userlog.tags.forEach(function (tag) {
+                //         tagNames.push(tag.name);
+                //     });
+                //     userlog.tag_list = tagNames.join(',');
+                // });
+                //
+                // var columns = [
+                //     {title: "User", dataKey: "userName"},
+                //     {title: "Start", dataKey: "start_time"},
+                //     {title: "End", dataKey: "end_time"},
+                //     {title: "Content", dataKey: "content"},
+                //     {title: "Tags", dataKey: "tag_list"}
+                // ];
+                //
+                // pdf.setFontSize(20);
+                // pdf.text('Userlog Report - ' + exportTime + ' (UTC)', 20, 25);
+                // pdf.setFontSize(12);
+                // pdf.setFontSize(12);
+                // pdf.text(('From: ' + vm.startDatetimeReadable + '     To: ' + vm.endDatetimeReadable), 20, 45);
+                //
+                // pdf.autoTable(columns, vm.filteredReportUserlogs, {
+                //     startY: 55,
+                //     theme: 'striped',
+                //     margin: {top: 8, bottom: 8},
+                //     columnStyles: {
+                //         userName: {columnWidth: 80, overflow: 'linebreak'},
+                //         start_time: {columnWidth: 120},
+                //         end_time: {columnWidth: 120},
+                //         content: {overflow: 'linebreak'},
+                //         tag_list: {overflow: 'linebreak'}}});
+                //
+                // if (vm.includeActivityLogs) {
+                //     columns = [{title: "System Activity Logs", key: "msg"}];
+                //
+                //     UserLogService.queryActivityLogs(query).then(
+                //         function (result) {
+                //             pdf.autoTable(columns, result.data, {
+                //                 startY: pdf.autoTableEndPosY() + 50,
+                //                 theme: 'striped',
+                //                 margin: {top: 8, bottom: 8}});
+                //             pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
+                //             vm.exportingPdf = false;
+                //         }, function (error) {
+                //             $log.error(error);
+                //             vm.exportingPdf = false;
+                //         });
+                // } else {
+                //     pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
+                //     vm.exportingPdf = false;
+                // }
+            };
+
+            vm.createReport = function () {
+                vm.createSubarraysReport();
+                vm.createReceptorsReport();
+            };
 
             vm.createSubarraysReport = function () {
-                vm.creatingReport = true;
+                vm.creatingSubarrayReport = true;
                 $state.go('utilisation-report', {
                         startTime: vm.startDatetimeReadable,
                         endTime: vm.endDatetimeReadable,
@@ -161,16 +168,16 @@
                             vm.subarrayReportResults.push(reportItem);
                         });
                     }
-                    vm.creatingReport = false;
+                    vm.creatingSubarrayReport = false;
                 }, function (result) {
-                    vm.creatingReport = false;
+                    vm.creatingSubarrayReport = false;
                     NotifyService.showSimpleDialog('Error creating report', result.data);
                     $log.error(result);
                 });
             };
 
             vm.createReceptorsReport = function () {
-                vm.creatingReport = true;
+                vm.creatingReceptorReport = true;
                 $state.go('utilisation-report', {
                         startTime: vm.startDatetimeReadable,
                         endTime: vm.endDatetimeReadable,
@@ -180,7 +187,7 @@
                 var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
                 var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
                 DataService.sampleValueDuration(vm.receptorsReportSensorsRegex, startDate, endDate).then(function (result) {
-                    vm.creatingReport = false;
+                    vm.creatingReceptorReport = false;
                     vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     if (result.data) {
                         result.data.forEach(function (item) {
@@ -241,7 +248,9 @@
                                     vm.poolResourcesMaintenanceDurations[resources[i]].durationSeconds += item[2];
                                 }
                             } else if (reportItem.sensorName.search('windstow.active') > -1) {
-                                vm.windstowReceptorReportResults.push(reportItem);
+                                vm.interlockReceptorReportResults.push(reportItem);
+                            } else if (reportItem.sensorName.search('sys.interlock.state') > -1) {
+                                vm.interlockReceptorReportResults.push(reportItem);
                             }
                             vm.receptorReportResults.push(reportItem);
                         });
@@ -282,7 +291,7 @@
                         });
                     }
                 }, function (result) {
-                    vm.creatingReport = false;
+                    vm.creatingReceptorReport = false;
                     NotifyService.showSimpleDialog('Error creating report', result.data);
                     $log.error(result);
                 });
