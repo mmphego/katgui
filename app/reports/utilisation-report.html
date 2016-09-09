@@ -53,7 +53,7 @@
             </div>
             <div layout="column">
                 <div ng-repeat="item in vm.subarrayReportResults | orderBy:sensorName track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis">
+                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                     <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
                     <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
                     <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
@@ -71,7 +71,7 @@
                 </div>
                 <div layout="column">
                     <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations[subarray]) | orderBy:key track by $index"
-                        layout="row" class="report-item text-overflow-ellipsis">
+                        layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                         <span flex>{{key}}</span>
                         <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].duration}}</span>
                         <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].percentageOfTotal}}</span>
@@ -87,7 +87,7 @@
             </div>
             <div layout="column">
                 <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFreeDurations) | orderBy:key track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis">
+                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                     <span flex>{{key}}</span>
                     <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].duration}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].percentageOfTotal}}</span>
@@ -98,7 +98,7 @@
             </div>
             <div layout="column">
                 <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFaultyDurations) | orderBy:key track by $index"
-                    layout="row" class="red-color report-item text-overflow-ellipsis">
+                    layout="row" class="red-color report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                     <span flex>{{key}}</span>
                     <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].duration}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].percentageOfTotal}}</span>
@@ -109,7 +109,7 @@
             </div>
             <div layout="column">
                 <div ng-repeat="key in $root.objectKeys(vm.poolResourcesMaintenanceDurations) | orderBy:key track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis maintenance-color">
+                    layout="row" class="report-item text-overflow-ellipsis maintenance-color" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                     <span flex>{{key}}</span>
                     <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].duration}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].percentageOfTotal}}</span>
@@ -126,7 +126,7 @@
             </div>
             <div layout="column">
                 <div ng-repeat="item in vm.interlockReceptorReportResults | orderBy:sensorName track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis">
+                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                     <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
                     <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
                     <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
