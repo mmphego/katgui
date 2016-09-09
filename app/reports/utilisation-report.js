@@ -21,11 +21,12 @@
             vm.reportTimeWindowMSDuration = 0;
             vm.creatingReport = false;
             vm.subarrayReportSensorsRegex = "subarray...state|subarray...maintenance|subarray...product|subarray...band|sched.mode..";
-            vm.receptorsReportSensorsRegex = "^(m0..|ant.).mode|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance";
+            vm.receptorsReportSensorsRegex = "^(m0..|ant.).windstow.active|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance";
             vm.poolResourcesAssignedDurations = {};
             vm.poolResourcesFreeDurations = {};
             vm.poolResourcesFaultyDurations = {};
             vm.poolResourcesMaintenanceDurations = {};
+            vm.windstowReceptorReportResults = [];
 
             //TODO probably get from config
             vm.poolResourcesAssignedToSubarraysDurations = {
@@ -53,6 +54,7 @@
                 vm.poolResourcesFreeDurations = {};
                 vm.poolResourcesFaultyDurations = {};
                 vm.poolResourcesMaintenanceDurations = {};
+                vm.windstowReceptorReportResults = [];
                 vm.poolResourcesAssignedToSubarraysDurations = {
                     subarray_1: {},
                     subarray_2: {},
@@ -238,6 +240,8 @@
                                     }
                                     vm.poolResourcesMaintenanceDurations[resources[i]].durationSeconds += item[2];
                                 }
+                            } else if (reportItem.sensorName.search('windstow.active') > -1) {
+                                vm.windstowReceptorReportResults.push(reportItem);
                             }
                             vm.receptorReportResults.push(reportItem);
                         });

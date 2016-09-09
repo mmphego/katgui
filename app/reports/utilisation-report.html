@@ -4,8 +4,6 @@
             <div md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools" layout="row" layout-align="start center"
                 style="padding: 0">
                 <!-- <span style="margin-left: 8px" flex>Report Parameters</span> -->
-                <input class="fade-in search-input-box" style="margin-left: 8px; width: 200px; max-width: 200px" type="search" ng-model-options="{ debounce: 300 }"
-                    ng-model="vm.searchInputText" placeholder="Filter items..." />
                 <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
                     <div layout="row" layout-align="center center" style="min-width: 180px;">
                         <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;" title="Start Date 'yyyy-MM-dd HH:mm:ss'">
@@ -47,15 +45,16 @@
                 </div>
             </div>
         </md-toolbar>
-        <div flex layout="column" class="md-whiteframe-z1" ng-show="vm.subarrayReportResults.length > 0">
-            <div class="md-whiteframe-z1" style="min-height: 42px; max-height: 42px; padding: 8px; font-size: 18px; font-weight: bold;" layout="row">
+        <div layout="column" class="md-whiteframe-z1" ng-show="vm.subarrayReportResults.length > 0">
+            <span style="font-size: 22px" class="report-section-title-div">Subarray Section</span>
+            <div class="report-section-title-div" layout="row">
                 <span style="width: 300px">Sensor</span>
                 <span style="width: 125px" flex>Value</span>
                 <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
                 <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
             </div>
             <div flex style="overflow: auto" layout="column">
-                <div ng-repeat="item in vm.subarrayReportResults | regexSearch:vm.reportFields:vm.searchInputText track by $index"
+                <div ng-repeat="item in vm.subarrayReportResults track by $index"
                     layout="row" class="report-item text-overflow-ellipsis">
                     <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
                     <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
@@ -64,70 +63,96 @@
                 </div>
             </div>
         </div>
-        <div layout="column" class="md-whiteframe-z1" ng-repeat="subarray in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations) track by $index">
-            <div class="md-whiteframe-z1" style="min-height: 42px; max-height: 42px; padding: 8px; font-size: 18px; font-weight: bold;" layout="row">
-                <span style="width: 300px">Resources assigned to {{subarray}}</span>
+        <div layout="column" ng-show="vm.receptorReportResults.length > 0" class="md-whiteframe-z1" style="margin-bottom: 8px">
+            <span style="font-size: 22px" class="report-section-title-div">Resources Section</span>
+            <div layout="column" ng-repeat="subarray in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations) track by $index">
+                <div class="report-section-title-div" layout="row">
+                    <span flex>Assigned to {{subarray}}</span>
+                    <span ng-show="$index === 0" style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
+                    <span ng-show="$index === 0" style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations[subarray]) | orderBy:key"
+                        layout="row" class="report-item text-overflow-ellipsis">
+                        <span flex>{{key}}</span>
+                        <!-- <span flex style="min-width: 200px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].value}}</span> -->
+                        <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].duration}}</span>
+                        <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].percentageOfTotal}}</span>
+                    </div>
+                    <div class="report-item" ng-show="$root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations[subarray]).length === 0">
+                        <i>None</i>
+                    </div>
+                </div>
+
+            </div>
+            <!-- <div class="md-whiteframe-z1" style="min-height: 42px; max-height: 42px; padding: 8px; font-size: 18px; font-weight: bold;" layout="row">
+                <span style="width: 300px">Resources assigned to a subarray</span>
+                <span style="width: 125px" flex>Value</span>
+                <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
             </div>
             <div layout="column">
-                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations[subarray]) | orderBy:key"
+                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations)"
                     layout="row" class="report-item text-overflow-ellipsis">
                     <span class="fixed-width-300" title="{{key}}">{{key}}</span>
-                    <span flex style="min-width: 200px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].value}}</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].duration}}</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].percentageOfTotal}}</span>
+                    <span flex style="min-width: 200px">{{vm.poolResourcesAssignedDurations[key].value}}</span>
+                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedDurations[key].duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedDurations[key].percentageOfTotal}}</span>
+                </div>
+            </div> -->
+            <div class="report-section-title-div" layout="row">
+                <span flex>Free</span>
+            </div>
+            <div layout="column">
+                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFreeDurations)"
+                    layout="row" class="report-item text-overflow-ellipsis">
+                    <span flex>{{key}}</span>
+                    <!-- <span flex style="min-width: 200px">{{vm.poolResourcesFreeDurations[key].value}}</span> -->
+                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].percentageOfTotal}}</span>
                 </div>
             </div>
-
-        </div>
-        <!-- <div class="md-whiteframe-z1" style="min-height: 42px; max-height: 42px; padding: 8px; font-size: 18px; font-weight: bold;" layout="row">
-            <span style="width: 300px">Resources assigned to a subarray</span>
-            <span style="width: 125px" flex>Value</span>
-            <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
-            <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
-        </div>
-        <div layout="column">
-            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations)"
-                layout="row" class="report-item text-overflow-ellipsis">
-                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
-                <span flex style="min-width: 200px">{{vm.poolResourcesAssignedDurations[key].value}}</span>
-                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedDurations[key].duration}}</span>
-                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedDurations[key].percentageOfTotal}}</span>
+            <div class="red-color report-section-title-div" layout="row">
+                <span flex>Faulty</span>
             </div>
-        </div> -->
-        <div class="md-whiteframe-z1 report-section-title-div">
-            Free Resources
-        </div>
-        <div layout="column">
-            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFreeDurations)"
-                layout="row" class="report-item text-overflow-ellipsis">
-                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
-                <span flex style="min-width: 200px">{{vm.poolResourcesFreeDurations[key].value}}</span>
-                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].duration}}</span>
-                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].percentageOfTotal}}</span>
+            <div layout="column">
+                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFaultyDurations)"
+                    layout="row" class="report-item text-overflow-ellipsis">
+                    <span flex>{{key}}</span>
+                    <!-- <span flex style="min-width: 200px">{{vm.poolResourcesFaultyDurations[key].value}}</span> -->
+                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].percentageOfTotal}}</span>
+                </div>
+            </div>
+            <div class="maintenance-color report-section-title-div" layout="row">
+                <span flex>In Maintenance</span>
+            </div>
+            <div layout="column">
+                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesMaintenanceDurations)"
+                    layout="row" class="report-item text-overflow-ellipsis">
+                    <span flex>{{key}}</span>
+                    <!-- <span flex style="min-width: 200px">{{vm.poolResourcesMaintenanceDurations[key].value}}</span> -->
+                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].percentageOfTotal}}</span>
+                </div>
             </div>
         </div>
-        <div class="md-whiteframe-z1 report-section-title-div">
-            Faulty Resources
-        </div>
-        <div layout="column">
-            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFaultyDurations)"
-                layout="row" class="report-item text-overflow-ellipsis">
-                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
-                <span flex style="min-width: 200px">{{vm.poolResourcesFaultyDurations[key].value}}</span>
-                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].duration}}</span>
-                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].percentageOfTotal}}</span>
+        <div layout="column" class="md-whiteframe-z1" ng-show="vm.windstowReceptorReportResults.length > 0">
+            <span style="font-size: 22px" class="report-section-title-div">Windstow Section</span>
+            <div class="report-section-title-div" layout="row">
+                <span style="width: 300px">Sensor</span>
+                <span style="width: 125px" flex>Value</span>
+                <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
             </div>
-        </div>
-        <div class="md-whiteframe-z1 report-section-title-div">
-            In Maintenance Resources
-        </div>
-        <div layout="column">
-            <div ng-repeat="key in $root.objectKeys(vm.poolResourcesMaintenanceDurations)"
-                layout="row" class="report-item text-overflow-ellipsis">
-                <span class="fixed-width-300" title="{{key}}">{{key}}</span>
-                <span flex style="min-width: 200px">{{vm.poolResourcesMaintenanceDurations[key].value}}</span>
-                <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].duration}}</span>
-                <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].percentageOfTotal}}</span>
+            <div flex style="overflow: auto" layout="column">
+                <div ng-repeat="item in vm.windstowReceptorReportResults track by $index"
+                    layout="row" class="report-item text-overflow-ellipsis">
+                    <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
+                    <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
+                    <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
+                </div>
             </div>
         </div>
     </div>
