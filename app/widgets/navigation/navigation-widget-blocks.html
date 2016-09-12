@@ -84,4 +84,11 @@
             <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('about')" layout="row"><span class="fa fa-info"></span><span flex>About KATGUI</span></md-button>
         </div>
     </div>
+
+    <div layout="column" class="nav-widget-container">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Reports</span></md-toolbar>
+        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
+            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('utilisation-report')" layout="row"><span class="fa fa-file-pdf-o"></span><span flex>Utilisation Report</span></md-button>
+        </div>
+    </div>
 </div>
