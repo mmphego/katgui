@@ -218,6 +218,14 @@
                 });
         };
 
+        api.getScheduleBlockDetails = function (idCodes) {
+            return $http(createRequest('post',
+                urlBase + '/sb/details',
+                {
+                    id_codes: idCodes.join(',')
+                }));
+        };
+
         api.getScheduledScheduleBlocks = function () {
             var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/sb/scheduled'))
