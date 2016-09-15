@@ -43,11 +43,10 @@
         </div>
     </md-toolbar>
     <div flex style="overflow: auto" class="md-whiteframe-z1">
-
         <div layout="column" style="margin-bottom: 8px;">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Scheduler Mode</i>
             <div layout="row">
-                <i class="report-row-column-item">Subarrays</i>
+                <i class="report-row-column-item">Subarray</i>
                 <b ng-repeat="subNr in vm.subarrayNrs" class="report-column-value-item">
                     {{subNr}}
                 </b>
@@ -59,7 +58,7 @@
                     </div>
                 </div>
                 <div layout="column">
-                    <div ng-repeat="key in $root.objectKeys(vm.schedModeDurations)" layout="row">
+                    <div ng-repeat="key in $root.objectKeys(vm.schedModeDurations)" layout="row" class="report-item">
                         <div ng-repeat="subNr in $root.objectKeys(vm.schedModeDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.schedModeDurations[key][subNr].duration}}">
                             {{vm.schedModeDurations[key][subNr].percentageOfTotal}}
                         </div>
@@ -67,11 +66,10 @@
                 </div>
             </div>
         </div>
-
         <div layout="column" style="margin-bottom: 8px;">
-            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Subarrays</i>
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Subarray</i>
             <div layout="row">
-                <i class="report-row-column-item">Subarrays</i>
+                <i class="report-row-column-item">Subarray</i>
                 <b ng-repeat="subNr in vm.subarrayNrs" class="report-column-value-item">
                     {{subNr}}
                 </b>
@@ -92,7 +90,7 @@
                     </div>
                 </div>
                 <div layout="column">
-                    <div ng-repeat="key in $root.objectKeys(vm.subarrayStateDurations)" layout="row">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayStateDurations)" layout="row" class="report-item">
                         <div ng-repeat="subNr in $root.objectKeys(vm.subarrayStateDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayStateDurations[key][subNr].duration}}">
                             {{vm.subarrayStateDurations[key][subNr].percentageOfTotal}}
                         </div>
@@ -109,7 +107,7 @@
                     </div>
                 </div>
                 <div layout="column">
-                    <div ng-repeat="key in $root.objectKeys(vm.subarrayBandDurations)" layout="row">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayBandDurations)" layout="row" class="report-item">
                         <div ng-repeat="subNr in $root.objectKeys(vm.subarrayBandDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayBandDurations[key][subNr].duration}}">
                             {{vm.subarrayBandDurations[key][subNr].percentageOfTotal}}
                         </div>
@@ -126,7 +124,7 @@
                     </div>
                 </div>
                 <div layout="column">
-                    <div ng-repeat="key in $root.objectKeys(vm.subarrayProductDurations)" layout="row">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayProductDurations)" layout="row" class="report-item">
                         <div ng-repeat="subNr in $root.objectKeys(vm.subarrayProductDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayProductDurations[key][subNr].duration}}">
                             {{vm.subarrayProductDurations[key][subNr].percentageOfTotal}}
                         </div>
@@ -134,139 +132,53 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div layout="column" ng-show="vm.subarrayReportResults.length > 0" style="margin-bottom: 8px;">
-            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Subarray Sensors</i>
-            <div class="report-section-sub-title-div" layout="row">
-                <span style="width: 300px">Sensor</span>
-                <span style="width: 125px" flex>Value</span>
-                <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
-                <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
-            </div>
-            <div layout="column">
-                <div ng-repeat="item in vm.subarrayReportResults | orderBy:sensorName track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                    <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
-                    <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
-                </div>
-            </div>
-        </div> -->
-        <div layout="column" ng-show="vm.receptorReportResults.length > 0" style="margin-bottom: 8px;">
+        <div layout="column" style="margin-bottom: 8px;">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Resource Utilisation</i>
-            <div layout="column" ng-repeat="subarray in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations) | orderBy:subarray track by $index">
-                <div class="report-section-sub-title-div" layout="row">
-                    <span flex>Assigned to {{subarray}}</span>
-                    <span ng-show="$index === 0" style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
-                    <span ng-show="$index === 0" style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
+            <div layout="row">
+                <i class="report-row-column-item">Subarray</i>
+                <b ng-repeat="key in vm.resourceItemColumns" class="report-column-value-item">
+                    {{key}}
+                </b>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations) | orderBy:key" class="report-row-value-item">
+                        {{key}}
+                    </div>
                 </div>
                 <div layout="column">
-                    <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations[subarray]) | orderBy:key track by $index"
-                        layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                        <span flex>{{key}}</span>
-                        <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].duration}}</span>
-                        <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesAssignedToSubarraysDurations[subarray][key].percentageOfTotal}}</span>
-                    </div>
-                    <div class="report-item" ng-show="$root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations[subarray]).length === 0">
-                        <i>None</i>
+                    <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations) | orderBy:key" layout="row" class="report-item">
+                        <div ng-repeat="column in $root.objectKeys(vm.poolResourcesAssignedDurations[key]) | orderBy:column" class="report-cell-item" title="{{vm.poolResourcesAssignedDurations[key][column].value + ' ' + vm.poolResourcesAssignedDurations[key][column].duration}}">
+                            {{vm.poolResourcesAssignedDurations[key][column].percentageOfTotal}}
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="report-section-sub-title-div" layout="row">
-                <span flex>Free</span>
-            </div>
-            <div layout="column">
-                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFreeDurations) | orderBy:key track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                    <span flex>{{key}}</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].duration}}</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFreeDurations[key].percentageOfTotal}}</span>
+        </div>
+        <div layout="column" style="margin-bottom: 8px;">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">System State</i>
+            <div layout="row">
+                <b class="report-row-column-item"></b>
+                <div class="report-column-value-item" ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)">
+                    {{key}}
                 </div>
             </div>
-            <div class="report-section-sub-title-div" layout="row">
-                <span flex>Faulty</span>
-            </div>
-            <div layout="column">
-                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesFaultyDurations) | orderBy:key track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                    <span flex>{{key}}</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].duration}}</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesFaultyDurations[key].percentageOfTotal}}</span>
-                </div>
-            </div>
-            <div class="report-section-sub-title-div" layout="row">
-                <span flex>In Maintenance</span>
-            </div>
-            <div layout="column">
-                <div ng-repeat="key in $root.objectKeys(vm.poolResourcesMaintenanceDurations) | orderBy:key track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                    <span flex>{{key}}</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].duration}}</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].percentageOfTotal}}</span>
-                </div>
-            </div>
-            <!-- <div layout="column" ng-show="vm.interlockReceptorReportResults.length > 0" style="margin-bottom: 8px;">
-                <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Receptor Modes</i>
-                <div class="report-section-sub-title-div" layout="row">
-                    <span style="width: 300px">Sensor</span>
-                    <span style="width: 125px" flex>Value</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
-                </div>
+            <div layout="row">
+                <b class="report-row-column-item">Interlock State</b>
                 <div layout="column">
-                    <div ng-repeat="item in vm.receptorModeDurations | orderBy:sensorName track by $index"
-                        layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                        <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
-                        <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
-                        <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
-                        <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
+                    <div ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)" class="report-cell-item" class="report-item">
+                        {{vm.interlockReceptorReportResults[key].percentageOfTotal}}
                     </div>
                 </div>
-            </div> -->
-        </div>
-        <div layout="column" ng-show="vm.interlockReceptorReportResults.length > 0" style="margin-bottom: 8px;">
-            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Interlock/Windstow</i>
-            <div class="report-section-sub-title-div" layout="row">
-                <span style="width: 300px">Sensor</span>
-                <span style="width: 125px" flex>Value</span>
-                <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
-                <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
-            </div>
-            <div layout="column">
-                <div ng-repeat="item in vm.interlockReceptorReportResults | orderBy:sensorName track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                    <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
-                    <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
-                </div>
             </div>
         </div>
-        <div layout="column" ng-show="vm.scheduleReportResults.length > 0"  style="margin-bottom: 8px;">
-            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Active Schedule Blocks</i>
-            <div class="report-section-sub-title-div" layout="row">
-                <span style="width: 300px">Sensor</span>
-                <span style="width: 125px" flex>Value</span>
-                <span style="width: 80px; text-align: right; margin-left: 16px">Duration</span>
-                <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
-            </div>
-            <div layout="column">
-                <div ng-repeat="item in vm.scheduleReportResults | orderBy:sensorName track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
-                    <span class="fixed-width-300" title="{{item.sensorName}}">{{item.sensorName}}</span>
-                    <span flex style="min-width: 200px" title="{{item.value}}">{{item.value}}</span>
-                    <span style="width: 80px; text-align: right; margin-left: 16px">{{item.duration}}</span>
-                    <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
-                </div>
-            </div>
-        </div>
-        <div layout="column" ng-show="vm.scheduleReportResults.length > 0">
+        <div layout="column">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Active Schedule Block Details</i>
             <div class="report-section-sub-title-div" layout="row">
                 <span style="width: 120px">Id Code</span>
                 <span style="width: 120px">Owner</span>
                 <span style="width: 125px" flex>Description</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">Subarray</span>
                 <span style="width: 100px; text-align: right; margin-left: 16px">State</span>
                 <span style="width: 100px; text-align: right; margin-left: 16px">Outcome</span>
                 <span style="width: 100px; text-align: right; margin-left: 16px">Duration</span>
@@ -278,6 +190,7 @@
                     <span style="width: 120px">{{sb.id_code}}</span>
                     <span style="width: 120px">{{sb.owner}}</span>
                     <span flex style="min-width: 200px" title="{{sb.description}}">{{sb.description}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.sub_nr}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.state}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.outcome}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.duration}}</span>

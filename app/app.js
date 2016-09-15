@@ -312,7 +312,11 @@
             }
         };
         $rootScope.objectKeys = function (obj) {
-            return Object.keys(obj);
+            if (obj) {
+                return Object.keys(obj);
+            } else {
+                return [];
+            }
         };
         $rootScope.openCentralLogger = function () {
             window.open('http://' + ConfigService.systemConfig.katportal.katlogwebserver).focus();

@@ -19,13 +19,12 @@
             vm.creatingReceptorReport = false;
             vm.creatingSubarrayReport = false;
             vm.subarrayReportSensorsRegex = "subarray...state|subarray...maintenance|subarray...product|subarray...band|sched.mode..";
-            vm.receptorsReportSensorsRegex = "^(m0..|ant.).windstow.active|^(m0..|ant.).mode|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance|sys.interlock.state";
+            // vm.receptorsReportSensorsRegex = "^(m0..|ant.).windstow.active|^(m0..|ant.).mode|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance|sys.interlock.state";
+            vm.receptorsReportSensorsRegex = "katpool.pool.resources.[1-4]|katpool.resources.faulty|katpool.resources.in.maintenance";
+            vm.interlockReportSensorsRegex = "sys.interlock.state";
             vm.scheduleReportSensorsRegex = "sched.active.schedule..";
             vm.poolResourcesAssignedDurations = {};
-            vm.poolResourcesFreeDurations = {};
-            vm.poolResourcesFaultyDurations = {};
-            vm.poolResourcesMaintenanceDurations = {};
-            vm.interlockReceptorReportResults = [];
+            vm.interlockReceptorReportResults = {};
             vm.receptorModeDurations = [];
             vm.SBDetails = [];
             vm.subarrayNrs = [];
@@ -34,6 +33,7 @@
             vm.subarrayBandDurations = {};
             vm.subarrayProductDurations = {};
             vm.subarrayMaintenanceDurations = {};
+            vm.resourceItemColumns = [];
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -50,17 +50,17 @@
                 vm.receptorReportResults = [];
                 vm.scheduleReportResults = [];
                 vm.poolResourcesAssignedDurations = {};
-                vm.poolResourcesFreeDurations = {};
-                vm.poolResourcesFaultyDurations = {};
-                vm.poolResourcesMaintenanceDurations = {};
-                vm.interlockReceptorReportResults = [];
+                vm.interlockReceptorReportResults = {};
                 vm.receptorModeDurations = [];
                 vm.poolResourcesAssignedToSubarraysDurations = {};
+                vm.resourceItemColumns = [];
 
                 vm.subarrayNrs.forEach(function (subNr) {
                     vm.subarrayMaintenanceDurations[subNr] = {};
-                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + subNr] = {};
+                    vm.poolResourcesAssignedToSubarraysDurations[subNr] = {};
+                    vm.resourceItemColumns.push(subNr);
                 });
+                vm.resourceItemColumns = vm.resourceItemColumns.concat(['faulty', 'in_maintenance']);
             };
 
             vm.clearReportsData();
@@ -258,7 +258,7 @@
 
             vm.createReport = function () {
                 vm.clearReportsData();
-                vm.createSubarraysReport().then(vm.createReceptorsReport).then(vm.createScheduleReport);
+                vm.createSubarraysReport().then(vm.createReceptorsReport).then(vm.createInterlockReport).then(vm.createScheduleReport);
             };
 
             vm.createSubarraysReport = function () {
@@ -286,7 +286,6 @@
                             };
 
                             if (reportItem.duration) {
-                                //convert to milliseconds and then to percentageOfTotal
                                 reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
                             }
                             if (reportItem.sensorName.search('_mode_.') > -1) {
@@ -360,105 +359,48 @@
                     vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     if (result.data) {
                         result.data.forEach(function (item) {
+                            var subNr;
                             var duration = moment.duration(item[2], 's');
                             var reportItem = {
                                 sensorName: item[0],
                                 value: item[1],
-                                durationSeconds: item[2],
+                                durationSeconds: item[2] !== null? item[2]: 0,
                                 duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
                             };
 
                             if (reportItem.duration) {
-                                //convert to milliseconds and then to percentageOfTotal
                                 reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
                             }
-                            var resources, subarray, i, value;
-                            if (reportItem.sensorName.search('subarray...pool.resources') > -1 && reportItem.value.length > 0) {
+                            var resources, subarray, i, key;
+                            if (reportItem.sensorName.search('katpool.pool.resources..|katpool.resources.faulty|katpool.resources.in.maintenance') > -1 && reportItem.value.length > 0) {
                                 resources = reportItem.value.split(',');
-                                subarray = reportItem.sensorName.split('_', 2).join('_');
-                                for (i = 0; i < resources.length; i++) {
-                                    if (!vm.poolResourcesAssignedDurations[resources[i]]) {
-                                        vm.poolResourcesAssignedDurations[resources[i]] = { value: 'assigned to a subarray', durationSeconds: 0, duration: '0:00:00'};
-                                    }
-                                    if (!vm.poolResourcesAssignedDurations[resources[i]][subarray]) {
-                                        vm.poolResourcesAssignedDurations[resources[i]][subarray] = {sensorName: resources[i], value: subarray, durationSeconds: 0, duration: '0:00:00'};
-                                    }
-                                    vm.poolResourcesAssignedDurations[resources[i]].durationSeconds += item[2];
-                                    vm.poolResourcesAssignedDurations[resources[i]][subarray].durationSeconds += item[2];
+                                if (reportItem.sensorName.endsWith('faulty')) {
+                                    key = 'faulty';
+                                } else if (reportItem.sensorName.endsWith('in_maintenance')) {
+                                    key = 'in_maintenance';
+                                } else {
+                                    key = _.last(reportItem.sensorName.split('_'));
                                 }
-                            }
-                            else if (reportItem.sensorName.search('pool.resources.free') > -1 && reportItem.value.length > 0) {
-                                resources = reportItem.value.split(',');
-                                value = 'free';
-                                for (i = 0; i < resources.length; i++) {
-                                    if (!vm.poolResourcesFreeDurations[resources[i]]) {
-                                        vm.poolResourcesFreeDurations[resources[i]] = {resourceName: resources[i], value: value, durationSeconds: 0, duration: '0:00:00'};
+                                resources.forEach(function (resource) {
+                                    if (!vm.poolResourcesAssignedDurations[resource]) {
+                                        vm.poolResourcesAssignedDurations[resource] = {};
+                                        vm.resourceItemColumns.forEach(function (col) {
+                                            vm.poolResourcesAssignedDurations[resource][col] = {};
+                                        });
                                     }
-                                    vm.poolResourcesFreeDurations[resources[i]].durationSeconds += item[2];
-                                }
-                            }
-                            else if (reportItem.sensorName.search('resources.faulty') > -1 && reportItem.value.length > 0) {
-                                resources = reportItem.value.split(',');
-                                value = 'faulty';
-                                for (i = 0; i < resources.length; i++) {
-                                    if (!vm.poolResourcesFaultyDurations[resources[i]]) {
-                                        vm.poolResourcesFaultyDurations[resources[i]] = {resourceName: resources[i], value: value, durationSeconds: 0, duration: '0:00:00'};
+
+                                    if (!vm.poolResourcesAssignedDurations[resource][key].value) {
+                                        vm.poolResourcesAssignedDurations[resource][key] = reportItem;
+                                    } else {
+                                        var existingResourceItem = vm.poolResourcesAssignedDurations[resource][key];
+                                        existingResourceItem.durationSeconds += reportItem.durationSeconds;
+                                        duration = moment.duration(existingResourceItem.durationSeconds, 's');
+                                        existingResourceItem.duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+                                        existingResourceItem.percentageOfTotal = parseFloat(100 * existingResourceItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                                        vm.poolResourcesAssignedDurations[resource][key] = existingResourceItem;
                                     }
-                                    vm.poolResourcesFaultyDurations[resources[i]].durationSeconds += item[2];
-                                }
+                                });
                             }
-                            else if (reportItem.sensorName.search('resources.in.maintenance') > -1 && reportItem.value.length > 0) {
-                                resources = reportItem.value.split(',');
-                                value = 'in_maintenance';
-                                for (i = 0; i < resources.length; i++) {
-                                    if (!vm.poolResourcesMaintenanceDurations[resources[i]]) {
-                                        vm.poolResourcesMaintenanceDurations[resources[i]] = {resourceName: resources[i], value: value, durationSeconds: 0, duration: '0:00:00'};
-                                    }
-                                    vm.poolResourcesMaintenanceDurations[resources[i]].durationSeconds += item[2];
-                                }
-                            } else if (reportItem.sensorName.search('windstow.active') > -1) {
-                                vm.interlockReceptorReportResults.push(reportItem);
-                            } else if (reportItem.sensorName.search('sys.interlock.state') > -1) {
-                                vm.interlockReceptorReportResults.push(reportItem);
-                            } else if (reportItem.sensorName.search('^(m0..|ant.).mode') > -1) {
-                                vm.receptorModeDurations.push(reportItem);
-                            }
-                            vm.receptorReportResults.push(reportItem);
-                        });
-                        Object.keys(vm.poolResourcesAssignedDurations).forEach(function (key) {
-                            var item = vm.poolResourcesAssignedDurations[key];
-                            var duration = moment.duration(item.durationSeconds, 's');
-                            vm.poolResourcesAssignedDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
-                            vm.poolResourcesAssignedDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
-                            for (var j = 1; j <= 4; j++) {
-                                var subarrayItem = vm.poolResourcesAssignedDurations[key]['subarray_' + j];
-                                if (subarrayItem) {
-                                    duration = moment.duration(subarrayItem.durationSeconds, 's');
-                                    vm.poolResourcesAssignedDurations[key]['subarray_' + j].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
-                                    vm.poolResourcesAssignedDurations[key]['subarray_' + j].percentageOfTotal = parseFloat(100 * subarrayItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
-                                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + j][key] = vm.poolResourcesAssignedDurations[key]['subarray_' + j];
-                                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + j][key].resourceName = key;
-                                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + j][key].subarray = j;
-                                }
-                            }
-                        });
-                        Object.keys(vm.poolResourcesFreeDurations).forEach(function (key) {
-                            var item = vm.poolResourcesFreeDurations[key];
-                            var duration = moment.duration(item.durationSeconds, 's');
-                            vm.poolResourcesFreeDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
-                            vm.poolResourcesFreeDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
-                        });
-                        Object.keys(vm.poolResourcesFaultyDurations).forEach(function (key) {
-                            var item = vm.poolResourcesFaultyDurations[key];
-                            var duration = moment.duration(item.durationSeconds, 's');
-                            vm.poolResourcesFaultyDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
-                            vm.poolResourcesFaultyDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
-                        });
-                        Object.keys(vm.poolResourcesMaintenanceDurations).forEach(function (key) {
-                            var item = vm.poolResourcesMaintenanceDurations[key];
-                            var duration = moment.duration(item.durationSeconds, 's');
-                            vm.poolResourcesMaintenanceDurations[key].duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
-                            vm.poolResourcesMaintenanceDurations[key].percentageOfTotal = parseFloat(100 * item.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
                         });
                     }
                     deferred.resolve();
@@ -496,7 +438,6 @@
                             };
 
                             if (reportItem.duration) {
-                                //convert to milliseconds and then to percentageOfTotal
                                 reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
                             }
                             vm.scheduleReportResults.push(reportItem);
@@ -515,6 +456,46 @@
                     deferred.resolve();
                 }, function (result) {
                     vm.creatingScheduleReport = false;
+                    NotifyService.showSimpleDialog('Error creating report', result.data);
+                    $log.error(result);
+                    deferred.reject();
+                });
+                return deferred.promise;
+            };
+
+            vm.createInterlockReport = function () {
+                var deferred = $q.defer();
+                vm.creatingReceptorReport = true;
+                $state.go('utilisation-report', {
+                        startTime: vm.startDatetimeReadable,
+                        endTime: vm.endDatetimeReadable,
+                        filter: vm.searchInputText},
+                        { notify: false, reload: false });
+
+                var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
+                var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
+                DataService.sampleValueDuration(vm.interlockReportSensorsRegex, startDate, endDate).then(function (result) {
+                    vm.creatingInterlockReport = false;
+                    vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
+                    if (result.data) {
+                        result.data.forEach(function (item) {
+                            var duration = moment.duration(item[2], 's');
+                            var reportItem = {
+                                sensorName: item[0],
+                                value: item[1],
+                                durationSeconds: item[2] !== null? item[2]: 0,
+                                duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
+                            };
+
+                            if (reportItem.duration) {
+                                reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                            }
+                            vm.interlockReceptorReportResults[reportItem.value] = reportItem;
+                        });
+                    }
+                    deferred.resolve();
+                }, function (result) {
+                    vm.creatingInterlockReport = false;
                     NotifyService.showSimpleDialog('Error creating report', result.data);
                     $log.error(result);
                     deferred.reject();
