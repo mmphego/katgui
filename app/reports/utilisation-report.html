@@ -43,7 +43,99 @@
         </div>
     </md-toolbar>
     <div flex style="overflow: auto" class="md-whiteframe-z1">
-        <div layout="column" ng-show="vm.subarrayReportResults.length > 0" style="margin-bottom: 8px;">
+
+        <div layout="column" style="margin-bottom: 8px;">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Scheduler Mode</i>
+            <div layout="row">
+                <i class="report-row-column-item">Subarrays</i>
+                <b ng-repeat="subNr in vm.subarrayNrs" class="report-column-value-item">
+                    {{subNr}}
+                </b>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.schedModeDurations)" class="report-row-value-item">
+                        {{key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.schedModeDurations)" layout="row">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.schedModeDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.schedModeDurations[key][subNr].duration}}">
+                            {{vm.schedModeDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div layout="column" style="margin-bottom: 8px;">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Subarrays</i>
+            <div layout="row">
+                <i class="report-row-column-item">Subarrays</i>
+                <b ng-repeat="subNr in vm.subarrayNrs" class="report-column-value-item">
+                    {{subNr}}
+                </b>
+            </div>
+            <div layout="row">
+                <b class="report-row-value-item">Maintenance</b>
+                <div ng-repeat="subNr in $root.objectKeys(vm.subarrayMaintenanceDurations) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayMaintenanceDurations[subNr].duration}}">
+                    {{vm.subarrayMaintenanceDurations[subNr].percentageOfTotal}}
+                </div>
+            </div>
+            <div class="report-section-sub-title-div" style="padding-left: 0">
+                <div class="report-row-value-item" style="border: 0">State</div>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayStateDurations)" class="report-row-value-item">
+                        {{key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayStateDurations)" layout="row">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.subarrayStateDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayStateDurations[key][subNr].duration}}">
+                            {{vm.subarrayStateDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="report-section-sub-title-div" style="padding-left: 0">
+                <div class="report-row-value-item" style="border: 0">Band</div>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayBandDurations)" class="report-row-value-item">
+                        {{key === ''? 'None': key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayBandDurations)" layout="row">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.subarrayBandDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayBandDurations[key][subNr].duration}}">
+                            {{vm.subarrayBandDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="report-section-sub-title-div" style="padding-left: 0">
+                <div class="report-row-value-item" style="border: 0">Product</div>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayProductDurations)" class="report-row-value-item">
+                        {{key === ''? 'None': key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayProductDurations)" layout="row">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.subarrayProductDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayProductDurations[key][subNr].duration}}">
+                            {{vm.subarrayProductDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- <div layout="column" ng-show="vm.subarrayReportResults.length > 0" style="margin-bottom: 8px;">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Subarray Sensors</i>
             <div class="report-section-sub-title-div" layout="row">
                 <span style="width: 300px">Sensor</span>
@@ -60,7 +152,7 @@
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div layout="column" ng-show="vm.receptorReportResults.length > 0" style="margin-bottom: 8px;">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Resource Utilisation</i>
             <div layout="column" ng-repeat="subarray in $root.objectKeys(vm.poolResourcesAssignedToSubarraysDurations) | orderBy:subarray track by $index">
@@ -114,7 +206,7 @@
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{vm.poolResourcesMaintenanceDurations[key].percentageOfTotal}}</span>
                 </div>
             </div>
-            <div layout="column" ng-show="vm.interlockReceptorReportResults.length > 0" style="margin-bottom: 8px;">
+            <!-- <div layout="column" ng-show="vm.interlockReceptorReportResults.length > 0" style="margin-bottom: 8px;">
                 <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Receptor Modes</i>
                 <div class="report-section-sub-title-div" layout="row">
                     <span style="width: 300px">Sensor</span>
@@ -131,7 +223,7 @@
                         <span style="width: 100px; text-align: right; margin-left: 16px">{{item.percentageOfTotal}}</span>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         <div layout="column" ng-show="vm.interlockReceptorReportResults.length > 0" style="margin-bottom: 8px;">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Interlock/Windstow</i>

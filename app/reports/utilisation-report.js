@@ -29,12 +29,22 @@
             vm.receptorModeDurations = [];
             vm.SBDetails = [];
             vm.subarrayNrs = [];
+            vm.schedModeDurations = {};
+            vm.subarrayStateDurations = {};
+            vm.subarrayBandDurations = {};
+            vm.subarrayProductDurations = {};
+            vm.subarrayMaintenanceDurations = {};
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
             }
 
             vm.clearReportsData = function () {
+                vm.schedModeDurations = {};
+                vm.subarrayStateDurations = {};
+                vm.subarrayMaintenanceDurations = {};
+                vm.subarrayBandDurations = {};
+                vm.subarrayProductDurations = {};
                 vm.SBDetails = [];
                 vm.subarrayReportResults = [];
                 vm.receptorReportResults = [];
@@ -46,9 +56,11 @@
                 vm.interlockReceptorReportResults = [];
                 vm.receptorModeDurations = [];
                 vm.poolResourcesAssignedToSubarraysDurations = {};
-                for (var i = 0; i < vm.subarrayNrs.length; i++) {
-                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + vm.subarrayNrs[i]] = {};
-                }
+
+                vm.subarrayNrs.forEach(function (subNr) {
+                    vm.subarrayMaintenanceDurations[subNr] = {};
+                    vm.poolResourcesAssignedToSubarraysDurations['subarray_' + subNr] = {};
+                });
             };
 
             vm.clearReportsData();
@@ -264,6 +276,7 @@
                     vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     if (result.data) {
                         result.data.forEach(function (item) {
+                            var subNr;
                             var duration = moment.duration(item[2], 's');
                             var reportItem = {
                                 sensorName: item[0],
@@ -276,7 +289,48 @@
                                 //convert to milliseconds and then to percentageOfTotal
                                 reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
                             }
-                            vm.subarrayReportResults.push(reportItem);
+                            if (reportItem.sensorName.search('_mode_.') > -1) {
+                                subNr = _.last(reportItem.sensorName.split('_'));
+                                if (!vm.schedModeDurations[reportItem.value]) {
+                                    vm.schedModeDurations[reportItem.value] = {};
+                                    vm.subarrayNrs.forEach(function (item) {
+                                        vm.schedModeDurations[reportItem.value][item] = {};
+                                    });
+                                }
+                                vm.schedModeDurations[reportItem.value][subNr] = reportItem;
+                            } else if (reportItem.sensorName.endsWith('maintenance') && reportItem.value.toLowerCase() === 'true') {
+                                subNr = reportItem.sensorName.split('_')[1];
+                                vm.subarrayMaintenanceDurations[subNr] = reportItem;
+                            } else if (reportItem.sensorName.search('subarray...state') > -1) {
+                                subNr = reportItem.sensorName.split('_')[1];
+                                if (!vm.subarrayStateDurations[reportItem.value]) {
+                                    vm.subarrayStateDurations[reportItem.value] = {};
+                                    vm.subarrayNrs.forEach(function (item) {
+                                        vm.subarrayStateDurations[reportItem.value][item] = {};
+                                    });
+                                }
+                                vm.subarrayStateDurations[reportItem.value][subNr] = reportItem;
+                            } else if (reportItem.sensorName.search('subarray...band') > -1) {
+                                subNr = reportItem.sensorName.split('_')[1];
+                                if (!vm.subarrayBandDurations[reportItem.value]) {
+                                    vm.subarrayBandDurations[reportItem.value] = {};
+                                    vm.subarrayNrs.forEach(function (item) {
+                                        vm.subarrayBandDurations[reportItem.value][item] = {};
+                                    });
+                                }
+                                vm.subarrayBandDurations[reportItem.value][subNr] = reportItem;
+                            } else if (reportItem.sensorName.search('subarray...product') > -1) {
+                                subNr = reportItem.sensorName.split('_')[1];
+                                if (!vm.subarrayProductDurations[reportItem.value]) {
+                                    vm.subarrayProductDurations[reportItem.value] = {};
+                                    vm.subarrayNrs.forEach(function (item) {
+                                        vm.subarrayProductDurations[reportItem.value][item] = {};
+                                    });
+                                }
+                                vm.subarrayProductDurations[reportItem.value][subNr] = reportItem;
+                            } else {
+                                vm.subarrayReportResults.push(reportItem);
+                            }
                         });
                     }
                     vm.creatingSubarrayReport = false;
@@ -452,7 +506,10 @@
                                 });
                             }
                         });
-                        vm.fetchSBDetails(Object.keys(SBIdCodes));
+                        var SBIdCodesList = Object.keys(SBIdCodes);
+                        if (SBIdCodesList.lengh > 0) {
+                            vm.fetchSBDetails(SBIdCodesList);
+                        }
                     }
                     vm.creatingScheduleReport = false;
                     deferred.resolve();
