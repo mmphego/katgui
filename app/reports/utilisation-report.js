@@ -308,9 +308,10 @@
                             if (reportItem.duration) {
                                 reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
-                            var resources, subarray, i, key;
+                            $log.info(reportItem);
                             if (reportItem.sensorName.search('katpool.pool.resources..|katpool.resources.faulty|katpool.resources.in.maintenance') > -1 && reportItem.value.length > 0) {
-                                resources = reportItem.value.split(',');
+                                var resources = reportItem.value.split(',');
+                                var key;
                                 if (reportItem.sensorName.endsWith('faulty')) {
                                     key = 'faulty';
                                 } else if (reportItem.sensorName.endsWith('in_maintenance')) {
@@ -318,6 +319,7 @@
                                 } else {
                                     key = _.last(reportItem.sensorName.split('_'));
                                 }
+
                                 resources.forEach(function (resource) {
                                     if (!vm.poolResourcesAssignedDurations[resource]) {
                                         vm.poolResourcesAssignedDurations[resource] = {durationTotalSeconds: 0, percentageTotal: '0%', durationTotal: '0:00:00'};
@@ -333,7 +335,13 @@
                                     }
 
                                     if (!vm.poolResourcesAssignedDurations[resource][key].value) {
-                                        vm.poolResourcesAssignedDurations[resource][key] = reportItem;
+                                        vm.poolResourcesAssignedDurations[resource][key] = {
+                                            duration: reportItem.duration,
+                                            durationSeconds: reportItem.durationSeconds,
+                                            percentageOfTotal: reportItem.percentageOfTotal,
+                                            sensorName: reportItem.sensorName,
+                                            value: resource
+                                        };
                                     } else {
                                         var existingResourceItem = vm.poolResourcesAssignedDurations[resource][key];
                                         existingResourceItem.durationSeconds += reportItem.durationSeconds;
