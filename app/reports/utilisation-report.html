@@ -135,7 +135,9 @@
         <div layout="column" style="margin-bottom: 8px;">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Resource Utilisation</i>
             <div layout="row">
-                <i class="report-row-column-item">Subarray</i>
+                <i class="report-row-column-item"></i>
+                <i class="report-column-value-item">Total Duration</i>
+                <i class="report-column-value-item">Total %</i>
                 <b ng-repeat="key in vm.resourceItemColumns" class="report-column-value-item">
                     {{key}}
                 </b>
@@ -148,7 +150,13 @@
                 </div>
                 <div layout="column">
                     <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations) | orderBy:key" layout="row" class="report-item">
-                        <div ng-repeat="column in $root.objectKeys(vm.poolResourcesAssignedDurations[key]) | orderBy:column" class="report-cell-item" title="{{vm.poolResourcesAssignedDurations[key][column].value + ' ' + vm.poolResourcesAssignedDurations[key][column].duration}}">
+                        <div class="report-cell-item" title="Total utilisation in hours for all subarrays">
+                            {{vm.poolResourcesAssignedDurations[key].durationTotal}}
+                        </div>
+                        <div class="report-cell-item" title="Total utilisation percentage for all subarrays">
+                            {{vm.poolResourcesAssignedDurations[key].percentageTotal}}
+                        </div>
+                        <div ng-repeat="column in vm.resourceItemColumns | orderBy:column" class="report-cell-item" title="{{vm.poolResourcesAssignedDurations[key][column].duration}}">
                             {{vm.poolResourcesAssignedDurations[key][column].percentageOfTotal}}
                         </div>
                     </div>
@@ -158,16 +166,20 @@
         <div layout="column" style="margin-bottom: 8px;">
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">System State</i>
             <div layout="row">
-                <b class="report-row-column-item"></b>
+                <b class="report-row-column-item">Interlock State</b>
                 <div class="report-column-value-item" ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)">
                     {{key}}
                 </div>
             </div>
             <div layout="row">
-                <b class="report-row-column-item">Interlock State</b>
                 <div layout="column">
-                    <div ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)" class="report-cell-item" class="report-item">
-                        {{vm.interlockReceptorReportResults[key].percentageOfTotal}}
+                    <span class="report-row-value-item">Percentage</span>
+                    <span class="report-row-value-item">Duration</span>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)" layout="column">
+                        <div class="report-cell-item report-item">{{vm.interlockReceptorReportResults[key].percentageOfTotal}}</div>
+                        <div class="report-cell-item report-item">{{vm.interlockReceptorReportResults[key].duration}}</div>
                     </div>
                 </div>
             </div>

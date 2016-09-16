@@ -484,7 +484,7 @@
                     vm.intervalNum = intervalTime.toString();
                     vm.intervalType = intervalParams[1];
                 } else {
-                    vm.intervalNum = 1;
+                    vm.intervalNum = '10';
                     vm.intervalType = 'm';
                 }
                 var sensorNames = $stateParams.sensors.split(',');

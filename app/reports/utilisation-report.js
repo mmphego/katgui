@@ -15,17 +15,14 @@
             vm.endTime = new Date();
             vm.startDatetimeReadable = moment(vm.startTime.getTime()).format(DATETIME_FORMAT);
             vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(DATETIME_FORMAT);
-            vm.reportTimeWindowMSDuration = 0;
             vm.creatingReceptorReport = false;
             vm.creatingSubarrayReport = false;
             vm.subarrayReportSensorsRegex = "subarray...state|subarray...maintenance|subarray...product|subarray...band|sched.mode..";
-            // vm.receptorsReportSensorsRegex = "^(m0..|ant.).windstow.active|^(m0..|ant.).mode|pool.resources.free|subarray...pool.resources|resources.faulty|resources.in.maintenance|sys.interlock.state";
             vm.receptorsReportSensorsRegex = "katpool.pool.resources.[1-4]|katpool.resources.faulty|katpool.resources.in.maintenance";
             vm.interlockReportSensorsRegex = "sys.interlock.state";
             vm.scheduleReportSensorsRegex = "sched.active.schedule..";
             vm.poolResourcesAssignedDurations = {};
             vm.interlockReceptorReportResults = {};
-            vm.receptorModeDurations = [];
             vm.SBDetails = [];
             vm.subarrayNrs = [];
             vm.schedModeDurations = {};
@@ -46,18 +43,13 @@
                 vm.subarrayBandDurations = {};
                 vm.subarrayProductDurations = {};
                 vm.SBDetails = [];
-                vm.subarrayReportResults = [];
-                vm.receptorReportResults = [];
                 vm.scheduleReportResults = [];
                 vm.poolResourcesAssignedDurations = {};
                 vm.interlockReceptorReportResults = {};
-                vm.receptorModeDurations = [];
-                vm.poolResourcesAssignedToSubarraysDurations = {};
                 vm.resourceItemColumns = [];
 
                 vm.subarrayNrs.forEach(function (subNr) {
                     vm.subarrayMaintenanceDurations[subNr] = {};
-                    vm.poolResourcesAssignedToSubarraysDurations[subNr] = {};
                     vm.resourceItemColumns.push(subNr);
                 });
                 vm.resourceItemColumns = vm.resourceItemColumns.concat(['faulty', 'in_maintenance']);
@@ -92,20 +84,6 @@
                 pdf.text(('From: ' + vm.startDatetimeReadable + '     To: ' + vm.endDatetimeReadable), 20, 45);
 
                 pdf.setFontSize(20);
-                pdf.setFontStyle('italic');
-                pdf.text('Subarray Sensors', 20, 75);
-
-                pdf.autoTable(sensorColumns, vm.subarrayReportResults, {
-                    startY: 85,
-                    theme: 'striped',
-                    margin: {top: 8, bottom: 8},
-                    columnStyles: {
-                        sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                        value: {},
-                        duration: {columnWidth: 80},
-                        percentageOfTotal: {columnWidth: 80}}});
-
-                pdf.setFontSize(20);
                 pdf.text('Resource Utilisation', 20, pdf.autoTableEndPosY() + 45);
 
                 var assignedToSubColumns = [
@@ -114,29 +92,6 @@
                     {title: "% of Total", dataKey: "percentageOfTotal"}
                 ];
 
-                vm.subarrayNrs.forEach(function (subNr) {
-                    assignedToSubColumns[0].title = "Assigned to Subarray " + subNr;
-
-                    var assignedToSubarray = [];
-                    var resourcesAssignedToSub = Object.keys(vm.poolResourcesAssignedToSubarraysDurations['subarray_' + subNr]);
-
-                    resourcesAssignedToSub.forEach(function (key) {
-                        var resource = vm.poolResourcesAssignedToSubarraysDurations['subarray_' + subNr][key];
-                        assignedToSubarray.push(resource);
-                    });
-
-                    if (assignedToSubarray.length > 0) {
-                        pdf.autoTable(assignedToSubColumns, assignedToSubarray, {
-                            startY: subNr === "1"? pdf.autoTableEndPosY() + 60 : pdf.autoTableEndPosY() + 8,
-                            theme: 'striped',
-                            margin: {top: 8, bottom: 8},
-                            columnStyles: {
-                                sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                                value: {},
-                                duration: {columnWidth: 80},
-                                percentageOfTotal: {columnWidth: 80}}});
-                    }
-                });
 
                 assignedToSubColumns[0].title = "Free";
                 var assignedToFree = [];
@@ -195,17 +150,6 @@
                             percentageOfTotal: {columnWidth: 80}}});
                 }
 
-                pdf.text('Receptor Modes', 20, pdf.autoTableEndPosY() + 45);
-                pdf.autoTable(sensorColumns, vm.receptorModeDurations, {
-                    startY: pdf.autoTableEndPosY() + 60,
-                    theme: 'striped',
-                    margin: {top: 8, bottom: 8},
-                    columnStyles: {
-                        sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                        value: {},
-                        duration: {columnWidth: 80},
-                        percentageOfTotal: {columnWidth: 80}}});
-
                 pdf.text('Interlock / Windstow', 20, pdf.autoTableEndPosY() + 45);
                 pdf.autoTable(sensorColumns, vm.interlockReceptorReportResults, {
                     startY: pdf.autoTableEndPosY() + 60,
@@ -258,22 +202,25 @@
 
             vm.createReport = function () {
                 vm.clearReportsData();
-                vm.createSubarraysReport().then(vm.createReceptorsReport).then(vm.createInterlockReport).then(vm.createScheduleReport);
-            };
-
-            vm.createSubarraysReport = function () {
-                var deferred = $q.defer();
-                vm.creatingSubarrayReport = true;
                 $state.go('utilisation-report', {
                         startTime: vm.startDatetimeReadable,
                         endTime: vm.endDatetimeReadable,
                         filter: vm.searchInputText},
                         { notify: false, reload: false });
-
                 var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
                 var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
+                vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
+                vm.createSubarraysReport(startDate, endDate);
+                vm.createReceptorsReport(startDate, endDate);
+                vm.createInterlockReport(startDate, endDate);
+                vm.createScheduleReport(startDate, endDate);
+            };
+
+            vm.createSubarraysReport = function (startDate, endDate) {
+                var deferred = $q.defer();
+                vm.creatingSubarrayReport = true;
+
                 DataService.sampleValueDuration(vm.subarrayReportSensorsRegex, startDate, endDate).then(function (result) {
-                    vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     if (result.data) {
                         result.data.forEach(function (item) {
                             var subNr;
@@ -282,11 +229,11 @@
                                 sensorName: item[0],
                                 value: item[1],
                                 durationSeconds: item[2],
-                                duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
+                                duration: vm.durationToString(duration)
                             };
 
                             if (reportItem.duration) {
-                                reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                                reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
                             if (reportItem.sensorName.search('_mode_.') > -1) {
                                 subNr = _.last(reportItem.sensorName.split('_'));
@@ -327,8 +274,6 @@
                                     });
                                 }
                                 vm.subarrayProductDurations[reportItem.value][subNr] = reportItem;
-                            } else {
-                                vm.subarrayReportResults.push(reportItem);
                             }
                         });
                     }
@@ -343,20 +288,12 @@
                 return deferred.promise;
             };
 
-            vm.createReceptorsReport = function () {
+            vm.createReceptorsReport = function (startDate, endDate) {
                 var deferred = $q.defer();
                 vm.creatingReceptorReport = true;
-                $state.go('utilisation-report', {
-                        startTime: vm.startDatetimeReadable,
-                        endTime: vm.endDatetimeReadable,
-                        filter: vm.searchInputText},
-                        { notify: false, reload: false });
 
-                var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
-                var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
                 DataService.sampleValueDuration(vm.receptorsReportSensorsRegex, startDate, endDate).then(function (result) {
                     vm.creatingReceptorReport = false;
-                    vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     if (result.data) {
                         result.data.forEach(function (item) {
                             var subNr;
@@ -365,11 +302,11 @@
                                 sensorName: item[0],
                                 value: item[1],
                                 durationSeconds: item[2] !== null? item[2]: 0,
-                                duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
+                                duration: vm.durationToString(duration)
                             };
 
                             if (reportItem.duration) {
-                                reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                                reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
                             var resources, subarray, i, key;
                             if (reportItem.sensorName.search('katpool.pool.resources..|katpool.resources.faulty|katpool.resources.in.maintenance') > -1 && reportItem.value.length > 0) {
@@ -383,20 +320,23 @@
                                 }
                                 resources.forEach(function (resource) {
                                     if (!vm.poolResourcesAssignedDurations[resource]) {
-                                        vm.poolResourcesAssignedDurations[resource] = {};
+                                        vm.poolResourcesAssignedDurations[resource] = {durationTotalSeconds: 0};
                                         vm.resourceItemColumns.forEach(function (col) {
                                             vm.poolResourcesAssignedDurations[resource][col] = {};
                                         });
                                     }
-
+                                    vm.poolResourcesAssignedDurations[resource].durationTotalSeconds += reportItem.durationSeconds;
+                                    duration = moment.duration(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds, 's');
+                                    vm.poolResourcesAssignedDurations[resource].durationTotal = vm.durationToString(duration);
+                                    vm.poolResourcesAssignedDurations[resource].percentageTotal = vm.percentageOfTotalToString(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds);
                                     if (!vm.poolResourcesAssignedDurations[resource][key].value) {
                                         vm.poolResourcesAssignedDurations[resource][key] = reportItem;
                                     } else {
                                         var existingResourceItem = vm.poolResourcesAssignedDurations[resource][key];
                                         existingResourceItem.durationSeconds += reportItem.durationSeconds;
                                         duration = moment.duration(existingResourceItem.durationSeconds, 's');
-                                        existingResourceItem.duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
-                                        existingResourceItem.percentageOfTotal = parseFloat(100 * existingResourceItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                                        existingResourceItem.duration = vm.durationToString(duration);
+                                        existingResourceItem.percentageOfTotal = vm.percentageOfTotalToString(existingResourceItem.durationSeconds);
                                         vm.poolResourcesAssignedDurations[resource][key] = existingResourceItem;
                                     }
                                 });
@@ -413,19 +353,11 @@
                 return deferred.promise;
             };
 
-            vm.createScheduleReport = function () {
+            vm.createScheduleReport = function (startDate, endDate) {
                 var deferred = $q.defer();
                 vm.creatingScheduleReport = true;
-                $state.go('utilisation-report', {
-                        startTime: vm.startDatetimeReadable,
-                        endTime: vm.endDatetimeReadable,
-                        filter: vm.searchInputText},
-                        { notify: false, reload: false });
 
-                var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
-                var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
                 DataService.sampleValueDuration(vm.scheduleReportSensorsRegex, startDate, endDate).then(function (result) {
-                    vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     var SBIdCodes = {};
                     if (result.data) {
                         result.data.forEach(function (item) {
@@ -434,11 +366,11 @@
                                 sensorName: item[0],
                                 value: item[1],
                                 durationSeconds: item[2],
-                                duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
+                                duration: vm.durationToString(duration)
                             };
 
                             if (reportItem.duration) {
-                                reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                                reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
                             vm.scheduleReportResults.push(reportItem);
                             if (reportItem.value.length > 0) {
@@ -463,20 +395,12 @@
                 return deferred.promise;
             };
 
-            vm.createInterlockReport = function () {
+            vm.createInterlockReport = function (startDate, endDate) {
                 var deferred = $q.defer();
                 vm.creatingReceptorReport = true;
-                $state.go('utilisation-report', {
-                        startTime: vm.startDatetimeReadable,
-                        endTime: vm.endDatetimeReadable,
-                        filter: vm.searchInputText},
-                        { notify: false, reload: false });
 
-                var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
-                var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
                 DataService.sampleValueDuration(vm.interlockReportSensorsRegex, startDate, endDate).then(function (result) {
                     vm.creatingInterlockReport = false;
-                    vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
                     if (result.data) {
                         result.data.forEach(function (item) {
                             var duration = moment.duration(item[2], 's');
@@ -484,11 +408,11 @@
                                 sensorName: item[0],
                                 value: item[1],
                                 durationSeconds: item[2] !== null? item[2]: 0,
-                                duration: Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss")
+                                duration: vm.durationToString(duration)
                             };
 
                             if (reportItem.duration) {
-                                reportItem.percentageOfTotal = parseFloat(100 * reportItem.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                                reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
                             vm.interlockReceptorReportResults[reportItem.value] = reportItem;
                         });
@@ -512,11 +436,22 @@
                             var endSeconds = moment.utc(sb.actual_end_time, DATETIME_FORMAT).toDate().getTime() / 1000;
                             sb.durationSeconds = Math.abs(endSeconds - startSeconds);
                             var duration = moment.duration(sb.durationSeconds, 's');
-                            sb.duration = Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
-                            sb.percentageOfTotal = parseFloat(100 * sb.durationSeconds / vm.reportTimeWindowSecondsDuration).toFixed(2) + '%';
+                            sb.duration = vm.durationToString(duration);
+                            sb.percentageOfTotal = vm.percentageOfTotalToString(sb.durationSeconds);
                         }
                     });
                 });
+            };
+
+            vm.durationToString = function (duration) {
+                return Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+            };
+
+            vm.percentageOfTotalToString = function (durationSeconds, totalSeconds) {
+                if (totalSeconds === undefined) {
+                    totalSeconds = vm.reportTimeWindowSecondsDuration;
+                }
+                return parseFloat(100 * durationSeconds / totalSeconds).toFixed(2) + '%';
             };
 
             vm.afterInit = function() {
