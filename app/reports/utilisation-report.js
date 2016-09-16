@@ -320,15 +320,18 @@
                                 }
                                 resources.forEach(function (resource) {
                                     if (!vm.poolResourcesAssignedDurations[resource]) {
-                                        vm.poolResourcesAssignedDurations[resource] = {durationTotalSeconds: 0};
+                                        vm.poolResourcesAssignedDurations[resource] = {durationTotalSeconds: 0, percentageTotal: '0%', durationTotal: '0:00:00'};
                                         vm.resourceItemColumns.forEach(function (col) {
                                             vm.poolResourcesAssignedDurations[resource][col] = {};
                                         });
                                     }
-                                    vm.poolResourcesAssignedDurations[resource].durationTotalSeconds += reportItem.durationSeconds;
-                                    duration = moment.duration(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds, 's');
-                                    vm.poolResourcesAssignedDurations[resource].durationTotal = vm.durationToString(duration);
-                                    vm.poolResourcesAssignedDurations[resource].percentageTotal = vm.percentageOfTotalToString(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds);
+                                    if (vm.subarrayNrs.indexOf(key) > -1) {
+                                        vm.poolResourcesAssignedDurations[resource].durationTotalSeconds += reportItem.durationSeconds;
+                                        duration = moment.duration(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds, 's');
+                                        vm.poolResourcesAssignedDurations[resource].durationTotal = vm.durationToString(duration);
+                                        vm.poolResourcesAssignedDurations[resource].percentageTotal = vm.percentageOfTotalToString(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds);
+                                    }
+
                                     if (!vm.poolResourcesAssignedDurations[resource][key].value) {
                                         vm.poolResourcesAssignedDurations[resource][key] = reportItem;
                                     } else {
@@ -380,7 +383,7 @@
                             }
                         });
                         var SBIdCodesList = Object.keys(SBIdCodes);
-                        if (SBIdCodesList.lengh > 0) {
+                        if (SBIdCodesList.length > 0) {
                             vm.fetchSBDetails(SBIdCodesList);
                         }
                     }

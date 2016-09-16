@@ -167,7 +167,7 @@
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">System State</i>
             <div layout="row">
                 <b class="report-row-column-item">Interlock State</b>
-                <div class="report-column-value-item" ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)">
+                <div class="report-column-value-item-long" ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)">
                     {{key}}
                 </div>
             </div>
@@ -176,10 +176,10 @@
                     <span class="report-row-value-item">Percentage</span>
                     <span class="report-row-value-item">Duration</span>
                 </div>
-                <div layout="column">
+                <div layout="row">
                     <div ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)" layout="column">
-                        <div class="report-cell-item report-item">{{vm.interlockReceptorReportResults[key].percentageOfTotal}}</div>
-                        <div class="report-cell-item report-item">{{vm.interlockReceptorReportResults[key].duration}}</div>
+                        <div class="report-cell-item-long report-item">{{vm.interlockReceptorReportResults[key].percentageOfTotal}}</div>
+                        <div class="report-cell-item-long report-item">{{vm.interlockReceptorReportResults[key].duration}}</div>
                     </div>
                 </div>
             </div>
@@ -198,7 +198,7 @@
             </div>
             <div layout="column">
                 <div ng-repeat="sb in vm.SBDetails | orderBy:id_code track by $index"
-                    layout="row" class="report-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
+                    layout="row" class="report-sb-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                     <span style="width: 120px">{{sb.id_code}}</span>
                     <span style="width: 120px">{{sb.owner}}</span>
                     <span flex style="min-width: 200px" title="{{sb.description}}">{{sb.description}}</span>

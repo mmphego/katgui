@@ -5,12 +5,25 @@
     }
 }
 
+.report-sb-item {
+    padding: 2px 8px;
+    &:hover {
+        background-color: rgba(215, 215, 215, 0.4);
+    }
+}
+
 .report-cell-item {
     min-width: 120px;
     max-width: 120px;
     padding: 2px 8px;
     text-align: center;
     cursor: auto;
+}
+
+.report-cell-item-long {
+    .report-cell-item;
+    min-width: 250px;
+    max-width: 250px;
 }
 
 .report-row-value-item {
@@ -27,6 +40,12 @@
     text-align: center;
     padding: 2px 8px;
     border-bottom: 1px solid rgba(158, 158, 158, 0.5);
+}
+
+.report-column-value-item-long {
+    .report-column-value-item;
+    min-width: 250px;
+    max-width: 250px;
 }
 
 .report-row-column-item {
