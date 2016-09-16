@@ -81,109 +81,173 @@
                 pdf.setFontSize(20);
                 pdf.text('Utilisation Report - ' + exportTime + ' (UTC)', 20, 25);
                 pdf.setFontSize(12);
+
+                pdf.text('From: ' + vm.startDatetimeReadable + '\tTo: ' + vm.endDatetimeReadable + '\t\t(Report Duration: ' + vm.reportTimeWindowSecondsDurationReadable + ' hours)', 20, 45);
+
+                var schedColumns = [
+                    {title: "", dataKey: "value"},
+                    {title: "1", dataKey: "percentageOfTotal_1"},
+                    {title: "2", dataKey: "percentageOfTotal_2"},
+                    {title: "3", dataKey: "percentageOfTotal_3"},
+                    {title: "4", dataKey: "percentageOfTotal_4"}
+                ];
+                var schedModeKeys = Object.keys(vm.schedModeDurations);
+                var rows = [];
+                schedModeKeys.forEach(function (key) {
+                    rows.push({
+                        value: key,
+                        percentageOfTotal_1: vm.schedModeDurations[key]['1'].percentageOfTotal,
+                        percentageOfTotal_2: vm.schedModeDurations[key]['2'].percentageOfTotal,
+                        percentageOfTotal_3: vm.schedModeDurations[key]['3'].percentageOfTotal,
+                        percentageOfTotal_4: vm.schedModeDurations[key]['4'].percentageOfTotal
+                    });
+                });
+
+                pdf.setFontSize(20);
+                pdf.text('Scheduler Mode', 20, 80);
                 pdf.setFontSize(12);
-                pdf.text(('From: ' + vm.startDatetimeReadable + '     To: ' + vm.endDatetimeReadable), 20, 45);
+
+                pdf.autoTable(schedColumns, rows, {
+                    startY: 95,
+                    theme: 'striped',
+                    margin: {top: 8, bottom: 8}});
+
+                var subarrayStateKeys = Object.keys(vm.subarrayStateDurations);
+                rows = [];
+                schedColumns[0].title = "";
+                subarrayStateKeys.forEach(function (key) {
+                    rows.push({
+                        value: key,
+                        percentageOfTotal_1: vm.subarrayStateDurations[key]['1'].percentageOfTotal,
+                        percentageOfTotal_2: vm.subarrayStateDurations[key]['2'].percentageOfTotal,
+                        percentageOfTotal_3: vm.subarrayStateDurations[key]['3'].percentageOfTotal,
+                        percentageOfTotal_4: vm.subarrayStateDurations[key]['4'].percentageOfTotal
+                    });
+                });
+                pdf.setFontSize(20);
+                pdf.text('Subarray State', 20, pdf.autoTableEndPosY() + 45);
+                pdf.setFontSize(12);
+
+                pdf.autoTable(schedColumns, rows, {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: 'striped',
+                    margin: {top: 8, bottom: 8}});
+
+                schedColumns[0].title = "";
+                var subarrayBandKeys = Object.keys(vm.subarrayBandDurations);
+                rows = [];
+                subarrayBandKeys.forEach(function (key) {
+                    rows.push({
+                        value: key !== ""? key: "None",
+                        percentageOfTotal_1: vm.subarrayBandDurations[key]['1'].percentageOfTotal,
+                        percentageOfTotal_2: vm.subarrayBandDurations[key]['2'].percentageOfTotal,
+                        percentageOfTotal_3: vm.subarrayBandDurations[key]['3'].percentageOfTotal,
+                        percentageOfTotal_4: vm.subarrayBandDurations[key]['4'].percentageOfTotal
+                    });
+                });
+
+                pdf.setFontSize(20);
+                pdf.text('Subarray Bands', 20, pdf.autoTableEndPosY() + 45);
+                pdf.setFontSize(12);
+
+                pdf.autoTable(schedColumns, rows, {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: 'striped',
+                    margin: {top: 8, bottom: 8}});
+
+                schedColumns[0].title = "";
+                var subarrayProductKeys = Object.keys(vm.subarrayProductDurations);
+                rows = [];
+                subarrayProductKeys.forEach(function (key) {
+                    rows.push({
+                        value: key !== ""? key: "None",
+                        percentageOfTotal_1: vm.subarrayProductDurations[key]['1'].percentageOfTotal,
+                        percentageOfTotal_2: vm.subarrayProductDurations[key]['2'].percentageOfTotal,
+                        percentageOfTotal_3: vm.subarrayProductDurations[key]['3'].percentageOfTotal,
+                        percentageOfTotal_4: vm.subarrayProductDurations[key]['4'].percentageOfTotal
+                    });
+                });
+
+                pdf.setFontSize(20);
+                pdf.text('Subarray Products', 20, pdf.autoTableEndPosY() + 45);
+                pdf.setFontSize(12);
+
+                pdf.autoTable(schedColumns, rows, {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: 'striped',
+                    margin: {top: 8, bottom: 8}});
+
+                var poolResourcesKeys = Object.keys(vm.poolResourcesAssignedDurations).sort();
+                rows = [];
+                poolResourcesKeys.forEach(function (key) {
+                    rows.push({
+                        resource: key,
+                        durationTotal: vm.poolResourcesAssignedDurations[key].durationTotal,
+                        percentageTotal: vm.poolResourcesAssignedDurations[key].percentageTotal,
+                        faulty: vm.poolResourcesAssignedDurations[key].faulty.percentageOfTotal,
+                        in_maintenance: vm.poolResourcesAssignedDurations[key].in_maintenance.percentageOfTotal,
+                        percentageOfTotal_1: vm.poolResourcesAssignedDurations[key]['1'].percentageOfTotal,
+                        percentageOfTotal_2: vm.poolResourcesAssignedDurations[key]['2'].percentageOfTotal,
+                        percentageOfTotal_3: vm.poolResourcesAssignedDurations[key]['3'].percentageOfTotal,
+                        percentageOfTotal_4: vm.poolResourcesAssignedDurations[key]['4'].percentageOfTotal
+                    });
+                });
+
+                var resourceColumns = [
+                    {title: "Resource", dataKey: "resource"},
+                    {title: "Total Duration", dataKey: "durationTotal"},
+                    {title: "Total %", dataKey: "percentageTotal"},
+                    {title: "1", dataKey: "percentageOfTotal_1"},
+                    {title: "2", dataKey: "percentageOfTotal_2"},
+                    {title: "3", dataKey: "percentageOfTotal_3"},
+                    {title: "4", dataKey: "percentageOfTotal_4"},
+                    {title: "faulty", dataKey: "faulty"},
+                    {title: "in_maintenance", dataKey: "in_maintenance"}
+                ];
 
                 pdf.setFontSize(20);
                 pdf.text('Resource Utilisation', 20, pdf.autoTableEndPosY() + 45);
+                pdf.setFontSize(12);
 
-                var assignedToSubColumns = [
-                    {title: "Assigned to Subarray ", dataKey: "resourceName"},
-                    {title: "Duration", dataKey: "duration"},
-                    {title: "% of Total", dataKey: "percentageOfTotal"}
-                ];
-
-
-                assignedToSubColumns[0].title = "Free";
-                var assignedToFree = [];
-                var resourcesAssignedToFree = Object.keys(vm.poolResourcesFreeDurations);
-                resourcesAssignedToFree.forEach(function (key) {
-                    assignedToFree.push(vm.poolResourcesFreeDurations[key]);
-                });
-
-                if (assignedToFree.length > 0) {
-                    pdf.autoTable(assignedToSubColumns, assignedToFree, {
-                        startY: pdf.autoTableEndPosY() + 8,
-                        theme: 'striped',
-                        margin: {top: 8, bottom: 8},
-                        columnStyles: {
-                            sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                            value: {},
-                            duration: {columnWidth: 80},
-                            percentageOfTotal: {columnWidth: 80}}});
-                }
-
-                assignedToSubColumns[0].title = "Faulty";
-                var assignedToFaulty = [];
-                var resourcesAssignedToFaulty = Object.keys(vm.poolResourcesFaultyDurations);
-                resourcesAssignedToFaulty.forEach(function (key) {
-                    assignedToFaulty.push(vm.poolResourcesFaultyDurations[key]);
-                });
-
-                if (assignedToFaulty.length > 0) {
-                    pdf.autoTable(assignedToSubColumns, assignedToFaulty, {
-                        startY: pdf.autoTableEndPosY() + 8,
-                        theme: 'striped',
-                        margin: {top: 8, bottom: 8},
-                        columnStyles: {
-                            sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                            value: {},
-                            duration: {columnWidth: 80},
-                            percentageOfTotal: {columnWidth: 80}}});
-                }
-
-                assignedToSubColumns[0].title = "In Maintenance";
-                var assignedToInMaintenance = [];
-                var resourcesAssignedToInMaintenance = Object.keys(vm.poolResourcesMaintenanceDurations);
-                resourcesAssignedToInMaintenance.forEach(function (key) {
-                    assignedToInMaintenance.push(vm.poolResourcesMaintenanceDurations[key]);
-                });
-
-                if (assignedToInMaintenance.length > 0) {
-                    pdf.autoTable(assignedToSubColumns, assignedToInMaintenance, {
-                        startY: pdf.autoTableEndPosY() + 8,
-                        theme: 'striped',
-                        margin: {top: 8, bottom: 8},
-                        columnStyles: {
-                            sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                            value: {},
-                            duration: {columnWidth: 80},
-                            percentageOfTotal: {columnWidth: 80}}});
-                }
-
-                pdf.text('Interlock / Windstow', 20, pdf.autoTableEndPosY() + 45);
-                pdf.autoTable(sensorColumns, vm.interlockReceptorReportResults, {
+                pdf.autoTable(resourceColumns, rows, {
                     startY: pdf.autoTableEndPosY() + 60,
                     theme: 'striped',
-                    margin: {top: 8, bottom: 8},
-                    columnStyles: {
-                        sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                        value: {},
-                        duration: {columnWidth: 80},
-                        percentageOfTotal: {columnWidth: 80}}});
+                    margin: {top: 8, bottom: 8}});
 
-                pdf.text('Active Schedule Blocks', 20, pdf.autoTableEndPosY() + 45);
-                pdf.autoTable(sensorColumns, vm.scheduleReportResults, {
+                var systemStateColumns = [{title: "Interlock State", dataKey: "rowName"}];
+                rows = [{rowName: 'Percentage'}, {rowName: 'Duration'}];
+                Object.keys(vm.interlockReceptorReportResults).forEach(function (key) {
+                    if (!_.find(systemStateColumns, {title: key})) {
+                        systemStateColumns.push({title: key, dataKey: key});
+                    }
+                    rows[0][key] = vm.interlockReceptorReportResults[key].percentageOfTotal;
+                    rows[1][key] = vm.interlockReceptorReportResults[key].duration;
+                });
+
+                pdf.setFontSize(20);
+                pdf.text('System State', 20, pdf.autoTableEndPosY() + 45);
+                pdf.setFontSize(12);
+
+                pdf.autoTable(systemStateColumns, rows, {
                     startY: pdf.autoTableEndPosY() + 60,
                     theme: 'striped',
-                    margin: {top: 8, bottom: 8},
-                    columnStyles: {
-                        sensorName: {columnWidth: 200, overflow: 'linebreak'},
-                        value: {},
-                        duration: {columnWidth: 80},
-                        percentageOfTotal: {columnWidth: 80}}});
+                    margin: {top: 8, bottom: 8}});
 
                 var sbColumns = [
                     {title: "Id Code", dataKey: "id_code"},
                     {title: "Owner", dataKey: "owner"},
                     {title: "Description", dataKey: "description"},
+                    {title: "Subarray", dataKey: "sub_nr"},
                     {title: "State", dataKey: "state"},
                     {title: "Outcome", dataKey: "outcome"},
                     {title: "Duration", dataKey: "duration"},
                     {title: "% of Total", dataKey: "percentageOfTotal"},
                 ];
 
+                pdf.setFontSize(20);
                 pdf.text('Active Schedule Block Details', 20, pdf.autoTableEndPosY() + 45);
+                pdf.setFontSize(12);
+
                 pdf.autoTable(sbColumns, vm.SBDetails, {
                     startY: pdf.autoTableEndPosY() + 60,
                     theme: 'striped',
@@ -192,6 +256,7 @@
                         id_code: {columnWidth: 85},
                         owner: {columnWidth: 85},
                         description: {overflow: 'linebreak'},
+                        subarray: {columnWidth: 65},
                         state: {columnWidth: 85},
                         outcome: {columnWidth: 85},
                         duration: {columnWidth: 80},
