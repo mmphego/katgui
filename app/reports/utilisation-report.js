@@ -47,6 +47,7 @@
                 vm.poolResourcesAssignedDurations = {};
                 vm.interlockReceptorReportResults = {};
                 vm.resourceItemColumns = [];
+                vm.reportTimeWindowSecondsDurationReadable = '';
 
                 vm.subarrayNrs.forEach(function (subNr) {
                     vm.subarrayMaintenanceDurations[subNr] = {};
@@ -210,6 +211,7 @@
                 var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
                 var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
                 vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
+                vm.reportTimeWindowSecondsDurationReadable = vm.durationToString(moment.duration(vm.reportTimeWindowSecondsDuration, 's'));
                 vm.createSubarraysReport(startDate, endDate);
                 vm.createReceptorsReport(startDate, endDate);
                 vm.createInterlockReport(startDate, endDate);
