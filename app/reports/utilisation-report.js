@@ -273,8 +273,8 @@
                         endTime: vm.endDatetimeReadable,
                         filter: vm.searchInputText},
                         { notify: false, reload: false });
-                var startDate = moment.utc(vm.startDatetimeReadable).toDate().getTime() / 1000;
-                var endDate =  moment.utc(vm.endDatetimeReadable).toDate().getTime() / 1000;
+                var startDate = moment(vm.startDatetimeReadable).unix();
+                var endDate =  moment(vm.endDatetimeReadable).unix();
                 vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate);
                 vm.reportTimeWindowSecondsDurationReadable = vm.durationToString(moment.duration(vm.reportTimeWindowSecondsDuration, 's'));
                 vm.createSubarraysReport(startDate, endDate);
@@ -510,8 +510,8 @@
                     vm.SBDetails = JSON.parse(result.data.result);
                     vm.SBDetails.forEach(function (sb) {
                         if (sb.actual_end_time && sb.actual_start_time) {
-                            var startSeconds = moment.utc(sb.actual_start_time, DATETIME_FORMAT).toDate().getTime() / 1000;
-                            var endSeconds = moment.utc(sb.actual_end_time, DATETIME_FORMAT).toDate().getTime() / 1000;
+                            var startSeconds = moment(sb.actual_start_time, DATETIME_FORMAT).unix();
+                            var endSeconds = moment(sb.actual_end_time, DATETIME_FORMAT).unix();
                             sb.durationSeconds = Math.abs(endSeconds - startSeconds);
                             var duration = moment.duration(sb.durationSeconds, 's');
                             sb.duration = vm.durationToString(duration);
@@ -522,7 +522,7 @@
             };
 
             vm.durationToString = function (duration) {
-                return Math.floor(duration.asHours()) + moment.utc(duration.asMilliseconds()).format(":mm:ss");
+                return Math.floor(duration.asHours()) + moment(duration.asMilliseconds()).format(":mm:ss");
             };
 
             vm.percentageOfTotalToString = function (durationSeconds, totalSeconds) {
