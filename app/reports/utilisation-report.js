@@ -273,9 +273,9 @@
                         endTime: vm.endDatetimeReadable,
                         filter: vm.searchInputText},
                         { notify: false, reload: false });
-                var startDate = moment(vm.startDatetimeReadable).toDate().getTime();
-                var endDate =  moment(vm.endDatetimeReadable).toDate().getTime();
-                vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate) / 1000;
+                var startDate = moment.utc(vm.startDatetimeReadable).toDate().getTime() / 1000;
+                var endDate =  moment.utc(vm.endDatetimeReadable).toDate().getTime() / 1000;
+                vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate);
                 vm.reportTimeWindowSecondsDurationReadable = vm.durationToString(moment.duration(vm.reportTimeWindowSecondsDuration, 's'));
                 vm.createSubarraysReport(startDate, endDate);
                 vm.createReceptorsReport(startDate, endDate);

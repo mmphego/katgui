@@ -63,7 +63,7 @@
                 'sample-value-duration?sensors=' + sensorNames +
                 '&start=' + startDate +
                 '&end=' + endDate +
-                '&time_type=ms';
+                '&time_type=s';
                 return $http.get(requestStr);
         };
 
