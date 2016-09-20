@@ -312,7 +312,11 @@
             }
         };
         $rootScope.objectKeys = function (obj) {
-            return Object.keys(obj);
+            if (obj) {
+                return Object.keys(obj);
+            } else {
+                return [];
+            }
         };
         $rootScope.openCentralLogger = function () {
             window.open('http://' + ConfigService.systemConfig.katportal.katlogwebserver).focus();
@@ -594,6 +598,17 @@
                 filter: { value: null, squash: true }
             },
             title: 'User Log Reports'
+        });
+        $stateProvider.state('utilisation-report', {
+            url: '/utilisation-report/{startTime}/{endTime}/{filter}',
+            templateUrl: 'app/reports/utilisation-report.html',
+            //makes the params optional
+            params: {
+                startTime: { value: null, squash: true },
+                endTime: { value: null, squash: true },
+                filter: { value: null, squash: true }
+            },
+            title: 'Utilisation Report'
         });
         /* Add New States Above */
         $urlRouterProvider.otherwise('/login');

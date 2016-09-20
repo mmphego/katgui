@@ -218,6 +218,14 @@
                 });
         };
 
+        api.getScheduleBlockDetails = function (idCodes) {
+            return $http(createRequest('post',
+                urlBase + '/sb/details',
+                {
+                    id_codes: idCodes.join(',')
+                }));
+        };
+
         api.getScheduledScheduleBlocks = function () {
             var deferred = $q.defer();
             $http(createRequest('get', urlBase + '/sb/scheduled'))
@@ -494,8 +502,8 @@
 
         api.showSubarrayAndDataLogs = function (sub_nr) {
             if (ConfigService.GetKATTaskFileServerURL()) {
-                window.open(ConfigService.GetKATTaskFileServerURL() + "/logfile/kat.katsubarray" + sub_nr + ".log/tail/");
-                window.open(ConfigService.GetKATTaskFileServerURL() + "/logfile/kat.data_" + sub_nr + ".log/tail/");
+                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/kat.katsubarray" + sub_nr + ".log/tail/");
+                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/kat.data_" + sub_nr + ".log/tail/");
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Logfile', 'There is no KATTaskFileServer IP defined in config, please contact CAM support.');
             }

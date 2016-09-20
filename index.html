@@ -118,6 +118,7 @@
 <script src="app/device-status/device-status.js"></script>
 <script src="app/instrumental-config/instrumental-config.js"></script>
 <script src="app/activity/activity.js"></script>
+<script src="app/reports/utilisation-report.js"></script>
 <!-- Add New Component JS Above -->
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
@@ -250,6 +251,19 @@
                 <md-item>
                     <md-item-content ng-show="$root.showVideoLinks" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('video')">
                         <md-button flex><span class="fa fa-video-camera"></span><span>Video</span></md-button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('utilisation-report')">
+                        <md-button flex><span class="fa fa-file-pdf-o"></span><span>Utilisation Report</span></md-button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
                     </md-item-content>
                 </md-item>
                 <md-item>

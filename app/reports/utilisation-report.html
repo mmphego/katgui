@@ -1,0 +1,214 @@
+<div flex style="padding: 16px; min-width: 600px" ng-controller="UtilisationReportCtrl as vm" layout="column" ng-click="vm.showEndDatePicker = false; vm.showDawtePicker = false;">
+    <md-toolbar md-theme="{{themePrimary}}" class="md-whiteframe-z1" layout="column">
+        <div md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools" layout="row" layout-align="start center"
+            style="padding: 0">
+            <span style="margin-left: 8px" flex>Report Duration - {{vm.reportTimeWindowSecondsDurationReadable}} hours</span>
+            <div layout="row" layout-align="start center" style="margin: 0 4px; font-size: 14px;">
+                <div layout="row" layout-align="center center" style="min-width: 180px;">
+                    <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;" title="Start Date 'yyyy-MM-dd HH:mm:ss'">
+                        <input flex type="text" style="color: white" title="Start Date 'yyyy-MM-dd HH:mm:ss'" data-ng-model="vm.startDatetimeReadable"
+                            placeholder="Start Date" />
+                    </md-input-container>
+                    <span></span>
+                    <md-button class="md-icon-button" style="margin-left: 0; margin-top: 3px; width: 40px; height: 40px;"
+                        ng-click="vm.showDatePicker = !vm.showDatePicker; vm.showEndDatePicker = false; $event.stopPropagation()">
+                        <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                    </md-button>
+
+                    <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showDatePicker = false"
+                        style="position: absolute; right: 500px; top: 40px; color: #333333" ng-show="vm.showDatePicker"
+                        data-ng-model="vm.startTime" ng-keypress="vm.showDatePicker = false" ng-click="$event.stopPropagation()"
+                        data-on-set-time="vm.showDatePicker = false; vm.onStartTimeSet(vm.startTime)"></datetimepicker>
+                </div>
+                <div layout="row" layout-align="center center" style="min-width: 180px">
+                    <md-input-container flex md-no-float style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
+                        <input flex type="text" style="color: white" data-ng-model="vm.endDatetimeReadable" placeholder="End Date"
+                            title="End Date 'yyyy-MM-dd HH:mm:ss'" />
+                    </md-input-container>
+                    <span></span>
+                    <md-button class="md-icon-button" style="margin-left: 0;width: 40px; height: 40px;" ng-click="vm.showEndDatePicker = !vm.showEndDatePicker; vm.showDatePicker = false; $event.stopPropagation()">
+                        <md-icon class="fa" md-font-icon="fa-calendar"></md-icon>
+                    </md-button>
+                    <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showEndDatePicker = false"
+                        style="position: absolute; right: 335px; top: 40px; color: #333333" ng-show="vm.showEndDatePicker"
+                        data-ng-model="vm.endTime" ng-keypress="vm.showEndDatePicker = false" ng-click="$event.stopPropagation()"
+                        data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(vm.endTime)"></datetimepicker>
+                </div>
+                <md-button class="add-tab md-primary md-raised" ng-click="vm.createReport()" ng-disabled="vm.creatingSubarrayReport || vm.creatingReceptorReport || vm.creatingScheduleReport"
+                    style="margin-right: 0; min-width: 215px;">{{vm.creatingSubarrayReport || vm.creatingReceptorReport || vm.creatingScheduleReport? 'Creating Report...': 'Preview Utilisation Report'}}</md-button>
+                <md-button ng-disabled="vm.receptorReportResults.length === 0 || vm.exportingPdf || vm.creatingSubarrayReport || vm.creatingReceptorReport || vm.creatingScheduleReport" class="add-tab md-primary md-raised"
+                    ng-click="vm.exportPdf()" style="margin-right: 0;">{{vm.exportingPdf? 'Exporting PDF...' : 'Export as PDF'}}
+                </md-button>
+            </div>
+        </div>
+    </md-toolbar>
+    <div flex style="overflow: auto" class="md-whiteframe-z1">
+        <div layout="column" style="margin-bottom: 8px;">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Scheduler Mode</i>
+            <div layout="row">
+                <i class="report-row-column-item">Subarray</i>
+                <b ng-repeat="subNr in vm.subarrayNrs" class="report-column-value-item">
+                    {{subNr}}
+                </b>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.schedModeDurations)" class="report-row-value-item">
+                        {{key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.schedModeDurations)" layout="row" class="report-item">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.schedModeDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.schedModeDurations[key][subNr].duration}}">
+                            {{vm.schedModeDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout="column" style="margin-bottom: 8px;">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Subarray</i>
+            <div layout="row">
+                <i class="report-row-column-item">Subarray</i>
+                <b ng-repeat="subNr in vm.subarrayNrs" class="report-column-value-item">
+                    {{subNr}}
+                </b>
+            </div>
+            <div layout="row">
+                <b class="report-row-value-item">Maintenance</b>
+                <div ng-repeat="subNr in $root.objectKeys(vm.subarrayMaintenanceDurations) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayMaintenanceDurations[subNr].duration}}">
+                    {{vm.subarrayMaintenanceDurations[subNr].percentageOfTotal}}
+                </div>
+            </div>
+            <div class="report-section-sub-title-div" style="padding-left: 0">
+                <div class="report-row-value-item" style="border: 0">State</div>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayStateDurations)" class="report-row-value-item">
+                        {{key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayStateDurations)" layout="row" class="report-item">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.subarrayStateDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayStateDurations[key][subNr].duration}}">
+                            {{vm.subarrayStateDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="report-section-sub-title-div" style="padding-left: 0">
+                <div class="report-row-value-item" style="border: 0">Band</div>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayBandDurations)" class="report-row-value-item">
+                        {{key === ''? 'None': key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayBandDurations)" layout="row" class="report-item">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.subarrayBandDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayBandDurations[key][subNr].duration}}">
+                            {{vm.subarrayBandDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="report-section-sub-title-div" style="padding-left: 0">
+                <div class="report-row-value-item" style="border: 0">Product</div>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayProductDurations)" class="report-row-value-item">
+                        {{key === ''? 'None': key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.subarrayProductDurations)" layout="row" class="report-item">
+                        <div ng-repeat="subNr in $root.objectKeys(vm.subarrayProductDurations[key]) | orderBy:subNr" class="report-cell-item" title="{{vm.subarrayProductDurations[key][subNr].duration}}">
+                            {{vm.subarrayProductDurations[key][subNr].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout="column" style="margin-bottom: 8px;">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Resource Utilisation</i>
+            <div layout="row">
+                <i class="report-row-column-item"></i>
+                <i class="report-column-value-item">Total Duration</i>
+                <i class="report-column-value-item">Total %</i>
+                <b ng-repeat="key in vm.resourceItemColumns" class="report-column-value-item">
+                    {{key}}
+                </b>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations) | orderBy:key" class="report-row-value-item">
+                        {{key}}
+                    </div>
+                </div>
+                <div layout="column">
+                    <div ng-repeat="key in $root.objectKeys(vm.poolResourcesAssignedDurations) | orderBy:key" layout="row" class="report-item">
+                        <div class="report-cell-item" title="Total utilisation in hours for all subarrays">
+                            {{vm.poolResourcesAssignedDurations[key].durationTotal}}
+                        </div>
+                        <div class="report-cell-item" title="Total utilisation percentage for all subarrays">
+                            {{vm.poolResourcesAssignedDurations[key].percentageTotal}}
+                        </div>
+                        <div ng-repeat="column in vm.resourceItemColumns | orderBy:column" class="report-cell-item" title="{{vm.poolResourcesAssignedDurations[key][column].duration}}">
+                            {{vm.poolResourcesAssignedDurations[key][column].percentageOfTotal}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout="column" style="margin-bottom: 8px;">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">System State</i>
+            <div layout="row">
+                <b class="report-row-column-item">Interlock State</b>
+                <div class="report-column-value-item-long" ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)">
+                    {{key}}
+                </div>
+            </div>
+            <div layout="row">
+                <div layout="column">
+                    <span class="report-row-value-item">Percentage</span>
+                    <span class="report-row-value-item">Duration</span>
+                </div>
+                <div layout="row">
+                    <div ng-repeat="key in $root.objectKeys(vm.interlockReceptorReportResults)" layout="column">
+                        <div class="report-cell-item-long report-item">{{vm.interlockReceptorReportResults[key].percentageOfTotal}}</div>
+                        <div class="report-cell-item-long report-item">{{vm.interlockReceptorReportResults[key].duration}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div layout="column">
+            <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Active Schedule Block Details</i>
+            <div class="report-section-sub-title-div" layout="row">
+                <span style="width: 120px">Id Code</span>
+                <span style="width: 120px">Owner</span>
+                <span style="width: 125px" flex>Description</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">Subarray</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">State</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">Outcome</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">Duration</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
+            </div>
+            <div layout="column">
+                <div ng-repeat="sb in vm.SBDetails | orderBy:id_code track by $index"
+                    layout="row" class="report-sb-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
+                    <span style="width: 120px">{{sb.id_code}}</span>
+                    <span style="width: 120px">{{sb.owner}}</span>
+                    <span flex style="min-width: 200px" title="{{sb.description}}">{{sb.description}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.sub_nr}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.state}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.outcome}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.duration}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.percentageOfTotal}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

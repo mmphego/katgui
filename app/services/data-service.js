@@ -58,6 +58,15 @@
             return $http(req);
         };
 
+        api.sampleValueDuration = function (sensorNames, startDate, endDate) {
+            var requestStr = urlBase +
+                'sample-value-duration?sensors=' + sensorNames +
+                '&start=' + startDate +
+                '&end=' + endDate +
+                '&time_type=s';
+                return $http.get(requestStr);
+        };
+
         return api;
     }
 })();
