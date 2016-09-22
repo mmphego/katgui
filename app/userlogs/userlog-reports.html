@@ -44,10 +44,12 @@
                             data-ng-model="vm.endTime" ng-keypress="vm.showEndDatePicker = false" ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(vm.endTime)"></datetimepicker>
                     </div>
-                    <md-checkbox md-theme="{{$root.themePrimaryButtons}}" ng-model="vm.includeActivityLogs" class="md-primary"
-                                 style="font-size: 12px; width: 120px; line-height: 1.3; margin: 0">
-                        Include Activity logs in Export
-                    </md-checkbox>
+                    <md-input-container md-theme="{{$root.themePrimaryButtons}}" title="{{vm.selectedLogFiles}}" style="min-width: 250px; max-width: 250px">
+                        <label>Include log files...</label>
+                        <md-select ng-model="vm.selectedLogFiles" multiple>
+                            <md-option ng-value="logFile" ng-repeat="logFile in vm.logFiles | orderBy:logFile">{{logFile}}</md-option>
+                        </md-select>
+                    </md-input-container>
                     <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event)"
                                style="margin-right: 0;">Preview Report
                     </md-button>

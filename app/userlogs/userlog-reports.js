@@ -13,6 +13,8 @@
             vm.startDatetimeReadable = moment(vm.startTime.getTime()).format('YYYY-MM-DD 00:00:00');
             vm.endDatetimeReadable = moment(vm.endTime.getTime()).format('YYYY-MM-DD 23:59:59');
             vm.tags = UserLogService.tags;
+            vm.logFiles = UserLogService.logFiles;
+            vm.selectedLogFiles = [];
             vm.filterTags = [];
             vm.reportUserlogs = [];
             vm.andTagFiltering = false;
@@ -91,15 +93,23 @@
                         content: {overflow: 'linebreak'},
                         tag_list: {overflow: 'linebreak'}}});
 
-                if (vm.includeActivityLogs) {
-                    columns = [{title: "System Activity Logs", key: "msg"}];
+                if (vm.selectedLogFiles.length > 0) {
 
-                    UserLogService.queryActivityLogs(query).then(
+                    UserLogService.queryLogFiles(vm.selectedLogFiles, vm.startDatetimeReadable, vm.endDatetimeReadable).then(
                         function (result) {
-                            pdf.autoTable(columns, result.data, {
-                                startY: pdf.autoTableEndPosY() + 50,
-                                theme: 'striped',
-                                margin: {top: 8, bottom: 8}});
+                            Object.keys(result.data).forEach(function (key) {
+                                columns = [{title: key, key: "line"}];
+                                var logLines = [];
+                                result.data[key].forEach(function (line) {
+                                    if (line.length > 0) {
+                                        logLines.push({line: line});
+                                    }
+                                });
+                                pdf.autoTable(columns, logLines, {
+                                    startY: pdf.autoTableEndPosY() + 50,
+                                    theme: 'striped',
+                                    margin: {top: 8, bottom: 8}});
+                            });
                             pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
                             vm.exportingPdf = false;
                         }, function (error) {
@@ -161,6 +171,7 @@
                         });
                     }
                 });
+                UserLogService.getLogFiles();
                 $timeout(function () {
                     var startTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
                     var endTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
