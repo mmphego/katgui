@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ConfigService', ConfigService);
 
-    function ConfigService($mdDialog, $q, $http, StatusService, $rootScope, $log, $timeout) {
+    function ConfigService($mdDialog, $q, $http, StatusService, $rootScope, $log, $timeout, KatGuiUtil) {
 
         function urlBase() {
             return $rootScope.portalUrl? $rootScope.portalUrl + '/katconf' : '';
@@ -52,13 +52,13 @@
             return deferred.promise;
         };
 
-        api.getSystemConfig = function () {
+        api.getSystemConfig = function (forceConfig) {
             var deferred = $q.defer();
-            if (api.systemConfig) {
+            if (api.systemConfig && !forceConfig) {
                 $timeout(function () {
                     deferred.resolve(api.systemConfig);
                 }, 1);
-            } else if (urlBase()) {
+            } else if (urlBase() && KatGuiUtil.isValidURL(urlBase())) {
                 $http(createRequest('get', urlBase() + '/system-config'))
                     .then(function (result) {
                         api.systemConfig = result.data;
@@ -67,9 +67,9 @@
                         $log.error(message);
                         deferred.reject(message);
                     });
-            } else if (!urlBase() || urlBase().length === 0) {
+            } else {
                 $timeout(function () {
-                    deferred.reject("No portalUrl has been specified.");
+                    deferred.reject("No valid portalUrl has been specified.");
                 }, 1);
             }
             return deferred.promise;

@@ -4,14 +4,33 @@
         <h1>KATGUI <b>{{$root.systemType? ' - ' + $root.systemType : ''}}</b></h1>
     </md-toolbar>
     <form ng-submit="vm.verify(vm.credentials, vm.loginAs)" style="padding-top: 24px;" flex name="form" layout="column" layout-align="center center" layout-padding md-theme="{{themePrimaryButtons}}">
-        <md-input-container md-no-float required ng-if="$root.devMode" class="long-input">
-            <input focus ng-model="$root.portalUrl" placeholder="Portal URL">
+        <md-input-container ng-if="$root.devMode" class="long-input">
+            <label>Development Mode: Portal URL</label>
+            <input focus required name="portalUrl" ng-model="$root.portalUrl" ng-blur="vm.portalUrlBlur()"/>
+            <div ng-messages="form.portalUrl.$error" role="alert">
+                <div ng-message-exp="['required']">
+                    You must enter a URL to connect to when in development mode.
+                </div>
+            </div>
+        </md-input-container>
+        <md-input-container md-no-float class="long-input">
+            <label>Email</label>
+            <input required focus ng-model="vm.credentials.username" minlength="5" ng-pattern="/^.+@.+\..+$/"
+                 name="email" type="email"/>
+            <div ng-messages="form.email.$error" role="alert">
+                <div ng-message-exp="['required', 'minlength', 'pattern']">
+                    You must enter a valid email address that is longer than 5 characters.
+                </div>
+            </div>
         </md-input-container>
         <md-input-container md-no-float required class="long-input">
-            <input focus ng-model="vm.credentials.username" placeholder="Email">
-        </md-input-container>
-        <md-input-container  md-no-float required class="long-input">
-            <input type="password" ng-model="vm.credentials.password" placeholder="Password">
+            <label>Password</label>
+            <input type="password" required ng-model="vm.credentials.password" name="password"/>
+            <div ng-messages="form.password.$error" role="alert">
+                <div ng-message-exp="['required']">
+                    The password field cannot be empty.
+                </div>
+            </div>
         </md-input-container>
         <div layout="row" layout-align="center center">
             <label style="margin: -8px 12px 0 0">Login as</label>
