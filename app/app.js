@@ -80,7 +80,7 @@
         $rootScope.connectedToMonitor = true;
 
         $rootScope.devMode = window.location.host === 'localhost:8000';
-        $rootScope.portalUrl = $rootScope.devMode? $localStorage.devModePortalURL : window.location.host;
+        $rootScope.portalUrl = $rootScope.devMode? $localStorage.devModePortalURL : window.location.origin;
 
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {
