@@ -4,6 +4,9 @@
         <h1>KATGUI <b>{{$root.systemType? ' - ' + $root.systemType : ''}}</b></h1>
     </md-toolbar>
     <form ng-submit="vm.verify(vm.credentials, vm.loginAs)" style="padding-top: 24px;" flex name="form" layout="column" layout-align="center center" layout-padding md-theme="{{themePrimaryButtons}}">
+        <md-input-container md-no-float required ng-if="$root.devMode" class="long-input">
+            <input focus ng-model="$root.portalUrl" placeholder="Portal URL">
+        </md-input-container>
         <md-input-container md-no-float required class="long-input">
             <input focus ng-model="vm.credentials.username" placeholder="Email">
         </md-input-container>

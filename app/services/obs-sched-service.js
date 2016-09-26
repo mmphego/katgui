@@ -3,11 +3,13 @@
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
-    function ObsSchedService($rootScope, $http, SERVER_URL, ConfigService, KatGuiUtil,
+    function ObsSchedService($rootScope, $http, ConfigService, KatGuiUtil,
                              UserLogService, $log, $q, $mdDialog, NotifyService,
                              $timeout, $interval, $localStorage) {
 
-        var urlBase = SERVER_URL + '/katcontrol';
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol' : '';
+        }
         var api = {};
         if (!$localStorage.lastKnownSubarrayConfig) {
             $localStorage.lastKnownSubarrayConfig = {};
@@ -64,7 +66,7 @@
         };
 
         api.markResourceFaulty = function (resource, faulty) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/faulty/' + faulty)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/resource/' + resource + '/faulty/' + faulty)));
             var tags = [];
             tags.push(_.find(UserLogService.tags, function (item) {return item.name === 'status'; }));
             var tagResource = _.find(UserLogService.tags, function (item) {return item.name === resource; });
@@ -85,7 +87,7 @@
         };
 
         api.markResourceInMaintenance = function (resource, maintenance) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/resource/' + resource + '/maintenance/' + maintenance)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/resource/' + resource + '/maintenance/' + maintenance)));
             var tags = [];
             tags.push(_.find(UserLogService.tags, function (item) {return item.name === 'maintenance'; }));
             var tagResource = _.find(UserLogService.tags, function (item) {return item.name === resource; });
@@ -106,31 +108,31 @@
         };
 
         api.restartMaintenanceDevice = function (sub_nr, resource, device) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/resource/' + resource + '/device/' + device + '/restart')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/resource/' + resource + '/device/' + device + '/restart')));
         };
 
         api.listResourceMaintenanceDevices = function (resource) {
-            return $http(createRequest('get',  urlBase + '/resource/' + resource + '/maintenance-device-list'));
+            return $http(createRequest('get',  urlBase() + '/resource/' + resource + '/maintenance-device-list'));
         };
 
         api.deleteScheduleDraft = function (id) {
-            return $http(createRequest('post', urlBase + '/sb/' + id + '/delete'));
+            return $http(createRequest('post', urlBase() + '/sb/' + id + '/delete'));
         };
 
         api.scheduleDraft = function (sub_nr, id) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id + '/schedule')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id + '/schedule')));
         };
 
         api.scheduleToDraft = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/to-draft')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/to-draft')));
         };
 
         api.scheduleToComplete = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/complete')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/complete')));
         };
 
         api.setSchedulePriority = function (id_code, priority) {
-            $http(createRequest('post', urlBase + '/sb/' + id_code + '/priority/' + priority))
+            $http(createRequest('post', urlBase() + '/sb/' + id_code + '/priority/' + priority))
                 .then(function (result) {
                     NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
                 }, function (error) {
@@ -139,27 +141,27 @@
         };
 
         api.verifyScheduleBlock = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/verify')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/verify')));
         };
 
         api.executeSchedule = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/execute')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/execute')));
         };
 
         api.stopSchedule = function (sub_nr, id_code) {
             NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule', 'Are you sure you want to stop executing ' + id_code + '?', 'Yes', 'Cancel').then(function() {
-                api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/stop')));
+                api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/stop')));
             }, function () {
                 NotifyService.showSimpleToast('Cancelled stop executing ' + id_code);
             });
         };
 
         api.cancelExecuteSchedule = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
         };
 
         api.cloneSchedule = function (id_code) {
-            return $http(createRequest('post', urlBase + '/sb/' + id_code + '/clone'));
+            return $http(createRequest('post', urlBase() + '/sb/' + id_code + '/clone'));
         };
 
         api.cloneAndAssignSchedule = function (id_code, sub_nr) {
@@ -175,37 +177,37 @@
         };
 
         api.assignScheduleBlock = function (sub_nr, id_code) {
-            return api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/assign')), true);
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/assign')), true);
         };
 
         api.unassignScheduleBlock = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/sb/' + sub_nr + '/' + id_code + '/unassign')));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/unassign')));
         };
 
         api.assignResourcesToSubarray = function (sub_nr, resources) {
-            return api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/assign-resource/' + resources)), true);
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/assign-resource/' + resources)), true);
         };
 
         api.unassignResourcesFromSubarray = function (sub_nr, resources) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/unassign-resource/' + resources)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/unassign-resource/' + resources)));
         };
 
         api.activateSubarray = function (sub_nr) {
-            return $http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/activate'), true);
+            return $http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/activate'), true);
         };
 
         api.setSubarrayMaintenance = function (sub_nr, maintenance) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/maintenance/' + maintenance)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/maintenance/' + maintenance)));
         };
 
         api.freeSubarray = function (sub_nr) {
-            return api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/free')), true);
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/free')), true);
         };
 
         api.getScheduleBlocks = function () {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
-            $http(createRequest('get', urlBase + '/sb'))
+            $http(createRequest('get', urlBase() + '/sb'))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
@@ -220,7 +222,7 @@
 
         api.getScheduleBlockDetails = function (idCodes) {
             return $http(createRequest('post',
-                urlBase + '/sb/details',
+                urlBase() + '/sb/details',
                 {
                     id_codes: idCodes.join(',')
                 }));
@@ -228,7 +230,7 @@
 
         api.getScheduledScheduleBlocks = function () {
             var deferred = $q.defer();
-            $http(createRequest('get', urlBase + '/sb/scheduled'))
+            $http(createRequest('get', urlBase() + '/sb/scheduled'))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
                     var newScheduleDataIdCodes = [];
@@ -268,7 +270,7 @@
         api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
-            $http(createRequest('get', urlBase + '/sb/completed/' + sub_nr + '/' + max_nr))
+            $http(createRequest('get', urlBase() + '/sb/completed/' + sub_nr + '/' + max_nr))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
@@ -280,11 +282,11 @@
         };
 
         api.setSchedulerModeForSubarray = function (sub_nr, mode) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/sched-mode/' + mode)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/sched-mode/' + mode)));
         };
 
         api.updateScheduleDraft = function (scheduleBlockDraft) {
-            return $http(createRequest('post', urlBase + '/sb/' + scheduleBlockDraft.id_code, {
+            return $http(createRequest('post', urlBase() + '/sb/' + scheduleBlockDraft.id_code, {
                 id_code: scheduleBlockDraft.id_code,
                 type: scheduleBlockDraft.type,
                 instruction_set: scheduleBlockDraft.instruction_set,
@@ -465,7 +467,7 @@
 
         api.listConfigLabels = function () {
             api.configLabels.splice(0, api.configLabels.length);
-            $http(createRequest('get', urlBase + '/config-labels'))
+            $http(createRequest('get', urlBase() + '/config-labels'))
                 .then(function (result) {
                     var configLabels = JSON.parse(result.data);
                     configLabels.forEach(function (item) {
@@ -477,19 +479,19 @@
         };
 
         api.setConfigLabel = function (sub_nr, config_label) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/config-labels/' + sub_nr + '/' + config_label)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/config-labels/' + sub_nr + '/' + config_label)));
         };
 
         api.setBand = function (sub_nr, band) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/bands/' + sub_nr + '/' + band)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/bands/' + sub_nr + '/' + band)));
         };
 
         api.setProduct = function (sub_nr, product) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/products/' + sub_nr + '/' + product)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/products/' + sub_nr + '/' + product)));
         };
 
         api.delegateControl = function (sub_nr, userName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase + '/subarray/' + sub_nr + '/delegate-control/' + userName)));
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/delegate-control/' + userName)));
         };
 
         api.viewTaskLogForSBIdCode = function (id_code, mode) {
@@ -558,7 +560,7 @@
 
         api.listResourceTemplates = function () {
             api.resourceTemplates.splice(0, api.resourceTemplates.length);
-            $http.get(urlBase + '/subarray/template/list')
+            $http.get(urlBase() + '/subarray/template/list')
                 .then(function (result) {
                     result.data.forEach(function (item) {
                         api.resourceTemplates.push(item);
@@ -584,7 +586,7 @@
 
         api.addResourceTemplate = function (template) {
             $http(createRequest('post',
-                urlBase + '/subarray/template/add',
+                urlBase() + '/subarray/template/add',
                 {
                     name: template.name,
                     owner: $rootScope.currentUser.email,
@@ -602,7 +604,7 @@
 
         api.modifyResourceTemplate = function (template) {
             $http(createRequest('post',
-                urlBase + '/subarray/template/modify/' + template.id,
+                urlBase() + '/subarray/template/modify/' + template.id,
                 {
                     name: template.name,
                     owner: $rootScope.currentUser.email,

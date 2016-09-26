@@ -56,7 +56,7 @@
         .controller('ApplicationCtrl', ApplicationCtrl);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
-                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService, SERVER_URL,
+                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
                              CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
         var vm = this;
         SessionService.recoverLogin();
@@ -79,6 +79,9 @@
         $rootScope.showVideoLinks = false;
         $rootScope.connectedToMonitor = true;
 
+        $rootScope.devMode = window.location.host === 'localhost:8000';
+        $rootScope.portalUrl = $rootScope.devMode? $localStorage.devModePortalURL : window.location.host;
+
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {
             lead_operator: 'Lead Operator',
@@ -99,7 +102,11 @@
                 $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
                 $rootScope.confConnectionError = null;
             }, function (error) {
-                $rootScope.confConnectionError = 'Could not connect to ' + SERVER_URL + '/katconf.';
+                if ($rootScope.portalUrl) {
+                    $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf.';
+                } else {
+                    $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
+                }
                 //retry every 10 seconds to get the system config
                 if (vm.getSystemConfigTimeout) {
                     $timeout.cancel(vm.getSystemConfigTimeout);

@@ -3,11 +3,13 @@
     angular.module('katGui.services')
         .service('MonitorService', MonitorService);
 
-    function MonitorService(SERVER_URL, KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
+    function MonitorService(KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
                             $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService,
                             SessionService, SensorsService) {
 
-        var urlBase = SERVER_URL + '/katmonitor';
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katmonitor' : '';
+        }
         var api = {};
         api.deferredMap = {};
         api.connection = null;
@@ -204,7 +206,7 @@
             api.deferredMap['connectDefer'] = $q.defer();
             if (!api.connection) {
                 $log.info('Monitor Connecting...');
-                api.connection = new SockJS(urlBase + '/portal');
+                api.connection = new SockJS(urlBase() + '/portal');
                 api.connection.onopen = api.onSockJSOpen;
                 api.connection.onmessage = api.onSockJSMessage;
                 api.connection.onclose = api.onSockJSClose;

@@ -3,13 +3,15 @@
     angular.module('katGui.services')
         .service('DataService', DataService);
 
-    function DataService($http, SERVER_URL) {
+    function DataService($http, $rootScope) {
 
-        var urlBase = SERVER_URL + '/katstore/';
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katstore/' : '';
+        }
         var api = {};
 
         api.sensorsInfo = function (sensorNames, type, limit) {
-            var requestStr = urlBase +
+            var requestStr = urlBase() +
                 'sensors?sensors=' + sensorNames +
                 '&sensor_type=' + type +
                 '&limit=' + limit;
@@ -17,7 +19,7 @@
         };
 
         api.sensorData = function (namespace, sensorName, startDate, endDate, limit, interval) {
-            var requestStr = urlBase +
+            var requestStr = urlBase() +
                 'samples?sensor=' + sensorName +
                 '&start=' + startDate +
                 '&end=' + endDate +
@@ -50,7 +52,7 @@
 
             var req = {
                 method: 'post',
-                url: urlBase + 'samples',
+                url: urlBase() + 'samples',
                 headers: {},
                 data: data
             };
@@ -59,7 +61,7 @@
         };
 
         api.sampleValueDuration = function (sensorNames, startDate, endDate) {
-            var requestStr = urlBase +
+            var requestStr = urlBase() +
                 'sample-value-duration?sensors=' + sensorNames +
                 '&start=' + startDate +
                 '&end=' + endDate +

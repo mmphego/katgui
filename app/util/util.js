@@ -349,7 +349,7 @@ function autoGrow() {
 /* istanbul ignore next */
 //be very sure you know what you are doing when you alter the below functions
 //they are not tested
-function katGuiUtil(SERVER_URL, $sce) {
+function katGuiUtil($rootScope, $sce) {
 
     this.generateUUID = function() {
         var d = new Date().getTime();
@@ -365,7 +365,7 @@ function katGuiUtil(SERVER_URL, $sce) {
         if (window.location.host !== 'localhost:8000') {
             window.open("http://" + window.location.hostname + ":" + port + "/" + path).focus();
         } else {
-            window.open(SERVER_URL + ":" + port + "/" + path).focus();
+            window.open($rootScope.portalUrl + ":" + port + "/" + path).focus();
         }
     };
 

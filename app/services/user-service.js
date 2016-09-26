@@ -3,17 +3,20 @@
     angular.module('katGui.services')
         .service('UserService', UserService);
 
-    function UserService($http, $q, SERVER_URL, $rootScope, $log, NotifyService) {
+    function UserService($http, $q, $rootScope, $log, NotifyService) {
+
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katauth' : '';
+        }
 
         var api = {};
-        api.urlBase = SERVER_URL + '/katauth';
         api.users = [];
 
         api.listUsers = function () {
 
             var def = $q.defer();
 
-            $http(createRequest('get', api.urlBase + '/user/list')).then(
+            $http(createRequest('get', urlBase() + '/user/list')).then(
                 function (result) {
 
                     if (result && result.data) {
@@ -35,7 +38,7 @@
 
         api.createUser = function (user) {
             $http(createRequest('post',
-                api.urlBase + '/user/add',
+                urlBase() + '/user/add',
                 {
                     name: user.name,
                     email: user.email,
@@ -56,7 +59,7 @@
         };
 
         api.updateUser = function (user) {
-            $http(createRequest('post', api.urlBase + '/user/modify/' + user.id,
+            $http(createRequest('post', urlBase() + '/user/modify/' + user.id,
                 {
                     name: user.name,
                     email: user.email,
@@ -76,7 +79,7 @@
 
         api.resetPassword = function (user, passwordHash) {
             return $http(createRequest('post',
-                api.urlBase + '/user/reset/' + user.id,
+                urlBase() + '/user/reset/' + user.id,
                 {'password': passwordHash}));
         };
 

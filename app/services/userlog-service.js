@@ -3,10 +3,13 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, SERVER_URL, NotifyService, $mdDialog, $sce) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, NotifyService, $mdDialog, $sce) {
+
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol' : '';
+        }
 
         var api = {};
-        api.urlBase = SERVER_URL + '/katcontrol';
         api.userlogs = [];
         api.tags = [];
         api.tagsMap = {};
@@ -34,7 +37,7 @@
         api.listUserLogsForTimeRange = function (start, end) {
             var deferred = $q.defer();
             var query = '?start_time=' + start + '&end_time=' + end;
-            $http(createRequest('get', api.urlBase + '/userlogs/query' + query)).then(
+            $http(createRequest('get', urlBase() + '/userlogs/query' + query)).then(
                 function (result) {
                     if (result && result.data) {
                         result.data.forEach(function (userlog) {
@@ -54,7 +57,7 @@
 
         api.listTags = function () {
             var deferred = $q.defer();
-            $http(createRequest('get', api.urlBase + '/tags')).then(
+            $http(createRequest('get', urlBase() + '/tags')).then(
                 function (result) {
                     if (result && result.data) {
                         api.tags.splice(0, api.tags.length);
@@ -76,7 +79,7 @@
 
         api.listTaxonomies = function () {
             var deferred = $q.defer();
-            $http(createRequest('get', api.urlBase + '/taxonomies')).then(
+            $http(createRequest('get', urlBase() + '/taxonomies')).then(
                 function (result) {
                     if (result && result.data) {
                         api.taxonomies.splice(0, api.taxonomies.length);
@@ -98,7 +101,7 @@
         api.queryUserLogs = function (query) {
             var query_uri = encodeURI(query);
             var defer = $q.defer();
-            $http(createRequest('get', api.urlBase + '/userlogs/query' + query_uri)).then(
+            $http(createRequest('get', urlBase() + '/userlogs/query' + query_uri)).then(
                 function (result) {
                     defer.resolve(result);
                 }, function (result) {
@@ -111,7 +114,7 @@
         api.queryActivityLogs = function (query) {
             var query_uri = encodeURI(query);
             var defer = $q.defer();
-            $http(createRequest('get', api.urlBase + '/userlogs/activity' + query_uri)).then(
+            $http(createRequest('get', urlBase() + '/userlogs/activity' + query_uri)).then(
                 function (result) {
                     defer.resolve(result);
                 }, function (error) {
@@ -123,7 +126,7 @@
 
         api.getLogFiles = function () {
             var deferred = $q.defer();
-            $http(createRequest('get', api.urlBase + '/log-files')).then(
+            $http(createRequest('get', urlBase() + '/log-files')).then(
                 function (result) {
                     if (result && result.data) {
                         api.logFiles.splice(0, api.logFiles.length);
@@ -149,7 +152,7 @@
                 start_time: start_time,
                 end_time: end_time
             };
-            $http(createRequest('post', api.urlBase + '/search-logs', searchQuery)).then(
+            $http(createRequest('post', urlBase() + '/search-logs', searchQuery)).then(
                 function (result) {
                     defer.resolve(result);
                 }, function (error) {
@@ -172,7 +175,7 @@
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
             };
-            $http.post(api.urlBase + '/userlogs/' + userlog_id + '/attachments', formData, options).then(
+            $http.post(urlBase() + '/userlogs/' + userlog_id + '/attachments', formData, options).then(
                 function (result) {
                     defer.resolve(result);
                     NotifyService.showSimpleToast("Uploaded files successfully.");
@@ -191,7 +194,7 @@
                 },
                 responseType: 'blob'
             };
-            $http.get(api.urlBase + '/userlogs/' + userlog_id + '/attachments/' + file_name, options).then(
+            $http.get(urlBase() + '/userlogs/' + userlog_id + '/attachments/' + file_name, options).then(
                 function (result) {
                     var blob = result.data;
                     var url = $window.URL || $window.webkitURL;
@@ -202,7 +205,7 @@
                     downloadLink[0].click();
                     url.revokeObjectURL(file_url);
                 }, function () {
-                    $log.error(api.urlBase + '/userlogs/get/attach');
+                    $log.error(urlBase() + '/userlogs/get/attach');
                 });
         };
 
@@ -215,7 +218,7 @@
                 content: log.content,
                 tag_ids: log.tag_ids
             };
-            $http(createRequest('post', api.urlBase + '/userlogs', newUserLog)).then(
+            $http(createRequest('post', urlBase() + '/userlogs', newUserLog)).then(
                 function (result) {
                     NotifyService.showSimpleToast("Log Created. ");
                     defer.resolve(result);
@@ -235,7 +238,7 @@
                 tag_ids: ulog.tag_ids,
                 metadata: ulog.metadata
             };
-            $http(createRequest('post', api.urlBase + '/userlogs/' + ulog.id, modifiedUserLog)).then(
+            $http(createRequest('post', urlBase() + '/userlogs/' + ulog.id, modifiedUserLog)).then(
                 function (result) {
                     NotifyService.showSimpleToast("Edited userlog " + result.data.id);
                     defer.resolve(result);
@@ -253,7 +256,7 @@
                 slug: tag.slug,
                 activated: tag.activated
             };
-            $http(createRequest('post', api.urlBase + '/tags/modify/' + tag.id, modifiedTag)).then(
+            $http(createRequest('post', urlBase() + '/tags/modify/' + tag.id, modifiedTag)).then(
                 function (result) {
                     NotifyService.showSimpleToast("Modified tag " + tag.id + ".");
                     defer.resolve(result);
@@ -271,7 +274,7 @@
                 slug: tag.slug,
                 activated: tag.activated
             };
-            $http(createRequest('post', api.urlBase + '/tags/add', newTag)).then(
+            $http(createRequest('post', urlBase() + '/tags/add', newTag)).then(
                 function (result) {
                     tag.id = result.data.id;
                     tag.name = tag.name;

@@ -3,10 +3,12 @@
     angular.module('katGui.services')
         .service('SensorsService', SensorsService);
 
-    function SensorsService($rootScope, SERVER_URL, KatGuiUtil, $timeout, $q, $interval, $log, $http,
+    function SensorsService($rootScope, KatGuiUtil, $timeout, $q, $interval, $log, $http,
                             ConfigService) {
 
-        var urlBase = SERVER_URL + '/katmonitor';
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katmonitor' : '';
+        }
         var api = {};
         api.connection = null;
         api.deferredMap = {};
@@ -141,7 +143,7 @@
             } else {
                 api.guid = KatGuiUtil.generateUUID();
                 $log.info('Sensors Connecting...');
-                api.connection = new SockJS(urlBase + '/client');
+                api.connection = new SockJS(urlBase() + '/client');
                 api.connection.onopen = api.onSockJSOpen;
                 api.connection.onmessage = api.onSockJSMessage;
                 api.connection.onclose = api.onSockJSClose;
@@ -203,7 +205,7 @@
 
         api.listResources = function () {
             var deferred = $q.defer();
-            $http.get(urlBase + '/resource')
+            $http.get(urlBase() + '/resource')
                 .then(function (result) {
                     for (var i in result.data) {
                         for (var node in ConfigService.systemConfig['katconn:resources']) {
@@ -253,7 +255,7 @@
 
         api.listResourceSensors = function (resourceName) {
             var deferred = $q.defer();
-            $http.get(urlBase + '/resource/' + resourceName + '/sensors')
+            $http.get(urlBase() + '/resource/' + resourceName + '/sensors')
                 .then(function (result) {
                     api.resources[resourceName].sensorsList = [];
                     for (var i in result.data) {
@@ -278,7 +280,7 @@
 
         api.listSensors = function (filter) {
             var deferred = $q.defer();
-            $http.post(urlBase + '/sensor-list', {filter: filter})
+            $http.post(urlBase() + '/sensor-list', {filter: filter})
                 .then(function (result) {
                     deferred.resolve(result);
                 }, function (result) {

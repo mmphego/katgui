@@ -3,10 +3,13 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL,
+    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog,
                             KatGuiUtil, $timeout, $q, $interval, $log, $location, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katauth';
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katauth' : '';
+        }
+
         var api = {};
         api.connection = null;
         api.deferredMap = {};
@@ -25,14 +28,14 @@
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.auth_jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
             $rootScope.jwt = $rootScope.auth_jwt;
-            $http(createRequest('get', urlBase + '/user/verify/' + role))
+            $http(createRequest('get', urlBase() + '/user/verify/' + role))
                 .then(verifySuccess, verifyError);
         };
 
         api.verifyAs = function (role) {
             var req = {
                 method: 'get',
-                url: urlBase + '/user/verify/' + role,
+                url: urlBase() + '/user/verify/' + role,
                 headers: {
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
@@ -62,14 +65,14 @@
 
         api.login = function (session_id) {
             $rootScope.jwt = session_id;
-            $http(createRequest('post', urlBase + '/user/login', {}))
+            $http(createRequest('post', urlBase() + '/user/login', {}))
                 .then(function(result){
                     loginSuccess(result, session_id);
                 }, loginError);
         };
 
         api.logout = function () {
-            return $http(createRequest('post', urlBase + '/user/logout',{}))
+            return $http(createRequest('post', urlBase() + '/user/logout',{}))
                 .then(logoutResultSuccess, logoutResultError);
         };
 
@@ -77,7 +80,7 @@
             if ($rootScope.jwt) {
                 var b = $rootScope.jwt.split(".");
                 var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
-                $http(createRequest('get', urlBase + '/user/verify/' + payload.req_role))
+                $http(createRequest('get', urlBase() + '/user/verify/' + payload.req_role))
                     .then(verifySuccess, verifyError);
                 $rootScope.currentUser = payload;
             }
@@ -103,7 +106,7 @@
 
         api.connectListener = function (skipDeferObject) {
             $log.info('Lead Operator Connecting...');
-            api.connection = new SockJS(urlBase + '/alive');
+            api.connection = new SockJS(urlBase() + '/alive');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
             api.connection.onclose = api.onSockJSClose;
@@ -169,7 +172,11 @@
                 //User's session expired, we got a message
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.data.message);
+                if (result.data.message) {
+                    NotifyService.showSimpleToast(result.data.message);
+                } else {
+                    $log.error("Could not determine verify success message.");
+                }
             }
         }
 
@@ -262,7 +269,11 @@
                 $log.info('No session id');
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.data.message);
+                if (result.data.message) {
+                    NotifyService.showSimpleToast(result.data.message);
+                } else {
+                    $log.error("Could not determine login success message.");
+                }
             }
         }
 

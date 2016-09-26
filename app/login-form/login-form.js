@@ -15,6 +15,12 @@
         };
 
         vm.verify = function () {
+            if ($rootScope.devMode) {
+                if (!$rootScope.portalUrl.startsWith('http://')) {
+                    $rootScope.portalUrl = 'http://' + $rootScope.portalUrl;
+                }
+                $localStorage.devModePortalURL = $rootScope.portalUrl;
+            }
             $localStorage.loginAs = vm.loginAs;
             $rootScope.credentials = vm.credentials;
             SessionService.verify(vm.credentials.username, vm.credentials.password, vm.loginAs);

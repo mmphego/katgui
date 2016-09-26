@@ -11,6 +11,10 @@
 
         api.showSimpleToast = function (message) {
             // $mdToast.hide();
+            if (!message || message.length === 0) {
+                $log.error('Attempting to show empty toast message - aborting.');
+                return;
+            }
             var simpleToast = $mdToast.simple()
                 .content(message)
                 .highlightAction(true)
