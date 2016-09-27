@@ -1,6 +1,6 @@
 echo "## Updating mkatgui code from git ..."
 git remote update -p
-git merge --ff-only master
+git merge --ff-only origin/master
 
 echo "## Updating bower and gulp ..."
 sudo -H npm update -g bower gulp
