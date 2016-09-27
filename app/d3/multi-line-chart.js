@@ -541,26 +541,40 @@ angular.module('katGui.d3')
 
             function drawValues() {
 
-                svg.selectAll('.path-container').remove();
-
                 setupAxis();
                 updateNowLine();
 
-                if (scope.nestedData.length === 0) {
-                    return;
-                }
-
                 // DATA JOIN
                 // Join new data with old elements, if any.
-                var focuslineGroups = focus.selectAll("svg")
+                var focuslineGroups = focus.selectAll(".path-container")
                     .data(scope.nestedData);
+
+                // EXIT
+                // remove stale elements.
+                focuslineGroups.exit().remove();
+
+                // UPDATE
+                // update existing elements.
+                focuslineGroups.selectAll(".value-line")
+                    .attr("d", function(d) {
+                        return line(d.values);
+                    });
+                focuslineGroups.selectAll(".minline")
+                    .attr("d", function(d) {
+                        return minline(d.values);
+                    });
+                focuslineGroups.selectAll(".maxline")
+                    .attr("d", function(d) {
+                        return maxline(d.values);
+                    });
 
                 // ENTER
                 // Create new elements as needed.
-                focuslineGroups.enter()
+                var pathContainer = focuslineGroups.enter()
                     .append("g")
-                    .attr("class", "path-container")
-                    .append("path")
+                    .attr("class", "path-container");
+
+                pathContainer.append("path")
                     .attr("id", function(d) {
                         var c = d.color;
                         if (!c) {
@@ -578,43 +592,40 @@ angular.module('katGui.d3')
                         return d.key;
                     })
                     .attr("class", function(d) {
-                        return "line " + d.key + " path-line";
+                        return "value-line line " + d.key + " path-line";
                     })
                     .attr("d", function(d) {
                         return line(d.values);
+                    });
+
+                // Create new elements as min line paths as needed.
+                pathContainer.append("path")
+                    .attr("id", function(d) {
+                        return d.key + 'minLine';
+                    })
+                    .attr("class", function(d) {
+                        return "line " + d.key + " path-line minline";
+                    })
+                    .style("opacity", "0.5")
+                    .style("stroke-dasharray", "20, 10")
+                    .attr("d", function(d) {
+                        return minline(d.values);
+                    });
+
+                // // Create new elements as max line paths as needed.
+                pathContainer.append("path")
+                    .attr("id", function(d) {
+                        return d.key + 'maxLine';
+                    })
+                    .attr("class", function(d) {
+                        return "line " + d.key + " path-line maxline";
+                    })
+                    .style("opacity", "0.5")
+                    .style("stroke-dasharray", "20, 10")
+                    .attr("d", function(d) {
+                        return maxline(d.values);
                     })
                     .attr("clip-path", "url(#clip)");
-
-                focuslineGroups.exit().remove();
-
-                if (scope.options.hasMinMax && scope.nestedData.length > 0) {
-                    //add min/max dashed paths
-                    var focusMinLines = focuslineGroups.append("path")
-                        .attr("id", function(d) {
-                            return d.key + 'minLine';
-                        })
-                        .attr("class", function(d) {
-                            return "line " + d.key + " path-line minline";
-                        })
-                        .style("opacity", "0.5")
-                        .style("stroke-dasharray", "20, 10")
-                        .attr("d", function(d) {
-                            return minline(d.values);
-                        }).attr("clip-path", "url(#clip)");
-
-                    var focusMaxLines = focuslineGroups.append("path")
-                        .attr("id", function(d) {
-                            return d.key + 'maxLine';
-                        })
-                        .attr("class", function(d) {
-                            return "line " + d.key + " path-line maxline";
-                        })
-                        .style("opacity", "0.5")
-                        .style("stroke-dasharray", "20, 10")
-                        .attr("d", function(d) {
-                            return maxline(d.values);
-                        }).attr("clip-path", "url(#clip)");
-                }
 
 
                 if (scope.mouseOverTooltip) {
@@ -639,15 +650,23 @@ angular.module('katGui.d3')
                     x2.domain(x.domain());
                     y2.domain(y.domain());
 
-                    context.selectAll(".brush-container").remove();
+                    var contextlineGroups = context.selectAll(".brush-container")
+                        .data(scope.nestedData);
 
-                    var contextlineGroups = context.selectAll("svg")
-                        .data(scope.nestedData)
-                        .enter()
+                    // EXIT - remove stale elements
+                    contextlineGroups.exit().remove();
+
+                    // UPDATE - update existing items with new values
+                    contextlineGroups.selectAll(".context-line")
+                        .attr("d", function(d) {
+                            return line2(d.values);
+                        });
+
+                    // ENTER - create new elements as needed
+                    contextlineGroups.enter()
                         .append("g")
-                        .attr("class", "brush-container");
-
-                    var contextLines = contextlineGroups.append("path")
+                        .attr("class", "brush-container")
+                        .append("path")
                         .attr("class", "line context-line")
                         .attr("d", function(d) {
                             return line2(d.values);
