@@ -352,7 +352,7 @@
 
         vm.sensorDataReceived = function (event, sensor) {
 
-            var hasMinMax = (vm.intervalNum !== 1 || vm.intervalType !== 's') && !vm.searchDiscrete;
+            var hasMinMax = (parseInt(vm.intervalNum) !== 1 || vm.intervalType !== 's') && !vm.searchDiscrete;
 
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
@@ -373,8 +373,15 @@
                     newSensorNames[sensorName] = {};
                 }
 
-                if (newData) {
-                    vm.redrawChart(newData, true);
+                if (newData.length > 0) {
+                    vm.redrawChart(newData, hasMinMax);
+                }
+
+                //there are not enough pixels on our screens to display such a graph for complex paths!
+                if (newData.length > 65000) {
+                    NotifyService.showSimpleDialog("Too many samples!",
+                        "There are too many samples in the data set to draw reliably (" + newData.length + " samples). " +
+                        "Please reduce the search window if the results are not visible. Alternatively, download the CSV data.");
                 }
             }
             else if (sensor.value) {

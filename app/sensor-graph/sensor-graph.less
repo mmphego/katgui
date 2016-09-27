@@ -33,7 +33,10 @@
 
 .line {
     fill: none !important;
-    stroke-width: 1.5px;
+    // if we set the stroke-width > 1px, we do not draw the lines properly
+    // when there is a LOT of datapoints. Not setting this also improves
+    // painting performance a lot
+    // stroke-width: 1.5px;
 }
 
 .dot {

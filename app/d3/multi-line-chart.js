@@ -266,7 +266,8 @@ angular.module('katGui.d3')
                 d3.select(element[0]).select('svg').remove();
                 svg = d3.select(element[0]).append("svg")
                     .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom);
+                    .attr("height", height + margin.top + margin.bottom)
+                    .style("shape-rendering", "optimiseSpeed");
 
                 if (!scope.options.hideContextZoom) {
                     svg.append("defs").append("clipPath")
@@ -800,25 +801,24 @@ angular.module('katGui.d3')
 
             scope.downloadCsv = function(useUnixTimestamps) {
                 scope.nestedData.forEach(function(sensorValues, index) {
-                    var csvContent = "data:text/csv;charset=utf-8,update_time,value_time,status,value\n";
-                    var dataString = '';
-                    var valuesArray = [];
+                    var csvContent = ["timestamp,status,value"];
                     for (var i = 0; i < sensorValues.values.length; i++) {
+                        var dataString = '';
                         var sensorInfo = sensorValues.values[i];
                         if (useUnixTimestamps) {
                             dataString += (sensorInfo.sample_ts * 1000) + ',';
-                            dataString += (sensorInfo.value_ts * 1000) + ',';
                         } else {
                             dataString += moment.utc(sensorInfo.sample_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
-                            dataString += moment.utc(sensorInfo.value_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
                         }
                         dataString += sensorValues.values[i].status + ',';
-                        dataString += sensorValues.values[i].value + '\n';
+                        dataString += sensorValues.values[i].value;
+                        csvContent.push(dataString);
                     }
-                    var encodedUri = encodeURI(csvContent + dataString);
+                    var csvData = new Blob([csvContent.join('\r\n')], { type: 'text/csv' });
+                    var csvUrl = URL.createObjectURL(csvData);
                     var link = document.createElement("a");
-                    link.setAttribute("href", encodedUri);
-                    link.setAttribute("download", sensorValues.key + ".csv");
+                    link.href =  csvUrl;
+                    link.download = sensorValues.key + ".csv";
                     link.click();
                 });
             };

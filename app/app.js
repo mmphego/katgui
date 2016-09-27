@@ -59,7 +59,6 @@
                              ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
                              CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
         var vm = this;
-        SessionService.recoverLogin();
 
         var theme = _.find(THEMES, function (theme) {
             return $localStorage['selectedTheme'] === theme.name;
@@ -93,6 +92,8 @@
             operator: 'Operator',
             read_only: 'Monitor Only'
         };
+
+        SessionService.recoverLogin();
 
         $rootScope.getSystemConfig = function (forceConfig) {
             ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
