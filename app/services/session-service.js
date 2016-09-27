@@ -223,21 +223,22 @@
                             $mdDialog.hide();
                         };
                     },
-                    template: '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">' +
-                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>' +
-                        '  <md-dialog-content class="md-padding" layout="column">' +
-                        '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
-                        '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be demoted to the Monitor Role.</p>' +
-                        '  </md-dialog-content>' +
-                        '  <md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">' +
-                        '    <md-button ng-click="cancel()" class="md-primary md-raised">' +
-                        '      Cancel' +
-                        '    </md-button>' +
-                        '    <md-button ng-click="proceed()" class="md-primary md-raised">' +
-                        '      Proceed' +
-                        '    </md-button>' +
-                        '  </md-dialog-actions>' +
-                        '</md-dialog>'
+                    template: [
+                        '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">',
+                            '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>',
+                            '<md-dialog-content class="md-padding" layout="column">',
+                                '<p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>',
+                                '<p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be demoted to the Monitor Role.</p>',
+                            '</md-dialog-content>',
+                            '<md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">',
+                                '<md-button ng-click="cancel()" class="md-primary md-raised">',
+                                    'Login As Monitor Only',
+                                '</md-button>',
+                                '<md-button ng-click="proceed()" class="md-primary md-raised">',
+                                    'Login As Lead Operator',
+                                '</md-button>',
+                            '</md-dialog-actions>',
+                        '</md-dialog>'].join('')
                     });
         }
 

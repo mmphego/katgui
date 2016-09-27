@@ -264,7 +264,9 @@
                     if (result.data instanceof Array) {
                         vm.sensorDataReceived(null, {value: result.data});
                     }
-                    vm.sensorNames.push(sensor);
+                    if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
+                        vm.sensorNames.push(sensor);
+                    }
                     if (vm.liveData) {
                         vm.connectLiveFeed(sensor.name);
                     }

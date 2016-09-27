@@ -24,6 +24,7 @@
                 '&start=' + startDate +
                 '&end=' + endDate +
                 '&limit=' + limit +
+                '&results_in_chunks=' + 0 +
                 '&time_type=ms';
 
             if (namespace) {
