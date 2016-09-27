@@ -1,9 +1,10 @@
 node('docker') {
-    stage 'Cleanup workspace'
-    sh 'chmod 777 -R .'
-    sh 'rm -rf *'
 
     docker.image('camguinode:latest').inside('-u root') {
+        stage 'Cleanup workspace'
+            sh 'chmod 777 -R .'
+            sh 'rm -rf *'
+
         stage 'Checkout SCM'
            checkout([
                $class: 'GitSCM',
@@ -22,8 +23,6 @@ node('docker') {
         stage 'Build .whl & .deb'
             sh 'mv dist/ katgui'
             sh 'fpm -s "dir" -t "deb" --name katgui --version $(kat-get-version.py) --description "The operator interface for SKA-SA" katgui=/var/www'
-            // chmod for cleanup stage
-            sh 'chmod 777 -R katgui *.deb'
 
         stage 'Archive build artifact .deb'
             archive '*.deb'
