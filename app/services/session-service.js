@@ -49,7 +49,7 @@
                         if (payload.req_role === 'lead_operator' &&
                             payload.current_lo &&
                             payload.current_lo !== payload.requester) {
-                            confirmRole(result.data.confirmation_token, payload);
+                            confirmRole(result.data.session_id, payload);
                         } else {
                             api.login(payload.session_id);
                         }
@@ -161,7 +161,7 @@
                     if (payload.req_role === 'lead_operator' &&
                         payload.current_lo &&
                         payload.current_lo !== payload.requester) {
-                        confirmRole(result.data.confirmation_token, payload, true);
+                        confirmRole(result.data.session_id, payload);
                     } else {
                         api.login(payload.session_id);
                     }
@@ -219,7 +219,7 @@
                         };
 
                         $scope.cancel = function () {
-                            session_id = null;
+                            api.login(readonly_session_id);
                             $mdDialog.hide();
                         };
                     },

@@ -376,13 +376,6 @@
                 if (newData.length > 0) {
                     vm.redrawChart(newData, hasMinMax);
                 }
-
-                //there are not enough pixels on our screens to display such a graph for complex paths!
-                if (newData.length > 65000) {
-                    NotifyService.showSimpleDialog("Too many samples!",
-                        "There are too many samples in the data set to draw reliably (" + newData.length + " samples). " +
-                        "Please reduce the search window if the results are not visible. Alternatively, download the CSV data.");
-                }
             }
             else if (sensor.value) {
                 var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_').replace(/-/g, '_');
