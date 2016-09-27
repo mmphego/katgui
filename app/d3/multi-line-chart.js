@@ -206,12 +206,12 @@ angular.module('katGui.d3')
             };
 
             scope.removeSensorFunction = function(sensorName) {
-                var existingDataLine = _.findWhere(scope.nestedData, {
+                var index = _.findIndex(scope.nestedData, {
                     key: sensorName.replace(/\./g, '_')
                 });
-                if (existingDataLine) {
-                    scope.nestedData.splice(scope.nestedData.indexOf(existingDataLine), 1);
-                    d3.select("." + existingDataLine.key + "-tooltip").remove();
+                if (index > -1) {
+                    scope.nestedData.splice(index, 1);
+                    d3.select("." + sensorName + "-tooltip").remove();
                     drawValues();
                 }
             };
@@ -547,7 +547,9 @@ angular.module('katGui.d3')
                 // DATA JOIN
                 // Join new data with old elements, if any.
                 var focuslineGroups = focus.selectAll(".path-container")
-                    .data(scope.nestedData);
+                    .data(scope.nestedData, function(d) {
+                        return d.key;
+                    });
 
                 // EXIT
                 // remove stale elements.
@@ -592,7 +594,7 @@ angular.module('katGui.d3')
                         return d.key;
                     })
                     .attr("class", function(d) {
-                        return "value-line line " + d.key + " path-line";
+                        return "line value-line " + d.key + " path-line";
                     })
                     .attr("d", function(d) {
                         return line(d.values);
@@ -612,7 +614,7 @@ angular.module('katGui.d3')
                         return minline(d.values);
                     });
 
-                // // Create new elements as max line paths as needed.
+                // Create new elements as max line paths as needed.
                 pathContainer.append("path")
                     .attr("id", function(d) {
                         return d.key + 'maxLine';
@@ -626,7 +628,6 @@ angular.module('katGui.d3')
                         return maxline(d.values);
                     })
                     .attr("clip-path", "url(#clip)");
-
 
                 if (scope.mouseOverTooltip) {
                     scope.nestedData.forEach(function(data) {

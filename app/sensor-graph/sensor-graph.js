@@ -317,7 +317,7 @@
             var elements = document.getElementsByClassName(chipName);
             for (var i = 0; i < elements.length; i++) {
                 if (elements[i].classList[0] === 'line') {
-                    angular.element(elements[i]).css('stroke-width', '1.5px');
+                    angular.element(elements[i]).css('stroke-width', '1.0px');
                 } else if (elements[i].classList[0] === 'dot') {
                     for (var k = 0; k < elements[i].childNodes.length; k++) {
                         elements[i].childNodes[k].setAttribute('r', '3');
