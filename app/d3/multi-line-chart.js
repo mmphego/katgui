@@ -598,36 +598,40 @@ angular.module('katGui.d3')
                     })
                     .attr("d", function(d) {
                         return line(d.values);
-                    });
-
-                // Create new elements as min line paths as needed.
-                pathContainer.append("path")
-                    .attr("id", function(d) {
-                        return d.key + 'minLine';
-                    })
-                    .attr("class", function(d) {
-                        return "line " + d.key + " path-line minline";
-                    })
-                    .style("opacity", "0.5")
-                    .style("stroke-dasharray", "20, 10")
-                    .attr("d", function(d) {
-                        return minline(d.values);
-                    });
-
-                // Create new elements as max line paths as needed.
-                pathContainer.append("path")
-                    .attr("id", function(d) {
-                        return d.key + 'maxLine';
-                    })
-                    .attr("class", function(d) {
-                        return "line " + d.key + " path-line maxline";
-                    })
-                    .style("opacity", "0.5")
-                    .style("stroke-dasharray", "20, 10")
-                    .attr("d", function(d) {
-                        return maxline(d.values);
                     })
                     .attr("clip-path", "url(#clip)");
+
+                if (!scope.options.discreteSensors) {
+                    // Create new elements as min line paths as needed.
+                    pathContainer.append("path")
+                        .attr("id", function(d) {
+                            return d.key + 'minLine';
+                        })
+                        .attr("class", function(d) {
+                            return "line " + d.key + " path-line minline";
+                        })
+                        .style("opacity", "0.5")
+                        .style("stroke-dasharray", "20, 10")
+                        .attr("d", function(d) {
+                            return minline(d.values);
+                        })
+                        .attr("clip-path", "url(#clip)");
+
+                    // Create new elements as max line paths as needed.
+                    pathContainer.append("path")
+                        .attr("id", function(d) {
+                            return d.key + 'maxLine';
+                        })
+                        .attr("class", function(d) {
+                            return "line " + d.key + " path-line maxline";
+                        })
+                        .style("opacity", "0.5")
+                        .style("stroke-dasharray", "20, 10")
+                        .attr("d", function(d) {
+                            return maxline(d.values);
+                        })
+                        .attr("clip-path", "url(#clip)");
+                }
 
                 if (scope.mouseOverTooltip) {
                     scope.nestedData.forEach(function(data) {
