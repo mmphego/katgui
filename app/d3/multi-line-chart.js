@@ -206,12 +206,12 @@ angular.module('katGui.d3')
             };
 
             scope.removeSensorFunction = function(sensorName) {
-                var existingDataLine = _.findWhere(scope.nestedData, {
+                var index = _.findIndex(scope.nestedData, {
                     key: sensorName.replace(/\./g, '_')
                 });
-                if (existingDataLine) {
-                    scope.nestedData.splice(scope.nestedData.indexOf(existingDataLine), 1);
-                    d3.select("." + existingDataLine.key + "-tooltip").remove();
+                if (index > -1) {
+                    scope.nestedData.splice(index, 1);
+                    d3.select("." + sensorName + "-tooltip").remove();
                     drawValues();
                 }
             };
@@ -266,7 +266,8 @@ angular.module('katGui.d3')
                 d3.select(element[0]).select('svg').remove();
                 svg = d3.select(element[0]).append("svg")
                     .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom);
+                    .attr("height", height + margin.top + margin.bottom)
+                    .style("shape-rendering", "optimiseSpeed");
 
                 if (!scope.options.hideContextZoom) {
                     svg.append("defs").append("clipPath")
@@ -540,26 +541,42 @@ angular.module('katGui.d3')
 
             function drawValues() {
 
-                svg.selectAll('.path-container').remove();
-
                 setupAxis();
                 updateNowLine();
 
-                if (scope.nestedData.length === 0) {
-                    return;
-                }
-
                 // DATA JOIN
                 // Join new data with old elements, if any.
-                var focuslineGroups = focus.selectAll("svg")
-                    .data(scope.nestedData);
+                var focuslineGroups = focus.selectAll(".path-container")
+                    .data(scope.nestedData, function(d) {
+                        return d.key;
+                    });
+
+                // EXIT
+                // remove stale elements.
+                focuslineGroups.exit().remove();
+
+                // UPDATE
+                // update existing elements.
+                focuslineGroups.selectAll(".value-line")
+                    .attr("d", function(d) {
+                        return line(d.values);
+                    });
+                focuslineGroups.selectAll(".minline")
+                    .attr("d", function(d) {
+                        return minline(d.values);
+                    });
+                focuslineGroups.selectAll(".maxline")
+                    .attr("d", function(d) {
+                        return maxline(d.values);
+                    });
 
                 // ENTER
                 // Create new elements as needed.
-                focuslineGroups.enter()
+                var pathContainer = focuslineGroups.enter()
                     .append("g")
-                    .attr("class", "path-container")
-                    .append("path")
+                    .attr("class", "path-container");
+
+                pathContainer.append("path")
                     .attr("id", function(d) {
                         var c = d.color;
                         if (!c) {
@@ -577,18 +594,16 @@ angular.module('katGui.d3')
                         return d.key;
                     })
                     .attr("class", function(d) {
-                        return "line " + d.key + " path-line";
+                        return "line value-line " + d.key + " path-line";
                     })
                     .attr("d", function(d) {
                         return line(d.values);
                     })
                     .attr("clip-path", "url(#clip)");
 
-                focuslineGroups.exit().remove();
-
-                if (scope.options.hasMinMax && scope.nestedData.length > 0) {
-                    //add min/max dashed paths
-                    var focusMinLines = focuslineGroups.append("path")
+                if (!scope.options.discreteSensors) {
+                    // Create new elements as min line paths as needed.
+                    pathContainer.append("path")
                         .attr("id", function(d) {
                             return d.key + 'minLine';
                         })
@@ -599,9 +614,11 @@ angular.module('katGui.d3')
                         .style("stroke-dasharray", "20, 10")
                         .attr("d", function(d) {
                             return minline(d.values);
-                        }).attr("clip-path", "url(#clip)");
+                        })
+                        .attr("clip-path", "url(#clip)");
 
-                    var focusMaxLines = focuslineGroups.append("path")
+                    // Create new elements as max line paths as needed.
+                    pathContainer.append("path")
                         .attr("id", function(d) {
                             return d.key + 'maxLine';
                         })
@@ -612,9 +629,9 @@ angular.module('katGui.d3')
                         .style("stroke-dasharray", "20, 10")
                         .attr("d", function(d) {
                             return maxline(d.values);
-                        }).attr("clip-path", "url(#clip)");
+                        })
+                        .attr("clip-path", "url(#clip)");
                 }
-
 
                 if (scope.mouseOverTooltip) {
                     scope.nestedData.forEach(function(data) {
@@ -638,15 +655,23 @@ angular.module('katGui.d3')
                     x2.domain(x.domain());
                     y2.domain(y.domain());
 
-                    context.selectAll(".brush-container").remove();
+                    var contextlineGroups = context.selectAll(".brush-container")
+                        .data(scope.nestedData);
 
-                    var contextlineGroups = context.selectAll("svg")
-                        .data(scope.nestedData)
-                        .enter()
+                    // EXIT - remove stale elements
+                    contextlineGroups.exit().remove();
+
+                    // UPDATE - update existing items with new values
+                    contextlineGroups.selectAll(".context-line")
+                        .attr("d", function(d) {
+                            return line2(d.values);
+                        });
+
+                    // ENTER - create new elements as needed
+                    contextlineGroups.enter()
                         .append("g")
-                        .attr("class", "brush-container");
-
-                    var contextLines = contextlineGroups.append("path")
+                        .attr("class", "brush-container")
+                        .append("path")
                         .attr("class", "line context-line")
                         .attr("d", function(d) {
                             return line2(d.values);
@@ -800,25 +825,24 @@ angular.module('katGui.d3')
 
             scope.downloadCsv = function(useUnixTimestamps) {
                 scope.nestedData.forEach(function(sensorValues, index) {
-                    var csvContent = "data:text/csv;charset=utf-8,update_time,value_time,status,value\n";
-                    var dataString = '';
-                    var valuesArray = [];
+                    var csvContent = ["timestamp,status,value"];
                     for (var i = 0; i < sensorValues.values.length; i++) {
+                        var dataString = '';
                         var sensorInfo = sensorValues.values[i];
                         if (useUnixTimestamps) {
                             dataString += (sensorInfo.sample_ts * 1000) + ',';
-                            dataString += (sensorInfo.value_ts * 1000) + ',';
                         } else {
                             dataString += moment.utc(sensorInfo.sample_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
-                            dataString += moment.utc(sensorInfo.value_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
                         }
                         dataString += sensorValues.values[i].status + ',';
-                        dataString += sensorValues.values[i].value + '\n';
+                        dataString += sensorValues.values[i].value;
+                        csvContent.push(dataString);
                     }
-                    var encodedUri = encodeURI(csvContent + dataString);
+                    var csvData = new Blob([csvContent.join('\r\n')], { type: 'text/csv' });
+                    var csvUrl = URL.createObjectURL(csvData);
                     var link = document.createElement("a");
-                    link.setAttribute("href", encodedUri);
-                    link.setAttribute("download", sensorValues.key + ".csv");
+                    link.href =  csvUrl;
+                    link.download = sensorValues.key + ".csv";
                     link.click();
                 });
             };

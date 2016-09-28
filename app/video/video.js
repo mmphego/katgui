@@ -8,8 +8,11 @@
     function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog, ControlService, SensorsService,
                        SERVER_URL, NotifyService, USER_ROLES, ConfigService, KatGuiUtil, $state) {
 
+        function urlBase() {
+           return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/vds' : '';
+        }
+
         var vm = this;
-        var urlBase = SERVER_URL + '/katcontrol/vds';
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
@@ -81,7 +84,7 @@
                         $scope.title = 'Set VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
-                            $http(createRequest('post', urlBase + '/presetset/'));
+                            $http(createRequest('post', urlBase() + '/presetset/'));
                             if (i < 10) {
                                 $scope.presetIDs.push('m00' + i);
                             }
@@ -93,7 +96,7 @@
                             $mdDialog.hide();
                         };
                         $scope.setPreset = function (preset) {
-                            $http(createRequest('post', urlBase + '/presetset/' + preset))
+                            $http(createRequest('post', urlBase() + '/presetset/' + preset))
                                 .then(requestSuccess, requestError);
                         };
                     },
@@ -137,7 +140,7 @@
                         };
                         $scope.gotoPreset = function (preset) {
                             vm.lastPreset = preset;
-                            $http(createRequest('post', urlBase + '/presetgoto/' + preset))
+                            $http(createRequest('post', urlBase() + '/presetgoto/' + preset))
                                 .then(requestSuccess, requestError);
                         };
                     },
@@ -193,12 +196,12 @@
         };
 
         vm.stopVDS = function () {
-            $http(createRequest('post', urlBase + '/stop'))
+            $http(createRequest('post', urlBase() + '/stop'))
                 .then(requestSuccess, requestError);
         };
 
         vm.vdsCommand = function (endpoint, args) {
-            $http(createRequest('post', urlBase + '/' + endpoint + '/' + args))
+            $http(createRequest('post', urlBase() + '/' + endpoint + '/' + args))
                 .then(requestSuccess, requestError);
         };
 

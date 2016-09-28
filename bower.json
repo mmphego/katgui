@@ -22,6 +22,7 @@
     "angular-cookies": "~1.5",
     "angular-resource": "~1.5",
     "angular-mocks": "~1.5",
+    "angular-messages": "~1.5",
     "angular-ui-utils": "~0.1",
     "angular-ui-router": "~0.3",
     "cryptojs": "*",

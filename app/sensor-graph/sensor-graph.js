@@ -264,7 +264,9 @@
                     if (result.data instanceof Array) {
                         vm.sensorDataReceived(null, {value: result.data});
                     }
-                    vm.sensorNames.push(sensor);
+                    if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
+                        vm.sensorNames.push(sensor);
+                    }
                     if (vm.liveData) {
                         vm.connectLiveFeed(sensor.name);
                     }
@@ -315,7 +317,7 @@
             var elements = document.getElementsByClassName(chipName);
             for (var i = 0; i < elements.length; i++) {
                 if (elements[i].classList[0] === 'line') {
-                    angular.element(elements[i]).css('stroke-width', '1.5px');
+                    angular.element(elements[i]).css('stroke-width', '1.0px');
                 } else if (elements[i].classList[0] === 'dot') {
                     for (var k = 0; k < elements[i].childNodes.length; k++) {
                         elements[i].childNodes[k].setAttribute('r', '3');
@@ -352,7 +354,7 @@
 
         vm.sensorDataReceived = function (event, sensor) {
 
-            var hasMinMax = (vm.intervalNum !== 1 || vm.intervalType !== 's') && !vm.searchDiscrete;
+            var hasMinMax = (parseInt(vm.intervalNum) !== 1 || vm.intervalType !== 's') && !vm.searchDiscrete;
 
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
@@ -373,8 +375,8 @@
                     newSensorNames[sensorName] = {};
                 }
 
-                if (newData) {
-                    vm.redrawChart(newData, true);
+                if (newData.length > 0) {
+                    vm.redrawChart(newData, hasMinMax);
                 }
             }
             else if (sensor.value) {

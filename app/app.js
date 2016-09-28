@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    angular.module('katGui', ['ngMaterial',
+    angular.module('katGui', ['ngMaterial', 'ngMessages',
         'ui.bootstrap', 'ui.utils', 'ui.router',
         'ngAnimate', 'katGui.services',
         'katGui.admin',
@@ -56,10 +56,9 @@
         .controller('ApplicationCtrl', ApplicationCtrl);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
-                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService, SERVER_URL,
+                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
                              CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
         var vm = this;
-        SessionService.recoverLogin();
 
         var theme = _.find(THEMES, function (theme) {
             return $localStorage['selectedTheme'] === theme.name;
@@ -79,6 +78,12 @@
         $rootScope.showVideoLinks = false;
         $rootScope.connectedToMonitor = true;
 
+        $rootScope.devMode = window.location.host === 'localhost:8000';
+        $rootScope.portalUrl = $rootScope.devMode? $localStorage.devModePortalURL : window.location.origin;
+        if ($rootScope.portalUrl === 'http://') {
+            $rootScope.portalUrl = '';
+        }
+
         $rootScope.possibleRoles = ['lead_operator', 'expert', 'control_authority', 'operator', 'read_only'];
         $rootScope.rolesMap = {
             lead_operator: 'Lead Operator',
@@ -88,9 +93,11 @@
             read_only: 'Monitor Only'
         };
 
-        $rootScope.getSystemConfig = function () {
+        SessionService.recoverLogin();
+
+        $rootScope.getSystemConfig = function (forceConfig) {
             ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
-            ConfigService.getSystemConfig().then(function (systemConfig) {
+            ConfigService.getSystemConfig(forceConfig).then(function (systemConfig) {
                 $rootScope.systemConfig = systemConfig;
                 StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
                 if (systemConfig.vds && systemConfig.vds.vds_source) {
@@ -99,13 +106,17 @@
                 $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
                 $rootScope.confConnectionError = null;
             }, function (error) {
-                $rootScope.confConnectionError = 'Could not connect to ' + SERVER_URL + '/katconf.';
+                if ($rootScope.portalUrl) {
+                    $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
+                } else {
+                    $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
+                }
                 //retry every 10 seconds to get the system config
                 if (vm.getSystemConfigTimeout) {
                     $timeout.cancel(vm.getSystemConfigTimeout);
                 }
                 vm.getSystemConfigTimeout = $timeout(function () {
-                    $rootScope.getSystemConfig();
+                    $rootScope.getSystemConfig(forceConfig);
                 }, 10000);
             });
         };

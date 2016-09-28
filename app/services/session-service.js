@@ -3,10 +3,13 @@
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
-    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog, SERVER_URL,
+    function SessionService($http, $state, $rootScope, $localStorage, $mdDialog,
                             KatGuiUtil, $timeout, $q, $interval, $log, $location, NotifyService) {
 
-        var urlBase = SERVER_URL + '/katauth';
+        function urlBase() {
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katauth' : '';
+        }
+
         var api = {};
         api.connection = null;
         api.deferredMap = {};
@@ -25,14 +28,14 @@
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.auth_jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
             $rootScope.jwt = $rootScope.auth_jwt;
-            $http(createRequest('get', urlBase + '/user/verify/' + role))
+            $http(createRequest('get', urlBase() + '/user/verify/' + role))
                 .then(verifySuccess, verifyError);
         };
 
         api.verifyAs = function (role) {
             var req = {
                 method: 'get',
-                url: urlBase + '/user/verify/' + role,
+                url: urlBase() + '/user/verify/' + role,
                 headers: {
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
@@ -46,7 +49,7 @@
                         if (payload.req_role === 'lead_operator' &&
                             payload.current_lo &&
                             payload.current_lo !== payload.requester) {
-                            confirmRole(result.data.confirmation_token, payload);
+                            confirmRole(result.data.session_id, payload);
                         } else {
                             api.login(payload.session_id);
                         }
@@ -62,14 +65,14 @@
 
         api.login = function (session_id) {
             $rootScope.jwt = session_id;
-            $http(createRequest('post', urlBase + '/user/login', {}))
+            $http(createRequest('post', urlBase() + '/user/login', {}))
                 .then(function(result){
                     loginSuccess(result, session_id);
                 }, loginError);
         };
 
         api.logout = function () {
-            return $http(createRequest('post', urlBase + '/user/logout',{}))
+            return $http(createRequest('post', urlBase() + '/user/logout',{}))
                 .then(logoutResultSuccess, logoutResultError);
         };
 
@@ -77,7 +80,7 @@
             if ($rootScope.jwt) {
                 var b = $rootScope.jwt.split(".");
                 var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
-                $http(createRequest('get', urlBase + '/user/verify/' + payload.req_role))
+                $http(createRequest('get', urlBase() + '/user/verify/' + payload.req_role))
                     .then(verifySuccess, verifyError);
                 $rootScope.currentUser = payload;
             }
@@ -103,7 +106,7 @@
 
         api.connectListener = function (skipDeferObject) {
             $log.info('Lead Operator Connecting...');
-            api.connection = new SockJS(urlBase + '/alive');
+            api.connection = new SockJS(urlBase() + '/alive');
             api.connection.onopen = api.onSockJSOpen;
             api.connection.onmessage = api.onSockJSMessage;
             api.connection.onclose = api.onSockJSClose;
@@ -158,7 +161,7 @@
                     if (payload.req_role === 'lead_operator' &&
                         payload.current_lo &&
                         payload.current_lo !== payload.requester) {
-                        confirmRole(result.data.confirmation_token, payload, true);
+                        confirmRole(result.data.session_id, payload);
                     } else {
                         api.login(payload.session_id);
                     }
@@ -169,7 +172,11 @@
                 //User's session expired, we got a message
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.data.message);
+                if (result.data.message) {
+                    NotifyService.showSimpleToast(result.data.message);
+                } else {
+                    $log.error("Could not determine verify success message.");
+                }
             }
         }
 
@@ -212,25 +219,26 @@
                         };
 
                         $scope.cancel = function () {
-                            session_id = null;
+                            api.login(readonly_session_id);
                             $mdDialog.hide();
                         };
                     },
-                    template: '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">' +
-                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>' +
-                        '  <md-dialog-content class="md-padding" layout="column">' +
-                        '   <p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>' +
-                        '   <p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be demoted to the Monitor Role.</p>' +
-                        '  </md-dialog-content>' +
-                        '  <md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">' +
-                        '    <md-button ng-click="cancel()" class="md-primary md-raised">' +
-                        '      Cancel' +
-                        '    </md-button>' +
-                        '    <md-button ng-click="proceed()" class="md-primary md-raised">' +
-                        '      Proceed' +
-                        '    </md-button>' +
-                        '  </md-dialog-actions>' +
-                        '</md-dialog>'
+                    template: [
+                        '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">',
+                            '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>',
+                            '<md-dialog-content class="md-padding" layout="column">',
+                                '<p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>',
+                                '<p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be demoted to the Monitor Role.</p>',
+                            '</md-dialog-content>',
+                            '<md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">',
+                                '<md-button ng-click="cancel()" class="md-primary md-raised">',
+                                    'Login As Monitor Only',
+                                '</md-button>',
+                                '<md-button ng-click="proceed()" class="md-primary md-raised">',
+                                    'Login As Lead Operator',
+                                '</md-button>',
+                            '</md-dialog-actions>',
+                        '</md-dialog>'].join('')
                     });
         }
 
@@ -262,7 +270,11 @@
                 $log.info('No session id');
                 $localStorage['currentUserToken'] = null;
                 $state.go('login');
-                NotifyService.showSimpleToast(result.data.message);
+                if (result.data.message) {
+                    NotifyService.showSimpleToast(result.data.message);
+                } else {
+                    $log.error("Could not determine login success message.");
+                }
             }
         }
 
