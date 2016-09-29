@@ -24,7 +24,8 @@
                 '&start=' + startDate +
                 '&end=' + endDate +
                 '&limit=' + limit +
-                '&results_in_chunks=' + 0 +
+                '&results_in_chunks=' + 1 +
+                '&chunk_size=' + 43200 + //12 hour chunks if 1 sample every second
                 '&time_type=ms';
 
             if (namespace) {

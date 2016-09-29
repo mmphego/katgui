@@ -401,7 +401,7 @@ angular.module('katGui.d3')
 
                     scope.brushFunction = function() {
                         x.domain(brush.empty() ? x2.domain() : brush.extent());
-                        focus.selectAll("path.line").attr("d", function(d) {
+                        focus.selectAll("path.value-line").attr("d", function(d) {
                             return line(d.values);
                         });
                         if (scope.options.hasMinMax) {
@@ -412,8 +412,8 @@ angular.module('katGui.d3')
                                 return maxline(d.values);
                             });
                         }
-                        focus.select(".x.axis").call(xAxis);
-                        focus.select(".y.axis").call(yAxis);
+                        xAxisElement.call(xAxis);
+                        yAxisElement.call(yAxis);
                         mousemove(true);
                     };
 
@@ -686,8 +686,8 @@ angular.module('katGui.d3')
                         .attr("clip-path", "url(#clip)");
 
                     xAxisElement2.call(xAxis2);
-
                 }
+
                 //context zoom element stop
                 if (limitOverlayElements) {
                     limitOverlayElements.forEach(function(limitElement, index) {
@@ -722,6 +722,7 @@ angular.module('katGui.d3')
             var lazyloadTooltipValues = _.debounce(loadTooltipValues, 150);
 
             function updateAxis() {
+
                 xAxisElement.call(xAxis);
                 yAxisElement.call(yAxis);
 

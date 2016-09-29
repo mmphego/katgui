@@ -7,6 +7,7 @@
                              SensorsService, $interval, $log, NotifyService, $stateParams, $state) {
 
         var vm = this;
+        var SAMPLES_QUERY_LIMIT = 1000000;
         var DATETIME_FORMAT = 'HH:mm:ss DD-MM-YYYY';
         vm.showGridLines = false;
         vm.dateTimeError = false;
@@ -23,6 +24,7 @@
         vm.showRelativeTime = false;
         vm.liveData = false;
         vm.useFixedYAxis = false;
+        vm.useFixedXAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.connectInterval = null;
@@ -121,12 +123,10 @@
                 showGridLines: vm.showGridLines,
                 hideContextZoom: !vm.showContextZoom,
                 useFixedYAxis: vm.useFixedYAxis,
+                useFixedXAxis: vm.useFixedXAxis,
+                xAxisValues: [vm.sensorStartDatetime, vm.sensorEndDatetime],
                 discreteSensors: vm.searchDiscrete
             });
-        };
-
-        vm.showHelp = function ($event) {
-            NotifyService.showDialog('Sensor Graph Help', 'This popup should probably show some helpful hints', $event);
         };
 
         vm.getMillisecondsDifference = function (plusMinus, time, count, type) {
@@ -240,6 +240,10 @@
                 endDate = vm.sensorStartDatetime.getTime();
             }
 
+            if (vm.useFixedXAxis) {
+                vm.showOptionsChanged();
+            }
+
             var indexOfSensor = vm.sensorNames.indexOf(sensor);
             if (indexOfSensor > -1) {
                 vm.sensorNames.splice(indexOfSensor, 1);
@@ -253,10 +257,10 @@
             }
 
             var requestParams;
-            if (sensor.type === 'discrete') {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000];
+            if (sensor.type === 'discrete' || vm.intervalType === 'n') { // discrete sensors and user selected no interval
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
             } else {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000, interval];
+                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
             }
 
             DataService.sensorData.apply(this, requestParams)
@@ -334,6 +338,8 @@
                 showGridLines: vm.showGridLines,
                 hideContextZoom: !vm.showContextZoom,
                 useFixedYAxis: vm.useFixedYAxis,
+                useFixedXAxis: vm.useFixedXAxis,
+                xAxisValues: [vm.sensorStartDatetime, vm.sensorEndDatetime],
                 discreteSensors: vm.searchDiscrete
             });
         };
@@ -354,7 +360,7 @@
 
         vm.sensorDataReceived = function (event, sensor) {
 
-            var hasMinMax = (parseInt(vm.intervalNum) !== 1 || vm.intervalType !== 's') && !vm.searchDiscrete;
+            var hasMinMax = vm.intervalType !== 'n' && !vm.searchDiscrete;
 
             if (sensor.value && sensor.value instanceof Array) {
                 vm.waitingForSearchResult = false;
@@ -482,7 +488,7 @@
                 var intervalTime = parseInt(intervalParams[0]);
                 if (intervalParams.length > 1 &&
                     intervalTime > 0 && intervalTime < 10000 &&
-                    ['s', 'm', 'h', 'd'].indexOf(intervalParams[1]) > -1) {
+                    ['s', 'm', 'h', 'd', 'n'].indexOf(intervalParams[1]) > -1) {
                     vm.intervalNum = intervalTime.toString();
                     vm.intervalType = intervalParams[1];
                 } else {
@@ -504,21 +510,19 @@
                     }
                     sensors.forEach(function (sensor) {
                         var requestParams = [];
-                        if (vm.searchDiscrete) {
-                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000];
+                        if (vm.searchDiscrete || vm.intervalType === 'n') {
+                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
                         } else {
-                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 1000000, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
                         }
 
-                        $timeout(function () {
-                            DataService.sensorData.apply(this, requestParams)
-                                .then(function (result) {
-                                    vm.sensorNames.push(sensor);
-                                }, function (error) {
-                                    vm.waitingForSearchResult = false;
-                                    $log.info(error);
-                                });
-                        }, 100);
+                        DataService.sensorData.apply(this, requestParams)
+                            .then(function (result) {
+                                vm.sensorNames.push(sensor);
+                            }, function (error) {
+                                vm.waitingForSearchResult = false;
+                                $log.info(error);
+                            });
                     });
                 });
 
