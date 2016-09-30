@@ -29,7 +29,7 @@ node('docker') {
 
         stage 'Trigger downstream publish'
             build job: 'publish-local', parameters: [
-                string(name: 'artifact_source', value: "${currentBuild.absoluteUrl}/artifact/dist/*zip*/dist.zip"),
+                string(name: 'artifact_source', value: "${currentBuild.absoluteUrl}/artifact/*zip*/archive.zip"),
                 string(name: 'source_branch', value: "${env.BRANCH_NAME}")]
     }
 }
