@@ -11,11 +11,11 @@ var ngannotate = require('gulp-ng-annotate');
 var htmlmin = require('gulp-htmlmin');
 var cssmin = require('gulp-cssmin');
 var streamqueue = require('streamqueue');
-var jshint = require('gulp-jshint');
+// var jshint = require('gulp-jshint');
 var jasmine = require('gulp-jasmine');
-var stylish = require('jshint-stylish');
+// var stylish = require('jshint-stylish');
 var domSrc = require('gulp-dom-src');
-var karma = require('gulp-karma');
+// var karma = require('gulp-karma');
 var util = require('gulp-util');
 var insert = require('gulp-insert');
 var exec = require('child_process').exec;
@@ -129,27 +129,27 @@ gulp.task('sounds', ['clean'], function () {
         .pipe(gulp.dest('dist/sounds/'));
 });
 
-gulp.task('jshint', function () {
-    gulp.src(['app/**/*.js'])
-        .pipe(jshint())
-        .pipe(jshint.reporter(stylish));
-});
+// gulp.task('jshint', function () {
+//     gulp.src(['app/**/*.js'])
+//         .pipe(jshint())
+//         .pipe(jshint.reporter(stylish));
+// });
 
-gulp.task('test', ['clean-tests'], function() {
-    // Be sure to return the stream
-    // NOTE: Using the fake './foobar' so as to run the files
-    // listed in karma.conf.js INSTEAD of what was passed to
-    // gulp.src !
-    return gulp.src('./foobar')
-        .pipe(karma({
-            configFile: 'karma.conf.js',
-            action: 'run'
-        }))
-        .on('error', function(err) {
-            // Make sure failed tests cause gulp to exit non-zero
-            this.emit('end'); //instead of erroring the stream, end it
-        });
-});
+// gulp.task('test', ['clean-tests'], function() {
+//     // Be sure to return the stream
+//     // NOTE: Using the fake './foobar' so as to run the files
+//     // listed in karma.conf.js INSTEAD of what was passed to
+//     // gulp.src !
+//     return gulp.src('./foobar')
+//         .pipe(karma({
+//             configFile: 'karma.conf.js',
+//             action: 'run'
+//         }))
+//         .on('error', function(err) {
+//             // Make sure failed tests cause gulp to exit non-zero
+//             this.emit('end'); //instead of erroring the stream, end it
+//         });
+// });
 
 var webserver = require('gulp-webserver');
 
