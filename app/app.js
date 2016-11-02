@@ -2,7 +2,9 @@
     "use strict";
 
     angular.module('katGui', ['ngMaterial', 'ngMessages',
-        'ui.bootstrap', 'ui.utils', 'ui.router',
+        'ui.bootstrap',
+        'ui.router',
+        // 'ui.utils',
         'ngAnimate', 'katGui.services',
         'katGui.admin',
         'katGui.alarms',
@@ -400,11 +402,9 @@
         if (window.location.host !== 'localhost:8000') {
             $compileProvider.debugInfoEnabled(false);
         } else {
-            if (!$httpProvider.defaults.headers.get) {
-                $httpProvider.defaults.headers.common = {};
-            }
+            $urlRouterProvider.otherwise('/login');
             $httpProvider.defaults.useXDomain = true;
-            delete $httpProvider.defaults.headers.common['X-Requested-With'];
+            $httpProvider.defaults.withCredentials = true;
         }
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
@@ -622,7 +622,6 @@
             title: 'Utilisation Report'
         });
         /* Add New States Above */
-        $urlRouterProvider.otherwise('/login');
     }
 
     function runKatGui($rootScope, $state, $localStorage, $log, $templateCache) {
