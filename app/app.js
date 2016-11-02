@@ -402,10 +402,11 @@
         if (window.location.host !== 'localhost:8000') {
             $compileProvider.debugInfoEnabled(false);
         } else {
-            $urlRouterProvider.otherwise('/login');
             $httpProvider.defaults.useXDomain = true;
             $httpProvider.defaults.withCredentials = true;
         }
+        $urlRouterProvider.otherwise('/home');
+
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
         // $locationProvider.html5Mode({

@@ -3,11 +3,15 @@
     angular.module('katGui.landing', ['ngStorage'])
         .controller('LandingCtrl', LandingCtrl);
 
-    function LandingCtrl($scope, $localStorage, $timeout) {
+    function LandingCtrl($rootScope, $scope, $state, $localStorage, $timeout) {
 
         var vm = this;
         vm.dashboardWidgetsOrder = [];
         var localStorageName = 'katGuiDashboardLayout';
+
+        if (!$rootScope.jwt) {
+            $state.go('login');
+        }
 
         $scope.$watch("vm.dashboardWidgets", _.debounce(function () {
             vm.saveDashboardConfig();
