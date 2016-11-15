@@ -16,9 +16,12 @@
         'katGui.util',
         'katGui.scheduler',
         'katGui.services',
-        'katGui.video'
-    ])
-        .constant('UI_VERSION', '0.0.1')
+        'katGui.video'])
+    .config(configureKatGui)
+    .run(runKatGui)
+    .controller('ApplicationCtrl', ApplicationCtrl);
+
+    angular.module('katGui').constant('UI_VERSION', '0.0.1')
         .constant('USER_ROLES', {
             all: "all",
             user_admin: "user_admin",
@@ -52,10 +55,7 @@
                 primary: 'dark',
                 secondary: 'dark-secondary',
                 primaryButtons: 'dark-buttons'
-            }])
-        .config(configureKatGui)
-        .run(runKatGui)
-        .controller('ApplicationCtrl', ApplicationCtrl);
+            }]);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
