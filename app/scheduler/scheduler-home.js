@@ -80,7 +80,8 @@
                 toState.name === 'scheduler.execute' ||
                 toState.name === 'scheduler.subarrays' ||
                 toState.name === 'scheduler.observations' ||
-                toState.name === 'scheduler.observations.detail');
+                toState.name === 'scheduler.observations.detail' ||
+                toState.name === 'scheduler.program-blocks');
 
             if (toState.name === 'scheduler.observations' ||
                 toState.name === 'scheduler.drafts' ||
