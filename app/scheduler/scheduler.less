@@ -122,12 +122,22 @@
     &:hover {
         background-color: rgba(158, 158, 158, 0.1);
     }
-    .pb_id {
-        font-size: 14px;
-        font-weight: bold;
-    }
-    .owner {
-        font-style: italic;
+    .pb-id-container {
+        min-width: 160px;
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: 8px;
+        .owner {
+            font-style: italic;
+        }
+        .pb-id {
+            font-size: 14px;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 160px;
+        }
     }
 }
 

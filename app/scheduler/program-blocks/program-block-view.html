@@ -4,16 +4,16 @@
         <div ng-include="'app/scheduler/templates/pb-view-header.html'"></div>
     </md-toolbar>
     <md-virtual-repeat-container flex class="md-whiteframe-z1">
-        <div md-virtual-repeat="pb in vm.programBlocks" class="pb-view-item" layout="row"
-            layout-align="start center" style="cursor: pointer">
-            <div layout="column" layout-align="center start" style="min-width: 100px; max-width: 100px"
-                ng-click="$root.showSBDetails(pb)">
-                <span class="pb_id">{{pb.pb_id}}</span>
+        <div md-virtual-repeat="pb in vm.programBlocks" class="pb-view-item" layout="row" ng-init="pb.showSBList = false"
+            layout-align="start center" style="cursor: pointer" ng-click="pb.showSBList = !pb.showSBList">
+            <div layout="column" layout-align="center start" class="pb-id-container" ng-click="$root.showSBDetails(pb, $event, 'Program Block: ' + pb.pb_id)">
+                <span class="pb-id">{{pb.pb_id}}</span>
                 <span>{{pb.owner}}</span>
             </div>
-            <span flex class="sb-wrapped-description">
+            <span flex class="sb-wrapped-description" style="height: initial">
                 {{pb.description}}
             </span>
+            <span style="min-width: 80px">{{pb.schedule_blocks.length}}</span>
             <span style="min-width: 80px">{{pb.state}}</span>
             <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin-left: 4px; min-width: 148px">
                 <span>{{pb.desired_lst_start_time}}</span>
