@@ -16,6 +16,7 @@
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
         vm.subarrays = ObsSchedService.subarrays;
+        vm.programBlocks = ObsSchedService.programBlocks;
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
@@ -93,6 +94,7 @@
         };
 
         MonitorService.subscribe('sched');
+        ObsSchedService.getProgramBlocks();
         ObsSchedService.getScheduleBlocks();
         ObsSchedService.getScheduledScheduleBlocks();
 

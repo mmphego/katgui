@@ -542,6 +542,13 @@
             templateUrl: 'app/scheduler/observations/observations-detail.html',
             title: 'Subarrays.Observations'
         };
+        var programBlocks = {
+            name: 'scheduler.program-blocks',
+            parent: schedulerHome,
+            url: '/program-blocks',
+            template: '<program-blocks layout="column" flex program-blocks="vm.programBlocks"></program-blocks>',
+            title: 'Scheduler.Program Blocks'
+        };
 
         $stateProvider
             .state(schedulerHome)
@@ -549,7 +556,9 @@
             .state(subArrays)
             .state(subArrayResources)
             .state(observationsOverview)
-            .state(observationsDetail);
+            .state(observationsDetail)
+            .state(programBlocks);
+
         $stateProvider.state('sensor-graph', {
             url: '/sensor-graph/{startTime}/{endTime}/{interval}/{sensors}/{discrete}',
             templateUrl: 'app/sensor-graph/sensor-graph.html',

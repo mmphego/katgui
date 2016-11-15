@@ -1,0 +1,24 @@
+<div flex layout="column" style="padding: 8px" md-theme="{{$root.themePrimary}}">
+    <md-toolbar style="margin-top: 8px" class="md-whiteframe-z1 md-toolbar-tools-medium"
+        layout="row" layout-align="center center">
+        <div ng-include="'app/scheduler/templates/pb-view-header.html'"></div>
+    </md-toolbar>
+    <md-virtual-repeat-container flex class="md-whiteframe-z1">
+        <div md-virtual-repeat="pb in vm.programBlocks" class="pb-view-item" layout="row"
+            layout-align="start center" style="cursor: pointer">
+            <div layout="column" layout-align="center start" style="min-width: 100px; max-width: 100px"
+                ng-click="$root.showSBDetails(pb)">
+                <span class="pb_id">{{pb.pb_id}}</span>
+                <span>{{pb.owner}}</span>
+            </div>
+            <span flex class="sb-wrapped-description">
+                {{pb.description}}
+            </span>
+            <span style="min-width: 80px">{{pb.state}}</span>
+            <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin-left: 4px; min-width: 148px">
+                <span>{{pb.desired_lst_start_time}}</span>
+                <span>{{pb.desired_start_time}}</span>
+            </div>
+        </div>
+    </md-virtual-repeat-container>
+</div>
