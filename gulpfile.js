@@ -11,9 +11,9 @@ var ngannotate = require('gulp-ng-annotate');
 var htmlmin = require('gulp-htmlmin');
 var cssmin = require('gulp-cssmin');
 var streamqueue = require('streamqueue');
-var jshint = require('gulp-jshint');
+// var jshint = require('gulp-jshint');
 var jasmine = require('gulp-jasmine');
-var stylish = require('jshint-stylish');
+// var stylish = require('jshint-stylish');
 var domSrc = require('gulp-dom-src');
 // var karma = require('gulp-karma');
 var util = require('gulp-util');
@@ -48,14 +48,14 @@ gulp.task('clean:csstmp', ['css:material', 'css:main', 'css:concat', 'clean'], f
 });
 
 gulp.task('css:material', ['clean'], function () {
-    return gulp.src(['bower_components/angular-material/angular-material.min.css'])
+    return gulp.src(['node_modules/angular-material/angular-material.min.css'])
         .pipe(gulp.dest('dist/'));
 });
 
 gulp.task('css:main', ['clean'], function () {
 
-    return gulp.src(['bower_components/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
-        'bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
+    return gulp.src(['node_modules/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
+        'node_modules/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
         'app/app.less'])
         .pipe(insert.prepend('@fa-font-path: "fonts";'))
         .pipe(less().on('error', util.log))
@@ -115,7 +115,7 @@ gulp.task('indexHtml', ['clean'], function () {
 });
 
 gulp.task('fonts', ['clean'], function () {
-    return gulp.src(['bower_components/font-awesome/fonts/**', 'fonts/**'])
+    return gulp.src(['node_modules/font-awesome/fonts/**', 'fonts/**'])
         .pipe(gulp.dest('dist/fonts/'));
 });
 
@@ -129,11 +129,11 @@ gulp.task('sounds', ['clean'], function () {
         .pipe(gulp.dest('dist/sounds/'));
 });
 
-gulp.task('jshint', function () {
-    gulp.src(['app/**/*.js'])
-        .pipe(jshint())
-        .pipe(jshint.reporter(stylish));
-});
+// gulp.task('jshint', function () {
+//     gulp.src(['app/**/*.js'])
+//         .pipe(jshint())
+//         .pipe(jshint.reporter(stylish));
+// });
 
 // gulp.task('test', ['clean-tests'], function() {
 //     // Be sure to return the stream

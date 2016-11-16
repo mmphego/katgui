@@ -16,6 +16,7 @@
         var vm = this;
         vm.childStateShowing = $state.current.name !== 'scheduler';
         vm.subarrays = ObsSchedService.subarrays;
+        vm.programBlocks = ObsSchedService.programBlocks;
         vm.disconnectIssued = false;
         vm.connectInterval = null;
         vm.connectionLost = false;
@@ -79,7 +80,8 @@
                 toState.name === 'scheduler.execute' ||
                 toState.name === 'scheduler.subarrays' ||
                 toState.name === 'scheduler.observations' ||
-                toState.name === 'scheduler.observations.detail');
+                toState.name === 'scheduler.observations.detail' ||
+                toState.name === 'scheduler.program-blocks');
 
             if (toState.name === 'scheduler.observations' ||
                 toState.name === 'scheduler.drafts' ||
@@ -93,6 +95,7 @@
         };
 
         MonitorService.subscribe('sched');
+        ObsSchedService.getProgramBlocks();
         ObsSchedService.getScheduleBlocks();
         ObsSchedService.getScheduledScheduleBlocks();
 
@@ -378,23 +381,17 @@
 
         vm.freeSubarray = function () {
             vm.subarray.showProgress = true;
-            // var dataResource = _.find(vm.subarray.allocations, function(resource) {
-            //     return resource.name.startsWith('data_');
-            // });
-            var dataResource = {name: 'data_' + vm.subarray.id};
-
             ObsSchedService.freeSubarray(vm.subarray.id).then(function (success) {
-                if (dataResource) {
-                    $timeout(function () {
-                        if (vm.subarray.state === 'inactive') {
-                            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, dataResource.name).then(function () {
-                                vm.subarray.showProgress = false;
-                            });
-                        } else {
-                            $log.error('Could not assign ' + dataResource.name + ', because subarray_' + vm.subarray.id + ' was still in state: ' + vm.subarray.state);
-                        }
-                    }, 1000);
-                }
+                $timeout(function () {
+                    var dataResource = 'data_' + vm.subarray.id;
+                    if (vm.subarray.state === 'inactive' && _.findWhere(ObsSchedService.poolResourcesFree, {name: dataResource})) {
+                        ObsSchedService.assignResourcesToSubarray(vm.subarray.id, dataResource).then(function () {
+                            vm.subarray.showProgress = false;
+                        });
+                    } else {
+                        $log.error('Could not assign ' + dataResource + ', because subarray_' + vm.subarray.id + ' was still in state: ' + vm.subarray.state);
+                    }
+                }, 100);
                 vm.subarray.showProgress = false;
             }, function () {
                 vm.subarray.showProgress = false;

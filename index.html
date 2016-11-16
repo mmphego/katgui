@@ -13,36 +13,35 @@
 
 <!-- Livereload script for development only (stripped during dist build) -->
 <script src="http://localhost:35729/livereload.js" data-build="exclude"></script>
-<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
 
-<!-- JS from Bower Components -->
-<script src="bower_components/less.js/dist/less.min.js" data-build="exclude"></script>
-<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-<script src="bower_components/underscore/underscore.js"></script>
-<script src="bower_components/moment/moment.js"></script>
-<script src="bower_components/sockjs/sockjs.js"></script>
-<script src="bower_components/angular/angular.js"></script>
-<script src="bower_components/angular-messages/angular-messages.js"></script>
-<script src="bower_components/angular-aria/angular-aria.js"></script>
-<script src="bower_components/angular-animate/angular-animate.js"></script>
-<script src="bower_components/hammerjs/hammer.js"></script>
-<script src="bower_components/angular-material/angular-material.js"></script>
-<script src="bower_components/angular-mocks/angular-mocks.js"></script>
-<script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
-<script src="bower_components/angular-resource/angular-resource.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script src="bower_components/angular-ui-utils/ui-utils.js"></script>
-<script src="bower_components/ngstorage/ngStorage.js"></script>
-<script src="bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
-<script src="bower_components/jsjws/jws-3.0.js"></script>
-<script src="bower_components/jsjws/ext/json-sans-eval-min.js"></script>
-<script src="bower_components/jsrsasign/jsrsasign-4.7.0-all-min.js"></script>
-<script src="bower_components/d3/d3.js"></script>
-<script src="bower_components/jspdf/dist/jspdf.min.js"></script>
-<script src="bower_components/html2canvas/build/html2canvas.js"></script>
-<script src="bower_components/jspdf-autotable/dist/jspdf.plugin.autotable.js"></script>
-<!--<script src="bower_components/angular-gantt/assets/angular-gantt.js"></script>-->
-<!-- Add New Bower Component JS Above -->
+<!-- JS from node_modules -->
+<script src="node_modules/less/dist/less.min.js" data-build="exclude"></script>
+<script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+<script src="node_modules/underscore/underscore.js"></script>
+<script src="node_modules/moment/moment.js"></script>
+<script src="node_modules/sockjs-client/dist/sockjs.js"></script>
+<script src="node_modules/angular/angular.js"></script>
+<script src="node_modules/angular-messages/angular-messages.js"></script>
+<script src="node_modules/angular-aria/angular-aria.js"></script>
+<script src="node_modules/angular-animate/angular-animate.js"></script>
+<script src="node_modules/hammerjs/hammer.js"></script>
+<script src="node_modules/angular-material/angular-material.js"></script>
+<script src="node_modules/angular-mocks/angular-mocks.js" data-build="exclude"></script>
+<script src="node_modules/angular-ui-router/release/angular-ui-router.js"></script>
+<script src="node_modules/angular-resource/angular-resource.js"></script>
+<script src="node_modules/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="node_modules/ngstorage/ngStorage.js"></script>
+<script src="node_modules/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+<script src="node_modules/d3/d3.js"></script>
+<script src="node_modules/jspdf/dist/jspdf.min.js"></script>
+<script src="node_modules/jspdf-autotable/dist/jspdf.plugin.autotable.js"></script>
+<script src="node_modules/crypto-js/core.js"></script>
+<script src="node_modules/crypto-js/enc-base64.js"></script>
+<script src="node_modules/crypto-js/sha256.js"></script>
+<script src="node_modules/crypto-js/hmac.js"></script>
+<script src="node_modules/crypto-js/hmac-sha256.js"></script>
+<!-- Add node_modules JS Above -->
 
 <!-- Main App JS -->
 <script src="app/services/alarms-service.js"></script>
@@ -110,6 +109,7 @@
 <script src="app/scheduler/subarray-resources/subarray-resources.js"></script>
 <script src="app/scheduler/observations/observations-detail.js"></script>
 <script src="app/scheduler/observations/observations-overview.js"></script>
+<script src="app/scheduler/program-blocks/program-block-view.js"></script>
 <script src="app/userlogs/userlogs.js"></script>
 <script src="app/userlogs/userlog-tags.js"></script>
 <script src="app/userlogs/userlog-reports.js"></script>
@@ -194,6 +194,9 @@
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
                             <md-button flex><span class="fa fa-pencil"></span><span>Schedule Block Drafts</span></md-button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.program-blocks')">
+                            <md-button flex><span class="fa fa-pencil"></span><span>Program Blocks</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
                             <md-button flex><span class="fa fa-asterisk"></span><span>Subarray Schedule Blocks</span></md-button>

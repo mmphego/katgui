@@ -18,6 +18,7 @@
         api.scheduleData = [];
         api.scheduleDraftData = [];
         api.scheduleCompletedData = [];
+        api.programBlocks = [];
 
         api.scheduleDataCache = [];
         api.scheduleDraftDataCache = [];
@@ -214,6 +215,19 @@
                         if (jsonResult[i].state === 'DRAFT') {
                             api.scheduleDraftData.push(jsonResult[i]);
                         }
+                    }
+                }, function (error) {
+                    $log.error(error);
+                });
+        };
+
+        api.getProgramBlocks = function () {
+            api.programBlocks.splice(0, api.programBlocks.length);
+            $http(createRequest('get', urlBase() + '/pb'))
+                .then(function (result) {
+                    var jsonResult = JSON.parse(result.data.result);
+                    for (var i in jsonResult) {
+                        api.programBlocks.push(jsonResult[i]);
                     }
                 }, function (error) {
                     $log.error(error);

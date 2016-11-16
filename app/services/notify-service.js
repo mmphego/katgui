@@ -140,10 +140,15 @@
             $log.info('Showing dialog, title: ' + title + ', message: ' + content);
         };
 
-        api.showSBDetails = function (sb, event) {
+        api.showSBDetails = function (sb, event, title) {
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog) {
+                        if (!title) {
+                            $scope.title = 'Schedule Block: ';
+                        } else {
+                            $scope.title = title;
+                        }
                         $scope.sb = sb;
                         $scope.hide = function () {
                             $mdDialog.hide();
@@ -152,7 +157,7 @@
                     },
                     template: "<md-dialog style='padding: 0; max-height: 95%' md-theme='{{$root.themePrimary}}' aria-label='Schedule Block Details'>" +
                     "<md-content style='padding: 0; margin: 0; width: 500px; height:800px' layout='column' layout-padding >" +
-                    "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>Schedule Block: <b>{{sb.id_code}}</b></span></md-toolbar>" +
+                    "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span>{{title}}<b>{{sb.id_code}}</b></span></md-toolbar>" +
                     "<pre style='white-space: pre-wrap; overflow: auto' ng-bind-html='sb | prettifyJSON'></pre>" +
                     "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
                     "<md-button class='md-primary md-raised' style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' aria-label='Done' ng-click='hide()'>Done</md-button>" +

@@ -2,7 +2,9 @@
     "use strict";
 
     angular.module('katGui', ['ngMaterial', 'ngMessages',
-        'ui.bootstrap', 'ui.utils', 'ui.router',
+        'ui.bootstrap',
+        'ui.router',
+        // 'ui.utils',
         'ngAnimate', 'katGui.services',
         'katGui.admin',
         'katGui.alarms',
@@ -14,9 +16,12 @@
         'katGui.util',
         'katGui.scheduler',
         'katGui.services',
-        'katGui.video'
-    ])
-        .constant('UI_VERSION', '0.0.1')
+        'katGui.video'])
+    .config(configureKatGui)
+    .run(runKatGui)
+    .controller('ApplicationCtrl', ApplicationCtrl);
+
+    angular.module('katGui').constant('UI_VERSION', '0.0.1')
         .constant('USER_ROLES', {
             all: "all",
             user_admin: "user_admin",
@@ -50,10 +55,7 @@
                 primary: 'dark',
                 secondary: 'dark-secondary',
                 primaryButtons: 'dark-buttons'
-            }])
-        .config(configureKatGui)
-        .run(runKatGui)
-        .controller('ApplicationCtrl', ApplicationCtrl);
+            }]);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
                              ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
@@ -400,12 +402,11 @@
         if (window.location.host !== 'localhost:8000') {
             $compileProvider.debugInfoEnabled(false);
         } else {
-            if (!$httpProvider.defaults.headers.get) {
-                $httpProvider.defaults.headers.common = {};
-            }
             $httpProvider.defaults.useXDomain = true;
-            delete $httpProvider.defaults.headers.common['X-Requested-With'];
+            $httpProvider.defaults.withCredentials = true;
         }
+        $urlRouterProvider.otherwise('/home');
+
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
         // $locationProvider.html5Mode({
@@ -541,6 +542,13 @@
             templateUrl: 'app/scheduler/observations/observations-detail.html',
             title: 'Subarrays.Observations'
         };
+        var programBlocks = {
+            name: 'scheduler.program-blocks',
+            parent: schedulerHome,
+            url: '/program-blocks',
+            template: '<program-blocks layout="column" flex program-blocks="vm.programBlocks"></program-blocks>',
+            title: 'Scheduler.Program Blocks'
+        };
 
         $stateProvider
             .state(schedulerHome)
@@ -548,7 +556,9 @@
             .state(subArrays)
             .state(subArrayResources)
             .state(observationsOverview)
-            .state(observationsDetail);
+            .state(observationsDetail)
+            .state(programBlocks);
+
         $stateProvider.state('sensor-graph', {
             url: '/sensor-graph/{startTime}/{endTime}/{interval}/{sensors}/{discrete}',
             templateUrl: 'app/sensor-graph/sensor-graph.html',
@@ -622,7 +632,6 @@
             title: 'Utilisation Report'
         });
         /* Add New States Above */
-        $urlRouterProvider.otherwise('/login');
     }
 
     function runKatGui($rootScope, $state, $localStorage, $log, $templateCache) {
