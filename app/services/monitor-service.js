@@ -164,7 +164,8 @@
                                     if (messageChannel[1] === 'sys_interlock_state') {
                                         api.interlockState.value = messageObj.msg_data.value;
                                     } else {
-                                        StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
+                                        $log.error('Dangling Sensors message...');
+                                        $log.error(messageObj);
                                     }
                                 } else if (messageChannel[0] === 'resources') {
                                     if (messageChannel[1].endsWith('katpool_resources_in_maintenance')) {
@@ -179,7 +180,8 @@
                                             value: messageObj.msg_data
                                         });
                                     } else {
-                                        StatusService.messageReceivedSensors(messageObj.msg_channel, messageObj.msg_data);
+                                        $log.error('Dangling Sensors message...');
+                                        $log.error(messageObj);
                                     }
                                 } else if (messageChannel[0] === 'alarms') {
                                     AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
