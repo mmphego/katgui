@@ -6,7 +6,7 @@
         .controller('VideoCtrl', VideoCtrl);
 
     function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog, ControlService, SensorsService,
-                       SERVER_URL, NotifyService, USER_ROLES, ConfigService, KatGuiUtil, $state) {
+                       NotifyService, USER_ROLES, ConfigService, KatGuiUtil, $state) {
 
         function urlBase() {
            return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/vds' : '';
