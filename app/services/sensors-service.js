@@ -235,17 +235,19 @@
                     for (var node in systemConfig['katconn:resources']) {
                         var processList = systemConfig['katconn:resources'][node].split(',');
                         for (var i in processList) {
-                            var group = 'Components';
-                            if (node === 'single_ctl') {
-                                group = 'Proxies';
+                            if (processList[i].length > 0) {
+                                var group = 'Components';
+                                if (node === 'single_ctl') {
+                                    group = 'Proxies';
+                                }
+                                var processClientConfig = systemConfig['katconn:clients'][processList[i]].split(':');
+                                api.resources[processList[i]] = {
+                                    name: processList[i],
+                                    host: processClientConfig[0],
+                                    port: processClientConfig[1],
+                                    node: group
+                                };
                             }
-                            var processClientConfig = systemConfig['katconn:clients'][processList[i]].split(':');
-                            api.resources[processList[i]] = {
-                                name: processList[i],
-                                host: processClientConfig[0],
-                                port: processClientConfig[1],
-                                node: group
-                            };
                         }
                     }
                     deferred.resolve(api.resources);

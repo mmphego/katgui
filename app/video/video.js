@@ -13,17 +13,27 @@
         }
 
         var vm = this;
+        vm.imageSources = [];
+        vm.imageSource = null;
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
-                if (systemConfig.vds && KatGuiUtil.isValidURL(systemConfig.vds.vds_source)) {
-                    vm.imageSource = systemConfig.vds.vds_source.replace(/"/g, '').replace(/'/g, "");
-                    if (!$scope.$$phase) {
-                        $scope.$digest();
-                    }
-                } else {
+
+                if (!systemConfig.vds) {
                     $state.go('home');
                     return;
+                }
+
+                vm.imageSources = [];
+                var imageKeys = Object.keys(systemConfig.vds);
+                for (var i = 0; i < imageKeys.length; i++) {
+                    vm.imageSources.push({name: imageKeys[i], url: systemConfig.vds[imageKeys[i]]});
+                }
+
+                vm.imageSource = vm.imageSources[0];
+
+                if (!$scope.$$phase) {
+                    $scope.$digest();
                 }
             });
 
