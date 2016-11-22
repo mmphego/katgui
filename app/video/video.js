@@ -15,6 +15,7 @@
         var vm = this;
         vm.imageSources = [];
         vm.imageSource = null;
+        vm.vds_name = vm.imageSource.split('_').pop(0);
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
@@ -94,7 +95,7 @@
                         $scope.title = 'Set VDS Preset';
                         $scope.presetIDs = [];
                         for (var i = 0; i < 64; i++) {
-                            $http(createRequest('post', urlBase() + '/presetset/'));
+                            $http(createRequest('post', urlBase() + '/' + vm.vds_name  + '/presetset/'));
                             if (i < 10) {
                                 $scope.presetIDs.push('m00' + i);
                             }
@@ -106,7 +107,7 @@
                             $mdDialog.hide();
                         };
                         $scope.setPreset = function (preset) {
-                            $http(createRequest('post', urlBase() + '/presetset/' + preset))
+                            $http(createRequest('post', urlBase() + '/' + vm.vds_name  + '/presetset/' + preset))
                                 .then(requestSuccess, requestError);
                         };
                     },
@@ -150,7 +151,7 @@
                         };
                         $scope.gotoPreset = function (preset) {
                             vm.lastPreset = preset;
-                            $http(createRequest('post', urlBase() + '/presetgoto/' + preset))
+                            $http(createRequest('post', urlBase() + '/' + vm.vds_name  + '/presetgoto/' + preset))
                                 .then(requestSuccess, requestError);
                         };
                     },
@@ -206,12 +207,12 @@
         };
 
         vm.stopVDS = function () {
-            $http(createRequest('post', urlBase() + '/stop'))
+            $http(createRequest('post', urlBase() + '/' + vm.vds_name  + '/stop'))
                 .then(requestSuccess, requestError);
         };
 
         vm.vdsCommand = function (endpoint, args) {
-            $http(createRequest('post', urlBase() + '/' + endpoint + '/' + args))
+            $http(createRequest('post', urlBase() + '/' + vm.vds_name  + '/' + endpoint + '/' + args))
                 .then(requestSuccess, requestError);
         };
 
@@ -277,9 +278,9 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var sensorName = sensor.name.split(':')[1].replace('anc_', '');
             vm.sensorValues[sensorName] = sensor.value;
-            if (sensorName === vm.imageSource.name + '_focus_position') {
+            if (sensorName === vm.vds_name + '_focus_position') {
                 vm.focus = sensor.value.value;
-            } else if (sensorName === vm.imageSource.name + '_zoom_position') {
+            } else if (sensorName === vm.vds_name + '_zoom_position') {
                 vm.zoom = sensor.value.value;
             }
         });
