@@ -267,9 +267,9 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var sensorName = sensor.name.split(':')[1].replace('anc_', '');
             vm.sensorValues[sensorName] = sensor.value;
-            if (sensorName === 'vds_focus_position') {
+            if (sensorName === vm.imageSource.name + '_focus_position') {
                 vm.focus = sensor.value.value;
-            } else if (sensorName === 'vds_zoom_position') {
+            } else if (sensorName === vm.imageSource.name + '_zoom_position') {
                 vm.zoom = sensor.value.value;
             }
         });
