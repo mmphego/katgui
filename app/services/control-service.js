@@ -27,10 +27,6 @@
             return $http(createRequest('post', urlBase() + '/receptors/resume-all'));
         };
 
-        api.floodlightsOn = function (onOff) {
-            return $http(createRequest('post', urlBase() + '/vds/floodlights/' + onOff));
-        };
-
         api.shutdownComputing = function () {
             return $http(createRequest('post', urlBase() + '/system/shutdown-computing'));
         };

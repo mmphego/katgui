@@ -44,7 +44,7 @@
         vm.stepTimeValue = 1;
 
         vm.toggleFloodLights = function () {
-            ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
+            floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
                 .then(function (result) {
                     var splitMessage = result.data.result.split(' ');
                     var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
@@ -56,6 +56,10 @@
                 }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });
+        };
+
+        vm.floodlightsOn = function(onOff) {
+            return $http(createRequest('post', urlBase() + '/floodlights/' + onOff));
         };
 
         vm.panLeft = function () {
