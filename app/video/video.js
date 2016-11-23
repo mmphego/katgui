@@ -9,12 +9,13 @@
                        NotifyService, USER_ROLES, ConfigService, KatGuiUtil, $state) {
 
         function urlBase() {
-           return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/vds/' + vm.imageSource.split('_')[0] : '';
+           return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/vds/' + vm.vds_name : '';
         }
 
         var vm = this;
         vm.imageSources = [];
         vm.imageSource = null;
+
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
@@ -26,11 +27,13 @@
 
                 vm.imageSources = [];
                 var imageKeys = Object.keys(systemConfig.vds);
+
                 for (var i = 0; i < imageKeys.length; i++) {
                     vm.imageSources.push({name: imageKeys[i], url: systemConfig.vds[imageKeys[i]]});
                 }
 
                 vm.imageSource = vm.imageSources[0];
+                vm.vds_name = vm.imageSource.name.split('_')[0];
 
                 if (!$scope.$$phase) {
                     $scope.$digest();
@@ -277,9 +280,9 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var sensorName = sensor.name.split(':')[1].replace('anc_', '');
             vm.sensorValues[sensorName] = sensor.value;
-            if (sensorName === vm.imageSource.name.split('_')[0] + '_focus_position') {
+            if (sensorName === vm.vds_name + '_focus_position') {
                 vm.focus = sensor.value.value;
-            } else if (sensorName === vm.imageSource.name.split('_')[0] + '_zoom_position') {
+            } else if (sensorName === vm.vds_name + '_zoom_position') {
                 vm.zoom = sensor.value.value;
             }
         });
