@@ -44,7 +44,7 @@
         vm.stepTimeValue = 1;
 
         vm.toggleFloodLights = function () {
-            floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
+            floodlightsOn(vm.sensorValues[vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
                 .then(function (result) {
                     var splitMessage = result.data.result.split(' ');
                     var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
