@@ -16,7 +16,6 @@
         vm.imageSources = [];
         vm.imageSource = null;
 
-
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
 
@@ -32,9 +31,6 @@
                     vm.imageSources.push({name: imageKeys[i], url: systemConfig.vds[imageKeys[i]]});
                 }
 
-                vm.imageSource = vm.imageSources[0];
-                vm.vds_name = vm.imageSource.name.split('_')[0];
-
                 if (!$scope.$$phase) {
                     $scope.$digest();
                 }
@@ -44,7 +40,7 @@
         vm.stepTimeValue = 1;
 
         vm.toggleFloodLights = function () {
-            floodlightsOn(vm.sensorValues[vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
+            vm.floodlightsOn(vm.sensorValues[vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
                 .then(function (result) {
                     var splitMessage = result.data.result.split(' ');
                     var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
@@ -58,7 +54,11 @@
                 });
         };
 
-        vm.floodlightsOn = function(onOff) {
+        vm.SelectedSource = function (selected_item) {
+            vm.vds_name = selected_item.name.split('_')[0];
+        }
+
+        vm.floodlightsOn = function (onOff) {
             return $http(createRequest('post', urlBase() + '/floodlights/' + onOff));
         };
 

@@ -1,8 +1,8 @@
 <div layout="column" layout-align="start center" style="position: relative;" flex ng-controller="VideoCtrl as vm">
 
     <md-select ng-model="vm.imageSource" ng-click="$event.stopPropagation()"
-               class="md-primary vds-source-select" md-theme="{{themePrimaryButtons}}" ng-change="vm.mapTypeChanged()">
-        <md-option ng-value="imageSource" ng-repeat="imageSource in vm.imageSources">{{imageSource.name}}</md-option>
+               class="md-primary vds-source-select" md-theme="{{themePrimaryButtons}}" ng-change="vm.SelectedSource(vm.imageSource)">
+        <md-option ng-value="imageSource" ng-repeat="imageSource in vm.imageSources" ng-selected={{$first}}>{{imageSource.name}}</md-option>
     </md-select>
 
     <div class="videoimg" style="position:relative; border: 1px solid rgba(127, 127, 127, 0.2); height: 600px; width: 800px">
