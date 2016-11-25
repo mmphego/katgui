@@ -389,7 +389,10 @@
                             vm.subarray.showProgress = false;
                         });
                     } else {
-                        $log.error('Could not assign ' + dataResource + ', because subarray_' + vm.subarray.id + ' was still in state: ' + vm.subarray.state);
+                        $log.error(
+                            'Could not assign ' + dataResource + ', because subarray_' +
+                            vm.subarray.id + ' was still in state: ' + vm.subarray.state +
+                            '. Or the requested resource is not a free resource (does it exist in this system?).');
                     }
                 }, 100);
                 vm.subarray.showProgress = false;

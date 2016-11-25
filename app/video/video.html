@@ -1,7 +1,12 @@
-<div layout="row" style="position: relative;" flex ng-controller="VideoCtrl as vm">
+<div layout="column" layout-align="start center" style="position: relative;" flex ng-controller="VideoCtrl as vm">
+
+    <md-select ng-model="vm.imageSource" ng-click="$event.stopPropagation()"
+               class="md-primary vds-source-select" md-theme="{{themePrimaryButtons}}" ng-change="vm.SelectedSource(vm.imageSource)">
+        <md-option ng-value="imageSource" ng-repeat="imageSource in vm.imageSources" ng-selected={{$first}}>{{imageSource.name}}</md-option>
+    </md-select>
 
     <div class="videoimg" style="position:relative; border: 1px solid rgba(127, 127, 127, 0.2); height: 600px; width: 800px">
-        <img style="height: 100%;" alt="Could not load video image..." ng-src="{{vm.imageSource}}"/>
+        <img style="height: 100%;" alt="Could not load video image..." ng-src="{{vm.imageSource.url}}"/>
         <div resizeable=".videoimg" class="resize-grip">
             <span flex class="fa fa-arrows-v"></span>
         </div>

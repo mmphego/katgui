@@ -9,21 +9,30 @@
                        NotifyService, USER_ROLES, ConfigService, KatGuiUtil, $state) {
 
         function urlBase() {
-           return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/vds' : '';
+           return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/vds/' + vm.vds_name : '';
         }
 
         var vm = this;
+        vm.imageSources = [];
+        vm.imageSource = null;
 
         ConfigService.getSystemConfig()
             .then(function (systemConfig) {
-                if (systemConfig.vds && KatGuiUtil.isValidURL(systemConfig.vds.vds_source)) {
-                    vm.imageSource = systemConfig.vds.vds_source.replace(/"/g, '').replace(/'/g, "");
-                    if (!$scope.$$phase) {
-                        $scope.$digest();
-                    }
-                } else {
+
+                if (!systemConfig.vds) {
                     $state.go('home');
                     return;
+                }
+
+                vm.imageSources = [];
+                var imageKeys = Object.keys(systemConfig.vds);
+
+                for (var i = 0; i < imageKeys.length; i++) {
+                    vm.imageSources.push({name: imageKeys[i], url: systemConfig.vds[imageKeys[i]]});
+                }
+
+                if (!$scope.$$phase) {
+                    $scope.$digest();
                 }
             });
 
@@ -31,7 +40,7 @@
         vm.stepTimeValue = 1;
 
         vm.toggleFloodLights = function () {
-            ControlService.floodlightsOn(vm.sensorValues.vds_flood_lights_on.value ? 'off' : 'on')
+            vm.floodlightsOn(vm.sensorValues[vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
                 .then(function (result) {
                     var splitMessage = result.data.result.split(' ');
                     var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
@@ -43,6 +52,14 @@
                 }, function (error) {
                     NotifyService.showSimpleDialog('Error sending request', error);
                 });
+        };
+
+        vm.SelectedSource = function (selected_item) {
+            vm.vds_name = selected_item.name.split('_')[0];
+        }
+
+        vm.floodlightsOn = function (onOff) {
+            return $http(createRequest('post', urlBase() + '/floodlights/' + onOff));
         };
 
         vm.panLeft = function () {
@@ -267,9 +284,9 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var sensorName = sensor.name.split(':')[1].replace('anc_', '');
             vm.sensorValues[sensorName] = sensor.value;
-            if (sensorName === 'vds_focus_position') {
+            if (sensorName === vm.vds_name + '_focus_position') {
                 vm.focus = sensor.value.value;
-            } else if (sensorName === 'vds_zoom_position') {
+            } else if (sensorName === vm.vds_name + '_zoom_position') {
                 vm.zoom = sensor.value.value;
             }
         });
