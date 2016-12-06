@@ -178,7 +178,7 @@
         };
 
         api.cloneAndScheduleSB = function (id_code, sub_nr) {
-            api.cloneAndAssignSB(id_code).then(function (result) {
+            api.cloneSB(id_code).then(function (result) {
                 if (result.data.result) {
                     api.scheduleDraft(sub_nr, result.data.result.id_code);
                 } else {
