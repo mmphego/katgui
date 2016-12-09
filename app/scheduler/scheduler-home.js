@@ -444,8 +444,8 @@
             ObsSchedService.scheduleToComplete(vm.subarray.id, item.id_code);
         };
 
-        vm.moveScheduleRowToDraft = function (item) {
-            ObsSchedService.scheduleToDraft(vm.subarray.id, item.id_code);
+        vm.moveScheduleRowToApproved = function (item) {
+            ObsSchedService.scheduleToApproved(vm.subarray.id, item.id_code);
         };
 
         vm.setSchedulerMode = function (mode) {

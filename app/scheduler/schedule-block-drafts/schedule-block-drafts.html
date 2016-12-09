@@ -32,7 +32,7 @@
                     <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
                         style="margin-right: 4px;"></span>
                     </span>
-                    <div style="min-width: 8px" ng-show="$root.elementHasScrollbar('#scheduleDraftDataRepeat', true)"></div>
+                    <!-- <div style="min-width: 8px" ng-show="$root.elementHasScrollbar('#scheduleDraftDataRepeat', true)"></div> -->
                 </div>
             </md-toolbar>
             <md-virtual-repeat-container ng-click="showDatePicker = false" flex id="scheduleDraftDataRepeat">
