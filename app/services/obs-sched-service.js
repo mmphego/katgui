@@ -161,16 +161,28 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
         };
 
-        api.cloneSchedule = function (id_code) {
+        api.cloneSB = function (id_code) {
             return $http(createRequest('post', urlBase() + '/sb/' + id_code + '/clone'));
         };
 
-        api.cloneAndAssignSchedule = function (id_code, sub_nr) {
-            api.cloneSchedule(id_code).then(function (result) {
+        api.cloneAndAssignSB = function (id_code, sub_nr) {
+            api.cloneSB(id_code).then(function (result) {
                 if (result.data.result) {
                     api.assignScheduleBlock(sub_nr, result.data.result.id_code);
                 } else {
                     NotifyService.showPreDialog('Error Processing Request', 'Could not clone schedule block.');
+                }
+            }, function (error) {
+                NotifyService.showHttpErrorDialog('Error sending request', error);
+            });
+        };
+
+        api.cloneAndScheduleSB = function (id_code, sub_nr) {
+            api.cloneSB(id_code).then(function (result) {
+                if (result.data.result) {
+                    api.scheduleDraft(sub_nr, result.data.result.id_code);
+                } else {
+                    NotifyService.showPreDialog('Error Processing Request', 'Could not clone and assign schedule block.');
                 }
             }, function (error) {
                 NotifyService.showHttpErrorDialog('Error sending request', error);

@@ -66,7 +66,7 @@
                     </div>
                     <div style="width: 121px; font-size: 10px" layout="column">
                         <span>Type</span>
-                        <span>Desired Time</span>
+                        <span>End Time</span>
                     </div>
                     <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleCompleteDataRepeat')"></div>
                 </div>
@@ -91,7 +91,7 @@
                         </div>
                         <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin: 0 4px">
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">{{item.type}}</span>
-                            <span>{{item.desired_start_time}}</span>
+                            <span>{{item.actual_end_time}}</span>
                         </div>
 
                         <md-menu>
@@ -105,10 +105,13 @@
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
-                                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSchedule(item)">Clone SB</md-button>
+                                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSB(item)">Clone SB</md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndAssignSchedule(item)">Clone and Assign SB</md-button>
+                                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndAssignSB(item)">Clone and Assign SB</md-button>
+                                </md-menu-item>
+                                <md-menu-item>
+                                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndScheduleSB(item)">Clone and Schedule SB</md-button>
                                 </md-menu-item>
                             </md-menu-content>
                         </md-menu>
