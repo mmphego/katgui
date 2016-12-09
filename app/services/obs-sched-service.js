@@ -74,17 +74,17 @@
             if (tagResource) {
                 tags.push(tagResource);
             }
-
-            var content = faulty === 'set'? 'Marking resource ' + resource + ' as faulty.' : 'Clearing resource ' + resource + ' faulty flag.';
-
-            var newlog = {
-                start_time: $rootScope.utcDateTime,
-                end_time: '',
-                tags:tags,
-                user_id: $rootScope.currentUser.id,
-                content: content
-            };
-            UserLogService.editUserLog(newlog, true);
+            if (faulty === 'set') {
+                var content = 'Marking resource ' + resource + ' as faulty.';
+                var newlog = {
+                    start_time: $rootScope.utcDateTime,
+                    end_time: '',
+                    tags:tags,
+                    user_id: $rootScope.currentUser.id,
+                    content: content
+                };
+                UserLogService.editUserLog(newlog, true);
+            }
         };
 
         api.markResourceInMaintenance = function (resource, maintenance) {
@@ -96,16 +96,17 @@
                 tags.push(tagResource);
             }
 
-            var content = maintenance === 'set'? 'Setting resource ' + resource + ' in maintenance.' : 'Clearing resource ' + resource + ' maintenance flag.';
-
-            var newlog = {
-                start_time: $rootScope.utcDateTime,
-                end_time: '',
-                tags: tags,
-                user_id: $rootScope.currentUser.id,
-                content: content
-            };
-            UserLogService.editUserLog(newlog, true);
+            if (maintenance === 'set') {
+                var content = 'Setting resource ' + resource + ' in maintenance.';
+                var newlog = {
+                    start_time: $rootScope.utcDateTime,
+                    end_time: '',
+                    tags: tags,
+                    user_id: $rootScope.currentUser.id,
+                    content: content
+                };
+                UserLogService.editUserLog(newlog, true);
+            }
         };
 
         api.restartMaintenanceDevice = function (sub_nr, resource, device) {
