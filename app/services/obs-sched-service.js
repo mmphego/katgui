@@ -74,17 +74,17 @@
             if (tagResource) {
                 tags.push(tagResource);
             }
-
-            var content = faulty === 'set'? 'Marking resource ' + resource + ' as faulty.' : 'Clearing resource ' + resource + ' faulty flag.';
-
-            var newlog = {
-                start_time: $rootScope.utcDateTime,
-                end_time: '',
-                tags:tags,
-                user_id: $rootScope.currentUser.id,
-                content: content
-            };
-            UserLogService.editUserLog(newlog, true);
+            if (faulty === 'set') {
+                var content = 'Marking resource ' + resource + ' as faulty.';
+                var newlog = {
+                    start_time: $rootScope.utcDateTime,
+                    end_time: '',
+                    tags:tags,
+                    user_id: $rootScope.currentUser.id,
+                    content: content
+                };
+                UserLogService.editUserLog(newlog, true);
+            }
         };
 
         api.markResourceInMaintenance = function (resource, maintenance) {
@@ -96,16 +96,17 @@
                 tags.push(tagResource);
             }
 
-            var content = maintenance === 'set'? 'Setting resource ' + resource + ' in maintenance.' : 'Clearing resource ' + resource + ' maintenance flag.';
-
-            var newlog = {
-                start_time: $rootScope.utcDateTime,
-                end_time: '',
-                tags: tags,
-                user_id: $rootScope.currentUser.id,
-                content: content
-            };
-            UserLogService.editUserLog(newlog, true);
+            if (maintenance === 'set') {
+                var content = 'Setting resource ' + resource + ' in maintenance.';
+                var newlog = {
+                    start_time: $rootScope.utcDateTime,
+                    end_time: '',
+                    tags: tags,
+                    user_id: $rootScope.currentUser.id,
+                    content: content
+                };
+                UserLogService.editUserLog(newlog, true);
+            }
         };
 
         api.restartMaintenanceDevice = function (sub_nr, resource, device) {
@@ -161,16 +162,28 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
         };
 
-        api.cloneSchedule = function (id_code) {
+        api.cloneSB = function (id_code) {
             return $http(createRequest('post', urlBase() + '/sb/' + id_code + '/clone'));
         };
 
-        api.cloneAndAssignSchedule = function (id_code, sub_nr) {
-            api.cloneSchedule(id_code).then(function (result) {
+        api.cloneAndAssignSB = function (id_code, sub_nr) {
+            api.cloneSB(id_code).then(function (result) {
                 if (result.data.result) {
                     api.assignScheduleBlock(sub_nr, result.data.result.id_code);
                 } else {
                     NotifyService.showPreDialog('Error Processing Request', 'Could not clone schedule block.');
+                }
+            }, function (error) {
+                NotifyService.showHttpErrorDialog('Error sending request', error);
+            });
+        };
+
+        api.cloneAndScheduleSB = function (id_code, sub_nr) {
+            api.cloneSB(id_code).then(function (result) {
+                if (result.data.result) {
+                    api.scheduleDraft(sub_nr, result.data.result.id_code);
+                } else {
+                    NotifyService.showPreDialog('Error Processing Request', 'Could not clone and assign schedule block.');
                 }
             }, function (error) {
                 NotifyService.showHttpErrorDialog('Error sending request', error);

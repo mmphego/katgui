@@ -421,12 +421,15 @@
             ObsSchedService.cancelExecuteSchedule(vm.subarray.id, item.id_code);
         };
 
-        vm.cloneSchedule = function (item) {
-            ObsSchedService.cloneSchedule(item.id_code);
+        vm.cloneSB = function (item) {
+            ObsSchedService.cloneSB(item.id_code);
         };
 
-        vm.cloneAndAssignSchedule = function (item) {
-            ObsSchedService.cloneAndAssignSchedule(item.id_code, vm.subarray.id);
+        vm.cloneAndAssignSB = function (item) {
+            ObsSchedService.cloneAndAssignSB(item.id_code, vm.subarray.id);
+        };
+        vm.cloneAndScheduleSB = function (item) {
+            ObsSchedService.cloneAndScheduleSB(item.id_code, vm.subarray.id);
         };
 
         vm.viewSBTasklog = function (sb, mode) {

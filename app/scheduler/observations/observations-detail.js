@@ -51,7 +51,7 @@
             {label: 'Description', value: 'description'},
             {label: 'State', value: 'state'},
             {label: 'Outcome', value: 'outcome'},
-            {label: 'Date', value: 'desired_start_time'},
+            {label: 'Date', value: 'actual_end_time'},
             {label: 'State', value: 'state'},
             {label: 'Type', value: 'type'}
         ];

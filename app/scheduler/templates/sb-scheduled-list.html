@@ -59,11 +59,15 @@
                 </md-menu-item>
                 <md-menu-divider></md-menu-divider>
                 <md-menu-item>
-                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSchedule(item)" title="Clone Schedule Block">Clone Schedule</md-button>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSB(item)" title="Clone Schedule Block">Clone SB</md-button>
                 </md-menu-item>
                 <md-menu-item>
-                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndAssignSchedule(item)"
-                        title="{{'Clone and Assign to Subarray ' + vm.subarray.id}}">Clone and Assign Schedule</md-button>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndAssignSB(item)"
+                        title="{{'Clone and Assign to Subarray ' + vm.subarray.id}}">Clone and Assign SB</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndScheduleSB(item)"
+                        title="{{'Clone and Schedule on Subarray ' + vm.subarray.id}}">Clone and Schedule SB</md-button>
                 </md-menu-item>
                 <md-menu-divider></md-menu-divider>
                 <md-menu-item>
