@@ -40,7 +40,8 @@
         vm.stepTimeValue = 1;
 
         vm.toggleFloodLights = function () {
-            vm.floodlightsOn(vm.sensorValues[vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
+            vm.floodlightsOn(
+              vm.sensorValues[vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
                 .then(function (result) {
                     var splitMessage = result.data.result.split(' ');
                     var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
@@ -55,7 +56,10 @@
         };
 
         vm.SelectedSource = function (selected_item) {
-            vm.vds_name = selected_item.name.split('_')[0];
+            var vds_names = {'core_south_camera':'cores',
+              'core_north_camera':'coren',
+              'high_elevation_camera':'high'};
+            vm.vds_name = 'vds' + vds_names[selected_item.name];
         }
 
         vm.floodlightsOn = function (onOff) {

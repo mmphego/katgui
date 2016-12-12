@@ -24,8 +24,8 @@
             <div md-theme="{{themePrimaryButtons}}" class="video-pan-controls" layout="row">
                 <div layout="column" layout-align="end center">
                     <div flex layout="column" style="width: 100%">
-                        <div layout="row"><span flex>Pan: </span><span>{{vm.sensorValues.vds_pan_position.value}}</span></div>
-                        <div layout="row"><span flex>Tilt: </span><span>{{vm.sensorValues.vds_tilt_position.value}}</span></div>
+                        <div layout="row"><span flex>Pan: </span><span>{{vm.sensorValues[vm.vds_name + '_pan_position'].value}}</span></div>
+                        <div layout="row"><span flex>Tilt: </span><span>{{vm.sensorValues[vm.vds_name + '_tilt_position'].value}}</span></div>
                         <div layout="row"><span flex>Last Go To Preset: </span><span>{{vm.lastPreset ? vm.lastPreset : 'None'}}</span></div>
                     </div>
                     <div layout="row">
@@ -92,8 +92,9 @@
     </div>
 
     <div layout="row" layout-align="start center" class="floodlights-button" md-theme="{{themePrimaryButtons}}">
-        <span>Floodlights {{vm.sensorValues.vds_flood_lights_on.value? 'on' : 'off'}}</span>
-        <md-switch ng-disabled="!vm.sensorValues.vds_flood_lights_on" ng-model="vm.sensorValues.vds_flood_lights_on.value"
+        <span>Floodlights {{vm.sensorValues[vm.vds_name + '_flood_lights_on'].value? 'on' : 'off'}}</span>
+        <md-switch ng-disabled="!vm.sensorValues[vm.vds_name + '_flood_lights_on'].value"
+                   ng-model="vm.sensorValues[vm.vds_name + '_flood_lights_on'].value"
                    ng-click="vm.toggleFloodLights()">
         </md-switch>
     </div>
