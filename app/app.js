@@ -513,7 +513,7 @@
             parent: schedulerHome,
             url: '/drafts',
             templateUrl: 'app/scheduler/schedule-block-drafts/schedule-block-drafts.html',
-            title: 'Scheduler.Drafts'
+            title: 'Scheduler.Approved Drafts'
         };
         var subArrays = {
             name: 'scheduler.subarrays',

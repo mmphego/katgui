@@ -8,10 +8,10 @@
         var vm = this;
 
         vm.schedulerNavData = [{
-            name: 'SB Drafts',
+            name: 'SB Approved',
             textOffset: -10,
             state: 'scheduler.drafts',
-            title: 'Manage Schedule Block Drafts'
+            title: 'Manage Schedule Block Approved'
         }, {
             name: 'Observations',
             textOffset: 0,

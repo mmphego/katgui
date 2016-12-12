@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, NotifyService, $rootScope) {
+    function SbDraftsCtrl($mdDialog, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, NotifyService, $rootScope) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;
@@ -94,6 +94,26 @@
             vm.showDatePicker = false;
             vm.currentSelectedDate = moment.utc(newDate);
             vm.currentRowDatePickerIndex = -1;
+        };
+
+        vm.editInstructionSet = function (sb, event) {
+            var confirm = $mdDialog.prompt()
+                .title('Edit Instruction Set for ' + sb.id_code)
+                .textContent('')
+                .placeholder('Instruction Set')
+                .ariaLabel('Instruction Set')
+                .initialValue(sb.instruction_set)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Save')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                sb.instruction_set = result;
+                vm.saveDraft(sb);
+            }, function() {
+                NotifyService.showSimpleToast('Cancelled Instruction Set edit for ' + sb.id_code);
+            });
         };
 
         vm.openDatePicker = function (item, $event, $index) {

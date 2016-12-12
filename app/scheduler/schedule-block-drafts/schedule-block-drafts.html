@@ -32,7 +32,7 @@
                     <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}"
                         style="margin-right: 4px;"></span>
                     </span>
-                    <!-- <div style="min-width: 8px" ng-show="$root.elementHasScrollbar('#scheduleDraftDataRepeat', true)"></div> -->
+                    <!-- <div style="min-width: 8p§x" ng-show="$root.elementHasScrollbar('#scheduleDraftDataRepeat', true)"></div> -->
                 </div>
             </md-toolbar>
             <md-virtual-repeat-container ng-click="showDatePicker = false" flex id="scheduleDraftDataRepeat">
@@ -72,13 +72,10 @@
                         <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
                         <md-menu-content>
                             <md-menu-item>
-                                <md-button ng-disabled="!$root.expertOrLO && $root.currentUser.req_role !== 'control_authority'" ng-click="item.editing = true">Edit Draft</md-button>
+                                <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="item.editing = true">Edit Draft</md-button>
                             </md-menu-item>
                             <md-menu-item>
-                                <md-button ng-disabled="item.type !== 'OBSERVATION' || (!item.sub_nr && (!$root.expertOrLO && $root.currentUser.req_role !== 'control_authority'))"
-                                    title="{{!item.sub_nr ? 'Assign to a Subarray before verifying' : ''}}"
-                                    ng-click="vm.verifyDraft(item)">Verify Draft
-                                </md-button>
+                                <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.editInstructionSet(item, $event)">Edit Instruction Set</md-button>
                             </md-menu-item>
                             <md-menu-item>
                                 <md-button ng-disabled="item.type !== 'OBSERVATION'" ng-click="vm.viewSBTasklog(item)">View Dryrun</md-button>
