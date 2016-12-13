@@ -201,16 +201,17 @@
             vm.initApp();
         });
 
-        $rootScope.elementHasScrollbar = function (elementId, queryFirstChild) {
-            var element = document.querySelector(elementId);
-            if (queryFirstChild && element) {
-                element = element.children[0];
-            }
-            if (element) {
-                return element.offsetWidth - element.scrollWidth >= 8;
-            }
-            return false;
-        };
+        // TODO this causes high cpu load when using Firefox!
+        // $rootScope.elementHasScrollbar = function (elementId, queryFirstChild) {
+        //     var element = document.querySelector(elementId);
+        //     if (queryFirstChild && element) {
+        //         element = element.children[0];
+        //     }
+        //     if (element) {
+        //         return element.offsetWidth - element.scrollWidth >= 8;
+        //     }
+        //     return false;
+        // };
         $rootScope.connectEvents = function () {
             MonitorService.connectListener()
                 .then(function () {
@@ -512,7 +513,7 @@
             parent: schedulerHome,
             url: '/drafts',
             templateUrl: 'app/scheduler/schedule-block-drafts/schedule-block-drafts.html',
-            title: 'Scheduler.Drafts'
+            title: 'Scheduler.Approved Drafts'
         };
         var subArrays = {
             name: 'scheduler.subarrays',

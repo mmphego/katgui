@@ -11,9 +11,9 @@
     <div ng-if="vm.subarrays.length > 0" layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}"
         style="margin-bottom: 4px; padding: 4px 0 4px 0; min-height: 32px; max-height: 32px"
         class="hover-opacity md-whiteframe-z3">
-        <md-button class="thin-nav-button" title="Schedule Block Drafts" ng-disabled="vm.currentState() === 'scheduler.drafts'"
+        <md-button class="thin-nav-button" title="Schedule Block Approved" ng-disabled="vm.currentState() === 'scheduler.drafts'"
             ng-click="vm.stateGo('scheduler.drafts')">
-            <span>SB Drafts</span>
+            <span>SB Approved</span>
         </md-button>
         <span flex></span>
         <md-button ng-show="vm.subarray" class="md-primary md-raised thin-nav-button" style="margin: 0"

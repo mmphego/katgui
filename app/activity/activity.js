@@ -202,6 +202,7 @@
             });
         });
 
+        // TODO update the sb_events to work with the timeline
         var unbindScheduleUpdate = $rootScope.$on('sb_schedule_update', function(event, sb) {
             var sbIndex = _.findIndex(vm.timelineData, function(item) {
                 return sb.id_code === item.id_code;

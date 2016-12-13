@@ -47,8 +47,8 @@
                         ng-click="parent.vm.verifySB(item)">Verify Schedule</md-button>
                 </md-menu-item>
                 <md-menu-item>
-                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToDraft(item)"
-                        title="Move Schedule Block to Draft">Move to Draft</md-button>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToApproved(item)"
+                        title="Move Schedule Block to Approved">Move to Approved</md-button>
                 </md-menu-item>
                 <md-menu-item>
                     <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToFinished(item)"

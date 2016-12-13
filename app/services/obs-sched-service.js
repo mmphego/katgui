@@ -29,6 +29,8 @@
         api.configLabels = [];
         api.resourceTemplates = [];
 
+        api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
+
         api.handleRequestResponse = function (request, defer) {
             var deferred;
             if (defer) {
@@ -125,8 +127,8 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id + '/schedule')));
         };
 
-        api.scheduleToDraft = function (sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/to-draft')));
+        api.scheduleToApproved = function (sub_nr, id_code) {
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/to-approved')));
         };
 
         api.scheduleToComplete = function (sub_nr, id_code) {
@@ -221,11 +223,11 @@
         api.getScheduleBlocks = function () {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
             api.scheduleDraftData.splice(0, api.scheduleDraftData.length);
-            $http(createRequest('get', urlBase() + '/sb'))
+            $http(createRequest('get', urlBase() + '/sb/approved'))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
                     for (var i in jsonResult) {
-                        if (jsonResult[i].state === 'DRAFT') {
+                        if (api.draftArrayStates.indexOf(jsonResult[i].state) > -1) {
                             api.scheduleDraftData.push(jsonResult[i]);
                         }
                     }
@@ -401,72 +403,83 @@
             }
         };
 
-        api.receivedScheduleMessage = function (changes) {
+        api.receivedScheduleMessage = function (message) {
             $rootScope.$apply(function () {
                 var scheduleDataToAdd = [];
                 var draftDataToAdd = [];
                 var completedDataToAdd = [];
                 var orderChangeCall = false;
 
-                for (var i = 0; i < changes.length; i++) {
-                    var sb = changes[i].value;
-                    var action = changes[i].command;
-                    if (action.startsWith('sb_remove')) {
-                        //only drafts can be deleted in the db
-                        var index = _.findLastIndex(api.scheduleDraftData, {id: parseInt(action.split('.')[1])});
-                        if (index > -1) {
-                            NotifyService.showSimpleToast('SB ' + api.scheduleDraftData[index].id_code + ' has been removed');
-                            api.scheduleDraftData.splice(index, 1);
-                        }
-                    } else if (action.startsWith('sb_update')) {
-                        var draftIndex = _.findLastIndex(api.scheduleDraftData, {id: sb.id});
-                        var scheduledIndex = _.findLastIndex(api.scheduleData, {id: sb.id});
+                var sb = message.value;
+                var commandList = message.command.split(' ');
+                var table = commandList[0];
+                var action = commandList[1];
+                var id_to_action = commandList[2];
+                if (action === 'delete') {
+                    //only drafts can be deleted in the db
+                    var index = _.findLastIndex(api.scheduleDraftData, {id: parseInt(id_to_action)});
+                    if (index > -1) {
+                        NotifyService.showSimpleToast('SB ' + api.scheduleDraftData[index].id_code + ' has been removed');
+                        api.scheduleDraftData.splice(index, 1);
+                    }
+                } else if (action === 'update') {
+                    var draftIndex = _.findLastIndex(api.scheduleDraftData, {id: sb.id});
+                    var scheduledIndex = _.findLastIndex(api.scheduleData, {id: sb.id});
 
-                        if (draftIndex > -1 && sb.state === 'DRAFT') {
+                    if (api.draftArrayStates.indexOf(sb.state) > -1) {
+                        if (draftIndex > -1) {
                             api.scheduleDraftData[draftIndex] = sb;
-                        } else if (draftIndex === -1 && sb.state === 'DRAFT'){
+                        } else if (draftIndex === -1) {
+                            //sb needs to be moved from scheduled to drafts
                             if (scheduledIndex > -1) {
                                 api.scheduleData.splice(scheduledIndex, 1);
                                 $rootScope.$emit('sb_schedule_remove', sb);
                             }
                             draftDataToAdd.push(sb);
-                            // api.scheduleDraftData.push(sb);
                         }
-
-                        if (scheduledIndex > -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
+                    } else if (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE') {
+                        if (scheduledIndex > -1) {
                             api.scheduleData[scheduledIndex] = sb;
                             $rootScope.$emit('sb_schedule_update', sb);
-                        } else if (scheduledIndex === -1 && (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE')) {
+                        } else if (scheduledIndex === -1) {
+                            //sb needs to be moved from drafts to scheduled
                             if (draftIndex > -1) {
                                 api.scheduleDraftData.splice(draftIndex, 1);
                             }
-                            // api.scheduleData.push(sb);
-                            scheduleDataToAdd.push(sb);
+                            //but scheduled's order is important, so get it from katportal
+                            orderChangeCall = true;
+                            // scheduleDataToAdd.push(sb);
                         }
-                    } else if (action.startsWith('sb_add')) {
-                        if (sb.state === 'DRAFT') {
-                            // api.scheduleDraftData.push(sb);
-                            draftDataToAdd.push(sb);
-                        } else if (sb.state === 'ACTIVE' || sb.state === 'SCHEDULED') {
-                            // api.scheduleData.push(sb);
-                            scheduleDataToAdd.push(sb);
+                    } else {
+                        var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id: sb.id});
+                        if (completedIndex > -1) {
+                            api.scheduleCompletedData[completedIndex] = sb;
+                        } else if (scheduledIndex > -1) {
+                            api.scheduleData.splice(scheduledIndex, 1);
+                            completedDataToAdd.push(sb);
+                        } else if (draftIndex > -1) {
+                            api.scheduleDraftData.splice(draftIndex, 1);
+                            completedDataToAdd.push(sb);
                         } else {
-                            // api.scheduleCompletedData.push(sb);
                             completedDataToAdd.push(sb);
                         }
-                        NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
-                    } else if (action.startsWith('sb_order_change')) {
-                        orderChangeCall = true;
-                        $rootScope.$emit('sb_order_change', '');
-                    } else if (action.startsWith('sb_completed_change')) {
-                        $rootScope.$emit('sb_completed_change', '');
-                    } else {
-                        $log.error('Dangling ObsSchedService ' + action + ' message for:');
-                        $log.error(sb);
                     }
+                } else if (action === 'insert') {
+                    if (api.draftArrayStates.indexOf(sb.state) > -1) {
+                        draftDataToAdd.push(sb);
+                    } else if (sb.state === 'ACTIVE' || sb.state === 'SCHEDULED') {
+                        scheduleDataToAdd.push(sb);
+                        $rootScope.$emit('sb_schedule_insert', sb);
+                    } else {
+                        completedDataToAdd.push(sb);
+                    }
+                    NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
+                } else {
+                    $log.error('Dangling ObsSchedService ' + action + ' message for:');
+                    $log.error(sb);
                 }
+
                 if (scheduleDataToAdd.length) {
-                    $rootScope.$emit('sb_schedule_add', scheduleDataToAdd);
                     Array.prototype.push.apply(api.scheduleData, scheduleDataToAdd);
                 }
                 if (draftDataToAdd.length) {
@@ -477,7 +490,8 @@
                 }
                 if (orderChangeCall) {
                     NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
-                    api.scheduleGetScheduledScheduleBlocksWithTimeout();
+                    // api.scheduleGetScheduledScheduleBlocksWithTimeout();
+                    api.getScheduledScheduleBlocks();
                 }
             });
         };
