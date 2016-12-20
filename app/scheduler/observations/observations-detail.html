@@ -51,11 +51,11 @@
         <div style="margin-top: 8px" layout="column">
             <md-toolbar class="panel-toolbar md-whiteframe-z1" style="min-height: 64px; max-height: 64px" layout="row"
                 layout-align="start center">
-                <span flex style="margin-left: 8px; margin-top: -7px;" ng-click="vm.showCompletedSBs = !vm.showCompletedSBs">Completed Schedule Blocks</span>
+                <span flex style="margin-left: 8px; margin-top: -7px;" ng-click="vm.showCompletedSBs = !vm.showCompletedSBs; vm.getCompletedScheduleBlocks()">Completed Schedule Blocks</span>
                 <input type="search" style="font-size: 14px; position: absolute; top: 8px; right: 28px; width: 140px; background: transparent; border: 0"
                     ng-model="vm.q3" placeholder="Search Schedules..." />
                 <span style="position: absolute; top: 4px; right: 4px" class="fa hover-opacity" ng-class="{'fa-chevron-down': vm.showCompletedSBs, 'fa-chevron-up': !vm.showCompletedSBs}"
-                    md-ink-ripple title="Hide completed schedule blocks" ng-click="vm.showCompletedSBs = !vm.showCompletedSBs"></span>
+                    md-ink-ripple title="Hide completed schedule blocks" ng-click="vm.showCompletedSBs = !vm.showCompletedSBs; vm.getCompletedScheduleBlocks()"></span>
                 <div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end" ng-click="$event.stopPropagation()"
                     style="cursor: default">
                     <span style="width: 120px" class="subheader-text">ID</span>
@@ -74,7 +74,7 @@
 
             <div style="padding: 0; max-height: 250px; min-height: 250px; overflow: auto" ng-show="vm.showCompletedSBs"
                 class="md-whiteframe-z1" id="scheduleCompleteDataRepeat">
-                <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray.id} | regexSearch:vm.completedFields:vm.q3 track by $index"
+                <div ng-repeat="item in vm.scheduleCompletedData | filter:{sub_nr:vm.subarray.id} | regexSearch:vm.completedFields:vm.q3 | orderBy:'actual_end_time':true track by $index"
                     class="schedule-draft-item" layout="column" ng-click="vm.setSelectedSchedule(item); $event.stopPropagation()"
                     ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedSchedule}">
 

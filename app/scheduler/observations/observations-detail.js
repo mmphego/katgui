@@ -36,14 +36,20 @@
         $scope.parent = $scope.$parent;
         vm.iAmAtLeastCA = $scope.$parent.vm.iAmAtLeastCA;
 
+        vm.getCompletedScheduleBlocks = function () {
+            if (vm.showCompletedSBs) {
+                ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
+            }
+        };
+
         if (!$scope.$parent.vm.subarray) {
             $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
                 vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
-                ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
+                vm.getCompletedScheduleBlocks();
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;
-            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
+            vm.getCompletedScheduleBlocks();
         }
 
         vm.completedFields = [
@@ -136,10 +142,6 @@
                     targetEvent: event
                 });
         };
-
-        vm.cancelListeningToCompletedUpdates = $rootScope.$on('sb_completed_change',function () {
-            ObsSchedService.getCompletedScheduleBlocks(vm.subarray.id, 100);
-        });
 
         $scope.$on('$destroy', function () {
             if (vm.progressInterval) {
