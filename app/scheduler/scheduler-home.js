@@ -410,15 +410,15 @@
         };
 
         vm.executeSchedule = function (item) {
-            ObsSchedService.executeSchedule(vm.subarray.id, item.id_code);
+            ObsSchedService.executeSchedule(item.sub_nr, item.id_code);
         };
 
         vm.stopExecuteSchedule = function (item) {
-            ObsSchedService.stopSchedule(vm.subarray.id, item.id_code);
+            ObsSchedService.stopSchedule(item.sub_nr, item.id_code);
         };
 
         vm.cancelExecuteSchedule = function (item) {
-            ObsSchedService.cancelExecuteSchedule(vm.subarray.id, item.id_code);
+            ObsSchedService.cancelExecuteSchedule(item.sub_nr, item.id_code);
         };
 
         vm.cloneSB = function (item) {
@@ -426,10 +426,10 @@
         };
 
         vm.cloneAndAssignSB = function (item) {
-            ObsSchedService.cloneAndAssignSB(item.id_code, vm.subarray.id);
+            ObsSchedService.cloneAndAssignSB(item.id_code, item.sub_nr);
         };
         vm.cloneAndScheduleSB = function (item) {
-            ObsSchedService.cloneAndScheduleSB(item.id_code, vm.subarray.id);
+            ObsSchedService.cloneAndScheduleSB(item.id_code, item.sub_nr);
         };
 
         vm.viewSBTasklog = function (sb, mode) {
@@ -441,11 +441,11 @@
         };
 
         vm.moveScheduleRowToFinished = function (item) {
-            ObsSchedService.scheduleToComplete(vm.subarray.id, item.id_code);
+            ObsSchedService.scheduleToComplete(item.sub_nr, item.id_code);
         };
 
         vm.moveScheduleRowToApproved = function (item) {
-            ObsSchedService.scheduleToApproved(vm.subarray.id, item.id_code);
+            ObsSchedService.scheduleToApproved(item.sub_nr, item.id_code);
         };
 
         vm.setSchedulerMode = function (mode) {
@@ -453,7 +453,7 @@
         };
 
         vm.verifySB = function (sb) {
-            ObsSchedService.verifyScheduleBlock(vm.subarray.id, sb.id_code);
+            ObsSchedService.verifyScheduleBlock(sb.sub_nr, sb.id_code);
         };
 
         $scope.$on('$destroy', function () {

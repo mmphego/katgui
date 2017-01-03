@@ -8,8 +8,6 @@
 
         var vm = this;
 
-        vm.draftListProcessingServerCall = false;
-        vm.scheduleListProcessingServerCall = false;
         vm.selectedSchedule = null;
         vm.modeTypes = ['queue', 'manual'];
         vm.scheduleData = ObsSchedService.scheduleData;
@@ -147,7 +145,6 @@
             if (vm.progressInterval) {
                 $interval.cancel(vm.progressInterval);
             }
-            vm.cancelListeningToCompletedUpdates();
             if (vm.unbindDelegateWatch) {
                 vm.unbindDelegateWatch();
             }
