@@ -115,7 +115,9 @@
                     $log.error(messages);
                 } else if (messages.result.msg_channel === 'time:time') {
                     api.lastSyncedTime = messages.result.msg_data + 0.5;
-                } else if (messages.id === 'redis-reconnect') {
+                } else if (messages.result.msg_channel === 'time:lst') {
+                    api.lastSyncedLST = messages.result.msg_data;
+                }else if (messages.id === 'redis-reconnect') {
                     api.subscribeToDefaultChannels();
                     if (SensorsService.connected) {
                         SensorsService.subscribe('*');
