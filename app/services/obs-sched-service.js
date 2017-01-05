@@ -296,6 +296,8 @@
             return deferred.promise;
         };
 
+        api.debounceGetScheduledScheduleBlocks = _.debounce(api.getScheduledScheduleBlocks, 1000);
+
         api.getCompletedScheduleBlocks = function (sub_nr, max_nr) {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
             api.scheduleCompletedData.splice(0, api.scheduleCompletedData.length);
@@ -434,6 +436,7 @@
                         if (scheduledIndex > -1) {
                             api.scheduleData.splice(scheduledIndex, 1);
                             $rootScope.$emit('sb_schedule_remove', sb);
+                            orderChangeCall = true;
                         }
                         draftDataToAdd.push(sb);
                     }
@@ -441,15 +444,13 @@
                     if (scheduledIndex > -1) {
                         api.scheduleData[scheduledIndex] = sb;
                         $rootScope.$emit('sb_schedule_update', sb);
-                    } else if (scheduledIndex === -1) {
-                        //sb needs to be moved from drafts to scheduled
-                        if (draftIndex > -1) {
-                            api.scheduleDraftData.splice(draftIndex, 1);
-                        }
-                        //but scheduled's order is important, so get it from katportal
-                        orderChangeCall = true;
-                        // scheduleDataToAdd.push(sb);
+
+                    } else if (scheduledIndex === -1 && draftIndex > -1) {
+                        api.scheduleDraftData.splice(draftIndex, 1);
                     }
+                    // always call order change when this happens
+                    // because it means that the states of sb's changed
+                    orderChangeCall = true;
                 } else {
                     var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id: sb.id});
                     if (completedIndex > -1) {
@@ -457,6 +458,7 @@
                     } else if (scheduledIndex > -1) {
                         api.scheduleData.splice(scheduledIndex, 1);
                         completedDataToAdd.push(sb);
+                        orderChangeCall = true;
                     } else if (draftIndex > -1) {
                         api.scheduleDraftData.splice(draftIndex, 1);
                         completedDataToAdd.push(sb);
@@ -489,23 +491,11 @@
                 Array.prototype.push.apply(api.scheduleCompletedData, completedDataToAdd);
             }
             if (orderChangeCall) {
-                NotifyService.showSimpleToast('Reloading sb order from KATPortal.');
-                // api.scheduleGetScheduledScheduleBlocksWithTimeout();
-                api.getScheduledScheduleBlocks();
+                api.debounceGetScheduledScheduleBlocks();
             }
             if (!$rootScope.$$phase) {
                 $rootScope.$digest();
             }
-        };
-
-        api.scheduleGetScheduledScheduleBlocksWithTimeout = function () {
-            if (api.getScheduledScheduleBlocksTimeout) {
-                $timeout.cancel(api.getScheduledScheduleBlocksTimeout);
-            }
-            api.getScheduledScheduleBlocksTimeout = $timeout(function () {
-                api.getScheduledScheduleBlocks();
-                api.getScheduleBlocks();
-            }, 1000);
         };
 
         api.listConfigLabels = function () {
