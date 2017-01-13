@@ -52,7 +52,7 @@
                 <!-- <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)" -->
                 <div ng-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse) track by $index" class="resource-sensor-item" ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
                     ng-class="{'selected-for-chart-row': sensor.selectedForChart}" layout="row" layout-align="start center">
-                    <span title="{{'Description: ' + sensor.description + ' - Units: ' + sensor.units + ' - Type: ' + sensor.type}}" class="resource-sensor-name">{{sensor.name}}</span>
+                    <span title="{{sensor.python_identifier + ' - Description: ' + sensor.description + ' - Units: ' + sensor.units + ' - Type: ' + sensor.type}}" class="resource-sensor-name">{{sensor.name}}</span>
                     <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
                     <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
                     <span title="{{sensor.value}}" class="resource-sensor-value-item" ng-click="vm.displaySensorValue($event, sensor); $event.stopPropagation();">{{sensor.value}}</span>
