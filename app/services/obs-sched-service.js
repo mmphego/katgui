@@ -493,10 +493,16 @@
             if (orderChangeCall) {
                 api.debounceGetScheduledScheduleBlocks();
             }
+            api.debounceRootScopeSafeDigest();
+        };
+
+        api.debounceRootScopeSafeDigest = _.debounce(rootScopeSafeDigest, 1000);
+
+        function rootScopeSafeDigest() {
             if (!$rootScope.$$phase) {
                 $rootScope.$digest();
             }
-        };
+        }
 
         api.listConfigLabels = function () {
             api.configLabels.splice(0, api.configLabels.length);

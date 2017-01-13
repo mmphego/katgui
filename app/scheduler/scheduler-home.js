@@ -410,11 +410,15 @@
         };
 
         vm.executeSchedule = function (item) {
-            ObsSchedService.executeSchedule(item.sub_nr, item.id_code);
+            if (vm.iAmAtLeastCA() && !item.pendingVerify && item.state !== 'ACTIVE' && item.obs_readiness === 'READY_TO_EXECUTE') {
+                ObsSchedService.executeSchedule(item.sub_nr, item.id_code);
+            }
         };
 
         vm.stopExecuteSchedule = function (item) {
-            ObsSchedService.stopSchedule(item.sub_nr, item.id_code);
+            if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
+                ObsSchedService.stopSchedule(item.sub_nr, item.id_code);
+            }
         };
 
         vm.cancelExecuteSchedule = function (item) {
