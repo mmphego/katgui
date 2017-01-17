@@ -380,25 +380,7 @@
         };
 
         vm.freeSubarray = function () {
-            vm.subarray.showProgress = true;
-            ObsSchedService.freeSubarray(vm.subarray.id).then(function (success) {
-                $timeout(function () {
-                    var dataResource = 'data_' + vm.subarray.id;
-                    if (vm.subarray.state === 'inactive' && _.findWhere(ObsSchedService.poolResourcesFree, {name: dataResource})) {
-                        ObsSchedService.assignResourcesToSubarray(vm.subarray.id, dataResource).then(function () {
-                            vm.subarray.showProgress = false;
-                        });
-                    } else {
-                        $log.error(
-                            'Could not assign ' + dataResource + ', because subarray_' +
-                            vm.subarray.id + ' was still in state: ' + vm.subarray.state +
-                            '. Or the requested resource is not a free resource (does it exist in this system?).');
-                    }
-                }, 100);
-                vm.subarray.showProgress = false;
-            }, function () {
-                vm.subarray.showProgress = false;
-            });
+            ObsSchedService.freeSubarray(vm.subarray.id);
         };
 
         vm.listResourceMaintenanceDevicesDialog = function (resource, $event) {
