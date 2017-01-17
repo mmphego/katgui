@@ -6,7 +6,7 @@
 
         <md-progress-linear md-theme="green" ng-show="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
             md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{item.progress}}"
-            style="position: absolute; left: 0; right: 0; opacity: 0.8;">
+            style="position: absolute; left: 0; right: 0">
         </md-progress-linear>
         <md-progress-linear md-theme="grey" ng-show="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
             md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
