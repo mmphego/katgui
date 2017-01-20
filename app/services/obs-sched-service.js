@@ -120,7 +120,7 @@
         };
 
         api.deleteScheduleDraft = function (id) {
-            return $http(createRequest('post', urlBase() + '/sb/' + id + '/delete'));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + id + '/delete')));
         };
 
         api.scheduleDraft = function (sub_nr, id) {
