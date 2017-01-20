@@ -120,7 +120,15 @@
         };
 
         api.deleteScheduleDraft = function (id) {
-            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + id + '/delete')));
+            $http(createRequest('post', urlBase() + '/sb/' + id + '/delete')).then(function (result) {
+                if (result.data.error) {
+                    NotifyService.showSimpleDialog('Error deleting Schedule Block', result.data.error);
+                } else {
+                    NotifyService.showSimpleToast(result.data.result);
+                }
+            }, function (error) {
+                NotifyService.showHttpErrorDialog('Error sending request', error.data.message);
+            });
         };
 
         api.scheduleDraft = function (sub_nr, id) {

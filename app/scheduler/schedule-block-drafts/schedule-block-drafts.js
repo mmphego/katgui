@@ -64,16 +64,7 @@
         };
 
         vm.removeDraft = function (item) {
-            ObsSchedService.deleteScheduleDraft(item.id_code)
-                .then(function (result) {
-                    var index = ObsSchedService.scheduleDraftData.indexOf(item);
-                    if (index > -1) {
-                        ObsSchedService.scheduleDraftData.splice(index, 1);
-                    }
-                    NotifyService.showSimpleToast('Deleted SB ' + item.id_code);
-                }, function (result) {
-                    NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code, result.data);
-                });
+            ObsSchedService.deleteScheduleDraft(item.id_code);
         };
 
         vm.setSelectedScheduleDraft = function (selectedDraft, dontDeselectOnSame) {
