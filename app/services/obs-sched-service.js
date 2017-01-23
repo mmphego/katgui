@@ -143,15 +143,6 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/complete')));
         };
 
-        api.setSchedulePriority = function (id_code, priority) {
-            $http(createRequest('post', urlBase() + '/sb/' + id_code + '/priority/' + priority))
-                .then(function (result) {
-                    NotifyService.showSimpleToast('Set Priority ' + id_code + ' to ' + priority);
-                }, function (error) {
-                    NotifyService.showHttpErrorDialog('Error setting SB priority', error);
-                });
-        };
-
         api.verifyScheduleBlock = function (sub_nr, id_code) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/verify')));
         };
