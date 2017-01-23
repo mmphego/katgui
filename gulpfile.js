@@ -55,7 +55,6 @@ gulp.task('css:material', ['clean'], function () {
 gulp.task('css:main', ['clean'], function () {
 
     return gulp.src(['node_modules/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
-        'node_modules/angular-dashboard-framework/dist/angular-dashboard-framework.min.css',
         'app/app.less'])
         .pipe(insert.prepend('@fa-font-path: "fonts";'))
         .pipe(less().on('error', util.log))

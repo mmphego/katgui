@@ -299,41 +299,6 @@
                 });
         };
 
-        vm.setPriority = function (sb, event) {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.title = 'Set Priority - ' + sb.id_code + ' (current: ' + sb.priority + ')';
-                        $scope.priorities = ["LOW", "HIGH"];
-                        $scope.currentPriority = sb.priority;
-
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                        $scope.setPriority = function (priority) {
-                            ObsSchedService.setSchedulePriority(sb.id_code, priority);
-                        };
-                    },
-                    template:
-                    '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
-                    '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
-                    '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
-                    '           <span flex style="margin: 8px;">{{::title}}</span>' +
-                    '       </md-toolbar>' +
-                    '       <div flex layout="column">' +
-                    '           <div layout="row" layout-align="center center" ng-repeat="priority in priorities track by $index" ng-click="setPriority(priority); hide()" class="config-label-list-item">' +
-                    '               <b>{{priority}}</b>' +
-                    '           </div>' +
-                    '       </div>' +
-                    '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                    '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
-                    '       </div>' +
-                    '   </div>' +
-                    '</md-dialog>',
-                    targetEvent: event
-                });
-        };
-
         vm.setSubarrayInMaintenance = function () {
             ObsSchedService.setSubarrayMaintenance(vm.subarray.id, vm.subarray.maintenance ? 'clear' : 'set');
         };
@@ -392,15 +357,19 @@
         };
 
         vm.executeSchedule = function (item) {
-            ObsSchedService.executeSchedule(vm.subarray.id, item.id_code);
+            if (vm.iAmAtLeastCA() && !item.pendingVerify && item.state !== 'ACTIVE' && item.obs_readiness === 'READY_TO_EXECUTE') {
+                ObsSchedService.executeSchedule(item.sub_nr, item.id_code);
+            }
         };
 
         vm.stopExecuteSchedule = function (item) {
-            ObsSchedService.stopSchedule(vm.subarray.id, item.id_code);
+            if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
+                ObsSchedService.stopSchedule(item.sub_nr, item.id_code);
+            }
         };
 
         vm.cancelExecuteSchedule = function (item) {
-            ObsSchedService.cancelExecuteSchedule(vm.subarray.id, item.id_code);
+            ObsSchedService.cancelExecuteSchedule(item.sub_nr, item.id_code);
         };
 
         vm.cloneSB = function (item) {
@@ -408,10 +377,10 @@
         };
 
         vm.cloneAndAssignSB = function (item) {
-            ObsSchedService.cloneAndAssignSB(item.id_code, vm.subarray.id);
+            ObsSchedService.cloneAndAssignSB(item.id_code, item.sub_nr);
         };
         vm.cloneAndScheduleSB = function (item) {
-            ObsSchedService.cloneAndScheduleSB(item.id_code, vm.subarray.id);
+            ObsSchedService.cloneAndScheduleSB(item.id_code, item.sub_nr);
         };
 
         vm.viewSBTasklog = function (sb, mode) {
@@ -423,11 +392,11 @@
         };
 
         vm.moveScheduleRowToFinished = function (item) {
-            ObsSchedService.scheduleToComplete(vm.subarray.id, item.id_code);
+            ObsSchedService.scheduleToComplete(item.sub_nr, item.id_code);
         };
 
         vm.moveScheduleRowToApproved = function (item) {
-            ObsSchedService.scheduleToApproved(vm.subarray.id, item.id_code);
+            ObsSchedService.scheduleToApproved(item.sub_nr, item.id_code);
         };
 
         vm.setSchedulerMode = function (mode) {
@@ -435,7 +404,7 @@
         };
 
         vm.verifySB = function (sb) {
-            ObsSchedService.verifyScheduleBlock(vm.subarray.id, sb.id_code);
+            ObsSchedService.verifyScheduleBlock(sb.sub_nr, sb.id_code);
         };
 
         $scope.$on('$destroy', function () {

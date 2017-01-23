@@ -100,16 +100,7 @@
         };
 
         vm.removeDraft = function (item) {
-            ObsSchedService.deleteScheduleDraft(item.id_code)
-                .then(function (result) {
-                    var indexOfSelected = vm.selectedSBs.indexOf(item);
-                    if (indexOfSelected > -1) {
-                        vm.selectedSBs.splice(indexOfSelected, 1);
-                    }
-                    vm.showDeselectTooltip = vm.selectedSBs.length !== 0;
-                }, function (result) {
-                    NotifyService.showSimpleDialog('Error Deleteing SB ' + item.id_code + '.', result);
-                });
+            ObsSchedService.deleteScheduleDraft(item.id_code);
         };
 
         vm.unbindShortcuts = $rootScope.$on("keydown", function (e, key) {

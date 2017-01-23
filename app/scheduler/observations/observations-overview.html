@@ -22,8 +22,8 @@
                     <span style="width: 128px; padding-left: 12px" class="subheader-text">ID</span>
                     <span flex>Description</span>
                     <span style="width: 80px">State</span>
-                    <div style="width: 97px; font-size: 10px" layout="column">
-                        <span>Ready</span>
+                    <div style="width: 158px; font-size: 10px" layout="column">
+                        <span>Obs Readiness</span>
                         <span>Verification State</span>
                     </div>
                     <div style="width: 94px; font-size: 10px" layout="column">
@@ -45,16 +45,16 @@
                         <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
                             md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
                         </md-progress-linear>
-                        <span title="Priority: {{item.priority}}" style="min-width: 14px; font-size: 14px" class="fa" ng-class="{'fa-arrow-circle-up dark-blue-grey-color': item.priority === 'HIGH', 'fa-arrow-circle-down light-grey-color': item.priority === 'LOW'}"></span>
-                        <div layout="column" layout-align="start" style="width: 120px">
+                        <span style="min-width: 14px"></span>
+                        <div layout="column" layout-align="start" style="width: 120px" class="text-overflow-ellipsis">
                             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                                 style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
-                            <span><i>{{item.owner}}</i></span>
+                            <i style="width: 110px">{{item.owner}}</i>
                         </div>
-                        <span flex style="overflow: hidden; text-overflow: ellipsis;" title="{{item.description}}">{{item.description}}</span>
+                        <span flex style="overflow: hidden; text-overflow: ellipsis; margin-right: 4px" title="{{item.description}}">{{item.description}}</span>
                         <span style="width: 75px">{{item.state}}</span>
-                        <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin: 0 4px">
-                            <span style="width: 75px" ng-class="{'green-color': item.ready, 'red-color': !item.ready}">{{item.ready? 'READY' : 'NOT READY'}}</span>
+                        <div layout="column" layout-align="center" class="sb-obs-readiness-div" style="margin: 0 4px">
+                            <span style="width: 150px" ng-class="{'green-color': item.obs_readiness === 'READY_TO_EXECUTE', 'red-color': item.obs_readiness !== 'READY_TO_EXECUTE'}">{{item.obs_readiness}}</span>
                             <span style="width: 150px">{{item.verification_state}}</span>
                         </div>
                         <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin: 0 4px">

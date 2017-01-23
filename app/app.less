@@ -2,7 +2,6 @@
 @import "../node_modules/font-awesome/less/font-awesome";
 @import "../node_modules/angular-material/angular-material.min.css";
 @import "../node_modules/angular-bootstrap-datetimepicker/src/css/datetimepicker.css";
-@import "../node_modules/angular-dashboard-framework/dist/angular-dashboard-framework.min.css";
 /* Component LESS */
 @import "login-form/login-form";
 @import "landing/landing";
@@ -781,6 +780,10 @@ pre {
     opacity: 0.25;
 }
 
+.opacity-0 {
+    opacity: 0.0 !important;
+}
+
 .span-text-overflow-hidden-ellipsis {
     span {
         text-overflow: ellipsis;
@@ -840,6 +843,14 @@ pre {
 .fixed-width-300 {
     min-width: 300px;
     max-width: 300px;
+}
+
+.sb-obs-readiness-div {
+    font-size: 10px;
+    min-width: 152px;
+    max-width: 152px;
+    text-overflow: clip;
+    overflow: hidden;
 }
 
 .sb-time-and-type-div {

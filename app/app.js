@@ -317,9 +317,7 @@
                     utcTime.year(),
                     fractionalHours);
                 $rootScope.julianDay = Math.floor(julianDayWithTime * 100000) / 100000;
-                if ($rootScope.longitude) {
-                    $rootScope.localSiderealTime = KatGuiUtil.localSiderealTime(julianDayWithTime, $rootScope.longitude);
-                }
+                $rootScope.localSiderealTime = MonitorService.lastSyncedLST;
                 if (!$scope.$$phase) {
                     $scope.$digest();
                 }

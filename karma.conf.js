@@ -15,7 +15,6 @@ module.exports = function (config) {
             // 'bower_components/angular-ui-router/release/angular-ui-router.js',
             // 'bower_components/angular-ui-utils/ui-utils.js',
             // 'bower_components/Sortable/Sortable.min.js',
-            // 'bower_components/angular-dashboard-framework/dist/angular-dashboard-framework.min.js',
             // 'bower_components/angular-bootstrap-datetimepicker/src/js/datetimepicker.js',
             // 'bower_components/jsjws/jws-3.0.js',
             // 'bower_components/jsjws/ext/json-sans-eval-min.js',
