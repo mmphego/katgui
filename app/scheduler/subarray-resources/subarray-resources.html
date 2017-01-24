@@ -94,6 +94,12 @@
                                         <span>Load Last Known Subarray Config</span>
                                     </md-button>
                                 </md-menu-item>
+                                <md-menu-item>
+                                    <md-button ng-click="vm.setupSubarrayFromPB()" ng-disabled="vm.subarray.state !== 'inactive'">
+                                        <span style="margin-right: 4px" class="fa fa-cubes"></span>
+                                        <span>Setup Subarray from Program Block</span>
+                                    </md-button>
+                                </md-menu-item>
                             </md-menu-content>
                         </md-menu>
                     </md-toolbar>

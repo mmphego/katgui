@@ -698,6 +698,15 @@
             }
         };
 
+        api.setupSubarrayFromPB = function (subarrayNumber) {
+            $http(createRequest('post', urlBase() + '/subarray/' + subarrayNumber + '/setup/13'))
+                .then(function (result) {
+                    NotifyService.showSimpleToast("TODO complete this");
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog('Error setting up subarray from PB', error);
+                });
+        };
+
         api.progressInterval = $interval(function () {
             if (api.scheduleData.length > 0) {
                 api.scheduleData.forEach(function (sb) {
