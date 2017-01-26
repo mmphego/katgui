@@ -63,6 +63,9 @@
                     .then(function (result) {
                         api.systemConfig = result.data;
                         deferred.resolve(api.systemConfig);
+                        if (api.systemConfig && api.systemConfig.system && api.systemConfig.system.subarray_nrs) {
+                            api.systemConfig.subarrayNrs = api.systemConfig.system.subarray_nrs.split(',');
+                        }
                     }, function (message) {
                         $log.error(message);
                         deferred.reject(message);

@@ -57,8 +57,8 @@
                 primaryButtons: 'dark-buttons'
             }]);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
-                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, $q, THEMES,
+                             AlarmsService, ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
                              CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
         var vm = this;
 
@@ -98,6 +98,7 @@
         SessionService.recoverLogin();
 
         $rootScope.getSystemConfig = function (forceConfig) {
+            var deferred = $q.defer();
             ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
             ConfigService.getSystemConfig(forceConfig).then(function (systemConfig) {
                 $rootScope.systemConfig = systemConfig;
@@ -107,6 +108,7 @@
                 }
                 $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
                 $rootScope.confConnectionError = null;
+                deferred.resolve($rootScope.systemConfig);
             }, function (error) {
                 if ($rootScope.portalUrl) {
                     $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
@@ -121,6 +123,7 @@
                     $rootScope.getSystemConfig(forceConfig);
                 }, 10000);
             });
+            return deferred.promise;
         };
 
         vm.initApp = function () {

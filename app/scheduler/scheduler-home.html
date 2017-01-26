@@ -15,6 +15,10 @@
             ng-click="vm.stateGo('scheduler.drafts')">
             <span>SB Approved</span>
         </md-button>
+        <md-button class="thin-nav-button" title="List of Program Blocks" ng-disabled="vm.currentState() === 'scheduler.program-blocks'"
+            ng-click="vm.stateGo('scheduler.program-blocks')">
+            <span>Program Blocks</span>
+        </md-button>
         <span flex></span>
         <md-button ng-show="vm.subarray" class="md-primary md-raised thin-nav-button" style="margin: 0"
                     ng-click="vm.stateGo('scheduler.resources')" ng-disabled="vm.currentState() === 'scheduler.resources'">

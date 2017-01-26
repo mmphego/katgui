@@ -1,7 +1,8 @@
 (function() {
 
-    function ProgramBlocksCtrl(ObsSchedService) {
+    function ProgramBlocksCtrl(ObsSchedService, $scope) {
         var vm = this;
+        $scope.parent = $scope.$parent;
     }
 
     angular.module('katGui.scheduler')

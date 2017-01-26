@@ -249,10 +249,6 @@
             ObsSchedService.loadLastKnownSubarrayConfig(vm.subarray.id);
         };
 
-        vm.setupSubarrayFromPB = function () {
-            ObsSchedService.setupSubarrayFromPB(vm.subarray.id);
-        };
-
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
             if (vm.unbindDelegateWatch) {

@@ -38,7 +38,7 @@
 
         UserLogService.listTags();
 
-        ConfigService.getSystemConfig()
+        $rootScope.getSystemConfig()
             .then(function (systemConfig) {
                 if (systemConfig.system.bands) {
                     vm.bands = systemConfig.system.bands.split(',');
@@ -67,7 +67,8 @@
                 vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarray_id});
             } else if (vm.subarray) {
                 $state.go(newState, {subarray_id: vm.subarray.id});
-            } else if (newState === 'scheduler.observations' || newState === 'scheduler.drafts') {
+            } else if (newState === 'scheduler.observations' || newState === 'scheduler.drafts' ||
+                       newState === 'scheduler.program-blocks') {
                 $state.go(newState);
             } else {
                 $state.go('scheduler');
@@ -85,7 +86,8 @@
 
             if (toState.name === 'scheduler.observations' ||
                 toState.name === 'scheduler.drafts' ||
-                toState.name === 'scheduler') {
+                toState.name === 'scheduler.program-blocks' ||
+                toState.name === 'scheduler' ) {
                 vm.subarray = null;
             }
         });
@@ -405,6 +407,10 @@
 
         vm.verifySB = function (sb) {
             ObsSchedService.verifyScheduleBlock(sb.sub_nr, sb.id_code);
+        };
+
+        vm.setupSubarrayFromPB = function (sub_nr, pb_id, event) {
+            ObsSchedService.setupSubarrayFromPB(sub_nr, pb_id, event);
         };
 
         $scope.$on('$destroy', function () {
