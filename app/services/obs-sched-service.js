@@ -770,15 +770,8 @@
             $http(createRequest('post', urlBase() + '/subarray/' + subarrayNumber + '/setup/' + pb_id))
                 .then(function (result) {
                     $log.info(result);
-                    var results = result.data.results;
-                    try {
-                        results = result.data.results.replace(/^\[|\]$/g, '').split(', ').join('\n');
-                    } catch (error) {
-                        $log.error('Could not parse setup subarray post request message: ' + results);
-                    }
-
                     NotifyService.showSetupSubarrayDialog(
-                        event, "Setup Subarray " + subarrayNumber + " results", results, subarrayNumber);
+                        event, "Setup Subarray " + subarrayNumber + " results", result.data.results, subarrayNumber);
                 }, function (error) {
                     $log.info(error);
                     NotifyService.showHttpErrorDialog('Error setting up subarray from PB', error);

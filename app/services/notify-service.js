@@ -61,12 +61,12 @@
             $log.info('Showing dialog, title: ' + title + ', message: ' + content);
         };
 
-        api.showSetupSubarrayDialog = function (event, title, content, sub_nr) {
-            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
+        api.showSetupSubarrayDialog = function (event, title, contentList, sub_nr) {
+            $log.info('Showing dialog, title: ' + title + ', contentList: ' + contentList);
             $mdDialog.show({
                 controller: function ($rootScope, $scope, $mdDialog) {
                     $scope.title = title;
-                    $scope.content = content;
+                    $scope.contentList = contentList;
                     $scope.sub_nr = sub_nr;
                     $scope.hide = function () {
                         $mdDialog.hide();
@@ -79,7 +79,7 @@
                 template: "<md-dialog style='padding: 0; max-width: 95%; max-height: 95%' md-theme='{{$root.themePrimary}}' aria-label=''>" +
                 "<div style='padding:0; margin:0' layout='column' layout-padding >" +
                 "<md-toolbar class='md-primary' layout='row' layout-align='center center'><span style='margin:8px'>{{title}}</span></md-toolbar>" +
-                "<div style='overflow: auto' flex><pre style='white-space: pre-wrap'>{{content}}</pre></div>" +
+                "<div style='overflow: auto' flex><pre ng-repeat='content in contentList' style='white-space: pre-wrap'>{{content}}</pre></div>" +
                 "</div>" +
                 "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
                 "<md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +

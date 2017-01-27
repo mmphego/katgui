@@ -99,30 +99,36 @@
 
         $rootScope.getSystemConfig = function (forceConfig) {
             var deferred = $q.defer();
-            ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
-            ConfigService.getSystemConfig(forceConfig).then(function (systemConfig) {
-                $rootScope.systemConfig = systemConfig;
-                StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
-                if (systemConfig.vds && systemConfig.vds.vds_source) {
-                    $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
-                }
-                $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
-                $rootScope.confConnectionError = null;
-                deferred.resolve($rootScope.systemConfig);
-            }, function (error) {
-                if ($rootScope.portalUrl) {
-                    $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
-                } else {
-                    $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
-                }
-                //retry every 10 seconds to get the system config
-                if (vm.getSystemConfigTimeout) {
-                    $timeout.cancel(vm.getSystemConfigTimeout);
-                }
-                vm.getSystemConfigTimeout = $timeout(function () {
-                    $rootScope.getSystemConfig(forceConfig);
-                }, 10000);
-            });
+            if ($rootScope.systemConfig && !forceConfig) {
+                $timeout(function () {
+                    deferred.resolve($rootScope.systemConfig);
+                }, 1);
+            } else {
+                ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
+                ConfigService.getSystemConfig(forceConfig).then(function (systemConfig) {
+                    $rootScope.systemConfig = systemConfig;
+                    StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
+                    if (systemConfig.vds && systemConfig.vds.vds_source) {
+                        $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
+                    }
+                    $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
+                    $rootScope.confConnectionError = null;
+                    deferred.resolve($rootScope.systemConfig);
+                }, function (error) {
+                    if ($rootScope.portalUrl) {
+                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
+                    } else {
+                        $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
+                    }
+                    //retry every 10 seconds to get the system config
+                    if (vm.getSystemConfigTimeout) {
+                        $timeout.cancel(vm.getSystemConfigTimeout);
+                    }
+                    vm.getSystemConfigTimeout = $timeout(function () {
+                        $rootScope.getSystemConfig(forceConfig);
+                    }, 10000);
+                });
+            }
             return deferred.promise;
         };
 
