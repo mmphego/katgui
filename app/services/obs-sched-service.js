@@ -263,9 +263,7 @@
                     var jsonResult = JSON.parse(result.data.result);
                     var newScheduleDataIdCodes = [];
                     for (var i in jsonResult) {
-                        var existingSbIndex = _.findIndex(api.scheduleData, function (sb) {
-                            return sb.id_code === jsonResult[i].id_code;
-                        });
+                        var existingSbIndex = _.findIndex(api.scheduleData, {id_code: jsonResult[i].id_code});
                         if (existingSbIndex > -1) {
                             //Update existing schedule blocks
                             api.scheduleData.splice(existingSbIndex, 1);
@@ -405,17 +403,79 @@
         };
 
         api.receivedScheduleMessage = function (message) {
+            var obj = message.value;
+            var commandList = message.command.split(' ');
+            var table = commandList[0];
+            var action = commandList[1];
+            var id_to_action = commandList[2];
+            if (table === 'schedule_block') {
+                api.receivedSBMessage(obj, action, id_to_action);
+            } else {
+                api.receivedPBMessage(obj, action, id_to_action);
+            }
+            api.debounceRootScopeSafeDigest();
+        };
 
+        api.receivedPBMessage = function(pb, action, id_to_action) {
+            var pbDataToAdd = [];
+
+            if (action === 'delete') {
+                var index = _.findLastIndex(api.programBlocks, {id: parseInt(id_to_action)});
+                if (index > -1) {
+                    NotifyService.showSimpleToast('PB ' + api.programBlocks[index].pb_id + ' has been removed');
+                    api.programBlocks.splice(index, 1);
+                }
+            } else if (action === 'update') {
+                var pbIndex = _.findLastIndex(api.programBlocks, {id: pb.id});
+                if (pbIndex > -1) {
+                    var existingSBList = api.programBlocks[pbIndex].schedule_blocks;
+                    pb.schedule_blocks = existingSBList;
+                    api.programBlocks[pbIndex] = pb;
+                } else {
+                    api.programBlocks.push(pb);
+                }
+            } else if (action === 'insert') {
+                api.programBlocks.push(pb);
+                NotifyService.showSimpleToast('PB ' + pb.pb_id + ' has been added.');
+            } else {
+                $log.error('Dangling ObsSchedService ' + action + ' message for:');
+                $log.error(pb);
+            }
+        };
+
+        api.updateProgramBlocksWithUpdatedSb = function (sb) {
+            if (sb.pb_id) {
+                var pbIndex = _.findLastIndex(api.programBlocks, {id: sb.pb_id});
+                if (pbIndex > -1) {
+                    //SB could've moved from one pb to another
+                    api.programBlocks.forEach(function (pb) {
+                        var sbIndex = _.findLastIndex(api.programBlocks[pbIndex].schedule_blocks, {id: sb.id});
+                        if (sbIndex > -1) {
+                            api.programBlocks[pbIndex].schedule_blocks.splice(sbIndex, 1);
+                        }
+                    });
+                    api.programBlocks[pbIndex].schedule_blocks.push(sb);
+                } else {
+                    $log.warning('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
+                                 ', but could not find any program blocks with that id!');
+                }
+            } else {
+                //SB could have been removed from a pb
+                api.programBlocks.forEach(function (pb) {
+                    var sbIndex = _.findLastIndex(api.programBlocks[pbIndex].schedule_blocks, {id: sb.id});
+                    if (sbIndex > -1) {
+                        api.programBlocks[pbIndex].schedule_blocks.splice(sbIndex, 1);
+                    }
+                });
+            }
+        };
+
+        api.receivedSBMessage = function(sb, action, id_to_action) {
             var scheduleDataToAdd = [];
             var draftDataToAdd = [];
             var completedDataToAdd = [];
             var orderChangeCall = false;
 
-            var sb = message.value;
-            var commandList = message.command.split(' ');
-            var table = commandList[0];
-            var action = commandList[1];
-            var id_to_action = commandList[2];
             if (action === 'delete') {
                 //only drafts can be deleted in the db
                 var index = _.findLastIndex(api.scheduleDraftData, {id: parseInt(id_to_action)});
@@ -429,6 +489,9 @@
 
                 if (api.draftArrayStates.indexOf(sb.state) > -1) {
                     if (draftIndex > -1) {
+                        if (api.scheduleDraftData[draftIndex].pb_id !== sb.pb_id) {
+                            api.updateProgramBlocksWithUpdatedSb(sb);
+                        }
                         api.scheduleDraftData[draftIndex] = sb;
                     } else if (draftIndex === -1) {
                         //sb needs to be moved from scheduled to drafts
@@ -441,6 +504,9 @@
                     }
                 } else if (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE') {
                     if (scheduledIndex > -1) {
+                        if (api.scheduleData[scheduledIndex].pb_id !== sb.pb_id) {
+                            api.updateProgramBlocksWithUpdatedSb(sb);
+                        }
                         api.scheduleData[scheduledIndex] = sb;
                         $rootScope.$emit('sb_schedule_update', sb);
 
@@ -453,6 +519,9 @@
                 } else {
                     var completedIndex = _.findLastIndex(api.scheduleCompletedData, {id: sb.id});
                     if (completedIndex > -1) {
+                        if (api.scheduleCompletedData[completedIndex].pb_id !== sb.pb_id) {
+                            api.updateProgramBlocksWithUpdatedSb(sb);
+                        }
                         api.scheduleCompletedData[completedIndex] = sb;
                     } else if (scheduledIndex > -1) {
                         api.scheduleData.splice(scheduledIndex, 1);
@@ -492,7 +561,6 @@
             if (orderChangeCall) {
                 api.debounceGetScheduledScheduleBlocks();
             }
-            api.debounceRootScopeSafeDigest();
         };
 
         api.debounceRootScopeSafeDigest = _.debounce(rootScopeSafeDigest, 1000);
@@ -696,6 +764,18 @@
                     api.setProduct(subarrayNumber, lastKnownConfig.product);
                 }
             }
+        };
+
+        api.setupSubarrayFromPB = function (subarrayNumber, pb_id, event) {
+            $http(createRequest('post', urlBase() + '/subarray/' + subarrayNumber + '/setup/' + pb_id))
+                .then(function (result) {
+                    $log.info(result);
+                    NotifyService.showSetupSubarrayDialog(
+                        event, "Setup Subarray " + subarrayNumber + " results", result.data.results, subarrayNumber);
+                }, function (error) {
+                    $log.info(error);
+                    NotifyService.showHttpErrorDialog('Error setting up subarray from PB', error);
+                });
         };
 
         api.progressInterval = $interval(function () {

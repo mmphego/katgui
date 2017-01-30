@@ -31,7 +31,7 @@
             ng-class="{'fa-play green-color': item.state !== 'ACTIVE' && item.obs_readiness === 'READY_TO_EXECUTE', 'fa-stop red-color': item.state === 'ACTIVE', 'opacity-0': item.state !== 'ACTIVE' && item.obs_readiness !== 'READY_TO_EXECUTE'}"
             style="min-width: 26px; max-width: 26px"
             ng-click="item.state === 'ACTIVE'? parent.vm.stopExecuteSchedule(item) : parent.vm.executeSchedule(item); $event.stopPropagation()"></span>
-        <md-menu md-theme="{{themePrimaryButtons}}">
+        <md-menu md-theme="{{$root.themePrimaryButtons}}">
             <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
             <md-menu-content style="max-height: 475px">
                 <md-menu-item>

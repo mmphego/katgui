@@ -57,8 +57,8 @@
                 primaryButtons: 'dark-buttons'
             }]);
 
-    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, THEMES, AlarmsService,
-                             ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
+    function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, $q, THEMES,
+                             AlarmsService, ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
                              CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
         var vm = this;
 
@@ -98,29 +98,38 @@
         SessionService.recoverLogin();
 
         $rootScope.getSystemConfig = function (forceConfig) {
-            ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
-            ConfigService.getSystemConfig(forceConfig).then(function (systemConfig) {
-                $rootScope.systemConfig = systemConfig;
-                StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
-                if (systemConfig.vds && systemConfig.vds.vds_source) {
-                    $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
-                }
-                $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
-                $rootScope.confConnectionError = null;
-            }, function (error) {
-                if ($rootScope.portalUrl) {
-                    $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
-                } else {
-                    $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
-                }
-                //retry every 10 seconds to get the system config
-                if (vm.getSystemConfigTimeout) {
-                    $timeout.cancel(vm.getSystemConfigTimeout);
-                }
-                vm.getSystemConfigTimeout = $timeout(function () {
-                    $rootScope.getSystemConfig(forceConfig);
-                }, 10000);
-            });
+            var deferred = $q.defer();
+            if ($rootScope.systemConfig && !forceConfig) {
+                $timeout(function () {
+                    deferred.resolve($rootScope.systemConfig);
+                }, 1);
+            } else {
+                ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
+                ConfigService.getSystemConfig(forceConfig).then(function (systemConfig) {
+                    $rootScope.systemConfig = systemConfig;
+                    StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
+                    if (systemConfig.vds && systemConfig.vds.vds_source) {
+                        $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
+                    }
+                    $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
+                    $rootScope.confConnectionError = null;
+                    deferred.resolve($rootScope.systemConfig);
+                }, function (error) {
+                    if ($rootScope.portalUrl) {
+                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
+                    } else {
+                        $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
+                    }
+                    //retry every 10 seconds to get the system config
+                    if (vm.getSystemConfigTimeout) {
+                        $timeout.cancel(vm.getSystemConfigTimeout);
+                    }
+                    vm.getSystemConfigTimeout = $timeout(function () {
+                        $rootScope.getSystemConfig(forceConfig);
+                    }, 10000);
+                });
+            }
+            return deferred.promise;
         };
 
         vm.initApp = function () {

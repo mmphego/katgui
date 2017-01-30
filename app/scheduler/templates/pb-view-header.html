@@ -1,12 +1,46 @@
-<div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end" ng-click="$event.stopPropagation()"
-    style="pointer-events: none">
-    <div style="width: 168px; padding-left: 12px" class="subheader-text">PB ID</div>
-    <div flex>Description</div>
-    <div style="width: 80px">SB's count</div>
-    <div style="width: 88px">State</div>
-    <div style="width: 148px; font-size: 10px">
-        <div>Desired LST Start Time</div>
-        <div>Desired Start Time</div>
+<div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end" ng-click="$event.stopPropagation()">
+    <div style="width: 168px; font-size: 10px">
+        <div class="subheader-text" ng-click="vm.setPBsOrderBy('pb_id')">
+            <span>PB ID</span>
+            <span class="fa" style="margin-right: 4px;"
+                ng-class="{'fa-caret-up': vm.pbsOrderBy.value === 'pb_id' && !vm.pbsOrderBy.reverse, 'fa-caret-down': vm.pbsOrderBy.value === 'pb_id' && vm.pbsOrderBy.reverse}">
+            </span>
+        </div>
+        <div>
+            <span>Owner</span>
+        </div>
     </div>
-    <div></div>
+    <span flex style="width: 180px" class="subheader-text" ng-click="vm.setPBsOrderBy('description')">
+        <span>Description</span>
+        <span class="fa" style="margin-right: 4px;"
+            ng-class="{'fa-caret-up': vm.pbsOrderBy.value === 'description' && !vm.pbsOrderBy.reverse, 'fa-caret-down': vm.pbsOrderBy.value === 'description' && vm.pbsOrderBy.reverse}">
+        </span>
+    </span>
+    <span style="width: 308px" class="subheader-text" ng-click="vm.setPBsOrderBy('obs_spec')">
+        <span>Observation Spec</span>
+        <span class="fa" style="margin-right: 4px;"
+            ng-class="{'fa-caret-up': vm.pbsOrderBy.value === 'obs_spec' && !vm.pbsOrderBy.reverse, 'fa-caret-down': vm.pbsOrderBy.value === 'obs_spec' && vm.pbsOrderBy.reverse}">
+        </span>
+    </span>
+    <span style="width: 88px">SB's count</span>
+    <span style="width: 88px" class="subheader-text" ng-click="vm.setPBsOrderBy('state')">
+        <span>State</span>
+        <span class="fa" style="margin-right: 4px;"
+            ng-class="{'fa-caret-up': vm.pbsOrderBy.value === 'state' && !vm.pbsOrderBy.reverse, 'fa-caret-down': vm.pbsOrderBy.value === 'state' && vm.pbsOrderBy.reverse}">
+        </span>
+    </span>
+    <div style="width: 173px; font-size: 10px">
+        <div ng-click="vm.setPBsOrderBy('desired_lst_start_time')">
+            <span>Desired LST Start Time</span>
+            <span class="fa" style="margin-right: 4px;"
+                ng-class="{'fa-caret-up': vm.pbsOrderBy.value === 'desired_lst_start_time' && !vm.pbsOrderBy.reverse, 'fa-caret-down': vm.pbsOrderBy.value === 'desired_lst_start_time' && vm.pbsOrderBy.reverse}">
+            </span>
+        </div>
+        <div ng-click="vm.setPBsOrderBy('desired_start_time')">
+            <span>Desired Start Time</span>
+            <span class="fa" style="margin-right: 4px;"
+                ng-class="{'fa-caret-up': vm.pbsOrderBy.value === 'desired_start_time' && !vm.pbsOrderBy.reverse, 'fa-caret-down': vm.pbsOrderBy.value === 'desired_start_time' && vm.pbsOrderBy.reverse}">
+            </span>
+        </div>
+    </div>
 </div>

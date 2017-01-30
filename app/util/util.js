@@ -445,6 +445,30 @@ function katGuiUtil($rootScope, $sce) {
     };
 
     JSON.prettify = {
+        stringifyJSON: function(obj, indent) {
+            var keys = [];
+            var listTypesKeys = [];
+            if (obj) {
+                for(var obj_key in obj) {
+                    if (obj[obj_key] instanceof Array) {
+                        listTypesKeys.push(obj_key);
+                    } else {
+                        keys.push(obj_key);
+                    }
+                }
+            }
+            keys.sort();
+            listTypesKeys.sort();
+            //add array types at the end of the object that will be printed
+            keys = keys.concat(listTypesKeys);
+            var tObj = {};
+            var key;
+            for(var index in keys) {
+                key = keys[index];
+                tObj[key] = obj[key];
+            }
+            return JSON.stringify(tObj, null, indent);
+        },
         replacer: function(match, pIndent, pKey, pVal, pEnd) {
             var key = '<span class=json-key>';
             var val = '<span class=json-value>';
@@ -461,7 +485,7 @@ function katGuiUtil($rootScope, $sce) {
         prettyPrint: function(obj) {
             if (obj) {
                 var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
-                return $sce.trustAsHtml(JSON.stringify(obj, null, 3)
+                return $sce.trustAsHtml(JSON.prettify.stringifyJSON(obj, 3)
                     .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
                     .replace(/</g, '&lt;').replace(/>/g, '&gt;')
                     .replace(jsonLine, JSON.prettify.replacer));
