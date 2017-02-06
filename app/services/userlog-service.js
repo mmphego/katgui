@@ -6,7 +6,7 @@
     function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, NotifyService, $mdDialog, $sce) {
 
         function urlBase() {
-            return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol' : '';
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/userlogs' : '';
         }
 
         var api = {};
@@ -37,7 +37,7 @@
         api.listUserLogsForTimeRange = function (start, end) {
             var deferred = $q.defer();
             var query = '?start_time=' + start + '&end_time=' + end;
-            $http(createRequest('get', urlBase() + '/userlogs/query' + query)).then(
+            $http(createRequest('get', urlBase() + '/query' + query)).then(
                 function (result) {
                     if (result && result.data) {
                         result.data.forEach(function (userlog) {
@@ -101,7 +101,7 @@
         api.queryUserLogs = function (query) {
             var query_uri = encodeURI(query);
             var defer = $q.defer();
-            $http(createRequest('get', urlBase() + '/userlogs/query' + query_uri)).then(
+            $http(createRequest('get', urlBase() + '/query' + query_uri)).then(
                 function (result) {
                     defer.resolve(result);
                 }, function (result) {
@@ -114,7 +114,7 @@
         api.queryActivityLogs = function (query) {
             var query_uri = encodeURI(query);
             var defer = $q.defer();
-            $http(createRequest('get', urlBase() + '/userlogs/activity' + query_uri)).then(
+            $http(createRequest('get', urlBase() + '/activity' + query_uri)).then(
                 function (result) {
                     defer.resolve(result);
                 }, function (error) {
@@ -175,7 +175,7 @@
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
             };
-            $http.post(urlBase() + '/userlogs/' + userlog_id + '/attachments', formData, options).then(
+            $http.post(urlBase() + '/' + userlog_id + '/attachments', formData, options).then(
                 function (result) {
                     defer.resolve(result);
                     NotifyService.showSimpleToast("Uploaded files successfully.");
@@ -194,7 +194,7 @@
                 },
                 responseType: 'blob'
             };
-            $http.get(urlBase() + '/userlogs/' + userlog_id + '/attachments/' + file_name, options).then(
+            $http.get(urlBase() + '/' + userlog_id + '/attachments/' + file_name, options).then(
                 function (result) {
                     var blob = result.data;
                     var url = $window.URL || $window.webkitURL;
@@ -205,7 +205,7 @@
                     downloadLink[0].click();
                     url.revokeObjectURL(file_url);
                 }, function () {
-                    $log.error(urlBase() + '/userlogs/get/attach');
+                    $log.error(urlBase() + '/get/attach');
                 });
         };
 
@@ -238,7 +238,7 @@
                 tag_ids: ulog.tag_ids,
                 metadata: ulog.metadata
             };
-            $http(createRequest('post', urlBase() + '/userlogs/' + ulog.id, modifiedUserLog)).then(
+            $http(createRequest('post', urlBase() + '/' + ulog.id, modifiedUserLog)).then(
                 function (result) {
                     NotifyService.showSimpleToast("Edited userlog " + result.data.id);
                     defer.resolve(result);
