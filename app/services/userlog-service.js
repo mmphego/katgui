@@ -220,7 +220,7 @@
             };
             $http(createRequest('post', urlBase() + '/userlogs', newUserLog)).then(
                 function (result) {
-                    NotifyService.showSimpleToast("Log Created. ");
+                    NotifyService.showSimpleToast("Log Created.");
                     defer.resolve(result);
                 }, function (error) {
                     NotifyService.showHttpErrorDialog("Error creating user log", error);
