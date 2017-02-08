@@ -769,7 +769,6 @@
         api.setupSubarrayFromPB = function (subarrayNumber, pb_id, event) {
             $http(createRequest('post', urlBase() + '/subarray/' + subarrayNumber + '/setup/' + pb_id))
                 .then(function (result) {
-                    $log.info(result);
                     NotifyService.showSetupSubarrayDialog(
                         event, "Setup Subarray " + subarrayNumber + " results", result.data.results, subarrayNumber);
                 }, function (error) {
