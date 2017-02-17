@@ -5,7 +5,7 @@
         $scope.parent = $scope.$parent;
 
         vm.pbsOrderByFields = [
-            {label: 'PB ID', value: 'pb_id'},
+            {label: 'PB ID', value: 'pb_id', reverse: true},
             {label: 'Description', value: 'description'},
             {label: 'Observation Spec', value: 'obs_spec'},
             {label: 'State', value: 'state'},
@@ -13,7 +13,7 @@
             {label: 'Desired Start Time', value: 'desired_start_time'}
         ];
 
-        vm.setPBsOrderBy = function (column) {
+        vm.setPBsOrderBy = function(column) {
             var newOrderBy = _.findWhere(vm.pbsOrderByFields, {value: column});
             if ((vm.pbsOrderBy || {}).value === column) {
                 if (newOrderBy.reverse === undefined) {
@@ -24,6 +24,10 @@
                 }
             }
             vm.pbsOrderBy = newOrderBy;
+        };
+
+        vm.sbCount = function (pb) {
+            return pb.schedule_blocks.length;
         };
 
         vm.setPBsOrderBy('pb_id');
