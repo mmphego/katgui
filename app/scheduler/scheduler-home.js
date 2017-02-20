@@ -409,8 +409,8 @@
                         $scope.selectedPB = null;
                         $scope.acceptButtonText = 'Clone into PB';
 
-                        $scope.setSelectedPB = function (pb) {
-                            $scope.selectedPB = $scope.selectedPB === pb? null : pb;
+                        $scope.setSelectedPB = function(pb) {
+                            $scope.selectedPB = $scope.selectedPB === pb ? null : pb;
                         };
 
                         $scope.acceptDialogAction = function() {
@@ -427,7 +427,7 @@
                 });
         };
 
-        vm.moveSBIntoPBDialog = function (event, sb) {
+        vm.moveSBIntoPBDialog = function(event, sb) {
             $mdDialog
                 .show({
                     controller: function($scope, $mdDialog) {
@@ -437,13 +437,13 @@
                         $scope.selectedPB = null;
                         $scope.acceptButtonText = 'Move into PB';
 
-                        $scope.setSelectedPB = function (pb) {
-                            $scope.selectedPB = $scope.selectedPB === pb? null : pb;
+                        $scope.setSelectedPB = function(pb) {
+                            $scope.selectedPB = $scope.selectedPB === pb ? null : pb;
                         };
 
                         $scope.acceptDialogAction = function() {
                             ObsSchedService.updateScheduleBlockWithProgramBlockID(sb, $scope.selectedPB).then(
-                                function () {
+                                function() {
                                     NotifyService.showSimpleToast('Moved SB ' + sb.id_code + ' into PB ' + $scope.selectedPB.pb_id);
                                 });
                             $mdDialog.hide();
@@ -491,6 +491,17 @@
 
         vm.setupSubarrayFromPB = function(sub_nr, pb_id, event) {
             ObsSchedService.setupSubarrayFromPB(sub_nr, pb_id, event);
+        };
+
+        vm.removeSBFromAnyPB = function(sb) {
+            ObsSchedService.updateScheduleBlockWithProgramBlockID(sb, null).then(
+                function() {
+                    NotifyService.showSimpleToast('Removed SB ' + sb.id_code + ' from PB.');
+                },
+                function(result) {
+                    NotifyService.showSimpleDialog('Error removing SB from PB',
+                        'Error while removing Schedule Block (' + sb.id_code + ') from Program Block!');
+                });
         };
 
         $scope.$on('$destroy', function() {

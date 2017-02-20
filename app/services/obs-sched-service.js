@@ -164,9 +164,13 @@
         };
 
         api.updateScheduleBlockWithProgramBlockID = function (sb, pb) {
-            return $http(createRequest('post', urlBase() + '/sb/' + sb.id_code + '/update-pb-id', {
-                pb_id: pb.pb_id
-            }));
+            var body = {};
+            if (pb && pb.pb_id) {
+                body = {
+                    pb_id: pb.pb_id
+                };
+            }
+            return $http(createRequest('post', urlBase() + '/sb/' + sb.id_code + '/update-pb-id', body));
         };
 
         api.cloneSBIntoPB = function (sb, pb) {
@@ -501,12 +505,11 @@
                     $log.warning('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
                                  ', but could not find any program blocks with that id!');
                 }
-            } else {
-                //SB could have been removed from a pb
+            } else if (!sb.pb_id) {
                 api.programBlocks.forEach(function (pb) {
-                    var sbIndex = _.findLastIndex(api.programBlocks[pbIndex].schedule_blocks, {id: sb.id});
+                    var sbIndex = _.findLastIndex(pb.schedule_blocks, {id: sb.id});
                     if (sbIndex > -1) {
-                        api.programBlocks[pbIndex].schedule_blocks.splice(sbIndex, 1);
+                        pb.schedule_blocks.splice(sbIndex, 1);
                     }
                 });
             }
