@@ -271,10 +271,6 @@
 
                         $scope.$on('$destroy', function () {
                             unbindUpdate();
-                            //TODO: Should we remove the sensor strategies? What if the sensor is also used on this connection for a different display?
-                            // if ($scope.sensorsRegex.length > 0) {
-                            //     SensorsService.removeSensorStrategies($scope.sensorsRegex.join('|'));
-                            // }
                             if (!$scope.reusedSensorsServiceConnection) {
                                 SensorsService.disconnectListener();
                             }
