@@ -260,21 +260,17 @@
                         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
                             var strList = sensor.name.split(':');
                             var sensorName = strList[1].replace(/\./g, '_').trim();
-                            if (!$scope.sensors[sensorName]) {
+                            if ($scope.sensors[sensorName]) {
                                 $scope.sensors[sensorName] = {name: sensorName};
+                                $scope.sensors[sensorName].value = sensor.value;
+                                $scope.sensors[sensorName].status = sensor.status;
+                                $scope.sensors[sensorName].timestamp = moment.utc(sensor.timestamp, 'X').format(DATETIME_FORMAT);
+                                $scope.sensors[sensorName].received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(DATETIME_FORMAT);
                             }
-                            $scope.sensors[sensorName].value = sensor.value;
-                            $scope.sensors[sensorName].status = sensor.status;
-                            $scope.sensors[sensorName].timestamp = moment.utc(sensor.timestamp, 'X').format(DATETIME_FORMAT);
-                            $scope.sensors[sensorName].received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(DATETIME_FORMAT);
                         });
 
                         $scope.$on('$destroy', function () {
                             unbindUpdate();
-                            //TODO: Should we remove the sensor strategies? What if the sensor is also used on this connection for a different display?
-                            // if ($scope.sensorsRegex.length > 0) {
-                            //     SensorsService.removeSensorStrategies($scope.sensorsRegex.join('|'));
-                            // }
                             if (!$scope.reusedSensorsServiceConnection) {
                                 SensorsService.disconnectListener();
                             }

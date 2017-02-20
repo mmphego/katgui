@@ -359,7 +359,7 @@
                         $scope.selectedTags = [];
                         $scope.attachments = log.attachments;
                         $scope.uploadingFiles = false;
-                        $scope.validTags = false;
+                        $scope.validTags = true;
                         $scope.mandatoryTagsListString = api.mandatoryTagsListString;
                         $scope.showInvalidTagsTooltip = false;
                         $scope.openedWithoutEndTime = log.end_time !== null && log.end_time.length > 0;
@@ -382,10 +382,19 @@
                                     break;
                                 }
                             }
-                            $scope.validTags = containsMandatoryTags;
-                            $scope.showInvalidTagsTooltip = !$scope.validTags;
                             if (!initStep) {
                                 $scope.chipHasBeenAdded = true;
+                                $scope.validTags = containsMandatoryTags || !editMode;
+                                $scope.showInvalidTagsTooltip = !$scope.validTags;
+                            } else {
+                                // wait a while before we indicate that we there are missing mandatory tags
+                                // in the init step the dialog is still animating its location, so this
+                                // tooltip will end up in the middle of no where if we don't wait for the
+                                // translating animation to finish
+                                $timeout(function () {
+                                    $scope.validTags = containsMandatoryTags || !editMode;
+                                    $scope.showInvalidTagsTooltip = !$scope.validTags;
+                                }, 1000);
                             }
                         };
 
@@ -409,6 +418,7 @@
                         };
 
                         $scope.hide = function () {
+                            $scope.showInvalidTagsTooltip = false;
                             $mdDialog.hide();
                         };
 

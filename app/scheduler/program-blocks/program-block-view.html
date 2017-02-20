@@ -16,7 +16,7 @@
                 {{pb.description}}
             </span>
             <span class="pb-obs-spec-list-item" title="{{pb.obs_spec}}">{{pb.obs_spec}}</span>
-            <span style="min-width: 80px; margin-right: 8px">{{pb.schedule_blocks.length}}</span>
+            <span style="min-width: 80px; margin-right: 8px; text-align: center">{{pb.schedule_blocks.length}}</span>
             <span style="min-width: 80px">{{pb.state}}</span>
             <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin-left: 4px; min-width: 148px">
                 <span>{{pb.desired_lst_start_time}}</span>
@@ -28,6 +28,15 @@
                     <md-menu-item ng-repeat="sub_nr in $root.systemConfig.subarrayNrs">
                         <md-button ng-click="parent.vm.setupSubarrayFromPB(sub_nr, pb.id, $event)" title="Setup subarray {{sub_nr}} using this observation specification and schedule block list">
                             Setup Subarray {{sub_nr}} with this PB</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-click="parent.vm.clonePB(pb, false)" title="Clone Program Block without it's Schedule Blocks">
+                            Clone PB only</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="parent.vm.clonePB(pb, true)" title="Clone Program Block as well as it's Schedule Blocks">
+                            Clone PB and it's SB's</md-button>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>

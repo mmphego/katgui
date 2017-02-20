@@ -1,0 +1,43 @@
+<md-dialog style="padding: 0; margin: 0; max-width: 95%; max-height: 95%" md-theme="{{$root.themePrimary}}" layout="column">
+    <md-toolbar class="md-primary" style="position: relative; height: 48px">
+        <span flex style="position: absolute; top: 8px; left: 0; right: 0; text-align: center">{{title}}</span>
+        <div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end">
+            <div style="width: 134px; font-size: 10px">
+                <div class="subheader-text">PB ID</div>
+                <div>Owner</div>
+            </div>
+            <span flex style="width: 180px" class="subheader-text">Description</span>
+            <span style="width: 200px" class="subheader-text">Observation Spec</span>
+            <span style="width: 88px; text-align: center">SB's count</span>
+            <span style="width: 88px" class="subheader-text">State</span>
+            <div style="width: 128px; font-size: 10px">
+                <div>Desired LST Start Time</div>
+                <div>Desired Start Time</div>
+            </div>
+        </div>
+    </md-toolbar>
+    <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">
+        <div ng-repeat="pb in programBlocks | orderBy:pb.id:true track by pb.pb_id" class="pb-view-item" layout="row" layout-align="start center"
+            ng-click="setSelectedPB(pb)" style="min-height: 44px; min-width: 800px; padding-right: 0" ng-class="{'selected-resource-item': pb.id === selectedPB.id}">
+            <div layout="column" layout-align="center start" class="pb-id-container">
+                <span class="pb-id">{{pb.pb_id}}</span>
+                <span>{{pb.owner}}</span>
+            </div>
+            <span flex class="sb-wrapped-description" style="height: initial; min-width: 140px">
+                {{pb.description}}
+            </span>
+            <span class="pb-obs-spec-list-item" style="font-size: 10px; min-width: 200px; max-width:200px" title="{{pb.obs_spec}}">{{pb.obs_spec}}</span>
+            <span style="min-width: 80px; margin-right: 8px; text-align: center">{{pb.schedule_blocks.length}}</span>
+            <span style="min-width: 80px">{{pb.state}}</span>
+            <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin-left: 4px; min-width: 148px">
+                <span>{{pb.desired_lst_start_time}}</span>
+                <span>{{pb.desired_start_time}}</span>
+            </div>
+        </div>
+    </div>
+    <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;"
+        md-theme="{{$root.themePrimaryButtons}}">
+        <md-button style="margin-left: 8px;" class="md-primary md-raised" ng-click="hide()">Cancel</md-button>
+        <md-button class="md-primary md-raised" ng-click="acceptDialogAction()" ng-disabled="selectedPB === null">{{acceptButtonText}}</md-button>
+    </div>
+</md-dialog>

@@ -68,6 +68,17 @@
                     <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndScheduleSB(item)"
                         title="{{'Clone and Schedule on Subarray ' + vm.subarray.id}}">Clone and Schedule SB</md-button>
                 </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSBIntoPBDialog($event, item)" title="Clone Schedule Block into a Program Block">Clone SB Into PB...</md-button>
+                </md-menu-item>
+                <md-menu-divider></md-menu-divider>
+                <md-menu-item>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveSBIntoPBDialog($event, item)" title="Move Schedule Block to a Program Block">Move SB to PB...</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA() || item.pb_id === null || item.pb_id === undefined"
+                        ng-click="parent.vm.removeSBFromAnyPB(item)" title="Remove Schedule block from any Program Block">Remove SB From PB</md-button>
+                </md-menu-item>
             </md-menu-content>
         </md-menu>
     </div>

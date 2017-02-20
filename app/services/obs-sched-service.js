@@ -163,8 +163,28 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
         };
 
+        api.updateScheduleBlockWithProgramBlockID = function (sb, pb) {
+            var body = {};
+            if (pb && pb.pb_id) {
+                body = {
+                    pb_id: pb.pb_id
+                };
+            }
+            return $http(createRequest('post', urlBase() + '/sb/' + sb.id_code + '/update-pb-id', body));
+        };
+
+        api.cloneSBIntoPB = function (sb, pb) {
+            return $http(createRequest('post', urlBase() + '/sb/' + sb.id_code + '/clone', {
+                pb_id: pb.pb_id
+            }));
+        };
+
         api.cloneSB = function (id_code) {
             return $http(createRequest('post', urlBase() + '/sb/' + id_code + '/clone'));
+        };
+
+        api.clonePB = function (pb, cloneSBs) {
+            return $http(createRequest('post', urlBase() + '/pb/' + pb.pb_id + '/clone/' + (cloneSBs? '1' : '0')));
         };
 
         api.cloneAndAssignSB = function (id_code, sub_nr) {
@@ -236,16 +256,40 @@
         };
 
         api.getProgramBlocks = function () {
-            api.programBlocks.splice(0, api.programBlocks.length);
+            var deferred = $q.defer();
             $http(createRequest('get', urlBase() + '/pb'))
                 .then(function (result) {
                     var jsonResult = JSON.parse(result.data.result);
+                    var newPBIds = [];
                     for (var i in jsonResult) {
+                        var existingPBIndex = _.findIndex(api.programBlocks, {pb_id: jsonResult[i].pb_id});
+                        if (existingPBIndex > -1) {
+                            //Update existing program blocks
+                            api.programBlocks.splice(existingPBIndex, 1);
+                        }
                         api.programBlocks.push(jsonResult[i]);
+                        newPBIds.push(jsonResult[i].pb_id);
                     }
+                    //Remove old program blocks that has had a state change
+                    var existingPBIDs = api.programBlocks.map(function (pb) {
+                        return pb.pb_id;
+                    });
+                    var PBIDsToRemove = _.difference(existingPBIDs, newPBIds);
+                    PBIDsToRemove.forEach(function (pbID) {
+                        var existingPBIndex = _.findIndex(api.programBlocks, function (pb) {
+                            return pb.pb_id === pbID;
+                        });
+                        if (existingPBIndex > -1) {
+                            api.programBlocks.splice(existingPBIndex, 1);
+                        }
+                    });
+
+                    deferred.resolve(api.programBlocks);
                 }, function (error) {
                     $log.error(error);
+                    deferred.reject(error);
                 });
+            return deferred.promise;
         };
 
         api.getScheduleBlockDetails = function (idCodes) {
@@ -454,17 +498,18 @@
                             api.programBlocks[pbIndex].schedule_blocks.splice(sbIndex, 1);
                         }
                     });
-                    api.programBlocks[pbIndex].schedule_blocks.push(sb);
+                    if (!sb.deleted) {
+                        api.programBlocks[pbIndex].schedule_blocks.push(sb);
+                    }
                 } else {
                     $log.warning('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
                                  ', but could not find any program blocks with that id!');
                 }
-            } else {
-                //SB could have been removed from a pb
+            } else if (!sb.pb_id) {
                 api.programBlocks.forEach(function (pb) {
-                    var sbIndex = _.findLastIndex(api.programBlocks[pbIndex].schedule_blocks, {id: sb.id});
+                    var sbIndex = _.findLastIndex(pb.schedule_blocks, {id: sb.id});
                     if (sbIndex > -1) {
-                        api.programBlocks[pbIndex].schedule_blocks.splice(sbIndex, 1);
+                        pb.schedule_blocks.splice(sbIndex, 1);
                     }
                 });
             }
@@ -481,6 +526,10 @@
                 var index = _.findLastIndex(api.scheduleDraftData, {id: parseInt(id_to_action)});
                 if (index > -1) {
                     NotifyService.showSimpleToast('SB ' + api.scheduleDraftData[index].id_code + ' has been removed');
+                    if (api.scheduleDraftData[index].pb_id) {
+                        api.scheduleDraftData[index].deleted = true;
+                        api.updateProgramBlocksWithUpdatedSb(api.scheduleDraftData[index]);
+                    }
                     api.scheduleDraftData.splice(index, 1);
                 }
             } else if (action === 'update') {
@@ -499,6 +548,9 @@
                             api.scheduleData.splice(scheduledIndex, 1);
                             $rootScope.$emit('sb_schedule_remove', sb);
                             orderChangeCall = true;
+                        }
+                        if (sb.pb_id) {
+                            api.updateProgramBlocksWithUpdatedSb(sb);
                         }
                         draftDataToAdd.push(sb);
                     }
@@ -542,6 +594,9 @@
                     $rootScope.$emit('sb_schedule_insert', sb);
                 } else {
                     completedDataToAdd.push(sb);
+                }
+                if (sb.pb_id) {
+                    api.updateProgramBlocksWithUpdatedSb(sb);
                 }
                 NotifyService.showSimpleToast('SB ' + sb.id_code + ' has been added.');
             } else {
