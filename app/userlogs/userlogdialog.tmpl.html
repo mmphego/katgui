@@ -54,7 +54,7 @@
             </md-input-container>
         </div>
 
-        <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 48px" ng-class="{'chips-tag-input-error': !validTags}">
+        <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 48px; border: 2px solid rgba(0, 0, 0, 0.0)" ng-class="{'chips-tag-input-error': !validTags}">
             <md-tooltip md-visible="showInvalidTagsTooltip" md-autohide="false">
                 Select at least one of the mandatory tags: {{mandatoryTagsListString}}
             </md-tooltip>
