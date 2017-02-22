@@ -631,7 +631,7 @@
         vm.pbOrderDialog = function(pb, event) {
             var confirm = $mdDialog.prompt()
                 .title('Set PB Order for ' + pb.pb_id)
-                .textContent('')
+                .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
                 .placeholder('PB Order')
                 .ariaLabel('PB Order')
                 .initialValue(pb.pb_order)
