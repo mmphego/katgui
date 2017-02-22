@@ -492,10 +492,10 @@
                 var pbIndex = _.findLastIndex(api.programBlocks, {id: sb.pb_id});
                 if (pbIndex > -1) {
                     //SB could've moved from one pb to another
-                    api.programBlocks.forEach(function (pb) {
-                        var sbIndex = _.findLastIndex(api.programBlocks[pbIndex].schedule_blocks, {id: sb.id});
+                    api.programBlocks.forEach(function (pb, existingIndex) {
+                        var sbIndex = _.findLastIndex(pb.schedule_blocks, {id: sb.id});
                         if (sbIndex > -1) {
-                            api.programBlocks[pbIndex].schedule_blocks.splice(sbIndex, 1);
+                            api.programBlocks[existingIndex].schedule_blocks.splice(sbIndex, 1);
                         }
                     });
                     if (!sb.deleted) {
@@ -830,6 +830,26 @@
                     $log.info(error);
                     NotifyService.showHttpErrorDialog('Error setting up subarray from PB', error);
                 });
+        };
+
+        api.updateSBOrderingValues = function (id_code, lead_operator_priority, sb_order, sb_sequence) {
+            return $http(createRequest('post',
+                urlBase() + '/sb/' + id_code + '/order',
+                {
+                    lead_operator_priority: lead_operator_priority,
+                    sb_order: sb_order,
+                    sb_sequence: sb_sequence,
+                }));
+        };
+
+        api.updatePBOrderingValues = function (pb_id, director_priority, pb_order, pb_sequence) {
+            return $http(createRequest('post',
+                urlBase() + '/pb/' + pb_id + '/order',
+                {
+                    director_priority: director_priority,
+                    pb_order: pb_order,
+                    pb_sequence: pb_sequence,
+                }));
         };
 
         api.progressInterval = $interval(function () {

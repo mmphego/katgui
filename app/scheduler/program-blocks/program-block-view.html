@@ -7,7 +7,12 @@
     </md-toolbar>
     <md-virtual-repeat-container flex class="md-whiteframe-z1" md-theme="{{$root.themePrimaryButtons}}">
         <div md-virtual-repeat="pb in vm.programBlocks | regexSearch:vm.pbsOrderByFields:vm.q | orderBy:vm.pbsOrderBy.value:vm.pbsOrderBy.reverse" class="pb-view-item" layout="row" ng-init="pb.showSBList = false"
-            layout-align="start center" style="cursor: pointer" ng-click="pb.showSBList = !pb.showSBList">
+            layout-align="start center" ng-click="pb.showSBList = !pb.showSBList">
+            <div class="sb-ordering-container" title="Director Priority | PB Order | PB Sequence" layout="column">
+                <div ng-click="parent.vm.directorPriorityDialog(pb, $event)">{{pb.director_priority}}</div>
+                <div ng-click="parent.vm.pbSequenceDialog(pb, $event)">{{pb.pb_sequence}}</div>
+                <div ng-click="parent.vm.pbOrderDialog(pb, $event)">{{pb.pb_order}}</div>
+            </div>
             <div layout="column" layout-align="center start" class="pb-id-container" ng-click="$root.showSBDetails(pb, $event, 'Program Block: ' + pb.pb_id)">
                 <span class="pb-id">{{pb.pb_id}}</span>
                 <span>{{pb.owner}}</span>
@@ -28,6 +33,16 @@
                     <md-menu-item ng-repeat="sub_nr in $root.systemConfig.subarrayNrs">
                         <md-button ng-click="parent.vm.setupSubarrayFromPB(sub_nr, pb.id, $event)" title="Setup subarray {{sub_nr}} using this observation specification and schedule block list">
                             Setup Subarray {{sub_nr}} with this PB</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.directorPriorityDialog(pb, $event)" title="Update Lead Operator Priority">Update Director Priority...</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.pbOrderDialog(pb, $event)" title="Update SB Order">Update PB Order...</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.pbSequenceDialog(pb, $event)" title="Update SB Sequence">Update PB Sequence...</md-button>
                     </md-menu-item>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>
