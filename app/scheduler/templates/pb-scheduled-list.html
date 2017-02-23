@@ -1,6 +1,6 @@
 <div flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2" ng-class="{'maintenance-bg':vm.subarray.maintenance}" style="overflow: auto">
-    <div ng-repeat="pb in vm.observationSchedule track by $index" class="pb-schedule-item" layout="column">
-        <md-toolbar flex class="pb-schedule-item-header md-hue-3 pb-view-item" md-theme="{{themePrimary}}" title="{{pb.description}}">
+    <div ng-repeat="pb in vm.observationSchedule | filter:parent.vm.hasScheduleBlocks(pb) | filter:{sub_nr: vm.subarray.id} track by $index" class="pb-schedule-item" layout="column">
+        <md-toolbar flex class="pb-schedule-item-header md-hue-3 pb-view-item md-whiteframe-z1" md-theme="{{themePrimary}}" title="{{pb.description}}">
             <div style="position: absolute; left: 4px; top: 4px" class="sb-ordering-container" title="Director Priority | PB Order | PB Sequence" layout="column">
                 <div ng-click="parent.vm.directorPriorityDialog(pb, $event)">{{pb.director_priority}}</div>
                 <div ng-click="parent.vm.pbSequenceDialog(pb, $event)">{{pb.pb_sequence}}</div>
@@ -16,7 +16,10 @@
                 <span>{{pb.desired_start_time}}</span>
             </div> -->
 
-            <div class="pb-schedule-item-header-title" ng-click="$root.showSBDetails(pb, $event, 'Program Block: ' + pb.pb_id)">Program Block - <b>{{pb.pb_id}}</b></div>
+            <div class="pb-schedule-item-header-title" ng-click="$root.showSBDetails(pb, $event, 'Program Block: ' + pb.pb_id)">
+                <span ng-show="pb.id > -1">Program Block - <b>{{pb.pb_id}}</b></span>
+                <b ng-show="!pb.id && pb.id !== 0">{{pb.pb_id}}</b>
+            </div>
             <md-menu style="position: absolute; top: 4px; right: 4px">
                 <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
                 <md-menu-content style="max-height: 475px">
@@ -49,23 +52,12 @@
                 </md-menu-content>
             </md-menu>
             <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
-                style="height: 32px; border-top: 1px solid rgba(158,158,158,0.5); border-top-style: dashed; width: calc(100% - 8px);"></div>
+                style="height: 32px; border-top: 1px solid rgba(158,158,158,0.5); border-top-style: dashed; width: 100%"></div>
         </md-toolbar>
 
         <div ng-repeat="sb in pb.schedule_blocks track by $index" style="margin: 0 16px; z-index: 0; min-width: calc(100% - 32px)"
             ng-class="{'selected-schedule-row md-whiteframe-z3': sb === vm.selectedSchedule}" class="schedule-draft-item"
             layout="row" layout-align="start center" ng-click='vm.setSelectedSchedule(sb)' ng-include="'app/scheduler/templates/sb-single-scheduled-line-item.html'">
         </div>
-    </div>
-    <md-toolbar flex class="pb-schedule-item-header md-hue-3 pb-view-item" md-theme="{{themePrimary}}" title="{{pb.description}}"
-        style="margin-top: 16px">
-        <div class="pb-schedule-item-header-title">Unlinked Schedule Blocks</div>
-
-        <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
-            style="height: 32px; border-top: 1px solid rgba(158,158,158,0.5); border-top-style: dashed; width: calc(100% - 8px);"></div>
-    </md-toolbar>
-    <div ng-repeat="sb in vm.scheduleData | filter:{pb_id: null} track by $index" style="margin: 0 16px; z-index: 0; min-width: calc(100% - 32px)"
-        ng-class="{'selected-schedule-row md-whiteframe-z3': sb === vm.selectedSchedule}" class="schedule-draft-item"
-        layout="row" layout-align="start center" ng-click='vm.setSelectedSchedule(sb)' ng-include="'app/scheduler/templates/sb-single-scheduled-line-item.html'">
     </div>
 </div>

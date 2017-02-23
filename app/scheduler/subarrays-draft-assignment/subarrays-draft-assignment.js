@@ -11,6 +11,7 @@
         vm.showDeselectTooltip = false;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
         vm.scheduleData = ObsSchedService.scheduleData;
+        vm.observationSchedule = ObsSchedService.observationSchedule;
 
         if (!$scope.$parent.vm.subarray) {
             $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {

@@ -751,6 +751,12 @@
                 });
         };
 
+        vm.hasScheduleBlocks = function(item) {
+            return function(item) {
+                return angular.isDefined(item.schedule_blocks) && item.schedule_blocks.length > 0;
+            };
+        };
+
         $scope.$on('$destroy', function() {
             MonitorService.unsubscribe('sched', '*');
             vm.unbindStateChangeStart();

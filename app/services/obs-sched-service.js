@@ -314,36 +314,12 @@
             var deferred = $q.defer();
             $http(createRequest('get', urlBase() + '/pb/observation-schedule'))
                 .then(function(result) {
+                    api.observationSchedule.splice(0, api.observationSchedule.length);
                     var jsonResult = JSON.parse(result.data.result);
-                    var newObsSchedItemIds = [];
                     jsonResult.forEach(function (jsonItem) {
-                        var existingItemIndex = _.findIndex(api.observationSchedule, function (item) {
-                             // this is a program block
-                            return item.schedule_blocks && item.pb_id === jsonItem.pb_id;
-                        });
-                        if (existingItemIndex > -1) {
-                            //Update existing schedule blocks
-                            api.observationSchedule[existingItemIndex] = jsonItem;
-                        } else {
-                            api.observationSchedule.push(jsonItem);
-                        }
-                        newObsSchedItemIds.push(jsonItem.pb_id);
+                        api.observationSchedule.push(jsonItem);
                     });
-                    // // //Remove old schedule blocks that has had a state change
-                    // var existingItemIndexes = api.scheduleData.map(function(item) {
-                    //     return item.schedule_blocks? item.pb_id : -1;
-                    // });
-                    // var itemIdsToRemove = _.difference(existingItemIndexes, newObsSchedItemIds);
-                    // sbIdCodesToRemove.forEach(function(sbIdCode) {
-                    //     var existingSbIndex = _.findIndex(api.scheduleData, function(sb) {
-                    //         return sb.id_code === sbIdCode;
-                    //     });
-                    //     if (existingSbIndex > -1) {
-                    //         api.scheduleData.splice(existingSbIndex, 1);
-                    //     }
-                    // });
-
-                    // deferred.resolve(api.scheduleData);
+                    deferred.resolve(api.observationSchedule);
                 }, function(error) {
                     $log.error(error);
                     deferred.reject(error);

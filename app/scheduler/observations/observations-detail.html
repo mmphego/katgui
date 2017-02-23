@@ -2,7 +2,7 @@
     <div flex layout="column">
         <div flex style="min-height: 150px;" layout="column">
             <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
-                ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z1" layout="row"
+                ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z2" layout="row"
                 layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 86px; min-height: 86px; position: relative">
                 <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                 <md-menu style="margin: -16px 0 0 0; padding: 0;">
