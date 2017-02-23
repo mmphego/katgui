@@ -1,8 +1,12 @@
 <div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end" ng-click="$event.stopPropagation()"
     style="pointer-events: none">
-    <span style="line-height: 9px; font-size: 9px; margin-left: -6px; word-break: break-all; width: 16px"
-        class="subheader-text" title="Order of Schedule Blocks by lead_operator_priority, sb_order and sb_sequence">LO Seq Ord</span>
-    <span style="width: 130px; padding-left: 8px" class="subheader-text">ID</span>
+    <div layout="column" style="font-size: 9px; word-break: break-all; width: 16px; margin-left: 8px; line-height: 9px" class="subheader-text" title="Order of Schedule Blocks by lead_operator_priority, sb_order and sb_sequence">
+        <span>LOP</span>
+        <span>Seq</span>
+        <span>Ord</span>
+    </div>
+
+    <span style="width: 118px; padding-left: 2px" class="subheader-text">ID</span>
     <span flex>Description</span>
     <span style="width: 80px">State</span>
     <div style="width: 158px; font-size: 10px" layout="column">

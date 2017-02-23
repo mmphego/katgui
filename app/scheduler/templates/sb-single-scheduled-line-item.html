@@ -1,0 +1,91 @@
+<md-progress-linear md-theme="green" ng-show="sb.state === 'ACTIVE' " class="md-primary progress-bar-fill"
+    md-mode="{{sb.expected_duration_seconds? 'determinate' : 'indeterminate'}}" value="{{sb.progress}}"
+    style="position: absolute; left: 0; right: 0">
+</md-progress-linear>
+<md-progress-linear md-theme="grey" ng-show="sb.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
+    md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
+</md-progress-linear>
+<div class="sb-ordering-container" title="Lead Operator Priority | SB Order | SB Sequence" layout="column">
+    <div ng-click="parent.vm.leadOperatorPriorityDialog(sb, $event)">{{sb.lead_operator_priority}}</div>
+    <div ng-click="parent.vm.sbSequenceDialog(sb, $event)">{{sb.sb_sequence}}</div>
+    <div ng-click="parent.vm.sbOrderDialog(sb, $event)">{{sb.sb_order}}</div>
+</div>
+<div layout="column" layout-align="start" style="width: 120px" class="text-overflow-ellipsis">
+    <span ng-class="{'manual-color': sb.type === 'MANUAL', 'maintenance-color': sb.type === 'MAINTENANCE', 'observation-color': sb.type === 'OBSERVATION'}"
+        style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(sb, $event);$event.stopPropagation();">{{sb.id_code}}</span>
+    <i style="width: 110px">{{sb.owner}}</i>
+</div>
+<span flex style="overflow: hidden; text-overflow: ellipsis; margin-right: 4px" title="{{sb.description}}">{{sb.description}}</span>
+<span style="width: 75px">{{sb.state}}</span>
+<div layout="column" layout-align="center" class="sb-obs-readiness-div" style="margin: 0 4px">
+    <span style="width: 150px" ng-class="{'green-color': sb.obs_readiness === 'READY_TO_EXECUTE', 'red-color': sb.obs_readiness !== 'READY_TO_EXECUTE'}">{{sb.obs_readiness}}</span>
+    <span style="width: 150px">{{sb.verification_state}}</span>
+</div>
+<div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin: 0 4px">
+    <span ng-class="{'manual-color': sb.type === 'MANUAL', 'maintenance-color': sb.type === 'MAINTENANCE', 'observation-color': sb.type === 'OBSERVATION'}">{{sb.type}}</span>
+    <span>{{sb.desired_start_time}}</span>
+</div>
+<span md-ink-ripple class="icon-button fa" title="{{sb.state !== 'ACTIVE'? 'Execute': 'Stop Execution'}}"
+    ng-class="{'fa-play green-color': sb.state !== 'ACTIVE' && sb.obs_readiness === 'READY_TO_EXECUTE', 'fa-stop red-color': sb.state === 'ACTIVE', 'opacity-0': sb.state !== 'ACTIVE' && sb.obs_readiness !== 'READY_TO_EXECUTE'}"
+    style="min-width: 26px; max-width: 26px"
+    ng-click="sb.state === 'ACTIVE'? parent.vm.stopExecuteSchedule(sb) : parent.vm.executeSchedule(sb); $event.stopPropagation()"></span>
+<md-menu md-theme="{{$root.themePrimaryButtons}}">
+    <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+    <md-menu-content style="max-height: 475px">
+        <md-menu-item>
+            <md-button ng-click="parent.vm.viewSBTasklog(sb, 'progress')" title="View Progress in a New Tab">View Progress</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-click="parent.vm.viewSBTasklog(sb, 'dryrun')" title="View Dryrun result in a New Tab">View Dryrun</md-button>
+        </md-menu-item>
+        <md-menu-divider></md-menu-divider>
+        <md-menu-item>
+            <md-button ng-disabled="sb.type !== 'OBSERVATION' || sb.pendingVerify || !parent.vm.iAmAtLeastCA()"
+                ng-click="parent.vm.verifySB(sb)">Verify Schedule</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToApproved(sb)"
+                title="Move Schedule Block to Approved">Move to Approved</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveScheduleRowToFinished(sb)"
+                title="Move Schedule Block to Complete">Move To Completed</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cancelExecuteSchedule(sb)" title="Cancel Schedule Block Execution">Cancel Execution</md-button>
+        </md-menu-item>
+        <md-menu-divider></md-menu-divider>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.leadOperatorPriorityDialog(sb, $event)" title="Update Lead Operator Priority">Update Lead Operator Priority...</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.sbOrderDialog(sb, $event)" title="Update SB Order">Update SB Order...</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.sbSequenceDialog(sb, $event)" title="Update SB Sequence">Update SB Sequence...</md-button>
+        </md-menu-item>
+        <md-menu-divider></md-menu-divider>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSB(sb)" title="Clone Schedule Block">Clone SB</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndAssignSB(sb)"
+                title="{{'Clone and Assign to Subarray ' + vm.subarray.id}}">Clone and Assign SB</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneAndScheduleSB(sb)"
+                title="{{'Clone and Schedule on Subarray ' + vm.subarray.id}}">Clone and Schedule SB</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cloneSBIntoPBDialog($event, sb)" title="Clone Schedule Block into a Program Block">Clone SB Into PB...</md-button>
+        </md-menu-item>
+        <md-menu-divider></md-menu-divider>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.moveSBIntoPBDialog($event, sb)" title="Move Schedule Block to a Program Block">Move SB to PB...</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-disabled="!parent.vm.iAmAtLeastCA() || sb.pb_id === null || sb.pb_id === undefined"
+                ng-click="parent.vm.removeSBFromAnyPB(sb)" title="Remove Schedule block from any Program Block">Remove SB From PB</md-button>
+        </md-menu-item>
+    </md-menu-content>
+</md-menu>

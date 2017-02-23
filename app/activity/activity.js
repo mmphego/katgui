@@ -177,6 +177,8 @@
             ObsSchedService.getScheduledScheduleBlocks().then(function(scheduleData) {
                 vm.addSbsToTimeline(scheduleData);
             });
+            // TODO update activity timeline with program blocks?
+            // ObsSchedService.getProgramBlocksObservationSchedule();
         });
 
         //This needs to run on the next digest because the timeline is not rendered yet

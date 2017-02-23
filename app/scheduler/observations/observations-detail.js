@@ -12,6 +12,7 @@
         vm.modeTypes = ['queue', 'manual'];
         vm.scheduleData = ObsSchedService.scheduleData;
         vm.scheduleCompletedData = ObsSchedService.scheduleCompletedData;
+        vm.observationSchedule = ObsSchedService.observationSchedule;
         vm.subarray = $scope.$parent.vm.subarray;
 
         vm.showSchedSBDetails = $localStorage.showSchedSBDetails;

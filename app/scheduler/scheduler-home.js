@@ -114,6 +114,7 @@
         ObsSchedService.getProgramBlocks();
         ObsSchedService.getScheduleBlocks();
         ObsSchedService.getScheduledScheduleBlocks();
+        ObsSchedService.getProgramBlocksObservationSchedule();
 
         vm.checkCASubarrays = function() {
             vm.subarray = _.findWhere(ObsSchedService.subarrays, {

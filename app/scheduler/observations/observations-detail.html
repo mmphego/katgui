@@ -1,12 +1,11 @@
 <div flex layout="row" style="min-width: 1000px; min-height: 650px; padding: 0 8px 8px 8px" ng-controller="SubArrayObservationsDetail as vm">
-
     <div flex layout="column">
         <div flex style="min-height: 150px;" layout="column">
             <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                 ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z1" layout="row"
-                layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 76px; min-height: 76px; position: relative">
+                layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 86px; min-height: 86px; position: relative">
                 <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
-                <md-menu style="margin: 0; padding: 0;">
+                <md-menu style="margin: -16px 0 0 0; padding: 0;">
                     <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu()" style="color: currentColor !important; font-size: 30px; position: relative">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 12px"></span>
                         <span style="margin-left: 12px;">
@@ -26,10 +25,10 @@
 
                 <span flex></span>
 
-                <md-menu style="margin-top: 16px; position: relative">
-                    <span md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu()" class="opaque-hover">
+                <md-menu style="margin: -16px 0 0 0; padding: 0px; position: relative">
+                    <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdOpenMenu()" class="opaque-hover">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
-                        <span style="margin-left: 6px">MODE: <b>{{vm.subarray.mode}}</b></span>                        </span>
+                        <span style="margin-left: 6px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
                     </span>
                     <md-menu-content>
                         <md-menu-item ng-repeat="type in vm.modeTypes">
@@ -42,10 +41,8 @@
                     ng-click="parent.vm.activateSubarray()"></span>
                 <span style="margin-top: -14px" class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple
                     ng-show="parent.vm.iAmAtLeastCA()" title="Free Subarray" ng-click="parent.vm.freeSubarray()"></span>
-
-                <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'"></div>
             </md-toolbar>
-            <div layout="column" flex ng-include="'app/scheduler/templates/sb-scheduled-list.html'"></div>
+            <div layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
         </div>
 
         <div style="margin-top: 8px" layout="column">
