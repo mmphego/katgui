@@ -3,10 +3,10 @@
         <div flex style="min-height: 150px;" layout="column">
             <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
                 ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z2" layout="row"
-                layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 86px; min-height: 86px; position: relative">
+                layout-align="center center" title="{{vm.subarray.description}}" style="position: relative">
                 <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
-                <md-menu style="margin: -16px 0 0 0; padding: 0;">
-                    <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu()" style="color: currentColor !important; font-size: 30px; position: relative">
+                <md-menu style="margin: 0; padding: 0;">
+                    <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event)" style="color: currentColor !important; font-size: 30px; position: relative">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 12px"></span>
                         <span style="margin-left: 12px;">
                                     SUBARRAY {{vm.subarray.id}} -
@@ -25,8 +25,8 @@
 
                 <span flex></span>
 
-                <md-menu style="margin: -16px 0 0 0; padding: 0px; position: relative">
-                    <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdOpenMenu()" class="opaque-hover">
+                <md-menu style="margin: 0; padding: 0; position: relative">
+                    <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" class="opaque-hover">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
                         <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
                     </span>
@@ -65,7 +65,6 @@
                         <span>Type</span>
                         <span>End Time</span>
                     </div>
-                    <!-- <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleCompleteDataRepeat')"></div> -->
                 </div>
             </md-toolbar>
 
@@ -92,7 +91,7 @@
                         </div>
 
                         <md-menu>
-                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                             <md-menu-content>
                                 <md-menu-item>
                                     <md-button ng-click="parent.vm.viewSBTasklog(item, 'progress')" title="View Progress output in a New Tab">View Progress</md-button>

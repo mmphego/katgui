@@ -28,7 +28,7 @@
                 <span>{{pb.desired_start_time}}</span>
             </div>
             <md-menu>
-                <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+                <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                 <md-menu-content style="max-height: 475px">
                     <md-menu-item ng-repeat="sub_nr in $root.systemConfig.subarrayNrs">
                         <md-button ng-click="parent.vm.setupSubarrayFromPB(sub_nr, pb.id, $event)" title="Setup subarray {{sub_nr}} using this observation specification and schedule block list">
@@ -52,6 +52,15 @@
                     <md-menu-item>
                         <md-button ng-click="parent.vm.clonePB(pb, true)" title="Clone Program Block as well as it's Schedule Blocks">
                             Clone PB and it's SB's</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-disabled="!pb.obs_constraints" ng-click="$root.showSBDetails(pb.obs_constraints, $event, pb.pb_id + ' Observation Constraints')" title="View Observation Constraints">
+                            View Obs Constraints</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-disabled="!pb.obs_spec" ng-click="$root.showSBDetails(pb.obs_spec, $event, pb.pb_id + ' Observation Spec')" title="View Observation Specification">
+                            View Obs Spec</md-button>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>

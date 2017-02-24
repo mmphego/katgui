@@ -178,10 +178,12 @@
                         } else {
                             $scope.title = title;
                         }
+                        if (_.isString(sb)) {
+                            sb = JSON.parse(sb);
+                        }
                         $scope.sb = sb;
                         $scope.hide = function () {
                             $mdDialog.hide();
-                            $rootScope.mdDialogSb = undefined;
                         };
                     },
                     template: "<md-dialog style='padding: 0; max-height: 95%' md-theme='{{$root.themePrimary}}' aria-label='Schedule Block Details'>" +

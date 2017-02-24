@@ -36,10 +36,9 @@
                                 <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}" style="margin-right: 4px;"></span>
                             </span>
                         </div>
-                        <!-- <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleDraftDataRepeat', true)"></div> -->
                     </div>
                     <md-menu>
-                        <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                        <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event); $event.stopPropagation()"
                             style="font-size: inherit">
                             <span class="fa fa-chevron-down subarray-select-chevron" style="top: 6px"></span>
                             <span style="margin-left: 14px;">
@@ -85,7 +84,7 @@
                         <span class="icon-button fa fa-chevron-right" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()" title="Unassign Schedule Blocks"
                             ng-click="parent.vm.iAmAtLeastCA() && vm.freeScheduleBlock(item)"></span>
                         <md-menu>
-                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                             <md-menu-content>
                                 <md-menu-item>
                                     <md-button ng-disabled="!(item.type === 'OBSERVATION' && parent.vm.iAmAtLeastCA())" ng-click="vm.verifyDraft(item)">Verify Draft</md-button>

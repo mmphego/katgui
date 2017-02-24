@@ -338,7 +338,7 @@
                 <span flex style="font-size: 30px; cursor: pointer;" title="Click to Navigate to Parent Display" ng-click="vm.navigateToParentState()">{{$root.currentStateTitle()}}</span>
                 <div layout="column" layout-align="start center" style="margin-right: 8px">
                     <md-menu style="padding: 0;">
-                        <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdOpenMenu()">
+                        <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdMenu.open($event)">
                             <span>{{$root.currentUser.email}}</span><i style="font-size: 12px"> ({{$root.rolesMap[$root.currentUser.req_role]}})</i>
                             <span style="font-size: 14px" class="fa fa-caret-down"></span>
                         </md-button>

@@ -36,7 +36,7 @@
             style="min-width: 26px; max-width: 26px"
             ng-click="item.state === 'ACTIVE'? parent.vm.stopExecuteSchedule(item) : parent.vm.executeSchedule(item); $event.stopPropagation()"></span>
         <md-menu md-theme="{{$root.themePrimaryButtons}}">
-            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
             <md-menu-content style="max-height: 475px">
                 <md-menu-item>
                     <md-button ng-click="parent.vm.viewSBTasklog(item, 'progress')" title="View Progress in a New Tab">View Progress</md-button>
