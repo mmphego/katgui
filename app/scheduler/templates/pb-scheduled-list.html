@@ -20,7 +20,7 @@
                 <span ng-show="pb.id > -1">Program Block - <b>{{pb.pb_id}}</b></span>
                 <b ng-show="!pb.id && pb.id !== 0">{{pb.pb_id}}</b>
             </div>
-            <md-menu style="position: absolute; top: 4px; right: 4px">
+            <md-menu ng-show="pb.id > -1" style="position: absolute; top: 4px; right: 4px">
                 <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                 <md-menu-content style="max-height: 475px">
                     <md-menu-item>
@@ -28,11 +28,12 @@
                             title="Update Lead Operator Priority">Update Director Priority...</md-button>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.pbOrderDialog(pb, $event)" title="Update SB Order">Update PB Order...</md-button>
-                    </md-menu-item>
-                    <md-menu-item>
                         <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.pbSequenceDialog(pb, $event)"
                             title="Update SB Sequence">Update PB Sequence...</md-button>
+                    </md-menu-item>
+                    <md-menu-item >
+                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.pbOrderDialog(pb, $event)"
+                        title="Update PB Order">Update PB Order...</md-button>
                     </md-menu-item>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>

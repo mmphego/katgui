@@ -476,12 +476,18 @@
         };
 
         vm.leadOperatorPriorityDialog = function(sb, event) {
+            var initValue = sb.lead_operator_priority;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
             var confirm = $mdDialog.prompt()
                 .title('Set Lead Operator Priority for ' + sb.id_code)
                 .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
                 .placeholder('Lead Operator Priority')
                 .ariaLabel('Lead Operator Priority')
-                .initialValue(sb.lead_operator_priority)
+                .initialValue(initValue)
                 .targetEvent(event)
                 .theme($rootScope.themePrimaryButtons)
                 .ok('Save')
@@ -514,12 +520,18 @@
         };
 
         vm.sbOrderDialog = function(sb, event) {
+            var initValue = sb.sb_order;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
             var confirm = $mdDialog.prompt()
                 .title('Set SB Order for ' + sb.id_code)
                 .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
                 .placeholder('SB Order')
                 .ariaLabel('SB Order')
-                .initialValue(sb.sb_order)
+                .initialValue(initValue)
                 .targetEvent(event)
                 .theme($rootScope.themePrimaryButtons)
                 .ok('Save')
@@ -552,12 +564,18 @@
         };
 
         vm.sbSequenceDialog = function(sb, event) {
+            var initValue = sb.sb_sequence;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
             var confirm = $mdDialog.prompt()
                 .title('Set SB Sequence for ' + sb.id_code)
                 .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
                 .placeholder('SB Sequence')
                 .ariaLabel('SB Sequence')
-                .initialValue(sb.sb_sequence)
+                .initialValue(initValue)
                 .targetEvent(event)
                 .theme($rootScope.themePrimaryButtons)
                 .ok('Save')
@@ -591,12 +609,18 @@
         };
 
         vm.directorPriorityDialog = function(pb, event) {
+            var initValue = pb.director_priority;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
             var confirm = $mdDialog.prompt()
                 .title('Set Director Priority for ' + pb.pb_id)
                 .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
                 .placeholder('Director Priority')
                 .ariaLabel('Director Priority')
-                .initialValue(pb.director_priority)
+                .initialValue(initValue)
                 .targetEvent(event)
                 .theme($rootScope.themePrimaryButtons)
                 .ok('Save')
@@ -629,12 +653,18 @@
         };
 
         vm.pbOrderDialog = function(pb, event) {
+            var initValue = pb.pb_order;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
             var confirm = $mdDialog.prompt()
                 .title('Set PB Order for ' + pb.pb_id)
                 .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
                 .placeholder('PB Order')
                 .ariaLabel('PB Order')
-                .initialValue(pb.pb_order)
+                .initialValue(initValue)
                 .targetEvent(event)
                 .theme($rootScope.themePrimaryButtons)
                 .ok('Save')
@@ -667,12 +697,18 @@
         };
 
         vm.pbSequenceDialog = function(pb, event) {
+            var initValue = pb.pb_sequence;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
             var confirm = $mdDialog.prompt()
                 .title('Set PB Sequence for ' + pb.pb_id)
                 .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
                 .placeholder('PB Sequence')
                 .ariaLabel('PB Sequence')
-                .initialValue(pb.pb_sequence)
+                .initialValue(initValue)
                 .targetEvent(event)
                 .theme($rootScope.themePrimaryButtons)
                 .ok('Save')

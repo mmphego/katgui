@@ -36,10 +36,10 @@
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
-                <span style="margin-top: -14px" class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple
+                <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple
                     ng-show="$root.expertOrLO && vm.subarray.state === 'inactive'" title="Activate Subarray"
                     ng-click="parent.vm.activateSubarray()"></span>
-                <span style="margin-top: -14px" class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple
+                <span class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple
                     ng-show="parent.vm.iAmAtLeastCA()" title="Free Subarray" ng-click="parent.vm.freeSubarray()"></span>
             </md-toolbar>
             <div layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
