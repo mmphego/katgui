@@ -610,7 +610,6 @@
                 if (api.draftArrayStates.indexOf(sb.state) > -1) {
                     if (draftIndex > -1) {
                         if (api.scheduleDraftData[draftIndex].pb_id !== sb.pb_id) {
-                            api.updateProgramBlocksWithUpdatedSb(sb);
                         }
                         api.scheduleDraftData[draftIndex] = sb;
                     } else if (draftIndex === -1) {
@@ -620,16 +619,11 @@
                             $rootScope.$emit('sb_schedule_remove', sb);
                             orderChangeCall = true;
                         }
-                        if (sb.pb_id) {
-                            api.updateProgramBlocksWithUpdatedSb(sb);
-                        }
                         draftDataToAdd.push(sb);
                     }
+
                 } else if (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE') {
                     if (scheduledIndex > -1) {
-                        if (api.scheduleData[scheduledIndex].pb_id !== sb.pb_id) {
-                            api.updateProgramBlocksWithUpdatedSb(sb);
-                        }
                         api.scheduleData[scheduledIndex] = sb;
                         $rootScope.$emit('sb_schedule_update', sb);
 
@@ -644,9 +638,6 @@
                         id: sb.id
                     });
                     if (completedIndex > -1) {
-                        if (api.scheduleCompletedData[completedIndex].pb_id !== sb.pb_id) {
-                            api.updateProgramBlocksWithUpdatedSb(sb);
-                        }
                         api.scheduleCompletedData[completedIndex] = sb;
                     } else if (scheduledIndex > -1) {
                         api.scheduleData.splice(scheduledIndex, 1);
@@ -659,6 +650,7 @@
                         completedDataToAdd.push(sb);
                     }
                 }
+                api.updateProgramBlocksWithUpdatedSb(sb);
             } else if (action === 'insert') {
                 if (api.draftArrayStates.indexOf(sb.state) > -1) {
                     draftDataToAdd.push(sb);
