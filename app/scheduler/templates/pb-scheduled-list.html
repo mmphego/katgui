@@ -1,7 +1,7 @@
-<div flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2" ng-class="{'maintenance-bg':vm.subarray.maintenance}" style="overflow: auto">
-    <div ng-repeat="pb in vm.observationSchedule | filter:parent.vm.hasScheduleBlocks(pb) | filter:{sub_nr: vm.subarray.id} track by $index" class="pb-schedule-item" layout="column">
+<div flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2" ng-class="{'maintenance-bg':subarray.maintenance}" style="overflow: auto">
+    <div ng-repeat="pb in vm.observationSchedule | filter:parent.vm.hasScheduleBlocks(pb) | filter:{sub_nr: subarray.id} track by $index" class="pb-schedule-item" layout="column">
         <md-toolbar flex class="pb-schedule-item-header md-hue-3 pb-view-item md-whiteframe-z1" md-theme="{{themePrimary}}" title="{{pb.description}}">
-            <div style="position: absolute; left: 4px; top: 4px" class="sb-ordering-container" title="Director Priority | PB Order | PB Sequence" layout="column">
+            <div ng-show="pb.id > -1" style="position: absolute; left: 4px; top: 4px" class="sb-ordering-container" title="Director Priority | PB Order | PB Sequence" layout="column">
                 <div ng-click="parent.vm.directorPriorityDialog(pb, $event)">{{pb.director_priority}}</div>
                 <div ng-click="parent.vm.pbSequenceDialog(pb, $event)">{{pb.pb_sequence}}</div>
                 <div ng-click="parent.vm.pbOrderDialog(pb, $event)">{{pb.pb_order}}</div>
@@ -23,12 +23,6 @@
             <md-menu style="position: absolute; top: 4px; right: 4px">
                 <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
                 <md-menu-content style="max-height: 475px">
-                    <!-- <md-menu-item>
-                    <md-button ng-click="parent.vm.setupSubarrayFromPB(parent.vm.subarray_id, pb.id, $event)" title="Setup subarray {{parent.vm.subarray_id}} using this observation specification and schedule block list">
-                        Setup Subarray {{parent.vm.subarray_id}} with this PB
-                    </md-button>
-                </md-menu-item> -->
-                    <!-- <md-menu-divider></md-menu-divider> -->
                     <md-menu-item>
                         <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.directorPriorityDialog(pb, $event)"
                             title="Update Lead Operator Priority">Update Director Priority...</md-button>

@@ -113,7 +113,6 @@
         MonitorService.subscribe('sched');
         ObsSchedService.getProgramBlocks();
         ObsSchedService.getScheduleBlocks();
-        ObsSchedService.getScheduledScheduleBlocks();
         ObsSchedService.getProgramBlocksObservationSchedule();
 
         vm.checkCASubarrays = function() {

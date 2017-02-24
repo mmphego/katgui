@@ -1,4 +1,4 @@
-<div flex layout="column" style="min-width: 1015px; min-height: 600px; margin: 0 8px 8px 8px" ng-controller="SubArrayExecutorOverview as vm">
+<div flex layout="column" style="min-width: 1015px; min-height: 1000px; margin: 0 8px 8px 8px" ng-controller="SubArrayExecutorOverview as vm">
     <div flex ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
         layout="row" flex style="min-height: 120px" md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
         <div layout="column" flex>

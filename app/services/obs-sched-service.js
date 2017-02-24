@@ -15,20 +15,15 @@
             $localStorage.lastKnownSubarrayConfig = {};
         }
         api.lastKnownSubarrayConfig = $localStorage.lastKnownSubarrayConfig;
-        api.scheduleData = [];
         api.scheduleDraftData = [];
         api.scheduleCompletedData = [];
         api.programBlocks = [];
-
-        api.scheduleDataCache = [];
-        api.scheduleDraftDataCache = [];
-        api.scheduleCompletedDataCache = [];
-
         api.subarrays = [];
         api.poolResourcesFree = [];
         api.configLabels = [];
         api.resourceTemplates = [];
         api.observationSchedule = [];
+        api.scheduleData = [];
 
         api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
 
@@ -366,8 +361,7 @@
             return deferred.promise;
         };
 
-        api.debounceGetScheduledScheduleBlocks = _.debounce(api.getScheduledScheduleBlocks, 1000);
-        api.debounceGetProgramBlocksObservationSchedule = _.debounce(api.getProgramBlocksObservationSchedule, 1000);
+        api.debounceGetProgramBlocksObservationSchedule = _.debounce(api.getProgramBlocksObservationSchedule, 300);
 
         api.getCompletedScheduleBlocks = function(sub_nr, max_nr) {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
@@ -500,8 +494,17 @@
 
         api.receivedPBMessage = function(pb, action, id_to_action) {
             var pbDataToAdd = [];
+            var orderChangeCall = false;
 
             if (action === 'delete') {
+                var obsIndex = _.findLastIndex(api.observationSchedule, {
+                    id: parseInt(id_to_action)
+                });
+                if (obsIndex > -1) {
+                    api.observationSchedule.splice(obsIndex, 1);
+                    orderChangeCall = true;
+                }
+
                 var index = _.findLastIndex(api.programBlocks, {
                     id: parseInt(id_to_action)
                 });
@@ -510,22 +513,35 @@
                     api.programBlocks.splice(index, 1);
                 }
             } else if (action === 'update') {
+                var pbObsIndex = _.findLastIndex(api.observationSchedule, {
+                    id: pb.id
+                });
+                if (pbObsIndex > -1) {
+                    pb.schedule_blocks = api.observationSchedule[pbObsIndex].schedule_blocks;
+                    pb.sub_nr = api.observationSchedule[pbObsIndex].sub_nr;
+                    api.observationSchedule[pbObsIndex] = pb;
+                    orderChangeCall = true;
+                }
+
                 var pbIndex = _.findLastIndex(api.programBlocks, {
                     id: pb.id
                 });
                 if (pbIndex > -1) {
-                    var existingSBList = api.programBlocks[pbIndex].schedule_blocks;
-                    pb.schedule_blocks = existingSBList;
+                    pb.schedule_blocks = api.programBlocks[pbIndex].schedule_blocks;
                     api.programBlocks[pbIndex] = pb;
                 } else {
                     api.programBlocks.push(pb);
                 }
             } else if (action === 'insert') {
+                orderChangeCall = true;
                 api.programBlocks.push(pb);
                 NotifyService.showSimpleToast('PB ' + pb.pb_id + ' has been added.');
             } else {
                 $log.error('Dangling ObsSchedService ' + action + ' message for:');
                 $log.error(pb);
+            }
+            if (orderChangeCall) {
+                api.debounceGetProgramBlocksObservationSchedule();
             }
         };
 
@@ -564,6 +580,7 @@
         };
 
         api.receivedSBMessage = function(sb, action, id_to_action) {
+            // TODO update observationSchedule
             var scheduleDataToAdd = [];
             var draftDataToAdd = [];
             var completedDataToAdd = [];
@@ -670,7 +687,6 @@
                 Array.prototype.push.apply(api.scheduleCompletedData, completedDataToAdd);
             }
             if (orderChangeCall) {
-                api.debounceGetScheduledScheduleBlocks();
                 api.debounceGetProgramBlocksObservationSchedule();
             }
         };
@@ -907,11 +923,13 @@
         };
 
         api.progressInterval = $interval(function() {
-            if (api.scheduleData.length > 0) {
-                api.scheduleData.forEach(function(sb) {
-                    if (sb.state === 'ACTIVE' && sb.expected_duration_seconds && sb.actual_start_time) {
-                        sb.progress = api.sbProgress(sb);
-                    }
+            if (api.observationSchedule.length > 0) {
+                api.observationSchedule.forEach(function(pb) {
+                    pb.schedule_blocks.forEach(function (sb){
+                        if (sb.state === 'ACTIVE' && sb.expected_duration_seconds && sb.actual_start_time) {
+                            sb.progress = api.sbProgress(sb);
+                        }
+                    });
                 });
             }
         }, 3000);
