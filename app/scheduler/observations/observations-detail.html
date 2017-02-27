@@ -31,8 +31,8 @@
                         <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
                     </span>
                     <md-menu-content>
-                        <md-menu-item ng-repeat="type in vm.modeTypes">
-                            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.setSchedulerMode(type)">Set Mode to: {{type}}</md-button>
+                        <md-menu-item ng-repeat="type in parent.vm.modeTypes">
+                            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.setSchedulerMode(vm.subarray.id, type)">Set Mode to: {{type}}</md-button>
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>

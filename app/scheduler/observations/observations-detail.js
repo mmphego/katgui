@@ -9,7 +9,6 @@
         var vm = this;
 
         vm.selectedSchedule = null;
-        vm.modeTypes = ['queue', 'manual'];
         vm.scheduleData = ObsSchedService.scheduleData;
         vm.scheduleCompletedData = ObsSchedService.scheduleCompletedData;
         vm.observationSchedule = ObsSchedService.observationSchedule;

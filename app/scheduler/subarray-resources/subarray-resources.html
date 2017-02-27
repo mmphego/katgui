@@ -30,6 +30,18 @@
 
                         <span flex></span>
 
+                        <md-menu style="margin: 0 8px; padding: 0; position: relative">
+                            <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" class="opaque-hover">
+                                <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
+                                <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
+                            </span>
+                            <md-menu-content>
+                                <md-menu-item ng-repeat="type in parent.vm.modeTypes">
+                                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.setSchedulerMode(vm.subarray.id, type)">Set Mode to: {{type}}</md-button>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
+
                         <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple ng-show="$root.expertOrLO && vm.subarray.state === 'inactive'"
                             title="Activate Subarray" ng-click="parent.vm.activateSubarray()"></span>
                         <span class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple ng-show="parent.vm.iAmAtLeastCA()"
