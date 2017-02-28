@@ -4,15 +4,15 @@
         <div layout="column" flex>
 
             <md-toolbar ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1" layout="row"
-                layout-align="start center" title="{{subarray.description}}" style="max-height: 48px; min-height: 48px; position: relative; padding-right: 8px"
+                layout-align="start center" title="{{subarray.description}}" style="max-height: 58px; min-height: 58px; position: relative; padding-right: 8px"
                 ng-click="parent.vm.stateGo('scheduler.observations.detail', subarray.id)">
-                <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
+                <span style="margin-left: 8px; margin-top: -16px">SUBARRAY {{subarray.id}} -
                             <span><b>{{subarray.state}}</b></span>
                 <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
                 </span>
                 <span flex></span>
-                <md-menu style="margin: 0; padding: 0; position: relative">
-                    <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" class="opaque-hover">
+                <md-menu style="margin-top: -16px; margin-bottom: 0; padding: 0; position: relative">
+                    <span md-ink-ripple style="margin: 0; padding: 0" ng-click="$mdMenu.open($event)" class="opaque-hover">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
                         <span style="margin-left: 16px">MODE: <b>{{subarray.mode}}</b></span> </span>
                     </span>
@@ -22,6 +22,8 @@
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
+                <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
+                    style="height: 32px; width: 100%"></div>
                 <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
             </md-toolbar>
             <div layout="column" style="overflow: auto" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
