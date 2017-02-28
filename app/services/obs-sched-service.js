@@ -649,6 +649,7 @@
                     } else {
                         completedDataToAdd.push(sb);
                     }
+                    orderChangeCall = true;
                 }
                 api.updateProgramBlocksWithUpdatedSb(sb);
             } else if (action === 'insert') {
