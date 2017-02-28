@@ -67,7 +67,7 @@
             <md-toolbar class="md-toolbar-tools-small md-whiteframe-z1">
                 <span flex><b>{{node}}</b></span>
             </md-toolbar>
-            <div ng-repeat="key in $root.objectKeys(vm.resourcesNames) | orderBy:key track by key"
+            <div ng-repeat="key in $root.objectKeys(vm.resourcesNames) | orderBy:key track by $index"
              class="process-control-container" ng-if="vm.resourcesNames[key].node === node">
             <div flex role="heading"
                  ng-init="vm.resourcesNames[key].showDetails = false"
@@ -130,11 +130,11 @@
 
             </div>
             <div ng-if="vm.resourcesNames[key].showDetails" class="grow-height-animation" style="cursor: auto;">
-                <div ng-repeat="(key, sensor) in vm.resourcesNames[key].sensors | orderBy:'name' track by key"
+                <div ng-repeat="sensorKey in $root.objectKeys(vm.resourcesNames[key].sensors) | orderBy:'name' track by $index"
                      style="margin: 4px;">
-                    <div style="text-align: end; width: 230px; display: inline-block"><span>{{sensor.name}}:</span>
+                    <div style="text-align: end; width: 230px; display: inline-block"><span>{{vm.resourcesNames[key].sensors[sensorKey].name}}:</span>
                     </div>
-                    <div style="display: inline-block; margin-left: 4px;"><span><b>{{sensor.value}}</b></span></div>
+                    <div style="display: inline-block; margin-left: 4px;"><span><b>{{vm.resourcesNames[key].sensors[sensorKey].value}}</b></span></div>
                 </div>
             </div>
         </div>

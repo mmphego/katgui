@@ -39,7 +39,7 @@
                     </div>
                     <md-menu>
                         <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event); $event.stopPropagation()"
-                            style="font-size: inherit">
+                            style="font-size: inherit; margin: -8px 0 8px 0">
                             <span class="fa fa-chevron-down subarray-select-chevron" style="top: 6px"></span>
                             <span style="margin-left: 14px;">
                                 SUBARRAY {{vm.subarray.id}} -
@@ -54,6 +54,17 @@
                         </md-menu-content>
                     </md-menu>
                     <span flex></span>
+                    <md-menu style="margin: -12px 8px 0 0; padding: 0; position: relative">
+                        <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" class="opaque-hover">
+                            <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
+                            <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
+                        </span>
+                        <md-menu-content>
+                            <md-menu-item ng-repeat="type in parent.vm.modeTypes">
+                                <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.setSchedulerMode(vm.subarray.id, type)">Set Mode to: {{type}}</md-button>
+                            </md-menu-item>
+                        </md-menu-content>
+                    </md-menu>
                 </md-toolbar>
                 <md-virtual-repeat-container id="scheduleDraftDataRepeat" md-theme="{{themePrimary}}" flex class="md-whiteframe-z2"
                     ng-class="{'maintenance-bg':vm.subarray.maintenance}">
@@ -126,8 +137,10 @@
             </md-button>
         </div>
         <div layout="column" style="padding-right: 4px" class="md-whiteframe-z1">
-            <md-toolbar ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" style="margin-top: 8px" class="md-whiteframe-z2 md-toolbar-tools-medium">
-                <span md-ink-ripple flex title="Click to view scheduling details" ng-click="parent.vm.stateGo('scheduler.observations.detail')">Observations</span>
+            <md-toolbar ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" style="margin-top: 8px; min-height: 60px" class="md-whiteframe-z2 md-toolbar-tools-medium">
+                <span md-ink-ripple flex title="Click to view scheduling details" ng-click="parent.vm.stateGo('scheduler.observations.detail')" style="margin-top: -20px">Observations</span>
+                <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
+                    style="height: 32px; width: 100%"></div>
             </md-toolbar>
             <div layout="column" style="min-height: 350px; max-height: 350px; overflow: auto" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
         </div>

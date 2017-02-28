@@ -27,6 +27,7 @@
         vm.bands = [];
         vm.users = [];
         vm.iAmCA = false;
+        vm.modeTypes = ['queue', 'manual'];
 
         if (!$stateParams.subarray_id) {
             $state.go($state.current.name, {
@@ -763,8 +764,8 @@
             ObsSchedService.scheduleToApproved(item.sub_nr, item.id_code);
         };
 
-        vm.setSchedulerMode = function(mode) {
-            ObsSchedService.setSchedulerModeForSubarray(vm.subarray.id, mode);
+        vm.setSchedulerMode = function(subarrayId, mode) {
+            ObsSchedService.setSchedulerModeForSubarray(subarrayId, mode);
         };
 
         vm.verifySB = function(sb) {
