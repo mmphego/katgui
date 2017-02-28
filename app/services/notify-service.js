@@ -178,10 +178,12 @@
                         } else {
                             $scope.title = title;
                         }
+                        if (_.isString(sb)) {
+                            sb = JSON.parse(sb);
+                        }
                         $scope.sb = sb;
                         $scope.hide = function () {
                             $mdDialog.hide();
-                            $rootScope.mdDialogSb = undefined;
                         };
                     },
                     template: "<md-dialog style='padding: 0; max-height: 95%' md-theme='{{$root.themePrimary}}' aria-label='Schedule Block Details'>" +
@@ -321,6 +323,7 @@
                                 '<md-toolbar class="md-primary" layout="row" layout-align="center center"><span>{{title}}</span></md-toolbar>',
                                 '<div flex layout="column" layout-align="start" class="resource-sensor-item">',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Name:</span><span>{{sensor.parentName? sensor.parentName + "_" + sensor.python_identifier : sensor.python_identifier}}</span></div>',
+                                    '<div layout="row" style="max-width: 700px"><span class="sensor-dialog-details-name">Description:</span><div>{{sensor.description}}</div></div>',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Status:</span><span ng-class="sensorClass(sensor.status)">{{sensor.status}}</span></div>',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Units:</span><span>{{sensor.units}}</span></div>',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Type:</span><span>{{sensor.type}}</span></div>',

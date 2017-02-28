@@ -36,10 +36,9 @@
                                 <span class="fa" ng-class="{'fa-caret-up': vm.draftsOrderBy.value === 'desired_start_time' && !vm.draftsOrderBy.reverse, 'fa-caret-down': vm.draftsOrderBy.value === 'desired_start_time' && vm.draftsOrderBy.reverse}" style="margin-right: 4px;"></span>
                             </span>
                         </div>
-                        <!-- <div style="min-width: 8px" ng-show="vm.subarray && $root.elementHasScrollbar('#scheduleDraftDataRepeat', true)"></div> -->
                     </div>
                     <md-menu>
-                        <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                        <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event); $event.stopPropagation()"
                             style="font-size: inherit">
                             <span class="fa fa-chevron-down subarray-select-chevron" style="top: 6px"></span>
                             <span style="margin-left: 14px;">
@@ -85,7 +84,7 @@
                         <span class="icon-button fa fa-chevron-right" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()" title="Unassign Schedule Blocks"
                             ng-click="parent.vm.iAmAtLeastCA() && vm.freeScheduleBlock(item)"></span>
                         <md-menu>
-                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+                            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                             <md-menu-content>
                                 <md-menu-item>
                                     <md-button ng-disabled="!(item.type === 'OBSERVATION' && parent.vm.iAmAtLeastCA())" ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
@@ -126,13 +125,11 @@
                 <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto"></md-icon>
             </md-button>
         </div>
-        <div layout="column" style="padding-right: 4px">
-            <md-toolbar ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" style="margin-top: 8px" class="md-whiteframe-z1 md-toolbar-tools-medium"
-                layout="row" layout-align="center center" title="{{vm.subarray.description}}">
-                <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'"></div>
-                <span md-ink-ripple flex title="Click to view scheduling details" style="margin-top: -5px;" ng-click="parent.vm.stateGo('scheduler.observations.detail')">Observations</span>
+        <div layout="column" style="padding-right: 4px" class="md-whiteframe-z1">
+            <md-toolbar ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" style="margin-top: 8px" class="md-whiteframe-z2 md-toolbar-tools-medium">
+                <span md-ink-ripple flex title="Click to view scheduling details" ng-click="parent.vm.stateGo('scheduler.observations.detail')">Observations</span>
             </md-toolbar>
-            <div layout="column" style="min-height: 200px" ng-include="'app/scheduler/templates/sb-scheduled-list.html'"></div>
+            <div layout="column" style="min-height: 350px; max-height: 350px; overflow: auto" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
         </div>
     </div>
 

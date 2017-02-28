@@ -2,7 +2,9 @@
     <md-toolbar class="md-primary" style="position: relative; height: 48px">
         <span flex style="position: absolute; top: 8px; left: 0; right: 0; text-align: center">{{title}}</span>
         <div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end">
-            <div style="width: 134px; font-size: 10px">
+            <span style="line-height: 9px; font-size: 9px; margin-left: -6px; word-break: break-all; width: 16px"
+                class="subheader-text" title="Order of Program Blocks by director_priority, sb_order and sb_sequence">DP Seq Ord</span>
+            <div style="width: 134px; margin-left: 4px; font-size: 10px">
                 <div class="subheader-text">PB ID</div>
                 <div>Owner</div>
             </div>
@@ -18,7 +20,13 @@
     </md-toolbar>
     <div flex layout="column" style="overflow-x: auto; overflow-y: scroll">
         <div ng-repeat="pb in programBlocks | orderBy:pb.id:true track by pb.pb_id" class="pb-view-item" layout="row" layout-align="start center"
-            ng-click="setSelectedPB(pb)" style="min-height: 44px; min-width: 800px; padding-right: 0" ng-class="{'selected-resource-item': pb.id === selectedPB.id}">
+            ng-click="sb.pb_id !== pb.id && setSelectedPB(pb)" style="min-height: 44px; min-width: 800px; padding-right: 0"
+            ng-class="{'selected-resource-item': pb.id === selectedPB.id, 'pb-disabled-select': sb.pb_id === pb.id}">
+            <div class="sb-ordering-container" title="Director Priority | PB Order | PB Sequence" layout="column">
+                <div>{{pb.director_priority}}</div>
+                <div>{{pb.pb_sequence}}</div>
+                <div>{{pb.pb_order}}</div>
+            </div>
             <div layout="column" layout-align="center start" class="pb-id-container">
                 <span class="pb-id">{{pb.pb_id}}</span>
                 <span>{{pb.owner}}</span>

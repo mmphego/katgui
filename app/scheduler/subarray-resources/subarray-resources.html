@@ -10,7 +10,7 @@
                         layout="row" layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 56px; min-height: 56px; position: relative">
                         <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                         <md-menu style="margin: 0; padding: 0;">
-                            <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                            <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event); $event.stopPropagation()"
                                 style="font-size: 30px">
                                 <span class="fa fa-chevron-down subarray-select-chevron" style="top: 12px"></span>
                                 <span style="margin-left: 14px">
@@ -37,7 +37,7 @@
 
                         <md-menu ng-show="$root.expertOrLO" md-theme="{{themePrimary}}">
                             <md-button style="padding: 0; font-size: 24px" class="md-icon-button inline-action-button hover-opacity"
-                                ng-click="vm.initLastKnownConfig(); $mdOpenMenu()">
+                                ng-click="vm.initLastKnownConfig(); $mdMenu.open($event)">
                                 <span class="fa fa-ellipsis-v"></span>
                             </md-button>
                             <md-menu-content style="min-height: 427px">

@@ -12,7 +12,9 @@
         vm.modeTypes = ['queue', 'manual'];
         vm.scheduleData = ObsSchedService.scheduleData;
         vm.scheduleCompletedData = ObsSchedService.scheduleCompletedData;
+        vm.observationSchedule = ObsSchedService.observationSchedule;
         vm.subarray = $scope.$parent.vm.subarray;
+        $scope.subarray = vm.subarray;
 
         vm.showSchedSBDetails = $localStorage.showSchedSBDetails;
         vm.showCompletedSBs = $localStorage.showCompletedSBs;
@@ -43,10 +45,12 @@
         if (!$scope.$parent.vm.subarray) {
             $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
                 vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
+                $scope.subarray = vm.subarray;
                 vm.getCompletedScheduleBlocks();
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;
+            $scope.subarray = vm.subarray;
             vm.getCompletedScheduleBlocks();
         }
 

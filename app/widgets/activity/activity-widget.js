@@ -26,6 +26,8 @@
 
         //TODO this needs a promise
         ObsSchedService.getScheduledScheduleBlocks();
+        //TODO program blocks
+        // ObsSchedService.getProgramBlocksObservationSchedule();
         MonitorService.subscribe('sched');
         MonitorService.subscribe('userlogs');
 
@@ -101,6 +103,7 @@
 
         var unbindOrderChangeAdd = $rootScope.$on('sb_order_change', function(event, sb) {
             //TODO this needs a promise
+            // TODO program blocks
             ObsSchedService.getScheduledScheduleBlocks();
             $timeout(function() {
                 vm.addSbsToTimeline(ObsSchedService.scheduleData);

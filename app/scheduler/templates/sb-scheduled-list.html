@@ -1,7 +1,7 @@
 <md-virtual-repeat-container id="scheduleDataRepeat" flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2"
-    ng-class="{'maintenance-bg':vm.subarray.maintenance}">
+    ng-class="{'maintenance-bg':vm.subarray.maintenance}" style="y-overflow: scroll">
     <div md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray.id})"
-        style="padding: 0 4px; z-index: 0" ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedSchedule}" class="schedule-draft-item"
+        style="padding: 0 2px 0 0; z-index: 0" ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedSchedule}" class="schedule-draft-item"
         layout="row" layout-align="start center" ng-click='vm.setSelectedSchedule(item)'>
 
         <md-progress-linear md-theme="green" ng-show="item.state === 'ACTIVE'" class="md-primary progress-bar-fill"
@@ -11,7 +11,11 @@
         <md-progress-linear md-theme="grey" ng-show="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
             md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
         </md-progress-linear>
-        <span style="min-width: 14px"></span>
+        <div class="sb-ordering-container" title="Lead Operator Priority | SB Order | SB Sequence" layout="column">
+            <div ng-click="parent.vm.leadOperatorPriorityDialog(item, $event)">{{item.lead_operator_priority}}</div>
+            <div ng-click="parent.vm.sbSequenceDialog(item, $event)">{{item.sb_sequence}}</div>
+            <div ng-click="parent.vm.sbOrderDialog(item, $event)">{{item.sb_order}}</div>
+        </div>
         <div layout="column" layout-align="start" style="width: 120px" class="text-overflow-ellipsis">
             <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
                 style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
@@ -32,7 +36,7 @@
             style="min-width: 26px; max-width: 26px"
             ng-click="item.state === 'ACTIVE'? parent.vm.stopExecuteSchedule(item) : parent.vm.executeSchedule(item); $event.stopPropagation()"></span>
         <md-menu md-theme="{{$root.themePrimaryButtons}}">
-            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+            <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
             <md-menu-content style="max-height: 475px">
                 <md-menu-item>
                     <md-button ng-click="parent.vm.viewSBTasklog(item, 'progress')" title="View Progress in a New Tab">View Progress</md-button>
@@ -55,6 +59,16 @@
                 </md-menu-item>
                 <md-menu-item>
                     <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.cancelExecuteSchedule(item)" title="Cancel Schedule Block Execution">Cancel Execution</md-button>
+                </md-menu-item>
+                <md-menu-divider></md-menu-divider>
+                <md-menu-item>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.leadOperatorPriorityDialog(item, $event)" title="Update Lead Operator Priority">Update Lead Operator Priority...</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.sbSequenceDialog(item, $event)" title="Update SB Sequence">Update SB Sequence...</md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.sbOrderDialog(item, $event)" title="Update SB Order">Update SB Order...</md-button>
                 </md-menu-item>
                 <md-menu-divider></md-menu-divider>
                 <md-menu-item>

@@ -113,7 +113,7 @@
         MonitorService.subscribe('sched');
         ObsSchedService.getProgramBlocks();
         ObsSchedService.getScheduleBlocks();
-        ObsSchedService.getScheduledScheduleBlocks();
+        ObsSchedService.getProgramBlocksObservationSchedule();
 
         vm.checkCASubarrays = function() {
             vm.subarray = _.findWhere(ObsSchedService.subarrays, {
@@ -414,7 +414,17 @@
                         };
 
                         $scope.acceptDialogAction = function() {
-                            ObsSchedService.cloneSBIntoPB($scope.sb, $scope.selectedPB);
+                            ObsSchedService.cloneSBIntoPB($scope.sb, $scope.selectedPB).then(
+                                function(updateResult) {
+                                    if (updateResult.data.error) {
+                                        NotifyService.showPreDialog('Error cloning SB into PB', updateResult.data.error);
+                                    } else {
+                                        NotifyService.showSimpleToast('Cloned SB ' + sb.id_code + ' into PB ' + $scope.selectedPB.pb_id);
+                                    }
+                                },
+                                function(error) {
+                                    NotifyService.showPreDialog('Error cloning SB into PB', error);
+                                });
                             $mdDialog.hide();
                         };
 
@@ -443,8 +453,15 @@
 
                         $scope.acceptDialogAction = function() {
                             ObsSchedService.updateScheduleBlockWithProgramBlockID(sb, $scope.selectedPB).then(
-                                function() {
-                                    NotifyService.showSimpleToast('Moved SB ' + sb.id_code + ' into PB ' + $scope.selectedPB.pb_id);
+                                function(updateResult) {
+                                    if (updateResult.data.error) {
+                                        NotifyService.showPreDialog('Error moving SB into PB', updateResult.data.error);
+                                    } else {
+                                        NotifyService.showSimpleToast('Moved SB ' + sb.id_code + ' into PB ' + $scope.selectedPB.pb_id);
+                                    }
+                                },
+                                function(error) {
+                                    NotifyService.showPreDialog('Error moving SB into PB', error);
                                 });
                             $mdDialog.hide();
                         };
@@ -456,6 +473,271 @@
                     templateUrl: 'app/scheduler/templates/program-block-select.html',
                     targetEvent: event
                 });
+        };
+
+        vm.leadOperatorPriorityDialog = function(sb, event) {
+            var initValue = sb.lead_operator_priority;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
+            var confirm = $mdDialog.prompt()
+                .title('Set Lead Operator Priority for ' + sb.id_code)
+                .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
+                .placeholder('Lead Operator Priority')
+                .ariaLabel('Lead Operator Priority')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Save')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                var parsedResult = parseInt(result);
+                if (result !== '' && result !== 'none' && (isNaN(parsedResult) || parsedResult < 0 || parsedResult > 100)) {
+                    vm.leadOperatorPriorityDialog(sb);
+                } else if (result === 'none' || result === '' || parsedResult > -1 || parsedResult < 101) {
+                    if (result === '') {
+                        result = 'none';
+                    }
+                    ObsSchedService.updateSBOrderingValues(
+                        sb.id_code, result, sb.sb_order, sb.sb_sequence).then(
+                        function(updateResult) {
+                            if (updateResult.data.error) {
+                                NotifyService.showPreDialog('Error updating Lead Operator Priority', updateResult.data.error);
+                            } else {
+                                NotifyService.showSimpleToast('Updated SB ' + sb.id_code + ' lead_operator_priority to ' + updateResult.data.result.lead_operator_priority);
+                            }
+                        },
+                        function(error) {
+                            NotifyService.showPreDialog('Error updating Lead Operator Priority', error);
+                        });
+                }
+            }, function() {
+                NotifyService.showSimpleToast('Cancelled Lead Operator Priority edit for ' + sb.id_code);
+            });
+        };
+
+        vm.sbOrderDialog = function(sb, event) {
+            var initValue = sb.sb_order;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
+            var confirm = $mdDialog.prompt()
+                .title('Set SB Order for ' + sb.id_code)
+                .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
+                .placeholder('SB Order')
+                .ariaLabel('SB Order')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Save')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                var parsedResult = parseInt(result);
+                if (result !== '' && result !== 'none' && (isNaN(parsedResult) || parsedResult < 0 || parsedResult > 100)) {
+                    vm.sbOrderDialog(sb);
+                } else if (result === 'none' || result === '' || parsedResult > -1 || parsedResult < 101) {
+                    if (result === '') {
+                        result = 'none';
+                    }
+                    ObsSchedService.updateSBOrderingValues(
+                        sb.id_code, sb.lead_operator_priority, result, sb.sb_sequence).then(
+                        function(updateResult) {
+                            if (updateResult.data.error) {
+                                NotifyService.showPreDialog('Error updating SB Order', updateResult.data.error);
+                            } else {
+                                NotifyService.showSimpleToast('Updated SB ' + sb.id_code + ' sb_order to ' + updateResult.data.result.sb_order);
+                            }
+                        },
+                        function(error) {
+                            NotifyService.showPreDialog('Error updating SB Order', error);
+                        });
+                }
+            }, function() {
+                NotifyService.showSimpleToast('Cancelled SB Order edit for ' + sb.id_code);
+            });
+        };
+
+        vm.sbSequenceDialog = function(sb, event) {
+            var initValue = sb.sb_sequence;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
+            var confirm = $mdDialog.prompt()
+                .title('Set SB Sequence for ' + sb.id_code)
+                .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
+                .placeholder('SB Sequence')
+                .ariaLabel('SB Sequence')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Save')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                var parsedResult = parseInt(result);
+                if (result !== '' && result !== 'none' && (isNaN(parsedResult) || parsedResult < 0 || parsedResult > 100)) {
+                    vm.sbSequenceDialog(sb);
+                } else if (result === 'none' || result === '' || parsedResult > -1 || parsedResult < 101) {
+                    if (result === '') {
+                        result = 'none';
+                    }
+                    ObsSchedService.updateSBOrderingValues(
+                        sb.id_code, sb.lead_operator_priority, sb.sb_order, result).then(
+                        function(updateResult) {
+                            if (updateResult.data.error) {
+                                NotifyService.showPreDialog('Error updating SB Sequence', updateResult.data.error);
+                            } else {
+                                NotifyService.showSimpleToast('Updated SB ' + sb.id_code + ' sb_sequence to ' + updateResult.data.result.sb_sequence);
+                            }
+
+                        },
+                        function(error) {
+                            NotifyService.showPreDialog('Error updating SB Sequence', error);
+                        });
+                }
+            }, function() {
+                NotifyService.showSimpleToast('Cancelled SB Order edit for ' + sb.id_code);
+            });
+        };
+
+        vm.directorPriorityDialog = function(pb, event) {
+            var initValue = pb.director_priority;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
+            var confirm = $mdDialog.prompt()
+                .title('Set Director Priority for ' + pb.pb_id)
+                .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
+                .placeholder('Director Priority')
+                .ariaLabel('Director Priority')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Save')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                var parsedResult = parseInt(result);
+                if (result !== '' && result !== 'none' && (isNaN(parsedResult) || parsedResult < 0 || parsedResult > 100)) {
+                    vm.directorPriorityDialog(pb);
+                } else if (result === 'none' || result === '' || parsedResult > -1 || parsedResult < 101) {
+                    if (result === '') {
+                        result = 'none';
+                    }
+                    ObsSchedService.updatePBOrderingValues(
+                        pb.pb_id, result, pb.pb_order, pb.pb_sequence).then(
+                        function(updateResult) {
+                            if (updateResult.data.error) {
+                                NotifyService.showPreDialog('Error updating Director Priority', updateResult.data.error);
+                            } else {
+                                NotifyService.showSimpleToast('Updated SB ' + pb.pb_id + ' director_priority to ' + updateResult.data.result.director_priority);
+                            }
+                        },
+                        function(error) {
+                            NotifyService.showPreDialog('Error updating Director Priority', error);
+                        });
+                }
+            }, function() {
+                NotifyService.showSimpleToast('Cancelled Director Priority edit for ' + pb.pb_id);
+            });
+        };
+
+        vm.pbOrderDialog = function(pb, event) {
+            var initValue = pb.pb_order;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
+            var confirm = $mdDialog.prompt()
+                .title('Set PB Order for ' + pb.pb_id)
+                .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
+                .placeholder('PB Order')
+                .ariaLabel('PB Order')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Save')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                var parsedResult = parseInt(result);
+                if (result !== '' && result !== 'none' && (isNaN(parsedResult) || parsedResult < 0 || parsedResult > 100)) {
+                    vm.pbOrderDialog(pb);
+                } else if (result === 'none' || result === '' || parsedResult > -1 || parsedResult < 101) {
+                    if (result === '') {
+                        result = 'none';
+                    }
+                    ObsSchedService.updatePBOrderingValues(
+                        pb.pb_id, pb.director_priority, result, pb.pb_sequence).then(
+                        function(updateResult) {
+                            if (updateResult.data.error) {
+                                NotifyService.showPreDialog('Error updating PB Order', updateResult.data.error);
+                            } else {
+                                NotifyService.showSimpleToast('Updated PB ' + pb.pb_id + ' pb_order to ' + updateResult.data.result.pb_order);
+                            }
+                        },
+                        function(error) {
+                            NotifyService.showPreDialog('Error updating PB Order', error);
+                        });
+                }
+            }, function() {
+                NotifyService.showSimpleToast('Cancelled PB Order edit for ' + pb.pb_id);
+            });
+        };
+
+        vm.pbSequenceDialog = function(pb, event) {
+            var initValue = pb.pb_sequence;
+            if (initValue !== null && initValue > -1) {
+                initValue = initValue.toString();
+            } else {
+                initValue = '';
+            }
+            var confirm = $mdDialog.prompt()
+                .title('Set PB Sequence for ' + pb.pb_id)
+                .textContent('Must be an number between 0 and 100 ("none" or empty to clear)')
+                .placeholder('PB Sequence')
+                .ariaLabel('PB Sequence')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Save')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function(result) {
+                var parsedResult = parseInt(result);
+                if (result !== '' && result !== 'none' && (isNaN(parsedResult) || parsedResult < 0 || parsedResult > 100)) {
+                    vm.pbSequenceDialog(pb);
+                } else if (result === 'none' || result === '' || parsedResult > -1 || parsedResult < 101) {
+                    if (result === '') {
+                        result = 'none';
+                    }
+                    ObsSchedService.updatePBOrderingValues(
+                        pb.pb_id, pb.director_priority, pb.pb_order, result).then(
+                        function(updateResult) {
+                            if (updateResult.data.error) {
+                                NotifyService.showPreDialog('Error updating PB Sequence', updateResult.data.error);
+                            } else {
+                                NotifyService.showSimpleToast('Updated PB ' + pb.pb_id + ' pb_sequence to ' + updateResult.data.result.pb_sequence);
+                            }
+                        },
+                        function(error) {
+                            NotifyService.showPreDialog('Error updating PB Sequence', error);
+                        });
+                }
+            }, function() {
+                NotifyService.showSimpleToast('Cancelled PB Order edit for ' + pb.pb_id);
+            });
         };
 
         vm.cloneAndAssignSB = function(item) {
@@ -502,6 +784,12 @@
                     NotifyService.showSimpleDialog('Error removing SB from PB',
                         'Error while removing Schedule Block (' + sb.id_code + ') from Program Block!');
                 });
+        };
+
+        vm.hasScheduleBlocks = function(item) {
+            return function(item) {
+                return angular.isDefined(item.schedule_blocks) && item.schedule_blocks.length > 0;
+            };
         };
 
         $scope.$on('$destroy', function() {

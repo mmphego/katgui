@@ -97,7 +97,7 @@
                                style="margin: 0">
                     </md-switch>
                     <md-menu style="padding: 0" ng-if="$root.expertOrLO">
-                        <md-button class="md-icon-button" ng-click="$mdOpenMenu(); $event.stopPropagation()"
+                        <md-button class="md-icon-button" ng-click="$mdMenu.open($event); $event.stopPropagation()"
                             style="height: 32px; width: 32px; margin: 0">
                             <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                         </md-button>
