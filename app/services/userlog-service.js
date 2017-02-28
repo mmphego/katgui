@@ -218,7 +218,7 @@
                 content: log.content,
                 tag_ids: log.tag_ids
             };
-            $http(createRequest('post', urlBase() + '/userlogs', newUserLog)).then(
+            $http(createRequest('post', urlBase(), newUserLog)).then(
                 function (result) {
                     NotifyService.showSimpleToast("Log Created.");
                     defer.resolve(result);
@@ -347,6 +347,7 @@
         };
 
         api.editUserLog = function (log, editMode, event) {
+            var defer = $q.defer();
             $mdDialog
                 .show({
                     controller: function ($rootScope, $scope, $mdDialog, $filter, $log) {
@@ -420,6 +421,7 @@
                         $scope.hide = function () {
                             $scope.showInvalidTagsTooltip = false;
                             $mdDialog.hide();
+                            defer.resolve();
                         };
 
                         $scope.submit = function () {
@@ -450,12 +452,14 @@
                                             api.uploadFileToUrl($scope.filesToUpload, modified_userlog_id).then(function () {
                                                 $scope.uploadingFiles = false;
                                                 $mdDialog.hide();
+                                                defer.resolve();
                                             });
                                         });
 
                                 } else {
                                     api.modifyUserLog(newLog).then(function () {
                                         $mdDialog.hide();
+                                        defer.resolve();
                                     });
                                 }
                             } else {
@@ -467,12 +471,14 @@
                                             api.uploadFileToUrl($scope.filesToUpload, new_userlog_id).then(function () {
                                                 $scope.uploadingFiles = false;
                                                 $mdDialog.hide();
+                                                defer.resolve();
                                             });
                                         });
 
                                 } else {
                                     api.addUserLog(newLog).then(function () {
                                         $mdDialog.hide();
+                                        defer.resolve();
                                     });
                                 }
                             }
@@ -515,6 +521,7 @@
                     templateUrl: 'app/userlogs/userlogdialog.tmpl.html',
                     targetEvent: event
                 });
+            return defer.promise;
         };
 
         return api;
