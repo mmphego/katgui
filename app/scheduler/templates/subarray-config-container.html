@@ -2,7 +2,7 @@
     <span md-ink-ripple ng-click="parent.vm.showSubarrayAndDataLogs()" class="icon-button fa fa-file-text-o" title="Show Subarray and Data Proxy logs"
         style="font-size: 12px; height: 14px; padding: 2px 4px; opacity: 0.5"></span>
     <md-menu>
-        <span ng-disabled="!$root.expertOrLO" title="Control Authority" ng-click="$root.expertOrLO && $mdOpenMenu()"
+        <span ng-disabled="!$root.expertOrLO" title="Control Authority" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
              <i>CA: </i><b>{{parent.vm.subarray.delegated_ca}}</b>
          </span>
@@ -20,7 +20,7 @@
         </md-menu-content>
     </md-menu>
     <md-menu>
-        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdOpenMenu()"
+        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
              <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
          </span>
@@ -33,7 +33,7 @@
         </md-menu-content>
     </md-menu>
     <md-menu>
-        <span ng-disabled="!$root.expertOrLO" title="Selected Product" ng-click="$root.expertOrLO && $mdOpenMenu()"
+        <span ng-disabled="!$root.expertOrLO" title="Selected Product" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
              <i>Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
          </span>

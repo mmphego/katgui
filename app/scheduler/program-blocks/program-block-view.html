@@ -7,7 +7,12 @@
     </md-toolbar>
     <md-virtual-repeat-container flex class="md-whiteframe-z1" md-theme="{{$root.themePrimaryButtons}}">
         <div md-virtual-repeat="pb in vm.programBlocks | regexSearch:vm.pbsOrderByFields:vm.q | orderBy:vm.pbsOrderBy.value:vm.pbsOrderBy.reverse" class="pb-view-item" layout="row" ng-init="pb.showSBList = false"
-            layout-align="start center" style="cursor: pointer" ng-click="pb.showSBList = !pb.showSBList">
+            layout-align="start center" ng-click="pb.showSBList = !pb.showSBList">
+            <div class="sb-ordering-container" title="Director Priority | PB Order | PB Sequence" layout="column">
+                <div ng-click="parent.vm.directorPriorityDialog(pb, $event)">{{pb.director_priority}}</div>
+                <div ng-click="parent.vm.pbSequenceDialog(pb, $event)">{{pb.pb_sequence}}</div>
+                <div ng-click="parent.vm.pbOrderDialog(pb, $event)">{{pb.pb_order}}</div>
+            </div>
             <div layout="column" layout-align="center start" class="pb-id-container" ng-click="$root.showSBDetails(pb, $event, 'Program Block: ' + pb.pb_id)">
                 <span class="pb-id">{{pb.pb_id}}</span>
                 <span>{{pb.owner}}</span>
@@ -23,7 +28,7 @@
                 <span>{{pb.desired_start_time}}</span>
             </div>
             <md-menu>
-                <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdOpenMenu(); $event.stopPropagation()"></span>
+                <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                 <md-menu-content style="max-height: 475px">
                     <md-menu-item ng-repeat="sub_nr in $root.systemConfig.subarrayNrs">
                         <md-button ng-click="parent.vm.setupSubarrayFromPB(sub_nr, pb.id, $event)" title="Setup subarray {{sub_nr}} using this observation specification and schedule block list">
@@ -31,12 +36,31 @@
                     </md-menu-item>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>
-                        <md-button ng-click="parent.vm.clonePB(pb, false)" title="Clone Program Block without it's Schedule Blocks">
+                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.directorPriorityDialog(pb, $event)" title="Update Director Priority">Update Director Priority...</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.pbSequenceDialog(pb, $event)" title="Update PB Sequence">Update PB Sequence...</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.pbOrderDialog(pb, $event)" title="Update PB Order">Update PB Order...</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-click="parent.vm.clonePB(pb, false)" title="Clone Program Block without its Schedule Blocks">
                             Clone PB only</md-button>
                     </md-menu-item>
                     <md-menu-item>
-                        <md-button ng-click="parent.vm.clonePB(pb, true)" title="Clone Program Block as well as it's Schedule Blocks">
-                            Clone PB and it's SB's</md-button>
+                        <md-button ng-click="parent.vm.clonePB(pb, true)" title="Clone Program Block as well as its Schedule Blocks">
+                            Clone PB and its SB's</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-disabled="!pb.obs_constraints" ng-click="$root.showSBDetails(pb.obs_constraints, $event, pb.pb_id + ' Observation Constraints')" title="View Observation Constraints">
+                            View Obs Constraints</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-disabled="!pb.obs_spec" ng-click="$root.showSBDetails(pb.obs_spec, $event, pb.pb_id + ' Observation Spec')" title="View Observation Specification">
+                            View Obs Spec</md-button>
                     </md-menu-item>
                 </md-menu-content>
             </md-menu>

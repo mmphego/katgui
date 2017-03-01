@@ -1,5 +1,7 @@
 <div class="unselectable list-subheader-title subheader-text" layout="row" layout-align="start end" ng-click="$event.stopPropagation()">
-    <div style="width: 134px; font-size: 10px">
+    <span style="line-height: 9px; font-size: 9px; margin-left: -6px; word-break: break-all; width: 19px"
+        class="subheader-text" title="Order of Program Blocks by director_priority, sb_order and sb_sequence">DP Seq Ord</span>
+    <div style="width: 134px; margin-left: 4px; font-size: 10px">
         <div class="subheader-text" ng-click="vm.setPBsOrderBy('pb_id')">
             <span>PB ID</span>
             <span class="fa" style="margin-right: 4px;"
@@ -29,7 +31,7 @@
             ng-class="{'fa-caret-up': vm.pbsOrderBy.value === 'state' && !vm.pbsOrderBy.reverse, 'fa-caret-down': vm.pbsOrderBy.value === 'state' && vm.pbsOrderBy.reverse}">
         </span>
     </span>
-    <div style="width: 173px; font-size: 10px">
+    <div style="width: 160px; font-size: 10px">
         <div ng-click="vm.setPBsOrderBy('desired_lst_start_time')">
             <span>Desired LST Start Time</span>
             <span class="fa" style="margin-right: 4px;"

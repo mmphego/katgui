@@ -495,21 +495,6 @@ function katGuiUtil($rootScope, $sce) {
         }
     };
 
-    this.getParentNameFromSensor = function(sensorName) {
-        var exceptions = ['nm', 'mon', 'subarray', 'data', 'katgui'];
-        var sensorNameList = sensorName.split(/_(.+)?/);
-        var firstPart = sensorNameList[0];
-        var secondPart = sensorNameList[1];
-        if (firstPart === 'agg') {
-            return 'agg';
-        }
-        if (exceptions.indexOf(firstPart) > -1) {
-            return firstPart + '_' + secondPart.split(/_(.+)?/)[0];
-        } else {
-            return firstPart;
-        }
-    };
-
     this.isValidURL = function(str) {
         var pattern = new RegExp('^(?:(?:http|https|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[0-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]+-?)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,})))|localhost)(?::\\d{2,5})?(?:(/|\\?|#)[^\\s]*)?$');
         //remove possible quotes left in from katconfig
