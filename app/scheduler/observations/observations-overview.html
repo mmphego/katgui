@@ -1,69 +1,32 @@
-<div flex layout="column" style="min-width: 1015px; min-height: 600px; margin: 0 8px 8px 8px" ng-controller="SubArrayExecutorOverview as vm">
+<div flex layout="column" style="min-width: 1015px; min-height: 1000px; margin: 0 8px 8px 8px" ng-controller="SubArrayExecutorOverview as vm">
     <div flex ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
         layout="row" flex style="min-height: 120px" md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
         <div layout="column" flex>
 
             <md-toolbar ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1" layout="row"
-                layout-align="center center" title="{{subarray.description}}" style="max-height: 48px; min-height: 48px; position: relative"
+                layout-align="start center" title="{{subarray.description}}" style="max-height: 58px; min-height: 58px; position: relative; padding-right: 8px"
                 ng-click="parent.vm.stateGo('scheduler.observations.detail', subarray.id)">
-                <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
+                <span style="margin-left: 8px; margin-top: -16px">SUBARRAY {{subarray.id}} -
                             <span><b>{{subarray.state}}</b></span>
                 <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
                 </span>
                 <span flex></span>
-                <div layout="row" layout-align="center center" style="position: absolute; padding: 0; top: 0; left: 0; right: 0; font-size: 12px">
-                    <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
-                    <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ? subarray.band : 'None'}}</b></span>
-                    <span title="Selected Product" style="margin-right: 8px;"><i>Product: </i><b>{{subarray.product ? subarray.product : 'None'}}</b></span>
-                    <span ng-show="subarray.state === 'active' || subarray.config_label" title="Config Label"><i>Config Label: </i><b>{{subarray.config_label ? subarray.config_label : 'None'}}</b></span>
-                </div>
-                <div class="unselectable list-subheader-title subheader-text avoid-clicks" layout="row" layout-align="start end"
-                    style="cursor: default">
-                    <span style="width: 128px; padding-left: 12px" class="subheader-text">ID</span>
-                    <span flex>Description</span>
-                    <span style="width: 80px">State</span>
-                    <div style="width: 158px; font-size: 10px" layout="column">
-                        <span>Obs Readiness</span>
-                        <span>Verification State</span>
-                    </div>
-                    <div style="width: 94px; font-size: 10px" layout="column">
-                        <span>Type</span>
-                        <span>Desired Time</span>
-                    </div>
-                    <!-- <div style="min-width: 8px" ng-show="subarray && $root.elementHasScrollbar('#scheduleDataRepeat' + subarray.id, false)"></div> -->
-                </div>
-
+                <md-menu style="margin-top: -16px; margin-bottom: 0; padding: 0; position: relative">
+                    <span md-ink-ripple style="margin: 0; padding: 0" ng-click="$mdMenu.open($event)" class="opaque-hover">
+                        <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
+                        <span style="margin-left: 16px">MODE: <b>{{subarray.mode}}</b></span> </span>
+                    </span>
+                    <md-menu-content>
+                        <md-menu-item ng-repeat="type in parent.vm.modeTypes">
+                            <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="parent.vm.setSchedulerMode(subarray.id, type)">Set Mode to: {{type}}</md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
+                    style="height: 32px; width: 100%"></div>
+                <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
             </md-toolbar>
-            <div flex id="{{'scheduleDataRepeat' + subarray.id}}" ng-class="{'maintenance-bg': subarray.maintenance}"
-                style="overflow: auto">
-                <div style="padding: 0 4px" ng-repeat="item in vm.scheduleData | filter:{sub_nr:subarray.id} track by item.id"
-                    class="schedule-draft-item" layout="column">
-                    <div flex layout="row" layout-align="start center">
-                        <md-progress-linear ng-if="item.state === 'ACTIVE'" class="md-primary progress-bar-fill" md-mode="{{item.expected_duration_seconds? 'determinate' : 'indeterminate'}}"
-                            value="{{item.progress}}" style="position: absolute; left: 0; right: 0;">
-                        </md-progress-linear>
-                        <md-progress-linear md-theme="grey" ng-if="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
-                            md-mode="indeterminate" style="position: absolute; left: 0; right: 0;">
-                        </md-progress-linear>
-                        <span style="min-width: 14px"></span>
-                        <div layout="column" layout-align="start" style="width: 120px" class="text-overflow-ellipsis">
-                            <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
-                                style="font-size: 14px; font-weight: bold" ng-click="$root.showSBDetails(item, $event);$event.stopPropagation();">{{item.id_code}}</span>
-                            <i style="width: 110px">{{item.owner}}</i>
-                        </div>
-                        <span flex style="overflow: hidden; text-overflow: ellipsis; margin-right: 4px" title="{{item.description}}">{{item.description}}</span>
-                        <span style="width: 75px">{{item.state}}</span>
-                        <div layout="column" layout-align="center" class="sb-obs-readiness-div" style="margin: 0 4px">
-                            <span style="width: 150px" ng-class="{'green-color': item.obs_readiness === 'READY_TO_EXECUTE', 'red-color': item.obs_readiness !== 'READY_TO_EXECUTE'}">{{item.obs_readiness}}</span>
-                            <span style="width: 150px">{{item.verification_state}}</span>
-                        </div>
-                        <div layout="column" layout-align="center" class="sb-time-and-type-div" style="margin: 0 4px">
-                            <span ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}">{{item.type}}</span>
-                            <span>{{item.desired_start_time}}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div layout="column" style="overflow: auto" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
         </div>
     </div>
 </div>

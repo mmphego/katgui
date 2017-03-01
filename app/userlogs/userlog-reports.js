@@ -50,7 +50,10 @@
             };
 
             vm.editUserLog = function (userlog, event) {
-                UserLogService.editUserLog(userlog, false, event);
+                UserLogService.editUserLog(userlog, userlog.user.email === $rootScope.currentUser.email, event).then(
+                    function() {
+                        vm.queryUserlogs();
+                    });
             };
 
             vm.exportPdf = function(){

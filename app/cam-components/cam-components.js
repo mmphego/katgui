@@ -104,15 +104,27 @@
                 }
                 vm.resourcesNames[resource].connected = sensor.value.value;
             } else {
-                var parentName = KatGuiUtil.getParentNameFromSensor(sensorName);
-                if (!vm.resourcesNames[parentName]) {
-                    vm.resourcesNames[parentName] = {sensors: {}};
+                var parentName;
+                var resourceNamesList = Object.keys(vm.resourcesNames);
+                for (var i = 0; i < resourceNamesList.length; i++) {
+                    if (sensorName.startsWith(resourceNamesList[i])) {
+                        parentName = resourceNamesList[i];
+                        break;
+                    }
                 }
-                sensorName = sensorName.replace(parentName + '_', '');
-                vm.resourcesNames[parentName].sensors[sensorName] = {
-                    name: sensorName,
-                    value: sensor.value.value
-                };
+                if (parentName) {
+                    if (!vm.resourcesNames[parentName]) {
+                        vm.resourcesNames[parentName] = {sensors: {}};
+                    }
+                    sensorName = sensorName.replace(parentName + '_', '');
+                    vm.resourcesNames[parentName].sensors[sensorName] = {
+                        name: sensorName,
+                        value: sensor.value.value
+                    };
+                } else {
+                    $log.error('Dangling sensor message without a parent component: ' + sensor);
+                    return;
+                }
             }
             if (!$scope.$$phase) {
                 $scope.$digest();
@@ -149,7 +161,6 @@
         };
 
         vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
-        vm.afterInit();
 
         $scope.$on('$destroy', function () {
             unbindUpdate();

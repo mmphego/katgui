@@ -10,6 +10,7 @@
         vm.scheduleData = ObsSchedService.scheduleData;
         $scope.$parent.vm.subarray = null;
         $scope.parent = $scope.$parent;
+        vm.observationSchedule = ObsSchedService.observationSchedule;
 
         vm.navigateToSchedulerDetails = function (subarray_id) {
             $state.go('scheduler.observations.detail', {subarray_id: subarray_id});

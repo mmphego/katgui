@@ -210,22 +210,19 @@
             vm.initApp();
         });
 
-        // TODO this causes high cpu load when using Firefox!
-        // $rootScope.elementHasScrollbar = function (elementId, queryFirstChild) {
-        //     var element = document.querySelector(elementId);
-        //     if (queryFirstChild && element) {
-        //         element = element.children[0];
-        //     }
-        //     if (element) {
-        //         return element.offsetWidth - element.scrollWidth >= 8;
-        //     }
-        //     return false;
-        // };
-        $rootScope.connectEvents = function () {
+        $rootScope.connectEvents = function (reconnecting) {
             MonitorService.connectListener()
                 .then(function () {
                     if ($rootScope.connectedToMonitor) {
-                        $log.info('Reconnected Monitor Connection.');
+                        if (reconnecting && $rootScope.currentStateName().startsWith('sched')) {
+                            MonitorService.subscribe('sched');
+                            ObsSchedService.getProgramBlocks();
+                            ObsSchedService.getScheduleBlocks();
+                            ObsSchedService.getProgramBlocksObservationSchedule();
+                        }
+                        if (reconnecting) {
+                            $log.info('Reconnected Monitor Connection.');
+                        }
                     } else {
                         $timeout($rootScope.connectEvents, 3000);
                     }
@@ -243,7 +240,9 @@
                 .then(function () {
                     if (!vm.disconnectIssued) {
                         $log.info('Monitor connection timeout! Attempting to reconnect...');
-                        $timeout($rootScope.connectEvents, 3000);
+                        $timeout(function () {
+                            $rootScope.connectEvents(true);
+                        }, 3000);
                     }
                 });
         };
