@@ -252,11 +252,7 @@ angular.module('katGui.d3')
                                 }
                             } else {
                                 fullSensorName = prefix + d.parentName + '_' + d.sensor;
-                                if (StatusService.sensorValues[fullSensorName]) {
-                                    classString += StatusService.sensorValues[fullSensorName].status + '-child health-full-item ';
-                                } else {
-                                    classString += ' health-full-item';
-                                }
+                                classString += StatusService.sensorValues[fullSensorName].status + '-child health-full-item ';
                             }
 
                             classString += " " + fullSensorName;
