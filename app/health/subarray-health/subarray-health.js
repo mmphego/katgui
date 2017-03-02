@@ -117,9 +117,9 @@
                             vm.debounceScheduleRedraw();
                         });
                 });
-        }, 500);
+        }, 3000);
 
-        vm.debounceScheduleRedraw = _.debounce(vm.scheduleRedraw, 1000);
+        vm.debounceScheduleRedraw = _.throttle(vm.scheduleRedraw, 3000);
 
         $scope.$on('$destroy', function () {
             vm.cancelListeningToSensorMessages();
