@@ -10,6 +10,7 @@
         vm.receptorHealthTree = ConfigService.receptorHealthTree;
         vm.receptorList = StatusService.receptors;
         vm.subarrays = {};
+        //TODO replace SensorsService with MonitorService usage because we have default subscriptions to subarray sensors
         SensorsService.subarraySensorValues = {};
 
         vm.connectListeners = function () {
@@ -48,31 +49,41 @@
 
         vm.initSensors = function () {
             var subarrays = ConfigService.systemConfig.system.subarray_nrs.split(',');
-            var receptorSensorsRegex = '';
-            receptorSensorsRegex += 'subarray_._state';
-            receptorSensorsRegex += '|subarray_._pool_resources';
-            receptorSensorsRegex += '|subarray_._maintenance';
+            var receptorSensorsRegex = 'subarray_._state|subarray_._pool_resources|subarray_._maintenance|cbf_.*.sensors.ok|sdp.*.sensors.ok|anc.*.sensors.ok';
             for (var i = 0; i < subarrays.length; i++) {
                 vm.subarrays['subarray_' + subarrays[i]] = {id: i.toString()};
             }
             SensorsService.setSensorStrategies(receptorSensorsRegex, 'event-rate', 1, 360);
+            if (StatusService.receptorTreesSensors) {
+                SensorsService.setSensorStrategies(Object.keys(StatusService.receptorTreesSensors).join('|'), 'event-rate', 1, 360);
+            }
         };
 
         vm.statusMessageReceived = function (event, message) {
             var sensorName = message.name.split(':')[1];
-            var splitSensorName = sensorName.split('_');
-            var sub_nr = splitSensorName[1];
-            if (!SensorsService.subarraySensorValues['subarray_' + sub_nr]) {
-                SensorsService.subarraySensorValues['subarray_' + sub_nr] = {};
+            if (sensorName.startsWith('subarray_')) {
+                var splitSensorName = sensorName.split('_');
+                var sub_nr = splitSensorName[1];
+                if (!SensorsService.subarraySensorValues['subarray_' + sub_nr]) {
+                    SensorsService.subarraySensorValues['subarray_' + sub_nr] = {};
+                }
+                SensorsService.subarraySensorValues['subarray_' + sub_nr][sensorName.replace('subarray_' + sub_nr + '_', '')] = message.value;
+                SensorsService.subarraySensorValues['subarray_' + sub_nr].id = sub_nr;
+            } else {
+                message.status = message.value.status;
+                message.received_timestamp = message.value.received_timestamp;
+                message.timestamp = message.value.timestamp;
+                message.value = message.value.value;
+                StatusService.sensorValues[sensorName] = message;
+                StatusService.addToUpdateQueue(sensorName);
             }
-            SensorsService.subarraySensorValues['subarray_' + sub_nr][sensorName.replace('subarray_' + sub_nr + '_', '')] = message.value;
-            SensorsService.subarraySensorValues['subarray_' + sub_nr].id = sub_nr;
-            vm.scheduleRedraw(true);
+            vm.debounceScheduleRedraw();
         };
 
         vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
 
         vm.populateTree = function (parent, receptor) {
+            StatusService.receptorTreesSensors['(ant|m).*' + parent.sensor] = 1;
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function (child) {
                     vm.populateTree(child, receptor);
@@ -83,18 +94,13 @@
                         parent.children = [];
                     }
                     parent.children.push({name: sub, sensor: sub, hidden: true});
+                    StatusService.receptorTreesSensors['(ant|m).*' + sub] = 1;
                 });
             }
         };
 
         vm.scheduleRedraw = function (force) {
-            if (!vm.redrawInterval) {
-                vm.redrawInterval = $interval(function () {
-                    $rootScope.$emit('redrawChartMessage', force);
-                    $interval.cancel(vm.redrawInterval);
-                    vm.redrawInterval = null;
-                }, 1000);
-            }
+            $rootScope.$emit('redrawChartMessage', force);
         };
 
         $timeout(function () {
@@ -102,21 +108,20 @@
                 .then(function (result) {
                     ConfigService.getReceptorList()
                         .then(function (receptors) {
+                            StatusService.receptorTreesSensors = {};
                             StatusService.setReceptorsAndStatusTree(result.data, receptors);
-                            for (var i = 0; i < ConfigService.receptorList.length; i++) {
-                                //recursively populate children
-                                vm.populateTree(StatusService.statusData[ConfigService.receptorList[i]], ConfigService.receptorList[i]);
-                            }
-                            vm.scheduleRedraw();
+                            StatusService.receptors.forEach(function (receptor) {
+                                vm.populateTree(StatusService.statusData[receptor], receptor);
+                            });
                             vm.connectListeners();
+                            vm.debounceScheduleRedraw();
                         });
                 });
         }, 500);
 
+        vm.debounceScheduleRedraw = _.debounce(vm.scheduleRedraw, 1000);
+
         $scope.$on('$destroy', function () {
-            if (vm.redrawInterval) {
-                $interval.cancel(vm.redrawInterval);
-            }
             vm.cancelListeningToSensorMessages();
             SensorsService.disconnectListener();
         });

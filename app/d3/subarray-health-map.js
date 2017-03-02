@@ -272,14 +272,24 @@ angular.module('katGui.d3')
                             if (d.name.startsWith('Subarray_')) {
                                 return;
                             }
-                            var fullSensorName = (d.prefix? d.prefix: '') + (d.parentName + '_') + d.sensor;
-                            d.sensorValue = StatusService.sensorValues[fullSensorName];
+                            var sensorValue;
+                            var pythonIdentifier = d.sensor.replace(/\./g, '_');
+                            var prefix = d.prefix? d.prefix : '';
+                            var fullSensorName = prefix + (d.parentName? d.parentName + '_' : '') + d.sensor;
+                            if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
+                                sensorValue = StatusService.sensorValues[pythonIdentifier];
+                            }
+                            else if (StatusService.sensorValues && StatusService.sensorValues[fullSensorName]) {
+                                sensorValue = StatusService.sensorValues[fullSensorName];
+                            } else if (!sensorValue) {
+                                sensorValue = d.sensorValue;
+                            }
                             tooltip.html(
                                 "<div style='font-size: 14px'>" +
-                                "<div><b>" + d.sensorValue.name + "</b></div>" +
-                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + d.sensorValue.value + "</div>" +
-                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + d.sensorValue.status + "</div>" +
-                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(d.sensorValue.timestamp, 'X').format(DATETIME_FORMAT) + "</div>" +
+                                "<div><b>" + fullSensorName + "</b></div>" +
+                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
+                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
+                                "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format(DATETIME_FORMAT) + "</div>" +
                                 "</div>"
                             );
 
