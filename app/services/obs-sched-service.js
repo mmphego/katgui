@@ -487,7 +487,18 @@
                 api.guiUrlsRaw.forEach(function (guiUrls) {
                     var resourceName = guiUrls.name.split('.')[0];
                     guiUrls.value = JSON.parse(guiUrls.value);
-                    api.guiUrls[resourceName] = guiUrls;
+                    if (!api.guiUrls[resourceName]) {
+                        api.guiUrls[resourceName] = guiUrls;
+                    } else {
+                        guiUrls.value.forEach(function (guiUrl) {
+                            var existingUrlIndex = _.findIndex(api.guiUrls[resourceName].value, {title: guiUrl.title, href: guiUrl.href});
+                            if (existingUrlIndex > -1) {
+                                api.guiUrls[resourceName].value[existingUrlIndex] = guiUrl;
+                            } else {
+                                api.guiUrls[resourceName].value.push(guiUrl);
+                            }
+                        });
+                    }
                 });
             }, function(error) {
                 $log.error('Could not retrieve gui urls! ' + error);

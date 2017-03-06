@@ -115,7 +115,7 @@
                             ng-repeat="resource in vm.subarray.allocations | orderBy:'name'" ng-class="{'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource), 'faulty-border': parent.vm.isResourceFaulty(resource)}">
                             <span flex style="font-size: 18px; margin-left: 4px" ng-class="{'error-text':resource.state === 'faulty', 'maintenance-text':resource.maintenance}">{{resource.name}}</span>
                             <div flex layout="column" layout-wrap style="max-height: 100%; max-width: 200px; min-width: 150px; overflow: auto">
-                                <a ng-repeat="link in parent.vm.guiUrls[resource.name].value" href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
+                                <a ng-repeat="link in parent.vm.guiUrls[resource.name].value track by $index" href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
                             </div>
                             <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance"
                                 title="Restart Maintenance Device" ng-click="parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
