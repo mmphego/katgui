@@ -28,6 +28,7 @@
         vm.users = [];
         vm.iAmCA = false;
         vm.modeTypes = ['queue', 'manual'];
+        vm.guiUrls = ObsSchedService.guiUrls;
 
         if (!$stateParams.subarray_id) {
             $state.go($state.current.name, {

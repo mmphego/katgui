@@ -24,6 +24,8 @@
         api.resourceTemplates = [];
         api.observationSchedule = [];
         api.scheduleData = [];
+        api.guiUrlsRaw = [];
+        api.guiUrls = {};
 
         api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
 
@@ -311,7 +313,7 @@
                 .then(function(result) {
                     api.observationSchedule.splice(0, api.observationSchedule.length);
                     var jsonResult = JSON.parse(result.data.result);
-                    jsonResult.forEach(function (jsonItem) {
+                    jsonResult.forEach(function(jsonItem) {
                         api.observationSchedule.push(jsonItem);
                     });
                     deferred.resolve(api.observationSchedule);
@@ -446,6 +448,7 @@
                                         band: api.subarrays[subarrayIndex].band,
                                         product: api.subarrays[subarrayIndex].product
                                     };
+                                    api.throttlePopulateGUIUrls();
                                 }
                             }, 1000);
                         }
@@ -477,6 +480,21 @@
                 api[trimmed] = sensor.value;
             }
         };
+
+        api.populateGUIUrls = function() {
+            $http(createRequest('get', $rootScope.portalUrl + '/katmonitor/sensor-list/gui.urls')).then(function(result) {
+                api.guiUrlsRaw = result.data;
+                api.guiUrlsRaw.forEach(function (guiUrls) {
+                    var resourceName = guiUrls.name.split('.')[0];
+                    guiUrls.value = JSON.parse(guiUrls.value);
+                    api.guiUrls[resourceName] = guiUrls;
+                });
+            }, function(error) {
+                $log.error('Could not retrieve gui urls! ' + error);
+            });
+        };
+
+        api.throttlePopulateGUIUrls = _.throttle(api.populateGUIUrls, 1000);
 
         api.receivedScheduleMessage = function(message) {
             var obj = message.value;
@@ -609,8 +627,6 @@
 
                 if (api.draftArrayStates.indexOf(sb.state) > -1) {
                     if (draftIndex > -1) {
-                        if (api.scheduleDraftData[draftIndex].pb_id !== sb.pb_id) {
-                        }
                         api.scheduleDraftData[draftIndex] = sb;
                     } else if (draftIndex === -1) {
                         //sb needs to be moved from scheduled to drafts
@@ -918,7 +934,7 @@
         api.progressInterval = $interval(function() {
             if (api.observationSchedule.length > 0) {
                 api.observationSchedule.forEach(function(pb) {
-                    pb.schedule_blocks.forEach(function (sb){
+                    pb.schedule_blocks.forEach(function(sb) {
                         if (sb.state === 'ACTIVE' && sb.expected_duration_seconds && sb.actual_start_time) {
                             sb.progress = api.sbProgress(sb);
                         }

@@ -11,7 +11,8 @@
         <div ng-repeat="(key, sensor) in vm.sensorValues track by $index" layout="row" layout-align="start center" style="padding: 0 8px; min-height: 28px" class="device-status-row-item">
             <div style="min-width: 350px; margin: 0 8px" title="{{key}}">{{key}}</div>
             <div layout="row" flex style="">
-                <a flex ng-repeat="link in sensor.value track by $index" href="{{link.href}}" title="{{link.description}}" style="padding: 0 8px; min-width: 200px">{{link.title}}</a>
+                <a flex ng-repeat="link in sensor.value track by $index" href="{{link.href}}" title="{{link.description}}"
+                    style="padding: 0 8px; min-width: 200px">{{link.title}}</a>
             </div>
         </div>
     </div>
