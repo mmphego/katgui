@@ -5,7 +5,7 @@
 
     function MonitorService(KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
                             $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService,
-                            SessionService, SensorsService) {
+                            SessionService, SensorsService, $http) {
 
         function urlBase() {
             return $rootScope.portalUrl? $rootScope.portalUrl + '/katmonitor' : '';
