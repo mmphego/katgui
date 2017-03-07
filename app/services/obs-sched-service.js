@@ -518,7 +518,7 @@
             } else {
                 api.receivedPBMessage(obj, action, id_to_action);
             }
-            api.throttleRootScopeSafeDigest();
+            api.debounceRootScopeSafeDigest();
         };
 
         api.receivedPBMessage = function(pb, action, id_to_action) {
@@ -712,7 +712,7 @@
             }
         };
 
-        api.throttleRootScopeSafeDigest = _.throttle(rootScopeSafeDigest, 1000);
+        api.debounceRootScopeSafeDigest = _.debounce(rootScopeSafeDigest, 1000);
 
         function rootScopeSafeDigest() {
             if (!$rootScope.$$phase) {
