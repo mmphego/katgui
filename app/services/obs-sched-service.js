@@ -363,7 +363,7 @@
             return deferred.promise;
         };
 
-        api.debounceGetProgramBlocksObservationSchedule = _.debounce(api.getProgramBlocksObservationSchedule, 300);
+        api.throttleGetProgramBlocksObservationSchedule = _.throttle(api.getProgramBlocksObservationSchedule, 300);
 
         api.getCompletedScheduleBlocks = function(sub_nr, max_nr) {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
@@ -518,7 +518,7 @@
             } else {
                 api.receivedPBMessage(obj, action, id_to_action);
             }
-            api.debounceRootScopeSafeDigest();
+            api.throttleRootScopeSafeDigest();
         };
 
         api.receivedPBMessage = function(pb, action, id_to_action) {
@@ -570,7 +570,7 @@
                 $log.error(pb);
             }
             if (orderChangeCall) {
-                api.debounceGetProgramBlocksObservationSchedule();
+                api.throttleGetProgramBlocksObservationSchedule();
             }
         };
 
@@ -647,6 +647,7 @@
                             orderChangeCall = true;
                         }
                         draftDataToAdd.push(sb);
+                        orderChangeCall = true;
                     }
 
                 } else if (sb.state === 'SCHEDULED' || sb.state === 'ACTIVE') {
@@ -707,11 +708,11 @@
                 Array.prototype.push.apply(api.scheduleCompletedData, completedDataToAdd);
             }
             if (orderChangeCall) {
-                api.debounceGetProgramBlocksObservationSchedule();
+                api.throttleGetProgramBlocksObservationSchedule();
             }
         };
 
-        api.debounceRootScopeSafeDigest = _.debounce(rootScopeSafeDigest, 1000);
+        api.throttleRootScopeSafeDigest = _.throttle(rootScopeSafeDigest, 1000);
 
         function rootScopeSafeDigest() {
             if (!$rootScope.$$phase) {
