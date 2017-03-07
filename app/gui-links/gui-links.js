@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('GuiLinksCtrl', GuiLinksCtrl);
 
-    function GuiLinksCtrl($rootScope, $scope, $interval, $log, SensorsService, DATETIME_FORMAT, NotifyService) {
+    function GuiLinksCtrl($rootScope, $scope, $interval, $log, SensorsService, DATETIME_FORMAT, NotifyService, $timeout) {
 
         var vm = this;
 
@@ -66,8 +66,15 @@
             catch (Exception) {
                 $log.error('Error parsing sensor message value: ' + sensor.value.value);
             }
-
         });
+
+        vm.refreshGuiLinks = function () {
+            vm.sensorValues = {};
+            SensorsService.removeSensorStrategies('gui.urls$');
+            $timeout(function (){
+                SensorsService.setSensorStrategies('gui.urls$', 'event-rate', 1, 360);
+            }, 500);
+        };
 
         $scope.$on('$destroy', function () {
             unbindUpdate();

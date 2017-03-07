@@ -1,7 +1,9 @@
 <div ng-controller="GuiLinksCtrl as vm" layout="column" layout-align="start" style="padding: 32px; min-height: 100%">
 
     <md-toolbar class="md-whiteframe-z1 md-toolbar-tools" layout="row" layout-align="start center" style="position: relative">
-        <span>External GUI Links</span>
+        <span flex>External GUI Links</span>
+        <span class="fa fa-refresh subarray-action-icon hover-opacity" style="height: auto" md-ink-ripple
+            title="Refresh GUI Links sensors" ng-click="vm.refreshGuiLinks()"></span>
         <div layout="row" style="position: absolute; left: 8px; bottom: 0" class="subheader-text">
             <div style="min-width: 350px; margin: 0 8px">Sensor Name</div>
             <div style="padding: 0 8px; min-width: 200px">Links</div>
@@ -12,7 +14,7 @@
             <div style="min-width: 350px; margin: 0 8px" title="{{key}}">{{key}}</div>
             <div layout="row" flex style="">
                 <a flex ng-repeat="link in sensor.value track by $index" href="{{link.href}}" title="{{link.description}}"
-                    style="padding: 0 8px; min-width: 200px">{{link.title}}</a>
+                    style="padding: 0 8px; min-width: 150px">{{link.title}}</a>
             </div>
         </div>
     </div>
