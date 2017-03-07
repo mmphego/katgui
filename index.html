@@ -116,6 +116,7 @@
 <script src="app/process-control/process-control.js"></script>
 <script src="app/cam-components/cam-components.js"></script>
 <script src="app/device-status/device-status.js"></script>
+<script src="app/gui-links/gui-links.js"></script>
 <script src="app/instrumental-config/instrumental-config.js"></script>
 <script src="app/activity/activity.js"></script>
 <script src="app/reports/utilisation-report.js"></script>
@@ -225,9 +226,14 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('device-status')"
-                                     style="border-bottom: 1px solid #e5e5e5;">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('device-status')">
                         <md-button flex><span class="fa fa-th-list"></span><span>Device Status</span></md-button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('gui-links')"
+                                     style="border-bottom: 1px solid #e5e5e5;">
+                        <md-button flex><span class="fa fa-list-alt"></span><span>GUI Links</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>

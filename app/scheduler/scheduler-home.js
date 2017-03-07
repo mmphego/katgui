@@ -28,6 +28,7 @@
         vm.users = [];
         vm.iAmCA = false;
         vm.modeTypes = ['queue', 'manual'];
+        vm.guiUrls = ObsSchedService.guiUrls;
 
         if (!$stateParams.subarray_id) {
             $state.go($state.current.name, {
@@ -752,8 +753,12 @@
             ObsSchedService.viewTaskLogForSBIdCode(sb.id_code, mode);
         };
 
-        vm.showSubarrayAndDataLogs = function() {
-            ObsSchedService.showSubarrayAndDataLogs(vm.subarray.id);
+        vm.showSubarrayLogs = function() {
+            ObsSchedService.showSubarrayLogs(vm.subarray.id);
+        };
+
+        vm.showResourceLogs = function(resourceName) {
+            ObsSchedService.showResourceLogs(resourceName);
         };
 
         vm.moveScheduleRowToFinished = function(item) {
