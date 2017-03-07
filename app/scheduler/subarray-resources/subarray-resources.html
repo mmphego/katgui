@@ -119,6 +119,7 @@
                             </div>
                             <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance"
                                 title="Restart Maintenance Device" ng-click="parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
+                            <span md-ink-ripple ng-click="parent.vm.showResourceLogs(resource.name)" class="icon-button fa fa-file-text-o" title="{{'Show ' + resource.name + ' logs'}}"></span>
                             <span class="icon-button fa" ng-disabled="!$root.expertOrLO" md-ink-ripple title="Mark Resource As Faulty"
                                 ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
                                 ng-click="parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
