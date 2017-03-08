@@ -491,7 +491,7 @@
                         api.guiUrls[resourceName] = guiUrls;
                     } else {
                         guiUrls.value.forEach(function (guiUrl) {
-                            var existingUrlIndex = _.findIndex(api.guiUrls[resourceName].value, {title: guiUrl.title, href: guiUrl.href});
+                            var existingUrlIndex = _.findIndex(api.guiUrls[resourceName].value, {title: guiUrl.title});
                             if (existingUrlIndex > -1) {
                                 api.guiUrls[resourceName].value[existingUrlIndex] = guiUrl;
                             } else {
