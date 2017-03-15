@@ -16,6 +16,7 @@
         api.controlledResources = [];
         api.topStatusTreesSensors = {};
         api.receptorTreesSensors = {};
+        api.configHealthSensors = {};
         api.updateQueue = [];
 
         api.addToUpdateQueue = function (sensor) {

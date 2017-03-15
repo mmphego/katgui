@@ -93,6 +93,7 @@
 <script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/health/receptor-pointing/receptor-pointing.js"></script>
 <script src="app/health/custom-health/custom-health.js"></script>
+<script src="app/health/config-health-view/config-health-view.js"></script>
 <script src="app/health/subarray-health/subarray-health.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/sensor-list/sensor-list.js"></script>
@@ -147,6 +148,9 @@
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
                             <md-button flex><span class="fa fa-th"></span><span>Receptor Status</span></md-button>
+                        </div>
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('config-health')">
+                            <md-button flex><span class="fa fa-file-code-o"></span><span>Config Health</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorPointing')">
                             <md-button flex><span class="fa fa-crosshairs"></span><span>Receptor Pointing</span></md-button>

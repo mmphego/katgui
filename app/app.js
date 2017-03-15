@@ -457,6 +457,11 @@
             templateUrl: 'app/health/receptor-health/receptor-health.html',
             title: 'Receptor Health'
         });
+        $stateProvider.state('config-health', {
+            url: '/config-health',
+            templateUrl: 'app/health/config-health-view/config-health-view.html',
+            title: 'Config Health'
+        });
         $stateProvider.state('subarrayHealth', {
             url: '/subarray-health',
             templateUrl: 'app/health/subarray-health/subarray-health.html',

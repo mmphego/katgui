@@ -78,6 +78,10 @@
             return deferred.promise;
         };
 
+        api.getConfigHealthViews = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/custom_views'));
+        };
+
         api.getProductConfig = function () {
             var deferred = $q.defer();
             if (api.productConfig) {

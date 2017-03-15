@@ -43,12 +43,32 @@ angular.module('katGui.d3')
                     unbindRedraw();
                 });
 
+                scope.data = function () {
+                    if (scope.dataMapName instanceof Object) {
+                        return scope.dataMapName;
+                    } else {
+                        return StatusService.statusData[scope.dataMapName];
+                    }
+                };
+
+                scope.dataName = function () {
+                    if (scope.dataMapName instanceof Object) {
+                        return scope.dataMapName.name;
+                    } else {
+                        return scope.dataMapName;
+                    }
+                };
+
                 scope.redraw = function () {
+                    if (!scope.data()) {
+                        return;
+                    }
+
                     var width = scope.chartSize.width;
                     var height = scope.chartSize.height;
                     var radius = height / 2;
                     var padding = 2;
-                    node = root = StatusService.statusData[scope.dataMapName];
+                    node = root = scope.data();
 
                     //create our x,y axis linear scales
                     var x = d3.scale.linear().range([0, 2 * Math.PI]);
@@ -57,7 +77,7 @@ angular.module('katGui.d3')
 
                     //create the main svg element
                     containerSvg = d3.select(element[0]).append("svg")
-                        .attr("class", "health-chart treemapHealthChart" + scope.dataMapName)
+                        .attr("class", "health-chart treemapHealthChart" + scope.dataName())
                         .attr("width", width + padding * 2)
                         .attr("height", height + padding * 2);
 
@@ -79,13 +99,9 @@ angular.module('katGui.d3')
                             return Math.max(0, y(d.y + d.dy));
                         });
 
-                    if (!StatusService.statusData[scope.dataMapName]) {
-                        return;
-                    }
-
                     //create each child node svg:g element
                     var g = svg.selectAll("g")
-                        .data(mapLayout.nodes(StatusService.statusData[scope.dataMapName]))
+                        .data(mapLayout.nodes(scope.data()))
                         .enter().append("g");
 
                     //add the arc math as a svg:path element
@@ -93,13 +109,18 @@ angular.module('katGui.d3')
                         .attr("d", arc)
                         .attr("class", function (d) {
                             var prefix = d.prefix? d.prefix : '';
-                            var classStr = d3Util.createSensorId(d, scope.dataMapName) + ' health-full-item ';
-                            classStr += (StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor] ?
-                                    StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor].status : 'inactive') + '-child child';
+                            var classStr = '';
+                            if (scope.dataMapName instanceof Object) {
+                                classStr = d.sensor + ' health-full-item ';
+                            } else {
+                                classStr = d3Util.createSensorId(d, scope.dataName()) + ' health-full-item ';
+                            }
+                            classStr += (StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor] ?
+                                    StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor].status : 'inactive') + '-child child';
                             return classStr;
                         })
                         .call(function (d) {
-                            d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
+                            d3Util.applyTooltipValues(d, tooltip, scope.dataName());
                         })
                         .on("click", click);
 
@@ -119,8 +140,8 @@ angular.module('katGui.d3')
                         .attr("dy", ".35em") // vertical-align
                         .attr("class", function (d) {
                             var prefix = d.prefix? d.prefix : '';
-                            var classString = StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor] ?
-                                StatusService.sensorValues[prefix + scope.dataMapName + '_' + d.sensor].status : 'inactive';
+                            var classString = StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor] ?
+                                StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor].status : 'inactive';
                             if (d.depth === 0) {
                                 return classString + '-child-text parent';
                             } else {
