@@ -63,7 +63,6 @@
         </md-menu>
 
     </div>
-    <div>{{vm.selectedConfigView}}</div>
     <div ng-repeat="item in vm.configHealhViews[vm.selectedConfigView] track by $index" ng-switch="vm.mapType" style="display: inline-block">
         <receptor-health-tree-map class="treemap-container" receptor="item" ng-switch-when="Treemap"></receptor-health-tree-map>
         <receptor-health-pack-map class="treemap-container" receptor="item" ng-switch-when="Pack"></receptor-health-pack-map>

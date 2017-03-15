@@ -458,9 +458,12 @@
             title: 'Receptor Health'
         });
         $stateProvider.state('config-health', {
-            url: '/config-health',
+            url: '/config-health/{configItem}',
             templateUrl: 'app/health/config-health-view/config-health-view.html',
-            title: 'Config Health'
+            title: 'Config Health',
+            params: {
+                configItem: { value: null, squash: true }
+            },
         });
         $stateProvider.state('subarrayHealth', {
             url: '/subarray-health',

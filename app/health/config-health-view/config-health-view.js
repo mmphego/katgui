@@ -3,14 +3,16 @@
     angular.module('katGui.health')
         .controller('ConfigHealthViewCtrl', ConfigHealthViewCtrl);
 
-    function ConfigHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, SensorsService, ConfigService, StatusService, NotifyService) {
+    function ConfigHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, SensorsService,
+                                  ConfigService, StatusService, NotifyService, $stateParams) {
 
         var vm = this;
 
         vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst', 'Force Layout'];
         vm.connectInterval = null;
         vm.configHealhViews = {};
-        vm.selectedConfigView = '';
+        vm.configItemsSelect = [];
+        vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -53,8 +55,10 @@
 
         ConfigService.getConfigHealthViews().then(
             function(result) {
+                vm.configItemsSelect = [];
                 vm.configHealhViews = result.data;
-                _.each(vm.configHealhViews, function (value, key, obj) {
+                _.each(result.data, function (value, key, obj) {
+                    vm.configItemsSelect.push(key);
                     if (value instanceof Array) {
                         value.forEach(function (item) {
                             vm.populateSensorNames(key, item);
@@ -63,8 +67,6 @@
                         vm.populateSensorNames(key, value);
                     }
                 });
-                // TODO populate this from the url
-                vm.selectedConfigView = Object.keys(vm.configHealhViews)[1];
                 vm.redrawCharts();
                 vm.connectListeners();
             },
