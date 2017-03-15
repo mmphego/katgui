@@ -502,6 +502,11 @@
             templateUrl: 'app/device-status/device-status.html',
             title: 'Device Status'
         });
+        $stateProvider.state('gui-links', {
+            url: '/gui-links',
+            templateUrl: 'app/gui-links/gui-links.html',
+            title: 'GUI Links'
+        });
         $stateProvider.state('instrumental-config', {
             url: '/instrumental-config',
             templateUrl: 'app/instrumental-config/instrumental-config.html',
