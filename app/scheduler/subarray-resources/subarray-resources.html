@@ -118,13 +118,13 @@
                                 <a ng-repeat="link in parent.vm.guiUrls[resource.name].value track by $index" href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
                             </div>
                             <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance"
-                                title="Restart Maintenance Device" ng-click="parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
+                                title="Restart Maintenance Device" ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
                             <span md-ink-ripple ng-click="parent.vm.showResourceLogs(resource.name)" class="icon-button fa fa-file-text-o" title="{{'Show ' + resource.name + ' logs'}}"></span>
-                            <span class="icon-button fa" ng-disabled="!$root.expertOrLO" md-ink-ripple title="Mark Resource As Faulty"
+                            <span class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple title="Mark Resource As Faulty"
                                 ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
-                                ng-click="parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                                ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
                             <span class="icon-button fa fa-chevron-right" ng-disabled="!$root.expertOrLO" md-ink-ripple title="Free Assigned Resource"
-                                ng-click="vm.freeAssignedResource(resource); $event.stopPropagation()"></span>
+                                ng-click="!$root.expertOrLO || vm.freeAssignedResource(resource); $event.stopPropagation()"></span>
                         </div>
                     </div>
                 </div>
@@ -148,7 +148,7 @@
                         [esc] to clear selection, [enter] to assign resources
                     </md-tooltip>
                     <span flex class="md-toolbar-tools" title="Click to select or deselect all free resources" style="cursor: pointer; max-height: 32px; padding: 0 4px"
-                        ng-click="vm.selectAllUnassignedResources(vm.selectedResources.length === 0)">Free Resources</span>
+                        ng-click="!$root.expertOrLO || vm.selectAllUnassignedResources(vm.selectedResources.length === 0)">Free Resources</span>
                     <input class="search-input-box unselectable" type="search" style="width: 140px;" ng-model-options="{ debounce: 300 }"
                         ng-model="vm.q" placeholder="Search Resources..." />
                 </md-toolbar>
@@ -159,14 +159,14 @@
                         ng-disabled="!$root.expertOrLO" ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = resource.selected; vm.toggleResourceSelect(resource)"
                         ng-mouseover="vm.dragSelect && !vm.dragSelectUnselect? vm.toggleResourceSelect(resource, true) : vm.dragSelect && vm.dragSelectUnselect? vm.toggleResourceSelect(resource, false) : ''">
                         <span md-ink-ripple class="icon-button fa fa-chevron-left" ng-disabled="!$root.expertOrLO" title="Assign to Subarray"
-                            ng-mousedown="$event.stopPropagation()" ng-click="vm.assignResource(resource); $event.stopPropagation()"></span>
+                            ng-mousedown="$event.stopPropagation()" ng-click="!$root.expertOrLO || vm.assignResource(resource); $event.stopPropagation()"></span>
                         <span flex style="font-size:18px; margin-left: 4px;" class="resource-name" ng-class="{'maintenance-text': resource.maintenance}">{{resource.name}}</span>
                         <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource in Maintenance"
                             ng-class="{'maintenance-text opaque': resource.maintenance}" ng-mousedown="$event.stopPropagation()"
-                            ng-click="parent.vm.markResourceInMaintenance(resource); $event.stopPropagation()"></span>
+                            ng-click="!$root.expertOrLO || parent.vm.markResourceInMaintenance(resource); $event.stopPropagation()"></span>
                         <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource As Faulty"
                             ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
-                            ng-click="parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                            ng-click="!$root.expertOrLO || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
                     </div>
                 </div>
             </div>

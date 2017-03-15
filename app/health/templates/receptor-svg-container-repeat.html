@@ -10,9 +10,9 @@
 
     <div style="position: absolute; top: 0; right: 0; width: 26px">
         <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor in Maintenance"
-            ng-class="{'maintenance-text opaque': receptor.maintenance}" ng-click="vm.markResourceInMaintenance(receptor); $event.stopPropagation()"></span>
+            ng-class="{'maintenance-text opaque': receptor.maintenance}" ng-click="!$root.expertOrLO || vm.markResourceInMaintenance(receptor); $event.stopPropagation()"></span>
         <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor As Faulty"
             ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !receptor.faulty, 'fa-warning error-text opaque': receptor.faulty}"
-            ng-click="vm.markResourceFaulty(receptor); $event.stopPropagation()"></span>
+            ng-click="!$root.expertOrLO || vm.markResourceFaulty(receptor); $event.stopPropagation()"></span>
     </div>
 </div>

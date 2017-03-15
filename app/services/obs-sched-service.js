@@ -486,18 +486,21 @@
                 api.guiUrlsRaw = result.data;
                 api.guiUrlsRaw.forEach(function (guiUrls) {
                     var resourceName = guiUrls.name.split('.')[0];
-                    guiUrls.value = JSON.parse(guiUrls.value);
-                    if (!api.guiUrls[resourceName]) {
-                        api.guiUrls[resourceName] = guiUrls;
-                    } else {
-                        guiUrls.value.forEach(function (guiUrl) {
-                            var existingUrlIndex = _.findIndex(api.guiUrls[resourceName].value, {title: guiUrl.title});
-                            if (existingUrlIndex > -1) {
-                                api.guiUrls[resourceName].value[existingUrlIndex] = guiUrl;
-                            } else {
-                                api.guiUrls[resourceName].value.push(guiUrl);
-                            }
-                        });
+                    if (guiUrls.value.length > 0) {
+                        // can't JSON parse empty strings
+                        guiUrls.value = JSON.parse(guiUrls.value);
+                        if (!api.guiUrls[resourceName]) {
+                            api.guiUrls[resourceName] = guiUrls;
+                        } else {
+                            guiUrls.value.forEach(function (guiUrl) {
+                                var existingUrlIndex = _.findIndex(api.guiUrls[resourceName].value, {title: guiUrl.title});
+                                if (existingUrlIndex > -1) {
+                                    api.guiUrls[resourceName].value[existingUrlIndex] = guiUrl;
+                                } else {
+                                    api.guiUrls[resourceName].value.push(guiUrl);
+                                }
+                            });
+                        }
                     }
                 });
             }, function(error) {

@@ -6,7 +6,7 @@
                 <div layout="row" class="unselectable">
                     <span flex style="max-height: 10px;"></span>
                     <input class="fade-in search-input-box" type="search" ng-model-options="{ debounce: 300 }" ng-model="vm.q"
-                        placeholder="Search Drafts..." />
+                        placeholder="Search Approved..." />
                     <span class="icon-button fa fa-check" style="font-size: 16px" md-ink-ripple title="Save all changes"
                         ng-click="vm.saveAllDirtyDrafts()"></span>
                 </div>
@@ -65,7 +65,7 @@
                     <span class="icon-button fa fa-check" md-ink-ripple title="Save Edits" ng-click="vm.saveDraft(item); $event.stopPropagation()"
                         ng-if="item.editing"></span>
                     <span ng-disabled="!$root.expertOrLO && $root.currentUser.req_role !== 'control_authority'" class="icon-button fa fa-remove"
-                        md-ink-ripple title="Delete Draft Schedule Block" ng-click="vm.removeDraft(item); $event.stopPropagation()"
+                        md-ink-ripple title="Delete Approved Schedule Block" ng-click="!$root.expertOrLO && $root.currentUser.req_role !== 'control_authority' || vm.removeDraft(item); $event.stopPropagation()"
                         ng-if="!item.editing"></span>
                     <md-menu>
                         <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
