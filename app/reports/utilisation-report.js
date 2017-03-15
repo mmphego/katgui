@@ -291,8 +291,8 @@
                         endTime: vm.endDatetimeReadable,
                         filter: vm.searchInputText},
                         { notify: false, reload: false });
-                var startDate = moment(vm.startDatetimeReadable).unix();
-                var endDate =  moment(vm.endDatetimeReadable).unix();
+                var startDate = moment.utc(vm.startDatetimeReadable).unix();
+                var endDate =  moment.utc(vm.endDatetimeReadable).unix();
                 vm.reportTimeWindowSecondsDuration = Math.abs(endDate - startDate);
                 vm.reportTimeWindowSecondsDurationReadable = vm.durationToString(moment.duration(vm.reportTimeWindowSecondsDuration, 's'));
                 vm.createSubarraysReport(startDate, endDate);
