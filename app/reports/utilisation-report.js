@@ -112,6 +112,24 @@
                     theme: 'striped',
                     margin: {top: 8, bottom: 8}});
 
+                rows = [{
+                    value: 'In Maintenance',
+                    percentageOfTotal_1: vm.subarrayMaintenanceDurations['1'].percentageOfTotal || '',
+                    percentageOfTotal_2: vm.subarrayMaintenanceDurations['2'].percentageOfTotal || '',
+                    percentageOfTotal_3: vm.subarrayMaintenanceDurations['3'].percentageOfTotal || '',
+                    percentageOfTotal_4: vm.subarrayMaintenanceDurations['4'].percentageOfTotal || ''
+                }];
+                schedColumns[0].title = "";
+
+                pdf.setFontSize(20);
+                pdf.text('Subarray In Maintenance', 20, pdf.autoTableEndPosY() + 45);
+                pdf.setFontSize(12);
+
+                pdf.autoTable(schedColumns, rows, {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: 'striped',
+                    margin: {top: 8, bottom: 8}});
+
                 var subarrayStateKeys = Object.keys(vm.subarrayStateDurations);
                 rows = [];
                 schedColumns[0].title = "";
