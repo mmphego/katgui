@@ -111,7 +111,7 @@
         };
 
         vm.redrawCharts = function () {
-            //TODO implement this plox
+            $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
         vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 300);

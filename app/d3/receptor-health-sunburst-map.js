@@ -4,7 +4,8 @@ angular.module('katGui.d3')
         return {
             restrict: 'E',
             scope: {
-                dataMapName: '=receptor'
+                dataMapName: '=receptor',
+                sizeStorageKey: '@'
             },
             link: function (scope, element) {
 
@@ -20,10 +21,10 @@ angular.module('katGui.d3')
                     .sort(function (a, b) {
                         return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
                     });
+                scope.sizeStorageKey = scope.sizeStorageKey? scope.sizeStorageKey : 'receptorHealthDisplaySize';
 
-
-                if ($localStorage['receptorHealthDisplaySize']) {
-                    scope.chartSize = JSON.parse($localStorage['receptorHealthDisplaySize']);
+                if ($localStorage[scope.sizeStorageKey]) {
+                    scope.chartSize = JSON.parse($localStorage[scope.sizeStorageKey]);
                 } else {
                     scope.chartSize = {width: 480, height: 480};
                 }
@@ -110,13 +111,16 @@ angular.module('katGui.d3')
                         .attr("class", function (d) {
                             var prefix = d.prefix? d.prefix : '';
                             var classStr = '';
+                            var dataName = '';
                             if (scope.dataMapName instanceof Object) {
                                 classStr = d.sensor + ' health-full-item ';
+                                dataName = d.sensor;
                             } else {
                                 classStr = d3Util.createSensorId(d, scope.dataName()) + ' health-full-item ';
+                                dataName = prefix + scope.dataName() + '_' + d.sensor;
                             }
-                            classStr += (StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor] ?
-                                    StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor].status : 'inactive') + '-child child';
+                            classStr += (StatusService.sensorValues[dataName] ?
+                                    StatusService.sensorValues[dataName].status : 'inactive') + '-child child';
                             return classStr;
                         })
                         .call(function (d) {
@@ -140,12 +144,18 @@ angular.module('katGui.d3')
                         .attr("dy", ".35em") // vertical-align
                         .attr("class", function (d) {
                             var prefix = d.prefix? d.prefix : '';
-                            var classString = StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor] ?
-                                StatusService.sensorValues[prefix + scope.dataName() + '_' + d.sensor].status : 'inactive';
-                            if (d.depth === 0) {
-                                return classString + '-child-text parent';
+                            var dataName = '';
+                            if (scope.dataMapName instanceof Object) {
+                                dataName = d.sensor;
                             } else {
-                                return classString + '-child-text child';
+                                dataName = prefix + scope.dataName() + '_' + d.sensor;
+                            }
+                            var classString = StatusService.sensorValues[dataName] ?
+                                StatusService.sensorValues[dataName].status : 'inactive';
+                            if (d.depth === 0) {
+                                return classString + '-child-text parent ' + dataName;
+                            } else {
+                                return classString + '-child-text child ' + dataName;
                             }
                         })
                         .text(function (d) {
