@@ -56,6 +56,7 @@
         };
 
         vm.SelectedSource = function (selected_item) {
+            vm.lastPreset = '';
             var vds_names = {'core_south_camera':'cores',
               'core_north_camera':'coren',
               'high_elevation_camera':'high'};

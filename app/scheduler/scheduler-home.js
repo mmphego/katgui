@@ -390,7 +390,9 @@
         };
 
         vm.cancelExecuteSchedule = function(item) {
-            ObsSchedService.cancelExecuteSchedule(item.sub_nr, item.id_code);
+            if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
+                ObsSchedService.cancelExecuteSchedule(item.sub_nr, item.id_code);
+            }
         };
 
         vm.cloneSB = function(item) {
