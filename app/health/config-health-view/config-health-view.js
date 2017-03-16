@@ -8,7 +8,7 @@
 
         var vm = this;
 
-        vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst', 'Force Layout'];
+        vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
         vm.connectInterval = null;
         vm.configHealhViews = {};
         vm.configItemsSelect = [];

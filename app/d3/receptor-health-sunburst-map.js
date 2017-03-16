@@ -75,7 +75,6 @@ angular.module('katGui.d3')
                     var x = d3.scale.linear().range([0, 2 * Math.PI]);
                     var y = d3.scale.linear().range([0, radius]);
 
-
                     //create the main svg element
                     containerSvg = d3.select(element[0]).append("svg")
                         .attr("class", "health-chart treemapHealthChart" + scope.dataName())
@@ -124,7 +123,7 @@ angular.module('katGui.d3')
                             return classStr;
                         })
                         .call(function (d) {
-                            d3Util.applyTooltipValues(d, tooltip, scope.dataName());
+                            d3Util.applyTooltipValues(d, tooltip);
                         })
                         .on("click", click);
 
