@@ -67,6 +67,7 @@
                         vm.populateSensorNames(key, value);
                     }
                 });
+                $rootScope.configHealthViews = vm.configItemsSelect;
                 vm.redrawCharts();
                 vm.connectListeners();
             },

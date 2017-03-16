@@ -95,6 +95,8 @@
             read_only: 'Monitor Only'
         };
 
+        $rootScope.configHealthViews = [];
+
         SessionService.recoverLogin();
 
         $rootScope.getSystemConfig = function (forceConfig) {
@@ -203,6 +205,17 @@
             if (!ConfigService.systemConfig) {
                 $rootScope.getSystemConfig();
             }
+
+            ConfigService.getConfigHealthViews().then(
+                function(result) {
+                    $rootScope.configHealthViews = [];
+                    _.each(result.data, function (value, key, obj) {
+                        $rootScope.configHealthViews.push(key);
+                    });
+                },
+                function(error) {
+                    $log.error(error);
+                });
         };
 
         vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
@@ -265,8 +278,8 @@
         $rootScope.stateGo = function (newState, params) {
             $state.go(newState, params);
         };
-        vm.sideNavStateGo = function (newState) {
-            $rootScope.stateGo(newState);
+        vm.sideNavStateGo = function (newState, params) {
+            $rootScope.stateGo(newState, params);
             $mdSidenav('left-sidenav').close();
         };
         vm.sideNavRightStateGo = function (newState) {

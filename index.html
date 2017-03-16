@@ -149,9 +149,6 @@
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
                             <md-button flex><span class="fa fa-th"></span><span>Receptor Status</span></md-button>
                         </div>
-                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('config-health')">
-                            <md-button flex><span class="fa fa-file-code-o"></span><span>Config Health</span></md-button>
-                        </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorPointing')">
                             <md-button flex><span class="fa fa-crosshairs"></span><span>Receptor Pointing</span></md-button>
                         </div>
@@ -163,6 +160,13 @@
                         </div>
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('activity')">
                             <md-button flex><span class="fa fa-dashboard"></span><span>System Activity</span></md-button>
+                        </div>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
+                        <div ng-repeat="configItem in $root.configHealthViews track by $index" class="menu-item" layout="row" layout-align="start center">
+                            <md-button ng-click="vm.sideNavStateGo('config-health', {configItem: configItem})" flex><span class="fa fa-file-code-o"></span><span>{{configItem.toUpperCase()}} Health</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
