@@ -5,8 +5,9 @@
         <md-option ng-value="imageSource" ng-repeat="imageSource in vm.imageSources" ng-selected={{$first}}>{{imageSource.name}}</md-option>
     </md-select>
 
-    <div class="videoimg" style="position:relative; border: 1px solid rgba(127, 127, 127, 0.2); height: 600px; width: 800px">
-        <img style="height: 100%;" alt="Could not load video image..." ng-src="{{vm.imageSource.url}}"/>
+    <div class="videoimg"
+        style="position: absolute; border: 1px solid rgba(127, 127, 127, 0.2); left: calc(50% - 400px); top: 140px; min-height: 600px; min-width: 800px">
+        <img draggable=".videoimg" style="cursor: move; height: 100%; width: 100%" alt="Could not load video image..." ng-src="{{vm.imageSource.url}}"/>
         <div resizeable=".videoimg" class="resize-grip">
             <span flex class="fa fa-arrows-v"></span>
         </div>
