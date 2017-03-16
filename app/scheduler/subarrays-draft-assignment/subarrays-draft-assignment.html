@@ -91,9 +91,9 @@
                         </div>
 
                         <span class="icon-button fa fa-chevron-circle-down" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()"
-                            title="Schedule" ng-click="parent.vm.iAmAtLeastCA() && vm.scheduleDraft(item)"></span>
+                            title="Schedule" ng-click="!parent.vm.iAmAtLeastCA() || vm.scheduleDraft(item)"></span>
                         <span class="icon-button fa fa-chevron-right" md-ink-ripple ng-disabled="!parent.vm.iAmAtLeastCA()" title="Unassign Schedule Blocks"
-                            ng-click="parent.vm.iAmAtLeastCA() && vm.freeScheduleBlock(item)"></span>
+                            ng-click="!parent.vm.iAmAtLeastCA() || vm.freeScheduleBlock(item)"></span>
                         <md-menu>
                             <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                             <md-menu-content>
@@ -165,7 +165,7 @@
                 ng-mouseover="vm.dragSelect && !vm.dragSelectUnselect? vm.toggleSBSelect(item, true) : vm.dragSelect && vm.dragSelectUnselect? vm.toggleSBSelect(item, false) : ''"
                 style="cursor: pointer" ng-disabled="!$root.expertOrLO">
                 <span class="icon-button fa fa-chevron-left" md-ink-ripple style="width: 22px; padding: 6px 4px" ng-disabled="!parent.vm.iAmAtLeastCA()"
-                    title="Assign schedule block to subarray" ng-click="parent.vm.iAmAtLeastCA() && vm.assignScheduleBlock(item)"
+                    title="Assign schedule block to subarray" ng-click="!parent.vm.iAmAtLeastCA() || vm.assignScheduleBlock(item)"
                     ng-mousedown="$event.stopPropagation()"></span>
                 <div layout="column" layout-align="center start" style="min-width: 100px; max-width: 100px">
                     <span ng-click="$root.showSBDetails(item, $event); $event.stopPropagation()" ng-class="{'manual-color': item.type === 'MANUAL', 'maintenance-color': item.type === 'MAINTENANCE', 'observation-color': item.type === 'OBSERVATION'}"
@@ -180,7 +180,7 @@
                     <span>{{item.desired_start_time}}</span>
                 </div>
                 <span class="icon-button fa fa-remove fixed-width-18" md-ink-ripple style="padding: 6px 2px" ng-disabled="!parent.vm.iAmAtLeastCA()"
-                    ng-mousedown="$event.stopPropagation()" title="Delete Schedule Block" ng-click="parent.vm.iAmAtLeastCA() && vm.removeDraft(item); $event.stopPropagation()"></span>
+                    ng-mousedown="$event.stopPropagation()" title="Delete Schedule Block" ng-click="!parent.vm.iAmAtLeastCA() || vm.removeDraft(item); $event.stopPropagation()"></span>
             </div>
         </md-virtual-repeat-container>
     </div>

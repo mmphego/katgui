@@ -139,10 +139,10 @@
                 </div>
                 <span style="width: 18px; padding: 6px 0" class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO"
                     md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance" title="Restart Maintenance Device"
-                    ng-click="parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
-                <span style="width: 18px; padding: 6px 0" class="icon-button fa" ng-disabled="!$root.expertOrLO" md-ink-ripple
+                    ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
+                <span style="width: 18px; padding: 6px 0" class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple
                     title="Mark Resource As Faulty" ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
-                    ng-click="parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                    ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
             </div>
         </div>
         <md-toolbar style="margin-left: 0; width: 450px; position: relative; margin-top: 8px" class="panel-toolbar-small md-whiteframe-z1">
