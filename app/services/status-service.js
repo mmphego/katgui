@@ -16,6 +16,7 @@
         api.controlledResources = [];
         api.topStatusTreesSensors = {};
         api.receptorTreesSensors = {};
+        api.configHealthSensors = {};
         api.updateQueue = [];
 
         api.addToUpdateQueue = function (sensor) {
@@ -96,6 +97,15 @@
                 var sensorName = api.updateQueue.shift();
                 d3.selectAll('.health-full-item.' + sensorName).attr('class', function (d) {
                     return api.getClassesOfSensor(d, sensorName, true) + ' health-full-item';
+                });
+                d3.selectAll('text.' + sensorName).attr('class', function (d) {
+                    var classString = api.sensorValues[sensorName] ?
+                        api.sensorValues[sensorName].status : 'inactive';
+                    if (d.depth === 0) {
+                        return classString + '-child-text parent ' + sensorName;
+                    } else {
+                        return classString + '-child-text child ' + sensorName;
+                    }
                 });
                 d3.selectAll('.text-bg-rect.' + sensorName).attr('class', function (d) {
                     return api.getClassesOfSensor(d, sensorName, false) + ' text-bg-rect';
