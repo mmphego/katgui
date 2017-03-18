@@ -79,10 +79,10 @@ angular.module('katGui.util')
                             left: x + 'px'
                         });
 
-                        targetElement.css({
-                            width: targetElement.innerWidth(),
-                            height: targetElement.innerHeight()
-                        });
+                        // targetElement.css({
+                            // width: targetElement.innerWidth(),
+                            // height: targetElement.innerHeight()
+                        // });
                     }
 
                 }
@@ -147,7 +147,6 @@ angular.module('katGui.util')
                             x = event.pageX - startX;
                             var innerWidth = targetElement.innerWidth(),
                                 innerHeight = targetElement.innerHeight();
-
                             targetElement.css({
                                 width: innerWidth - (targetElement.offset().left + innerWidth - event.pageX) + offsetX,
                                 height: innerHeight - (targetElement.offset().top + innerHeight - event.pageY) + offsetY
