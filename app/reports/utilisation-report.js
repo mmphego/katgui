@@ -307,6 +307,7 @@
 
                 DataService.sampleValueDuration(vm.subarrayReportSensorsRegex, startDate, endDate).then(function (result) {
                     if (result.data) {
+
                         result.data.forEach(function (item) {
                             var subNr;
                             var duration = moment.duration(item[2], 's');
@@ -380,7 +381,14 @@
                 DataService.sampleValueDuration(vm.receptorsReportSensorsRegex, startDate, endDate).then(function (result) {
                     vm.creatingReceptorReport = false;
                     if (result.data) {
-                        result.data.forEach(function (item) {
+
+                        result.data.map(function (item, itemIndex, data) {
+                            if (itemIndex > 0) {
+                                data[itemIndex - 1][2] = data[itemIndex][2];
+                            }
+                        });
+
+                        result.data.forEach(function (item, itemIndex, data) {
                             var subNr;
                             var duration = moment.duration(item[2], 's');
                             var reportItem = {
@@ -393,7 +401,7 @@
                             if (reportItem.duration) {
                                 reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
-                            $log.info(reportItem);
+
                             if (reportItem.sensorName.search('katpool.pool.resources..|katpool.resources.faulty|katpool.resources.in.maintenance') > -1 && reportItem.value.length > 0) {
                                 var resources = reportItem.value.split(',');
                                 var key;
