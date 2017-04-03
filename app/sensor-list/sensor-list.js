@@ -4,7 +4,7 @@
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval,
-                            $log, $mdDialog, DATETIME_FORMAT, NotifyService, ConfigService) {
+                            $log, $mdDialog, DATETIME_FORMAT, NotifyService, ConfigService, $localStorage) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -22,6 +22,7 @@
         vm.yAxisMaxValue = 100;
         vm.hideNominalSensors = false;
         vm.sensorValues = {};
+        vm.showValueTimestamp = false;
 
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
@@ -30,6 +31,14 @@
             {label: 'Status', value: 'status'},
             {label: 'Value', value: 'value'}
         ];
+
+        if ($localStorage.sensorListShowValueTimestamp) {
+            vm.showValueTimestamp = $localStorage.sensorListShowValueTimestamp;
+        }
+
+        vm.saveLocalStorage = function () {
+            $localStorage.sensorListShowValueTimestamp = vm.showValueTimestamp;
+        };
 
         vm.connectListeners = function () {
             SensorsService.connectListener()
@@ -221,8 +230,8 @@
             var strList = sensor.name.split(':');
             if (vm.sensorValues[strList[1]]) {
                 vm.sensorValues[strList[1]].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
-                vm.sensorValues[strList[1]].status = sensor.value.status;
                 vm.sensorValues[strList[1]].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+                vm.sensorValues[strList[1]].status = sensor.value.status;
                 vm.sensorValues[strList[1]].value = sensor.value.value;
 
                 if (vm.sensorsPlotNames.length > 0 &&
