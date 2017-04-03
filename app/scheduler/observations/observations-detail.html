@@ -5,13 +5,14 @@
                 ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z2" layout="row"
                 layout-align="center center" title="{{vm.subarray.description}}" style="position: relative; height: 80px">
                 <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
-                <md-menu style="margin-top: -16px; margin-bottom: 0; padding: 0;">
-                    <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event)" style="color: currentColor !important; font-size: 30px; position: relative">
+                <md-menu>
+                    <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event); $event.stopPropagation()"
+                        style="font-size: 30px; margin: 0 4px">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 12px"></span>
-                        <span style="margin-left: 12px;">
-                                    SUBARRAY {{vm.subarray.id}} -
-                                    <span><b>{{vm.subarray.state}}</b></span>
-                        <span ng-if="vm.subarray.maintenance">{{"- in maintenance"}}</span>
+                        <span style="margin-left: 14px;">
+                            SUBARRAY {{vm.subarray.id}} -
+                            <span><b>{{vm.subarray.state}}</b></span>
+                        <span ng-show="vm.subarray.maintenance">{{"- in maintenance"}}</span>
                         </span>
                     </md-button>
                     <md-menu-content>
@@ -25,7 +26,7 @@
 
                 <span flex></span>
 
-                <md-menu style="margin-top: -16px; margin-bottom: 0; padding: 0; position: relative">
+                <md-menu style="margin: 0 8px; margin-bottom: 0; padding: 0; position: relative">
                     <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" class="opaque-hover">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
                         <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
@@ -130,6 +131,9 @@
         </md-toolbar>
         <div flex class="schedule-block-resource-window md-whiteframe-z1" style="max-width: 450px; min-height: 284px; overflow: auto; min-width: 150px"
             layout="column" layout-wrap layout-align="start start">
+            <div class="resource-counter-overlay" title="The amount of resources assigned to this subarray">
+                {{vm.subarray.allocations.length}}
+            </div>
             <div ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': resource.maintenance}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
                 layout-align="start center">
