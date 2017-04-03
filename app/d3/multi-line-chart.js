@@ -139,10 +139,7 @@ angular.module('katGui.d3')
 
                 newData.forEach(function(d) {
                     d.date = new Date(d.sample_ts);
-                    if (typeof(d.value) === 'number' || !isNaN(d.value)) {
-                        d.value = d.value;
-                    } else {
-                        d.value = d.value;
+                    if (scope.options.discreteSensors) {
                         if (!scope.options.yAxisValues) {
                             scope.options.yAxisValues = [];
                         }
