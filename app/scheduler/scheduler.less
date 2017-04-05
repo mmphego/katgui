@@ -325,6 +325,7 @@
 
 .schedule-block-resource-window {
     padding: 0;
+    position: relative;
 }
 
 .schedule-block-list {
@@ -618,7 +619,6 @@
 
 .subarray-action-icon {
     font-size: 30px;
-    height: 100%;
     padding: 6px;
     margin: 0 6px;
     border-radius: 50%;
@@ -694,5 +694,17 @@
     cursor: not-allowed;
     &:hover {
         background-color: inherit !important;
+    }
+}
+
+.resource-counter-overlay {
+    position: absolute;
+    right: 4px;
+    bottom: 0px;
+    opacity: 0.25;
+    font-size: 3em;
+    cursor: default;
+    &:hover {
+        opacity: 1.0;
     }
 }

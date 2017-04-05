@@ -11,6 +11,9 @@
                 <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
                 </span>
                 <span flex></span>
+                <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
+                    style="height: 32px; width: 100%"></div>
+                <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                 <md-menu style="margin-top: -16px; margin-bottom: 0; padding: 0; position: relative">
                     <span md-ink-ripple style="margin: 0; padding: 0" ng-click="$mdMenu.open($event)" class="opaque-hover">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
@@ -22,11 +25,8 @@
                         </md-menu-item>
                     </md-menu-content>
                 </md-menu>
-                <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
-                    style="height: 32px; width: 100%"></div>
-                <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
             </md-toolbar>
-            <div layout="column" style="overflow: auto" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div layout="column" style="overflow: auto; min-height: calc(100% - 58px)" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
         </div>
     </div>
 </div>

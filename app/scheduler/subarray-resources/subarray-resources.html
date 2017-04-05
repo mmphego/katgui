@@ -3,11 +3,13 @@
     <div flex layout="row">
         <div flex layout="column" style="padding: 0 8px">
             <div class="subarray-container" layout="row" style="min-width: 450px; position: relative" flex ng-class="{'maintenance-bg': vm.subarray.maintenance}">
-
+                <div class="resource-counter-overlay" title="The total of resources assigned to this subarray">
+                    {{vm.subarray.allocations.length}}
+                </div>
                 <div flex class="md-whiteframe-z2" layout="column">
                     <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
-                        ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z1"
-                        layout="row" layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 56px; min-height: 56px; position: relative">
+                        ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z2"
+                        layout="row" layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 80px; min-height: 80px; position: relative">
                         <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                         <md-menu style="margin: 0; padding: 0;">
                             <md-button class="subarray-config-menu-button" title="Change Subarray" ng-click="$mdMenu.open($event); $event.stopPropagation()"
