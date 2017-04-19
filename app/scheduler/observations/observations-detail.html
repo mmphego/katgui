@@ -1,4 +1,4 @@
-<div flex layout="row" style="min-width: 1000px; min-height: 650px; padding: 0 8px 8px 8px" ng-controller="SubArrayObservationsDetail as vm">
+<div flex layout="row" style="min-width: 1150px; min-height: 650px; padding: 0 8px 8px 8px" ng-controller="SubArrayObservationsDetail as vm">
     <div flex layout="column">
         <div flex style="min-height: 150px;" layout="column">
             <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
@@ -27,8 +27,8 @@
                 <span flex></span>
 
                 <md-menu style="margin: 0 8px; margin-bottom: 0; padding: 0; position: relative">
-                    <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" class="opaque-hover">
-                        <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
+                    <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)">
+                        <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px; opacity: 1.0"></span>
                         <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
                     </span>
                     <md-menu-content>
@@ -131,8 +131,8 @@
         </md-toolbar>
         <div flex class="schedule-block-resource-window md-whiteframe-z1" style="max-width: 450px; min-height: 284px; overflow: auto; min-width: 150px"
             layout="column" layout-wrap layout-align="start start">
-            <div class="resource-counter-overlay" title="The amount of resources assigned to this subarray">
-                {{vm.subarray.allocations.length}}
+            <div class="resource-counter-overlay" title="The amount of receptors assigned to this subarray">
+                {{parent.vm.getTotalReceptorsInSubarray()}}
             </div>
             <div ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': resource.maintenance}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"

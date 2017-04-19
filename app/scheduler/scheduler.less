@@ -91,6 +91,9 @@
     min-width: 147px;
     border: 1px solid rgba(158, 158, 158, 0.3);
     overflow: hidden;
+    a {
+        margin-right: 4px;
+    }
     &:hover {
         background-color: rgba(158, 158, 158, 0.1);
     }
@@ -619,9 +622,19 @@
 
 .subarray-action-icon {
     font-size: 30px;
-    padding: 6px;
-    margin: 0 6px;
+    padding: 4px;
+    margin: 0 2px;
     border-radius: 50%;
+}
+
+.subarray-mode-button {
+    opacity: 0.5;
+    .subarray-select-chevron {
+        opacity: 1.0;
+    }
+    &:hover {
+        opacity: 1.0;
+    }
 }
 
 .subarray-select-chevron {
@@ -658,10 +671,16 @@
     top: 0;
     left: 0;
     right: 0;
-    font-size: 12px;
+    font-size: 16px;
     md-menu {
-        margin: 0 2px;
+        margin: 0 12px;
         position: relative;
+    }
+    span {
+        opacity: 0.4;
+        &:hover {
+            opacity: 1.0;
+        }
     }
 }
 
@@ -707,4 +726,34 @@
     &:hover {
         opacity: 1.0;
     }
+}
+
+.resource-state-activated {
+    background-color: rgba(76, 175, 80, 0.2);
+    // color: rgba(255, 255, 255, 0.87);
+    &:hover {
+        background-color: rgba(76, 175, 80, 0.25);
+    }
+}
+
+.resource-state-error {
+    background-color: rgba(244, 67, 54, 0.2);
+    &:hover {
+        background-color: rgba(244, 67, 54, 0.25);
+    }
+}
+
+.resource-state-busy {
+    background-color: rgba(171, 71, 187, 0.2);
+    // color: rgba(255, 255, 255, 0.87);
+    &:hover {
+        background-color: rgba(171, 71, 187, 0.25);
+    }
+}
+
+.gui-urls-link-container {
+    max-height: 50px;
+    min-width: 150px;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
