@@ -1,4 +1,4 @@
-<div flex layout="column" style="min-width: 1015px; min-height: 1000px; margin: 0 8px 8px 8px" ng-controller="SubArrayExecutorOverview as vm">
+<div flex layout="column" style="min-width: 1150px; min-height: 1000px; margin: 0 8px 8px 8px" ng-controller="SubArrayExecutorOverview as vm">
     <div flex ng-repeat="subarray in vm.subarrays | orderBy:'id'" class="subarray-container md-whiteframe-z2"
         layout="row" flex style="min-height: 120px" md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}">
         <div layout="column" flex>
@@ -13,9 +13,24 @@
                 <span flex></span>
                 <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
                     style="height: 32px; width: 100%"></div>
-                <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
-                <md-menu style="margin-top: -16px; margin-bottom: 0; padding: 0; position: relative">
-                    <span md-ink-ripple style="margin: 0; padding: 0" ng-click="$mdMenu.open($event)" class="opaque-hover">
+                <div layout="row" layout-align="center" class="subarray-config-container">
+                    <span md-ink-ripple ng-click="parent.vm.showSubarrayLogs()" class="icon-button fa fa-file-text-o opaque-hover" title="Show Subarray logs"
+                        style="font-size: 18px; height: 22px; padding: 2px 4px"></span>
+                    <span title="Control Authority" style="margin: 0 12px">
+                         <i>CA: </i><b>{{subarray.delegated_ca}}</b>
+                     </span>
+                    <span title="Selected Band" style="margin: 0 12px">
+                         <i>Band: </i><b>{{subarray.band ? subarray.band : 'None'}}</b>
+                     </span>
+                    <span title="Selected Product" style="margin: 0 12px">
+                         <i>Product: </i><b>{{subarray.product ? subarray.product : 'None'}}</b>
+                     </span>
+                    <span ng-show="subarray.config_label" title="Config Label" style="margin: 0 12px">
+                         <i>Config Label: </i><b>{{subarray.config_label ? subarray.config_label : 'None'}}</b>
+                     </span>
+                </div>
+                <md-menu style="margin-top: -16px; margin-bottom: 0; padding: 0; position: relative" class="subarray-mode-button">
+                    <span md-ink-ripple style="margin: 0; padding: 0" ng-click="$mdMenu.open($event)">
                         <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
                         <span style="margin-left: 16px">MODE: <b>{{subarray.mode}}</b></span> </span>
                     </span>

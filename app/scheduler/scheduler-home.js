@@ -16,6 +16,7 @@
         UserLogService, NotifyService, MonitorService, ConfigService, $stateParams, $q, $mdDialog, UserService) {
 
         var vm = this;
+        var receptorRegex = new RegExp('^(m|ant|dsh)\\d{1,4}$');
         vm.childStateShowing = $state.current.name !== 'scheduler';
         vm.subarrays = ObsSchedService.subarrays;
         vm.programBlocks = ObsSchedService.programBlocks;
@@ -29,6 +30,7 @@
         vm.iAmCA = false;
         vm.modeTypes = ['queue', 'manual'];
         vm.guiUrls = ObsSchedService.guiUrls;
+        vm.resourcesStates = ObsSchedService.resourcesStates;
 
         if (!$stateParams.subarray_id) {
             $state.go($state.current.name, {
@@ -107,6 +109,18 @@
                 vm.subarray = null;
             }
         });
+
+        vm.getTotalReceptorsInSubarray = function () {
+            var counter = 0;
+            if (vm.subarray && vm.subarray.allocations) {
+                vm.subarray.allocations.forEach(function (resource) {
+                    if (receptorRegex.test(resource.name)) {
+                        counter++;
+                    }
+                });
+            }
+            return counter;
+        };
 
         vm.currentState = function() {
             return $state.current.name;
@@ -798,6 +812,28 @@
             return function(item) {
                 return angular.isDefined(item.schedule_blocks) && item.schedule_blocks.length > 0;
             };
+        };
+
+        vm.classForResource = function (resource) {
+            var classes = "";
+            if (vm.isResourceInMaintenance(resource)) {
+                classes += 'maintenance-bg-hover';
+            }
+            if (vm.isResourceFaulty(resource)) {
+                classes += ' faulty-border';
+            }
+            var resourceStateSensor = vm.resourcesStates[resource.name];
+            if (resourceStateSensor) {
+                if (resourceStateSensor.value === 'activated') {
+                    classes += ' resource-state-activated';
+                } else if (resourceStateSensor.value === 'error') {
+                    classes += ' resource-state-error';
+                } else if (['deactivating', 'configuring', 'configured', 'activating']
+                           .indexOf(resourceStateSensor.value) > -1) {
+                    classes += ' resource-state-busy';
+                }
+            }
+            return classes;
         };
 
         $scope.$on('$destroy', function() {

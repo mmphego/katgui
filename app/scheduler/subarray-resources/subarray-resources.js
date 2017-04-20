@@ -12,12 +12,23 @@
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
         vm.resources_faulty = ObsSchedService.resources_faulty;
         vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
+
+        vm.initLastKnownConfig = function () {
+            vm.lastKnownSubarrayConfig = ObsSchedService.getLastKnownSubarrayConfig(vm.subarray.id);
+        };
+
+        vm.loadLastKnownSubarrayConfig = function () {
+            ObsSchedService.loadLastKnownSubarrayConfig(vm.subarray.id);
+        };
+
         if (!$scope.$parent.vm.subarray) {
             $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
                 vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
+                vm.initLastKnownConfig();
             });
         } else {
             vm.subarray = $scope.$parent.vm.subarray;
+            vm.initLastKnownConfig();
         }
 
         $scope.parent = $scope.$parent;
@@ -240,14 +251,6 @@
                 $scope.$apply();
             }
         });
-
-        vm.initLastKnownConfig = function () {
-            vm.lastKnownSubarrayConfig = ObsSchedService.getLastKnownSubarrayConfig(vm.subarray.id);
-        };
-
-        vm.loadLastKnownSubarrayConfig = function () {
-            ObsSchedService.loadLastKnownSubarrayConfig(vm.subarray.id);
-        };
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');

@@ -26,7 +26,7 @@
         api.scheduleData = [];
         api.guiUrlsRaw = [];
         api.guiUrls = {};
-
+        api.resourcesStates = {};
         api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
 
         api.handleRequestResponse = function(request, defer) {
@@ -467,6 +467,9 @@
                         });
                     }
                 }
+            } else if (sensorName.endsWith('_state')) {
+                var component = sensorName.split('_state')[0];
+                api.resourcesStates[component] = sensor;
             } else if (sensorName.indexOf('mode_') > -1) {
                 var subarrayId = sensorName.split('_')[2];
                 var subarray = _.findWhere(api.subarrays, {
