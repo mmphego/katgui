@@ -42,7 +42,8 @@ angular.module('katGui.d3')
                 left: 60
             };
             var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2, minline, maxline,
-                xAxisElement, yAxisElement, xAxisElement2, context, focus, brush, nowLine, nowText;
+                xAxisElement, yAxisElement, xAxisElement2, context, focus, brush, nowLine, nowText,
+                timestampKey;
 
             $timeout(function() {
                 scope.unbindResize = scope.$watch(function() {
@@ -71,6 +72,7 @@ angular.module('katGui.d3')
             scope.currentBrush = {};
             scope.nestedData = [];
             scope.options = {
+                plotUsingValueTimestamp: false,
                 showGridLines: false,
                 hideContextZoom: false,
                 useFixedYAxis: false,
@@ -87,6 +89,7 @@ angular.module('katGui.d3')
                 discreteSensors: false,
                 overrideMargins: null
             };
+            timestampKey = 'sample_ts';
 
             scope.loadOptionsFunction = function(options, forceRedraw) {
                 var optionsChanged = false;
@@ -96,6 +99,8 @@ angular.module('katGui.d3')
                         optionsChanged = true;
                     }
                 });
+
+                timestampKey = scope.options.plotUsingValueTimestamp? 'value_ts': 'sample_ts';
 
                 if (scope.options.scrollXAxisWindowBy) {
                     if (scope.scrollXAxisInterval) {
@@ -138,7 +143,7 @@ angular.module('katGui.d3')
                 }
 
                 newData.forEach(function(d) {
-                    d.date = new Date(d.sample_ts);
+                    d.date = new Date(d[timestampKey]);
                     if (scope.options.discreteSensors) {
                         if (!scope.options.yAxisValues) {
                             scope.options.yAxisValues = [];
@@ -154,13 +159,13 @@ angular.module('katGui.d3')
                             (scope.options.removeOutOfTimeWindowData && x.domain()[0].getTime() > 0 && existingDataLine.values[0].date < x.domain()[0])) {
                             existingDataLine.values.splice(0, 1);
                         }
-                        if (d.sample_ts < existingDataLine.values[0].sample_ts ||
-                            d.sample_ts < existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
+                        if (d[timestampKey] < existingDataLine.values[0][timestampKey] ||
+                            d[timestampKey] < existingDataLine.values[existingDataLine.values.length - 1][timestampKey]) {
                             doSort = true;
                         }
                         existingDataLine.values.push(d);
                         if (existingDataLine.values.length > 1 &&
-                            existingDataLine.values[0].sample_ts === existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
+                            existingDataLine.values[0][timestampKey] === existingDataLine.values[existingDataLine.values.length - 1][timestampKey]) {
                             existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
                         }
                     } else {
@@ -183,7 +188,7 @@ angular.module('katGui.d3')
                 if (doSort) {
                     scope.nestedData.forEach(function(d) {
                         d.values = _.sortBy(d.values, function(item) {
-                            return item.sample_ts;
+                            return item[timestampKey];
                         });
                     });
                     $log.info('Sorting all data sets.');

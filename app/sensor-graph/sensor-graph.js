@@ -34,6 +34,7 @@
             $localStorage['sensorGraphAutoCompleteList'] = [];
         }
 
+        vm.plotUsingValueTimestamp = $localStorage['plotUsingValueTimestamp']? true: false;
         vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
         vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
 
@@ -43,6 +44,12 @@
 
         vm.useUnixTimestampsChanged = function () {
             $localStorage['useUnixTimestamps'] = vm.useUnixTimestamps;
+        };
+
+        vm.plotUsingValueTimestampChanged = function () {
+            $localStorage['plotUsingValueTimestamp'] = vm.plotUsingValueTimestamp;
+            vm.showOptionsChanged();
+            vm.reloadAllData();
         };
 
         //TODO add an option to append to current data instead of deleting existing
@@ -132,6 +139,7 @@
                 $scope.$apply();
             }
             vm.loadOptions({
+                plotUsingValueTimestamp: vm.plotUsingValueTimestamp,
                 showGridLines: vm.showGridLines,
                 hideContextZoom: !vm.showContextZoom,
                 useFixedYAxis: vm.useFixedYAxis,
@@ -356,6 +364,7 @@
             vm.sensorSearchNames = [];
             vm.findSensorNames(vm.searchText); //simulate keypress
             vm.loadOptions({
+                plotUsingValueTimestamp: vm.plotUsingValueTimestamp,
                 showGridLines: vm.showGridLines,
                 hideContextZoom: !vm.showContextZoom,
                 useFixedYAxis: vm.useFixedYAxis,
