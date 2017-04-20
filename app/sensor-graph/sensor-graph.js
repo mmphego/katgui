@@ -28,10 +28,29 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.connectInterval = null;
+
         vm.sensorServiceConnected = SensorsService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
         }
+
+        vm.plotUsingValueTimestamp = $localStorage['plotUsingValueTimestamp']? true: false;
+        vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
+        vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
+
+        vm.includeValueTimestampChanged = function () {
+            $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
+        };
+
+        vm.useUnixTimestampsChanged = function () {
+            $localStorage['useUnixTimestamps'] = vm.useUnixTimestamps;
+        };
+
+        vm.plotUsingValueTimestampChanged = function () {
+            $localStorage['plotUsingValueTimestamp'] = vm.plotUsingValueTimestamp;
+            vm.showOptionsChanged();
+            vm.reloadAllData();
+        };
 
         //TODO add an option to append to current data instead of deleting existing
 
@@ -120,6 +139,7 @@
                 $scope.$apply();
             }
             vm.loadOptions({
+                plotUsingValueTimestamp: vm.plotUsingValueTimestamp,
                 showGridLines: vm.showGridLines,
                 hideContextZoom: !vm.showContextZoom,
                 useFixedYAxis: vm.useFixedYAxis,
@@ -185,6 +205,15 @@
                 vm.sensorSearchFieldLengthError = true;
                 vm.sensorSearchFieldShowTooltip = true;
             }
+        };
+
+        vm.reloadAllData = function() {
+            vm.sensorNames.forEach(function (sensor) {
+                // stagger the katstore-webserver calls
+                $timeout(function () {
+                    vm.findSensorData(sensor);
+                }, 500);
+            });
         };
 
         vm.findSensorNames = function (searchStr, event) {
@@ -335,6 +364,7 @@
             vm.sensorSearchNames = [];
             vm.findSensorNames(vm.searchText); //simulate keypress
             vm.loadOptions({
+                plotUsingValueTimestamp: vm.plotUsingValueTimestamp,
                 showGridLines: vm.showGridLines,
                 hideContextZoom: !vm.showContextZoom,
                 useFixedYAxis: vm.useFixedYAxis,
@@ -463,7 +493,7 @@
 
         vm.downloadCSV = function () {
             //bound in multiLineChart
-            vm.downloadAsCSV(vm.useUnixTimestamps);
+            vm.downloadAsCSV(vm.useUnixTimestamps, vm.includeValueTimestamp);
         };
 
         $timeout(function () {
