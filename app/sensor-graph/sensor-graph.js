@@ -28,10 +28,22 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.connectInterval = null;
+
         vm.sensorServiceConnected = SensorsService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
         }
+
+        vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
+        vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
+
+        vm.includeValueTimestampChanged = function () {
+            $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
+        };
+
+        vm.useUnixTimestampsChanged = function () {
+            $localStorage['useUnixTimestamps'] = vm.useUnixTimestamps;
+        };
 
         //TODO add an option to append to current data instead of deleting existing
 
@@ -185,6 +197,15 @@
                 vm.sensorSearchFieldLengthError = true;
                 vm.sensorSearchFieldShowTooltip = true;
             }
+        };
+
+        vm.reloadAllData = function() {
+            vm.sensorNames.forEach(function (sensor) {
+                // stagger the katstore-webserver calls
+                $timeout(function () {
+                    vm.findSensorData(sensor);
+                }, 500);
+            });
         };
 
         vm.findSensorNames = function (searchStr, event) {
@@ -463,7 +484,7 @@
 
         vm.downloadCSV = function () {
             //bound in multiLineChart
-            vm.downloadAsCSV(vm.useUnixTimestamps);
+            vm.downloadAsCSV(vm.useUnixTimestamps, vm.includeValueTimestamp);
         };
 
         $timeout(function () {

@@ -821,15 +821,24 @@ angular.module('katGui.d3')
                 }
             });
 
-            scope.downloadCsv = function(useUnixTimestamps) {
+            scope.downloadCsv = function(useUnixTimestamps, includeValueTimestamp) {
                 scope.nestedData.forEach(function(sensorValues, index) {
                     var csvContent = ["timestamp,status,value"];
+                    if (includeValueTimestamp) {
+                        csvContent[0] = "value_timestamp," + csvContent[0];
+                    }
                     for (var i = 0; i < sensorValues.values.length; i++) {
                         var dataString = '';
                         var sensorInfo = sensorValues.values[i];
                         if (useUnixTimestamps) {
+                            if (includeValueTimestamp) {
+                                dataString += (sensorInfo.value_ts * 1000) + ',';
+                            }
                             dataString += (sensorInfo.sample_ts * 1000) + ',';
                         } else {
+                            if (includeValueTimestamp) {
+                                dataString += moment.utc(sensorInfo.value_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
+                            }
                             dataString += moment.utc(sensorInfo.sample_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
                         }
                         dataString += sensorValues.values[i].status + ',';

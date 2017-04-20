@@ -109,10 +109,16 @@
                 </md-button>
                 <div class="menu-item-divider" style="width: 100%"></div>
                 <div layout="row" layout-align="start center" style="min-height: 48px">
-                    <md-checkbox class="md-primary" ng-model="vm.useUnixTimestamps" ng-init="vm.useUnixTimestamps = false"
-                        ng-disabled="vm.sensorNames.length === 0" style="margin: 4px;; padding: 0">
-                        Use Unix timestamps
-                    </md-checkbox>
+                    <div layout="column">
+                        <md-checkbox class="md-primary" ng-model="vm.useUnixTimestamps" ng-change="vm.useUnixTimestampsChanged()"
+                            ng-disabled="vm.sensorNames.length === 0" style="margin: 4px; padding: 0">
+                            Use Unix timestamps
+                        </md-checkbox>
+                        <md-checkbox class="md-primary" ng-model="vm.includeValueTimestamp" ng-change="vm.includeValueTimestampChanged()"
+                            ng-disabled="vm.sensorNames.length === 0" style="margin: 4px; padding: 0">
+                            Include Value timestamps
+                        </md-checkbox>
+                    </div>
                     <md-button ng-disabled="vm.sensorNames.length === 0" class="md-primary md-raised" ng-click="vm.downloadCSV()">
                         Download As CSV
                     </md-button>
@@ -148,6 +154,9 @@
             clear-function="vm.clearChart" remove-sensor-function="vm.removeSensorLine" download-csv="vm.downloadAsCSV"
             y-max="vm.yAxisMaxValue" y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">
+            <md-button class="md-icon-button" ng-click="vm.reloadAllData()" title="Reload All Sensor Data">
+                <md-icon class="fa" md-font-icon="fa-refresh"></md-icon>
+            </md-button>
             <md-button class="md-icon-button" ng-click="vm.clearData()" title="Clear Data">
                 <md-icon class="fa" md-font-icon="fa-remove"></md-icon>
             </md-button>
