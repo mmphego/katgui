@@ -16,7 +16,7 @@
         UserLogService, NotifyService, MonitorService, ConfigService, $stateParams, $q, $mdDialog, UserService) {
 
         var vm = this;
-        var receptorRegex = new RegExp('^(m0..|ant.)$');
+        var receptorRegex = new RegExp('^(m|ant|dsh)\\d{1,4}$');
         vm.childStateShowing = $state.current.name !== 'scheduler';
         vm.subarrays = ObsSchedService.subarrays;
         vm.programBlocks = ObsSchedService.programBlocks;
@@ -828,9 +828,8 @@
                     classes += ' resource-state-activated';
                 } else if (resourceStateSensor.value === 'error') {
                     classes += ' resource-state-error';
-                } else if (resourceStateSensor.value === 'configuring' ||
-                           resourceStateSensor.value === 'configured' ||
-                           resourceStateSensor.value === 'activating') {
+                } else if (['deactivating', 'configuring', 'configured', 'activating']
+                           .indexOf(resourceStateSensor.value) > -1) {
                     classes += ' resource-state-busy';
                 }
             }
