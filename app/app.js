@@ -559,14 +559,14 @@
             parent: schedulerHome,
             url: '/resources/:subarray_id',
             templateUrl: 'app/scheduler/subarray-resources/subarray-resources.html',
-            title: 'Subarrays.Resource Assignment'
+            title: 'Subarrays.Resources'
         };
         var observationsOverview = {
             name: 'scheduler.observations',
             parent: schedulerHome,
             url: '/observations',
             templateUrl: 'app/scheduler/observations/observations-overview.html',
-            title: 'Subarrays.Observations Overview'
+            title: 'Subarrays.Overview'
         };
         var observationsDetail = {
             name: 'scheduler.observations.detail',

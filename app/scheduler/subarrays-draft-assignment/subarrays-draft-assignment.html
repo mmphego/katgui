@@ -1,4 +1,4 @@
-<div flex layout="row" style="min-width: 1000px; min-height: 600px" ng-controller="SubArraysCtrl as vm"
+<div flex layout="row" style="min-width: 1150px; min-height: 600px" ng-controller="SubArraysCtrl as vm"
     ng-mouseup="vm.dragSelect = false">
     <div flex class="subarray-container" layout="column" style="padding-left: 8px" md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}">
         <div layout="row" flex>
@@ -54,8 +54,8 @@
                         </md-menu-content>
                     </md-menu>
                     <span flex></span>
-                    <md-menu style="margin: 0 8px 0 0; padding: 0; position: relative">
-                        <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" class="opaque-hover">
+                    <md-menu style="margin: 0 8px 0 0; padding: 0; position: relative" class="subarray-mode-button">
+                        <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)">
                             <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
                             <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
                         </span>
