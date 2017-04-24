@@ -48,7 +48,7 @@
             <div layout="row" layout-align="center center" ng-show="!vm.searchDiscrete" style="min-height: 46px; max-height: 46px">
                 <span style="margin-right: 8px; cursor: default" title="Only resamples for results with multiple samples in the given interval">Resampling Interval:</span>
                 <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalNum = '10'" ng-model="vm.intervalNum"
-                    style="margin: 0; padding: 8px" ng-disabled="vm.intervalType === 'n'">
+                    style="margin: 0; padding: 8px" ng-disabled="vm.intervalType === 'n'" ng-change="vm.updateGraphUrl()">
                     <md-option value="1">1</md-option>
                     <md-option value="2">2</md-option>
                     <md-option value="5">5</md-option>
@@ -59,7 +59,7 @@
                     <md-option value="100">100</md-option>
                 </md-select>
                 <md-select md-theme="{{themePrimaryButtons}}" ng-init="vm.intervalType = 'm'" ng-model="vm.intervalType"
-                    style="margin: 0; padding: 8px">
+                    style="margin: 0; padding: 8px" ng-change="vm.updateGraphUrl()">
                     <md-option value="n">No Interval</md-option>
                     <md-option value="s">Second(s)</md-option>
                     <md-option value="m">Minute(s)</md-option>
