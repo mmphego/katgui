@@ -497,6 +497,7 @@
         };
 
         $timeout(function () {
+            vm.showOptionsChanged();
             if (moment.utc($stateParams.startTime, 'HH:mm:ss DD-MM-YYYY', true).isValid() &&
                 moment.utc($stateParams.endTime, 'HH:mm:ss DD-MM-YYYY', true).isValid() &&
                 $stateParams.sensors) {
@@ -525,7 +526,9 @@
                     vm.intervalNum = '10';
                     vm.intervalType = 'm';
                 }
-                var sensorNames = $stateParams.sensors.split(',');
+                var sensorNames = $stateParams.sensors.split(',').map(function (sensorName) {
+                    return '^(' + sensorName + ')$';
+                });
                 vm.findSensorNames(sensorNames.join('|')).then(function (sensors) {
                     var sensorTypes = [];
                     sensors.forEach(function (sensor) {
