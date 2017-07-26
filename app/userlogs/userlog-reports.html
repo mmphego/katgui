@@ -115,7 +115,7 @@
                     <span style="width: 125px; font-size: 12px">
                         {{userlog.end_time}}
                     </span>
-                    <pre flex ng-class="{'compressed-userlog': !vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px;" ng-bind-html="userlog.content | linkify | toTrustedHtml"></pre>
+                    <pre flex ng-class="{'compressed-userlog': !vm.expandEntries}" style="margin: 0; padding: 0; background: transparent; margin-bottom: 8px; min-height: 33px; color: inherit" ng-bind-html="userlog.content | linkify | toTrustedHtml"></pre>
                     <div class="tags-list-container" title="{{userlog.tagsListText}}" ng-class="{'tags-list-compressed-container': !vm.expandEntries}">
                         <i style="font-size: 11px; padding-right: 2px">{{userlog.tagsListText}}</i>
                     </div>
