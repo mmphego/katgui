@@ -206,7 +206,6 @@
                     var cachedBuildDate = new Date(document.katguiBuildDate);
                     var latestBuildDate = new Date(parseInt(result.data.buildDate));
                     if (cachedBuildDate < latestBuildDate) {
-
                         var textContent = '<b>You have loaded an older version of KATGUI than what is currently available!</b></br>' +
                                      '</br>Your version was built on ' + cachedBuildDate + ', but the latest version was built on ' + latestBuildDate +
                                      '</br></br>Click "Reload" to get the latest version.</p>';

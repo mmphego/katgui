@@ -44,7 +44,7 @@ gulp.task('clean-tests', function () {
 });
 
 gulp.task('clean:csstmp', ['css:material', 'css:main', 'css:concat', 'clean'], function (cb) {
-    return del(['dist/main.app.full.*', 'dist/angular-material.min.css']);
+    return del(['dist/main.app.full.min.css', 'dist/angular-material.min.css']);
 });
 
 gulp.task('css:material', ['clean'], function () {
