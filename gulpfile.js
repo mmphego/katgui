@@ -71,7 +71,7 @@ gulp.task('css:main', ['clean'], function () {
 
 gulp.task('css:concat', ['css:main', 'css:material', 'clean'], function () {
     return gulp.src(['dist/angular-material.min.css', 'dist/main.app.full.min.css'])
-        .pipe(concat('app.full.min.css'))
+        .pipe(concat('app.full.min.' + buildDate + '.css'))
         .pipe(gulp.dest('dist/'));
 });
 
@@ -93,7 +93,7 @@ gulp.task('js', ['clean'], function () {
     combined.queue(templateStream);
 
     return combined.done()
-        .pipe(concat('app.full.min.js'))
+        .pipe(concat('app.full.min.' + buildDate + '.js'))
         .pipe(insert.append('document.katguiBuildDate = ' + buildDate))
         .pipe(ngannotate())
         .pipe(uglify())
@@ -105,9 +105,9 @@ gulp.task('indexHtml', ['clean'], function () {
         .pipe(gCheerio(function ($) {
             $('script[data-remove!="exclude"]').remove();
             $('link').remove();
-            $('body').append('<script src="app.full.min.js"></script>');
+            $('body').append('<script src="app.full.min.' + buildDate + '.js"></script>');
             $('head').append('<link rel="icon" type="image/png" href="images/favicon.ico" sizes="32x32">');
-            $('head').append('<link rel="stylesheet" href="app.full.min.css">');
+            $('head').append('<link rel="stylesheet" href="app.full.min.' + buildDate + '.css">');
         }))
         .pipe(htmlmin(htmlminOptions))
         .pipe(gulp.dest('dist/'));

@@ -3,25 +3,42 @@
     angular.module('katGui.services')
         .factory('NotifyService', NotifyService);
 
-    function NotifyService($rootScope, $mdDialog, $mdToast, $log, $q, SensorsService, ConfigService, DATETIME_FORMAT) {
+    function NotifyService($rootScope, $mdDialog, $mdToast, $log, $q, $timeout, SensorsService, ConfigService, DATETIME_FORMAT) {
 
         var api = {};
         api.toastPosition = 'bottom right';
         api.toastHideDelay = 3500;
+        api.currentToast = null;
+        api.toastHideTimeout = null;
 
         api.showSimpleToast = function (message) {
             // $mdToast.hide();
+            $log.info('Showing toast-message: ' + message);
             if (!message || message.length === 0) {
                 $log.error('Attempting to show empty toast message - aborting.');
                 return;
             }
-            var simpleToast = $mdToast.simple()
-                .content(message)
-                .highlightAction(true)
-                .position(api.toastPosition)
-                .hideDelay(api.toastHideDelay);
-            $mdToast.show(simpleToast);
-            $log.info('Showing toast-message: ' + message);
+            if (!api.currentToast) {
+                api.currentToast = $mdToast.simple();
+                api.currentToast
+                    .content(message)
+                    .hideDelay(false) // never hide automatically
+                    .position(api.toastPosition);
+                $mdToast.show(api.currentToast);
+                api.toastHideTimeout = $timeout(function () {
+                    $mdToast.hide();
+                    api.currentToast = null;
+                }, api.toastHideDelay);
+            } else {
+                if (api.toastHideTimeout) {
+                    $timeout.cancel(api.toastHideTimeout);
+                }
+                api.toastHideTimeout = $timeout(function () {
+                    $mdToast.hide();
+                    api.currentToast = null;
+                }, api.toastHideDelay);
+                $mdToast.updateTextContent(message);
+            }
         };
 
         api.showHttpErrorDialog = function (title, httpResponse) {
