@@ -217,7 +217,7 @@
                                     $scope.title = 'KATGUI is out of date!';
                                     $scope.content = $sce.trustAsHtml(textContent);
                                     $scope.resolve = function () {
-                                        window.location.reload(true);
+                                        location.reload(true);
                                     };
                                     $scope.reject = function () {
                                         $mdDialog.hide();
