@@ -3,24 +3,26 @@
     angular.module('katGui')
         .controller('SensorListCtrl', SensorListCtrl);
 
-    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval,
-                            $log, $mdDialog, DATETIME_FORMAT, NotifyService, ConfigService, $localStorage) {
+    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval, $stateParams,
+                            $log, $mdDialog, DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
         vm.resourcesNames = [];
         vm.sensorsToDisplay = [];
         vm.resourceSensorsBeingDisplayed = '';
+        vm.searchFilter = $stateParams.filter? $stateParams.filter: '';
         vm.sensorsPlotNames = [];
         vm.guid = KatGuiUtil.generateUUID();
         vm.connectInterval = null;
+        vm.initDone = false;
 
         vm.showTips = false;
         vm.showContextZoom = false;
         vm.useFixedYAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
-        vm.hideNominalSensors = false;
+        vm.hideNominalSensors = $stateParams.hideNominal? $stateParams.hideNominal === 'true': false;
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
 
@@ -138,6 +140,7 @@
                     vm.showProgress = false;
                 });
             vm.resourceSensorsBeingDisplayed = resourceName;
+            vm.updateURL();
             //allow for the removeSensorStrategies to complete before setting up new strategies
             $timeout(function () {
                 vm.initSensors();
@@ -264,10 +267,34 @@
             return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal';
         };
 
+        vm.updateURL = function () {
+            if (vm.initDone) {
+                $state.go('sensor-list', {
+                    component: vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: null,
+                    filter: vm.searchFilter? vm.searchFilter: null,
+                    hideNominal: vm.hideNominalSensors? 'true': null},
+                    { notify: false, reload: false });
+            }
+        };
+
         //create to function to bind to, but dont do anything with it yet
         vm.downloadAsCSV = function () {};
 
-        vm.connectListeners();
+        if ($stateParams.component) {
+            vm.nodes = ConfigService.resourceGroups;
+            SensorsService.listResourcesFromConfig()
+                .then(function () {
+                    for (var key in SensorsService.resources) {
+                        vm.resourcesNames.push({name: key, node: SensorsService.resources[key].node});
+                    }
+                    vm.listResourceSensors($stateParams.component);
+                    vm.initDone = true;
+                });
+            $timeout(vm.connectListeners, 500);
+        } else {
+            vm.connectListeners();
+            vm.initDone = true;
+        }
 
         $scope.$on('$destroy', function () {
             unbindUpdate();
