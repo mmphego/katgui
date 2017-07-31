@@ -19,13 +19,13 @@
                 <div flex layout="row" layout-align="start center" style="margin-left: 16px">
                     <span flex>Sensors {{' - ' + vm.resourceSensorsBeingDisplayed | uppercase}}</span>
                     <md-checkbox class="md-primary" ng-model="vm.showValueTimestamp" ng-click="$event.stopPropagation()" md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0"
-                        ng-change="vm.saveLocalStorage()">
+                        ng-change="vm.updateURL()">
                         Show Value Timestamps
                     </md-checkbox>
-                    <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-click="$event.stopPropagation()" md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0">
+                    <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-change="vm.updateURL()" ng-click="$event.stopPropagation()" md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0">
                         Hide Nominal Sensors
                     </md-checkbox>
-                    <input class="fade-in search-input-box" style="margin: 0 4px" type="search" ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Sensors..." />
+                    <input class="fade-in search-input-box" style="margin: 0 4px" type="search" ng-model-options="{ debounce: 300 }" ng-model="vm.searchFilter" ng-change="vm.updateURL()" placeholder="Search Sensors..." />
                 </div>
 
                 <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center" style="padding: 0px 8px; max-height: 17px">
@@ -58,7 +58,7 @@
                 </div>
                 <!-- <md-virtual-repeat-container md-item-size="20" md-auto-shrink flex style="padding: 8px 0; margin-bottom: 8px" class="md-whiteframe-z1"> -->
                 <!-- <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)" -->
-                <div ng-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse) track by $index" class="resource-sensor-item" ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
+                <div ng-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.searchFilter | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse) track by $index" class="resource-sensor-item" ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
                     ng-class="{'selected-for-chart-row': sensor.selectedForChart}" layout="row" layout-align="start center">
                     <span title="{{sensor.python_identifier + ' - Description: ' + sensor.description + ' - Units: ' + sensor.units + ' - Type: ' + sensor.type}}" class="resource-sensor-name">{{sensor.name}}</span>
                     <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
