@@ -607,9 +607,15 @@
             noAuth: true
         });
         $stateProvider.state('sensor-list', {
-            url: '/sensor-list',
+            url: '/sensor-list?component&filter&hideNominal',
             templateUrl: 'app/sensor-list/sensor-list.html',
-            title: 'Sensor List'
+            title: 'Sensor List',
+            //makes the params optional
+            params: {
+                component: { value: null, squash: true },
+                filter: { value: null, squash: true },
+                hideNominal: { value: null, squash: true }
+            },
         });
         $stateProvider.state('sensor-groups', {
             url: '/sensor-groups',
