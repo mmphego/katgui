@@ -427,15 +427,8 @@
             $httpProvider.defaults.withCredentials = true;
         }
         $urlRouterProvider.otherwise('/home');
-        $locationProvider.html5Mode(true);
         $mdAriaProvider.disableWarnings();
-
-        //todo nginx needs the following config before we can switch on html5Mode
-        //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode
-        // $locationProvider.html5Mode({
-        //     enabled: true,
-        //     requireBase: false
-        // });
+        $locationProvider.html5Mode(true);
         configureThemes($mdThemingProvider);
 
         $stateProvider.state('login', {
