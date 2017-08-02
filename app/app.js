@@ -81,7 +81,7 @@
         $rootScope.showVideoLinks = false;
         $rootScope.connectedToMonitor = true;
 
-        $rootScope.devMode = window.location.host === 'localhost:8000';
+        $rootScope.devMode = window.location.host.startsWith('localhost');
         $rootScope.portalUrl = $rootScope.devMode? $localStorage.devModePortalURL : window.location.origin;
         if ($rootScope.portalUrl === 'http://') {
             $rootScope.portalUrl = '';
@@ -415,7 +415,7 @@
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider,
-                             $httpProvider, $urlMatcherFactoryProvider) {
+                             $httpProvider, $urlMatcherFactoryProvider, $locationProvider, $mdAriaProvider) {
 
         $urlMatcherFactoryProvider.strictMode(false);
         //disable this in production for performance boost
@@ -427,6 +427,8 @@
             $httpProvider.defaults.withCredentials = true;
         }
         $urlRouterProvider.otherwise('/home');
+        $locationProvider.html5Mode(true);
+        $mdAriaProvider.disableWarnings();
 
         //todo nginx needs the following config before we can switch on html5Mode
         //https://github.com/angular-ui/ui-router/wiki/Frequently-Asked-Questions#how-to-configure-your-server-to-work-with-html5mode

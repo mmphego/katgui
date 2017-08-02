@@ -4,7 +4,6 @@
         .controller('ActivityWidgetCtrl', ActivityWidgetCtrl);
 
     function ActivityWidgetCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService, MOMENT_DATETIME_FORMAT) {
-    function ActivityWidgetCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService, MOMENT_DATETIME_FORMAT) {
 
         var vm = this;
         vm.timelineData = [];
