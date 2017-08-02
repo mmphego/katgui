@@ -4,7 +4,7 @@
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
     function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, $timeout, ConfigService,
-                                ControlService, DATETIME_FORMAT, NotifyService, $state, USER_ROLES) {
+                                ControlService, MOMENT_DATETIME_FORMAT, NotifyService, $state, USER_ROLES) {
 
         var vm = this;
 
@@ -157,7 +157,7 @@
                 }
                 vm.sensorsToDisplay[strList[1]].value = sensor.value.value;
                 vm.sensorsToDisplay[strList[1]].timestamp = sensor.value.timestamp;
-                vm.sensorsToDisplay[strList[1]].date = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+                vm.sensorsToDisplay[strList[1]].date = moment.utc(sensor.value.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                 vm.sensorsToDisplay[strList[1]].received_timestamp = sensor.value.received_timestamp;
                 vm.sensorsToDisplay[strList[1]].status = sensor.value.status;
                 vm.sensorsToDisplay[strList[1]].name = strList[1];

@@ -4,7 +4,7 @@
         .controller('WeatherCtrl', WeatherCtrl);
 
     function WeatherCtrl($rootScope, $scope, DataService, SensorsService, KatGuiUtil, $interval, $log, $q,
-        DATETIME_FORMAT, ConfigService, NotifyService, $timeout, $localStorage) {
+        MOMENT_DATETIME_FORMAT, ConfigService, NotifyService, $timeout, $localStorage) {
 
         var vm = this;
         vm.ancResource = {
@@ -214,7 +214,7 @@
                         oldSensor.sensorValue = sensor.value;
                         oldSensor.status = sensor.value.status;
                         oldSensor.timestamp = moment.utc(sensor.value.timestamp, 'X').format('HH:mm:ss');
-                        oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
+                        oldSensor.received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                         oldSensor.value = sensor.value.value;
                         sensor.color = oldSensor.color;
 

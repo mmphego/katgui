@@ -3,7 +3,8 @@
     angular.module('katGui.widgets')
         .controller('ActivityWidgetCtrl', ActivityWidgetCtrl);
 
-    function ActivityWidgetCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService) {
+    function ActivityWidgetCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService, MOMENT_DATETIME_FORMAT) {
+    function ActivityWidgetCtrl($scope, $rootScope, $timeout, $log, ObsSchedService, MonitorService, UserLogService, MOMENT_DATETIME_FORMAT) {
 
         var vm = this;
         vm.timelineData = [];
@@ -72,11 +73,11 @@
 
         vm.addUserLogsToTimeline = function(userlogs) {
             userlogs.forEach(function(userlog) {
-                userlog.start = moment.utc(userlog.start_time, "YYYY-MM-DD HH:mm:ss").toDate();
+                userlog.start = moment.utc(userlog.start_time, MOMENT_DATETIME_FORMAT).toDate();
                 if (userlog.end_time) {
-                    userlog.end = moment.utc(userlog.end_time, "YYYY-MM-DD HH:mm:ss").toDate();
+                    userlog.end = moment.utc(userlog.end_time, MOMENT_DATETIME_FORMAT).toDate();
                 } else {
-                    userlog.end = moment.utc(userlog.start_time, "YYYY-MM-DD HH:mm:ss").add(4, 'm').add(30, 's').toDate();
+                    userlog.end = moment.utc(userlog.start_time, MOMENT_DATETIME_FORMAT).add(4, 'm').add(30, 's').toDate();
                 }
                 if (userlog.start > userlog.end) {
                     var newEnd = userlog.start;
@@ -117,8 +118,8 @@
             });
             vm.redrawTimeline();
             vm.addSbsToTimeline(ObsSchedService.scheduleData);
-            var startDate = moment().utc().subtract(30, 'm').format('YYYY-MM-DD HH:mm:ss'),
-                endDate = moment().utc().add(30, 'm').format('YYYY-MM-DD HH:mm:ss');
+            var startDate = moment().utc().subtract(30, 'm').format(MOMENT_DATETIME_FORMAT),
+                endDate = moment().utc().add(30, 'm').format(MOMENT_DATETIME_FORMAT);
             UserLogService.listTags().then(function() {
                 UserLogService.listUserLogsForTimeRange(startDate, endDate).then(function(result) {
                     if (result) {

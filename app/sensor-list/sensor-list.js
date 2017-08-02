@@ -4,7 +4,7 @@
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval, $stateParams,
-                            $log, $mdDialog, DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
+                            $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -127,8 +127,8 @@
                     vm.resources[resourceName].sensorsList = result;
                     vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
                     vm.sensorsToDisplay.forEach(function (item) {
-                        item.timestamp = moment.utc(item.timestamp, 'X').format(DATETIME_FORMAT);
-                        item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(DATETIME_FORMAT);
+                        item.timestamp = moment.utc(item.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
+                        item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                         vm.sensorValues[resourceName + '_' + item.python_identifier] = item;
                         item.parentName = resourceName;
                     });
@@ -232,8 +232,8 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             var strList = sensor.name.split(':');
             if (vm.sensorValues[strList[1]]) {
-                vm.sensorValues[strList[1]].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
-                vm.sensorValues[strList[1]].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+                vm.sensorValues[strList[1]].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
+                vm.sensorValues[strList[1]].timestamp = moment.utc(sensor.value.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                 vm.sensorValues[strList[1]].status = sensor.value.status;
                 vm.sensorValues[strList[1]].value = sensor.value.value;
 

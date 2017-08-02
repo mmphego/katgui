@@ -59,7 +59,8 @@
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, $q, THEMES,
                              AlarmsService, ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
-                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService) {
+                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService,
+                             MOMENT_DATETIME_FORMAT) {
         var vm = this;
 
         var theme = _.find(THEMES, function (theme) {
@@ -320,10 +321,10 @@
                 var localTime = moment(MonitorService.lastSyncedTime, 'X');
                 $rootScope.lastSyncedTime = MonitorService.lastSyncedTime;
                 if (!$rootScope.utcDateTime) {
-                    $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
+                    $rootScope.utcDateTime = utcTime.format(MOMENT_DATETIME_FORMAT);
                     $rootScope.$emit('utcDateTimeSet', $rootScope.utcDateTime);
                 } else {
-                    $rootScope.utcDateTime = utcTime.format('YYYY-MM-DD HH:mm:ss');
+                    $rootScope.utcDateTime = utcTime.format(MOMENT_DATETIME_FORMAT);
                 }
                 $rootScope.utcDate = utcTime.toDate();
                 $rootScope.utcTime = utcTime.format('HH:mm:ss');

@@ -1,6 +1,7 @@
 angular.module('katGui.util')
     .constant('CENTRAL_LOGGER_PORT', 9021)
-    .constant('DATETIME_FORMAT', 'HH:mm:ss DD-MM-YYYY')
+    .constant('DATETIME_FORMAT', 'yyyy-MM-dd HH:mm:ss')
+    .constant('MOMENT_DATETIME_FORMAT', 'YYYY-MM-DD HH:mm:ss')
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
@@ -9,9 +10,9 @@ angular.module('katGui.util')
             return JSON.prettify.prettyPrint(input);
         };
     })
-    .filter('utcDateFromUnix', function(DATETIME_FORMAT) {
+    .filter('utcDateFromUnix', function(MOMENT_DATETIME_FORMAT) {
         return function(input) {
-            return moment.utc(input, 'X').format(DATETIME_FORMAT);
+            return moment.utc(input, 'X').format(MOMENT_DATETIME_FORMAT);
         };
     })
     .directive('postNgRepeatLoadMore', function($timeout) {

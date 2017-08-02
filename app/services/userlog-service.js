@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, NotifyService, $mdDialog, $sce) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, NotifyService, $mdDialog, $sce, MOMENT_DATETIME_FORMAT, DATETIME_FORMAT) {
 
         function urlBase() {
             return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/userlogs' : '';
@@ -402,7 +402,7 @@
                         $scope.tagsChanged(true);
 
                         $scope.verifyDateTimeString = function (input) {
-                            return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
+                            return moment.utc(input, MOMENT_DATETIME_FORMAT, true).isValid();
                         };
 
                         $scope.verifyDateTimeInputs = function () {
@@ -496,7 +496,7 @@
                         };
 
                         $scope.onTimeSet = function (value, attribute) {
-                            $scope[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm:ss');
+                            $scope[attribute] = $filter('date')(value, DATETIME_FORMAT);
                             if (!$scope.end_time || $scope.start_time <= $scope.end_time) {
                                 $scope.endDateTimeError = false;
                             } else {

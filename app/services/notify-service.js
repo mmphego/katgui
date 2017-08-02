@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .factory('NotifyService', NotifyService);
 
-    function NotifyService($rootScope, $mdDialog, $mdToast, $log, $q, $timeout, SensorsService, ConfigService, DATETIME_FORMAT) {
+    function NotifyService($rootScope, $mdDialog, $mdToast, $log, $q, $timeout, SensorsService, ConfigService, MOMENT_DATETIME_FORMAT) {
 
         var api = {};
         api.toastPosition = 'bottom right';
@@ -283,8 +283,8 @@
                                 $scope.sensors[sensorName] = {name: sensorName};
                                 $scope.sensors[sensorName].value = sensor.value;
                                 $scope.sensors[sensorName].status = sensor.status;
-                                $scope.sensors[sensorName].timestamp = moment.utc(sensor.timestamp, 'X').format(DATETIME_FORMAT);
-                                $scope.sensors[sensorName].received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(DATETIME_FORMAT);
+                                $scope.sensors[sensorName].timestamp = moment.utc(sensor.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
+                                $scope.sensors[sensorName].received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                             }
                         });
 

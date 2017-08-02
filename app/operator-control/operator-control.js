@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $state, $interval, $log, USER_ROLES, DATETIME_FORMAT, ReceptorStateService,
+    function OperatorControlCtrl($rootScope, $scope, $state, $interval, $log, USER_ROLES, MOMENT_DATETIME_FORMAT, ReceptorStateService,
                                  KatGuiUtil, ControlService, NotifyService, ConfigService, SensorsService) {
 
         var vm = this;
@@ -68,7 +68,7 @@
                         }
                         var lastUpdateValue;
                         if (lastUpdate) {
-                            lastUpdateValue = moment(lastUpdate, 'X').format(DATETIME_FORMAT);
+                            lastUpdateValue = moment(lastUpdate, 'X').format(MOMENT_DATETIME_FORMAT);
                         }
                         SensorsService.setSensorStrategies(vm.sensorsToConnectRegex, 'event-rate', 1, 360);
                         vm.receptorsData.push({
