@@ -560,7 +560,7 @@
 
             } else if ($stateParams.startTime && $stateParams.endTime) {
                 NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
-                    'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be HH:mm:ss DD-MM-YYYY.');
+                    'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be ' + MOMENT_DATETIME_FORMAT);
             }
         }, 1000);
 

@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SbDraftsCtrl', SbDraftsCtrl);
 
-    function SbDraftsCtrl($mdDialog, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, NotifyService, $rootScope) {
+    function SbDraftsCtrl($mdDialog, $scope, ObsSchedService, SCHEDULE_BLOCK_TYPES, $log, NotifyService, $rootScope, MOMENT_DATETIME_FORMAT) {
 
         var vm = this;
         vm.selectedScheduleDraft = null;
@@ -80,7 +80,7 @@
         };
 
         vm.onTimeSet = function (newDate) {
-            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format('YYYY-MM-DD HH:mm:ss');
+            $scope.filteredDraftItems[vm.currentRowDatePickerIndex].desired_start_time = moment(newDate).format(MOMENT_DATETIME_FORMAT);
             $scope.filteredDraftItems[vm.currentRowDatePickerIndex].isDirty = true;
             vm.showDatePicker = false;
             vm.currentSelectedDate = moment.utc(newDate);
@@ -132,7 +132,7 @@
         };
 
         vm.validateInputDate = function (item) {
-            var d = moment(item.desired_start_time, 'YYYY-MM-DD HH:mm:ss');
+            var d = moment(item.desired_start_time, MOMENT_DATETIME_FORMAT);
             item.hasValidInput = d.isValid();
             return d.isValid();
         };
