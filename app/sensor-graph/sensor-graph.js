@@ -15,7 +15,7 @@
         vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
         vm.sensorEndDatetime = new Date(new Date().getTime());
         vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
-        vm.sensorSearchNames = null;
+        vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
         vm.showTips = false;

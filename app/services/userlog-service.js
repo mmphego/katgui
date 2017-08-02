@@ -41,7 +41,9 @@
                 function (result) {
                     if (result && result.data) {
                         result.data.forEach(function (userlog) {
-                            api.userlogs.push(api.populateUserlogTagsFromMap(userlog));
+                            if (_.findIndex(api.userlogs, {id: userlog.id}) === -1) {
+                                api.userlogs.push(api.populateUserlogTagsFromMap(userlog));
+                            }
                         });
                         deferred.resolve(result.data);
                     } else {

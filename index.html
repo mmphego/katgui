@@ -7,6 +7,14 @@
     <meta charset="utf-8">
     <link rel="icon" type="image/png" href="images/favicon.ico" sizes="32x32">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
+    <script>
+        //backwards compatibility to allow for linking with the old #/ in the url
+        // with html5 mode the angular hashbang is removed
+        if (window.location.href.indexOf('#/') > -1) {
+            var splitHref = window.location.href.split('#/');
+            window.location.href = splitHref[0] + splitHref[1];
+        }
+    </script>
 </head>
 
 <body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="row" ng-cloak>
