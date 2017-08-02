@@ -29,7 +29,7 @@
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [api.guid, pattern],
+                'params': ['sensor', pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -48,7 +48,7 @@
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [api.guid, pattern],
+                'params': ['sensor', pattern],
                 'id': 'sensors' + KatGuiUtil.generateUUID()
             };
 
@@ -65,7 +65,7 @@
             if (api.connection && api.connection.readyState) {
                 $log.info('Sensors Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
-                api.subscribe('*');
+                // api.subscribe('>');
                 api.connected = true;
             }
         };
@@ -93,41 +93,50 @@
             if (e && e.data) {
                 var messages = JSON.parse(e.data);
                 if (messages.error) {
-                    $log.error('There was an error sending a jsonrpc request:');
-                    $log.error(messages);
-                } else if (messages.result.msg_channel && messages.result.msg_channel.endsWith('katstore_error')) {
-                    $rootScope.$emit('sensorServiceMessageError', messages.result);
-                } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
-                    if (messages.id === 'redis-pubsub') {
-                        var arrayResult = [];
-                        arrayResult.push({
-                            msg_data: messages.result.msg_data,
-                            msg_channel: messages.result.msg_channel
-                        });
-                        messages.result = arrayResult;
-                    }
-                    messages.result.forEach(function (message) {
-                        var messageObj = message;
-                        if (_.isString(message)) {
-                            messageObj = JSON.parse(message);
-                        }
-                        if (messageObj.msg_channel) {
-                            $rootScope.$emit('sensorsServerUpdateMessage', {
-                                name: messageObj.msg_channel,
-                                value: messageObj.msg_data
-                            });
-                        } else {
-                            $log.error('Dangling Sensors message...');
-                            $log.error(messageObj);
-                        }
-                    });
-                } else if (messages.result) {
-                    $log.debug('Subscribed to: ' + JSON.stringify(messages.result));
-                    $rootScope.$emit('setSensorStrategyMessage', messages.result);
+                    console.log(messages.error);
                 } else {
-                    $log.error('Dangling sensors message...');
-                    $log.error(e);
+                    for (var i = 0; i < messages.length; i++) {
+                        $rootScope.$emit('sensorsServerUpdateMessage', messages[i]);
+                    }
                 }
+
+                // var messages = JSON.parse(e.data);
+                // if (messages.error) {
+                //     $log.error('There was an error sending a jsonrpc request:');
+                //     $log.error(messages);
+                // } else if (messages.result.msg_channel && messages.result.msg_channel.endsWith('katstore_error')) {
+                //     $rootScope.$emit('sensorServiceMessageError', messages.result);
+                // } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
+                //     if (messages.id === 'redis-pubsub') {
+                //         var arrayResult = [];
+                //         arrayResult.push({
+                //             msg_data: messages.result.msg_data,
+                //             msg_channel: messages.result.msg_channel
+                //         });
+                //         messages.result = arrayResult;
+                //     }
+                //     messages.result.forEach(function (message) {
+                //         var messageObj = message;
+                //         if (_.isString(message)) {
+                //             messageObj = JSON.parse(message);
+                //         }
+                //         if (messageObj.msg_channel) {
+                //             $rootScope.$emit('sensorsServerUpdateMessage', {
+                //                 name: messageObj.msg_channel,
+                //                 value: messageObj.msg_data
+                //             });
+                //         } else {
+                //             $log.error('Dangling Sensors message...');
+                //             $log.error(messageObj);
+                //         }
+                //     });
+                // } else if (messages.result) {
+                //     $log.debug('Subscribed to: ' + JSON.stringify(messages.result));
+                //     $rootScope.$emit('setSensorStrategyMessage', messages.result);
+                // } else {
+                //     $log.error('Dangling sensors message...');
+                //     $log.error(e);
+                // }
             } else {
                 $log.error('Dangling sensors message...');
                 $log.error(e);
@@ -165,7 +174,7 @@
 
         api.disconnectListener = function () {
             if (api.connection) {
-                api.unsubscribe('*');
+                api.unsubscribe('>');
                 $log.info('Disconnecting Sensors Connection.');
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);

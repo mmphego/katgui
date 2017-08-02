@@ -84,11 +84,12 @@
             }
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                SensorsService.setSensorStrategies(
-                    '^' + vm.resourceSensorsBeingDisplayed + '_*',
-                    $rootScope.sensorListStrategyType,
-                    $rootScope.sensorListStrategyInterval,
-                    360);
+                SensorsService.subscribe(vm.resourceSensorsBeingDisplayed + '.>');
+                // SensorsService.setSensorStrategies(
+                //     vm.resourceSensorsBeingDisplayed,
+                //     $rootScope.sensorListStrategyType,
+                //     $rootScope.sensorListStrategyInterval,
+                //     360);
             }
         };
 
@@ -116,7 +117,8 @@
             }
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                SensorsService.removeSensorStrategies('^' + vm.resourceSensorsBeingDisplayed + '*');
+                SensorsService.unsubscribe(vm.resourceSensorsBeingDisplayed + '.>');
+                // SensorsService.removeSensorStrategies('^' + vm.resourceSensorsBeingDisplayed + '*');
                 vm.sensorsToDisplay = [];
             }
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
@@ -230,26 +232,32 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var strList = sensor.name.split(':');
-            if (vm.sensorValues[strList[1]]) {
-                vm.sensorValues[strList[1]].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
-                vm.sensorValues[strList[1]].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
-                vm.sensorValues[strList[1]].status = sensor.value.status;
-                vm.sensorValues[strList[1]].value = sensor.value.value;
+            // if (vm.sensorValues[sensor.name]) {
+                sensor.name = sensor.name.split('.')[2];
+                sensor.timestamp = moment.utc(sensor.value_ts / 1000000, 'X').format(DATETIME_FORMAT);
+                sensor.received_timestamp = moment.utc(sensor.sample_ts / 1000000, 'X').format(DATETIME_FORMAT);
+                if (!vm.sensorValues[sensor.name]) {
+                    vm.sensorValues[sensor.name] = sensor;
+                    vm.sensorsToDisplay.push(sensor);
+                }
+                vm.sensorValues[sensor.name].received_timestamp = sensor.received_timestamp;
+                vm.sensorValues[sensor.name].timestamp = sensor.timestamp;
+                vm.sensorValues[sensor.name].status = sensor.status;
+                vm.sensorValues[sensor.name].value = sensor.value;
 
                 if (vm.sensorsPlotNames.length > 0 &&
                     _.findIndex(vm.sensorsPlotNames,
                         function (item) {
-                            return item.name === strList[1];
+                            return item.name === sensor.name;
                         }) > -1) {
                     vm.redrawChart([{
-                        sensor: strList[1],
-                        value_ts: sensor.value.timestamp * 1000,
-                        sample_ts: sensor.value.received_timestamp * 1000,
-                        value: sensor.value.value
+                        sensor: sensor.name,
+                        value_ts: sensor.value_ts * 1000,
+                        sample_ts: sensor.received_timestamp * 1000,
+                        value: sensor.value
                     }]);
                 }
-            }
+            // }
         });
 
         vm.showOptionsChanged = function () {
