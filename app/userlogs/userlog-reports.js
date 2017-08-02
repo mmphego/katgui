@@ -128,11 +128,12 @@
                 var filterTagsList = vm.filterTags.map(function (tag) {
                     return tag.id;
                 }).join(',');
-                $state.go('userlog-reports', {
+                $state.go('userlog-report', {
                         startTime: vm.startDatetimeReadable,
                         endTime: vm.endDatetimeReadable,
                         tagIds: filterTagsList? filterTagsList : ',',
-                        filter: vm.searchInputText},
+                        filter: vm.searchInputText,
+                        matchAllTags: vm.andTagFiltering},
                         { notify: false, reload: false });
                 vm.reportUserlogs = [];
                 var query = "?";
@@ -182,6 +183,7 @@
                         vm.endTime = endTimeParam.toDate();
                         vm.startDatetimeReadable = $stateParams.startTime;
                         vm.endDatetimeReadable = $stateParams.endTime;
+                        vm.andTagFiltering = $stateParams.matchAllTags === 'true';
                         var query = "?";
                         query += "start_time=" + vm.startDatetimeReadable + "&";
                         query += "end_time=" +  vm.endDatetimeReadable;

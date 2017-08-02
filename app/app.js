@@ -691,6 +691,38 @@
                 filter: {
                     value: null,
                     squash: true
+                },
+                matchAllTags: {
+                    value: null,
+                    squash: true
+                }
+            },
+            title: 'User Log Reports'
+        });
+        $stateProvider.state('userlog-report', {
+            url: '/userlog-report?startTime&endTime&tagIds&filter&matchAllTags',
+            templateUrl: 'app/userlogs/userlog-reports.html',
+            //makes the params optional
+            params: {
+                startTime: {
+                    value: null,
+                    squash: true
+                },
+                endTime: {
+                    value: null,
+                    squash: true
+                },
+                tagIds: {
+                    value: null,
+                    squash: true
+                },
+                filter: {
+                    value: null,
+                    squash: true
+                },
+                matchAllTags: {
+                    value: null,
+                    squash: true
                 }
             },
             title: 'User Log Reports'
