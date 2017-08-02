@@ -1,25 +1,26 @@
-(function () {
+(function() {
     "use strict";
 
     angular.module('katGui', ['ngMaterial', 'ngMessages',
-        'ui.bootstrap',
-        'ui.router',
-        // 'ui.utils',
-        'ngAnimate', 'katGui.services',
-        'katGui.admin',
-        'katGui.alarms',
-        'katGui.config',
-        'katGui.d3',
-        'katGui.health',
-        'katGui.widgets',
-        'katGui.landing',
-        'katGui.util',
-        'katGui.scheduler',
-        'katGui.services',
-        'katGui.video'])
-    .config(configureKatGui)
-    .run(runKatGui)
-    .controller('ApplicationCtrl', ApplicationCtrl);
+            'ui.bootstrap',
+            'ui.router',
+            // 'ui.utils',
+            'ngAnimate', 'katGui.services',
+            'katGui.admin',
+            'katGui.alarms',
+            'katGui.config',
+            'katGui.d3',
+            'katGui.health',
+            'katGui.widgets',
+            'katGui.landing',
+            'katGui.util',
+            'katGui.scheduler',
+            'katGui.services',
+            'katGui.video'
+        ])
+        .config(configureKatGui)
+        .run(runKatGui)
+        .controller('ApplicationCtrl', ApplicationCtrl);
 
     angular.module('katGui').constant('UI_VERSION', '0.0.1')
         .constant('USER_ROLES', {
@@ -31,8 +32,7 @@
             read_only: "read_only",
             expert: "expert"
         })
-        .constant('THEMES', [
-            {
+        .constant('THEMES', [{
                 name: 'Blue-Grey',
                 primary: 'blue-grey',
                 secondary: 'deep-purple',
@@ -55,15 +55,16 @@
                 primary: 'dark',
                 secondary: 'dark-secondary',
                 primaryButtons: 'dark-buttons'
-            }]);
+            }
+        ]);
 
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, $q, THEMES,
-                             AlarmsService, ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
-                             CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService,
-                             MOMENT_DATETIME_FORMAT) {
+        AlarmsService, ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
+        CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService,
+        MOMENT_DATETIME_FORMAT) {
         var vm = this;
 
-        var theme = _.find(THEMES, function (theme) {
+        var theme = _.find(THEMES, function(theme) {
             return $localStorage['selectedTheme'] === theme.name;
         });
         if (!theme) {
@@ -82,7 +83,7 @@
         $rootScope.connectedToMonitor = true;
 
         $rootScope.devMode = window.location.host.startsWith('localhost');
-        $rootScope.portalUrl = $rootScope.devMode? $localStorage.devModePortalURL : window.location.origin;
+        $rootScope.portalUrl = $rootScope.devMode ? $localStorage.devModePortalURL : window.location.origin;
         if ($rootScope.portalUrl === 'http://') {
             $rootScope.portalUrl = '';
         }
@@ -100,15 +101,15 @@
 
         SessionService.recoverLogin();
 
-        $rootScope.getSystemConfig = function (forceConfig) {
+        $rootScope.getSystemConfig = function(forceConfig) {
             var deferred = $q.defer();
             if ($rootScope.systemConfig && !forceConfig) {
-                $timeout(function () {
+                $timeout(function() {
                     deferred.resolve($rootScope.systemConfig);
                 }, 1);
             } else {
                 ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
-                ConfigService.getSystemConfig(forceConfig).then(function (systemConfig) {
+                ConfigService.getSystemConfig(forceConfig).then(function(systemConfig) {
                     $rootScope.systemConfig = systemConfig;
                     StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
                     if (systemConfig.vds && systemConfig.vds.vds_source) {
@@ -117,7 +118,7 @@
                     $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
                     $rootScope.confConnectionError = null;
                     deferred.resolve($rootScope.systemConfig);
-                }, function (error) {
+                }, function(error) {
                     if ($rootScope.portalUrl) {
                         $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
                     } else {
@@ -127,7 +128,7 @@
                     if (vm.getSystemConfigTimeout) {
                         $timeout.cancel(vm.getSystemConfigTimeout);
                     }
-                    vm.getSystemConfigTimeout = $timeout(function () {
+                    vm.getSystemConfigTimeout = $timeout(function() {
                         $rootScope.getSystemConfig(forceConfig);
                     }, 10000);
                 });
@@ -135,7 +136,7 @@
             return deferred.promise;
         };
 
-        vm.initApp = function () {
+        vm.initApp = function() {
             vm.showNavbar = true;
             $rootScope.showDate = $localStorage['showDate'];
             $rootScope.showDayOfYear = $localStorage['showDayOfYear'];
@@ -193,11 +194,11 @@
             }
             vm.updateTimeDisplayInterval = $interval(vm.updateTimeDisplay, 500);
             ConfigService.getSiteLocation()
-                .then(function (result) {
+                .then(function(result) {
                     var trimmedResult = result.data.replace(/"/g, '');
                     $rootScope.longitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[1]);
                     $rootScope.latitude = KatGuiUtil.degreesToFloat(trimmedResult.split(',')[0]);
-                }, function (error) {
+                }, function(error) {
                     $log.error("Could not retrieve site location from config server, LST will not display correctly. ");
                     $log.error(error);
                 });
@@ -210,7 +211,7 @@
             ConfigService.getConfigHealthViews().then(
                 function(result) {
                     $rootScope.configHealthViews = [];
-                    _.each(result.data, function (value, key, obj) {
+                    _.each(result.data, function(value, key, obj) {
                         $rootScope.configHealthViews.push(key);
                     });
                 },
@@ -219,14 +220,14 @@
                 });
         };
 
-        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function() {
             vm.showNavbar = true;
             vm.initApp();
         });
 
-        $rootScope.connectEvents = function (reconnecting) {
+        $rootScope.connectEvents = function(reconnecting) {
             MonitorService.connectListener()
-                .then(function () {
+                .then(function() {
                     if ($rootScope.connectedToMonitor) {
                         if (reconnecting && $rootScope.currentStateName().startsWith('sched')) {
                             MonitorService.subscribe('sched');
@@ -240,77 +241,77 @@
                     } else {
                         $timeout($rootScope.connectEvents, 3000);
                     }
-                }, function () {
+                }, function() {
                     $log.error('Could not establish Monitor connection. Retrying again in 3 seconds.');
                     $timeout($rootScope.connectEvents, 3000);
                 });
             vm.handleMonitorSocketTimeout();
         };
-        vm.toggleNavbar = function () {
+        vm.toggleNavbar = function() {
             vm.showNavbar = !vm.showNavbar;
         };
-        vm.handleMonitorSocketTimeout = function () {
+        vm.handleMonitorSocketTimeout = function() {
             MonitorService.getTimeoutPromise()
-                .then(function () {
+                .then(function() {
                     if (!vm.disconnectIssued) {
                         $log.info('Monitor connection timeout! Attempting to reconnect...');
-                        $timeout(function () {
+                        $timeout(function() {
                             $rootScope.connectEvents(true);
                         }, 3000);
                     }
                 });
         };
-        vm.toggleLeftSidenav = function () {
+        vm.toggleLeftSidenav = function() {
             $mdSidenav('left-sidenav').toggle();
         };
-        vm.toggleRightSidenav = function () {
+        vm.toggleRightSidenav = function() {
             $mdSidenav('right-sidenav').toggle();
         };
-        vm.checkAllowedRole = function (role) {
+        vm.checkAllowedRole = function(role) {
             return role !== 'user_admin' && role !== $rootScope.currentUser.req_role;
         };
-        $rootScope.logout = function () {
+        $rootScope.logout = function() {
             vm.disconnectIssued = true;
             MonitorService.disconnectListener();
             $mdSidenav('right-sidenav').close();
             SessionService.logout();
             vm.showNavbar = false;
         };
-        $rootScope.stateGo = function (newState, params) {
+        $rootScope.stateGo = function(newState, params) {
             $state.go(newState, params);
         };
-        vm.sideNavStateGo = function (newState, params) {
+        vm.sideNavStateGo = function(newState, params) {
             $rootScope.stateGo(newState, params);
             $mdSidenav('left-sidenav').close();
         };
-        vm.sideNavRightStateGo = function (newState) {
+        vm.sideNavRightStateGo = function(newState) {
             $rootScope.stateGo(newState);
             $mdSidenav('right-sidenav').close();
         };
-        $rootScope.currentStateTitle = function () {
+        $rootScope.currentStateTitle = function() {
             return $state.current.title;
         };
-        $rootScope.currentStateName = function () {
+        $rootScope.currentStateName = function() {
             return $state.current.name;
         };
-        vm.navigateToParentState = function () {
+        vm.navigateToParentState = function() {
             if ($state.current.parent) {
                 $state.go($state.current.parent.name);
             } else {
                 $state.go('home');
             }
         };
-        vm.loginAs = function (role) {
+        vm.loginAs = function(role) {
             SessionService.verifyAs(role);
         };
-        $rootScope.displayPromiseResult = function (result) {
+        $rootScope.displayPromiseResult = function(result) {
             if (result.result === 'ok') {
                 NotifyService.showSimpleToast(result.message);
             } else {
                 NotifyService.showSimpleDialog(result.result, result.message);
             }
         };
-        vm.updateTimeDisplay = function () {
+        vm.updateTimeDisplay = function() {
             if (MonitorService.lastSyncedTime && vm.showNavbar) {
                 //dont bother to update the gui if the diff is less than 0.66 seconds
                 //otherwise there can be stutter sometimes
@@ -345,36 +346,36 @@
                 }
             }
         };
-        $rootScope.objectKeys = function (obj) {
+        $rootScope.objectKeys = function(obj) {
             if (obj) {
                 return Object.keys(obj);
             } else {
                 return [];
             }
         };
-        $rootScope.openCentralLogger = function () {
+        $rootScope.openCentralLogger = function() {
             window.open('http://' + ConfigService.systemConfig.katportal.katlogwebserver).focus();
         };
-        $rootScope.openGangliaLink = function () {
+        $rootScope.openGangliaLink = function() {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
         };
-        $rootScope.openUrlInNewTab = function (url) {
+        $rootScope.openUrlInNewTab = function(url) {
             window.open(url).focus();
         };
-        vm.openIRCDisplay = function ($event) {
+        vm.openIRCDisplay = function($event) {
             NotifyService.showPreDialog(
                 'IRC Information',
                 'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
                 $event);
         };
-        $rootScope.openSystemLogger = function () {
+        $rootScope.openSystemLogger = function() {
             if (ConfigService.GetKATLogFileServerURL()) {
                 window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/" + $rootScope.logNumberOfLines).focus();
             } else {
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
-        $rootScope.openKatsnifferLogger = function (logFileName) {
+        $rootScope.openKatsnifferLogger = function(logFileName) {
             if (ConfigService.GetKATLogFileServerURL()) {
                 window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
             } else {
@@ -383,7 +384,7 @@
         };
 
         //todo material milestone v0.12 will have an option to not close menu when an item is clicked
-        $rootScope.openMenu = function ($mdOpenMenu, $event, menuContentId) {
+        $rootScope.openMenu = function($mdOpenMenu, $event, menuContentId) {
             var menu = $mdOpenMenu($event);
             $timeout(function() {
                 var menuContent = document.getElementById(menuContentId);
@@ -400,12 +401,12 @@
         };
 
         //so that all controllers and directives has access to which keys are pressed
-        document.onkeydown = function (event) {
+        document.onkeydown = function(event) {
             event = event || window.event;
             $rootScope.$emit('keydown', event.keyCode);
         };
 
-        $scope.$on('$destroy', function () {
+        $scope.$on('$destroy', function() {
             MonitorService.disconnectListener();
             vm.unbindLoginSuccess();
             if (vm.updateTimeDisplayInterval) {
@@ -415,12 +416,12 @@
     }
 
     function configureKatGui($stateProvider, $urlRouterProvider, $compileProvider, $mdThemingProvider,
-                             $httpProvider, $urlMatcherFactoryProvider, $locationProvider, $mdAriaProvider) {
+        $httpProvider, $urlMatcherFactoryProvider, $locationProvider, $mdAriaProvider) {
 
         $urlMatcherFactoryProvider.strictMode(false);
         //disable this in production for performance boost
         //batarang uses this for scope inspection
-        if (window.location.host !== 'localhost:8000') {
+        if (!window.location.host.startsWith('localhost')) {
             $compileProvider.debugInfoEnabled(false);
         } else {
             $httpProvider.defaults.useXDomain = true;
@@ -471,7 +472,10 @@
             templateUrl: 'app/health/config-health-view/config-health-view.html',
             title: 'Config Health',
             params: {
-                configItem: { value: null, squash: true }
+                configItem: {
+                    value: null,
+                    squash: true
+                }
             },
         });
         $stateProvider.state('subarrayHealth', {
@@ -594,11 +598,26 @@
             title: 'Sensor Graph',
             //makes the params optional
             params: {
-                startTime: { value: null, squash: true },
-                endTime: { value: null, squash: true },
-                interval: { value: null, squash: true },
-                sensors: { value: null, squash: true },
-                discrete: { value: null, squash: true }
+                startTime: {
+                    value: null,
+                    squash: true
+                },
+                endTime: {
+                    value: null,
+                    squash: true
+                },
+                interval: {
+                    value: null,
+                    squash: true
+                },
+                sensors: {
+                    value: null,
+                    squash: true
+                },
+                discrete: {
+                    value: null,
+                    squash: true
+                }
             },
             noAuth: true
         });
@@ -608,9 +627,18 @@
             title: 'Sensor List',
             //makes the params optional
             params: {
-                component: { value: null, squash: true },
-                filter: { value: null, squash: true },
-                hideNominal: { value: null, squash: true }
+                component: {
+                    value: null,
+                    squash: true
+                },
+                filter: {
+                    value: null,
+                    squash: true
+                },
+                hideNominal: {
+                    value: null,
+                    squash: true
+                }
             },
         });
         $stateProvider.state('sensor-groups', {
@@ -648,10 +676,22 @@
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
-                startTime: { value: null, squash: true },
-                endTime: { value: null, squash: true },
-                tagIds: { value: null, squash: true },
-                filter: { value: null, squash: true }
+                startTime: {
+                    value: null,
+                    squash: true
+                },
+                endTime: {
+                    value: null,
+                    squash: true
+                },
+                tagIds: {
+                    value: null,
+                    squash: true
+                },
+                filter: {
+                    value: null,
+                    squash: true
+                }
             },
             title: 'User Log Reports'
         });
@@ -660,9 +700,18 @@
             templateUrl: 'app/reports/utilisation-report.html',
             //makes the params optional
             params: {
-                startTime: { value: null, squash: true },
-                endTime: { value: null, squash: true },
-                filter: { value: null, squash: true }
+                startTime: {
+                    value: null,
+                    squash: true
+                },
+                endTime: {
+                    value: null,
+                    squash: true
+                },
+                filter: {
+                    value: null,
+                    squash: true
+                }
             },
             title: 'Utilisation Report'
         });
@@ -671,7 +720,7 @@
 
     function runKatGui($rootScope, $state, $localStorage, $log, $templateCache) {
 
-        $rootScope.$on('$stateChangeStart', function (event, toState) {
+        $rootScope.$on('$stateChangeStart', function(event, toState) {
             if (!toState.noAuth) {
                 if (!$rootScope.loggedIn && toState.name !== 'login') {
                     if (!$localStorage['currentUserToken']) {
@@ -689,12 +738,12 @@
         });
 
         $rootScope.$on('$routeChangeStart', function(event, next, current) {
-            if (typeof(current) !== 'undefined'){
+            if (typeof(current) !== 'undefined') {
                 $templateCache.remove(current.templateUrl);
             }
         });
 
-        $rootScope.$on('$stateChangeError', function (event) {
+        $rootScope.$on('$stateChangeError', function(event) {
             $log.error('$stateChangeError - debugging required. Event: ');
             $log.error(event);
         });
@@ -749,7 +798,9 @@
             .primaryPalette('amber')
             .accentPalette('blue');
 
-        $mdThemingProvider.definePalette('white', $mdThemingProvider.extendPalette('blue', {'400': 'ffffff'}));
+        $mdThemingProvider.definePalette('white', $mdThemingProvider.extendPalette('blue', {
+            '400': 'ffffff'
+        }));
         $mdThemingProvider.theme('white')
             .primaryPalette('white', {
                 'default': '400'

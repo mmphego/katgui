@@ -21,6 +21,7 @@ var insert = require('gulp-insert');
 var exec = require('child_process').exec;
 var del = require('del');
 var fs = require('fs');
+var replace = require('gulp-replace');
 var pkg = require('./package.json');
 
 var htmlminOptions = {
@@ -153,12 +154,19 @@ gulp.task('sounds', ['clean'], function () {
 var webserver = require('gulp-webserver');
 
 gulp.task('webserver', function() {
+    // for local webserver hosting we need to replace the base path to / so that the webserver
+    // can find all the other files correctly, but for production we need the base path to be
+    // /katgui/ so that we can enable html5 mode
+    gulp.src('index.html')
+        .pipe(replace('<base href="/katgui/">', '<base href="/">'))
+        .pipe(concat('localhostindex.html'))
+        .pipe(gulp.dest('.'));
+
     gulp.src('.')
         .pipe(webserver({
             livereload: true,
-            //directoryListing: true,
-            open: true,
-            fallback: 'index.html'
+            open: "http://localhost:8000/localhostindex.html",
+            fallback: 'localhostindex.html'
         }));
 });
 
