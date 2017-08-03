@@ -348,7 +348,7 @@
             }
         };
 
-        api.editUserLog = function (log, editMode, event) {
+        api.editUserLog = function (log, editMode, focusTarget, event) {
             var defer = $q.defer();
             $mdDialog
                 .show({
@@ -367,6 +367,24 @@
                         $scope.showInvalidTagsTooltip = false;
                         $scope.openedWithoutEndTime = log.end_time !== null && log.end_time.length > 0;
                         $scope.chipHasBeenAdded = false;
+                        $scope.focusTarget = focusTarget? focusTarget: 'userlogDialogStartTimeElement';
+
+                        $timeout(function () {
+                            var parentElement = document.querySelector('#' + focusTarget);
+                            var focusedChild = false;
+                            var childTargets = ['input', 'textarea'];
+                            for (var i = 0; i < childTargets.length; i++) {
+                                var childElement = parentElement.querySelector(childTargets[i]);
+                                if (childElement) {
+                                    childElement.focus();
+                                    focusedChild = true;
+                                    break;
+                                }
+                            }
+                            if (!focusedChild) {
+                                parentElement.focus();
+                            }
+                        }, 1250);
 
                         for (var i = 0; i < log.tags.length; i++) {
                             var existingTag = _.findWhere(api.tags, {id: log.tags[i].id});

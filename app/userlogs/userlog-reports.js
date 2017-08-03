@@ -49,7 +49,7 @@
             };
 
             vm.editUserLog = function (userlog, event) {
-                UserLogService.editUserLog(userlog, userlog.user.email === $rootScope.currentUser.email, event).then(
+                UserLogService.editUserLog(userlog, userlog.user.email === $rootScope.currentUser.email, 'userlogDialogContentElement', event).then(
                     function() {
                         vm.queryUserlogs();
                     });
@@ -128,7 +128,7 @@
                 var filterTagsList = vm.filterTags.map(function (tag) {
                     return tag.id;
                 }).join(',');
-                $state.go('userlog-report', {
+                $state.go('userlogs-report', {
                         startTime: vm.startDatetimeReadable,
                         endTime: vm.endDatetimeReadable,
                         tagIds: filterTagsList? filterTagsList : ',',

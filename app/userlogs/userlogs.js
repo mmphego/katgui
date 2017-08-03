@@ -18,7 +18,7 @@
         }])
         .controller('UserlogCtrl', UserlogCtrl);
 
-    function UserlogCtrl(MonitorService, $localStorage, $interval, $mdDialog, $scope, $rootScope,
+    function UserlogCtrl(MonitorService, $localStorage, $interval, $mdDialog, $scope, $rootScope, $stateParams,
                          $filter, $log, $timeout, UserLogService, MOMENT_DATETIME_FORMAT, DATETIME_FORMAT) {
 
         var vm = this;
@@ -215,7 +215,7 @@
         };
 
         vm.editUserLog = function (userlog, event) {
-            UserLogService.editUserLog(userlog, $rootScope.currentUser.id === userlog.user_id, event);
+            UserLogService.editUserLog(userlog, $rootScope.currentUser.id === userlog.user_id, 'userlogDialogContentElement', event);
         };
 
         vm.afterInit = function() {
@@ -232,6 +232,28 @@
                     vm.lastFutureQueryDayEnd = vm.lastFutureQueryDayEnd.add(1, 'M').add(1, 'd');
                     vm.lastFutureQueryDayTextEnd = vm.lastFutureQueryDayEnd.format('YYYY-MM-DD');
                 });
+                if ($stateParams.action === 'create') {
+                    var tags = [];
+                    var content = '';
+                    if ($stateParams.content) {
+                        content = $stateParams.content.replace(/\\n/g, '\n'); // preserve newlines
+                    }
+                    if ($stateParams.tags) {
+                        var tagNames = $stateParams.tags.split(',');
+                        tags = vm.tags.filter(function(tag) {
+                            return tagNames.indexOf(tag.name) > -1;
+                        });
+                    }
+                    var newUserLog = {
+                        start_time: $stateParams.startTime,
+                        end_time: $stateParams.endTime,
+                        tags: tags,
+                        user_id: $rootScope.currentUser.id,
+                        content: content,
+                        attachments: []
+                    };
+                    vm.editUserLog(newUserLog, event);
+                }
             });
         };
 

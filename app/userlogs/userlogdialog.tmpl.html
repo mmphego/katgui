@@ -7,7 +7,7 @@
         <div layout="row">
             <div layout="row" layout-align="start center" style="min-width: 180px; padding-top: 20px;">
                 <md-input-container md-is-error="!validStartTime" flex style="height: 36px; max-width: 135px; margin: 0; padding: 0;">
-                    <input md-autofocus ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
+                    <input id="userlogDialogStartTimeElement" ng-disabled="!editMode" flex type="text" ng-change="onTimeChange()"
                            data-ng-model="start_time" placeholder="Start Date"
                            title="Start Date 'yyyy-MM-dd HH:mm:ss'"/>
                 </md-input-container>
@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="md-whiteframe-z1" style="margin: 8px 0" flex>
-            <md-input-container md-is-error="content.length === 0" style="margin: 16px 0; min-height: 280px; max-height: 280px" class="md-block" flex>
+            <md-input-container id="userlogDialogContentElement" md-is-error="content.length === 0" style="margin: 16px 0; min-height: 280px; max-height: 280px" class="md-block" flex>
                 <label>Log Content</label>
                 <textarea style="overflow-y: scroll; resize: none; width: 100%; min-height: 280px; max-height: 280px; height: 280px" ng-disabled="!editMode" md-select-on-focus rows="10" md-maxlength="10000" ng-model="content"></textarea>
             </md-input-container>

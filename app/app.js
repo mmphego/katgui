@@ -621,6 +621,7 @@
             },
             noAuth: true
         });
+
         $stateProvider.state('sensor-list', {
             url: '/sensor-list?component&filter&hideNominal',
             templateUrl: 'app/sensor-list/sensor-list.html',
@@ -662,9 +663,31 @@
             title: 'Weather'
         });
         $stateProvider.state('userlogs', {
-            url: '/userlogs',
+            url: '/userlogs?action&id&startTime&endTime&tags&content',
             templateUrl: 'app/userlogs/userlogs.html',
-            title: 'User Logging'
+            title: 'User Logging',
+            //makes the params optional
+            params: {
+                action: {
+                    value: null,
+                    squash: true
+                }, id: {
+                    value: null,
+                    squash: true
+                }, startTime: {
+                    value: null,
+                    squash: true
+                }, endTime: {
+                    value: null,
+                    squash: true
+                }, tags: {
+                    value: null,
+                    squash: true
+                }, content: {
+                    value: null,
+                    squash: true
+                }
+            }
         });
         $stateProvider.state('userlog-tags', {
             url: '/userlog-tags',
@@ -699,8 +722,8 @@
             },
             title: 'User Log Reports'
         });
-        $stateProvider.state('userlog-report', {
-            url: '/userlog-report?startTime&endTime&tagIds&filter&matchAllTags',
+        $stateProvider.state('userlogs-report', {
+            url: '/userlogs-report?startTime&endTime&tagIds&filter&matchAllTags',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
