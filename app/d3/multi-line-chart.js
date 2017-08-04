@@ -17,6 +17,17 @@ angular.module('katGui.d3')
         replace: false,
         link: function(scope, element) {
 
+            var dateTimeFormat = d3.time.format.utc.multi([
+                [".%L", function(d) { return d.getUTCMilliseconds(); }],
+                [":%S", function(d) { return d.getUTCSeconds(); }],
+                ["%H:%M", function(d) { return d.getUTCMinutes(); }],
+                ["%Hh", function(d) { return d.getUTCHours(); }],
+                ["%a %d", function(d) { return d.getUTCDay() && d.getUTCDate() !== 1; }],
+                ["%b %d", function(d) { return d.getUTCDate() !== 1; }],
+                ["%B", function(d) { return d.getUTCMonth(); }],
+                ["%Y", function() { return true; }]
+            ]);
+
             scope.lockShowTooltip = false;
             var bgColor = angular.element(document.querySelector("md-content")).css('background-color');
             element.css({
@@ -318,7 +329,11 @@ angular.module('katGui.d3')
                 }
 
                 // define the axes
-                xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
+                xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .ticks(10)
+                    .tickFormat(dateTimeFormat);
 
                 yAxis = null;
                 if (scope.options.discreteSensors) {
