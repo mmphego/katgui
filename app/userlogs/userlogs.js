@@ -232,7 +232,7 @@
                     vm.lastFutureQueryDayEnd = vm.lastFutureQueryDayEnd.add(1, 'M').add(1, 'd');
                     vm.lastFutureQueryDayTextEnd = vm.lastFutureQueryDayEnd.format('YYYY-MM-DD');
                 });
-                if ($stateParams.action === 'create') {
+                if ($stateParams.action === 'add') {
                     var tags = [];
                     var content = '';
                     if ($stateParams.content) {
@@ -252,7 +252,51 @@
                         content: content,
                         attachments: []
                     };
-                    vm.editUserLog(newUserLog, event);
+                    // allow some time before showing the dialog to avoid the dialog overlay bugging out
+                    $timeout(function () {
+                        vm.editUserLog(newUserLog, event);
+                    }, 250);
+                } else if ($stateParams.action === 'edit' && $stateParams.id) {
+                    UserLogService.getUserLogById($stateParams.id).then(function (result) {
+                        var userlog = result.data;
+                        var content = userlog.content;
+                        var newTags = [];
+                        var userlogTags = [];
+
+                        if ($stateParams.tags) {
+                            var tagNames = $stateParams.tags.split(',');
+                            newTags = vm.tags.filter(function(tag) {
+                                return tagNames.indexOf(tag.name) > -1;
+                            });
+                        }
+                        if (userlog.tags) {
+                            var tagIds = JSON.parse(userlog.tags);
+                            userlogTags = vm.tags.filter(function(tag) {
+                                return tagIds.indexOf(tag.id) > -1;
+                            });
+                        }
+                        userlogTags.forEach(function (tag) {
+                            if (newTags.indexOf(tag) === -1) {
+                                newTags.push(tag);
+                            }
+                        });
+
+                        var start_time = $stateParams.startTime? $stateParams.startTime: userlog.start_time;
+                        var end_time = $stateParams.endTime? $stateParams.endTime: userlog.end_time;
+
+                        if ($rootScope.currentUser.id === userlog.user_id && $stateParams.content) {
+                            content = $stateParams.content.replace(/\\n/g, '\n'); // preserve newlines
+                        }
+                        userlog.content = content;
+                        userlog.start_time = start_time? start_time: '';
+                        userlog.end_time = end_time? end_time: '';
+                        userlog.tags = newTags? newTags: [];
+
+                        // allow some time before showing the dialog to avoid the dialog overlay bugging out
+                        $timeout(function () {
+                            vm.editUserLog(newUserLog, event);
+                        }, 250);
+                    });
                 }
             });
         };

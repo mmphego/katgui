@@ -231,6 +231,18 @@
             return defer.promise;
         };
 
+        api.getUserLogById = function (ulogId) {
+            var defer = $q.defer();
+            $http(createRequest('get', urlBase() + '/' + ulogId)).then(
+                function (result) {
+                    defer.resolve(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Error retrieving user log with id: " + ulogId, error);
+                    defer.reject(error);
+                });
+            return defer.promise;
+        };
+
         api.modifyUserLog = function (ulog) {
             var defer = $q.defer();
             var modifiedUserLog = {
@@ -365,6 +377,7 @@
                         $scope.validTags = true;
                         $scope.mandatoryTagsListString = api.mandatoryTagsListString;
                         $scope.showInvalidTagsTooltip = false;
+                        $scope.openedWithoutStartTime = log.start_time !== null && log.start_time.length > 0;
                         $scope.openedWithoutEndTime = log.end_time !== null && log.end_time.length > 0;
                         $scope.chipHasBeenAdded = false;
                         $scope.focusTarget = focusTarget? focusTarget: 'userlogDialogStartTimeElement';
@@ -426,7 +439,7 @@
                         };
 
                         $scope.verifyDateTimeInputs = function () {
-                            $scope.validStartTime = $scope.verifyDateTimeString($scope.start_time);
+                            $scope.validStartTime = $scope.verifyDateTimeString($scope.start_time) || $scope.start_time === '';
                             $scope.validEndTime = $scope.verifyDateTimeString($scope.end_time) || $scope.end_time === '';
                             return $scope.validStartTime && $scope.validEndTime;
                         };
