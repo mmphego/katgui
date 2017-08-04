@@ -787,12 +787,21 @@ angular.module('katGui.d3')
                         d1 = data.values[i];
                     var d;
 
-                    if (d0 && d0.date && d1 && d1.date) {
+                    var xTranslate, yTranslate, focusToolTip;
+                    if (scope.options.discreteSensors && d0) {
+                        d = d0;
+                        xTranslate = (x(d.date) + margin.left);
+                        yTranslate = (y(d.value) + margin.top);
+                        focusToolTip = d3.selectAll("." + data.key + "-tooltip");
+                        focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
+                        d.TooltipValue = d.value;
+                        tooltipValues.push(d);
+                    }
+                    else if (d0 && d0.date && d1 && d1.date) {
                         d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-                        var xTranslate = (x(d.date) + margin.left);
-                        var yTranslate = (y(d.value) + margin.top);
-
-                        var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
+                        xTranslate = (x(d.date) + margin.left);
+                        yTranslate = (y(d.value) + margin.top);
+                        focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                         focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
                         d.TooltipValue = d.value;
                         tooltipValues.push(d);
