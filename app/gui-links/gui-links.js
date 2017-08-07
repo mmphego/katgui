@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('GuiLinksCtrl', GuiLinksCtrl);
 
-    function GuiLinksCtrl($rootScope, $scope, $interval, $log, SensorsService, DATETIME_FORMAT, NotifyService, $timeout) {
+    function GuiLinksCtrl($rootScope, $scope, $interval, $log, SensorsService, MOMENT_DATETIME_FORMAT, NotifyService, $timeout) {
 
         var vm = this;
 
@@ -58,7 +58,7 @@
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             sensor.value.name = sensor.name.split(':')[1];
-            sensor.value.date = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+            sensor.value.date = moment.utc(sensor.value.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
             try {
                 sensor.value.value = JSON.parse(sensor.value.value);
                 vm.sensorValues[sensor.value.name] = sensor.value;

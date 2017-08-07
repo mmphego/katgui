@@ -4,7 +4,7 @@
         .controller('ActivityCtrl', ActivityCtrl);
 
     function ActivityCtrl($scope, $rootScope, $timeout, $log, $interval, $mdDialog, ObsSchedService, MonitorService,
-        UserLogService, SensorsService, NotifyService, DataService, $localStorage) {
+        UserLogService, SensorsService, NotifyService, DataService, $localStorage, MOMENT_DATETIME_FORMAT) {
 
         //TODO refactor so that the x-axis is adjusted at the same time for all timelines
         //TODO include sensor names in url
@@ -139,11 +139,11 @@
 
         vm.addUserLogsToTimeline = function(userlogs) {
             userlogs.forEach(function(userlog) {
-                userlog.start = moment.utc(userlog.start_time, "YYYY-MM-DD HH:mm:ss").toDate();
+                userlog.start = moment.utc(userlog.start_time, MOMENT_DATETIME_FORMAT).toDate();
                 if (userlog.end_time) {
-                    userlog.end = moment.utc(userlog.end_time, "YYYY-MM-DD HH:mm:ss").toDate();
+                    userlog.end = moment.utc(userlog.end_time, MOMENT_DATETIME_FORMAT).toDate();
                 } else {
-                    userlog.end = moment.utc(userlog.start_time, "YYYY-MM-DD HH:mm:ss").add(4, 'm').add(30, 's').toDate();
+                    userlog.end = moment.utc(userlog.start_time, MOMENT_DATETIME_FORMAT).add(4, 'm').add(30, 's').toDate();
                 }
                 if (userlog.start > userlog.end) {
                     var newEnd = userlog.start;
@@ -190,8 +190,8 @@
             ObsSchedService.getScheduledScheduleBlocks().then(function(scheduleData) {
                 vm.addSbsToTimeline(scheduleData);
             });
-            var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').format('YYYY-MM-DD HH:mm:ss'),
-                endDate = moment.utc($rootScope.utcDate).add(15, 'm').format('YYYY-MM-DD HH:mm:ss');
+            var startDate = moment.utc($rootScope.utcDate).subtract(45, 'm').format(MOMENT_DATETIME_FORMAT),
+                endDate = moment.utc($rootScope.utcDate).add(15, 'm').format(MOMENT_DATETIME_FORMAT);
             UserLogService.listTags().then(function() {
                 UserLogService.listUserLogsForTimeRange(startDate, endDate).then(function(result) {
                     if (result) {

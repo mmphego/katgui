@@ -3,7 +3,7 @@
     angular.module('katGui.services', ['katGui.util', 'ngStorage'])
         .service('AlarmsService', AlarmsService);
 
-    function AlarmsService($rootScope, ConfigService, SoundService, NotifyService) {
+    function AlarmsService($rootScope, ConfigService, SoundService, NotifyService, MOMENT_DATETIME_FORMAT) {
 
         var api = {};
         api.alarmsData = [];
@@ -24,7 +24,7 @@
             messageObj.severity = alarmValues[0];
             messageObj.priority = alarmValues[1];
             messageObj.name = messageName.replace('alarms:kataware_alarm_', '');
-            messageObj.date = moment.utc(messageObj.timestamp, 'X').format('DD-MM-YYYY HH:mm:ss');
+            messageObj.date = moment.utc(messageObj.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
 
             var severity_value =
                 alarmValues[0] === 'critical'? 0 :
