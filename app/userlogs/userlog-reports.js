@@ -4,10 +4,9 @@
         .controller('UserlogReportsCtrl', UserlogReportsCtrl);
 
         function UserlogReportsCtrl($rootScope, $scope, $localStorage, $filter, UserLogService,
-                                    $log, $stateParams, NotifyService, $timeout, $state) {
+                                    $log, $stateParams, NotifyService, $timeout, $state, MOMENT_DATETIME_FORMAT) {
 
             var vm = this;
-            var DATETIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
             vm.startTime = new Date();
             vm.endTime = vm.startTime;
             vm.startDatetimeReadable = moment(vm.startTime.getTime()).format('YYYY-MM-DD 00:00:00');
@@ -31,11 +30,11 @@
             ];
 
             vm.onStartTimeSet = function () {
-                vm.startDatetimeReadable = moment(vm.startTime.getTime()).format(DATETIME_FORMAT);
+                vm.startDatetimeReadable = moment(vm.startTime.getTime()).format(MOMENT_DATETIME_FORMAT);
             };
 
             vm.onEndTimeSet = function () {
-                vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(DATETIME_FORMAT);
+                vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(MOMENT_DATETIME_FORMAT);
             };
 
             vm.querySearch = function (query) {
@@ -50,7 +49,7 @@
             };
 
             vm.editUserLog = function (userlog, event) {
-                UserLogService.editUserLog(userlog, userlog.user.email === $rootScope.currentUser.email, event).then(
+                UserLogService.editUserLog(userlog, userlog.user.email === $rootScope.currentUser.email, 'userlogDialogContentElement', event).then(
                     function() {
                         vm.queryUserlogs();
                     });
@@ -59,7 +58,7 @@
             vm.exportPdf = function(){
                 vm.exportingPdf = true;
                 var pdf = new jsPDF('l', 'pt');
-                var exportTime = moment.utc().format(DATETIME_FORMAT);
+                var exportTime = moment.utc().format(MOMENT_DATETIME_FORMAT);
                 var query = "?start_time=" + vm.startDatetimeReadable + "&end_time=" + vm.endDatetimeReadable;
 
                 vm.filteredReportUserlogs.forEach(function (userlog) {
@@ -129,11 +128,12 @@
                 var filterTagsList = vm.filterTags.map(function (tag) {
                     return tag.id;
                 }).join(',');
-                $state.go('userlog-reports', {
+                $state.go('userlogs-report', {
                         startTime: vm.startDatetimeReadable,
                         endTime: vm.endDatetimeReadable,
                         tagIds: filterTagsList? filterTagsList : ',',
-                        filter: vm.searchInputText},
+                        filter: vm.searchInputText,
+                        matchAllTags: vm.andTagFiltering},
                         { notify: false, reload: false });
                 vm.reportUserlogs = [];
                 var query = "?";
@@ -176,13 +176,14 @@
                 });
                 UserLogService.getLogFiles();
                 $timeout(function () {
-                    var startTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
-                    var endTimeParam = moment($stateParams.startTime, DATETIME_FORMAT, true);
+                    var startTimeParam = moment($stateParams.startTime, MOMENT_DATETIME_FORMAT, true);
+                    var endTimeParam = moment($stateParams.startTime, MOMENT_DATETIME_FORMAT, true);
                     if (startTimeParam.isValid() && endTimeParam.isValid()) {
                         vm.startTime = startTimeParam.toDate();
                         vm.endTime = endTimeParam.toDate();
                         vm.startDatetimeReadable = $stateParams.startTime;
                         vm.endDatetimeReadable = $stateParams.endTime;
+                        vm.andTagFiltering = $stateParams.matchAllTags === 'true';
                         var query = "?";
                         query += "start_time=" + vm.startDatetimeReadable + "&";
                         query += "end_time=" +  vm.endDatetimeReadable;
@@ -195,7 +196,7 @@
                         });
                     } else if ($stateParams.startTime && $stateParams.endTime) {
                         NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
-                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be ' + DATETIME_FORMAT);
+                            'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be ' + MOMENT_DATETIME_FORMAT);
                     }
                 }, 1000);
             };

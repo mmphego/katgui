@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html ng-app="katGui">
 <head>
+    <base href="/katgui/">
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <link rel="icon" type="image/png" href="images/favicon.ico" sizes="32x32">
     <link href="app/app.less" type="text/css" rel="stylesheet/less">
-    <!-- <base href="/"> -->
+    <script data-remove="exclude">
+        //backwards compatibility to allow for linking with the old #/ in the url
+        // with html5 mode the angular hashbang is removed
+        if (window.location.href.indexOf('#/') > -1) {
+            var splitHref = window.location.href.split('#/');
+            window.location.href = splitHref[0] + splitHref[1];
+        }
+    </script>
 </head>
 
 <body ng-controller="ApplicationCtrl as vm" md-theme="{{themePrimary}}" md-theme-watch="true" layout="row" ng-cloak>
@@ -33,6 +41,7 @@
 <script src="node_modules/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="node_modules/ngstorage/ngStorage.js"></script>
 <script src="node_modules/angular-bootstrap-datetimepicker/src/js/datetimepicker.js"></script>
+<script src="node_modules/angular-bootstrap-datetimepicker/src/js/datetimepicker.templates.js"></script>
 <script src="node_modules/d3/d3.js"></script>
 <script src="node_modules/jspdf/dist/jspdf.min.js"></script>
 <script src="node_modules/jspdf-autotable/dist/jspdf.plugin.autotable.js"></script>
@@ -261,7 +270,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlog-reports')">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlogs-report')">
                         <md-button flex><span class="fa fa-file-pdf-o"></span><span>User Log Reports</span></md-button>
                     </md-item-content>
                 </md-item>

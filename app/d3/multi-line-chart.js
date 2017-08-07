@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-.directive('multiLineChart', function($rootScope, KatGuiUtil, DATETIME_FORMAT, $timeout, $log, $interval) {
+.directive('multiLineChart', function($rootScope, KatGuiUtil, MOMENT_DATETIME_FORMAT, $timeout, $log, $interval) {
     return {
         restrict: 'EA',
         scope: {
@@ -16,6 +16,17 @@ angular.module('katGui.d3')
         },
         replace: false,
         link: function(scope, element) {
+
+            var dateTimeFormat = d3.time.format.utc.multi([
+                [".%L", function(d) { return d.getUTCMilliseconds(); }],
+                [":%S", function(d) { return d.getUTCSeconds(); }],
+                ["%H:%M", function(d) { return d.getUTCMinutes(); }],
+                ["%Hh", function(d) { return d.getUTCHours(); }],
+                ["%a %d", function(d) { return d.getUTCDay() && d.getUTCDate() !== 1; }],
+                ["%b %d", function(d) { return d.getUTCDate() !== 1; }],
+                ["%B", function(d) { return d.getUTCMonth(); }],
+                ["%Y", function() { return true; }]
+            ]);
 
             scope.lockShowTooltip = false;
             var bgColor = angular.element(document.querySelector("md-content")).css('background-color');
@@ -318,7 +329,11 @@ angular.module('katGui.d3')
                 }
 
                 // define the axes
-                xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(10);
+                xAxis = d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    .ticks(10)
+                    .tickFormat(dateTimeFormat);
 
                 yAxis = null;
                 if (scope.options.discreteSensors) {
@@ -787,12 +802,21 @@ angular.module('katGui.d3')
                         d1 = data.values[i];
                     var d;
 
-                    if (d0 && d0.date && d1 && d1.date) {
+                    var xTranslate, yTranslate, focusToolTip;
+                    if (scope.options.discreteSensors && d0) {
+                        d = d0;
+                        xTranslate = (x(d.date) + margin.left);
+                        yTranslate = (y(d.value) + margin.top);
+                        focusToolTip = d3.selectAll("." + data.key + "-tooltip");
+                        focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
+                        d.TooltipValue = d.value;
+                        tooltipValues.push(d);
+                    }
+                    else if (d0 && d0.date && d1 && d1.date) {
                         d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-                        var xTranslate = (x(d.date) + margin.left);
-                        var yTranslate = (y(d.value) + margin.top);
-
-                        var focusToolTip = d3.selectAll("." + data.key + "-tooltip");
+                        xTranslate = (x(d.date) + margin.left);
+                        yTranslate = (y(d.value) + margin.top);
+                        focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                         focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
                         d.TooltipValue = d.value;
                         tooltipValues.push(d);
@@ -804,7 +828,7 @@ angular.module('katGui.d3')
                         html += "<div class='" + tooltipValues[i].sensor + "' style='display: flex'>";
                         html += "<i style='flex: 1 100%'>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + "</i>";
                         html += "<b style='margin-left: 8px; white-space: pre'> " + tooltipValues[i].TooltipValue + "</b>";
-                        html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span></div>";
+                        html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(MOMENT_DATETIME_FORMAT) + "</span></div>";
                         html += "</div>";
                     }
                     html += "";
@@ -842,9 +866,9 @@ angular.module('katGui.d3')
                             dataString += (sensorInfo.sample_ts * 1000) + ',';
                         } else {
                             if (includeValueTimestamp) {
-                                dataString += moment.utc(sensorInfo.value_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
+                                dataString += moment.utc(sensorInfo.value_ts).format(MOMENT_DATETIME_FORMAT) + ',';
                             }
-                            dataString += moment.utc(sensorInfo.sample_ts).format('YYYY-MM-DD HH:mm:ss.SSS') + ',';
+                            dataString += moment.utc(sensorInfo.sample_ts).format(MOMENT_DATETIME_FORMAT) + ',';
                         }
                         dataString += sensorValues.values[i].status + ',';
                         dataString += sensorValues.values[i].value;

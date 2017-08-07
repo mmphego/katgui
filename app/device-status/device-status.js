@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('DeviceStatusCtrl', DeviceStatusCtrl);
 
-    function DeviceStatusCtrl($rootScope, $scope, $interval, $log, KatGuiUtil, SensorsService, DATETIME_FORMAT,
+    function DeviceStatusCtrl($rootScope, $scope, $interval, $log, KatGuiUtil, SensorsService, MOMENT_DATETIME_FORMAT,
                               NotifyService) {
 
         var vm = this;
@@ -105,7 +105,7 @@
 
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             sensor.value.name = sensor.name.split(':')[1];
-            sensor.value.date = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+            sensor.value.date = moment.utc(sensor.value.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
             vm.sensorValues[sensor.value.name] = sensor.value;
             //note: manual sorting because we are using json as our datasource
             vm.setSensorsOrderBy(vm.sensorsOrderBy.value, true);

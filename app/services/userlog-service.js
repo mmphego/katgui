@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('UserLogService', UserLogService);
 
-    function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, NotifyService, $mdDialog, $sce) {
+    function UserLogService($http, $q, $rootScope, $window, $log, $filter, $timeout, NotifyService, $mdDialog, $sce, MOMENT_DATETIME_FORMAT, DATETIME_FORMAT) {
 
         function urlBase() {
             return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol/userlogs' : '';
@@ -41,7 +41,9 @@
                 function (result) {
                     if (result && result.data) {
                         result.data.forEach(function (userlog) {
-                            api.userlogs.push(api.populateUserlogTagsFromMap(userlog));
+                            if (_.findIndex(api.userlogs, {id: userlog.id}) === -1) {
+                                api.userlogs.push(api.populateUserlogTagsFromMap(userlog));
+                            }
                         });
                         deferred.resolve(result.data);
                     } else {
@@ -229,6 +231,18 @@
             return defer.promise;
         };
 
+        api.getUserLogById = function (ulogId) {
+            var defer = $q.defer();
+            $http(createRequest('get', urlBase() + '/' + ulogId)).then(
+                function (result) {
+                    defer.resolve(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Error retrieving user log with id: " + ulogId, error);
+                    defer.reject(error);
+                });
+            return defer.promise;
+        };
+
         api.modifyUserLog = function (ulog) {
             var defer = $q.defer();
             var modifiedUserLog = {
@@ -346,7 +360,7 @@
             }
         };
 
-        api.editUserLog = function (log, editMode, event) {
+        api.editUserLog = function (log, editMode, focusTarget, event) {
             var defer = $q.defer();
             $mdDialog
                 .show({
@@ -363,8 +377,27 @@
                         $scope.validTags = true;
                         $scope.mandatoryTagsListString = api.mandatoryTagsListString;
                         $scope.showInvalidTagsTooltip = false;
+                        $scope.openedWithoutStartTime = log.start_time !== null && log.start_time.length > 0;
                         $scope.openedWithoutEndTime = log.end_time !== null && log.end_time.length > 0;
                         $scope.chipHasBeenAdded = false;
+                        $scope.focusTarget = focusTarget? focusTarget: 'userlogDialogStartTimeElement';
+
+                        $timeout(function () {
+                            var parentElement = document.querySelector('#' + focusTarget);
+                            var focusedChild = false;
+                            var childTargets = ['input', 'textarea'];
+                            for (var i = 0; i < childTargets.length; i++) {
+                                var childElement = parentElement.querySelector(childTargets[i]);
+                                if (childElement) {
+                                    childElement.focus();
+                                    focusedChild = true;
+                                    break;
+                                }
+                            }
+                            if (!focusedChild) {
+                                parentElement.focus();
+                            }
+                        }, 1250);
 
                         for (var i = 0; i < log.tags.length; i++) {
                             var existingTag = _.findWhere(api.tags, {id: log.tags[i].id});
@@ -402,11 +435,11 @@
                         $scope.tagsChanged(true);
 
                         $scope.verifyDateTimeString = function (input) {
-                            return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
+                            return moment.utc(input, MOMENT_DATETIME_FORMAT, true).isValid();
                         };
 
                         $scope.verifyDateTimeInputs = function () {
-                            $scope.validStartTime = $scope.verifyDateTimeString($scope.start_time);
+                            $scope.validStartTime = $scope.verifyDateTimeString($scope.start_time) || $scope.start_time === '';
                             $scope.validEndTime = $scope.verifyDateTimeString($scope.end_time) || $scope.end_time === '';
                             return $scope.validStartTime && $scope.validEndTime;
                         };
@@ -496,7 +529,7 @@
                         };
 
                         $scope.onTimeSet = function (value, attribute) {
-                            $scope[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm:ss');
+                            $scope[attribute] = $filter('date')(value, DATETIME_FORMAT);
                             if (!$scope.end_time || $scope.start_time <= $scope.end_time) {
                                 $scope.endDateTimeError = false;
                             } else {
