@@ -73,7 +73,7 @@
             <i ng-show="vm.expandEntries" class="fa fa-minus-square-o"></i>
         </md-button>
     </md-toolbar>
-    <md-button style="border-bottom: 1px solid #d7d7d7" class="md-raised fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs"><i class="fa fa-caret-up" style="margin: 0 4px"></i>Fetch Logs for {{vm.lastFutureQueryDayTextStart}} to {{vm.lastFutureQueryDayTextEnd}}<i class="fa fa-caret-up" style="margin: 0 4px"></i></md-button>
+    <md-button class="fetch-more-logs-button" ng-click="vm.fetchMoreFutureLogs()" ng-disabled="vm.fetchingFutureLogs"><i class="fa fa-caret-up" style="margin: 0 4px"></i>Fetch Logs for {{vm.lastFutureQueryDayTextStart}} to {{vm.lastFutureQueryDayTextEnd}}<i class="fa fa-caret-up" style="margin: 0 4px"></i></md-button>
     <div flex class="md-whiteframe-z1" style="overflow: auto" id="userlogsContainer">
         <div ng-repeat="userlog in vm.userLogs | filter:vm.filterAfterNow | filter:vm.filterByTag | orderBy:vm.orderByValueFunction:vm.orderBy.reverse track by userlog.id"
             ng-mouseenter="userlog.showInlineEditButton = true" ng-mouseleave="userlog.showInlineEditButton = false" flex layout="column" class="user-log-row">
@@ -187,5 +187,5 @@
             </div>
         </div>
     </div>
-    <md-button class="md-raised fetch-more-logs-button" ng-click="vm.fetchMoreLogs()" ng-disabled="vm.fetchingPastLogs"><i class="fa fa-caret-down" style="margin: 0 4px"></i>Fetch Logs for {{vm.lastQueryDayTextStart}} to {{vm.lastQueryDayTextEnd}}<i class="fa fa-caret-down" style="margin: 0 4px"></i></md-button>
+    <md-button class="fetch-more-logs-button" ng-click="vm.fetchMoreLogs()" ng-disabled="vm.fetchingPastLogs"><i class="fa fa-caret-down" style="margin: 0 4px"></i>Fetch Logs for {{vm.lastQueryDayTextStart}} to {{vm.lastQueryDayTextEnd}}<i class="fa fa-caret-down" style="margin: 0 4px"></i></md-button>
 </div>

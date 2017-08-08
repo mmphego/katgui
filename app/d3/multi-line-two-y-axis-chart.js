@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('multiLineTwoYAxisChart', function (DATETIME_FORMAT, $timeout, $log) {
+    .directive('multiLineTwoYAxisChart', function (MOMENT_DATETIME_FORMAT, $timeout, $log) {
         return {
             restrict: 'EA',
             scope: {
@@ -362,7 +362,7 @@ angular.module('katGui.d3')
                             html += "<div class='" + tooltipValues[i].sensor + "' style='display: flex'>";
                             html += "<i style='flex: 1 100%'>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + "</i>";
                             html += "<div><b style='margin-left: 8px;'> " + tooltipValues[i].TooltipValue + "</b></div>";
-                            html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(DATETIME_FORMAT) + "</span></div>";
+                            html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(MOMENT_DATETIME_FORMAT) + "</span></div>";
                             html += "</div>";
                         }
                         html += "";

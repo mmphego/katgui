@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ReceptorStateService', ReceptorStateService);
 
-    function ReceptorStateService(NotifyService, ConfigService, $log, DATETIME_FORMAT) {
+    function ReceptorStateService(NotifyService, ConfigService, $log, MOMENT_DATETIME_FORMAT) {
 
         var api = {receptorsData: []};
         api.sensorValues = {};
@@ -26,7 +26,7 @@
                         }
                         var lastUpdateValue;
                         if (lastUpdate) {
-                            lastUpdateValue = moment(lastUpdate, 'X').format(DATETIME_FORMAT);
+                            lastUpdateValue = moment(lastUpdate, 'X').format(MOMENT_DATETIME_FORMAT);
                         }
 
                         api.receptorsData.push({

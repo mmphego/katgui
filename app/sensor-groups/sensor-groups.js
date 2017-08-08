@@ -4,7 +4,7 @@
         .controller('SensorGroupsCtrl', SensorGroupsCtrl);
 
     function SensorGroupsCtrl($scope, $rootScope, SensorsService, $timeout, $interval, NotifyService,
-                              ConfigService, $log, DATETIME_FORMAT, KatGuiUtil) {
+                              ConfigService, $log, MOMENT_DATETIME_FORMAT, KatGuiUtil) {
 
         var vm = this;
         vm.sensorGroups = {};
@@ -65,8 +65,8 @@
                 SensorsService.listSensors(vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors).then(function (result) {
                     if (result.data) {
                         result.data.forEach(function (sensor) {
-                            sensor.received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(DATETIME_FORMAT);
-                            sensor.timestamp = moment.utc(sensor.timestamp, 'X').format(DATETIME_FORMAT);
+                            sensor.received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
+                            sensor.timestamp = moment.utc(sensor.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                             vm.sensorValues[sensor.python_identifier] = sensor;
                         });
                         vm.sensorsToDisplay = result.data;
@@ -94,8 +94,8 @@
                 SensorsService.listSensors(vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors).then(function (result) {
                     if (result.data) {
                         result.data.forEach(function (sensor) {
-                            sensor.received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(DATETIME_FORMAT);
-                            sensor.timestamp = moment.utc(sensor.timestamp, 'X').format(DATETIME_FORMAT);
+                            sensor.received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
+                            sensor.timestamp = moment.utc(sensor.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                             vm.sensorValues[sensor.python_identifier] = sensor;
                         });
                         vm.sensorsToDisplay = result.data;
@@ -143,9 +143,9 @@
             var strList = sensor.name.split(':');
             var sensorName = strList[1];
             if (vm.sensorValues[sensorName]) {
-                vm.sensorValues[sensorName].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(DATETIME_FORMAT);
+                vm.sensorValues[sensorName].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                 vm.sensorValues[sensorName].status = sensor.value.status;
-                vm.sensorValues[sensorName].timestamp = moment.utc(sensor.value.timestamp, 'X').format(DATETIME_FORMAT);
+                vm.sensorValues[sensorName].timestamp = moment.utc(sensor.value.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                 vm.sensorValues[sensorName].value = sensor.value.value;
             }
         });
