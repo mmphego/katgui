@@ -4,7 +4,7 @@
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval, $stateParams,
-                            $log, $mdDialog, DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
+                            $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
 
         var vm = this;
         vm.resources = SensorsService.resources;
@@ -129,8 +129,8 @@
                     vm.resources[resourceName].sensorsList = result;
                     vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
                     vm.sensorsToDisplay.forEach(function (item) {
-                        item.timestamp = moment.utc(item.timestamp, 'X').format(DATETIME_FORMAT);
-                        item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(DATETIME_FORMAT);
+                        item.timestamp = moment.utc(item.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
+                        item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
                         vm.sensorValues[resourceName + '_' + item.python_identifier] = item;
                         item.parentName = resourceName;
                     });

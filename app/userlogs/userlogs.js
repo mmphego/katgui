@@ -18,10 +18,10 @@
         }])
         .controller('UserlogCtrl', UserlogCtrl);
 
-    function UserlogCtrl(MonitorService, $localStorage, $interval, $mdDialog, $scope, $rootScope, $filter, $log, $timeout, UserLogService) {
+    function UserlogCtrl(MonitorService, $localStorage, $interval, $mdDialog, $scope, $rootScope, $stateParams,
+                         $filter, $log, $timeout, UserLogService, MOMENT_DATETIME_FORMAT, DATETIME_FORMAT) {
 
         var vm = this;
-        var momentjsFormat = 'YYYY-MM-DD HH:mm:ss';
         UserLogService.userlogs = [];
         vm.userLogs = UserLogService.userlogs;
         vm.tags = UserLogService.tags;
@@ -79,11 +79,11 @@
         MonitorService.subscribe('userlogs', '*');
 
         vm.onTimeSet = function (value, target, attribute) {
-            target[attribute] = $filter('date')(value, 'yyyy-MM-dd HH:mm:ss');
+            target[attribute] = $filter('date')(value, DATETIME_FORMAT);
         };
 
         vm.verifyDateTimeString = function (input) {
-            return moment.utc(input, 'YYYY-MM-DD HH:mm:ss', true).isValid();
+            return moment.utc(input, MOMENT_DATETIME_FORMAT, true).isValid();
         };
 
         vm.verifyInlineInputs = function () {
@@ -99,7 +99,7 @@
             }
 
             if (!vm.newLogStartTimeText) {
-                vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                vm.newLogStartTimeText = moment($rootScope.utcDateTime, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
             }
             if (!vm.newLogEndTimeText) {
                 vm.newLogEndTimeText = $rootScope.utcDateTime;
@@ -126,10 +126,10 @@
                     vm.newLogStartTimeText = $rootScope.utcDateTime;
                     vm.newLogEndTimeText = '';
                 } else if (vm.orderBy.value === 'start_time') {
-                    vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                    vm.newLogStartTimeText = moment($rootScope.utcDateTime, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
                     vm.newLogEndTimeText = '';
                 } else if (vm.orderBy.value === 'end_time') {
-                    vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                    vm.newLogStartTimeText = moment($rootScope.utcDateTime, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
                     vm.newLogEndTimeText = $rootScope.utcDateTime;
                 }
 
@@ -215,7 +215,7 @@
         };
 
         vm.editUserLog = function (userlog, event) {
-            UserLogService.editUserLog(userlog, $rootScope.currentUser.id === userlog.user_id, event);
+            UserLogService.editUserLog(userlog, $rootScope.currentUser.id === userlog.user_id, 'userlogDialogContentElement', event);
         };
 
         vm.afterInit = function() {
@@ -232,6 +232,72 @@
                     vm.lastFutureQueryDayEnd = vm.lastFutureQueryDayEnd.add(1, 'M').add(1, 'd');
                     vm.lastFutureQueryDayTextEnd = vm.lastFutureQueryDayEnd.format('YYYY-MM-DD');
                 });
+                if ($stateParams.action === 'add') {
+                    var tags = [];
+                    var content = '';
+                    if ($stateParams.content) {
+                        content = $stateParams.content.replace(/\\n/g, '\n'); // preserve newlines
+                    }
+                    if ($stateParams.tags) {
+                        var tagNames = $stateParams.tags.split(',');
+                        tags = vm.tags.filter(function(tag) {
+                            return tagNames.indexOf(tag.name) > -1;
+                        });
+                    }
+                    var newUserLog = {
+                        start_time: $stateParams.startTime,
+                        end_time: $stateParams.endTime,
+                        tags: tags,
+                        user_id: $rootScope.currentUser.id,
+                        content: content,
+                        attachments: []
+                    };
+                    // allow some time before showing the dialog to avoid the dialog overlay bugging out
+                    $timeout(function () {
+                        vm.editUserLog(newUserLog, event);
+                    }, 250);
+                } else if ($stateParams.action === 'edit' && $stateParams.id) {
+                    UserLogService.getUserLogById($stateParams.id).then(function (result) {
+                        var userlog = result.data;
+                        var content = userlog.content;
+                        var newTags = [];
+                        var userlogTags = [];
+
+                        if ($stateParams.tags) {
+                            var tagNames = $stateParams.tags.split(',');
+                            newTags = vm.tags.filter(function(tag) {
+                                return tagNames.indexOf(tag.name) > -1;
+                            });
+                        }
+                        if (userlog.tags) {
+                            var tagIds = JSON.parse(userlog.tags);
+                            userlogTags = vm.tags.filter(function(tag) {
+                                return tagIds.indexOf(tag.id) > -1;
+                            });
+                        }
+                        userlogTags.forEach(function (tag) {
+                            if (newTags.indexOf(tag) === -1) {
+                                newTags.push(tag);
+                            }
+                        });
+
+                        var start_time = $stateParams.startTime? $stateParams.startTime: userlog.start_time;
+                        var end_time = $stateParams.endTime? $stateParams.endTime: userlog.end_time;
+
+                        if ($rootScope.currentUser.id === userlog.user_id && $stateParams.content) {
+                            content = $stateParams.content.replace(/\\n/g, '\n'); // preserve newlines
+                        }
+                        userlog.content = content;
+                        userlog.start_time = start_time? start_time: '';
+                        userlog.end_time = end_time? end_time: '';
+                        userlog.tags = newTags? newTags: [];
+
+                        // allow some time before showing the dialog to avoid the dialog overlay bugging out
+                        $timeout(function () {
+                            vm.editUserLog(userlog, event);
+                        }, 250);
+                    });
+                }
             });
         };
 
@@ -246,11 +312,11 @@
         });
 
         if ($rootScope.utcDateTime) {
-            vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+            vm.newLogStartTimeText = moment($rootScope.utcDateTime, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
             vm.verifyInlineInputs();
         } else {
             vm.undbindutcDateTimeSet = $rootScope.$on('utcDateTimeSet', function (event, value) {
-                vm.newLogStartTimeText = moment(value, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(value, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
                 vm.verifyInlineInputs();
             });
         }
@@ -293,7 +359,7 @@
 
         vm.setNewLogStartTimeAfterFocus = function () {
             if (!vm.chatMode && !vm.newLogContent) {
-                vm.newLogStartTimeText = moment($rootScope.utcDateTime, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
+                vm.newLogStartTimeText = moment($rootScope.utcDateTime, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
                 vm.verifyInlineInputs();
             }
         };
@@ -302,15 +368,15 @@
             var userlogsContainer = document.querySelector('#userlogsContainer');
             var scrollTopToKeep = userlogsContainer.scrollTop;
             if (vm.orderBy.value === 'start_time' && vm.orderBy.reverse) {
-                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.start_time, MOMENT_DATETIME_FORMAT).subtract(1, 's').format(MOMENT_DATETIME_FORMAT);
             } else if (vm.orderBy.value === 'start_time'){
-                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.start_time, MOMENT_DATETIME_FORMAT).add(1, 's').format(MOMENT_DATETIME_FORMAT);
             } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
-                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
-                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
+                vm.newLogEndTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).subtract(1, 's').format(MOMENT_DATETIME_FORMAT);
             } else if (vm.orderBy.value === 'end_time') {
-                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
-                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
+                vm.newLogEndTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).add(1, 's').format(MOMENT_DATETIME_FORMAT);
             }
             if (!vm.verifyDateTimeString(vm.newLogStartTimeText)) {
                 vm.newLogStartTimeText = $rootScope.utcDateTime;
@@ -326,15 +392,15 @@
             var userlogsContainer = document.querySelector('#userlogsContainer');
             var scrollTopToKeep = userlogsContainer.scrollTop;
             if (vm.orderBy.value === 'start_time' && vm.orderBy.reverse) {
-                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.start_time, MOMENT_DATETIME_FORMAT).add(1, 's').format(MOMENT_DATETIME_FORMAT);
             } else if (vm.orderBy.value === 'start_time'){
-                vm.newLogStartTimeText = moment(userlog.start_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.start_time, MOMENT_DATETIME_FORMAT).subtract(1, 's').format(MOMENT_DATETIME_FORMAT);
             } else if (vm.orderBy.value === 'end_time' && vm.orderBy.reverse) {
-                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
-                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).add(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
+                vm.newLogEndTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).add(1, 's').format(MOMENT_DATETIME_FORMAT);
             } else if (vm.orderBy.value === 'end_time') {
-                vm.newLogStartTimeText = moment(userlog.end_time, momentjsFormat).subtract(5, 'm').format(momentjsFormat);
-                vm.newLogEndTimeText = moment(userlog.end_time, momentjsFormat).subtract(1, 's').format(momentjsFormat);
+                vm.newLogStartTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).subtract(5, 'm').format(MOMENT_DATETIME_FORMAT);
+                vm.newLogEndTimeText = moment(userlog.end_time, MOMENT_DATETIME_FORMAT).subtract(1, 's').format(MOMENT_DATETIME_FORMAT);
             }
             if (!vm.verifyDateTimeString(vm.newLogStartTimeText)) {
                 vm.newLogStartTimeText = $rootScope.utcDateTime;

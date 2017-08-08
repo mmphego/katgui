@@ -4,19 +4,18 @@
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
     function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q,
-                             SensorsService, $interval, $log, NotifyService, $stateParams, $state) {
+                             SensorsService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
 
         var vm = this;
         var SAMPLES_QUERY_LIMIT = 1000000;
-        var DATETIME_FORMAT = 'HH:mm:ss DD-MM-YYYY';
         vm.showGridLines = false;
         vm.dateTimeError = false;
         vm.sensorNames = [];
         vm.sensorStartDatetime = new Date(new Date().getTime() - (60000 * 60)); //one hour earlier
-        vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
+        vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
         vm.sensorEndDatetime = new Date(new Date().getTime());
-        vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
-        vm.sensorSearchNames = null;
+        vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
+        vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
         vm.showTips = false;
@@ -104,18 +103,18 @@
 
         vm.onTimeSet = function () {
             vm.sensorStartDatetime = moment.utc(vm.sensorStartDatetime.getTime() - vm.sensorStartDatetime.getTimezoneOffset() * 60000).toDate();
-            vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
+            vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
             vm.dateTimeError = false;
         };
 
         vm.onEndTimeSet = function () {
             vm.sensorEndDatetime = moment.utc(vm.sensorEndDatetime.getTime() - vm.sensorEndDatetime.getTimezoneOffset() * 60000).toDate();
-            vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
+            vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
             vm.endDateTimeError = false;
         };
 
         vm.startTimeChange = function () {
-            var parsedDate = moment.utc(vm.sensorStartDateReadable, DATETIME_FORMAT).toDate();
+            var parsedDate = moment.utc(vm.sensorStartDateReadable, MOMENT_DATETIME_FORMAT).toDate();
             if (parsedDate) {
                 vm.sensorStartDatetime = new Date(parsedDate);
                 vm.dateTimeError = false;
@@ -125,7 +124,7 @@
         };
 
         vm.endTimeChange = function () {
-            var parsedDate = moment.utc(vm.sensorEndDateReadable, DATETIME_FORMAT).toDate();
+            var parsedDate = moment.utc(vm.sensorEndDateReadable, MOMENT_DATETIME_FORMAT).toDate();
             if (parsedDate) {
                 vm.sensorEndDatetime = new Date(parsedDate);
                 vm.endDateTimeError = false;
@@ -498,13 +497,13 @@
 
         $timeout(function () {
             vm.showOptionsChanged();
-            if (moment.utc($stateParams.startTime, 'HH:mm:ss DD-MM-YYYY', true).isValid() &&
-                moment.utc($stateParams.endTime, 'HH:mm:ss DD-MM-YYYY', true).isValid() &&
+            if (moment.utc($stateParams.startTime, MOMENT_DATETIME_FORMAT, true).isValid() &&
+                moment.utc($stateParams.endTime, MOMENT_DATETIME_FORMAT, true).isValid() &&
                 $stateParams.sensors) {
-                vm.sensorStartDatetime = moment.utc($stateParams.startTime, 'HH:mm:ss DD-MM-YYYY', true).toDate();
-                vm.sensorEndDatetime = moment.utc($stateParams.endTime, 'HH:mm:ss DD-MM-YYYY', true).toDate();
-                vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(DATETIME_FORMAT);
-                vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(DATETIME_FORMAT);
+                vm.sensorStartDatetime = moment.utc($stateParams.startTime, MOMENT_DATETIME_FORMAT, true).toDate();
+                vm.sensorEndDatetime = moment.utc($stateParams.endTime, MOMENT_DATETIME_FORMAT, true).toDate();
+                vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
+                vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
                 var startDate = vm.sensorStartDatetime.getTime();
                 var endDate = vm.sensorEndDatetime.getTime();
                 var intervalParams = $stateParams.interval.split(',');
@@ -561,7 +560,7 @@
 
             } else if ($stateParams.startTime && $stateParams.endTime) {
                 NotifyService.showSimpleDialog('Invalid Datetime URL Parameters',
-                    'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be HH:mm:ss DD-MM-YYYY.');
+                    'Invalid datetime strings: ' + $stateParams.startTime + ' or ' + $stateParams.endTime + '. Format should be ' + MOMENT_DATETIME_FORMAT);
             }
         }, 1000);
 
