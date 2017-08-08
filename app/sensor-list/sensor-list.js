@@ -234,8 +234,8 @@
         var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
             // if (vm.sensorValues[sensor.name]) {
                 sensor.name = sensor.name.split('.')[2];
-                sensor.timestamp = moment.utc(sensor.value_ts / 1000000, 'X').format(DATETIME_FORMAT);
-                sensor.received_timestamp = moment.utc(sensor.sample_ts / 1000000, 'X').format(DATETIME_FORMAT);
+                sensor.timestamp = moment.utc(sensor.value_ts / 1000000, 'X').format(MOMENT_DATETIME_FORMAT);
+                sensor.received_timestamp = moment.utc(sensor.sample_ts / 1000000, 'X').format(MOMENT_DATETIME_FORMAT);
                 if (!vm.sensorValues[sensor.name]) {
                     vm.sensorValues[sensor.name] = sensor;
                     vm.sensorsToDisplay.push(sensor);
