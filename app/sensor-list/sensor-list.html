@@ -58,13 +58,14 @@
                 </div>
                 <!-- <md-virtual-repeat-container md-item-size="20" md-auto-shrink flex style="padding: 8px 0; margin-bottom: 8px" class="md-whiteframe-z1"> -->
                 <!-- <div md-virtual-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.q | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse)" -->
-                <div ng-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.searchFilter | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse) track by $index" class="resource-sensor-item" ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;"
+                <!-- <div ng-repeat="sensor in sensors = (vm.sensorsToDisplay | filter:filterByNotNominal | regexSearch:vm.sensorsOrderByFields:vm.searchFilter | orderBy:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse) track by $index" class="resource-sensor-item" ng-click="vm.plotLiveSensorFeed(sensor, sensor.selectedForChart); sensor.selectedForChart = !sensor.selectedForChart;" -->
+                <div ng-repeat="key in vm.keys(vm.sensorValues) | filter:filterByNotNominal | orderBy:key | regexSearch:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorValues"
                     ng-class="{'selected-for-chart-row': sensor.selectedForChart}" layout="row" layout-align="start center">
-                    <span title="{{sensor.python_identifier + ' - Description: ' + sensor.description + ' - Units: ' + sensor.units + ' - Type: ' + sensor.type}}" class="resource-sensor-name">{{sensor.name}}</span>
-                    <span class="resource-sensor-status-item" ng-class="vm.sensorClass(sensor.status)">{{sensor.status}}</span>
-                    <span class="resource-sensor-time-item">{{sensor.received_timestamp}}</span>
-                    <span class="resource-sensor-time-item" ng-show="vm.showValueTimestamp">{{sensor.timestamp}}</span>
-                    <span title="{{sensor.value}}" class="resource-sensor-value-item" ng-click="vm.displaySensorValue($event, sensor); $event.stopPropagation();">{{sensor.value}}</span>
+                    <span title="" class="resource-sensor-name">{{vm.sensorValues[key].shortName}}</span>
+                    <span class="resource-sensor-status-item" ng-class="vm.sensorClass(vm.sensorValues[key].status)">{{vm.sensorValues[key].status}}</span>
+                    <span class="resource-sensor-time-item">{{vm.sensorValues[key].received_timestamp}}</span>
+                    <span class="resource-sensor-time-item" ng-show="vm.showValueTimestamp">{{vm.sensorValues[key].timestamp}}</span>
+                    <span title="{{vm.sensorValues[key].value}}" class="resource-sensor-value-item" ng-click="vm.displaySensorValue($event, vm.sensorValues[key]); $event.stopPropagation();">{{vm.sensorValues[key].value}}</span>
                     <!-- </div> -->
                 </div>
             </div>

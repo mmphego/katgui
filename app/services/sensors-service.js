@@ -95,48 +95,8 @@
                 if (messages.error) {
                     console.log(messages.error);
                 } else {
-                    for (var i = 0; i < messages.length; i++) {
-                        $rootScope.$emit('sensorsServerUpdateMessage', messages[i]);
-                    }
+                    $rootScope.$emit('sensorsServerUpdateMessage', messages);
                 }
-
-                // var messages = JSON.parse(e.data);
-                // if (messages.error) {
-                //     $log.error('There was an error sending a jsonrpc request:');
-                //     $log.error(messages);
-                // } else if (messages.result.msg_channel && messages.result.msg_channel.endsWith('katstore_error')) {
-                //     $rootScope.$emit('sensorServiceMessageError', messages.result);
-                // } else if (messages.id === 'redis-pubsub-init' || messages.id === 'redis-pubsub') {
-                //     if (messages.id === 'redis-pubsub') {
-                //         var arrayResult = [];
-                //         arrayResult.push({
-                //             msg_data: messages.result.msg_data,
-                //             msg_channel: messages.result.msg_channel
-                //         });
-                //         messages.result = arrayResult;
-                //     }
-                //     messages.result.forEach(function (message) {
-                //         var messageObj = message;
-                //         if (_.isString(message)) {
-                //             messageObj = JSON.parse(message);
-                //         }
-                //         if (messageObj.msg_channel) {
-                //             $rootScope.$emit('sensorsServerUpdateMessage', {
-                //                 name: messageObj.msg_channel,
-                //                 value: messageObj.msg_data
-                //             });
-                //         } else {
-                //             $log.error('Dangling Sensors message...');
-                //             $log.error(messageObj);
-                //         }
-                //     });
-                // } else if (messages.result) {
-                //     $log.debug('Subscribed to: ' + JSON.stringify(messages.result));
-                //     $rootScope.$emit('setSensorStrategyMessage', messages.result);
-                // } else {
-                //     $log.error('Dangling sensors message...');
-                //     $log.error(e);
-                // }
             } else {
                 $log.error('Dangling sensors message...');
                 $log.error(e);

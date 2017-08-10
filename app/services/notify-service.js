@@ -339,7 +339,7 @@
                             '<div style="padding:0; margin:0; overflow: auto" layout="column" layout-padding layout-align="start center">',
                                 '<md-toolbar class="md-primary" layout="row" layout-align="center center"><span>{{title}}</span></md-toolbar>',
                                 '<div flex layout="column" layout-align="start" class="resource-sensor-item" style="min-height: 165px">',
-                                    '<div layout="row"><span class="sensor-dialog-details-name">Name:</span><span>{{sensor.parentName? sensor.parentName + "_" + sensor.python_identifier : sensor.python_identifier}}</span></div>',
+                                    '<div layout="row"><span class="sensor-dialog-details-name">Name:</span><span>{{sensor.name}}</span></div>',
                                     '<div layout="row" style="max-width: 700px"><span class="sensor-dialog-details-name">Description:</span><div>{{sensor.description}}</div></div>',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Status:</span><span ng-class="sensorClass(sensor.status)">{{sensor.status}}</span></div>',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Units:</span><span>{{sensor.units}}</span></div>',
