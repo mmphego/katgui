@@ -321,8 +321,10 @@
                     vm.initDone = true;
                 });
             // $timeout(vm.connectListeners, 500);
+            $timeout(vm.initSensors, 500);
         } else {
             // vm.connectListeners();
+            vm.initSensors();
             vm.initDone = true;
         }
 
