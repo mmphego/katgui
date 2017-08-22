@@ -80,7 +80,7 @@
         };
 
         vm.listResourceSensors = function (resources) {
-            var resultPromise = $q.defer();
+            var resultDefer = $q.defer();
             var listResourcesPromises = [];
 
             for (var i in resources) {
@@ -127,9 +127,9 @@
                         }
                     }, 1000);
                 }
-                resultPromise.resolve();
+                resultDefer.resolve();
             });
-            return resultPromise;
+            return resultDefer.promise;
         };
 
         vm.stopProcess = function (nm, resource) {
