@@ -3,7 +3,7 @@
     angular.module('katGui')
         .controller('ProcessControlCtrl', ProcessControlCtrl);
 
-    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, $timeout, ConfigService,
+    function ProcessControlCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, $timeout, ConfigService, $q,
                                 ControlService, MOMENT_DATETIME_FORMAT, NotifyService, $state, USER_ROLES) {
 
         var vm = this;
@@ -56,13 +56,15 @@
         };
 
         vm.loadNodes = function () {
+            var nodeNames = [];
             for (var node in ConfigService.systemConfig.nodes) {
                 var nodeName = 'nm_' + node;
                 vm.detailedProcesses[nodeName] = {};
                 vm.nodemans.push(nodeName);
                 SensorsService.resources[nodeName] = {};
-                vm.listResourceSensors(nodeName);
+                nodeNames.push(nodeName);
             }
+            vm.listResourceSensors(nodeNames);
         };
 
         vm.collapseAll = function (nm_name) {
@@ -77,39 +79,57 @@
             }
         };
 
-        vm.listResourceSensors = function (resource) {
-            SensorsService.listResourceSensors(resource)
-                .then(function () {
-                    var runningSensorNamesToSetStrategies = [];
-                    var detailSensorNamesToSetStrategies = [];
-                    SensorsService.resources[resource].sensorsList.forEach(function (item, index) {
-                        if (item.name.indexOf('.') > -1) {
-                            var processName = item.name.split('.')[0];
+        vm.listResourceSensors = function (resources) {
+            var resultPromise = $q.defer();
+            var listResourcesPromises = [];
+
+            for (var i in resources) {
+                listResourcesPromises.push(SensorsService.listResourceSensors(resources[i]));
+            }
+            $q.all(listResourcesPromises).then(function () {
+                for (var i in resources) {
+                    var resource = resources[i];
+                    for (var k in SensorsService.resources[resource].sensorsList) {
+                        var sensorItem = SensorsService.resources[resource].sensorsList[k];
+                        if (sensorItem.name.indexOf('.') > -1) {
+                            var processName = sensorItem.name.split('.')[0];
                             if (!vm.detailedProcesses[resource][processName]) {
                                 vm.detailedProcesses[resource][processName] = {sensors: {}};
                             }
-                            vm.sensorsToDisplay[resource + '_' + item.python_identifier] = item;
-                            vm.detailedProcesses[resource][processName].sensors[item.python_identifier] = item;
-                            if (item.python_identifier.indexOf('running') !== -1) {
-                                runningSensorNamesToSetStrategies.push(resource + '_' + item.python_identifier);
-                            } else {
-                                detailSensorNamesToSetStrategies.push(resource + '_' + item.python_identifier);
-                            }
+                            vm.sensorsToDisplay[resource + '_' + sensorItem.python_identifier] = sensorItem;
+                            vm.detailedProcesses[resource][processName].sensors[sensorItem.python_identifier] = sensorItem;
                         }
-                    });
-                    if (runningSensorNamesToSetStrategies.length > 0) {
-                        SensorsService.setSensorStrategies(runningSensorNamesToSetStrategies.join('|'), 'event-rate', 1, 120);
                     }
-                    if (detailSensorNamesToSetStrategies.length > 0) {
-                        $timeout(function () {
-                            if (SensorsService.connection) {
-                                SensorsService.setSensorStrategies(detailSensorNamesToSetStrategies.join('|'), 'event-rate', 1, 120);
-                            }
-                        }, 3000);
-                    } else {
-                        vm.detailedProcesses[resource]['None'] = {sensors: {}};
-                    }
+                }
+            });
+
+            $q.all(listResourcesPromises).then(function () {
+                var detailSensorNamesToSetStrategies = [];
+                for (var i in resources) {
+                    var resource = resources[i];
+                    detailSensorNamesToSetStrategies = detailSensorNamesToSetStrategies.concat(
+                        SensorsService.resources[resource].sensorsList.map(function (sensor) {
+                            return sensor.python_identifier;
+                        }));
+                }
+
+                var runningSensorNamesToSetStrategies = detailSensorNamesToSetStrategies.filter(function (sensorName) {
+                    return sensorName.indexOf('running') > -1;
                 });
+
+                if (runningSensorNamesToSetStrategies.length > 0) {
+                    SensorsService.setSensorStrategies(runningSensorNamesToSetStrategies.join('|'), 'event-rate', 1, 360);
+                }
+                if (detailSensorNamesToSetStrategies.length > 0) {
+                    $timeout(function () {
+                        if (SensorsService.connection) {
+                            SensorsService.setSensorStrategies(detailSensorNamesToSetStrategies.join('|'), 'event-rate', 1, 360);
+                        }
+                    }, 1000);
+                }
+                resultPromise.resolve();
+            });
+            return resultPromise;
         };
 
         vm.stopProcess = function (nm, resource) {
