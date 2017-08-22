@@ -430,6 +430,7 @@
         $urlRouterProvider.otherwise('/home');
         $mdAriaProvider.disableWarnings();
         $locationProvider.html5Mode(true);
+
         configureThemes($mdThemingProvider);
 
         $stateProvider.state('login', {
@@ -662,7 +663,7 @@
             templateUrl: 'app/weather/weather.html',
             title: 'Weather'
         });
-        $stateProvider.state('userlogs', {
+        var userlogsState = {
             url: '/userlogs?action&id&startTime&endTime&tags&content',
             templateUrl: 'app/userlogs/userlogs.html',
             title: 'User Logging',
@@ -688,7 +689,18 @@
                     squash: true
                 }
             }
+        };
+        $urlRouterProvider.when(userlogsState.url, function ($location, $state, $match) {
+            var locationUrl = $location.url();
+            if (locationUrl.indexOf('&amp;') > -1) {
+                locationUrl = locationUrl.replace(/&amp;/g, '&');
+                var queryParams = $location.url(locationUrl).search();
+                $state.transitionTo('userlogs', queryParams);
+            } else {
+                $state.transitionTo('userlogs', $match);
+            }
         });
+        $stateProvider.state('userlogs', userlogsState);
         $stateProvider.state('userlog-tags', {
             url: '/userlog-tags',
             templateUrl: 'app/userlogs/userlog-tags.html',
