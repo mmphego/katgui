@@ -19,7 +19,7 @@
         .controller('UserlogCtrl', UserlogCtrl);
 
     function UserlogCtrl(MonitorService, $localStorage, $interval, $mdDialog, $scope, $rootScope, $stateParams,
-                         $filter, $log, $timeout, UserLogService, MOMENT_DATETIME_FORMAT, DATETIME_FORMAT) {
+                         $filter, $log, $timeout, $state, UserLogService, MOMENT_DATETIME_FORMAT, DATETIME_FORMAT) {
 
         var vm = this;
         UserLogService.userlogs = [];
@@ -215,7 +215,11 @@
         };
 
         vm.editUserLog = function (userlog, event) {
-            UserLogService.editUserLog(userlog, $rootScope.currentUser.id === userlog.user_id, 'userlogDialogContentElement', event);
+            UserLogService.editUserLog(
+                userlog, $rootScope.currentUser.id === userlog.user_id, 'userlogDialogContentElement', event)
+                .then(function() {
+                    $state.transitionTo('userlogs', null, { notify: false, reload: false });
+                });
         };
 
         vm.afterInit = function() {
