@@ -172,6 +172,11 @@
                         vm.filterTags = UserLogService.tags.filter(function (tag) {
                             return tagIdsList.indexOf(tag.id.toString()) > -1;
                         });
+                    } else if ($stateParams.tags) {
+                        var tagsList = $stateParams.tags.split(',');
+                        vm.filterTags = UserLogService.tags.filter(function (tag) {
+                            return tagsList.indexOf(tag.name) > -1;
+                        });
                     }
                 });
                 UserLogService.getLogFiles();
