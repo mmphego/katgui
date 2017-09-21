@@ -735,7 +735,7 @@
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&filter&matchAllTags',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -744,6 +744,10 @@
                     squash: true
                 },
                 endTime: {
+                    value: null,
+                    squash: true
+                },
+                tags: {
                     value: null,
                     squash: true
                 },
