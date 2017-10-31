@@ -764,19 +764,11 @@
         };
 
         api.showSubarrayLogs = function(sub_nr) {
-            if (ConfigService.GetKATTaskFileServerURL()) {
-                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/kat.katsubarray" + sub_nr + ".log/tail/");
-            } else {
-                NotifyService.showSimpleDialog('Error Viewing Logfile', 'There is no KATTaskFileServer IP defined in config, please contact CAM support.');
-            }
+            $rootScope.openLogWithProgramNameFilter('kat.subarray_' + sub_nr);
         };
 
         api.showResourceLogs = function(resourceName) {
-            if (ConfigService.GetKATTaskFileServerURL()) {
-                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/kat." + resourceName + ".log/tail/");
-            } else {
-                NotifyService.showSimpleDialog('Error Viewing Logfile', 'There is no KATTaskFileServer IP defined in config, please contact CAM support.');
-            }
+            $rootScope.openLogWithProgramNameFilter('kat.' + resourceName);
         };
 
         api.listResourceMaintenanceDevicesDialog = function(sub_nr, resource, event) {

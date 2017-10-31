@@ -98,8 +98,8 @@
         }, {
             name: 'KATCP Logs',
             textOffset: 0,
-            state: $rootScope.openKatsnifferLogger,
-            stateParams: ['katcpmsgs.log'],
+            state: $rootScope.openLogWithProgramNameFilter,
+            stateParams: ['katcpmsgs'],
             title: 'Open KATCP Messages Log in a new tab'
         }, {
             name: 'CAM Docs',
