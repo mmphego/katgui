@@ -115,7 +115,7 @@
                     if (systemConfig.vds && systemConfig.vds.vds_source) {
                         $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
                     }
-                    $rootScope.site = ConfigService.systemConfig.system.site;
+                    $rootScope.sitename = ConfigService.systemConfig.system.sitename;
                     $rootScope.confConnectionError = null;
                     deferred.resolve($rootScope.systemConfig);
                 }, function(error) {
@@ -356,7 +356,7 @@
         $rootScope.openCentralLogger = function() {
             window.open('http://' + ConfigService.systemConfig.system.kibana_server +
                 "/app/kibana#/discover?_g=()&_a=(columns:!(programname,severity,message),index:'" +
-                $rootScope.site +
+                $rootScope.sitename +
                 "*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))").focus();
         };
         $rootScope.openGangliaLink = function() {
@@ -387,13 +387,13 @@
                 "_a=(columns:!(programname,severity,message),",
                 "filters:!(('$state':(store:appState),",
                 "meta:(alias:!n,disabled:!f,index:'",
-                $rootScope.site,
+                $rootScope.sitename,
                 "*',key:programname,negate:!f,type:phrase,value:",
                 programName,
                 "),query:(match:(programname:(query:",
                 programName,
                 ",type:phrase))))),","index:'",
-                $rootScope.site,
+                $rootScope.sitename,
                 "*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             window.open(kibanaUrl).focus();
         };
