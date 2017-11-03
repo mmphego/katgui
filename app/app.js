@@ -357,7 +357,7 @@
             window.open('http://' + ConfigService.systemConfig.system.kibana_server +
                 "/app/kibana#/discover?_g=()&_a=(columns:!(programname,severity,message),index:'" +
                 $rootScope.sitename +
-                "*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))").focus();
+                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))").focus();
         };
         $rootScope.openGangliaLink = function() {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
@@ -388,13 +388,13 @@
                 "filters:!(('$state':(store:appState),",
                 "meta:(alias:!n,disabled:!f,index:'",
                 $rootScope.sitename,
-                "*',key:programname,negate:!f,type:phrase,value:",
+                "-*',key:programname,negate:!f,type:phrase,value:",
                 programName,
                 "),query:(match:(programname:(query:",
                 programName,
                 ",type:phrase))))),","index:'",
                 $rootScope.sitename,
-                "*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             window.open(kibanaUrl).focus();
         };
 
