@@ -29,11 +29,11 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
-        api.subscribe = function (namespace, pattern) {
+        api.subscribe = function (subscriptions) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [namespace, pattern],
+                'params': [subscriptions],
                 'id': 'monitor-' + KatGuiUtil.generateUUID()
             };
 
@@ -41,26 +41,26 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(namespace, pattern);
+                    api.subscribe(subscriptions);
                 }, 500);
             }
         };
 
-        api.unsubscribe = function (namespace, pattern) {
+        api.unsubscribe = function (subscriptions) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'unsubscribe',
-                'params': [namespace, pattern],
+                'params': [subscriptions],
                 'id': 'monitor-' + KatGuiUtil.generateUUID()
             };
 
             if (api.connection === null) {
-                $log.error('No Monitor Connection Present for subscribing, ignoring command for pattern ' + pattern);
+                $log.error('No Monitor Connection Present for subscribing, ignoring command for subs ' + subscriptions);
             } else if (api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.unsubscribe(namespace, pattern);
+                    api.unsubscribe(subscriptions);
                 }, 500);
             }
         };
@@ -77,7 +77,7 @@
         };
 
         api.subscribeToDefaultChannels = function () {
-            api.subscribe('katportal', ['time', 'mon', 'alarms', 'health', 'auth', 'resources']);
+            api.subscribe(['portal.time', 'portal.mon', 'portal.alarms', 'portal.health', 'portal.auth.>', 'portal.resources']);
         };
 
         api.checkAlive = function () {
@@ -102,86 +102,83 @@
         };
 
         api.onSockJSMessage = function (e) {
-            // if (e && e.data) {
-                //
-            // }
-            // return;
             if (e && e.data) {
-                var messages = JSON.parse(e.data);
-                if (messages.error) {
-                    $log.error('There was an error sending a jsonrpc request:');
-                    $log.error(messages);
-                } else {
-                    messages.forEach(function(msg) {
-                        var data = JSON.parse(msg.data);
-                        if (msg.subject === 'katportal.time') {
-                            api.lastSyncedTime = data.time + 0.5;
-                            api.lastSyncedLST = data.lst;
-                        } else if (msg.subject === 'katportal.sched') {
-                            $log.info(msg);
-                            // ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
-                        } else if (msg.subject === 'katportal.alarms') {
-                            $log.info(msg);
-                        //     if (messageChannel[0] === 'alarms') {
-                        //        AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
-                        //    }
-                        } else if (msg.subject === 'katportal.userlogs') {
-                            $log.info(msg);
-                            // UserLogService.receivedUserlogMessage(messages.result.msg_channel, messages.result.msg_data);
-                        } else if (msg.subject === 'katportal.auth') {
-                            $log.info(msg);
-                            // if (messageObj.msg_channel === 'auth:current_lo') {
-                            //     api.currentLeadOperator.name = messageObj.msg_data.lo;
-                            //     if ($rootScope.currentUser &&
-                            //         $rootScope.currentUser.req_role === 'lead_operator' &&
-                            //         api.currentLeadOperator.name.length > 0 &&
-                            //         api.currentLeadOperator.name !== $rootScope.currentUser.email) {
-                            //         NotifyService.showDialog(
-                            //             'You have been logged in as the Monitor Role', 'You have lost the Lead Operator Role because ' +
-                            //             api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
-                            //         //$rootScope.logout();
-                            //         //Do not logout, just loging as a demoted monitor only use
-                            //         SessionService.verifyAs('read_only');
-                            //     }
-                            // }
-                        } else if (msg.subject === 'katportal.mon') {
-                            $log.info(msg);
-                        //     if (messageChannel[0] === 'mon') {
-                        //        if (messageChannel[1] === 'sys_interlock_state') {
-                        //            api.interlockState.value = messageObj.msg_data.value;
-                        //        } else {
-                        //            $log.error('Dangling Sensors message...');
-                        //            $log.error(messageObj);
-                        //        }
-                        //    }
-                        } else if (msg.subject === 'katportal.resources') {
-                            $log.info(msg);
-                        //     if (messageChannel[0] === 'resources') {
-                        //        if (messageChannel[1].endsWith('katpool_resources_in_maintenance')) {
-                        //            StatusService.receptorMaintenanceMessageReceived(messageObj);
-                        //        }
-                        //        ObsSchedService.receivedResourceMessage(message.msg_data);
-                        //    }
-                        } else if (msg.subject === 'katportal.health') {
-                            $log.info(msg);
-                        //     if (messageChannel[0] === 'health') {
-                        //        if ((messageChannel[1].endsWith('mode') || messageChannel[1].endsWith('inhibited') ||
-                        //            messageChannel[1].endsWith('vds_flood_lights_on'))) {
-                        //            ReceptorStateService.receptorMessageReceived({
-                        //                name: messageObj.msg_channel,
-                        //                value: messageObj.msg_data
-                        //            });
-                        //        } else {
-                        //            $log.error('Dangling Sensors message...');
-                        //            $log.error(messageObj);
-                        //        }
-                        //    }
-                        } else if (msg.subject.startsWith('sensor.')) {
-                            $rootScope.$emit('sensorsServerUpdateMessage', data);
-                        } else {
-                            $log.error('Dangling monitor message: ' + msg);
+                if (e.data.data) {
+                    var msg = e.data;
+                    var data = JSON.parse(msg.data);
+                    if (msg.subject === 'portal.time') {
+                        api.lastSyncedTime = data.time + 0.5;
+                        api.lastSyncedLST = data.lst;
+                    } else if (msg.subject.startsWith('sensor.')) {
+                        $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                    } else if (msg.subject === 'portal.sched') {
+                        $log.info(msg);
+                        // ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
+                    } else if (msg.subject === 'portal.alarms') {
+                        $log.info(msg);
+                    //     if (messageChannel[0] === 'alarms') {
+                    //        AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
+                    //    }
+                    } else if (msg.subject === 'portal.userlogs') {
+                        $log.info(msg);
+                        // UserLogService.receivedUserlogMessage(messages.result.msg_channel, messages.result.msg_data);
+                    } else if (msg.subject === 'portal.auth.current_lo') {
+                        api.currentLeadOperator.name = data.lo;
+                        if ($rootScope.currentUser &&
+                            $rootScope.currentUser.req_role === 'lead_operator' &&
+                            api.currentLeadOperator.name.length > 0 &&
+                            api.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                            NotifyService.showDialog(
+                                'You have been logged in as the Monitor Role', 'You have lost the Lead Operator Role because ' +
+                                api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
+                            //$rootScope.logout();
+                            //Do not logout, just loging as a demoted monitor only use
+                            SessionService.verifyAs('read_only');
                         }
-                    });
+                    } else if (msg.subject === 'portal.mon') {
+                        $log.info(msg);
+                    //     if (messageChannel[0] === 'mon') {
+                    //        if (messageChannel[1] === 'sys_interlock_state') {
+                    //            api.interlockState.value = messageObj.msg_data.value;
+                    //        } else {
+                    //            $log.error('Dangling Sensors message...');
+                    //            $log.error(messageObj);
+                    //        }
+                    //    }
+                    } else if (msg.subject === 'portal.resources') {
+                        $log.info(msg);
+                    //     if (messageChannel[0] === 'resources') {
+                    //        if (messageChannel[1].endsWith('katpool_resources_in_maintenance')) {
+                    //            StatusService.receptorMaintenanceMessageReceived(messageObj);
+                    //        }
+                    //        ObsSchedService.receivedResourceMessage(message.msg_data);
+                    //    }
+                    } else if (msg.subject === 'portal.health') {
+                        $log.info(msg);
+                    //     if (messageChannel[0] === 'health') {
+                    //        if ((messageChannel[1].endsWith('mode') || messageChannel[1].endsWith('inhibited') ||
+                    //            messageChannel[1].endsWith('vds_flood_lights_on'))) {
+                    //            ReceptorStateService.receptorMessageReceived({
+                    //                name: messageObj.msg_channel,
+                    //                value: messageObj.msg_data
+                    //            });
+                    //        } else {
+                    //            $log.error('Dangling Sensors message...');
+                    //            $log.error(messageObj);
+                    //        }
+                    //    }
+                    } else {
+                        // this was a req reply (list_sensors remote request)
+                        $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                    }
+                } else {
+                    var message = JSON.parse(e.data);
+                    if (message.error) {
+                        $log.error('There was an error sending a jsonrpc request:');
+                        $log.error(message);
+                    } else {
+                        $log.warn('Dangling websocket message: ' + message);
+                    }
                 }
             }
         };
@@ -190,7 +187,7 @@
             api.deferredMap['connectDefer'] = $q.defer();
             if (!api.connection) {
                 $log.info('Monitor Connecting...');
-                api.connection = new SockJS(urlBase() + '/portal');
+                api.connection = new SockJS(urlBase() + '/client');
                 api.connection.onopen = api.onSockJSOpen;
                 api.connection.onmessage = api.onSockJSMessage;
                 api.connection.onclose = api.onSockJSClose;
@@ -212,7 +209,7 @@
         };
 
         api.disconnectListener = function () {
-            if (api.connection) {
+            if (api.connection && api.connection.readyState) {
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
@@ -221,9 +218,12 @@
             }
         };
 
-        api.sendMonitorCommand = function (method, params) {
+        api.listSensors = function (component, regex) {
+          api.sendMonitorCommand('list_sensors', [component, regex]);
+        };
 
-            if (api.connection) {
+        api.sendMonitorCommand = function (method, params) {
+            if (api.connection && api.connection.readyState) {
                 var jsonRPC = {
                     'id': KatGuiUtil.generateUUID(),
                     'jsonrpc': '2.0',

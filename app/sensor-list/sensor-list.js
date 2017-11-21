@@ -42,55 +42,10 @@
             $localStorage.sensorListShowValueTimestamp = vm.showValueTimestamp;
         };
 
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                        vm.connectListeners();
-                    }
-                });
-        };
-
         vm.initSensors = function () {
-            if (vm.resourcesNames.length === 0) {
-                vm.nodes = ConfigService.resourceGroups;
-                SensorsService.listResourcesFromConfig()
-                    .then(function () {
-                        for (var key in SensorsService.resources) {
-                            vm.resourcesNames.push({name: key, node: SensorsService.resources[key].node});
-                        }
-                    });
-            }
-
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                MonitorService.subscribe('sensor', vm.resourceSensorsBeingDisplayed + '.>');
-                // SensorsService.subscribe(vm.resourceSensorsBeingDisplayed + '.>');
-                // SensorsService.setSensorStrategies(
-                //     vm.resourceSensorsBeingDisplayed,
-                //     $rootScope.sensorListStrategyType,
-                //     $rootScope.sensorListStrategyInterval,
-                //     360);
+                MonitorService.listSensors(vm.resourceSensorsBeingDisplayed, '.*');
+                MonitorService.subscribe('sensor.*.' + vm.resourceSensorsBeingDisplayed + '.>');
             }
         };
 
@@ -118,14 +73,15 @@
             }
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                MonitorService.unsubscribe('sensor.' + vm.resourceSensorsBeingDisplayed + '.>');
-                // SensorsService.removeSensorStrategies('^' + vm.resourceSensorsBeingDisplayed + '*');
+                MonitorService.unsubscribe('sensor.*.' + vm.resourceSensorsBeingDisplayed + '.>');
                 vm.sensorsToDisplay = [];
                 vm.sensorValues = {};
             }
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
-            // vm.showProgress = true;
+            vm.showProgress = true;
+            MonitorService.listSensors(resourceName, '.*');
+            MonitorService.subscribe('sensor.*.' + resourceName + '.>');
             // SensorsService.listResourceSensors(resourceName)
             //     .then(function (result) {
             //         vm.resources[resourceName].sensorsList = result;
@@ -145,10 +101,6 @@
             //     });
             vm.resourceSensorsBeingDisplayed = resourceName;
             vm.updateURL();
-            //allow for the removeSensorStrategies to complete before setting up new strategies
-            $timeout(function () {
-                vm.initSensors();
-            }, 500);
         };
 
         vm.sensorClass = function (status) {
@@ -241,7 +193,11 @@
             return vm.sensorValue[key];
         };
 
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            // list_sensors request finished
+            if (vm.showProgress && subject.startsWith('req.reply')) {
+                vm.showProgress = false;
+            }
             var sensors;
             if (!(sensor instanceof Array)) {
                 sensors = [sensor];
@@ -250,7 +206,12 @@
             }
             sensors.forEach(function (sensor) {
                 if (sensor.name.startsWith(vm.resourceSensorsBeingDisplayed)) {
-                    sensor.shortName = sensor.name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
+                    if (sensor.original_name) {
+                        sensor.shortName = sensor.original_name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
+                    } else {
+                        sensor.shortName = sensor.name.replace(vm.resourceSensorsBeingDisplayed + '_', '');
+                    }
+
                     sensor.timestamp = moment.utc(sensor.value_ts, 'X').format(MOMENT_DATETIME_FORMAT);
                     if (sensor.sample_ts) {
                         sensor.received_timestamp = moment.utc(sensor.sample_ts, 'X').format(MOMENT_DATETIME_FORMAT);
@@ -310,27 +271,24 @@
         //create to function to bind to, but dont do anything with it yet
         vm.downloadAsCSV = function () {};
 
-        if ($stateParams.component) {
+        if (vm.resourcesNames.length === 0) {
             vm.nodes = ConfigService.resourceGroups;
             SensorsService.listResourcesFromConfig()
                 .then(function () {
                     for (var key in SensorsService.resources) {
                         vm.resourcesNames.push({name: key, node: SensorsService.resources[key].node});
                     }
-                    vm.listResourceSensors($stateParams.component);
-                    vm.initDone = true;
+                    if ($stateParams.component) {
+                        vm.listResourceSensors($stateParams.component);
+                    }
                 });
-            // $timeout(vm.connectListeners, 500);
-            $timeout(vm.initSensors, 500);
-        } else {
-            // vm.connectListeners();
-            vm.initSensors();
-            vm.initDone = true;
         }
+
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $scope.$on('$destroy', function () {
             unbindUpdate();
-            SensorsService.disconnectListener();
+            unbindReconnected();
         });
     }
 })();

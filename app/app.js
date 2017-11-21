@@ -237,6 +237,7 @@
                         }
                         if (reconnecting) {
                             $log.info('Reconnected Monitor Connection.');
+                            $rootScope.$emit('websocketReconnected');
                         }
                     } else {
                         $timeout($rootScope.connectEvents, 3000);
