@@ -29,11 +29,17 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
-        api.subscribe = function (subscriptions) {
+        api.subscribeSensor = function (sensor) {
+            var sensorWithoutComponent = sensor.name.replace(sensor.component + '_', '');
+            // Sensor subjects are sensor.*.<component>.<sensorName>
+            api.subscribe('sensor.*.' + sensor.component + '.' + sensorWithoutComponent);
+        };
+
+        api.subscribe = function (sub) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
                 'method': 'subscribe',
-                'params': [subscriptions],
+                'params': [sub],
                 'id': 'monitor-' + KatGuiUtil.generateUUID()
             };
 
@@ -41,9 +47,15 @@
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
                 $timeout(function () {
-                    api.subscribe(subscriptions);
+                    api.subscribe(sub);
                 }, 500);
             }
+        };
+
+        api.unsubscribeSensor = function (sensor) {
+            var sensorWithoutComponent = sensor.name.replace(sensor.component + '_', '');
+            // Sensor subjects are sensor.*.<component>.<sensorName>
+            api.unsubscribe('sensor.*.' + sensor.component + '.' + sensorWithoutComponent);
         };
 
         api.unsubscribe = function (subscriptions) {

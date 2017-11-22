@@ -82,23 +82,6 @@
             vm.showProgress = true;
             MonitorService.listSensors(resourceName, '.*');
             MonitorService.subscribe('sensor.*.' + resourceName + '.>');
-            // SensorsService.listResourceSensors(resourceName)
-            //     .then(function (result) {
-            //         vm.resources[resourceName].sensorsList = result;
-            //         vm.sensorsToDisplay = vm.resources[resourceName].sensorsList;
-            //         vm.sensorsToDisplay.forEach(function (item) {
-            //             item.timestamp = moment.utc(item.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-            //             item.received_timestamp = moment.utc(item.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-            //             vm.sensorValues[resourceName + '_' + item.python_identifier] = item;
-            //             item.parentName = resourceName;
-            //         });
-            //         if (!$scope.$$phase) {
-            //             $scope.$digest();
-            //         }
-            //         vm.showProgress = false;
-            //     }, function (error) {
-            //         vm.showProgress = false;
-            //     });
             vm.resourceSensorsBeingDisplayed = resourceName;
             vm.updateURL();
         };
@@ -198,36 +181,29 @@
             if (vm.showProgress && subject.startsWith('req.reply')) {
                 vm.showProgress = false;
             }
-            var sensors;
-            if (!(sensor instanceof Array)) {
-                sensors = [sensor];
-            } else {
-                sensors = sensor;
-            }
-            sensors.forEach(function (sensor) {
-                if (sensor.name.startsWith(vm.resourceSensorsBeingDisplayed)) {
-                    if (sensor.original_name) {
-                        sensor.shortName = sensor.original_name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
-                    } else {
-                        sensor.shortName = sensor.name.replace(vm.resourceSensorsBeingDisplayed + '_', '');
-                    }
 
-                    sensor.timestamp = moment.utc(sensor.value_ts, 'X').format(MOMENT_DATETIME_FORMAT);
-                    if (sensor.sample_ts) {
-                        sensor.received_timestamp = moment.utc(sensor.sample_ts, 'X').format(MOMENT_DATETIME_FORMAT);
-                    } else {
-                        sensor.received_timestamp = moment.utc().format(MOMENT_DATETIME_FORMAT);
-                    }
-                    if (!vm.sensorValues[sensor.name]) {
-                        vm.sensorValues[sensor.name] = sensor;
-                        vm.sensorsToDisplay.push(sensor);
-                    }
-                    vm.sensorValues[sensor.name].received_timestamp = sensor.received_timestamp;
-                    vm.sensorValues[sensor.name].timestamp = sensor.timestamp;
-                    vm.sensorValues[sensor.name].status = sensor.status;
-                    vm.sensorValues[sensor.name].value = sensor.value;
+            if (sensor.name.startsWith(vm.resourceSensorsBeingDisplayed)) {
+                if (sensor.original_name) {
+                    sensor.shortName = sensor.original_name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
+                } else {
+                    sensor.shortName = sensor.name.replace(vm.resourceSensorsBeingDisplayed + '_', '');
                 }
-            });
+
+                sensor.timestamp = moment.utc(sensor.value_ts, 'X').format(MOMENT_DATETIME_FORMAT);
+                if (sensor.sample_ts) {
+                    sensor.received_timestamp = moment.utc(sensor.sample_ts, 'X').format(MOMENT_DATETIME_FORMAT);
+                } else {
+                    sensor.received_timestamp = moment.utc().format(MOMENT_DATETIME_FORMAT);
+                }
+                if (!vm.sensorValues[sensor.name]) {
+                    vm.sensorValues[sensor.name] = sensor;
+                    vm.sensorsToDisplay.push(sensor);
+                }
+                vm.sensorValues[sensor.name].received_timestamp = sensor.received_timestamp;
+                vm.sensorValues[sensor.name].timestamp = sensor.timestamp;
+                vm.sensorValues[sensor.name].status = sensor.status;
+                vm.sensorValues[sensor.name].value = sensor.value;
+            }
 
             if (vm.sensorsPlotNames.length > 0 &&
                 _.findIndex(vm.sensorsPlotNames,
@@ -287,6 +263,7 @@
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $scope.$on('$destroy', function () {
+            MonitorService.unsubscribe('sensor.*.' + vm.resourceSensorsBeingDisplayed + '.>');
             unbindUpdate();
             unbindReconnected();
         });
