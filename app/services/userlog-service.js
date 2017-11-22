@@ -320,7 +320,7 @@
 
         api.receivedUserlogMessage = function (messageChannel, messageData) {
             var userlog;
-            if (messageChannel === 'userlogs:add') {
+            if (messageChannel === 'portal.userlogs.add') {
                 var index = _.findIndex(api.userlogs, {id: parseInt(messageData.id)});
                 if (index > -1) {
                     api.userlogs.splice(index, 1);
@@ -329,7 +329,7 @@
                     api.userlogs.push(api.populateUserlogTagsFromMap(messageData));
                     $rootScope.$emit('userlogs_add', api.userlogs[api.userlogs.length - 1]);
                 });
-            } else if (messageChannel === 'userlogs:modify') {
+            } else if (messageChannel === 'portal.userlogs.modify') {
                 var userlogIndex = _.findIndex(api.userlogs, {id: parseInt(messageData.parent_id)});
                 userlog = api.userlogs[userlogIndex];
                 if (userlog) {
@@ -347,7 +347,7 @@
                         $rootScope.$emit('userlogs_modify', api.userlogs[api.userlogs.length - 1]);
                     });
                 }
-            } else if (messageChannel === 'userlogs:metadata_upload') {
+            } else if (messageChannel === 'portal.userlogs.metadata_upload') {
                 userlog = _.findWhere(api.userlogs, {id: messageData[0].userlog_id});
                 if (userlog) {
                     $rootScope.$apply(function () {

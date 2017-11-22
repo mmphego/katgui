@@ -29,6 +29,10 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
+        api.subscribeSensorName = function (component, sensorName) {
+            api.subscribe('sensor.*.' + component + '.' + sensorName);
+        };
+
         api.subscribeSensor = function (sensor) {
             var sensorWithoutComponent = sensor.name.replace(sensor.component + '_', '');
             // Sensor subjects are sensor.*.<component>.<sensorName>
@@ -50,6 +54,10 @@
                     api.subscribe(sub);
                 }, 500);
             }
+        };
+
+        api.unsubscribeSensorName = function (component, sensorName) {
+            api.unsubscribe('sensor.*.' + component + '.' + sensorName);
         };
 
         api.unsubscribeSensor = function (sensor) {
@@ -89,7 +97,7 @@
         };
 
         api.subscribeToDefaultChannels = function () {
-            api.subscribe(['portal.time', 'portal.mon', 'portal.alarms', 'portal.health', 'portal.auth.>', 'portal.resources']);
+            api.subscribe(['portal.time', 'portal.alarms', 'portal.health', 'portal.auth.>', 'portal.resources']);
         };
 
         api.checkAlive = function () {
@@ -131,9 +139,8 @@
                     //     if (messageChannel[0] === 'alarms') {
                     //        AlarmsService.receivedAlarmMessage(messageObj.msg_channel, messageObj.msg_data);
                     //    }
-                    } else if (msg.subject === 'portal.userlogs') {
-                        $log.info(msg);
-                        // UserLogService.receivedUserlogMessage(messages.result.msg_channel, messages.result.msg_data);
+                    } else if (msg.subject.startsWith('portal.userlogs')) {
+                        UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject === 'portal.auth.current_lo') {
                         api.currentLeadOperator.name = data.lo;
                         if ($rootScope.currentUser &&
@@ -147,16 +154,6 @@
                             //Do not logout, just loging as a demoted monitor only use
                             SessionService.verifyAs('read_only');
                         }
-                    } else if (msg.subject === 'portal.mon') {
-                        $log.info(msg);
-                    //     if (messageChannel[0] === 'mon') {
-                    //        if (messageChannel[1] === 'sys_interlock_state') {
-                    //            api.interlockState.value = messageObj.msg_data.value;
-                    //        } else {
-                    //            $log.error('Dangling Sensors message...');
-                    //            $log.error(messageObj);
-                    //        }
-                    //    }
                     } else if (msg.subject === 'portal.resources') {
                         $log.info(msg);
                     //     if (messageChannel[0] === 'resources') {
@@ -182,6 +179,11 @@
                     } else {
                         // this was a req reply (list_sensors remote request)
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                        if (data.name === "katpool_lo_id") {
+                            api.currentLeadOperator.name = data.value;
+                        } else if (data.name === "sys_interlock_state") {
+                            api.interlockState.value = data.value;
+                        }
                     }
                 } else {
                     var message = JSON.parse(e.data);

@@ -230,7 +230,8 @@
                 .then(function() {
                     if ($rootScope.connectedToMonitor) {
                         if (reconnecting && $rootScope.currentStateName().startsWith('sched')) {
-                            MonitorService.subscribe('sched');
+                            MonitorService.subscribeSensorName('katpool', 'lo_id');
+                            MonitorService.subscribeSensorName('sys', 'interlock_state');
                             ObsSchedService.getProgramBlocks();
                             ObsSchedService.getScheduleBlocks();
                             ObsSchedService.getProgramBlocksObservationSchedule();
@@ -238,6 +239,9 @@
                         if (reconnecting) {
                             $log.info('Reconnected Monitor Connection.');
                             $rootScope.$emit('websocketReconnected');
+                        } else {
+                            MonitorService.listSensors('sys', 'interlock_state');
+                            MonitorService.listSensors('katpool', 'lo_id');
                         }
                     } else {
                         $timeout($rootScope.connectEvents, 3000);
@@ -408,6 +412,8 @@
         };
 
         $scope.$on('$destroy', function() {
+            MonitorService.unsubscribeSensorName('katpool', 'lo_id');
+            MonitorService.unsubscribeSensorName('sys', 'interlock_state');
             MonitorService.disconnectListener();
             vm.unbindLoginSuccess();
             if (vm.updateTimeDisplayInterval) {
