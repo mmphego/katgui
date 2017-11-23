@@ -120,7 +120,7 @@ angular.module('katGui.d3')
                     "<div><b>" + fullSensorName + "</b></div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
-                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format(MOMENT_DATETIME_FORMAT) + "</div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.time, 'X').format(MOMENT_DATETIME_FORMAT) + "</div>" +
                     "</div>"
                 );
             } else {
