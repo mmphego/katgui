@@ -81,6 +81,8 @@
         $rootScope.expertOrLO = false;
         $rootScope.showVideoLinks = false;
         $rootScope.connectedToMonitor = true;
+        $rootScope.currentLeadOperator = { name: '' };
+        $rootScope.interlockState = { value: '' };
 
         $rootScope.devMode = window.location.host.startsWith('localhost');
         $rootScope.portalUrl = $rootScope.devMode ? $localStorage.devModePortalURL : window.location.origin;
@@ -183,8 +185,6 @@
             vm.currentUser = null;
             vm.userRoles = USER_ROLES;
             $rootScope.alarmsData = AlarmsService.alarmsData;
-            $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
-            $rootScope.interlockState = MonitorService.interlockState;
 
             vm.utcTime = '';
             vm.localTime = '';
@@ -230,8 +230,6 @@
                 .then(function() {
                     if ($rootScope.connectedToMonitor) {
                         if (reconnecting && $rootScope.currentStateName().startsWith('sched')) {
-                            MonitorService.subscribeSensorName('katpool', 'lo_id');
-                            MonitorService.subscribeSensorName('sys', 'interlock_state');
                             ObsSchedService.getProgramBlocks();
                             ObsSchedService.getScheduleBlocks();
                             ObsSchedService.getProgramBlocksObservationSchedule();
@@ -239,10 +237,11 @@
                         if (reconnecting) {
                             $log.info('Reconnected Monitor Connection.');
                             $rootScope.$emit('websocketReconnected');
-                        } else {
-                            MonitorService.listSensors('sys', 'interlock_state');
-                            MonitorService.listSensors('katpool', 'lo_id');
                         }
+                        MonitorService.listSensors('sys', 'interlock_state');
+                        MonitorService.listSensors('katpool', 'lo_id');
+                        MonitorService.subscribeSensorName('katpool', 'lo_id');
+                        MonitorService.subscribeSensorName('sys', 'interlock_state');
                     } else {
                         $timeout($rootScope.connectEvents, 3000);
                     }

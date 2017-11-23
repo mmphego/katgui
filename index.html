@@ -426,9 +426,9 @@
         <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" ng-class="{'margin-bottom-25': $root.loggedIn}">
         </md-content>
         <div class="main-footer-toolbar" layout="column" ng-if="loggedIn">
-            <md-toolbar md-theme="{{themePrimary}}" class="md-toolbar-tools-small md-whiteframe-z1" layout="row">
+            <md-toolbar md-theme="{{$root.interlockState.value === 'NONE'? themePrimary: 'red'}}" class="md-toolbar-tools-small md-whiteframe-z1" layout="row">
                 <span>
-                    Interlock State: {{$root.interlockState.value ? $root.interlockState.value : 'None'}}
+                    Interlock State: <b>{{$root.interlockState.value}}</b>
                     <md-tooltip>Current Interlock State</md-tooltip>
                 </span>
                 <div style="position: absolute; bottom: 0; left: 0; right: 0" layout="row" layout-align="center center">

@@ -19,8 +19,6 @@
         //so allow for 35 seconds before alerting about timeout
         api.heartbeatTimeOutLimit = 35000;
         api.checkAliveConnectionInterval = 10000;
-        api.currentLeadOperator = {name: ''};
-        api.interlockState = {value: ''};
 
         api.getTimeoutPromise = function () {
             if (!api.deferredMap['timeoutDefer']) {
@@ -131,6 +129,11 @@
                         api.lastSyncedLST = data.lst;
                     } else if (msg.subject.startsWith('sensor.')) {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                        if (data.name === "katpool_lo_id") {
+                            $rootScope.currentLeadOperator.name = data.value;
+                        } else if (data.name === "sys_interlock_state") {
+                            $rootScope.interlockState.value = data.value;
+                        }
                     } else if (msg.subject === 'portal.sched') {
                         $log.info(msg);
                         // ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
@@ -142,14 +145,14 @@
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject === 'portal.auth.current_lo') {
-                        api.currentLeadOperator.name = data.lo;
+                        $rootScope.currentLeadOperator.name = data.lo;
                         if ($rootScope.currentUser &&
                             $rootScope.currentUser.req_role === 'lead_operator' &&
-                            api.currentLeadOperator.name.length > 0 &&
-                            api.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                            $rootScope.currentLeadOperator.name.length > 0 &&
+                            $rootScope.currentLeadOperator.name !== $rootScope.currentUser.email) {
                             NotifyService.showDialog(
                                 'You have been logged in as the Monitor Role', 'You have lost the Lead Operator Role because ' +
-                                api.currentLeadOperator.name + ' has assumed the Lead Operator role.');
+                                $rootScope.currentLeadOperator.name + ' has assumed the Lead Operator role.');
                             //$rootScope.logout();
                             //Do not logout, just loging as a demoted monitor only use
                             SessionService.verifyAs('read_only');
@@ -177,9 +180,9 @@
                         // this was a req reply (list_sensors remote request)
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         if (data.name === "katpool_lo_id") {
-                            api.currentLeadOperator.name = data.value;
+                            $rootScope.currentLeadOperator.name = data.value;
                         } else if (data.name === "sys_interlock_state") {
-                            api.interlockState.value = data.value;
+                            $rootScope.interlockState.value = data.value;
                         }
                     }
                 } else {
