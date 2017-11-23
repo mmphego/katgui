@@ -14,6 +14,7 @@
         vm.targetsToDisplay = [];
         vm.filters = [];
         vm.sensorValues = {};
+        vm.trailDots = 30;
         // map subarray number to a colour
         vm.subarrayColors = {1: "#EF6C00", 2: "#2196F3", 3: "#E91E63", 4: "#43A047"};
 
@@ -99,8 +100,6 @@
                             name: vm.targets[i].name,
                             pos_actual_pointm_azim: {value: az},
                             pos_actual_pointm_elev: {value: el}
-                            //pos_request_base_dec: {value: radec[1]},
-                            //pos_request_base_ra: {value: radec[0]}
                         });
                     }
                 }
@@ -183,11 +182,10 @@
         angular.element(document.querySelector(".sky-plot-options-containter")).css({'background-color': bgColor});
 
         vm.unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.statusMessageReceived);
-        vm.unbindPoolResourcesUpdates = $rootScope.$on('subarrayPoolResourcesSensorUpdate', vm.poolResourcesSensorUpdate);
         vm.unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         vm.initSensors();
-        vm.stopUpdating = $interval(function () {
+        vm.updatePlotInterval = $interval(function () {
              vm.redraw(false);
         }, 1000);
 
@@ -196,9 +194,8 @@
                 MonitorService.unsubscribeSensor(sensor);
             });
             vm.unbindSensorUpdates();
-            vm.unbindPoolResourcesUpdates();
             vm.unbindReconnected();
-            $interval.cancel(vm.stopUpdating);
+            $interval.cancel(vm.updatePlotInterval);
         });
     }
 })();
