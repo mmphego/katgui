@@ -3,56 +3,19 @@
     angular.module('katGui.health')
         .controller('ReceptorPointingCtrl', ReceptorPointingCtrl);
 
-    function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $interval, $log,
-                                  NotifyService, $timeout, ObsSchedService) {
+    function ReceptorPointingCtrl($rootScope, $scope, KatGuiUtil, ConfigService, MonitorService, $interval, $log,
+                                  NotifyService, $timeout) {
 
         var vm = this;
-        vm.receptorsData = [];
-        vm.guid = KatGuiUtil.generateUUID();
-        vm.disconnectIssued = false;
-        vm.connectInterval = null;
-        vm.connectionLost = false;
+        vm.receptors = {};
+        vm.skyPlotData = [];
+        vm.subscribedSensors = [];
         vm.targets = [];
         vm.targetsToDisplay = [];
         vm.filters = [];
         vm.sensorValues = {};
-        vm.subarrayColors = ["#EF6C00", "#2196F3", "#E91E63", "#43A047"];
-
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectionLost = false;
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectionLost = true;
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectionLost = true;
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
-                    }
-                });
-        };
-
-        vm.connectListeners();
+        // map subarray number to a colour
+        vm.subarrayColors = {1: "#EF6C00", 2: "#2196F3", 3: "#E91E63", 4: "#43A047"};
 
         vm.sensorsToConnect = [
             'pos_actual_pointm_azim',
@@ -72,29 +35,21 @@
         ];
 
         vm.initSensors = function () {
-            vm.receptorsData.splice(0, vm.receptorsData.length);
-            ConfigService.getReceptorList()
-                .then(function (result) {
-                    var sensorsRegexToConnect = [];
-                    result.forEach(function (item, index) {
-                        for (var i = 0; i < vm.sensorsToConnect.length; i++) {
-                            sensorsRegexToConnect.push('^' + item + '_' + vm.sensorsToConnect[i]);
-                        }
-                        var receptor = {name: item, showHorizonMask: false, skyPlot: false, subarrayColor: "#d7d7d7"};
-                        for (var k = 0; k < ObsSchedService.subarrays.length; k++) {
-                            if (ObsSchedService.subarrays[k].pool_resources &&
-                                ObsSchedService.subarrays[k].pool_resources.indexOf(receptor.name) > -1) {
-                                receptor.sub_nr = parseInt(ObsSchedService.subarrays[k].id);
-                                receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
-                                vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
-                                break;
-                            }
-                        }
-                        vm.receptorsData.push(receptor);
+            ConfigService.getSystemConfig()
+                .then(function (systemConfig) {
+                    systemConfig.system.ants.split(',').forEach(function (receptorName, index) {
+                        var receptor = {
+                            name: receptorName,
+                            showHorizonMask: false,
+                            subarrayColor: "#d7d7d7"
+                        };
+                        vm.receptors[receptorName] = receptor;
+                        MonitorService.listSensors(receptorName, '^(' + vm.sensorsToConnect.join('|') + ')$');
                     });
-                    SensorsService.setSensorStrategies(sensorsRegexToConnect.join('|'), 'event-rate', 1, 360);
+                    systemConfig.subarrayNrs.forEach(function(subNr) {
+                      MonitorService.listSensors('subarray_' + subNr, 'pool_resources$');
+                    });
                 });
-
         };
 
         vm.getSources = function () {
@@ -128,7 +83,7 @@
         };
 
         vm.drawSkyPlot = function (drawAll) {
-            vm.clearSkyPlot();
+            vm.skyPlotData = [];
             if (vm.selectedTarget || drawAll) {
                 for (var i in vm.targets) {
                     if ((vm.selectedFilter === '' || vm.targets[i].tags.indexOf(vm.selectedFilter) > -1) &&
@@ -140,9 +95,8 @@
                             az = az - 360;
                         }
                         var el = azel[1] * (180/Math.PI);
-                        vm.receptorsData.push({
+                        vm.skyPlotData.push({
                             name: vm.targets[i].name,
-                            skyPlot: true,
                             pos_actual_pointm_azim: {value: az},
                             pos_actual_pointm_elev: {value: el}
                             //pos_request_base_dec: {value: radec[1]},
@@ -155,60 +109,47 @@
         };
 
         vm.clearSkyPlot = function () {
-            var indexesToRemove = [];
-            for (var i = 0; i < vm.receptorsData.length; i++) {
-                if (vm.receptorsData[i].skyPlot) {
-                    indexesToRemove.push(i);
-                }
-            }
-            for (var idx = indexesToRemove.length - 1; idx >= 0; idx--) {
-                vm.receptorsData.splice(indexesToRemove[idx], 1);
-            }
             vm.redraw(true);
         };
 
-        vm.statusMessageReceived = function (event, message) {
-            var sensor = message.name.split(':')[1];
-            vm.sensorValues[sensor] = message.value;
-
-            vm.receptorsData.forEach(function (receptor) {
-                if (sensor.startsWith(receptor.name)) {
-                    receptor[sensor.replace(receptor.name + '_', '')] = message.value;
+        vm.statusMessageReceived = function (event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                if (sensor.component === 'sys' || sensor.component === 'katpool') {
+                    // These are sensors from other listings like katpool_lo_id and sys_interlock_state
+                    return;
                 }
-            });
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
+            }
+            vm.sensorValues[sensor.name] = sensor;
 
-            if (!vm.stopUpdating) {
-                vm.stopUpdating = $interval(function () {
-                    vm.redraw(false);
-                    $interval.cancel(vm.stopUpdating);
-                    vm.stopUpdating = null;
-                }, 1000);
+            if (sensor.name.endsWith('pool_resources')) {
+                // e.g. subarray_1_pool_resources
+                var sensorNameSplit = sensor.name.split('_');
+                // e.g. subarray_1
+                var subNr = parseInt(sensorNameSplit[sensorNameSplit.length - 3]);
+                for (var receptorName in vm.receptors) {
+                  if (sensor.value.indexOf(receptorName) > -1) {
+                      vm.receptors[receptorName].subarrayColor = vm.subarrayColors[subNr];
+                      vm.sensorValues[receptorName + '_sub_nr'] = subNr;
+                  } else if (vm.receptors[receptorName] === subNr) {
+                      // receptor was unassigned
+                      vm.receptors[receptorName].subarrayColor = "#d7d7d7";
+                      vm.sensorValues[receptorName + '_sub_nr'] = null;
+                  }
+                }
+            } else {
+              // e.g. m011_<sensor>
+              var receptor = sensor.name.split('_')[0];
+              sensor.name = sensor.name.replace(receptor + '_', '');
+              vm.receptors[receptor][sensor.name] = sensor;
             }
         };
 
-        vm.poolResourcesSensorUpdate = function (event, sensor) {
-            vm.receptorsData.forEach(function (receptor) {
-               if (sensor.value.indexOf(receptor.name) > -1) {
-                   receptor.sub_nr = parseInt(sensor.name.split('_')[1]);
-                   receptor.subarrayColor = vm.subarrayColors[receptor.sub_nr - 1];
-                   vm.sensorValues[receptor.name + '_sub_nr'] = {value: receptor.sub_nr};
-               } else if (receptor.sub_nr === parseInt(sensor.name.split('_')[1])) {
-                   receptor.sub_nr = null;
-                   receptor.subarrayColor = "#d7d7d7";
-                   vm.sensorValues[receptor.name + '_sub_nr'] = null;
-               }
-           });
-           if (!vm.stopUpdating) {
-               vm.stopUpdating = $interval(function () {
-                   vm.redraw(false);
-                   $interval.cancel(vm.stopUpdating);
-                   vm.stopUpdating = null;
-               }, 1000);
-           }
-       };
-
         vm.redraw = function (horizonMaskToggled) {
-            vm.redrawChart(vm.receptorsData, vm.showNames, vm.showTrails, vm.showGridLines, vm.trailDots, horizonMaskToggled);
+            vm.redrawChart(
+              vm.receptors, vm.skyPlotData, vm.showNames, vm.showTrails,
+              vm.showGridLines, vm.trailDots, horizonMaskToggled);
         };
 
         vm.toggleHorizonMask = function (receptor) {
@@ -232,7 +173,7 @@
             }
         };
 
-        vm.delaydRedrawAfterViewChange = function () {
+        vm.delayedRedrawAfterViewChange = function () {
             $timeout(function () {
                 vm.redraw(false);
             }, 1000);
@@ -241,15 +182,23 @@
         var bgColor = angular.element(document.querySelector("md-content")).css('background-color');
         angular.element(document.querySelector(".sky-plot-options-containter")).css({'background-color': bgColor});
 
-        vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
-        vm.cancelListeningToPoolResources = $rootScope.$on('subarrayPoolResourcesSensorUpdate', vm.poolResourcesSensorUpdate);
+        vm.unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.statusMessageReceived);
+        vm.unbindPoolResourcesUpdates = $rootScope.$on('subarrayPoolResourcesSensorUpdate', vm.poolResourcesSensorUpdate);
+        vm.unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
+        vm.initSensors();
+        vm.stopUpdating = $interval(function () {
+             vm.redraw(false);
+        }, 1000);
 
         $scope.$on('$destroy', function () {
-            vm.cancelListeningToSensorMessages();
-            vm.cancelListeningToPoolResources();
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            vm.unbindSensorUpdates();
+            vm.unbindPoolResourcesUpdates();
+            vm.unbindReconnected();
             $interval.cancel(vm.stopUpdating);
-            vm.disconnectIssued = true;
-            SensorsService.disconnectListener();
         });
     }
 })();

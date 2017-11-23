@@ -156,13 +156,10 @@
                             SessionService.verifyAs('read_only');
                         }
                     } else if (msg.subject === 'portal.resources') {
-                        $log.info(msg);
-                    //     if (messageChannel[0] === 'resources') {
-                    //        if (messageChannel[1].endsWith('katpool_resources_in_maintenance')) {
-                    //            StatusService.receptorMaintenanceMessageReceived(messageObj);
-                    //        }
-                    //        ObsSchedService.receivedResourceMessage(message.msg_data);
-                    //    }
+                         // if (data.name.endsWith('katpool_resources_in_maintenance')) {
+                         //     StatusService.receptorMaintenanceMessageReceived(data);
+                         // }
+                         // ObsSchedService.receivedResourceMessage(data);
                     } else if (msg.subject === 'portal.health') {
                         $log.info(msg);
                     //     if (messageChannel[0] === 'health') {

@@ -1,5 +1,5 @@
 <div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative; overflow: hidden"
-     ng-class="{'connection-lost-bg':vm.connectionLost}">
+     ng-class="{'connection-lost-bg':!$root.connectedToMonitor}">
 
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 120px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'pointing-menu-content')">
@@ -7,9 +7,9 @@
         </md-button>
         <md-menu-content width="4" style="padding-left: 16px;" id="pointing-menu-content" md-menu-disable-close>
             <md-menu-item>
-                <md-checkbox class="md-primary" ng-model="vm.useEquatorial" ng-init="vm.useEquatorial = true" ng-change="vm.redraw(true)"
-                    ng-click="vm.delaydRedrawAfterViewChange()">
-                    <span>Use Equatorial Coordinates</span>
+                <md-checkbox class="md-primary" ng-model="vm.usePolar" ng-init="vm.usePolar = true" ng-change="vm.redraw(true)"
+                    ng-click="vm.delayedRedrawAfterViewChange()">
+                    <span>Use Polar Coordinates</span>
                 </md-checkbox>
             </md-menu-item>
             <md-menu-item>
@@ -28,18 +28,6 @@
                     <span>Show Trails</span>
                 </md-checkbox>
             </md-menu-item>
-            <md-menu-item ng-show="vm.showTrails">
-                <div layout="row" layout-align="start center"
-                     style="margin-left: 24px; margin-right: 8px; margin-bottom: 8px;">
-                    <label style="width: 65px; font-weight: normal; margin-top: 4px;">Trail Dots:</label>
-                    <md-input-container md-no-float style="margin-left: 8px;text-align: start; padding: 0;"
-                                        class="md-primary" title="Set the desired trail dots">
-                        <input flex placeholder="Minimum" ng-model="vm.trailDots" ng-init="vm.trailDots = 30"
-                               ng-change="vm.redraw(false)" type="number" ng-model-options="{ debounce: 300 }"
-                               step="5" max="100" min="1">
-                    </md-input-container>
-                </div>
-            </md-menu-item>
             <md-menu-item>
                 <md-checkbox class="md-primary" ng-model="vm.showGridLines" ng-change="vm.redraw(false)"
                              ng-init="vm.showGridLines = true">
@@ -51,24 +39,25 @@
 
     <div flex layout="column" style="overflow: hidden; margin-top: 8px;">
         <div style="height: 90px; margin-bottom: 12px" ng-show="vm.showReceptorStates">
-            <div ng-repeat="receptor in vm.receptorsData | filter:{'skyPlot':false} track by $index"
-                 class="{{receptor.name + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
-                 ng-click="vm.toggleHorizonMask(receptor)" title="{{'Click to toggle the horizon mask for ' + receptor.name}}"
+            <!-- <div ng-repeat="(receptorName, receptor) in vm.receptorsData | filter:{'skyPlot':false} track by $index" -->
+            <div ng-repeat="(receptorName, receptor) in vm.receptors"
+                 class="{{receptorName + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
+                 ng-click="vm.toggleHorizonMask(receptor)" title="{{'Click to toggle the horizon mask for ' + receptorName}}"
                  style="overflow: visible; display: inline-block" ng-class="{'border-black-2px': receptor.showHorizonMask}"
-                 ng-mouseenter="vm.receptorHoverName=receptor.name" ng-mouseleave="vm.receptorHoverName=''">
-                <div class="receptor-legend-item-text">{{receptor.name}}</div>
-                <span ng-show="vm.sensorValues[receptor.name + '_mode'].value === 'POINT'" class="pointing-showing">P</span>
-                <span ng-show="vm.sensorValues[receptor.name + '_lock'].value" class="fa fa-asterisk on-target-span"
+                 ng-mouseenter="vm.receptorHoverName=receptorName" ng-mouseleave="vm.receptorHoverName=''">
+                <div class="receptor-legend-item-text">{{receptorName}}</div>
+                <span ng-show="vm.sensorValues[receptorName + '_mode'].value === 'POINT'" class="pointing-showing">P</span>
+                <span ng-show="vm.sensorValues[receptorName + '_lock'].value" class="fa fa-asterisk on-target-span"
                       title="AP on Target"></span>
-                <span ng-show="vm.sensorValues[receptor.name + '_inhibited'].value" class="fa fa-ban inhibited-showing"
+                <span ng-show="vm.sensorValues[receptorName + '_inhibited'].value" class="fa fa-ban inhibited-showing"
                       title="Inhibited"></span>
-                <span ng-show="vm.sensorValues[receptor.name + '_mode'].value === 'STOW'" class="fa fa-dot-circle-o stow-showing"
+                <span ng-show="vm.sensorValues[receptorName + '_mode'].value === 'STOW'" class="fa fa-dot-circle-o stow-showing"
                       title="Stowed"></span>
             </div>
         </div>
-        <receptor-pointing-equatorial ng-if="vm.useEquatorial" flex style="overflow: hidden"
-                                      redraw-function="vm.redrawChart"></receptor-pointing-equatorial>
-        <receptor-pointing-horizontal ng-if="!vm.useEquatorial" flex style="overflow: hidden"
+        <receptor-pointing-polar ng-if="vm.usePolar" flex style="overflow: hidden"
+                                      redraw-function="vm.redrawChart"></receptor-pointing-polar>
+        <receptor-pointing-horizontal ng-if="!vm.usePolar" flex style="overflow: hidden"
                                       redraw-function="vm.redrawChart"></receptor-pointing-horizontal>
     </div>
 

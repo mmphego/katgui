@@ -1,6 +1,6 @@
 angular.module('katGui.d3')
 
-    .directive('receptorPointingEquatorial', function ($timeout) {
+    .directive('receptorPointingPolar', function ($timeout) {
         return {
             restrict: 'EA',
             scope: {
@@ -31,16 +31,18 @@ angular.module('katGui.d3')
                 scope.skyPlotData = [];
                 scope.receptorData = [];
 
-                scope.redrawFunction = function (receptors, showNames, showTrails, showGridLines, trailDots, horizonMaskToggled) {
+                scope.redrawFunction = function (receptors, skyPlot, showNames, showTrails,
+                                                 showGridLines, trailDots, horizonMaskToggled) {
 
                     scope.showTrails = showTrails;
                     scope.trailDots = trailDots;
-                    scope.skyPlotData = [];
+                    scope.skyPlotData = skyPlot;
                     scope.receptorData = [];
 
                     //parse the horizon mask data and sort it
                     var newHorizonData = false;
-                    receptors.forEach(function (receptor) {
+                    Object.keys(receptors).forEach(function (receptorName) {
+                        var receptor = receptors[receptorName];
                         if (receptor.horizonMask && !receptor.horizonMaskData) {
                             receptor.horizonMaskData = [];
                             horizonMaskDsv.parse(receptor.horizonMask, function (d) {
@@ -51,11 +53,7 @@ angular.module('katGui.d3')
                             });
                             newHorizonData = true;
                         }
-                        if (receptor.skyPlot) {
-                            scope.skyPlotData.push(receptor);
-                        } else {
-                            scope.receptorData.push(receptor);
-                        }
+                        scope.receptorData.push(receptor);
                     });
 
                     if (!svg ||
@@ -225,8 +223,9 @@ angular.module('katGui.d3')
                         dataToDraw.push(receptor);
                     });
                     if (scope.redrawSkyPlot) {
-                        scope.skyPlotData.forEach(function (receptor) {
-                            dataToDraw.push(receptor);
+                        scope.skyPlotData.forEach(function (skyPlot) {
+                            skyPlot.skyPlot = true;
+                            dataToDraw.push(skyPlot);
                         });
                         scope.redrawSkyPlot = false;
                     }
