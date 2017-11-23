@@ -3,71 +3,32 @@
     angular.module('katGui')
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
-    function CamComponentsCtrl($rootScope, $scope, SensorsService, KatGuiUtil, $interval, $log, ConfigService,
+    function CamComponentsCtrl($rootScope, $scope, SensorsService, MonitorService, KatGuiUtil, $interval, $log, ConfigService,
                                ControlService, NotifyService, $state, USER_ROLES, $timeout) {
 
         var vm = this;
-
         vm.resourcesNames = {};
-        vm.guid = KatGuiUtil.generateUUID();
-        vm.connectInterval = null;
-
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                        vm.connectListeners();
-                    }
-                });
-        };
+        vm.subscribedSensors = [];
 
         vm.initSensors = function () {
             vm.nodes = ConfigService.resourceGroups;
             SensorsService.listResourcesFromConfig()
-                .then(function (result) {
-                    for (var key in result) {
-                        vm.resourcesNames[key] = {
-                            name: key,
-                            sensors: {},
-                            host: result[key].host,
-                            port: result[key].port,
-                            node: result[key].node
-                        };
-                        vm.resourcesNames[key].nodeman = $rootScope.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
-                    }
-
-                    SensorsService.setSensorStrategies(
-                        'sys_monitor_', 'event-rate', 1, 360);
-
-                    $timeout(function () {
-                        if (SensorsService.connection) {
-                            SensorsService.setSensorStrategies(
-                                'katcpmsgs|version|build', 'event-rate', 1, 360);
-                        }
-                    }, 1000);
+                .then(function (resources) {
+                  ConfigService.getSystemConfig().then(function () {
+                      for (var key in resources) {
+                          vm.resourcesNames[key] = {
+                              name: key,
+                              sensors: {},
+                              host: resources[key].host,
+                              port: resources[key].port,
+                              node: resources[key].node
+                          };
+                          vm.resourcesNames[key].nodeman = $rootScope.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
+                      }
+                      MonitorService.listSensors('sys', '^monitor_');
+                      MonitorService.listSensors('all', 'katcpmsgs|version|build');
+                  });
                 });
-
         };
 
         vm.stopProcess = function (resource) {
@@ -94,40 +55,39 @@
             ControlService.toggleKATCPMessageProxy(resource, newValue? 'enable' : 'disable');
         };
 
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var strList = sensor.name.split(':');
-            var sensorName = strList[1];
-            if (sensorName.indexOf('monitor_') > -1) {
-                var resource = sensorName.split('monitor_')[1];
-                if (!vm.resourcesNames[resource]) {
-                    vm.resourcesNames[resource] = {sensors: {}};
-                }
-                vm.resourcesNames[resource].connected = sensor.value.value;
-            } else {
-                var parentName;
-                var resourceNamesList = Object.keys(vm.resourcesNames);
-                for (var i = 0; i < resourceNamesList.length; i++) {
-                    if (sensorName.startsWith(resourceNamesList[i])) {
-                        parentName = resourceNamesList[i];
-                        break;
-                    }
-                }
-                if (parentName) {
-                    if (!vm.resourcesNames[parentName]) {
-                        vm.resourcesNames[parentName] = {sensors: {}};
-                    }
-                    sensorName = sensorName.replace(parentName + '_', '');
-                    vm.resourcesNames[parentName].sensors[sensorName] = {
-                        name: sensorName,
-                        value: sensor.value.value
-                    };
-                } else {
-                    $log.error('Dangling sensor message without a parent component: ' + sensor);
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                if (!vm.resourcesNames[sensor.component]) {
+                    // These are sensors from other listings like katpool_lo_id and sys_interlock_state
                     return;
                 }
-            }
-            if (!$scope.$$phase) {
-                $scope.$digest();
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
+                var sensorName = sensor.name.replace(sensor.component + '_', '');
+                if (sensorName.indexOf('monitor_') > -1) {
+                    var connectedComponent = sensorName.replace('monitor_', '');
+                    vm.resourcesNames[connectedComponent].connected = sensor.value;
+                } else {
+                    vm.resourcesNames[sensor.component].sensors[sensorName] = {
+                        name: sensorName,
+                        value: sensor.value
+                    };
+                }
+            } else {
+                var component;
+                if (sensor.name.indexOf('monitor_') > -1) {
+                    component = sensor.name.replace('sys_monitor_', '');
+                    vm.resourcesNames[component].connected = sensor.value;
+                } else {
+                    // sensor.archive.cbf_2.logging_katcpmsgs_devices_enabled
+                    var subjectSplit = subject.split('.');
+                    component = subjectSplit[subjectSplit.length - 2];
+                    var sensorNameFromSubject = subjectSplit[subjectSplit.length - 1];
+                    vm.resourcesNames[component].sensors[sensorNameFromSubject] = {
+                        name: sensorNameFromSubject,
+                        value: sensor.value
+                    };
+                }
             }
         });
 
@@ -145,29 +105,27 @@
 
         vm.disableAllKATCPMessageLogging = function () {
             for (var name in vm.resourcesNames) {
-                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled &&
-                    vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled.value) {
+                var devicesKatcpmsgsSensor = vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled;
+                var proxyKatcpmsgsSensor = vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled;
+                if (devicesKatcpmsgsSensor && devicesKatcpmsgsSensor.value) {
                     ControlService.toggleKATCPMessageDevices(name, 'disable');
                 }
-                if (vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled &&
-                    vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled.value) {
+                if (proxyKatcpmsgsSensor && proxyKatcpmsgsSensor.value) {
                     ControlService.toggleKATCPMessageProxy(name, 'disable');
                 }
             }
         };
 
-        vm.afterInit = function() {
-            vm.connectListeners();
-        };
+        vm.initSensors();
 
-        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $scope.$on('$destroy', function () {
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
             unbindUpdate();
-            if (vm.unbindLoginSuccess) {
-                vm.unbindLoginSuccess();
-            }
-            SensorsService.disconnectListener();
+            unbindReconnected();
         });
     }
 })();

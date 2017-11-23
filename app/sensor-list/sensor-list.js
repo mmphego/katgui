@@ -13,9 +13,6 @@
         vm.resourceSensorsBeingDisplayed = '';
         vm.searchFilter = $stateParams.filter? $stateParams.filter: '';
         vm.sensorsPlotNames = [];
-        vm.guid = KatGuiUtil.generateUUID();
-        vm.connectInterval = null;
-        vm.initDone = false;
 
         vm.showTips = false;
         vm.showContextZoom = false;
@@ -177,6 +174,9 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            if (!vm.resourceSensorsBeingDisplayed) {
+                return;
+            }
             // list_sensors request finished
             if (vm.showProgress && subject.startsWith('req.reply')) {
                 vm.showProgress = false;
@@ -235,13 +235,11 @@
         };
 
         vm.updateURL = function () {
-            if (vm.initDone) {
-                $state.go('sensor-list', {
-                    component: vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: null,
-                    filter: vm.searchFilter? vm.searchFilter: null,
-                    hideNominal: vm.hideNominalSensors? 'true': null},
-                    { notify: false, reload: false });
-            }
+            $state.go('sensor-list', {
+                component: vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: null,
+                filter: vm.searchFilter? vm.searchFilter: null,
+                hideNominal: vm.hideNominalSensors? 'true': null},
+                { notify: false, reload: false });
         };
 
         //create to function to bind to, but dont do anything with it yet
