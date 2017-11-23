@@ -126,7 +126,6 @@
                 if (e.data.data) {
                     var msg = e.data;
                     var data = JSON.parse(msg.data);
-                    console.log(msg.subject);
                     if (msg.subject === 'portal.time') {
                         api.lastSyncedTime = data.time + 0.5;
                         api.lastSyncedLST = data.lst;

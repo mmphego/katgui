@@ -38,7 +38,7 @@
         vm.initSensors = function () {
             ConfigService.getSystemConfig()
                 .then(function (systemConfig) {
-                    systemConfig.system.ants.split(',').forEach(function (receptorName, index) {
+                    systemConfig.system.ants.split(',').forEach(function (receptorName) {
                         var receptor = {
                             name: receptorName,
                             showHorizonMask: false,

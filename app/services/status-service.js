@@ -95,6 +95,10 @@
         api.applyPendingUpdates = function () {
             while (api.updateQueue.length > 0) {
                 var sensorName = api.updateQueue.shift();
+                // remove the mon_proxyN from the sensor name
+                if (sensorName.startsWith('mon_')) {
+                  sensorName = sensorName.replace(/^mon_.*agg_/, 'agg_');
+                }
                 d3.selectAll('.health-full-item.' + sensorName).attr('class', function (d) {
                     return api.getClassesOfSensor(d, sensorName, true) + ' health-full-item';
                 });
