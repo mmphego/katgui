@@ -368,8 +368,8 @@
                         $scope.editMode = editMode;
                         $scope.log = log;
                         $scope.tags = api.tags;
-                        $scope.start_time = log.start_time;
-                        $scope.end_time = log.end_time;
+                        $scope.start_time = log.start_time? log.start_time: '';
+                        $scope.end_time = log.end_time? log.end_time: '';
                         $scope.content = log.content;
                         $scope.selectedTags = [];
                         $scope.attachments = log.attachments;
@@ -377,8 +377,8 @@
                         $scope.validTags = true;
                         $scope.mandatoryTagsListString = api.mandatoryTagsListString;
                         $scope.showInvalidTagsTooltip = false;
-                        $scope.openedWithoutStartTime = log.start_time !== null && log.start_time.length > 0;
-                        $scope.openedWithoutEndTime = log.end_time !== null && log.end_time.length > 0;
+                        $scope.openedWithoutStartTime = $scope.start_time !== null && $scope.start_time.length > 0;
+                        $scope.openedWithoutEndTime = $scope.end_time !== null && $scope.end_time.length > 0;
                         $scope.chipHasBeenAdded = false;
                         $scope.focusTarget = focusTarget? focusTarget: 'userlogDialogStartTimeElement';
 

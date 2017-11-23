@@ -852,6 +852,14 @@ angular.module('katGui.d3')
 
             scope.downloadCsv = function(useUnixTimestamps, includeValueTimestamp) {
                 scope.nestedData.forEach(function(sensorValues, index) {
+                    var lengthBeforeUnique = sensorValues.values.length;
+                    sensorValues.values = _.uniq(sensorValues.values, function (item) {
+                        return item[timestampKey];
+                    });
+                    var lengthAfterUnique = sensorValues.values.length;
+                    if (lengthBeforeUnique > lengthAfterUnique) {
+                        $log.warn('Duplicate sensor values found, trimmed ' + (lengthBeforeUnique - lengthAfterUnique) + ' samples for ' + sensorValues.key);
+                    }
                     var csvContent = ["timestamp,status,value"];
                     if (includeValueTimestamp) {
                         csvContent[0] = "value_timestamp," + csvContent[0];

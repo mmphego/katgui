@@ -11,11 +11,7 @@
         $rootScope.$on('alarmMessage', api.receivedAlarmMessage);
 
         api.tailAlarmsHistory = function () {
-            if (ConfigService.GetKATLogFileServerURL()) {
-                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/alarms.log").focus();
-            } else {
-                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
-            }
+            $rootScope.openLogWithProgramNameFilter("alarms");
         };
 
         api.receivedAlarmMessage = function (messageName, messageObj) {

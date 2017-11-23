@@ -115,7 +115,7 @@
                     if (systemConfig.vds && systemConfig.vds.vds_source) {
                         $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
                     }
-                    $rootScope.systemType = systemConfig.system.system_conf.replace('katcamconfig/systems/', '').replace('.conf', '');
+                    $rootScope.sitename = ConfigService.systemConfig.system.sitename;
                     $rootScope.confConnectionError = null;
                     deferred.resolve($rootScope.systemConfig);
                 }, function(error) {
@@ -359,7 +359,10 @@
             }
         };
         $rootScope.openCentralLogger = function() {
-            window.open('http://' + ConfigService.systemConfig.katportal.katlogwebserver).focus();
+            window.open('http://' + ConfigService.systemConfig.system.kibana_server +
+                "/app/kibana#/discover?_g=()&_a=(columns:!(programname,severity,message),index:'" +
+                $rootScope.sitename +
+                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))").focus();
         };
         $rootScope.openGangliaLink = function() {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
@@ -380,12 +383,24 @@
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
-        $rootScope.openKatsnifferLogger = function(logFileName) {
-            if (ConfigService.GetKATLogFileServerURL()) {
-                window.open(ConfigService.GetKATLogFileServerURL() + "/logfile/" + logFileName + "/tail/" + $rootScope.logNumberOfLines).focus();
-            } else {
-                NotifyService.showSimpleDialog('Error Viewing Progress', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
-            }
+        $rootScope.openLogWithProgramNameFilter = function(programName) {
+            var kibanaUrl = [
+                "http://",
+                ConfigService.systemConfig.system.kibana_server,
+                "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:1000),",
+                "time:(from:now-12h,mode:relative,to:now))&",
+                "_a=(columns:!(programname,severity,message),",
+                "filters:!(('$state':(store:appState),",
+                "meta:(alias:!n,disabled:!f,index:'",
+                $rootScope.sitename,
+                "-*',key:programname,negate:!f,type:phrase,value:",
+                programName,
+                "),query:(match:(programname:(query:",
+                programName,
+                ",type:phrase))))),","index:'",
+                $rootScope.sitename,
+                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+            window.open(kibanaUrl).focus();
         };
 
         //todo material milestone v0.12 will have an option to not close menu when an item is clicked
@@ -437,6 +452,7 @@
         $urlRouterProvider.otherwise('/home');
         $mdAriaProvider.disableWarnings();
         $locationProvider.html5Mode(true);
+
         configureThemes($mdThemingProvider);
 
         $stateProvider.state('login', {
@@ -669,7 +685,7 @@
             templateUrl: 'app/weather/weather.html',
             title: 'Weather'
         });
-        $stateProvider.state('userlogs', {
+        var userlogsState = {
             url: '/userlogs?action&id&startTime&endTime&tags&content',
             templateUrl: 'app/userlogs/userlogs.html',
             title: 'User Logging',
@@ -695,7 +711,18 @@
                     squash: true
                 }
             }
+        };
+        $urlRouterProvider.when(userlogsState.url, function ($location, $state, $match) {
+            var locationUrl = $location.url();
+            if (locationUrl.indexOf('&amp;') > -1) {
+                locationUrl = locationUrl.replace(/&amp;/g, '&');
+                var queryParams = $location.url(locationUrl).search();
+                $state.transitionTo('userlogs', queryParams);
+            } else {
+                $state.transitionTo('userlogs', $match);
+            }
         });
+        $stateProvider.state('userlogs', userlogsState);
         $stateProvider.state('userlog-tags', {
             url: '/userlog-tags',
             templateUrl: 'app/userlogs/userlog-tags.html',
@@ -730,7 +757,7 @@
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&filter&matchAllTags',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -739,6 +766,10 @@
                     squash: true
                 },
                 endTime: {
+                    value: null,
+                    squash: true
+                },
+                tags: {
                     value: null,
                     squash: true
                 },
