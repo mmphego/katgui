@@ -78,8 +78,8 @@
             }
         }
 
-        api.receptorMaintenanceMessageReceived = function (message) {
-            api.resourcesInMaintenance = message.msg_data.value;
+        api.receptorMaintenanceMessageReceived = function (sensor) {
+            api.resourcesInMaintenance = sensor.value;
             var attributes = Object.keys(api.sensorValues);
             for (var i = 0; i < attributes.length; i++) {
                 var sensorName = attributes[i];

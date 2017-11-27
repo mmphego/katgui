@@ -68,17 +68,10 @@
 
         api.markResourceFaulty = function(resource, faulty) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/resource/' + resource + '/faulty/' + faulty)));
-            var tags = [];
-            tags.push(_.find(UserLogService.tags, function(item) {
-                return item.name === 'status';
-            }));
-            var tagResource = _.find(UserLogService.tags, function(item) {
-                return item.name === resource;
-            });
-            if (tagResource) {
-                tags.push(tagResource);
-            }
             if (faulty === 'set') {
+                var tags = UserLogService.tags.filter(function(item) {
+                    return item.name === 'status' || item.name === resource;
+                });
                 var content = 'Marking resource ' + resource + ' as faulty.';
                 var newlog = {
                     start_time: $rootScope.utcDateTime,
@@ -93,18 +86,11 @@
 
         api.markResourceInMaintenance = function(resource, maintenance) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/resource/' + resource + '/maintenance/' + maintenance)));
-            var tags = [];
-            tags.push(_.find(UserLogService.tags, function(item) {
-                return item.name === 'maintenance';
-            }));
-            var tagResource = _.find(UserLogService.tags, function(item) {
-                return item.name === resource;
-            });
-            if (tagResource) {
-                tags.push(tagResource);
-            }
 
             if (maintenance === 'set') {
+                var tags = UserLogService.tags.filter(function(item) {
+                    return item.name === 'maintenance' || item.name === resource;
+                });
                 var content = 'Setting resource ' + resource + ' in maintenance.';
                 var newlog = {
                     start_time: $rootScope.utcDateTime,

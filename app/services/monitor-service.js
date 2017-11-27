@@ -5,7 +5,7 @@
 
     function MonitorService(KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
                             $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService,
-                            SessionService, SensorsService, $http) {
+                            SessionService, $http, $state) {
 
         function urlBase() {
             return $rootScope.portalUrl? $rootScope.portalUrl + '/katmonitor' : '';
@@ -123,6 +123,7 @@
             if (e && e.data) {
                 if (e.data.data) {
                     var msg = e.data;
+                    console.log(msg.subject);
                     var data = JSON.parse(msg.data);
                     if (msg.subject === 'portal.time') {
                         api.lastSyncedTime = data.time + 0.5;
@@ -130,9 +131,9 @@
                     } else if (msg.subject.startsWith('sensor.')) {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         if (data.name === "katpool_lo_id") {
-                            $rootScope.currentLeadOperator.name = data.value;
+                            $rootScope.katpool_lo_id = data;
                         } else if (data.name === "sys_interlock_state") {
-                            $rootScope.interlockState.value = data.value;
+                            $rootScope.sys_interlock_state = data;
                         }
                     } else if (msg.subject === 'portal.sched') {
                         $log.info(msg);
@@ -145,23 +146,18 @@
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject === 'portal.auth.current_lo') {
-                        $rootScope.currentLeadOperator.name = data.lo;
+                        $rootScope.katpool_lo_id.name = data.lo;
                         if ($rootScope.currentUser &&
                             $rootScope.currentUser.req_role === 'lead_operator' &&
-                            $rootScope.currentLeadOperator.name.length > 0 &&
-                            $rootScope.currentLeadOperator.name !== $rootScope.currentUser.email) {
+                            $rootScope.katpool_lo_id.name.length > 0 &&
+                            $rootScope.katpool_lo_id.name !== $rootScope.currentUser.email) {
                             NotifyService.showDialog(
                                 'You have been logged in as the Monitor Role', 'You have lost the Lead Operator Role because ' +
-                                $rootScope.currentLeadOperator.name + ' has assumed the Lead Operator role.');
+                                $rootScope.katpool_lo_id.name + ' has assumed the Lead Operator role.');
                             //$rootScope.logout();
                             //Do not logout, just loging as a demoted monitor only use
                             SessionService.verifyAs('read_only');
                         }
-                    } else if (msg.subject === 'portal.resources') {
-                         // if (data.name.endsWith('katpool_resources_in_maintenance')) {
-                         //     StatusService.receptorMaintenanceMessageReceived(data);
-                         // }
-                         // ObsSchedService.receivedResourceMessage(data);
                     } else if (msg.subject === 'portal.health') {
                         $log.info(msg);
                     //     if (messageChannel[0] === 'health') {
@@ -180,9 +176,9 @@
                         // this was a req reply (list_sensors remote request)
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         if (data.name === "katpool_lo_id") {
-                            $rootScope.currentLeadOperator.name = data.value;
+                            $rootScope.katpool_lo_id = data;
                         } else if (data.name === "sys_interlock_state") {
-                            $rootScope.interlockState.value = data.value;
+                            $rootScope.sys_interlock_state = data;
                         }
                     }
                 } else {

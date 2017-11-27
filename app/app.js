@@ -81,8 +81,8 @@
         $rootScope.expertOrLO = false;
         $rootScope.showVideoLinks = false;
         $rootScope.connectedToMonitor = true;
-        $rootScope.currentLeadOperator = { name: '' };
-        $rootScope.interlockState = { value: '' };
+        $rootScope.katpool_lo_id = {};
+        $rootScope.sys_interlock_state = {};
 
         $rootScope.devMode = window.location.host.startsWith('localhost');
         $rootScope.portalUrl = $rootScope.devMode ? $localStorage.devModePortalURL : window.location.origin;

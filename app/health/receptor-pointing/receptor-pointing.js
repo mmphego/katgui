@@ -111,7 +111,7 @@
             vm.redraw(true);
         };
 
-        vm.statusMessageReceived = function (event, sensor, subject) {
+        vm.sensorUpdateMessage = function (event, sensor, subject) {
             if (subject.startsWith('req.reply')) {
                 if (sensor.component === 'sys' || sensor.component === 'katpool') {
                     // These are sensors from other listings like katpool_lo_id and sys_interlock_state
@@ -181,7 +181,7 @@
         var bgColor = angular.element(document.querySelector("md-content")).css('background-color');
         angular.element(document.querySelector(".sky-plot-options-containter")).css({'background-color': bgColor});
 
-        vm.unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.statusMessageReceived);
+        vm.unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
         vm.unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         vm.initSensors();

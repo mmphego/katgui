@@ -383,7 +383,7 @@
                         $scope.focusTarget = focusTarget? focusTarget: 'userlogDialogStartTimeElement';
 
                         $timeout(function () {
-                            var parentElement = document.querySelector('#' + focusTarget);
+                            var parentElement = document.querySelector('#' + $scope.focusTarget);
                             var focusedChild = false;
                             var childTargets = ['input', 'textarea'];
                             for (var i = 0; i < childTargets.length; i++) {

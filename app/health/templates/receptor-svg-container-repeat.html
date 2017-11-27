@@ -1,18 +1,18 @@
-<div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index" class="md-whiteframe-z1 receptor-svg-container"
-    style="display: -webkit-inline-box; position: relative; margin: 2px;" ng-class="{'maintenance-bg-hover': receptor.maintenance, 'receptor-svg-container-faulty': receptor.faulty, 'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW', 'receptor-graphic-stop': receptor.mode.value === 'STOP'}">
+<div ng-repeat="(receptorName, receptor) in vm.receptors" ng-if="!subarray || receptor.subNr === subarray.subNr" class="md-whiteframe-z1 receptor-svg-container"
+        style="display: -webkit-inline-box; position: relative; margin: 2px" ng-class="vm.getReceptorSvgClass(receptorName)">
     <div class="receptor-graphic-svg" ng-include="'images/receptor.svg'"></div>
-    <h2 class="receptor-graphic-name">{{receptor.name}}{{receptor.lock.value? '*' : ''}}</h2>
+    <h2 class="receptor-graphic-name">{{receptorName}}{{vm.sensorValues[receptorName + '_lock'].value.value? '*' : ''}}</h2>
     <div class="receptor-graphic-labels" layout="column">
-        <span ng-class="{'stop-item': receptor.mode.value === 'STOP', 'nominal-item': receptor.mode.value === 'POINT', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">{{receptor.windstow_active.value? '' : receptor.mode.value}}</span>
-        <span class="windstow-item">{{receptor.windstow_active.value? 'WINDSTOW' : ''}}</span>
-        <span class="inhibited-item">{{receptor.inhibited.value? 'INHIBITED' : ''}}</span>
+        <span ng-class="vm.getReceptorModeTextClass(receptorName)">{{vm.sensorValues[receptorName + '_windstow_active'].value? '' : vm.sensorValues[receptorName + '_mode'].value}}</span>
+        <span class="windstow-item">{{vm.sensorValues[receptorName + '_windstow_active'].value? 'WINDSTOW' : ''}}</span>
+        <span class="inhibited-item">{{vm.sensorValues[receptorName + '_inhibited'].value? 'INHIBITED' : ''}}</span>
     </div>
 
     <div style="position: absolute; top: 0; right: 0; width: 26px">
         <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor in Maintenance"
-            ng-class="{'maintenance-text opaque': receptor.maintenance}" ng-click="!$root.expertOrLO || vm.markResourceInMaintenance(receptor); $event.stopPropagation()"></span>
+            ng-class="{'maintenance-text opaque': vm.sensorValues[receptorName + '_marked_in_maintenance'].value}" ng-click="!$root.expertOrLO || vm.markResourceInMaintenance(receptor); $event.stopPropagation()"></span>
         <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor As Faulty"
-            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !receptor.faulty, 'fa-warning error-text opaque': receptor.faulty}"
+            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !vm.sensorValues[receptorName + '_marked_faulty'].value, 'fa-warning error-text opaque': vm.sensorValues[receptorName + '_marked_faulty'].value}"
             ng-click="!$root.expertOrLO || vm.markResourceFaulty(receptor); $event.stopPropagation()"></span>
     </div>
 </div>

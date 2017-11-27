@@ -101,6 +101,23 @@
                 });
         };
 
+        vm.getReceptorModeTextClass = function (receptorName) {
+            var classes = '';
+            var mode = vm.sensorValues[receptorName + '_mode'];
+            var windstowActive = vm.sensorValues[receptorName + '_windstow_active'];
+            if (mode) {
+                if (mode.value === 'POINT') {
+                    classes += ' nominal-item';
+                } else {
+                    classes += ' receptor-' + mode.value.toLowerCase() + '-state';
+                }
+            }
+            if (windstowActive && windstowActive.value) {
+                classes += ' error-item';
+            }
+            return classes;
+        };
+
         vm.canIntervene = function () {
             return $rootScope.expertOrLO || $rootScope.currentUser.req_role === USER_ROLES.operator;
         };

@@ -65,7 +65,7 @@
                 .then(function (result) {
                     ConfigService.getReceptorList()
                         .then(function (receptors) {
-                            StatusService.receptorSensors = [];
+                            StatusService.receptorSensors = ['marked_in_maintenance'];
                             StatusService.receptorAggSensors = [];
                             StatusService.setReceptorsAndStatusTree(result.data, receptors);
                             StatusService.receptors.forEach(function (receptor) {
@@ -79,16 +79,16 @@
 
         vm.initSensors = function () {
             if (StatusService.receptorSensors) {
-              var receptorSensorsRegex = StatusService.receptorSensors.join('|');
-              StatusService.receptors.forEach(function (receptor) {
-                  MonitorService.listSensors(receptor, receptorSensorsRegex);
-              });
-              ConfigService.getSystemConfig().then(function(systemConfig) {
-                  var receptorAggSensorsRegex = StatusService.receptorAggSensors.join('|');
-                  systemConfig.monitor.system_nodes.split(',').forEach(function (monitorNode) {
-                      MonitorService.listSensors('mon_' + monitorNode, receptorAggSensorsRegex);
-                  });
-              });
+                var receptorSensorsRegex = StatusService.receptorSensors.join('|');
+                StatusService.receptors.forEach(function (receptor) {
+                    MonitorService.listSensors(receptor, receptorSensorsRegex);
+                });
+                ConfigService.getSystemConfig().then(function(systemConfig) {
+                    var receptorAggSensorsRegex = StatusService.receptorAggSensors.join('|');
+                    systemConfig.monitor.system_nodes.split(',').forEach(function (monitorNode) {
+                        MonitorService.listSensors('mon_' + monitorNode, receptorAggSensorsRegex);
+                    });
+                });
             }
         };
 

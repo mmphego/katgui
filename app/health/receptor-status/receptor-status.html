@@ -1,14 +1,10 @@
 <div flex ng-controller="ReceptorStatusCtrl as vm" layout="column" layout-align="center"
      style="padding: 16px;" ng-class="{'connection-lost-bg':vm.connectionLost}">
-    <md-checkbox md-theme="{{themePrimaryButtons}}" class="md-primary" ng-model="vm.sortBySubarrays"
-        ng-mouseenter="vm.sortBySubarraysHover = true" ng-mouseleave="vm.sortBySubarraysHover = false"
-        ng-class="{'opacity-50': !vm.sortBySubarraysHover}"
+    <md-checkbox md-theme="{{themePrimaryButtons}}" class="md-primary opacity-hover" ng-model="vm.sortBySubarrays"
         style="position: absolute; top: 4px; right: 0;">
      Sort By Subarrays
     </md-checkbox>
-    <md-checkbox md-theme="{{themePrimaryButtons}}" class="md-primary" ng-model="vm.showGraphics"
-        ng-mouseenter="vm.showGraphicsHover = true" ng-mouseleave="vm.showGraphicsHover = false"
-        ng-class="{'opacity-50': !vm.showGraphicsHover}"
+    <md-checkbox md-theme="{{themePrimaryButtons}}" class="md-primary opacity-hover" ng-model="vm.showGraphics"
         style="position: absolute; top: 4px; right: 160px;">
      Show Graphics
     </md-checkbox>
@@ -22,50 +18,47 @@
             </div>
         </div>
 
-        <div ng-repeat="(key, subarray) in vm.subarrays" ng-if="vm.sortBySubarrays"
+        <div ng-repeat="(subarrayKey, subarray) in vm.subarrays" ng-if="vm.sortBySubarrays"
              class="subarray-container md-whiteframe-z2" layout="row" layout-align="start"
              style="min-width: 650px;" flex>
             <div layout="column" layout-align="start" flex>
                 <md-toolbar
-                    md-theme="{{subarray.state === 'inactive'? 'grey' : subarray.state === 'active'? 'green' : subarray.state === 'error'? 'amber' : 'deep-purple'}}"
-                    ng-class="{'md-hue-2': subarray.state !== 'inactive'}" class="md-whiteframe-z1"
-                    layout="row" layout-align="center start" title="{{subarray.description}}"
+                    md-theme="{{subarrayKey === 'subarray_free' || vm.sensorValues[subarrayKey + '_state'].value === 'inactive'? 'grey' : vm.sensorValues[subarrayKey + '_state'].value === 'active'? 'green' : vm.sensorValues[subarrayKey + '_state'].value === 'error'? 'amber' : 'deep-purple'}}"
+                    ng-class="{'md-hue-2': subarrayKey !== 'subarray_free' && vm.sensorValues[subarrayKey + '_state'].value !== 'inactive'}" class="md-whiteframe-z1"
+                    layout="row" layout-align="center start"
                     style="max-height: 34px; min-height: 34px; position: relative;"
                     ng-click="$root.stateGoWithSubId('scheduler.observations.detail', vm.subarray_id)">
-                    <span style="margin-left: 8px;">SUBARRAY {{subarray.id}} -
-                        <span><b>{{subarray.state}}</b></span>
-                        <span ng-if="subarray.maintenance">{{"- in maintenance"}}</span>
+                    <span style="margin-left: 8px;">
+                        <span>SUBARRAY {{subarray.subNr}}<b>{{subarrayKey !== 'subarray_free'? ' - ' + vm.sensorValues[subarrayKey + '_state'].value: ''}}</b></span>
+                        <span ng-if="vm.sensorValues[subarrayKey + '_maintenance'].value"> (in maintenance)</span>
                     </span>
                     <span flex></span>
 
-                    <div layout="row" layout-align="center center"
-                         style="font-size: 12px;">
-                        <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{subarray.delegated_ca}}</b></span>
-                        <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{subarray.band ?
-                            subarray.band : 'None'}}</b></span>
-                        <span title="Selected User Product" style="margin-right: 8px;"><i>User Product: </i><b>{{subarray.product
-                            ? subarray.product : 'None'}}</b></span>
-                        <span ng-show="subarray.state === 'active' || subarray.config_label" style="margin-right: 8px;"
-                              title="Config Label"><i>Config Label: </i><b>{{subarray.config_label ?
-                            subarray.config_label : 'None'}}</b></span>
+                    <div ng-if="subarrayKey !== 'subarray_free'" layout="row" layout-align="center center" style="font-size: 12px;">
+                        <span title="Control Authority" style="margin-right: 8px;"><i>CA: </i><b>{{vm.sensorValues[subarrayKey + '_delegated_ca'].value}}</b></span>
+                        <span title="Selected Band" style="margin-right: 8px;"><i>Band: </i><b>{{vm.sensorValues[subarrayKey + '_band'].value ?
+                            vm.sensorValues[subarrayKey + '_band'].value : 'None'}}</b></span>
+                        <span title="Selected User Product" style="margin-right: 8px;"><i>User Product: </i><b>{{vm.sensorValues[subarrayKey + '_product'].value
+                            ? vm.sensorValues[subarrayKey + '_product'].value : 'None'}}</b></span>
+                        <span ng-show="vm.sensorValues[subarrayKey + '_state'].value === 'active' || subarray.config_label" style="margin-right: 8px;"
+                              title="Config Label"><i>Config Label: </i><b>{{vm.sensorValues[subarrayKey + '_config_label'].value ?
+                            vm.sensorValues[subarrayKey + '_config_label'] : 'None'}}</b></span>
                     </div>
                 </md-toolbar>
                 <div ng-show="vm.showGraphics">
-                    <div ng-include="'app/health/templates/receptor-svg-container-repeat.html'"></div>
+                    <div ng-include="'app/health/templates/receptor-svg-container-repeat.html'" ng-class="{'maintenance-bg':vm.sensorValues[subarrayKey + '_maintenance'].value}"></div>
                 </div>
-                <div ng-show="!vm.showGraphics" flex style="padding: 4px; text-align: center" ng-class="{'maintenance-bg':subarray.maintenance}">
+                <div ng-show="!vm.showGraphics" flex style="padding: 4px; text-align: center" ng-class="{'maintenance-bg':vm.sensorValues[subarrayKey + '_maintenance'].value}">
                     <div ng-include="'app/health/templates/receptor-block-container-repeat.html'"></div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row"
-         ng-init="transparentLegend = true"
-         ng-class="{'transparent-legend':transparentLegend && !showLegend}">
-        <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
-                   ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true" class="md-fab md-mini md-primary">
-            <md-icon class="fa" ng-if="!showLegend" md-font-icon="fa-eye"></md-icon>
-            <md-icon class="fa" ng-if="showLegend" md-font-icon="fa-eye-slash"></md-icon>
+    <div class="legend-popup" style="background: transparent; pointer-events: none" layout="row">
+        <md-button flex style="pointer-events: auto" md-theme="{{themePrimaryButtons}}" ng-click="showLegend = !showLegend"
+                   class="md-fab md-mini md-primary opacity-hover">
+            <md-icon class="fa" ng-show="!showLegend" md-font-icon="fa-eye"></md-icon>
+            <md-icon class="fa" ng-show="showLegend" md-font-icon="fa-eye-slash"></md-icon>
         </md-button>
         <div class="md-whiteframe-z3" layout="column" ng-show="showLegend"
              style="background: white; padding: 8px;">
