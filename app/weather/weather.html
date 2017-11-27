@@ -23,7 +23,7 @@
 
             <div flex style="position: absolute; bottom: 0; left: 0" layout="row" layout-align="start center">
                 <span style="margin-left: 25px; min-width: 158px; max-width: 158px;" class="subheader-text">
-                    Wind Direction ({{vm.latestWindDirection | number:1}}°)
+                    Wind Direction ({{vm.sensorValues['anc_wind_direction'].value | number:1}}°)
                 </span>
                 <span style="width: 140px;" class="subheader-text">
                     Sensor
@@ -43,17 +43,16 @@
             <compass-chart redraw-function="vm.redrawCompass" style="min-width: 120px; min-height: 120px;">
             </compass-chart>
             <div flex layout="column" style="margin-left: 56px;">
-                <div ng-repeat="sensor in vm.ancResource.sensorList track by $index" title="{{sensor.description}}"
-                     class="resource-sensor-item" ng-if="sensor.name !== 'wind direction'"
+                <div ng-repeat="sensorName in vm.ancSensors track by $index" class="resource-sensor-item" ng-if="sensorName !== 'wind direction'"
                      layout="row" class="unselectable">
-                    <span style="min-width: 140px" ng-class="vm.classNameFromPythonID(sensor)">{{sensor.name}}</span>
+                    <span style="min-width: 140px">{{sensorName}}</span>
                     <span class="resource-sensor-value-item" style="width: 80px"
-                          ng-show="sensor.sensorValue">{{sensor.value | number:1}}</span>
-                    <span style="margin-left: 8px; width: 60px" ng-if="vm.maxSensorValue[sensor.name]">
-                        {{vm.maxSensorValue[sensor.name].value | number:1}}
+                          ng-show="vm.sensorValues['anc_' + sensorName]">{{vm.sensorValues['anc_' + sensorName].value | number:1}}</span>
+                    <span style="margin-left: 8px; width: 60px" ng-if="vm.maxSensorValue['anc_' + sensorName]">
+                        {{vm.maxSensorValue['anc_' + sensorName].value | number:1}}
                     </span>
-                    <span ng-if="vm.maxSensorValue[sensor.name]">
-                        {{vm.maxSensorValue[sensor.name].timestamp}}
+                    <span ng-if="vm.maxSensorValue['anc_' + sensorName]">
+                        {{vm.maxSensorValue['anc_' + sensorName].timestamp}}
                     </span>
                 </div>
             </div>
