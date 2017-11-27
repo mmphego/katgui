@@ -123,8 +123,14 @@
             if (e && e.data) {
                 if (e.data.data) {
                     var msg = e.data;
-                    console.log(msg.subject);
-                    var data = JSON.parse(msg.data);
+                    var data;
+                    try {
+                        console.log(msg.subject);
+                        data = JSON.parse(msg.data);
+                    } catch(error) {
+                        debugger;
+                    }
+                    data = JSON.parse(msg.data);
                     if (msg.subject === 'portal.time') {
                         api.lastSyncedTime = data.time + 0.5;
                         api.lastSyncedLST = data.lst;

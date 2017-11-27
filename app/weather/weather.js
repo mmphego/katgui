@@ -254,6 +254,7 @@
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $timeout(function() {
             vm.initSensors(true);
@@ -264,6 +265,7 @@
                 MonitorService.unsubscribeSensorName('anc', sensorName);
             });
             unbindSensorUpdates();
+            unbindReconnected();
         });
     }
 })();

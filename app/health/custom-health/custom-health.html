@@ -34,7 +34,7 @@
         <span flex></span>
     </md-toolbar> -->
     <div flex style="margin-top: 4px; position: relative; overflow: auto" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
-        <status-single-level-tree-map relative-draggable="status-top-label" auto-resize="true" layout-mode="dice" height="tree.size.h" width="tree.size.w"
+        <status-single-level-tree-map relative-draggable="status-top-label" auto-resize="true" height="tree.size.h" width="tree.size.w"
                                       offset-left="tree.offset.left" offset-top="tree.offset.top" ng-repeat="tree in vm.customStatusTrees" data="tree"
                                       style="position: absolute; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
                                       ng-class="tree.elementId">

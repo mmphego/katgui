@@ -500,11 +500,11 @@
                 }
             },
         });
-        $stateProvider.state('subarrayHealth', {
-            url: '/subarray-health',
-            templateUrl: 'app/health/subarray-health/subarray-health.html',
-            title: 'Subarray Health'
-        });
+        // $stateProvider.state('subarrayHealth', {
+            // url: '/subarray-health',
+            // templateUrl: 'app/health/subarray-health/subarray-health.html',
+            // title: 'Subarray Health'
+        // });
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',

@@ -36,11 +36,11 @@
             name: 'Health',
             state: 'receptorHealth',
             title: 'Receptor Health'
-        }, {
-            name: 'Sub Health',
-            textOffset: 10,
-            state: 'subarrayHealth',
-            title: 'Subarray Health'
+        // }, {
+        //     name: 'Sub Health',
+        //     textOffset: 10,
+        //     state: 'subarrayHealth',
+        //     title: 'Subarray Health'
         }];
 
         vm.sensorsNavData = [{
