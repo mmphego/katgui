@@ -95,11 +95,7 @@
                 });
                 DataService.sensorData.apply(this, requestParams)
                     .then(function(result) {
-                        if (result.data instanceof Array) {
-                            vm.sensorDataReceived(null, {
-                                value: result.data
-                            });
-                        }
+                        vm.sensorDataReceived(result.data);
                     }, function(error) {
                         $log.info(error);
                         NotifyService.showPreDialog('Error retrieving historical weather data', error);
@@ -107,54 +103,49 @@
             });
         };
 
-        vm.sensorDataReceived = function(event, sensor) {
-            // TODO refactor this
-            if (sensor.value && sensor.value instanceof Array) {
-                var newData = [];
-                var newWindData = [];
-                var newSensorNames = {};
-                for (var attr in sensor.value) {
-                    var sensorName = sensor.value[attr][4];
-                    var latestSensor = null;
-                    if (sensorName.indexOf('wind_speed') === -1 &&
-                        sensorName.indexOf('gust_speed') === -1) {
-                        latestSensor = {
-                            status: sensor.value[attr][5],
-                            sensor: sensorName,
-                            value: sensor.value[attr][3],
-                            sample_ts: sensor.value[attr][0],
-                        };
-                        if (sensorName.indexOf('pressure') !== -1) {
-                            latestSensor.rightAxis = true;
-                        }
-                        newData.push(latestSensor);
-                    } else {
-                        latestSensor = {
-                            status: sensor.value[attr][5],
-                            sensor: sensorName,
-                            value: sensor.value[attr][3],
-                            sample_ts: sensor.value[attr][0],
-                        };
-                        newWindData.push(latestSensor);
+        vm.sensorDataReceived = function(sensorData) {
+            var newData = [];
+            var newWindData = [];
+            var newSensorNames = {};
+            sensorData.forEach(function (sensor) {
+                var sensorName = sensor[4];
+                var latestSensor = {
+                    status: sensor[5],
+                    sensor: sensorName,
+                    value: sensor[3],
+                    sample_ts: sensor[0],
+                };
+                if (sensorName.startsWith('anc_air_')) {
+                    if (sensorName === 'anc_air_pressure') {
+                        latestSensor.rightAxis = true;
                     }
-                    if (!vm.maxSensorValue[sensorName]) {
-                        vm.maxSensorValue[sensorName] = {
-                            timestamp: latestSensor.sample_ts,
-                            value: latestSensor.value
-                        };
-                    } else if (latestSensor.value >= vm.maxSensorValue[latestSensor.sensor].value) {
-                        vm.maxSensorValue[latestSensor.sensor] = {
-                            timestamp: latestSensor.sample_ts,
-                            value: latestSensor.value
-                        };
-                    }
+                    newData.push(latestSensor);
+                } else {
+                    latestSensor = {
+                        status: sensor[5],
+                        sensor: sensorName,
+                        value: sensor[3],
+                        sample_ts: sensor[0],
+                    };
+                    newWindData.push(latestSensor);
                 }
-                if (newData.length > 0) {
-                    vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
+                if (!vm.maxSensorValue[sensor.name]) {
+                    vm.maxSensorValue[sensor.name] = {
+                        timestamp: moment.utc(sensor.time, 'X').format('HH:mm:ss'),
+                        value: sensor.value
+                    };
+                } else if (sensor.value > vm.maxSensorValue[sensor.name].value) {
+                    vm.maxSensorValue[sensor.name] = {
+                        timestamp: moment.utc(sensor.time, 'X').format('HH:mm:ss'),
+                        value: sensor.value
+                    };
                 }
-                if (newWindData.length > 0) {
-                    vm.redrawWindChart(newWindData);
-                }
+            });
+            if (newData.length > 0) {
+                vm.redrawChart(newData, vm.showGridLines, vm.dataTimeWindow);
+            }
+            if (newWindData.length > 0) {
+                vm.redrawWindChart(newWindData);
             }
         };
 
@@ -192,7 +183,7 @@
             }
         };
 
-        vm.relativeTimeToSeconds = function (count, type) {
+        vm.relativeTimeToSeconds = function(count, type) {
             switch (type) {
                 case 's':
                     return (count);
@@ -220,7 +211,7 @@
         //create to function to bind to, but dont do anything with it
         vm.downloadAsCSV = function() {};
 
-        vm.sensorUpdateMessage = function (event, sensor, subject) {
+        vm.sensorUpdateMessage = function(event, sensor, subject) {
             vm.sensorValues[sensor.name] = sensor;
 
             if (!vm.maxSensorValue[sensor.name]) {
@@ -237,8 +228,7 @@
 
             if (sensor.name === 'anc_wind_direction') {
                 vm.redrawCompass(sensor.value);
-            }
-            else if (sensor.name.endsWith('_wind_speed')) {
+            } else if (sensor.name.endsWith('_wind_speed')) {
                 var newWindSensor = {
                     sensor: sensor.name,
                     sample_ts: sensor.time * 1000,
@@ -265,7 +255,7 @@
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
 
-        $timeout(function () {
+        $timeout(function() {
             vm.initSensors(true);
         });
 
