@@ -63,9 +63,9 @@ angular.module('katGui.d3')
 
                 drawTreemap(width, height);
 
-                // $timeout(function() {
-                // resizeElement('force', 'draw');
-                // }, 250);
+                $timeout(function() {
+                resizeElement('force', 'draw');
+                }, 250);
 
                 function resizeElement(newVal, oldVal) {
                     if (newVal !== oldVal && !scope.drawingSvg) {

@@ -180,13 +180,12 @@
                                 }
                                 api.globalSubscribePatterns[data.component].sensors[data.name] = 1;
                                 api.subscribe('sensor.*.' + data.component + '.' + sensorWithoutComponent);
+                            } else {
+                                $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                             }
                             if ($state.current.name === 'sensor-list') {
                                 $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                             }
-                            if (data.name.startsWith('kataware_alarm')) {
-                               AlarmsService.receivedAlarmMessage(data);
-                           }
                         } else {
                             $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         }
