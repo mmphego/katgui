@@ -2,9 +2,10 @@
     ng-mouseup="vm.dragSelect = false">
     <div flex layout="row">
         <div flex layout="column" style="padding: 0 8px">
-            <div class="subarray-container" layout="row" style="min-width: 450px; position: relative" flex ng-class="{'maintenance-bg': vm.subarray.maintenance}">
+            <div class="subarray-container" layout="row" style="min-width: 450px; position: relative" flex
+                ng-class="{'maintenance-bg': parent.vm.sensorValues[vm.subarray.name + '_maintenance'].value}">
                 <div class="resource-counter-overlay" title="The number of receptors assigned to this subarray">
-                    {{parent.vm.getTotalReceptorsInSubarray()}}
+                    {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
                 </div>
                 <div flex class="md-whiteframe-z2" layout="column">
                     <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
@@ -17,8 +18,8 @@
                                 <span class="fa fa-chevron-down subarray-select-chevron" style="top: 12px"></span>
                                 <span style="margin-left: 14px">
                                     SUBARRAY {{vm.subarray.id}} -
-                                    <span><b>{{vm.subarray.state}}</b></span>
-                                <span ng-show="vm.subarray.maintenance">{{"- in maintenance"}}</span>
+                                    <b>{{parent.vm.sensorValues[vm.subarray.name + '_state'].value}}</b>
+                                <span ng-show="parent.vm.sensorValues[vm.subarray.name + '_maintenance'].value">{{"- in maintenance"}}</span>
                                 </span>
                             </md-button>
                             <md-menu-content>
@@ -88,7 +89,7 @@
                                 <md-menu-item>
                                     <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.setSubarrayInMaintenance()" title="Toggle Subarray in Maintenance">
                                         <span style="margin-right: 4px" class="fa fa-wrench"></span>
-                                        <span>{{vm.subarray.maintenance? 'Clear in Maintenance': 'Set in Maintenance'}}</span>
+                                        <span>Toggle Maintenance</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
@@ -121,15 +122,16 @@
                         <div style="max-height: 52px; position: relative" flex="25" class="resource-item" layout="row" layout-align="start center"
                             ng-repeat="resource in vm.subarray.allocations | orderBy:'name'" ng-class="parent.vm.classForResource(resource)">
                             <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resource.name}}</span>
-                            <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.resourcesStates[resource.name].value}}</span>
+                            <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resource.name + '_state'].value}}</span>
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">
-                                <a ng-repeat="link in parent.vm.guiUrls[resource.name].value track by $index" href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
+                                <a ng-repeat="link in parent.vm.guiUrls[resource.name] track by $index" target="_blank"
+                                    href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
                             </div>
-                            <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance"
+                            <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resource)"
                                 title="Restart Maintenance Device" ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
                             <span md-ink-ripple ng-click="parent.vm.showResourceLogs(resource.name)" class="icon-button fa fa-file-text-o" title="{{'Show ' + resource.name + ' logs'}}"></span>
                             <span class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple title="Mark Resource As Faulty"
-                                ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
+                                ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resource), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resource)}"
                                 ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
                             <span class="icon-button fa fa-chevron-right" ng-disabled="!$root.expertOrLO" md-ink-ripple title="Free Assigned Resource"
                                 ng-click="!$root.expertOrLO || vm.freeAssignedResource(resource); $event.stopPropagation()"></span>
@@ -168,12 +170,12 @@
                         ng-mouseover="vm.dragSelect && !vm.dragSelectUnselect? vm.toggleResourceSelect(resource, true) : vm.dragSelect && vm.dragSelectUnselect? vm.toggleResourceSelect(resource, false) : ''">
                         <span md-ink-ripple class="icon-button fa fa-chevron-left" ng-disabled="!$root.expertOrLO" title="Assign to Subarray"
                             ng-mousedown="$event.stopPropagation()" ng-click="!$root.expertOrLO || vm.assignResource(resource); $event.stopPropagation()"></span>
-                        <span flex style="font-size:18px; margin-left: 4px;" class="resource-name" ng-class="{'maintenance-text': resource.maintenance}">{{resource.name}}</span>
+                        <span flex style="font-size:18px; margin-left: 4px;" class="resource-name" ng-class="{'maintenance-text': parent.vm.isResourceInMaintenance(resource)}">{{resource.name}}</span>
                         <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource in Maintenance"
-                            ng-class="{'maintenance-text opaque': resource.maintenance}" ng-mousedown="$event.stopPropagation()"
+                            ng-class="{'maintenance-text opaque': parent.vm.isResourceInMaintenance(resource)}" ng-mousedown="$event.stopPropagation()"
                             ng-click="!$root.expertOrLO || parent.vm.markResourceInMaintenance(resource); $event.stopPropagation()"></span>
                         <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource As Faulty"
-                            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
+                            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resource), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resource)}"
                             ng-click="!$root.expertOrLO || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
                     </div>
                 </div>

@@ -3,8 +3,8 @@
     angular.module('katGui.health', ['katGui', 'katGui.d3'])
         .controller('HealthCtrl', HealthCtrl);
 
-    function HealthCtrl($timeout, $interval, $log, $rootScope, $scope, KatGuiUtil, ConfigService,
-        StatusService, NotifyService, MonitorService, d3Util) {
+    function HealthCtrl($rootScope, $scope, ConfigService, StatusService, NotifyService,
+        MonitorService, d3Util) {
 
         var vm = this;
         ConfigService.loadAggregateSensorDetail();

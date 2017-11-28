@@ -57,7 +57,7 @@
             if (api.systemConfig && !forceConfig) {
                 $timeout(function () {
                     deferred.resolve(api.systemConfig);
-                }, 1);
+                });
             } else if (urlBase() && KatGuiUtil.isValidURL(urlBase())) {
                 $http(createRequest('get', urlBase() + '/system-config'))
                     .then(function (result) {

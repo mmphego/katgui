@@ -132,13 +132,13 @@
         <div flex class="schedule-block-resource-window md-whiteframe-z1" style="max-width: 450px; min-height: 284px; overflow: auto; min-width: 150px"
             layout="column" layout-wrap layout-align="start start">
             <div class="resource-counter-overlay" title="The amount of receptors assigned to this subarray">
-                {{parent.vm.getTotalReceptorsInSubarray()}}
+                {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
             </div>
             <div ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': resource.maintenance}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
                 layout-align="start center">
                 <div flex layout="column">
-                    <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resource), 'maintenance-text': parent.vm.isResourceInMaintenance(resource)}">{{resource.name}}</span>
+                    <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resource), 'maintenance-text': vm.sensorValues[resource.name + '_marked_in_maintenance'].value}">{{resource.name}}</span>
                     <i title="Schedule Block allocated to resource" style="font-size: 10px">{{resource.allocation}}</i>
                 </div>
                 <span style="width: 18px; padding: 6px 0" class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO"

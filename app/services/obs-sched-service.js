@@ -26,8 +26,8 @@
         api.scheduleData = [];
         api.guiUrlsRaw = [];
         api.guiUrls = {};
-        api.resourcesStates = {};
         api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
+        api.sensorValues = {};
 
         api.handleRequestResponse = function(request, defer) {
             var deferred;
@@ -386,12 +386,6 @@
                 var subarrayIndex = _.findIndex(api.subarrays, function(item) {
                     return item.id === sensorName.split('_')[1];
                 });
-                if (subarrayIndex === -1) {
-                    api.subarrays.push({
-                        id: sensorName.split('_')[1]
-                    });
-                    subarrayIndex = api.subarrays.length - 1;
-                }
                 if (subarrayIndex > -1) {
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
                     if (sensorName.endsWith('allocations')) {
@@ -434,7 +428,6 @@
                                         band: api.subarrays[subarrayIndex].band,
                                         product: api.subarrays[subarrayIndex].product
                                     };
-                                    api.throttlePopulateGUIUrls();
                                 }
                             }, 1000);
                         }
@@ -453,9 +446,6 @@
                         });
                     }
                 }
-            } else if (sensorName.endsWith('_state')) {
-                var component = sensorName.split('_state')[0];
-                api.resourcesStates[component] = sensor;
             } else if (sensorName.indexOf('mode_') > -1) {
                 var subarrayId = sensorName.split('_')[2];
                 var subarray = _.findWhere(api.subarrays, {
@@ -470,34 +460,17 @@
             }
         };
 
-        api.populateGUIUrls = function() {
-            $http(createRequest('get', $rootScope.portalUrl + '/katmonitor/sensor-list/gui.urls')).then(function(result) {
-                api.guiUrlsRaw = result.data;
-                api.guiUrlsRaw.forEach(function (guiUrls) {
-                    var resourceName = guiUrls.name.split('.')[0];
-                    if (guiUrls.value.length > 0) {
-                        // can't JSON parse empty strings
-                        guiUrls.value = JSON.parse(guiUrls.value);
-                        if (!api.guiUrls[resourceName]) {
-                            api.guiUrls[resourceName] = guiUrls;
-                        } else {
-                            guiUrls.value.forEach(function (guiUrl) {
-                                var existingUrlIndex = _.findIndex(api.guiUrls[resourceName].value, {title: guiUrl.title});
-                                if (existingUrlIndex > -1) {
-                                    api.guiUrls[resourceName].value[existingUrlIndex] = guiUrl;
-                                } else {
-                                    api.guiUrls[resourceName].value.push(guiUrl);
-                                }
-                            });
-                        }
-                    }
-                });
-            }, function(error) {
-                $log.error('Could not retrieve gui urls! ' + error);
-            });
+        api.guiUrlsMessageReceived = function(sensor) {
+            // matches something like ptuse_1_gui_urls or m011_gui_urls
+            // and returns ptuse_1 or m011 respectively
+            // `match` returns null if there is no match, otherwise a list of results
+            var resourceName = sensor.name.match(/^[a-z]+_\d|^[a-z]+_/);
+            if (resourceName && sensor.value) {
+                api.guiUrls[resourceName[0]] = JSON.parse(sensor.value);
+            } else {
+                api.guiUrls[resourceName[0]] = [];
+            }
         };
-
-        api.throttlePopulateGUIUrls = _.throttle(api.populateGUIUrls, 1000);
 
         api.receivedScheduleMessage = function(message) {
             var obj = message.value;

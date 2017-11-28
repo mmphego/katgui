@@ -96,7 +96,7 @@
         };
 
         api.subscribeToDefaultChannels = function() {
-            api.subscribe(['portal.time', 'portal.auth.>', 'portal.sched.>']);
+            api.subscribe(['portal.time', 'portal.auth.>']);
         };
 
         api.checkAlive = function() {
@@ -124,7 +124,14 @@
             if (e && e.data) {
                 if (e.data.data) {
                     var msg = e.data;
-                    var data = JSON.parse(msg.data);
+                    var data;
+                    try {
+                        data = JSON.parse(msg.data);
+                    } catch (error) {
+                        $log.error('Error parsing websock message!');
+                        $log.error(e);
+                    }
+
                     if (msg.subject === 'portal.time') {
                         api.lastSyncedTime = data.time + 0.5;
                         api.lastSyncedLST = data.lst;
@@ -144,8 +151,7 @@
                             AlarmsService.receivedAlarmMessage(data);
                         }
                     } else if (msg.subject === 'portal.sched') {
-                        $log.info(msg);
-                        // ObsSchedService.receivedScheduleMessage(messages.result.msg_data);
+                        ObsSchedService.receivedScheduleMessage(data);
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject === 'portal.auth.current_lo') {

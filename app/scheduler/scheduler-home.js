@@ -12,16 +12,13 @@
         ])
         .controller('SchedulerHomeCtrl', SchedulerHomeCtrl);
 
-    function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, SensorsService, ObsSchedService, $timeout, KatGuiUtil,
+    function SchedulerHomeCtrl($state, $rootScope, $scope, $interval, $log, ObsSchedService, $timeout, KatGuiUtil,
         UserLogService, NotifyService, MonitorService, ConfigService, $stateParams, $q, $mdDialog, UserService) {
 
         var vm = this;
-        var receptorRegex = new RegExp('^(m|ant|dsh)\\d{1,4}$');
         vm.childStateShowing = $state.current.name !== 'scheduler';
         vm.subarrays = ObsSchedService.subarrays;
         vm.programBlocks = ObsSchedService.programBlocks;
-        vm.disconnectIssued = false;
-        vm.connectInterval = null;
         vm.connectionLost = false;
         vm.subarray = null;
         vm.products = [];
@@ -30,7 +27,8 @@
         vm.iAmCA = false;
         vm.modeTypes = ['queue', 'manual'];
         vm.guiUrls = ObsSchedService.guiUrls;
-        vm.resourcesStates = ObsSchedService.resourcesStates;
+        vm.subscribedSensors = [];
+        vm.sensorValues = ObsSchedService.sensorValues;
 
         if (!$stateParams.subarray_id) {
             $state.go($state.current.name, {
@@ -46,8 +44,15 @@
 
         UserLogService.listTags();
 
-        $rootScope.getSystemConfig()
+        ConfigService.getSystemConfig()
             .then(function(systemConfig) {
+                systemConfig.subarrayNrs.forEach(function(subNr) {
+                    ObsSchedService.subarrays.push({
+                        id: subNr,
+                        name: 'subarray_' + subNr
+                    });
+                });
+                vm.initSensors();
                 if (systemConfig.system.bands) {
                     vm.bands = systemConfig.system.bands.split(',');
                 } else {
@@ -110,23 +115,10 @@
             }
         });
 
-        vm.getTotalReceptorsInSubarray = function () {
-            var counter = 0;
-            if (vm.subarray && vm.subarray.allocations) {
-                vm.subarray.allocations.forEach(function (resource) {
-                    if (receptorRegex.test(resource.name)) {
-                        counter++;
-                    }
-                });
-            }
-            return counter;
-        };
-
         vm.currentState = function() {
             return $state.current.name;
         };
 
-        MonitorService.subscribe('sched');
         ObsSchedService.getProgramBlocks();
         ObsSchedService.getScheduleBlocks();
         ObsSchedService.getProgramBlocksObservationSchedule();
@@ -335,30 +327,27 @@
         };
 
         vm.setSubarrayInMaintenance = function() {
-            ObsSchedService.setSubarrayMaintenance(vm.subarray.id, vm.subarray.maintenance ? 'clear' : 'set');
+            ObsSchedService.setSubarrayMaintenance(
+                vm.subarray.id, vm.sensorValues[vm.subarray.name + '_maintenance'].value ? 'clear' : 'set');
         };
 
         vm.markResourceFaulty = function(resource) {
-            ObsSchedService.markResourceFaulty(resource.name, resource.faulty ? 'clear' : 'set');
+            ObsSchedService.markResourceFaulty(resource.name, vm.isResourceFaulty(resource) ? 'clear' : 'set');
         };
 
         vm.markResourceInMaintenance = function(resource) {
-            ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
+            ObsSchedService.markResourceInMaintenance(
+                resource.name, vm.isResourceInMaintenance(resource) ? 'clear' : 'set');
         };
 
         vm.isResourceInMaintenance = function(resource) {
-            if (ObsSchedService.resources_in_maintenance) {
-                resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
-                return resource.maintenance;
-            } else {
-                resource.maintenance = false;
-                return false;
-            }
+            return vm.sensorValues[resource.name + '_marked_in_maintenance'] &&
+                vm.sensorValues[resource.name + '_marked_in_maintenance'].value;
         };
 
         vm.isResourceFaulty = function(resource) {
-            resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
-            return resource.faulty;
+            return vm.sensorValues[resource.name + '_marked_faulty'] &&
+                vm.sensorValues[resource.name + '_marked_faulty'].value;
         };
 
         vm.activateSubarray = function() {
@@ -814,7 +803,7 @@
             };
         };
 
-        vm.classForResource = function (resource) {
+        vm.classForResource = function(resource) {
             var classes = "";
             if (vm.isResourceInMaintenance(resource)) {
                 classes += 'maintenance-bg-hover';
@@ -822,35 +811,70 @@
             if (vm.isResourceFaulty(resource)) {
                 classes += ' faulty-border';
             }
-            var resourceStateSensor = vm.resourcesStates[resource.name];
+            var resourceStateSensor = vm.sensorValues[resource.name + '_state'];
             if (resourceStateSensor) {
                 if (resourceStateSensor.value === 'activated') {
                     classes += ' resource-state-activated';
                 } else if (resourceStateSensor.value === 'error') {
                     classes += ' resource-state-error';
-                } else if (['deactivating', 'configuring', 'configured', 'activating']
-                           .indexOf(resourceStateSensor.value) > -1) {
+                } else if (resourceStateSensor.value in ['deactivating', 'configuring', 'configured', 'activating']) {
                     classes += ' resource-state-busy';
                 }
             }
             return classes;
         };
 
+        vm.initSensors = function() {
+            ConfigService.systemConfig.subarrayNrs.forEach(function(subNr) {
+                MonitorService.listSensors('subarray_' + subNr, '^(allocations|product|state|band|config_label|maintenance|delegated_ca|pool_resources|number_ants)$');
+            });
+            MonitorService.listSensors('sched', '^mode_\\d');
+            MonitorService.listSensors('katpool', '^pool_resources_free$');
+            ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
+                MonitorService.listSensors(resource, '^(marked_in_maintenance|marked_faulty|state)$|gui_urls$');
+            });
+            MonitorService.subscribe('portal.sched');
+        };
+
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                MonitorService.subscribeSensor(sensor);
+                if (sensor.name.endsWith('gui_urls')) {
+                    ObsSchedService.guiUrlsMessageReceived(sensor);
+                } else {
+                    vm.subscribedSensors.push(sensor);
+                }
+                // TODO loading indicator cancel
+            }
+            if (vm.subarray && sensor.name === 'subarray_' + vm.subarray.id + '_state' && sensor.value === 'active' &&
+                ObsSchedService.sensorValues[sensor.name] !== 'active') {
+                vm.subarray.allocations.forEach(function(resource) {
+                    MonitorService.listSensors(resource.name, 'gui_urls$');
+                });
+            }
+            ObsSchedService.sensorValues[sensor.name] = sensor;
+            ObsSchedService.receivedResourceMessage(sensor);
+        });
+
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
         $scope.$on('$destroy', function() {
-            MonitorService.unsubscribe('sched', '*');
+            MonitorService.unsubscribe('portal.sched.>');
+            vm.subscribedSensors.forEach(function(sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            unbindUpdate();
+            unbindReconnected();
+            ObsSchedService.sensorValues = {};
+
             vm.unbindStateChangeStart();
 
-            if (vm.connectInterval) {
-                $interval.cancel(vm.connectInterval);
-            }
             if (vm.unbindWatchSubarrays) {
                 vm.unbindWatchSubarrays();
             }
             if (vm.waitForSubarrayToExistInterval) {
                 $interval.cancel(vm.waitForSubarrayToExistInterval);
             }
-            SensorsService.disconnectListener();
-            vm.disconnectIssued = true;
         });
     }
 })();

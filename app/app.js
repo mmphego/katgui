@@ -108,7 +108,7 @@
             if ($rootScope.systemConfig && !forceConfig) {
                 $timeout(function() {
                     deferred.resolve($rootScope.systemConfig);
-                }, 1);
+                });
             } else {
                 ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
                 ConfigService.getSystemConfig(forceConfig).then(function(systemConfig) {

@@ -10,8 +10,6 @@
         vm.showDeselectTooltip = false;
         vm.selectedResources = [];
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
-        vm.resources_faulty = ObsSchedService.resources_faulty;
-        vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
 
         vm.initLastKnownConfig = function () {
             vm.lastKnownSubarrayConfig = ObsSchedService.getLastKnownSubarrayConfig(vm.subarray.id);
@@ -254,9 +252,6 @@
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
-            if (vm.unbindDelegateWatch) {
-                vm.unbindDelegateWatch();
-            }
         });
     }
 
