@@ -40,10 +40,8 @@
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
             if (subject.startsWith('req.reply')) {
-                if (sensor.name !== 'katpool_lo_id' && sensor.name !== 'sys_interlock_state') {
-                    MonitorService.subscribeSensor(sensor);
-                    vm.subscribedSensors.push(sensor);
-                }
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
             }
             StatusService.sensorValues[sensor.name] = sensor;
             if (sensor.name === 'katpool_resources_in_maintenance') {

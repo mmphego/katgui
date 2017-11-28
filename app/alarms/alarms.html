@@ -79,7 +79,7 @@
 
                     <div ng-if="item.selected" class="selected-alarm-list-item"></div>
 
-                    <div class="alarms-list-item-icon" ng-click="$event.stopPropagation(); vm.showAggregateSensorDetail(item)">
+                    <div class="alarms-list-item-icon" ng-click="vm.showAggregateSensorDetail(item); $event.stopPropagation()">
                         <span class="fa fa-warning" ng-switch-when="warn">
                             <md-tooltip>Warning</md-tooltip>
                         </span>

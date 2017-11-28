@@ -96,10 +96,6 @@
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
             if (subject.startsWith('req.reply')) {
-                if (sensor.component === 'sys' || sensor.component === 'katpool') {
-                    // These are sensors from other listings like katpool_lo_id and sys_interlock_state
-                    return;
-                }
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
             }
