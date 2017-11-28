@@ -22,7 +22,7 @@
             <label>{{tree.name}}</label>
         </md-toolbar>
         <div flex ng-repeat="sub in tree.subs" ng-class="vm.getClassesOfSensor(sub)" layout="column" layout-align="center center"
-            style="border: 1px solid">
+            style="margin: 1px">
             <label ng-mouseup="vm.subMouseUp(sub, $event)" style="cursor: pointer">{{sub.name}}</label>
         </div>
     </div>

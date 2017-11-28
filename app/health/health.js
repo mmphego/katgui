@@ -9,7 +9,7 @@
         var vm = this;
         ConfigService.loadAggregateSensorDetail();
         vm.topStatusTrees = StatusService.topStatusTrees;
-        StatusService.sensorValues = {};
+        vm.sensorValues = {};
         vm.subscribedSensors = [];
         vm.getClassesOfSensor = StatusService.getClassesOfSensor;
 
@@ -46,13 +46,15 @@
         vm.getClassesOfSensor = function(sub) {
             var sensorName = sub.component + '_' + sub.sensor;
             var statusClassResult = [sensorName, 'md-whiteframe-z1'];
-            var sensorValue = StatusService.sensorValues[sensorName];
+            var sensorValue = vm.sensorValues[sensorName];
             if (sensorValue) {
-                if (StatusService.resourcesInMaintenance.indexOf(sub.sensor.replace('agg_', '').split('_')[0]) > -1) {
+                var inMaintenance = vm.sensorValues.katpool_resources_in_maintenance;
+                if (inMaintenance && (
+                    inMaintenance.value.indexOf(sub.sensor.replace('agg_', '').split('_')[0]) > -1 ||
+                    inMaintenance.value.indexOf(sub.component) > -1)) {
                     statusClassResult.push('in-maintenance-child');
-                } else if (sensorValue.status !== undefined) {
-                    statusClassResult.push(sensorValue.status + '-child');
                 }
+                statusClassResult.push(sensorValue.status + '-child');
             } else {
                 statusClassResult.push('inactive-child');
             }
@@ -70,7 +72,7 @@
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
             }
-            StatusService.sensorValues[sensor.name] = sensor;
+            vm.sensorValues[sensor.name] = sensor;
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
@@ -81,7 +83,6 @@
             });
             unbindUpdate();
             unbindReconnected();
-            StatusService.sensorValues = {};
         });
     }
 })
