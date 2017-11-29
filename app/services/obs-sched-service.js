@@ -390,19 +390,14 @@
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
                     if (sensorName.endsWith('allocations')) {
                         var parsedAllocations = sensor.value !== "" ? JSON.parse(sensor.value) : [];
-                        if (!api.subarrays[subarrayIndex].allocations) {
-                            api.subarrays[subarrayIndex].allocations = [];
-                        } else {
-                            api.subarrays[subarrayIndex].allocations.splice(0, api.subarrays[subarrayIndex].allocations.length);
-                        }
-                        if (parsedAllocations.length > 0) {
-                            for (var m in parsedAllocations) {
-                                api.subarrays[subarrayIndex].allocations.push({
-                                    name: parsedAllocations[m][0],
-                                    allocation: parsedAllocations[m][1]
-                                });
-                            }
-                        }
+                        api.subarrays[subarrayIndex].allocations = [];
+                        parsedAllocations.forEach(function(alloc) {
+                            // alloc looks like: [["cbf_1","None","None"],["m011","None","None"],["sdp_1","None","None"]]
+                            api.subarrays[subarrayIndex].allocations.push({
+                                name: alloc[0],
+                                allocation: alloc[1]
+                            });
+                        });
                     } else if (sensorName.endsWith('delegated_ca')) {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         var iAmCA;
@@ -414,9 +409,6 @@
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
                     } else {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
-                        if (sensorName.endsWith('pool_resources')) {
-                            $rootScope.$emit('subarrayPoolResourcesSensorUpdate', sensor);
-                        }
                         if (sensorName.endsWith('state')) {
                             //wait a while to make sure on initial load that we get all the subarray sensor values
                             $timeout(function() {
@@ -439,13 +431,11 @@
             } else if (sensorName.endsWith('pool_resources_free')) {
                 api.poolResourcesFree.splice(0, api.poolResourcesFree.length);
                 var resourcesList = sensor.value.split(',');
-                if (resourcesList.length > 0 && resourcesList[0] !== '') {
-                    for (var index in resourcesList) {
-                        api.poolResourcesFree.push({
-                            name: resourcesList[index]
-                        });
-                    }
-                }
+                resourcesList.forEach(function(resourceName) {
+                    api.poolResourcesFree.push({
+                        name: resourceName
+                    });
+                });
             } else if (sensorName.indexOf('mode_') > -1) {
                 var subarrayId = sensorName.split('_')[2];
                 var subarray = _.findWhere(api.subarrays, {
@@ -454,9 +444,6 @@
                 if (subarray) {
                     subarray.mode = sensor.value;
                 }
-            } else {
-                var trimmed = sensorName.replace('katpool_', '');
-                api[trimmed] = sensor.value;
             }
         };
 

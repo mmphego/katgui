@@ -134,18 +134,18 @@
             <div class="resource-counter-overlay" title="The amount of receptors assigned to this subarray">
                 {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
             </div>
-            <div ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': resource.maintenance}"
+            <div ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource)}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
                 layout-align="start center">
                 <div flex layout="column">
-                    <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resource), 'maintenance-text': vm.sensorValues[resource.name + '_marked_in_maintenance'].value}">{{resource.name}}</span>
+                    <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resource), 'maintenance-text': parent.vm.isResourceInMaintenance(resource)}">{{resource.name}}</span>
                     <i title="Schedule Block allocated to resource" style="font-size: 10px">{{resource.allocation}}</i>
                 </div>
                 <span style="width: 18px; padding: 6px 0" class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO"
-                    md-ink-ripple ng-show="resource.maintenance && vm.subarray.maintenance" title="Restart Maintenance Device"
+                    md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resource) && vm.subarray.maintenance" title="Restart Maintenance Device"
                     ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
                 <span style="width: 18px; padding: 6px 0" class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple
-                    title="Mark Resource As Faulty" ng-class="{'fa-exclamation-circle': !resource.faulty, 'fa-warning error-text opaque': resource.faulty}"
+                    title="Mark Resource As Faulty" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resource), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resource)}"
                     ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
             </div>
         </div>
