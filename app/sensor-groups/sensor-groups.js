@@ -3,17 +3,15 @@
     angular.module('katGui')
         .controller('SensorGroupsCtrl', SensorGroupsCtrl);
 
-    function SensorGroupsCtrl($scope, $rootScope, SensorsService, $timeout, $interval, NotifyService,
+    function SensorGroupsCtrl($scope, $rootScope, MonitorService, $timeout, $interval, NotifyService,
                               ConfigService, $log, MOMENT_DATETIME_FORMAT, KatGuiUtil) {
 
         var vm = this;
         vm.sensorGroups = {};
         vm.sensorGroupList = [];
-        vm.sensorsToDisplay = [];
+        vm.subscribedSensors = [];
         vm.sensorsGroupBeingDisplayed = '';
         vm.sensorValues = {};
-        vm.guid = KatGuiUtil.generateUUID();
-        vm.connectInterval = null;
         vm.hideNominalSensors = false;
 
         ConfigService.loadSensorGroups().then(function (result) {
@@ -29,88 +27,27 @@
             {label: 'Value', value: 'value'}
         ];
 
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                        vm.connectListeners();
-                    }
-                });
-        };
-
         vm.initSensors = function () {
-            if (vm.sensorsGroupBeingDisplayed.length > 0) {
+            if (vm.sensorsGroupBeingDisplayed) {
                 vm.showProgress = true;
-                SensorsService.listSensors(vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors).then(function (result) {
-                    if (result.data) {
-                        result.data.forEach(function (sensor) {
-                            sensor.received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                            sensor.timestamp = moment.utc(sensor.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                            vm.sensorValues[sensor.python_identifier] = sensor;
-                        });
-                        vm.sensorsToDisplay = result.data;
-                        SensorsService.setSensorStrategies(
-                            vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors,
-                            $rootScope.sensorListStrategyType,
-                            $rootScope.sensorListStrategyInterval,
-                            10);
-                    }
-                    vm.showProgress = false;
+                var sensorsRegex = vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors.split('|');
+                sensorsRegex.forEach(function(sensorRegex) {
+                    var sensorSplitList = sensorRegex.split(':');
+                    var component = sensorSplitList[0];
+                    var regex = sensorSplitList[1];
+                    MonitorService.listSensors(component, regex);
                 });
             }
         };
 
         vm.setSensorGroupStrategy = function (sensorGroupName) {
-
-            if (vm.sensorsGroupBeingDisplayed && sensorGroupName !== vm.sensorsGroupBeingDisplayed) {
-                SensorsService.removeSensorStrategies(vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors);
-                vm.sensorValues = {};
-            }
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            vm.subscribedSensors = [];
+            vm.sensorValues = {};
             vm.sensorsGroupBeingDisplayed = sensorGroupName;
-            vm.sensorsToDisplay = [];
-            vm.showProgress = true;
-            $timeout(function () {
-                SensorsService.listSensors(vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors).then(function (result) {
-                    if (result.data) {
-                        result.data.forEach(function (sensor) {
-                            sensor.received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                            sensor.timestamp = moment.utc(sensor.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                            vm.sensorValues[sensor.python_identifier] = sensor;
-                        });
-                        vm.sensorsToDisplay = result.data;
-                        SensorsService.setSensorStrategies(
-                            vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors,
-                            $rootScope.sensorListStrategyType,
-                            $rootScope.sensorListStrategyInterval,
-                            10);
-                    }
-                    vm.showProgress = false;
-                }, function (error) {
-                    vm.showProgress = false;
-                    NotifyService.showPreDialog('Error displaying Sensor Group', error.data.err_msg);
-                });
-            }, 500);
+            vm.initSensors();
         };
 
         vm.displaySensorValue = function ($event, sensor) {
@@ -139,26 +76,38 @@
             return status + '-sensor-list-item';
         };
 
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var strList = sensor.name.split(':');
-            var sensorName = strList[1];
-            if (vm.sensorValues[sensorName]) {
-                vm.sensorValues[sensorName].received_timestamp = moment.utc(sensor.value.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                vm.sensorValues[sensorName].status = sensor.value.status;
-                vm.sensorValues[sensorName].timestamp = moment.utc(sensor.value.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                vm.sensorValues[sensorName].value = sensor.value.value;
-            }
-        });
-
         vm.filterByNotNominal = function (sensor) {
             return !vm.hideNominalSensors || vm.hideNominalSensors && sensor.status !== 'nominal';
         };
 
-        vm.connectListeners();
+        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                vm.showProgress = false;
+                if (!vm.sensorValues[sensor.name]) {
+                    MonitorService.subscribeSensor(sensor);
+                    vm.subscribedSensors.push(sensor);
+                }
+                vm.sensorValues[sensor.name] = sensor;
+            } else {
+                if (vm.sensorValues[sensor.name]) {
+                    for (var key in sensor) {
+                        vm.sensorValues[sensor.name][key] = sensor[key];
+                    }
+                }
+            }
+            vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+        });
+
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
+        vm.initSensors();
 
         $scope.$on('$destroy', function () {
-            unbindUpdate();
-            SensorsService.disconnectListener();
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            unbindSensorUpdates();
+            unbindReconnected();
         });
     }
 })();
