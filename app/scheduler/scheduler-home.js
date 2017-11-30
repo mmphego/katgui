@@ -849,10 +849,11 @@
                 }
             }
             if (vm.subarray && sensor.name === 'subarray_' + vm.subarray.id + '_state' && sensor.value === 'active' &&
-                ObsSchedService.sensorValues[sensor.name] !== 'active') {
-                vm.subarray.allocations.forEach(function(resourceAlloc) {
-                    MonitorService.listSensors(resourceAlloc[0], 'gui_urls$');
-                });
+                    ObsSchedService.sensorValues[sensor.name] !== 'active') {
+                ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue.forEach(
+                    function(resourceAlloc) {
+                        MonitorService.listSensors(resourceAlloc[0], 'gui_urls$');
+                    });
             }
             ObsSchedService.sensorValues[sensor.name] = sensor;
             ObsSchedService.receivedResourceMessage(sensor);

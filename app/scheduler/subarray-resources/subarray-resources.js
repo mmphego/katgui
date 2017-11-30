@@ -105,9 +105,10 @@
         };
 
         vm.saveTemplateDialog = function ($event) {
-            var resourceNames = [];
-            vm.subarray.allocations.forEach(function (allocation) {
-                resourceNames.push(allocation.name);
+
+            var allocations = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue;
+            var resourceNames = allocations.map(function (allocation) {
+                return allocation[0];
             });
             resourceNames = resourceNames.join(',');
 

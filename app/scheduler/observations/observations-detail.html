@@ -134,7 +134,7 @@
             <div class="resource-counter-overlay" title="The amount of receptors assigned to this subarray">
                 {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
             </div>
-            <div ng-repeat="resourceAlloc in vm.subarray.allocations" ng-class="{'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resourceAlloc[0])}"
+            <div ng-repeat="resourceAlloc in parent.vm.sensorValues[vm.subarray.name + '_allocations'].parsedValue" ng-class="{'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resourceAlloc[0])}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
                 layout-align="start center">
                 <div flex layout="column">

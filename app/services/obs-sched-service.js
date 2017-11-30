@@ -389,7 +389,7 @@
                 if (subarrayIndex > -1) {
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
                     if (sensorName.endsWith('allocations')) {
-                        api.subarrays[subarrayIndex].allocations = sensor.value !== "" ? JSON.parse(sensor.value) : [];
+                        api.sensorValues[sensorName].parsedValue = sensor.value !== "" ? JSON.parse(sensor.value) : [];
                     } else if (sensorName.endsWith('delegated_ca')) {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         var iAmCA;
@@ -405,10 +405,11 @@
                             //wait a while to make sure on initial load that we get all the subarray sensor values
                             $timeout(function() {
                                 if (api.subarrays[subarrayIndex].state !== 'inactive') {
-                                    $localStorage.lastKnownSubarrayConfig['subarray_' + api.subarrays[subarrayIndex].id] = {
-                                        allocations: api.subarrays[subarrayIndex].allocations.map(function(resource) {
-                                            return resource.name;
-                                        }).join(","),
+                                    $localStorage.lastKnownSubarrayConfig[api.subarrays[subarrayIndex].name] = {
+                                        allocations: api.sensorValues[api.subarrays[subarrayIndex].name + '_allocations'].parsedValue.map(
+                                            function(resource) {
+                                                return resource[0];
+                                            }).join(","),
                                         band: api.subarrays[subarrayIndex].band,
                                         product: api.subarrays[subarrayIndex].product
                                     };
@@ -443,11 +444,11 @@
             // matches something like ptuse_1_gui_urls or m011_gui_urls
             // and returns ptuse_1 or m011 respectively
             // `match` returns null if there is no match, otherwise a list of results
-            var resourceName = sensor.name.match(/^[a-z]+_\d|^[a-z]+_/);
-            if (resourceName && sensor.value) {
-                api.guiUrls[resourceName[0]] = JSON.parse(sensor.value);
+            var resourceNameMatches = sensor.name.match(/^[a-z]+_\d|^[a-z]+_/);
+            if (resourceNameMatches && sensor.value) {
+                api.guiUrls[resourceNameMatches[0]] = JSON.parse(sensor.value);
             } else {
-                api.guiUrls[resourceName[0]] = [];
+                api.guiUrls[resourceNameMatches[0]] = [];
             }
         };
 
@@ -840,9 +841,13 @@
                     return item.id === subarrayNumber;
                 });
                 if (lastKnownConfig.allocations) {
-                    var currentAllocations = subarray.allocations.map(function(resource) {
-                        return resource.name;
-                    });
+                    var currentAllocationsSensor = api.sensorValues[api.subarrays[subarrayNumber].name + '_allocations'];
+                    var currentAllocations = [];
+                    if (currentAllocationsSensor) {
+                        currentAllocationsSensor.parsedValue.map(function(resourceAlloc) {
+                            return resourceAlloc[0];
+                        });
+                    }
                     var resourcesToAllocate = lastKnownConfig.allocations.split(',');
                     var resourcesGoingToAllocate = _.difference(resourcesToAllocate, currentAllocations);
                     if (resourcesGoingToAllocate.length > 0) {
