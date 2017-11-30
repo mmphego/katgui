@@ -3,86 +3,52 @@
     angular.module('katGui')
         .controller('GuiLinksCtrl', GuiLinksCtrl);
 
-    function GuiLinksCtrl($rootScope, $scope, $interval, $log, SensorsService, MOMENT_DATETIME_FORMAT, NotifyService, $timeout) {
+    function GuiLinksCtrl($rootScope, $scope, $interval, $log, MonitorService, MOMENT_DATETIME_FORMAT, NotifyService, $timeout) {
 
         var vm = this;
-
-        vm.sortedSensorNames = [];
-        vm.disconnectIssued = false;
-        vm.connectInterval = null;
         vm.sensorValues = {};
-
+        vm.subscribedSensors = [];
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
             {label: 'Value', value: 'value'}
         ];
 
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        if (!vm.disconnectIssued) {
-                            NotifyService.showSimpleToast('Reconnected :)');
-                        }
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
-                    }
-                });
+        vm.refreshGuiLinks = function () {
+            vm.sensorValues = {};
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            vm.initSensors();
         };
 
         vm.initSensors = function () {
-            SensorsService.setSensorStrategies('gui.urls$', 'event-rate', 1, 360);
+            MonitorService.listSensors('all', 'gui_urls$');
         };
 
-        vm.connectListeners();
-
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            sensor.value.name = sensor.name.split(':')[1];
-            sensor.value.date = moment.utc(sensor.value.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-            try {
-                sensor.value.value = JSON.parse(sensor.value.value);
-                vm.sensorValues[sensor.value.name] = sensor.value;
+        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
+                vm.sensorValues[sensor.name] = sensor;
+            } else {
+                for (var key in sensor) {
+                    vm.sensorValues[sensor.name][key] = sensor[key];
+                }
             }
-            catch (Exception) {
-                $log.error('Error parsing sensor message value: ' + sensor.value.value);
-            }
+            vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+            vm.sensorValues[sensor.name].parsedValue = JSON.parse(sensor.value);
         });
 
-        vm.refreshGuiLinks = function () {
-            vm.sensorValues = {};
-            SensorsService.removeSensorStrategies('gui.urls$');
-            $timeout(function (){
-                SensorsService.setSensorStrategies('gui.urls$', 'event-rate', 1, 360);
-            }, 500);
-        };
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
+        vm.initSensors();
 
         $scope.$on('$destroy', function () {
-            unbindUpdate();
-            vm.disconnectIssued = true;
-            SensorsService.disconnectListener();
-            if (vm.connectInterval) {
-                $interval.cancel(vm.connectInterval);
-            }
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            unbindSensorUpdates();
+            unbindReconnected();
         });
     }
 })();
