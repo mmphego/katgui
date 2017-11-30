@@ -88,14 +88,15 @@
                     vm.subscribedSensors.push(sensor);
                 }
                 vm.sensorValues[sensor.name] = sensor;
+                vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
             } else {
                 if (vm.sensorValues[sensor.name]) {
                     for (var key in sensor) {
                         vm.sensorValues[sensor.name][key] = sensor[key];
                     }
                 }
+                vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
             }
-            vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);

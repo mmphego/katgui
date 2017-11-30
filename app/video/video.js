@@ -5,12 +5,15 @@
     angular.module('katGui.video', ['katGui.services'])
         .controller('VideoCtrl', VideoCtrl);
 
-    function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog, ControlService, SensorsService,
+    function VideoCtrl($scope, $rootScope, $http, $log, $interval, $mdDialog, ControlService, MonitorService,
         NotifyService, USER_ROLES, ConfigService, KatGuiUtil, $state) {
 
         var vm = this;
         vm.imageSources = [];
+        vm.subscribedSensors = [];
         vm.imageSource = null;
+        vm.sensorValues = {};
+        vm.stepTimeValue = 1;
 
         ConfigService.getSystemConfig()
             .then(function(systemConfig) {
@@ -20,27 +23,21 @@
                     return;
                 }
 
-                vm.imageSources = [];
                 var imageKeys = Object.keys(systemConfig.vds);
-
-                for (var i = 0; i < imageKeys.length; i++) {
-                    vm.imageSources.push({
-                        name: imageKeys[i],
-                        url: systemConfig.vds[imageKeys[i]]
-                    });
-                }
-
-                if (!$scope.$$phase) {
-                    $scope.$digest();
-                }
+                imageKeys = imageKeys.filter(function(imageSource) {
+                    return imageSource !== 'vds_constants';
+                });
+                vm.imageSources = imageKeys.map(function(imageSource) {
+                    return {
+                        name: imageSource,
+                        url: systemConfig.vds[imageSource]
+                    };
+                });
             });
-
-        vm.sensorValues = {};
-        vm.stepTimeValue = 1;
 
         vm.toggleFloodLights = function() {
             vm.floodlightsOn(
-                    vm.sensorValues[vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
+                    vm.sensorValues['anc_' + vm.vds_name + '_flood_lights_on'].value ? 'off' : 'on')
                 .then(function(result) {
                     var splitMessage = result.data.result.split(' ');
                     var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
@@ -234,74 +231,46 @@
             NotifyService.showSimpleDialog('Error sending VDS command.', result.data);
         }
 
-        vm.connectListeners = function() {
-            SensorsService.connectListener()
-                .then(function() {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        if (!vm.disconnectIssued) {
-                            NotifyService.showSimpleToast('Reconnected :)');
-                        }
-                    }
-                }, function() {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function() {
-            SensorsService.getTimeoutPromise()
-                .then(function() {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
-                    }
-                });
-        };
-
         vm.initSensors = function() {
-            SensorsService.setSensorStrategies('anc_vds_*', 'event-rate', 1, 360);
+            MonitorService.listSensors('anc', '^vds');
         };
 
-
-        vm.afterInit = function() {
-            if ($rootScope.currentUser) {
-                if ($rootScope.expertOrLO ||
-                    $rootScope.currentUser.req_role === USER_ROLES.operator) {
-                    vm.canOperateVDS = true;
-                    vm.connectListeners();
-                }
+        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
             }
-        };
-
-        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
-        vm.afterInit();
-
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function(event, sensor) {
-            var sensorName = sensor.name.split(':')[1].replace('anc_', '');
-            vm.sensorValues[sensorName] = sensor.value;
-            if (sensorName === vm.vds_name + '_focus_position') {
-                vm.focus = sensor.value.value;
-            } else if (sensorName === vm.vds_name + '_zoom_position') {
-                vm.zoom = sensor.value.value;
+            vm.sensorValues[sensor.name] = sensor;
+            if (sensor.name === vm.vds_name + '_focus_position') {
+                vm.focus = sensor.value;
+            } else if (sensor.name === vm.vds_name + '_zoom_position') {
+                vm.zoom = sensor.value;
             }
         });
 
-        $scope.$on('$destroy', function() {
-            unbindUpdate();
-            vm.disconnectIssued = true;
-            SensorsService.disconnectListener();
-            if (vm.unbindLoginSuccess) {
-                vm.unbindLoginSuccess();
-            }
+        vm.afterInit = function() {
+            // if ($rootScope.currentUser) {
+                // if ($rootScope.expertOrLO ||
+                    // $rootScope.currentUser.req_role === USER_ROLES.operator) {
+                    // vm.canOperateVDS = true;
+                    // vm.initSensors();
+                // }
+            // }
+            vm.canOperateVDS = true;
+            vm.initSensors();
+        };
+
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+        var unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
+        vm.afterInit();
+
+        $scope.$on('$destroy', function () {
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            unbindSensorUpdates();
+            unbindReconnected();
+            unbindLoginSuccess();
         });
 
         function urlBase() {
