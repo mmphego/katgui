@@ -4,7 +4,7 @@
         .controller('HealthCtrl', HealthCtrl);
 
     function HealthCtrl($rootScope, $scope, ConfigService, StatusService, NotifyService,
-        MonitorService, d3Util) {
+        MonitorService, d3Util, $timeout) {
 
         var vm = this;
         ConfigService.loadAggregateSensorDetail();
@@ -16,7 +16,7 @@
         ConfigService.getStatusTreesForTop()
             .then(function(result) {
                 StatusService.setTopStatusTrees(result.data);
-                vm.initSensors();
+                $timeout(vm.initSensors, 500);
             }, function() {
                 NotifyService.showSimpleDialog(
                     "Error retrieving layout from katconf-webserver, is the server running?");

@@ -10,6 +10,7 @@
         }
 
         var api = {};
+        api.resources = {};
         api.receptorHealthTree = {};
         api.receptorList = [];
         api.KATObsPortalURL = null;
@@ -243,6 +244,58 @@
             } else {
                 $log.warn('There\'s no cached katgui build date! This could be because katgui is being served uncompiled.');
             }
+        };
+
+        api.listResourcesFromConfig = function () {
+            var deferred = $q.defer();
+            api.getSystemConfig()
+                .then(function (systemConfig) {
+                    for (var node in systemConfig['katconn:resources']) {
+                        var processList = systemConfig['katconn:resources'][node].split(',');
+                        for (var i in processList) {
+                            if (processList[i].length > 0) {
+                                var group = 'Components';
+                                if (node === 'single_ctl') {
+                                    group = 'Proxies';
+                                }
+                                var processClientConfig = systemConfig['katconn:clients'][processList[i]].split(':');
+                                api.resources[processList[i]] = {
+                                    name: processList[i],
+                                    host: processClientConfig[0],
+                                    port: processClientConfig[1],
+                                    node: group
+                                };
+                            }
+                        }
+                    }
+                    deferred.resolve(api.resources);
+                });
+            return deferred.promise;
+        };
+
+        api.listResources = function () {
+            var deferred = $q.defer();
+            $http.get(urlBase() + '/resource')
+                .then(function (result) {
+                    for (var i in result.data) {
+                        for (var node in ConfigService.systemConfig['katconn:resources']) {
+                            var processList = ConfigService.systemConfig['katconn:resources'][node];
+                            if (processList.indexOf(result.data[i].name) > -1) {
+                                var group = 'Components';
+                                if (node === 'single_ctl') {
+                                    group = 'Proxies';
+                                }
+                                result.data[i].node = group;
+                                break;
+                            }
+                        }
+                        api.resources[result.data[i].name] = result.data[i];
+                    }
+                    deferred.resolve(api.resources);
+                }, function (result) {
+                    deferred.reject(result);
+                });
+            return deferred.promise;
         };
 
         function createRequest(method, url) {

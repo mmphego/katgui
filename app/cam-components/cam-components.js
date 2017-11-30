@@ -1,61 +1,59 @@
-(function () {
+(function() {
 
     angular.module('katGui')
         .controller('CamComponentsCtrl', CamComponentsCtrl);
 
-    function CamComponentsCtrl($rootScope, $scope, SensorsService, MonitorService, KatGuiUtil, $interval, $log, ConfigService,
-                               ControlService, NotifyService, $state, USER_ROLES, $timeout) {
+    function CamComponentsCtrl($rootScope, $scope, MonitorService, KatGuiUtil, $interval, $log, ConfigService,
+        ControlService, NotifyService, $state, USER_ROLES, $timeout) {
 
         var vm = this;
         vm.resourcesNames = {};
         vm.subscribedSensors = [];
 
-        vm.initSensors = function () {
+        vm.initSensors = function() {
             vm.nodes = ConfigService.resourceGroups;
-            SensorsService.listResourcesFromConfig()
-                .then(function (resources) {
-                  ConfigService.getSystemConfig().then(function () {
-                      for (var key in resources) {
-                          vm.resourcesNames[key] = {
-                              name: key,
-                              sensors: {},
-                              host: resources[key].host,
-                              port: resources[key].port,
-                              node: resources[key].node
-                          };
-                          vm.resourcesNames[key].nodeman = $rootScope.systemConfig['monitor:monctl'][key]? 'nm_monctl' : 'nm_proxy';
-                      }
-                      MonitorService.listSensors('sys', '^monitor_');
-                      MonitorService.listSensors('all', 'katcpmsgs|version|build');
-                  });
+            ConfigService.listResourcesFromConfig()
+                .then(function(resources) {
+                    for (var key in resources) {
+                        vm.resourcesNames[key] = {
+                            name: key,
+                            sensors: {},
+                            host: resources[key].host,
+                            port: resources[key].port,
+                            node: resources[key].node
+                        };
+                        vm.resourcesNames[key].nodeman = ConfigService.systemConfig['monitor:monctl'][key] ? 'nm_monctl' : 'nm_proxy';
+                    }
+                    MonitorService.listSensors('sys', '^monitor_');
+                    MonitorService.listSensors('all', 'katcpmsgs|version|build');
                 });
         };
 
-        vm.stopProcess = function (resource) {
+        vm.stopProcess = function(resource) {
             ControlService.stopProcess('nm_monctl', resource);
         };
 
-        vm.startProcess = function (resource) {
+        vm.startProcess = function(resource) {
             ControlService.startProcess('nm_monctl', resource);
         };
 
-        vm.restartProcess = function (resource) {
+        vm.restartProcess = function(resource) {
             ControlService.restartProcess('nm_monctl', resource);
         };
 
-        vm.killProcess = function (resource) {
+        vm.killProcess = function(resource) {
             ControlService.killProcess('nm_monctl', resource);
         };
 
-        vm.toggleKATCPMessageDevices = function (resource, newValue) {
-            ControlService.toggleKATCPMessageDevices(resource, newValue? 'enable' : 'disable');
+        vm.toggleKATCPMessageDevices = function(resource, newValue) {
+            ControlService.toggleKATCPMessageDevices(resource, newValue ? 'enable' : 'disable');
         };
 
-        vm.toggleKATCPMessageProxy = function (resource, newValue) {
-            ControlService.toggleKATCPMessageProxy(resource, newValue? 'enable' : 'disable');
+        vm.toggleKATCPMessageProxy = function(resource, newValue) {
+            ControlService.toggleKATCPMessageProxy(resource, newValue ? 'enable' : 'disable');
         };
 
-        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
@@ -64,10 +62,12 @@
                     var connectedComponent = sensorName.replace('monitor_', '');
                     vm.resourcesNames[connectedComponent].connected = sensor.value;
                 } else {
-                    vm.resourcesNames[sensor.component].sensors[sensorName] = {
-                        name: sensorName,
-                        value: sensor.value
-                    };
+                    if (vm.resourcesNames[sensor.component]) {
+                        vm.resourcesNames[sensor.component].sensors[sensorName] = {
+                            name: sensorName,
+                            value: sensor.value
+                        };
+                    }
                 }
             } else {
                 var component;
@@ -87,19 +87,19 @@
             }
         });
 
-        vm.collapseAll = function () {
+        vm.collapseAll = function() {
             for (var key in vm.resourcesNames) {
                 vm.resourcesNames[key].showDetails = false;
             }
         };
 
-        vm.expandAll = function () {
+        vm.expandAll = function() {
             for (var key in vm.resourcesNames) {
                 vm.resourcesNames[key].showDetails = true;
             }
         };
 
-        vm.disableAllKATCPMessageLogging = function () {
+        vm.disableAllKATCPMessageLogging = function() {
             for (var name in vm.resourcesNames) {
                 var devicesKatcpmsgsSensor = vm.resourcesNames[name].sensors.logging_katcpmsgs_devices_enabled;
                 var proxyKatcpmsgsSensor = vm.resourcesNames[name].sensors.logging_katcpmsgs_proxy_enabled;
@@ -116,8 +116,8 @@
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
-        $scope.$on('$destroy', function () {
-            vm.subscribedSensors.forEach(function (sensor) {
+        $scope.$on('$destroy', function() {
+            vm.subscribedSensors.forEach(function(sensor) {
                 MonitorService.unsubscribeSensor(sensor);
             });
             unbindUpdate();

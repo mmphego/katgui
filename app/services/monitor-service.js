@@ -5,7 +5,7 @@
 
     function MonitorService(KatGuiUtil, $timeout, StatusService, AlarmsService, ObsSchedService, $interval,
         $rootScope, $q, $log, ReceptorStateService, NotifyService, UserLogService, ConfigService,
-        SessionService, $http, $state) {
+        SessionService, $http, $state, $mdDialog, MOMENT_DATETIME_FORMAT) {
 
         function urlBase() {
             return $rootScope.portalUrl ? $rootScope.portalUrl + '/katmonitor' : '';
@@ -250,6 +250,113 @@
                     pattern: regex
                 };
             }
+        };
+
+        api.showAggregateSensorsDialog = function (title, content, event) {
+            $mdDialog
+                .show({
+                    controller: function ($rootScope, $scope, $mdDialog) {
+                        $scope.title = title;
+                        $scope.content = content;
+                        $scope.hide = function () {
+                            $mdDialog.hide();
+                        };
+                        $scope.jsonContent = JSON.parse(content);
+                        $scope.parentSensorNameList = $scope.jsonContent.sensors.split(',');
+                        $scope.subscribedSensors = [];
+                        $scope.sensorNameList = [];
+                        $scope.sensorValues = {};
+
+                        $scope.sensorClass = function (status) {
+                            return status + '-sensor-list-item';
+                        };
+
+                        $scope.initSensors = function () {
+                            setAggSensorStrategies();
+                        };
+
+                        function setAggSensorStrategies() {
+                            $scope.parentSensorNameList.forEach(function (sensorName) {
+                                getChildSensorsFromAgg(sensorName);
+                                function getChildSensorsFromAgg (sensor) {
+                                    if (sensor.indexOf('agg_') === -1) {
+                                        $scope.sensorNameList.push(sensor);
+                                    } else {
+                                        var childSensors = ConfigService.aggregateSensorDetail[sensor].sensors.split(',');
+                                        childSensors.forEach(function (childSensor) {
+                                            if (sensor.indexOf('agg_') === -1) {
+                                                $scope.sensorNameList.push(childSensor);
+                                            } else {
+                                                getChildSensorsFromAgg(childSensor);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+
+                            if ($scope.sensorNameList) {
+                                $scope.sensorNameList.map(function(sensorName) {
+                                    var component, componentNameMatches;
+                                    if (sensorName.startsWith('nm_') || sensorName.startsWith('mon_')) {
+                                        componentNameMatches = sensorName.match(/^(mon_|nm_)[a-z0-9]+_/);
+                                    } else {
+                                        componentNameMatches = sensorName.match(/^[a-z0-9]+_\d|^[a-z0-9]+_/);
+                                    }
+                                    if (componentNameMatches) {
+                                        component = componentNameMatches[0].slice(0, componentNameMatches[0].length - 1);
+                                    }
+                                    if (component) {
+                                        api.listSensors(component, sensorName.replace(component + '_', ''));
+                                    }
+                                });
+                            }
+                        }
+
+                        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+                            if (subject.startsWith('req.reply')) {
+                                api.subscribeSensor(sensor);
+                                if (!$scope.sensorValues[sensor.name]) {
+                                    $scope.subscribedSensors.push(sensor);
+                                }
+                            }
+                            sensor.date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+                            $scope.sensorValues[sensor.name] = sensor;
+                        });
+
+                        var unbindReconnected = $rootScope.$on('websocketReconnected', $scope.initSensors);
+                        $scope.initSensors();
+
+                        $scope.$on('$destroy', function () {
+                            $scope.subscribedSensors.forEach(function(sensor) {
+                                api.unsubscribeSensor(sensor);
+                            });
+                            unbindUpdate();
+                            unbindReconnected();
+                        });
+                    },
+                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label=''>" +
+                    "   <div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
+                    "       <md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
+                    "           <div flex><pre style='white-space: pre-wrap'>{{content}}</pre></div>" +
+                    "           <div layout='column' class='resource-sensors-list' style='margin: 0 16px'>" +
+                    "               <div style='height: 24px' ng-repeat='sensor in subscribedSensors'>" +
+                    "                   <div layout='row' class='resource-sensor-item' title='{{sensor.original_name}}'>" +
+                    "                       <span style='width: 450px; overflow: hidden; text-overflow: ellipsis'>{{sensor.original_name}}</span>" +
+                    "                       <span class='resource-sensor-status-item' ng-class='sensorClass(sensorValues[sensor.name].status)'>{{sensorValues[sensor.name].status}}</span>" +
+                    "                       <span class='resource-sensor-time-item' title='Timestamp'>{{sensorValues[sensor.name].date}}</span>" +
+                    "                       <span flex class='resource-sensor-value-item'>{{sensorValues[sensor.name].value}}</span>" +
+                    "                   </div>" +
+                    "               </div>" +
+                    "           </div>" +
+                    "   </div>" +
+                    "   <div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
+                    "       <md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
+                    "   </div>" +
+                    "</md-dialog>",
+                    targetEvent: event
+                });
+
+            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
         };
 
         api.sendMonitorCommand = function(method, params) {
