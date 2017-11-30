@@ -134,19 +134,20 @@
             <div class="resource-counter-overlay" title="The amount of receptors assigned to this subarray">
                 {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
             </div>
-            <div ng-repeat="resource in vm.subarray.allocations track by $index" ng-class="{'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource)}"
+            <div ng-repeat="resourceAlloc in vm.subarray.allocations" ng-class="{'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resourceAlloc[0])}"
                 class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
                 layout-align="start center">
                 <div flex layout="column">
-                    <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resource), 'maintenance-text': parent.vm.isResourceInMaintenance(resource)}">{{resource.name}}</span>
-                    <i title="Schedule Block allocated to resource" style="font-size: 10px">{{resource.allocation}}</i>
+                    <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resourceAlloc[0]), 'maintenance-text': parent.vm.isResourceInMaintenance(resourceAlloc[0])}">
+                        {{resourceAlloc[0]}}</span>
+                    <i title="Schedule Block allocated to resource" style="font-size: 10px">{{resourceAlloc[1]}}</i>
                 </div>
                 <span style="width: 18px; padding: 6px 0" class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO"
-                    md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resource) && vm.subarray.maintenance" title="Restart Maintenance Device"
-                    ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
+                    md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resourceAlloc[0]) && vm.subarray.maintenance" title="Restart Maintenance Device"
+                    ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resourceAlloc[0], $event); $event.stopPropagation()"></span>
                 <span style="width: 18px; padding: 6px 0" class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple
-                    title="Mark Resource As Faulty" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resource), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resource)}"
-                    ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                    title="Mark Resource As Faulty" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resourceAlloc[0]), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resourceAlloc[0])}"
+                    ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resourceAlloc[0]); $event.stopPropagation()"></span>
             </div>
         </div>
         <md-toolbar style="margin-left: 0; width: 450px; position: relative; margin-top: 8px" class="panel-toolbar-small md-whiteframe-z1">

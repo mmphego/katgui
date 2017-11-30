@@ -120,21 +120,21 @@
 
                     <div flex layout="column" layout-wrap style="overflow-y: auto">
                         <div style="max-height: 52px; position: relative" flex="25" class="resource-item" layout="row" layout-align="start center"
-                            ng-repeat="resource in vm.subarray.allocations | orderBy:'name'" ng-class="parent.vm.classForResource(resource)">
-                            <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resource.name}}</span>
-                            <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resource.name + '_state'].value}}</span>
+                            ng-repeat="resourceAlloc in vm.subarray.allocations" ng-class="parent.vm.classForResource(resourceAlloc[0])">
+                            <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resourceAlloc[0]}}</span>
+                            <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resourceAlloc[0] + '_state'].value}}</span>
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">
-                                <a ng-repeat="link in parent.vm.guiUrls[resource.name] track by $index" target="_blank"
+                                <a ng-repeat="link in parent.vm.guiUrls[resourceAlloc[0]] track by $index" target="_blank"
                                     href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
                             </div>
-                            <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resource)"
-                                title="Restart Maintenance Device" ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resource, $event); $event.stopPropagation()"></span>
-                            <span md-ink-ripple ng-click="parent.vm.showResourceLogs(resource.name)" class="icon-button fa fa-file-text-o" title="{{'Show ' + resource.name + ' logs'}}"></span>
+                            <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resourceAlloc[0])"
+                                title="Restart Maintenance Device" ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resourceAlloc[0], $event); $event.stopPropagation()"></span>
+                            <span md-ink-ripple ng-click="parent.vm.showResourceLogs(resourceAlloc[0])" class="icon-button fa fa-file-text-o" title="{{'Show ' + resourceAlloc[0] + ' logs'}}"></span>
                             <span class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple title="Mark Resource As Faulty"
-                                ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resource), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resource)}"
-                                ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                                ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resourceAlloc[0]), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resourceAlloc[0])}"
+                                ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resourceAlloc[0]); $event.stopPropagation()"></span>
                             <span class="icon-button fa fa-chevron-right" ng-disabled="!$root.expertOrLO" md-ink-ripple title="Free Assigned Resource"
-                                ng-click="!$root.expertOrLO || vm.freeAssignedResource(resource); $event.stopPropagation()"></span>
+                                ng-click="!$root.expertOrLO || vm.freeAssignedResource(resourceAlloc[0]); $event.stopPropagation()"></span>
                         </div>
                     </div>
                 </div>
@@ -146,7 +146,7 @@
         </div>
 
         <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" style="min-height: 90%; max-width: 41px; min-width: 41px; margin: 2px 4px 8px 0;"
-            ng-disabled="!$root.expertOrLO || vm.selectedResources.length === 0" ng-click="vm.assignSelectedResources();"
+            ng-disabled="!$root.expertOrLO" ng-click="vm.assignSelectedResources();"
             title="Assign Resources to Subarray">
             <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
         </md-button>
@@ -154,29 +154,24 @@
         <div flex layout="column" style="max-width:400px; min-height: 500px; margin-right: 8px">
             <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
                 <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">
-                    <md-tooltip md-visible="vm.showDeselectTooltip" md-direction="top" md-autohide="false">
-                        [esc] to clear selection, [enter] to assign resources
-                    </md-tooltip>
                     <span flex class="md-toolbar-tools" title="Click to select or deselect all free resources" style="cursor: pointer; max-height: 32px; padding: 0 4px"
-                        ng-click="!$root.expertOrLO || vm.selectAllUnassignedResources(vm.selectedResources.length === 0)">Free Resources</span>
-                    <input class="search-input-box unselectable" type="search" style="width: 140px;" ng-model-options="{ debounce: 300 }"
-                        ng-model="vm.q" placeholder="Search Resources..." />
+                        ng-click="!$root.expertOrLO || vm.toggleSelectAllUnassignedResources()">Free Resources</span>
                 </md-toolbar>
                 <div flex style="overflow: auto" layout="column" layout-wrap>
                     <div style="max-height: 40px; position: relative; cursor: pointer" flex="25" class="resource-item" layout="row"
-                        layout-align="start center" ng-repeat="resource in filteredResources = (vm.poolResourcesFree | regexSearch:[{label:'name', value:'name'}]:vm.q | orderBy:'name')"
-                        ng-class="{'selected-resource-item': resource.selected, 'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource), 'faulty-border': parent.vm.isResourceFaulty(resource)}"
-                        ng-disabled="!$root.expertOrLO" ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = resource.selected; vm.toggleResourceSelect(resource)"
-                        ng-mouseover="vm.dragSelect && !vm.dragSelectUnselect? vm.toggleResourceSelect(resource, true) : vm.dragSelect && vm.dragSelectUnselect? vm.toggleResourceSelect(resource, false) : ''">
+                        layout-align="start center" ng-repeat="resource in vm.poolResourcesFree | orderBy:'name'"
+                        ng-class="{'selected-resource-item': resource.selected, 'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource.name), 'faulty-border': parent.vm.isResourceFaulty(resource.name)}"
+                        ng-disabled="!$root.expertOrLO" ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = resource.selected; resource.selected = !resource.selected"
+                        ng-mouseenter="vm.dragSelect && !vm.dragSelectUnselect? resource.selected = !resource.selected : vm.dragSelect && vm.dragSelectUnselect? resource.selected = !resource.selected : ''">
                         <span md-ink-ripple class="icon-button fa fa-chevron-left" ng-disabled="!$root.expertOrLO" title="Assign to Subarray"
-                            ng-mousedown="$event.stopPropagation()" ng-click="!$root.expertOrLO || vm.assignResource(resource); $event.stopPropagation()"></span>
-                        <span flex style="font-size:18px; margin-left: 4px;" class="resource-name" ng-class="{'maintenance-text': parent.vm.isResourceInMaintenance(resource)}">{{resource.name}}</span>
+                            ng-mousedown="$event.stopPropagation()" ng-click="!$root.expertOrLO || vm.assignResource(resource.name); $event.stopPropagation()"></span>
+                        <span flex style="font-size:18px; margin-left: 4px;" class="resource-name" ng-class="{'maintenance-text': parent.vm.isResourceInMaintenance(resource.name)}">{{resource.name}}</span>
                         <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource in Maintenance"
-                            ng-class="{'maintenance-text opaque': parent.vm.isResourceInMaintenance(resource)}" ng-mousedown="$event.stopPropagation()"
-                            ng-click="!$root.expertOrLO || parent.vm.markResourceInMaintenance(resource); $event.stopPropagation()"></span>
+                            ng-class="{'maintenance-text opaque': parent.vm.isResourceInMaintenance(resource.name)}" ng-mousedown="$event.stopPropagation()"
+                            ng-click="!$root.expertOrLO || parent.vm.markResourceInMaintenance(resource.name); $event.stopPropagation()"></span>
                         <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Resource As Faulty"
-                            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resource), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resource)}"
-                            ng-click="!$root.expertOrLO || parent.vm.markResourceFaulty(resource); $event.stopPropagation()"></span>
+                            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resource.name), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resource.name)}"
+                            ng-click="!$root.expertOrLO || parent.vm.markResourceFaulty(resource.name); $event.stopPropagation()"></span>
                     </div>
                 </div>
             </div>

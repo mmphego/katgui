@@ -103,12 +103,12 @@
             }
         };
 
-        api.restartMaintenanceDevice = function(sub_nr, resource, device) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/resource/' + resource + '/device/' + device + '/restart')));
+        api.restartMaintenanceDevice = function(sub_nr, resourceName, device) {
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/resource/' + resourceName + '/device/' + device + '/restart')));
         };
 
-        api.listResourceMaintenanceDevices = function(resource) {
-            return $http(createRequest('get', urlBase() + '/resource/' + resource + '/maintenance-device-list'));
+        api.listResourceMaintenanceDevices = function(resourceName) {
+            return $http(createRequest('get', urlBase() + '/resource/' + resourceName + '/maintenance-device-list'));
         };
 
         api.deleteScheduleDraft = function(id) {
@@ -389,15 +389,7 @@
                 if (subarrayIndex > -1) {
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
                     if (sensorName.endsWith('allocations')) {
-                        var parsedAllocations = sensor.value !== "" ? JSON.parse(sensor.value) : [];
-                        api.subarrays[subarrayIndex].allocations = [];
-                        parsedAllocations.forEach(function(alloc) {
-                            // alloc looks like: [["cbf_1","None","None"],["m011","None","None"],["sdp_1","None","None"]]
-                            api.subarrays[subarrayIndex].allocations.push({
-                                name: alloc[0],
-                                allocation: alloc[1]
-                            });
-                        });
+                        api.subarrays[subarrayIndex].allocations = sensor.value !== "" ? JSON.parse(sensor.value) : [];
                     } else if (sensorName.endsWith('delegated_ca')) {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         var iAmCA;
@@ -717,13 +709,13 @@
             $rootScope.openLogWithProgramNameFilter('kat.' + resourceName);
         };
 
-        api.listResourceMaintenanceDevicesDialog = function(sub_nr, resource, event) {
+        api.listResourceMaintenanceDevicesDialog = function(sub_nr, resourceName, event) {
             $mdDialog
                 .show({
                     controller: function($rootScope, $scope, $mdDialog) {
-                        $scope.title = 'Select a device in ' + resource + ' to restart';
+                        $scope.title = 'Select a device in ' + resourceName + ' to restart';
                         $scope.devices = [];
-                        api.listResourceMaintenanceDevices(resource)
+                        api.listResourceMaintenanceDevices(resourceName)
                             .then(function(result) {
                                 var resultList = JSON.parse(result.data.result.replace(/\"/g, '').replace(/\'/g, '"'));
                                 for (var i in resultList) {
@@ -737,28 +729,29 @@
                             $mdDialog.hide();
                         };
                         $scope.restartMaintenanceDevice = function(device) {
-                            api.restartMaintenanceDevice(sub_nr, resource, device);
+                            api.restartMaintenanceDevice(sub_nr, resourceName, device);
                         };
                     },
-                    template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
-                        '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
-                        '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
-                        '           <span flex style="margin: 16px;">{{::title}}</span>' +
-                        '       </md-toolbar>' +
-                        '       <div flex layout="column">' +
-                        '           <div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">' +
-                        '               <md-button style="margin: 0" flex title="Restart {{device}} Device"' +
-                        '                   ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">' +
-                        '                   <span style="margin-right: 8px;" class="fa fa-refresh"></span>' +
-                        '                   <span>{{device}}</span>' +
-                        '               </md-button>' +
-                        '           </div>' +
-                        '       </div>' +
-                        '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</md-dialog>',
+                    template: [
+                        '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">',
+                            '<div style="padding: 0; margin: 0; overflow: auto" layout="column">',
+                                '<md-toolbar class="md-primary" layout="row" layout-align="center center">',
+                                    '<span flex style="margin: 16px;">{{::title}}</span>',
+                                '</md-toolbar>',
+                                '<div flex layout="column">',
+                                    '<div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">',
+                                    '<md-button style="margin: 0" flex title="Restart {{device}} Device"',
+                                        'ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">',
+                                        '<span style="margin-right: 8px;" class="fa fa-refresh"></span>',
+                                        '<span>{{device}}</span>',
+                                    '</md-button>',
+                                    '</div>',
+                                '</div>',
+                                '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
+                                    '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
+                                '</div>',
+                            '</div>',
+                        '</md-dialog>'].join(''),
                     targetEvent: event
                 });
         };

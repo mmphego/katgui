@@ -333,23 +333,24 @@
                 vm.subarray.id, vm.sensorValues[vm.subarray.name + '_maintenance'].value ? 'clear' : 'set');
         };
 
-        vm.markResourceFaulty = function(resource) {
-            ObsSchedService.markResourceFaulty(resource.name, vm.isResourceFaulty(resource) ? 'clear' : 'set');
+        vm.markResourceFaulty = function(resourceName) {
+            ObsSchedService.markResourceFaulty(
+                resourceName, vm.isResourceFaulty(resourceName) ? 'clear' : 'set');
         };
 
-        vm.markResourceInMaintenance = function(resource) {
+        vm.markResourceInMaintenance = function(resourceName) {
             ObsSchedService.markResourceInMaintenance(
-                resource.name, vm.isResourceInMaintenance(resource) ? 'clear' : 'set');
+                resourceName, vm.isResourceInMaintenance(resourceName) ? 'clear' : 'set');
         };
 
-        vm.isResourceInMaintenance = function(resource) {
+        vm.isResourceInMaintenance = function(resourceName) {
             return vm.sensorValues['katpool_resources_in_maintenance'] &&
-                vm.sensorValues['katpool_resources_in_maintenance'].value.indexOf(resource.name) > -1;
+                vm.sensorValues['katpool_resources_in_maintenance'].value.indexOf(resourceName) > -1;
         };
 
-        vm.isResourceFaulty = function(resource) {
+        vm.isResourceFaulty = function(resourceName) {
             return vm.sensorValues['katpool_resources_faulty'] &&
-                vm.sensorValues['katpool_resources_faulty'].value.indexOf(resource.name) > -1;
+                vm.sensorValues['katpool_resources_faulty'].value.indexOf(resourceName) > -1;
         };
 
         vm.activateSubarray = function() {
@@ -374,8 +375,8 @@
             ObsSchedService.freeSubarray(vm.subarray.id);
         };
 
-        vm.listResourceMaintenanceDevicesDialog = function(resource, $event) {
-            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resource.name, $event);
+        vm.listResourceMaintenanceDevicesDialog = function(resourceName, $event) {
+            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resourceName, $event);
         };
 
         vm.delegateControl = function(email) {
@@ -805,15 +806,15 @@
             };
         };
 
-        vm.classForResource = function(resource) {
+        vm.classForResource = function(resourceName) {
             var classes = "";
-            if (vm.isResourceInMaintenance(resource)) {
+            if (vm.isResourceInMaintenance(resourceName)) {
                 classes += 'maintenance-bg-hover';
             }
-            if (vm.isResourceFaulty(resource)) {
+            if (vm.isResourceFaulty(resourceName)) {
                 classes += ' faulty-border';
             }
-            var resourceStateSensor = vm.sensorValues[resource.name + '_state'];
+            var resourceStateSensor = vm.sensorValues[resourceName + '_state'];
             if (resourceStateSensor) {
                 if (resourceStateSensor.value === 'activated') {
                     classes += ' resource-state-activated';
@@ -827,12 +828,10 @@
         };
 
         vm.initSensors = function() {
-            var modeSensors = [];
             ConfigService.systemConfig.subarrayNrs.forEach(function(subNr) {
                 MonitorService.listSensors('subarray_' + subNr, '^(allocations|product|state|band|config_label|maintenance|delegated_ca|pool_resources|number_ants)$');
-                modeSensors.push('mode_' + subNr);
             });
-            MonitorService.listSensors('sched', modeSensors.join('|'));
+            MonitorService.listSensors('sched', '^mode_\\d$');
             MonitorService.listSensors('katpool', '^(pool_resources_free|resources_faulty|resources_in_maintenance)$');
             ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
                 MonitorService.listSensors(resource, '^state$|gui_urls$');
@@ -851,8 +850,8 @@
             }
             if (vm.subarray && sensor.name === 'subarray_' + vm.subarray.id + '_state' && sensor.value === 'active' &&
                 ObsSchedService.sensorValues[sensor.name] !== 'active') {
-                vm.subarray.allocations.forEach(function(resource) {
-                    MonitorService.listSensors(resource.name, 'gui_urls$');
+                vm.subarray.allocations.forEach(function(resourceAlloc) {
+                    MonitorService.listSensors(resourceAlloc[0], 'gui_urls$');
                 });
             }
             ObsSchedService.sensorValues[sensor.name] = sensor;
