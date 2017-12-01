@@ -30,17 +30,17 @@
             vm.mapType = 'Sunburst';
         }
 
-        vm.populateSensorNames = function(component, parent) {
-            if (!StatusService.configHealthSensors[component]) {
-                StatusService.configHealthSensors[component] = {
-                    component: component,
+        vm.populateSensorNames = function(viewName, parent) {
+            if (!StatusService.configHealthSensors[viewName]) {
+                StatusService.configHealthSensors[viewName] = {
+                    component: parent.component,
                     sensors: []
                 };
             }
-            StatusService.configHealthSensors[component].sensors.push(parent.sensor);
+            StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function(child) {
-                    vm.populateSensorNames(component, child);
+                    vm.populateSensorNames(viewName, child);
                 });
             }
         };
@@ -60,7 +60,7 @@
                 vm.configHealhViews = result.data;
                 Object.keys(vm.configHealhViews).forEach(function (viewKey) {
                     vm.configHealhViews[viewKey].forEach(function (view) {
-                        vm.populateSensorNames(view.component, view);
+                        vm.populateSensorNames(viewKey, view);
                     });
                 });
                 $rootScope.configHealthViews = Object.keys(vm.configHealhViews);
@@ -74,6 +74,10 @@
 
         vm.initSensors = function() {
             if (vm.selectedConfigView) {
+                vm.subscribedSensors.forEach(function (sensor) {
+                    MonitorService.unsubscribeSensor(sensor);
+                });
+                vm.subscribedSensors = [];
                 var componentSensors = {};
                 var view = StatusService.configHealthSensors[vm.selectedConfigView];
                 if (view) {
