@@ -87,8 +87,9 @@
             return status + '-sensor-list-item';
         };
 
-        vm.plotLiveSensorFeed = function (sensor, remove) {
-            var sensorName = sensor.parentName + '_' + sensor.python_identifier;
+        vm.plotLiveSensorFeed = function (sensorName) {
+            var sensor = vm.sensorValues[sensorName];
+            var remove = sensor.selectedForChart;
             if (remove) {
                 var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
                     return item.name === sensorName;
@@ -97,8 +98,10 @@
                     vm.sensorsPlotNames.splice(sensorIndex, 1);
                     vm.removeSensorLine(sensorName);
                 }
+                sensor.selectedForChart = false;
             } else {
-                vm.sensorsPlotNames.push({name: sensorName, class: sensorName.replace(/\./g, '_')});
+                vm.sensorsPlotNames.push({name: sensorName, class: sensorName});
+                sensor.selectedForChart = true;
             }
         };
 
@@ -169,10 +172,6 @@
             return Object.keys(obj);
         };
 
-        vm.sensorValue = function(key) {
-            return vm.sensorValue[key];
-        };
-
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
             if (!vm.resourceSensorsBeingDisplayed) {
                 return;
@@ -213,7 +212,7 @@
                 vm.redrawChart([{
                     sensor: sensor.name,
                     value_ts: sensor.value_ts * 1000,
-                    sample_ts: sensor.received_timestamp * 1000,
+                    sample_ts: sensor.time * 1000,
                     value: sensor.value
                 }]);
             }
