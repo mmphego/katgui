@@ -463,11 +463,6 @@
             templateUrl: 'app/admin/admin.html',
             title: 'User Admin'
         });
-        $stateProvider.state('activity', {
-            url: '/activity',
-            templateUrl: 'app/activity/activity.html',
-            title: 'Activity'
-        });
         $stateProvider.state('alarms', {
             url: '/alarms',
             templateUrl: 'app/alarms/alarms.html',
@@ -499,11 +494,6 @@
                 }
             },
         });
-        // $stateProvider.state('subarrayHealth', {
-            // url: '/subarray-health',
-            // templateUrl: 'app/health/subarray-health/subarray-health.html',
-            // title: 'Subarray Health'
-        // });
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',

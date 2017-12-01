@@ -1,6 +1,9 @@
+// *******************************************************************
+// TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
+// *******************************************************************
 angular.module('katGui.d3')
 
-    .directive('subarrayHealthMap', function (ConfigService, SensorsService, StatusService, $interval, $localStorage, $rootScope, d3Util, MOMENT_DATETIME_FORMAT) {
+    .directive('subarrayHealthMap', function (ConfigService, MonitorService, StatusService, $interval, $localStorage, $rootScope, d3Util, MOMENT_DATETIME_FORMAT) {
         return {
             restrict: 'E',
             scope: {},
@@ -125,7 +128,7 @@ angular.module('katGui.d3')
                         scope.lastDrawnSize = scope.chartSize;
                     }
 
-                    scope.subarrayKeys = Object.keys(SensorsService.subarraySensorValues);
+                    scope.subarrayKeys = Object.keys(MonitorService.subarraySensorValues);
                     if (scope.subarrayKeys.length === 0) {
                         return;
                     }
@@ -133,7 +136,7 @@ angular.module('katGui.d3')
                     root = {children: [], name: 'root'};
                     scope.subarrayKeys.forEach(function (subarrayKey) {
                         var children = [];
-                        var subarray = SensorsService.subarraySensorValues[subarrayKey];
+                        var subarray = MonitorService.subarraySensorValues[subarrayKey];
                         if (!subarray.pool_resources) {
                             //TODO get this from monitor service we dont have the sensor values we need yet
                             return;

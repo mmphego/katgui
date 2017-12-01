@@ -3,11 +3,11 @@
     angular.module('katGui')
         .controller('SensorListCtrl', SensorListCtrl);
 
-    function SensorListCtrl($scope, $rootScope, SensorsService, $timeout, KatGuiUtil, $interval, $stateParams, MonitorService,
+    function SensorListCtrl($scope, $rootScope, $timeout, KatGuiUtil, $interval, $stateParams, MonitorService,
                             $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
 
         var vm = this;
-        vm.resources = SensorsService.resources;
+        vm.resources = ConfigService.resources;
         vm.resourcesNames = [];
         vm.sensorsToDisplay = [];
         vm.resourceSensorsBeingDisplayed = '';
@@ -246,10 +246,10 @@
 
         if (vm.resourcesNames.length === 0) {
             vm.nodes = ConfigService.resourceGroups;
-            SensorsService.listResourcesFromConfig()
+            ConfigService.listResourcesFromConfig()
                 .then(function () {
-                    for (var key in SensorsService.resources) {
-                        vm.resourcesNames.push({name: key, node: SensorsService.resources[key].node});
+                    for (var key in ConfigService.resources) {
+                        vm.resourcesNames.push({name: key, node: ConfigService.resources[key].node});
                     }
                     if ($stateParams.component) {
                         vm.listResourceSensors($stateParams.component);
