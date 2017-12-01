@@ -3,15 +3,14 @@
     angular.module('katGui.health')
         .controller('ConfigHealthViewCtrl', ConfigHealthViewCtrl);
 
-    function ConfigHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, SensorsService,
+    function ConfigHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, MonitorService,
                                   ConfigService, StatusService, NotifyService, $stateParams) {
 
         var vm = this;
-
         vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
-        vm.connectInterval = null;
         vm.configHealhViews = {};
         vm.configItemsSelect = [];
+        vm.subscribedSensors = [];
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
 
         if ($localStorage['configHealthDisplayMapType']) {
@@ -31,14 +30,17 @@
             vm.mapType = 'Sunburst';
         }
 
-        vm.populateSensorNames = function(containerName, parent) {
-            if (!StatusService.configHealthSensors[containerName]) {
-                StatusService.configHealthSensors[containerName] = {};
+        vm.populateSensorNames = function(component, parent) {
+            if (!StatusService.configHealthSensors[component]) {
+                StatusService.configHealthSensors[component] = {
+                    component: component,
+                    sensors: []
+                };
             }
-            StatusService.configHealthSensors[containerName][parent.sensor] = 1;
+            StatusService.configHealthSensors[component].sensors.push(parent.sensor);
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function(child) {
-                    vm.populateSensorNames(containerName, child);
+                    vm.populateSensorNames(component, child);
                 });
             }
         };
@@ -55,59 +57,28 @@
 
         ConfigService.getConfigHealthViews().then(
             function(result) {
-                vm.configItemsSelect = [];
                 vm.configHealhViews = result.data;
-                _.each(result.data, function (value, key, obj) {
-                    vm.configItemsSelect.push(key);
-                    if (value instanceof Array) {
-                        value.forEach(function (item) {
-                            vm.populateSensorNames(key, item);
-                        });
-                    } else {
-                        vm.populateSensorNames(key, value);
-                    }
+                Object.keys(vm.configHealhViews).forEach(function (viewKey) {
+                    vm.configHealhViews[viewKey].forEach(function (view) {
+                        vm.populateSensorNames(view.component, view);
+                    });
                 });
-                $rootScope.configHealthViews = vm.configItemsSelect;
+                $rootScope.configHealthViews = Object.keys(vm.configHealhViews);
                 vm.redrawCharts();
-                vm.connectListeners();
+                vm.initSensors();
             },
             function(error) {
                 $log.error(error);
                 NotifyService.showSimpleDialog("Error retrieving config health views from katconf-webserver, is the service running?");
             });
 
-        vm.connectListeners = function() {
-            SensorsService.connectListener()
-                .then(function() {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-                    }
-                }, function() {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function() {
-            SensorsService.getTimeoutPromise()
-                .then(function() {
-                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                        vm.connectListeners();
-                    }
-                });
-        };
-
         vm.initSensors = function() {
             if (vm.selectedConfigView) {
-                SensorsService.setSensorStrategies(Object.keys(StatusService.configHealthSensors[vm.selectedConfigView]).join('|'), 'event-rate', 1, 360);
+                var componentSensors = {};
+                var view = StatusService.configHealthSensors[vm.selectedConfigView];
+                if (view) {
+                    MonitorService.listSensors(view.component, view.sensors.join('|'));
+                }
             }
         };
 
@@ -115,22 +86,26 @@
             $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
-        vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 300);
+        vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 150);
 
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function(event, sensor) {
-            var sensorName = sensor.name.split(':')[1];
-            sensor.status = sensor.value.status;
-            sensor.received_timestamp = sensor.value.received_timestamp;
-            sensor.timestamp = sensor.value.timestamp;
-            sensor.value = sensor.value.value;
-            StatusService.sensorValues[sensorName] = sensor;
-            StatusService.addToUpdateQueue(sensorName);
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
+            }
+            StatusService.addToUpdateQueue(sensor.name);
+            StatusService.sensorValues[sensor.name] = sensor;
         });
 
-        $scope.$on('$destroy', function() {
-            // $interval.cancel(vm.pendingUpdatesInterval);
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
+        $scope.$on('$destroy', function () {
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            $interval.cancel(vm.pendingUpdatesInterval);
             unbindUpdate();
-            SensorsService.disconnectListener();
+            unbindReconnected();
             StatusService.sensorValues = {};
         });
     }

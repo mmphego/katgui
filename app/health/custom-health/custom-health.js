@@ -108,9 +108,7 @@
             var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
             if (!existingItem) {
                 vm.regexStrings.push(sensorRegex);
-                // if (SensorsService.connected) {
-                    // SensorsService.setSensorStrategies(regex, 'event-rate', 1, 360);
-                // }
+                // TODO subscribe here?
             } else {
                 NotifyService.showSimpleToast('Expression already exists, not adding ' + regex);
             }
