@@ -18,7 +18,7 @@
         </md-toolbar>
 
         <div class="md-whiteframe-z1" md-theme="{{themePrimaryButtons}}" ng-show="vm[nmKey + 'showProcList']">
-            <div ng-repeat="process in vm.nodemans[nmKey].processes | orderBy:process" class="process-control-container"
+            <div ng-repeat="process in vm.nodemans[nmKey].processes | orderBy:'name'" class="process-control-container"
                 ng-click="vm.toggleProcessDetail(process)">
                 <div flex role="heading" class="process-control-bg-transition md-whiteframe-z1"
                   style="padding: 6px; cursor: pointer" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.sensorValues[process.runningSensor].showDetail}">

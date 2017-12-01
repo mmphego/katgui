@@ -168,15 +168,14 @@
                             SessionService.verifyAs('read_only');
                         }
                     } else {
-                        // this was a req reply (list_sensors remote request)
-                        if (data.name === "katpool_lo_id") {
+                        if (data && data.name === "katpool_lo_id") {
                             $rootScope.katpool_lo_id = data;
-                        } else if (data.name === "sys_interlock_state") {
+                        } else if (data && data.name === "sys_interlock_state") {
                             $rootScope.sys_interlock_state = data;
-                        } else if (data.name.startsWith('kataware_alarm')) {
+                        } else if (data && data.name && data.name.startsWith('kataware_alarm')) {
                             AlarmsService.receivedAlarmMessage(data);
                         }
-                        if (api.globalSubscribePatterns[data.component]) {
+                        if (data && data.component && api.globalSubscribePatterns[data.component]) {
                             if (data.name.includes(api.globalSubscribePatterns[data.component].pattern)) {
                                 var sensorWithoutComponent = data.name.replace(data.component + '_', '');
                                 if (!api.globalSubscribePatterns[data.component].sensors) {
