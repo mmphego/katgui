@@ -504,11 +504,6 @@
             templateUrl: 'app/health/receptor-pointing/receptor-pointing.html',
             title: 'Receptor Pointing'
         });
-        $stateProvider.state('customHealth', {
-            url: '/custom-health?layout',
-            templateUrl: 'app/health/custom-health/custom-health.html',
-            title: 'Custom Health'
-        });
         $stateProvider.state('home', {
             url: '/home',
             templateUrl: 'app/landing/landing.html',

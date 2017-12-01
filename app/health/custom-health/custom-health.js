@@ -1,64 +1,29 @@
+// *******************************************************************
+// TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
+// *******************************************************************
 (function () {
 
     angular.module('katGui.health')
         .controller('CustomHealthCtrl', CustomHealthCtrl);
 
-    function CustomHealthCtrl($scope, $rootScope, $interval, SensorsService, KatGuiUtil, $location, $stateParams,
-                              $timeout, $log, $mdDialog, $state, NotifyService) {
+    function CustomHealthCtrl($scope, $rootScope, $interval, MonitorService, KatGuiUtil, $location, $stateParams,
+                              $timeout, $log, $mdDialog, $state, NotifyService, ConfigService) {
 
         var vm = this;
-        vm.resources = SensorsService.resources;
+        vm.resources = ConfigService.resources;
         vm.resourcesNames = [];
         vm.customStatusTrees = [];
         vm.regexStrings = [];
+        vm.subscribedSensors = [];
         vm.guid = KatGuiUtil.generateUUID();
-        vm.connectionLost = false;
         vm.treeIDIncrement = 0;
-
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectionLost = false;
-                        vm.connectInterval = null;
-                        if (!vm.disconnectIssued) {
-                            NotifyService.showSimpleToast('Reconnected :)');
-                        }
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectionLost = true;
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectionLost = true;
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
-                    }
-                });
-        };
 
         vm.initSensors = function () {
             if (vm.regexStrings && vm.regexStrings.length > 0) {
-                var regexString = '';
-                var regexToConnect = [];
-                vm.regexStrings.forEach(function (regex) {
-                    regexToConnect.push(regex.name);
+                var regexToConnect = vm.regexStrings.map(function (regex) {
+                    return regex.name;
                 });
-                SensorsService.setSensorStrategies(regexToConnect.join('|'), 'event-rate', 1, 360);
+                MonitorService.listSensors('all', regexToConnect);
             }
         };
 
@@ -90,18 +55,6 @@
                 }
             }
         });
-
-        vm.unbindSensorsUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-            var sensorName = sensor.name.split(':')[1];
-            sensor.name = sensorName;
-
-            $scope.itemsToUpdate[sensorName] = sensor;
-            if (!vm.stopUpdating) {
-                vm.stopUpdating = $interval(vm.applyPendingUpdates, $rootScope.sensorListStrategyInterval);
-            }
-        });
-
-        $scope.itemsToUpdate = {};
 
         vm.applyPendingUpdates = function () {
             var attributes = Object.keys($scope.itemsToUpdate);
@@ -155,9 +108,9 @@
             var existingItem = _.findWhere(vm.regexStrings, {name: sensorRegex.name});
             if (!existingItem) {
                 vm.regexStrings.push(sensorRegex);
-                if (SensorsService.connected) {
-                    SensorsService.setSensorStrategies(regex, 'event-rate', 1, 360);
-                }
+                // if (SensorsService.connected) {
+                    // SensorsService.setSensorStrategies(regex, 'event-rate', 1, 360);
+                // }
             } else {
                 NotifyService.showSimpleToast('Expression already exists, not adding ' + regex);
             }
@@ -281,17 +234,26 @@
                 });
         };
 
+        $scope.itemsToUpdate = {};
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            if (subject.startsWith('req.reply')) {
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
+            }
+            $scope.itemsToUpdate[sensor.name] = sensor;
+            vm.applyPendingUpdates();
+        });
+
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
         $scope.$on('$destroy', function () {
-            vm.unbindSetSensorStrategy();
-            vm.unbindSensorsUpdate();
-            if (vm.stopUpdating) {
-                $interval.cancel(vm.stopUpdating);
-            }
-            if (vm.connectInterval) {
-                $interval.cancel(vm.connectInterval);
-            }
-            vm.disconnectIssued = true;
-            SensorsService.disconnectListener();
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            $interval.cancel(vm.pendingUpdatesInterval);
+            unbindUpdate();
+            unbindReconnected();
+            vm.sensorValues = {};
         });
 
         if ($stateParams.layout) {
@@ -315,7 +277,6 @@
             }
             vm.debounceUpdateUrl();
         }
-
         $timeout(vm.connectListeners, 500);
     }
 })();
