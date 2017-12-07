@@ -62,10 +62,10 @@
             state: 'health',
             title: 'Top Health'
         }, {
-            name: 'Custom Health',
-            state: 'customHealth',
-            title: 'Custom Health'
-        }, {
+        //     name: 'Custom Health',
+        //     state: 'customHealth',
+        //     title: 'Custom Health'
+        // }, {
             name: 'Alarms',
             state: 'alarms',
             title: 'Alarms'
