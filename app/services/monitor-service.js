@@ -124,12 +124,14 @@
             if (e && e.data) {
                 if (e.data.data) {
                     var msg = e.data;
-                    var data;
-                    try {
-                        data = JSON.parse(msg.data);
-                    } catch (error) {
-                        $log.error('Error parsing websock message!');
-                        $log.error(e);
+                    var data = msg.data;
+                    if (!(msg.data instanceof Object)) {
+                        try {
+                            data = JSON.parse(msg.data);
+                        } catch (error) {
+                            $log.error('Error parsing websock message!');
+                            $log.error(e);
+                        }
                     }
 
                     if (msg.subject === 'portal.time') {
