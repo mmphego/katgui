@@ -122,18 +122,15 @@
 
         api.onSockJSMessage = function(e) {
             if (e && e.data) {
+                var msg;
                 if (e.data.data) {
-                    var msg = e.data;
-                    var data = msg.data;
-                    if (!(msg.data instanceof Object)) {
-                        try {
-                            data = JSON.parse(msg.data);
-                        } catch (error) {
-                            $log.error('Error parsing websock message!');
-                            $log.error(e);
-                        }
+                    msg = e.data;
+                    var data;
+                    try {
+                        data = JSON.parse(msg.data);
+                    } catch (error) {
+                        data = msg.data;
                     }
-                    console.log(msg);
 
                     if (msg.subject === 'portal.time') {
                         api.lastSyncedTime = data.time;
@@ -199,12 +196,20 @@
                         }
                     }
                 } else {
-                    var message = JSON.parse(e.data);
-                    if (message.error) {
+                    msg = e.data;
+                    if (msg.error) {
                         $log.error('There was an error sending a jsonrpc request:');
-                        $log.error(message);
+                        $log.error(msg);
+                    } else if (msg.server_hint) {
+                        $log.warn('Server hint received: ' + msg.server_hint);
+                        $log.warn(msg);
+                        if (msg.server_hint === 'retry_later' && msg.hint_method === 'list_sensors') {
+                            $timeout(function () {
+                                api.listSensors(msg.hint_args.component, msg.hint_args.name_filter);
+                            }, msg.hint_args.timedelta);
+                        }
                     } else {
-                        $log.warn('Dangling websocket message: ' + message);
+                        $log.warn('Dangling websocket message: ' + msg);
                     }
                 }
             }
