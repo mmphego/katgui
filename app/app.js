@@ -122,7 +122,7 @@
                     deferred.resolve($rootScope.systemConfig);
                 }, function(error) {
                     if ($rootScope.portalUrl) {
-                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
+                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf (' + error.statusText + ')';
                     } else {
                         $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
                     }
@@ -813,6 +813,8 @@
                     $rootScope.requestedStateBeforeLogin = null;
                     $rootScope.requestedStateBeforeLoginParams = null;
                     $state.go(newStateName, newParams, {reload: false});
+                } else if ($rootScope.loggedIn && toState.name === 'login') {
+                    $state.go('home');
                 }
             }
         });

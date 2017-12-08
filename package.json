@@ -14,7 +14,7 @@
         "angular-mocks": "~1.6",
         "angular-messages": "~1.6",
         "angular-ui-utils": "0.1.1",
-        "angular-ui-router": "~0.3",
+        "angular-ui-router": "~0.4",
         "d3": "~3",
         "hammerjs": "~2.0.4",
         "jquery-ui": "^1.12",

@@ -192,12 +192,9 @@
                     NotifyService.showSimpleToast('Error: ' + result.data.err_msg);
                     $state.go('login');
                 } else {
-                    if (!window.location.hash.endsWith('sensor-graph')) {
+                    if (!window.location.pathname.startsWith('/sensor-graph')) {
                         NotifyService.showSimpleToast('Error connecting to KATPortal.');
-                        $log.error(result);
-                        if (result.data && result.data.startsWith('<html')) {
-                            document.body.html(result.data.html);
-                        }
+                        $log.error("Could not connect to portal webservers: " + result.statusText);
                         $state.go('login');
                     }
                 }
