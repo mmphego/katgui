@@ -4,7 +4,6 @@
     angular.module('katGui', ['ngMaterial', 'ngMessages',
             'ui.bootstrap',
             'ui.router',
-            // 'ui.utils',
             'ngAnimate', 'katGui.services',
             'katGui.admin',
             'katGui.alarms',
@@ -357,10 +356,7 @@
             }
         };
         $rootScope.openCentralLogger = function() {
-            window.open('http://' + ConfigService.systemConfig.system.kibana_server +
-                "/app/kibana#/discover?_g=()&_a=(columns:!(programname,severity,message),index:'" +
-                $rootScope.sitename +
-                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))").focus();
+            $rootScope.openKibanaInNewTab();
         };
         $rootScope.openGangliaLink = function() {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
@@ -381,23 +377,35 @@
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
-        $rootScope.openLogWithProgramNameFilter = function(programName) {
-            var kibanaUrl = [
-                "http://",
-                ConfigService.systemConfig.system.kibana_server,
-                "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:1000),",
-                "time:(from:now-12h,mode:relative,to:now))&",
-                "_a=(columns:!(programname,severity,message),",
-                "filters:!(('$state':(store:appState),",
-                "meta:(alias:!n,disabled:!f,index:'",
-                $rootScope.sitename,
-                "-*',key:programname,negate:!f,type:phrase,value:",
-                programName,
-                "),query:(match:(programname:(query:",
-                programName,
-                ",type:phrase))))),","index:'",
-                $rootScope.sitename,
-                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+        $rootScope.openKibanaInNewTab = function(programName) {
+            var kibanaUrl;
+            if (programName) {
+                kibanaUrl = [
+                    "http://",
+                    ConfigService.systemConfig.system.kibana_server,
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),",
+                    "filters:!(('$state':(store:appState),",
+                    "meta:(alias:!n,disabled:!f,index:'",
+                    $rootScope.sitename,
+                    "-*',key:programname,negate:!f,type:phrase,value:",
+                    programName,
+                    "),query:(match:(programname:(query:",
+                    programName,
+                    ",type:phrase))))),","index:'",
+                    $rootScope.sitename,
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+            } else {
+                kibanaUrl = [
+                    "http://",
+                    ConfigService.systemConfig.system.kibana_server,
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),index:'",
+                    $rootScope.sitename,
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+            }
             window.open(kibanaUrl).focus();
         };
 

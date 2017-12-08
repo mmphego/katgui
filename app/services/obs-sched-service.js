@@ -703,11 +703,11 @@
         };
 
         api.showSubarrayLogs = function(sub_nr) {
-            $rootScope.openLogWithProgramNameFilter('kat.subarray_' + sub_nr);
+            $rootScope.openKibanaInNewTab('kat.subarray_' + sub_nr);
         };
 
         api.showResourceLogs = function(resourceName) {
-            $rootScope.openLogWithProgramNameFilter('kat.' + resourceName);
+            $rootScope.openKibanaInNewTab('kat.' + resourceName);
         };
 
         api.listResourceMaintenanceDevicesDialog = function(sub_nr, resourceName, event) {

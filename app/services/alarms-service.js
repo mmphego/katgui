@@ -11,7 +11,7 @@
         $rootScope.$on('alarmMessage', api.receivedAlarmMessage);
 
         api.tailAlarmsHistory = function () {
-            $rootScope.openLogWithProgramNameFilter("alarms");
+            $rootScope.openKibanaInNewTab("alarms");
         };
 
         api.receivedAlarmMessage = function (messageObj) {

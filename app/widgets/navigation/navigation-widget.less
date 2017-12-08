@@ -1,60 +1,18 @@
-.navigation-buttons {
-
-    background: transparent;
-    margin: 16px;
+.nav-widget-container {
+    max-width: 300px;
+    min-width: 200px;
+    margin: 2px;
+    display: inline-block;
+    // same as md-whiteframe-z1
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 2px 1px -1px rgba(0,0,0,.12);
 
     button {
-        width: 12em;
-        margin-right: 10px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }
-}
-
-.pie-button-path {
-    stroke-width: 2;
-    opacity: 1.0;
-    cursor: pointer;
-    &:hover {
-        opacity: 0.8;
-    }
-}
-
-.pie-button-path-disabled {
-    stroke-width: 2;
-    cursor: not-allowed;
-}
-
-.pie-button-text {
-    text-anchor: middle;
-    text-transform: uppercase;
-}
-
-.nav-widget-button-container {
-    .md-button {
-        margin: 2px 0 0 0;
-        border-radius: 0;
-        position: relative;
-        text-align: start;
-        span:not(.fa) {
-            padding: 0 4px;
-            margin-left: 6px;
-            font-size: 14px;
-        }
-        span.fa {
-            font-size: 30px;
-            margin-left: 4px;
-            width: 36px;
-            text-align: center;
-        }
-    }
-}
-
-.nav-widget-container {
-    min-width: 225px;
-    height: 270px;
-    md-toolbar {
         text-align: center;
-        font-size: 20px;
+        position: relative;
+        padding: 0 8px;
+        margin: 1px 0 0 0;
+        span.fa {
+            margin-right: 8px;
+        }
     }
 }

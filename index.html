@@ -84,7 +84,6 @@
 <script src="app/d3/receptor-health-force.js"></script>
 <script src="app/d3/receptor-health-sunburst-map.js"></script>
 <script src="app/d3/status-single-level-tree-map.js"></script>
-<script src="app/d3/navigation-pie.js"></script>
 <script src="app/d3/timeline.js"></script>
 
 <script src="app/app.js"></script>
@@ -106,7 +105,6 @@
 <script src="app/admin/admin.js"></script>
 <script src="app/alarms/alarms.js"></script>
 <script src="app/alarms/alarms-notify.js"></script>
-<script src="app/widgets/navigation/navigation-widget.js"></script>
 <script src="app/widgets/apod/apod-widget.js"></script>
 <script src="app/scheduler/scheduler-home.js"></script>
 <script src="app/scheduler/schedule-block-drafts/schedule-block-drafts.js"></script>
@@ -421,19 +419,19 @@
         </md-content>
         <div class="" layout="column" >
             <md-toolbar ng-if="$root.loggedIn" md-theme="{{$root.sys_interlock_state.value === 'NONE'? themePrimary: 'amber'}}" class="main-footer-toolbar md-toolbar-tools-small md-whiteframe-z1" layout="row">
-                <div flex>
+                <div>
                     <span>Interlock State: <b>{{$root.sys_interlock_state.value}}</b></span>
                     <md-tooltip>Current Interlock State</md-tooltip>
                 </div>
 
-                <div layout="row">
+                <div layout="row" style="margin: auto">
                     <b ng-if="$root.devMode">{{$root.portalUrl}}</b>
                     <span style="margin: 0 4px;">{{$root.systemConfig.version.description}}</span>
                     <span style="margin: 0 4px;">{{$root.systemConfig.version.deployment_date}}</span>
                     <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
                 </div>
 
-                <div flex layout="row" layout-align="end">
+                <div layout="row" style="position: absolute; right: 0">
                     <div style="padding: 0 4px" ng-show="$root.showDayOfYear && $root.dayOfYear">
                         <span>{{$root.dayOfYear}}<sub>DoY</sub></span>
                         <md-tooltip>Current UTC Day Of Year</md-tooltip>

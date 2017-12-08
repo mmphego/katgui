@@ -1,94 +1,73 @@
-<div flex ng-controller="NavigationWidgetCtrl as vm" layout="row" layout-align="center start" layout-padding="4px" layout-wrap md-theme="{{$root.themePrimary}}">
+<div md-theme="{{$root.themePrimary}}" layout="row" layout-wrap layout-align="center">
+    <div class="nav-widget-container">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-small"><span>Scheduler</span></md-toolbar>
+        <div md-theme="{{$root.themePrimaryButtons}}" layout="row" layout-wrap layout-align="center">
+            <md-button ng-repeat="subNr in $root.systemConfig.subarrayNrs" class="md-primary md-raised" style="margin: 1px 1px 0 0"
+                ng-click="$root.stateGo('scheduler.resources', {subarray_id: subNr})">
+                {{'Setup Subarray ' + subNr}}
+            </md-button>
+            <md-button class="md-primary md-raised" ng-click="$root.stateGo('scheduler.drafts')" style="width: 230px">
+                <span class="fa fa-pencil"></span>Schedule Block Approved
+            </md-button>
+            <md-button class="md-primary md-raised" ng-click="$root.stateGo('scheduler')" style="width: 230px">
+                <span class="fa fa-list"></span>Observations Workflow
+            </md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('scheduler.observations')" style="width: 230px">
+                <span class="fa fa-binoculars"></span>Observations Overview</md-button>
+        </div>
+    </div>
 
-    <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Scheduler</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <div flex layout="row">
-                <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 1})" layout="row"><span>Setup Subarray</span><span class="subarray-number">1</span></md-button>
-                <md-button flex style="margin-left: 2px" class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 3})" layout="row"><span >Setup Subarray</span><span class="subarray-number">3</span></md-button>
-            </div>
-            <div flex layout="row">
-                <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 2})" layout="row"><span>Setup Subarray</span><span class="subarray-number">2</span></md-button>
-                <md-button flex style="margin-left: 2px" class="md-raised md-primary" ng-click="$root.stateGo('scheduler.resources', {subarray_id: 4})" layout="row"><span flex>Setup Subarray</span><span class="subarray-number">4</span></md-button>
-            </div>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.drafts')" layout="row"><span class="fa fa-pencil"></span><span flex>Schedule Block Approved</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler')" layout="row"><span class="fa fa-list"></span><span flex>Observations Workflow</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('scheduler.observations')" layout="row"><span class="fa fa-binoculars"></span><span flex>Observations Overview</span></md-button>
+    <div class="nav-widget-container">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-small"><span>Sensors</span></md-toolbar>
+        <div md-theme="{{$root.themePrimaryButtons}}" layout="column">
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('sensor-list')"><span class="fa fa-th-list"></span>Sensor List</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('sensor-graph')"><span class="fa fa-line-chart"></span>Sensor Graph</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('sensor-groups')"><span class="fa fa-th-list"></span>Sensor Groups</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('gui-links')"><span class="fa fa-th-list"></span>GUI links</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('weather')"><span class="fa fa-cloud"></span>Weather</md-button>
+        </div>
+    </div>
+
+    <div class="nav-widget-container">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-small"><span>Health</span></md-toolbar>
+        <div md-theme="{{$root.themePrimaryButtons}}" layout="column">
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('operator-control')"><span class="fa fa-cogs"></span>Operator Controls</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('health')"><span class="fa fa-heart"></span>Top Health</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorStatus')"><span class="fa fa-th"></span>Receptor Status</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorPointing')"><span class="fa fa-crosshairs"></span>Receptor Pointing</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorHealth')"><span class="fa fa-th-large"></span>Receptor Health</md-button>
         </div>
     </div>
 
     <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Receptors</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('receptorStatus')" layout="row"><span class="fa fa-th"></span><span flex>Receptor Status</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('receptorPointing')" layout="row"><span class="fa fa-crosshairs"></span><span flex>Receptor Pointing</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('receptorHealth')" layout="row"><span class="fa fa-th-large"></span><span flex>Receptor Health</span></md-button>
-            <!-- <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('subarrayHealth')" layout="row"><span class="fa fa-asterisk"></span><span flex>Subarray Health</span></md-button> -->
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-small"><span>Controls & Info</span></md-toolbar>
+        <div md-theme="{{$root.themePrimaryButtons}}" layout="column">
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('process-control')"><span class="fa fa-wrench"></span>Process Control</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('cam-components')"><span class="fa fa-cubes"></span>CAM Components</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('device-status')"><span class="fa fa-th-list"></span>Device Status</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('video')" ng-disabled="!$root.showVideoLinks"><span class="fa fa-video-camera"></span>Video</md-button>
         </div>
     </div>
 
     <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Sensors</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('sensor-list')" layout="row"><span class="fa fa-th-list"></span><span flex>Sensor List</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('sensor-graph')" layout="row"><span class="fa fa-line-chart"></span><span flex>Sensor Graph</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('weather')" layout="row"><span class="fa fa-cloud"></span><span flex>Weather</span></md-button>
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-small"><span>User Logs & Reports</span></md-toolbar>
+        <div md-theme="{{$root.themePrimaryButtons}}" layout="column">
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('userlogs')"><span class="fa fa-pencil-square-o"></span>User Logs</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('userlogs-report')"><span class="fa fa-file-pdf-o"></span>User Log Reports</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('utilisation-report')"><span class="fa fa-file-pdf-o"></span>Utilisation Report</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('instrumental-config')"><span class="fa fa-question-circle"></span>Instrumental Config</md-button>
+
         </div>
     </div>
 
     <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Health & Alarms</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('health')" layout="row"><span class="fa fa-heart"></span><span flex>Top Health</span></md-button>
-            <!-- <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('customHealth')" layout="row"><span class="fa fa-heartbeat"></span><span flex>Custom Health</span></md-button> -->
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('alarms')" layout="row"><span class="fa fa-warning"></span><span flex>Alarms</span></md-button>
-            <!-- <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('activity')" layout="row"><span class="fa fa-dashboard"></span><span flex>Activity</span></md-button> -->
-        </div>
-    </div>
-
-    <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Controls & Info</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('operator-control')" layout="row"><span class="fa fa-cogs"></span><span flex>Operator Controls</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('process-control')" layout="row"><span class="fa fa-wrench"></span><span flex>Process Control</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('cam-components')" layout="row"><span class="fa fa-cubes"></span><span flex>CAM Components</span></md-button>
-        </div>
-    </div>
-
-    <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>System Logs & Docs</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.openCentralLogger()" layout="row"><span class="fa fa-folder-open-o"></span><span flex>Central Logs</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.openSystemLogger()" layout="row"><span class="fa fa-file-text-o"></span><span flex>System Logs</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.openLogWithProgramNameFilter('katcpmsgs')" layout="row"><span class="fa fa-file-text"></span><span flex>KATCP Logs</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.openUrlInNewTab('https://drive.google.com/drive/folders/0B8fhAW5QnZQWVkdXYm1GTnZ2X1k')" layout="row"><span class="fa fa-google"></span><span flex>CAM Deployment Docs</span></md-button>
-        </div>
-    </div>
-
-    <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>User Logs</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('userlogs')" layout="row"><span class="fa fa-pencil-square-o"></span><span flex>User Logs</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('userlogs-report')" layout="row"><span class="fa fa-file-pdf-o"></span><span flex>User Log Reports</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('userlog-tags')" ng-show="$root.expertOrLO" layout="row"><span class="fa fa-tag"></span><span flex>User Log Tags</span></md-button>
-        </div>
-    </div>
-
-    <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Config & Info</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('video')" layout="row" ng-show="$root.showVideoLinks"><span class="fa fa-video-camera"></span><span flex>Video</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('instrumental-config')" layout="row"><span class="fa fa-question-circle"></span><span flex>Instrumental Config</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('admin')" layout="row"><span class="fa fa-users"></span><span flex>User Admin</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('config')" layout="row"><span class="fa fa-cog"></span><span flex>KATGUI Config</span></md-button>
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('about')" layout="row"><span class="fa fa-info"></span><span flex>About KATGUI</span></md-button>
-        </div>
-    </div>
-
-    <div layout="column" class="nav-widget-container">
-        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium"><span flex>Reports</span></md-toolbar>
-        <div flex class="md-whiteframe-z1 nav-widget-button-container" md-theme="{{$root.themePrimaryButtons}}" layout="column">
-            <md-button flex class="md-raised md-primary" ng-click="$root.stateGo('utilisation-report')" layout="row"><span class="fa fa-file-pdf-o"></span><span flex>Utilisation Report</span></md-button>
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-small"><span>System Logs & Docs</span></md-toolbar>
+        <div md-theme="{{$root.themePrimaryButtons}}" layout="column">
+            <md-button class="md-raised md-primary" ng-click="$root.openCentralLogger()"><span class="fa fa-folder-open-o"></span>Central Logs</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.openSystemLogger()"><span class="fa fa-file-text-o"></span>System Logs</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.openKibanaInNewTab('katcpmsgs')"><span class="fa fa-file-text"></span>KATCP Logs</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.openUrlInNewTab('https://drive.google.com/drive/folders/0B8fhAW5QnZQWVkdXYm1GTnZ2X1k')"><span class="fa fa-google"></span>CAM Deployment Docs</md-button>
+            <md-button class="md-raised md-primary"><span class="fa fa-area-chart"></span><span>Ganglia Monitoring</md-button>
         </div>
     </div>
 </div>
