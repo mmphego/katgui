@@ -133,9 +133,10 @@
                             $log.error(e);
                         }
                     }
+                    console.log(msg);
 
                     if (msg.subject === 'portal.time') {
-                        api.lastSyncedTime = data.time + 0.5;
+                        api.lastSyncedTime = data.time;
                         api.lastSyncedLST = data.lst;
                     } else if (msg.subject.startsWith('sensor.')) {
                         if ($state.current.name === 'sensor-list') {

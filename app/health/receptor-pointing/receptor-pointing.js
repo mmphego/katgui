@@ -45,7 +45,7 @@
                             subarrayColor: "#d7d7d7"
                         };
                         vm.receptors[receptorName] = receptor;
-                        MonitorService.listSensors(receptorName, '^(' + vm.sensorsToConnect.join('|') + ')$');
+                        MonitorService.listSensors(receptorName, vm.sensorsToConnect.join('|'));
                     });
                     systemConfig.subarrayNrs.forEach(function(subNr) {
                       MonitorService.listSensors('subarray_' + subNr, 'pool_resources$');

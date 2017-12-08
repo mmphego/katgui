@@ -22,7 +22,7 @@
                         if (!vm.nodemans[nodeName]) {
                           vm.nodemans[nodeName] = {processes: []};
                         }
-                        MonitorService.listSensors(nodeName, '(' + processSensors.join('|') + ')$');
+                        MonitorService.listSensors(nodeName, processSensors.join('|'));
                     }
                 });
         };
@@ -87,13 +87,14 @@
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
-                if (sensor.name.endsWith('running')) {
+                if (sensor.name.endsWith('running') && sensor.original_name) {
                     // e.g. nm_monctl.anc.running
                     var splitName = sensor.original_name.split('.');
                     var processName = splitName[1];
                     if (!vm.nodemans[sensor.component]) {
                       vm.nodemans[sensor.component] = {processes: []};
                     }
+
                     vm.nodemans[sensor.component].processes.push(
                       {name: processName, runningSensor: sensor.name, nm: sensor.component});
                 }
@@ -104,7 +105,6 @@
             } else {
                 vm.sensorValues[sensor.name].value = sensor.value;
             }
-
         });
 
         vm.initSensors();

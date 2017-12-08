@@ -39,7 +39,7 @@
                 for (var component in components) {
                     MonitorService.listSensors(component, components[component].sensors.join('|'));
                 }
-                MonitorService.listSensors('katpool', 'resources_in_maintenance');
+                MonitorService.listSensors('katpool', 'katpool_resources_in_maintenance');
             }
         };
 

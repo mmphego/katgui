@@ -11,7 +11,7 @@
         vm.receptorsData = [];
         vm.sensorValues = {};
         vm.waitingForRequestResult = false;
-        vm.sensorsRegex = '^(mode|inhibit|device.status)';
+        vm.sensorsRegex = 'mode|inhibit|device.status';
 
         vm.initSensors = function () {
             ConfigService.getReceptorList()

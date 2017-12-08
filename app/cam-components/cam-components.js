@@ -24,7 +24,7 @@
                         };
                         vm.resourcesNames[key].nodeman = ConfigService.systemConfig['monitor:monctl'][key] ? 'nm_monctl' : 'nm_proxy';
                     }
-                    MonitorService.listSensors('sys', '^monitor_');
+                    MonitorService.listSensors('sys', '^sys_monitor_');
                     MonitorService.listSensors('all', 'katcpmsgs|version|build');
                 });
         };

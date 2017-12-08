@@ -17,7 +17,7 @@
         ];
 
         vm.initSensors = function () {
-            MonitorService.listSensors('all', '^(?!agg_.*)device_status|serial|lru');
+            MonitorService.listSensors('all', '(?!agg_.*)device_status|serial|lru');
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {

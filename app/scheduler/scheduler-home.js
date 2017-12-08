@@ -829,12 +829,12 @@
 
         vm.initSensors = function() {
             ConfigService.systemConfig.subarrayNrs.forEach(function(subNr) {
-                MonitorService.listSensors('subarray_' + subNr, '^(allocations|product|state|band|config_label|maintenance|delegated_ca|pool_resources|number_ants)$');
+                MonitorService.listSensors('subarray_' + subNr, 'allocations|product|state|band|config_label|maintenance|delegated_ca|pool_resources|number_ants');
             });
-            MonitorService.listSensors('sched', '^mode_\\d$');
-            MonitorService.listSensors('katpool', '^(pool_resources_free|resources_faulty|resources_in_maintenance)$');
+            MonitorService.listSensors('sched', 'mode_\\d$');
+            MonitorService.listSensors('katpool', '(pool_resources_free|resources_faulty|resources_in_maintenance)$');
             ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
-                MonitorService.listSensors(resource, '^state$|gui_urls$');
+                MonitorService.listSensors(resource, 'state$|gui_urls$');
             });
             MonitorService.subscribe('portal.sched');
         };

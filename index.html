@@ -128,7 +128,7 @@
 
 <!--dont use md-whiteframe class because it leaves black artifacts on sidenav-->
 <md-content layout="row" layout-fill>
-    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav md-theme="{{themeSecondary}}" ng-if="$root.loggedIn" class="md-sidenav-left" md-component-id="left-sidenav" layout="column" style="box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">katGUI</h1>
         </md-toolbar>
@@ -310,7 +310,7 @@
         </md-content>
     </md-sidenav>
 
-    <md-sidenav md-theme="{{themeSecondary}}" ng-if="loggedIn" class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);">
+    <md-sidenav md-theme="{{themeSecondary}}" ng-if="$root.loggedIn" class="md-sidenav-right" md-component-id="right-sidenav" layout="column" style="box-shadow: 0 8px 17px 1px rgba(0, 0, 0, 0.2);">
         <md-toolbar class="md-whiteframe-z1" md-theme-watch="true">
             <h1 class="md-toolbar-tools side-nav-title">User Navigation</h1>
         </md-toolbar>
@@ -419,39 +419,41 @@
         </md-toolbar>
         <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" ng-class="{'margin-bottom-25': $root.loggedIn}">
         </md-content>
-        <div class="main-footer-toolbar" layout="column" ng-if="loggedIn">
-            <md-toolbar md-theme="{{$root.sys_interlock_state.value === 'NONE'? themePrimary: 'red'}}" class="md-toolbar-tools-small md-whiteframe-z1" layout="row">
-                <span>
-                    Interlock State: <b>{{$root.sys_interlock_state.value}}</b>
+        <div class="" layout="column" >
+            <md-toolbar ng-if="$root.loggedIn" md-theme="{{$root.sys_interlock_state.value === 'NONE'? themePrimary: 'amber'}}" class="main-footer-toolbar md-toolbar-tools-small md-whiteframe-z1" layout="row">
+                <div flex>
+                    <span>Interlock State: <b>{{$root.sys_interlock_state.value}}</b></span>
                     <md-tooltip>Current Interlock State</md-tooltip>
-                </span>
-                <div style="position: absolute; bottom: 0; left: 0; right: 0" layout="row" layout-align="center center">
+                </div>
+
+                <div layout="row">
                     <b ng-if="$root.devMode">{{$root.portalUrl}}</b>
                     <span style="margin: 0 4px;">{{$root.systemConfig.version.description}}</span>
                     <span style="margin: 0 4px;">{{$root.systemConfig.version.deployment_date}}</span>
                     <md-tooltip>CAM System Description and Deployment Date</md-tooltip>
                 </div>
-                <span flex></span>
-                <div layout="row">
-                    <div ng-show="showDayOfYear && $root.dayOfYear">
-                        <span>{{$root.dayOfYear}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> DoY</span>
+
+                <div flex layout="row" layout-align="end">
+                    <div style="padding: 0 4px" ng-show="$root.showDayOfYear && $root.dayOfYear">
+                        <span>{{$root.dayOfYear}}<sub>DoY</sub></span>
                         <md-tooltip>Current UTC Day Of Year</md-tooltip>
                     </div>
-                    <div ng-show="showDate && $root.currentDate">
-                        <span>{{$root.currentDate}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> Date</span>
+                    <div style="padding: 0 4px" ng-show="$root.showDate && $root.currentDate">
+                        <span>{{$root.currentDate}}<sub>Date</sub></span>
                         <md-tooltip>Current UTC Date</md-tooltip>
                     </div>
-                    <div ng-if="$root.julianDay" ng-show="showJulianDate">
-                        <span>{{$root.julianDay}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> JD</span>
+                    <div style="padding: 0 4px" ng-show="$root.showJulianDate && $root.julianDay">
+                        <span>{{$root.julianDay}}<sub>JD</sub></span>
                         <md-tooltip>Julian Day</md-tooltip>
                     </div>
                 </div>
+
             </md-toolbar>
         </div>
     </div>
 
 </md-content>
-<div ng-if="loggedIn" class="unselectable toolbar-collapse-button"
+<div ng-if="$root.loggedIn" class="unselectable toolbar-collapse-button"
         ng-click="vm.toggleNavbar()" title="Expand or Collapse Toolbar" layout="row">
 
     <div ng-show="vm.showNavbar" flex layout="row" layout-align="center center">
@@ -459,7 +461,7 @@
     </div>
 </div>
 
-<alarms-notifier ng-if="loggedIn"></alarms-notifier>
+<alarms-notifier ng-if="$root.loggedIn"></alarms-notifier>
 <!--this button is for d3 created buttons to be able to easily infer the current theme, but we do not need to display it-->
 <md-button  id="btnPrimaryTheme" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" style="display: none"></md-button>
 

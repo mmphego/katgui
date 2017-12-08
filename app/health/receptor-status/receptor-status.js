@@ -37,13 +37,13 @@
                             name: receptorName
                         };
                         vm.receptors[receptorName] = receptor;
-                        MonitorService.listSensors(receptorName, '^(' + vm.receptorSensorsToConnect.join('|') + ')$');
+                        MonitorService.listSensors(receptorName, vm.receptorSensorsToConnect.join('|'));
                     });
                     systemConfig.subarrayNrs.forEach(function(subNr) {
-                        MonitorService.listSensors('subarray_' + subNr, '^(' + vm.subarraySensors.join('|') + ')$');
+                        MonitorService.listSensors('subarray_' + subNr, vm.subarraySensors.join('|'));
                         vm.subarrays['subarray_' + subNr] = {subNr: subNr};
                     });
-                    MonitorService.listSensors('katpool', 'pool_resources_');
+                    MonitorService.listSensors('katpool', 'katpool_pool_resources_');
                 });
         };
 

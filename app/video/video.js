@@ -232,7 +232,7 @@
         }
 
         vm.initSensors = function() {
-            MonitorService.listSensors('anc', '^vds');
+            MonitorService.listSensors('anc', '^anc_vds');
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {

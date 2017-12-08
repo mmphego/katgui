@@ -23,7 +23,7 @@
                 var regexToConnect = vm.regexStrings.map(function (regex) {
                     return regex.name;
                 });
-                MonitorService.listSensors('all', regexToConnect);
+                MonitorService.listSensors('all', regexToConnect.join('|'));
             }
         };
 
