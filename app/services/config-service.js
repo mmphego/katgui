@@ -19,6 +19,7 @@
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
         api.sensorGroups = {};
+        api.loadingSystemConfigPromises = [];
 
         api.loadSensorGroups = function () {
             var deferred = $q.defer();
@@ -55,26 +56,43 @@
 
         api.getSystemConfig = function (forceConfig) {
             var deferred = $q.defer();
+            if (api.loadingSystemConfig) {
+                api.loadingSystemConfigPromises.push(deferred);
+                return deferred.promise;
+            }
             if (api.systemConfig && !forceConfig) {
                 $timeout(function () {
                     deferred.resolve(api.systemConfig);
                 });
             } else if (urlBase() && KatGuiUtil.isValidURL(urlBase())) {
+                api.loadingSystemConfig = true;
+
                 $http(createRequest('get', urlBase() + '/system-config'))
                     .then(function (result) {
                         api.systemConfig = result.data;
+                        $rootScope.systemConfig = api.systemConfig;
                         deferred.resolve(api.systemConfig);
                         if (api.systemConfig && api.systemConfig.system && api.systemConfig.system.subarray_nrs) {
                             api.systemConfig.subarrayNrs = api.systemConfig.system.subarray_nrs.split(',');
                         }
+                        api.loadingSystemConfig = false;
+                        api.loadingSystemConfigPromises.forEach(function (deferred) {
+                            deferred.resolve(api.systemConfig);
+                        });
+                        api.loadingSystemConfigPromises = [];
                     }, function (message) {
                         $log.error(message);
                         deferred.reject(message);
+                        api.loadingSystemConfig = false;
+                        api.loadingSystemConfigPromises.forEach(function (deferred) {
+                            deferred.reject(api.systemConfig);
+                        });
+                        api.loadingSystemConfigPromises = [];
                     });
             } else {
                 $timeout(function () {
                     deferred.reject("No valid portalUrl has been specified.");
-                }, 1);
+                });
             }
             return deferred.promise;
         };
