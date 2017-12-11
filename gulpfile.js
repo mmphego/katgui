@@ -115,7 +115,7 @@ gulp.task('indexHtml', ['clean'], function () {
 });
 
 gulp.task('fonts', ['clean'], function () {
-    return gulp.src(['node_modules/font-awesome/fonts/**', 'fonts/**'])
+    return gulp.src(['fonts/**'])
         .pipe(gulp.dest('dist/fonts/'));
 });
 

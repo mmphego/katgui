@@ -143,38 +143,25 @@
                                 !api.globalSubscribePatterns[data.component].sensors[data.name])) {
                             $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         }
-                        if (data.name === "katpool_lo_id") {
-                            $rootScope.katpool_lo_id = data;
-                        } else if (data.name === "sys_interlock_state") {
-                            $rootScope.sys_interlock_state = data;
-                        } else if (data.name.startsWith('kataware_alarm')) {
-                            AlarmsService.receivedAlarmMessage(data);
-                        }
                     } else if (msg.subject === 'portal.sched') {
                         ObsSchedService.receivedScheduleMessage(data);
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject === 'portal.auth.current_lo') {
-                        $rootScope.katpool_lo_id.name = data.lo;
+                        $rootScope.katpool_lo_id.value = data.lo;
                         if ($rootScope.currentUser &&
                             $rootScope.currentUser.req_role === 'lead_operator' &&
-                            $rootScope.katpool_lo_id.name.length > 0 &&
-                            $rootScope.katpool_lo_id.name !== $rootScope.currentUser.email) {
+                            $rootScope.katpool_lo_id.value.length > 0 &&
+                            $rootScope.katpool_lo_id.value !== $rootScope.currentUser.email) {
                             NotifyService.showDialog(
-                                'You have been logged in as the Monitor Role', 'You have lost the Lead Operator Role because ' +
-                                $rootScope.katpool_lo_id.name + ' has assumed the Lead Operator role.');
+                                'You have been logged in as the Monitor Role',
+                                'You have lost the Lead Operator Role because ' +
+                                $rootScope.katpool_lo_id.value + ' has assumed the Lead Operator role.');
                             //$rootScope.logout();
                             //Do not logout, just loging as a demoted monitor only use
                             SessionService.verifyAs('read_only');
                         }
                     } else {
-                        if (data && data.name === "katpool_lo_id") {
-                            $rootScope.katpool_lo_id = data;
-                        } else if (data && data.name === "sys_interlock_state") {
-                            $rootScope.sys_interlock_state = data;
-                        } else if (data && data.name && data.name.startsWith('kataware_alarm')) {
-                            AlarmsService.receivedAlarmMessage(data);
-                        }
                         if (data && data.component && api.globalSubscribePatterns[data.component]) {
                             if (data.name.includes(api.globalSubscribePatterns[data.component].pattern)) {
                                 var sensorWithoutComponent = data.name.replace(data.component + '_', '');
@@ -194,6 +181,14 @@
                         } else {
                             $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         }
+                    }
+
+                    if (data.name === "katpool_lo_id") {
+                        $rootScope.katpool_lo_id = data;
+                    } else if (data.name === "sys_interlock_state") {
+                        $rootScope.sys_interlock_state = data;
+                    } else if (data.name && data.name.startsWith('kataware_alarm')) {
+                        AlarmsService.receivedAlarmMessage(data);
                     }
                 } else {
                     msg = e.data;
