@@ -15,13 +15,13 @@
         vm.subscribedSensors = [];
 
         vm.receptorSensorsToConnect = [
-            'device_status',
-            'mode',
-            'inhibited',
-            'lock',
-            'windstow_active',
-            'marked_in_maintenance',
-            'marked_faulty'
+            'device_status$',
+            'mode$',
+            'inhibited$',
+            'lock$',
+            'windstow_active$',
+            'marked_in_maintenance$',
+            'marked_faulty$'
         ];
 
         vm.subarraySensors = [
@@ -37,7 +37,7 @@
                             name: receptorName
                         };
                         vm.receptors[receptorName] = receptor;
-                        MonitorService.listSensors(receptorName, vm.receptorSensorsToConnect.join('|'));
+                        MonitorService.listSensors(receptorName, receptorName + '_(' + vm.receptorSensorsToConnect.join('|') + ')');
                     });
                     systemConfig.subarrayNrs.forEach(function(subNr) {
                         MonitorService.listSensors('subarray_' + subNr, vm.subarraySensors.join('|'));
