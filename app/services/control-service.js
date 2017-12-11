@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .service('ControlService', ControlService);
 
-    function ControlService($rootScope, $http, NotifyService, KatGuiUtil) {
+    function ControlService($rootScope, $http, NotifyService, KatGuiUtil, $q) {
 
         function urlBase() {
             return $rootScope.portalUrl? $rootScope.portalUrl + '/katcontrol' : '';
@@ -36,43 +36,43 @@
         };
 
         api.acknowledgeAlarm = function (alarmName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/acknowledge')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/acknowledge')));
         };
 
         api.addKnownAlarm = function (alarmName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/known')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/known')));
         };
 
         api.cancelKnownAlarm = function (alarmName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/cancel-known')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/cancel-known')));
         };
 
         api.clearAlarm = function (alarmName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/clear')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/alarms/' + alarmName + '/clear')));
         };
 
         api.startProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/start')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/start')));
         };
 
         api.restartProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/restart')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/restart')));
         };
 
         api.killProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/kill')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/kill')));
         };
 
         api.stopProcess = function (nodeMan, processName) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/stop')));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/process/' + nodeMan + '/' + processName + '/stop')));
         };
 
         api.toggleKATCPMessageDevices = function (resource, newValue) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/logging/' + resource + '/katcpmsgs-devices/' + newValue)));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/logging/' + resource + '/katcpmsgs-devices/' + newValue)));
         };
 
         api.toggleKATCPMessageProxy = function (resource, newValue) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/logging/' + resource + '/katcpmsgs-proxy/' + newValue)));
+            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/logging/' + resource + '/katcpmsgs-proxy/' + newValue)));
         };
 
         api.tailProcess = function (nodeman, process, lines) {
@@ -80,18 +80,22 @@
         };
 
         api.handleRequestResponse = function (request) {
-            request
-                .then(function (result) {
+            var deferred = $q.defer();
+            request.then(function (result) {
                     var splitMessage = result.data.result.split(' ');
                     var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
                     if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
                         NotifyService.showPreDialog('Error sending request', message);
+                        deferred.reject(message);
                     } else {
                         NotifyService.showSimpleToast(message);
+                        deferred.resolve(result);
                     }
                 }, function (error) {
                     NotifyService.showHttpErrorDialog('Error sending request', error);
+                    deferred.reject(error);
                 });
+            return deferred.promise;
         };
 
         function createRequest(method, url) {

@@ -300,7 +300,7 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
-                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.openIRCDisplay($event)">
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.openIRCDisplay($event)">
                         <md-button flex><span class="fa"></span><span>#IRC</span></md-button>
                     </md-item-content>
                 </md-item>
@@ -351,6 +351,16 @@
                 </md-button>
 
                 <span flex style="font-size: 30px; cursor: pointer;" title="Click to Navigate to Parent Display" ng-click="vm.navigateToParentState()">{{$root.currentStateTitle()}}</span>
+                <div layout="row" layout-align="center center" style="position: absolute; top: 0; left: 0; right: 0; pointer-events: none">
+                    <div ng-show="$root.localSiderealTime && showLST" title="Local Sidereal Time">
+                        <span style="font-size: 32px;">{{$root.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px; margin-right: 8px;"> LST</span>
+                    </div>
+                    <div ng-if="$root.utcTime && showLocalAndSAST">
+                        <span class="toolbar-time-span">{{$root.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
+                        <span class="toolbar-time-span">{{$root.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> local</span>
+                    </div>
+                </div>
+
                 <div layout="column" layout-align="start center" style="margin-right: 8px">
                     <md-menu style="padding: 0;">
                         <md-button style="margin: 0; text-transform: none; font-size: 18px" ng-click="$mdMenu.open($event)">
@@ -382,16 +392,6 @@
                         LO: {{$root.katpool_lo_id.value}}
                         <md-tooltip>Current Lead Operator</md-tooltip>
                     </span>
-                </div>
-
-                <div style="position: absolute; top: 0; left: 0; right: 0; pointer-events: none" layout="row" layout-align="center center">
-                    <div ng-if="$root.localSiderealTime" ng-show="showLST" title="Local Sidereal Time">
-                        <span style="font-size: 32px;">{{$root.localSiderealTime}}</span><span class="toolbar-time-span" style="font-size: 12px;margin-right: 8px;"> LST</span>
-                    </div>
-                    <div ng-if="$root.utcTime && showLocalAndSAST">
-                        <span class="toolbar-time-span">{{$root.utcTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> UTC</span><br/>
-                        <span class="toolbar-time-span">{{$root.localTime}}</span><span class="toolbar-time-span" style="font-size: 12px;"> local</span>
-                    </div>
                 </div>
 
                 <md-button class="mainbar-navbar-button" ng-click="$root.stateGo('home')" title="Home">

@@ -23,42 +23,63 @@
                             node: resources[key].node
                         };
                         vm.resourcesNames[key].nodeman = ConfigService.systemConfig['monitor:monctl'][key] ? 'nm_monctl' : 'nm_proxy';
+
+                    }
+                    for (var resourceName in resources) {
+                        MonitorService.listSensors(resourceName, 'katcpmsgs|version|build');
                     }
                     MonitorService.listSensors('sys', '^sys_monitor_');
-                    MonitorService.listSensors('all', 'katcpmsgs|version|build');
                 });
         };
 
-        vm.stopProcess = function(resource) {
-            ControlService.stopProcess('nm_monctl', resource);
+        // TODO nm_monctl shouldnt work on multinode system???
+        vm.stopProcess = function(resourceName) {
+            ControlService.stopProcess('nm_monctl', resourceName);
         };
 
-        vm.startProcess = function(resource) {
-            ControlService.startProcess('nm_monctl', resource);
+        vm.startProcess = function(resourceName) {
+            ControlService.startProcess('nm_monctl', resourceName);
         };
 
-        vm.restartProcess = function(resource) {
-            ControlService.restartProcess('nm_monctl', resource);
+        vm.restartProcess = function(resourceName) {
+            ControlService.restartProcess('nm_monctl', resourceName);
         };
 
-        vm.killProcess = function(resource) {
-            ControlService.killProcess('nm_monctl', resource);
+        vm.killProcess = function(resourceName) {
+            ControlService.killProcess('nm_monctl', resourceName);
         };
 
-        vm.toggleKATCPMessageDevices = function(resource, newValue) {
-            ControlService.toggleKATCPMessageDevices(resource, newValue ? 'enable' : 'disable');
+        vm.toggleKATCPMessageDevices = function(resourceName, newValue) {
+            ControlService.toggleKATCPMessageDevices(resourceName, newValue ? 'enable' : 'disable').then(
+                function(result) {
+                    vm.resourcesNames[resourceName].sensors.logging_katcpmsgs_devices_enabled.value = newValue;
+                },
+                function(error) {
+                    vm.resourcesNames[resourceName].sensors.logging_katcpmsgs_devices_enabled.value = !newValue;
+                }
+            );
         };
 
-        vm.toggleKATCPMessageProxy = function(resource, newValue) {
-            ControlService.toggleKATCPMessageProxy(resource, newValue ? 'enable' : 'disable');
+        vm.toggleKATCPMessageProxy = function(resourceName, newValue) {
+            ControlService.toggleKATCPMessageProxy(resourceName, newValue ? 'enable' : 'disable').then(
+                function(result) {
+                    vm.resourcesNames[resourceName].sensors.logging_katcpmsgs_proxy_enabled.value = newValue;
+                },
+                function(error) {
+                    vm.resourcesNames[resourceName].sensors.logging_katcpmsgs_proxy_enabled.value = !newValue;
+                }
+            );
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (sensor.name.startsWith('kataware_alarm_')) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
                 var sensorName = sensor.name.replace(sensor.component + '_', '');
-                if (sensorName.indexOf('monitor_') > -1) {
+                if (sensor.name.indexOf('monitor_') > -1) {
                     var connectedComponent = sensorName.replace('monitor_', '');
                     vm.resourcesNames[connectedComponent].connected = sensor.value;
                 } else {
@@ -71,11 +92,11 @@
                 }
             } else {
                 var component;
-                if (sensor.name.indexOf('monitor_') > -1) {
+                if (sensor.name.indexOf('sys_monitor_') > -1) {
                     component = sensor.name.replace('sys_monitor_', '');
                     vm.resourcesNames[component].connected = sensor.value;
                 } else {
-                    // sensor.archive.cbf_2.logging_katcpmsgs_devices_enabled
+                    // e.g. sensor.archive.cbf_2.logging_katcpmsgs_devices_enabled
                     var subjectSplit = subject.split('.');
                     component = subjectSplit[subjectSplit.length - 2];
                     var sensorNameFromSubject = subjectSplit[subjectSplit.length - 1];

@@ -364,7 +364,7 @@
         $rootScope.openUrlInNewTab = function(url) {
             window.open(url).focus();
         };
-        vm.openIRCDisplay = function($event) {
+        $rootScope.openIRCDisplay = function($event) {
             NotifyService.showPreDialog(
                 'IRC Information',
                 'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
