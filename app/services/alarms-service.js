@@ -21,7 +21,8 @@
                 severity: alarmValues[0],
                 priority: alarmValues[1],
                 name: messageObj.name.replace('kataware_alarm_', ''),
-                date: moment.utc(messageObj.time, 'X').format(MOMENT_DATETIME_FORMAT)
+                date: moment.utc(messageObj.time, 'X').format(MOMENT_DATETIME_FORMAT),
+                value: messageObj.value
             };
 
             var severity_value =

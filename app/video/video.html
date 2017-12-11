@@ -16,7 +16,7 @@
     <div ng-if="vm.canOperateVDS" class="legend-popup" style="background: transparent;" layout="row" ng-init="transparentButton = true"
          ng-class="{'transparent-legend':transparentButton && !showControls}"
          ng-show="vm.sensorValues['anc_' + vm.vds_name + '_device_status'].value === 'ok'" >
-        <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showControls = true" ng-click="showControls = !showControls"
+        <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showControls = true" ng-click="showControls = !showControls"
                    ng-mouseenter="transparentButton = false" ng-mouseleave="transparentButton = true" class="md-fab md-mini md-primary">
             <md-icon class="fa" ng-if="!showControls" md-font-icon="fa-caret-up"></md-icon>
             <md-icon class="fa" ng-if="showControls" md-font-icon="fa-caret-down"></md-icon>

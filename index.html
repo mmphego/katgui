@@ -134,141 +134,141 @@
             <md-list>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('home')">
-                        <md-button flex><span class="fa fa-home"></span><span>Home</span></md-button>
+                        <md-button><span class="fa fa-home"></span><span>Home</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
-                        <md-button flex><span class="fa fa-warning"></span><span>Alarms</span></md-button>
+                        <md-button><span class="fa fa-warning"></span><span>Alarms</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
-                            <md-button flex><span class="fa fa-heart"></span><span>Top Health</span></md-button>
+                            <md-button><span class="fa fa-heart"></span><span>Top Health</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorStatus')">
-                            <md-button flex><span class="fa fa-th"></span><span>Receptor Status</span></md-button>
+                            <md-button><span class="fa fa-th"></span><span>Receptor Status</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorPointing')">
-                            <md-button flex><span class="fa fa-crosshairs"></span><span>Receptor Pointing</span></md-button>
+                            <md-button><span class="fa fa-crosshairs"></span><span>Receptor Pointing</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('receptorHealth')">
-                            <md-button flex><span class="fa fa-th-large"></span><span>Receptor Health</span></md-button>
+                            <md-button><span class="fa fa-th-large"></span><span>Receptor Health</span></md-button>
                         </div>
                         <!-- <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('customHealth')">
-                            <md-button flex><span class="fa fa-heartbeat"></span><span>Custom Health</span></md-button>
+                            <md-button><span class="fa fa-heartbeat"></span><span>Custom Health</span></md-button>
                         </div> -->
                         <!-- <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('activity')">
-                            <md-button flex><span class="fa fa-dashboard"></span><span>System Activity</span></md-button>
+                            <md-button><span class="fa fa-dashboard"></span><span>System Activity</span></md-button>
                         </div> -->
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
                         <div ng-repeat="configItem in $root.configHealthViews track by $index" class="menu-item" layout="row" layout-align="start center">
-                            <md-button ng-click="vm.sideNavStateGo('config-health', {configItem: configItem})" flex><span class="fa fa-file-code-o"></span><span>{{configItem.toUpperCase()}} Health</span></md-button>
+                            <md-button ng-click="vm.sideNavStateGo('config-health', {configItem: configItem})"><span class="fa fa-file-code-o"></span><span>{{configItem.toUpperCase()}} Health</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="padding-bottom: 8px" ng-click="vm.sideNavStateGo('operator-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
-                            <md-button flex><span class="fa fa-cogs"></span><span>Operator Control</span></md-button>
+                            <md-button><span class="fa fa-cogs"></span><span>Operator Control</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="padding-bottom: 8px" ng-click="vm.sideNavStateGo('cam-components')">
                         <div class="menu-item" layout="row" layout-align="start center">
-                            <md-button flex><span class="fa fa-cubes"></span><span>CAM Components</span></md-button>
+                            <md-button><span class="fa fa-cubes"></span><span>CAM Components</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="padding-bottom: 8px" ng-click="vm.sideNavStateGo('process-control')">
                         <div class="menu-item" layout="row" layout-align="start center">
-                            <md-button flex><span class="fa fa-wrench"></span><span>Process Control</span></md-button>
+                            <md-button><span class="fa fa-wrench"></span><span>Process Control</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content style="border-bottom: 1px solid #e5e5e5" class="menu-item" layout="row" layout-align="start center" ng-click="$root.openCentralLogger()">
-                        <md-button flex><span class="fa fa-file-text-o"></span><span>Central Logs</span></md-button>
+                        <md-button><span class="fa fa-file-text-o"></span><span>Central Logs</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content layout="column" style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;">
                         <div class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler')">
-                            <md-button flex><span class="fa fa-list"></span><span>Subarrays Workflow</span></md-button>
+                            <md-button><span class="fa fa-list"></span><span>Subarrays Workflow</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.drafts')">
-                            <md-button flex><span class="fa fa-pencil"></span><span>Schedule Block Approved</span></md-button>
+                            <md-button><span class="fa fa-pencil"></span><span>Schedule Block Approved</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.program-blocks')">
-                            <md-button flex><span class="fa fa-pencil"></span><span>Program Blocks</span></md-button>
+                            <md-button><span class="fa fa-pencil"></span><span>Program Blocks</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.subarrays')">
-                            <md-button flex><span class="fa fa-asterisk"></span><span>Subarray Schedule Blocks</span></md-button>
+                            <md-button><span class="fa fa-asterisk"></span><span>Subarray Schedule Blocks</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.resources')">
-                            <md-button flex><span class="fa fa-sitemap"></span><span>Set-up Subarray</span></md-button>
+                            <md-button><span class="fa fa-sitemap"></span><span>Set-up Subarray</span></md-button>
                         </div>
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('scheduler.observations')">
-                            <md-button flex><span class="fa fa-binoculars"></span><span>Observations Overview</span></md-button>
+                            <md-button><span class="fa fa-binoculars"></span><span>Observations Overview</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-graph')">
-                        <md-button flex><span class="fa fa-line-chart"></span><span>Sensor Graph</span></md-button>
+                        <md-button><span class="fa fa-line-chart"></span><span>Sensor Graph</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-list')">
-                        <md-button flex><span class="fa fa-th-list"></span><span>Sensor List</span></md-button>
+                        <md-button><span class="fa fa-th-list"></span><span>Sensor List</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('sensor-groups')">
-                        <md-button flex><span class="fa fa-list-alt"></span><span>Sensor Groups</span></md-button>
+                        <md-button><span class="fa fa-list-alt"></span><span>Sensor Groups</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('device-status')">
-                        <md-button flex><span class="fa fa-th-list"></span><span>Device Status</span></md-button>
+                        <md-button><span class="fa fa-th-list"></span><span>Device Status</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('gui-links')"
                                      style="border-bottom: 1px solid #e5e5e5;">
-                        <md-button flex><span class="fa fa-list-alt"></span><span>GUI Links</span></md-button>
+                        <md-button><span class="fa fa-list-alt"></span><span>GUI Links</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('instrumental-config')"
                                      style="border-bottom: 1px solid #e5e5e5;">
-                        <md-button flex><span class="fa fa-question-circle"></span><span>Instrumental Config</span></md-button>
+                        <md-button><span class="fa fa-question-circle"></span><span>Instrumental Config</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlogs')">
-                        <md-button flex><span class="fa fa-pencil-square-o"></span><span>User Logs</span></md-button>
+                        <md-button><span class="fa fa-pencil-square-o"></span><span>User Logs</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item ng-show="$root.expertOrLO">
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlog-tags')">
-                        <md-button flex><span class="fa fa-tag"></span><span>User Log Tags</span></md-button>
+                        <md-button><span class="fa fa-tag"></span><span>User Log Tags</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('userlogs-report')">
-                        <md-button flex><span class="fa fa-file-pdf-o"></span><span>User Log Reports</span></md-button>
+                        <md-button><span class="fa fa-file-pdf-o"></span><span>User Log Reports</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content ng-show="$root.showVideoLinks" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('video')">
-                        <md-button flex><span class="fa fa-video-camera"></span><span>Video</span></md-button>
+                        <md-button><span class="fa fa-video-camera"></span><span>Video</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -277,7 +277,7 @@
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('utilisation-report')">
-                        <md-button flex><span class="fa fa-file-pdf-o"></span><span>Utilisation Report</span></md-button>
+                        <md-button><span class="fa fa-file-pdf-o"></span><span>Utilisation Report</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -286,22 +286,22 @@
                 </md-item>
                 <md-item>
                     <md-item-content style="border-bottom: 1px solid #e5e5e5;" class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('weather')">
-                        <md-button flex><span class="fa fa-cloud"></span><span>Weather</span></md-button>
+                        <md-button><span class="fa fa-cloud"></span><span>Weather</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.openGangliaLink()">
-                        <md-button flex><span class="fa fa-area-chart"></span><span>Cluster Monitoring (Ganglia)</span></md-button>
+                        <md-button><span class="fa fa-area-chart"></span><span>Cluster Monitoring (Ganglia)</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.openUrlInNewTab('https://drive.google.com/drive/folders/0B8fhAW5QnZQWVkdXYm1GTnZ2X1k')">
-                        <md-button flex><span class="fa fa-google"></span><span>CAM Documentation</span></md-button>
+                        <md-button><span class="fa fa-google"></span><span>CAM Documentation</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.openIRCDisplay($event)">
-                        <md-button flex><span class="fa"></span><span>#IRC</span></md-button>
+                        <md-button><span class="fa"></span><span>#IRC</span></md-button>
                     </md-item-content>
                 </md-item>
             </md-list>
@@ -316,17 +316,17 @@
             <md-list>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavRightStateGo('admin')">
-                        <md-button flex><span class="fa fa-users"></span><span>User Admin</span></md-button>
+                        <md-button><span class="fa fa-users"></span><span>User Admin</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavRightStateGo('config')">
-                        <md-button flex><span class="fa fa-gear"></span><span>Configure katGUI</span></md-button>
+                        <md-button><span class="fa fa-gear"></span><span>Configure katGUI</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavRightStateGo('about')">
-                        <md-button flex><span class="fa fa-info"></span><span style="margin-left: 8px">About katGUI</span></md-button>
+                        <md-button><span class="fa fa-info"></span><span style="margin-left: 8px">About katGUI</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -335,7 +335,7 @@
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.logout()">
-                        <md-button flex><span class="fa"></span><span>Logout</span></md-button>
+                        <md-button><span class="fa"></span><span>Logout</span></md-button>
                     </md-item-content>
                 </md-item>
             </md-list>
