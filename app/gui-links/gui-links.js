@@ -26,6 +26,9 @@
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (sensor.name.indexOf('gui_urls') === -1) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
@@ -36,7 +39,11 @@
                 }
             }
             vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
-            vm.sensorValues[sensor.name].parsedValue = JSON.parse(sensor.value);
+            try {
+                vm.sensorValues[sensor.name].parsedValue = JSON.parse(sensor.value);
+            } catch (error) {
+                vm.sensorValues[sensor.name].parsedValue = sensor.value;
+            }
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);

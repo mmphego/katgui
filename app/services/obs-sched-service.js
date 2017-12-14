@@ -24,7 +24,6 @@
         api.resourceTemplates = [];
         api.observationSchedule = [];
         api.scheduleData = [];
-        api.guiUrlsRaw = [];
         api.guiUrls = {};
         api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
         api.sensorValues = {};
@@ -446,9 +445,11 @@
             // `match` returns null if there is no match, otherwise a list of results
             var resourceNameMatches = sensor.name.match(/^[a-z]+_\d|^[a-z]+_/);
             if (resourceNameMatches && sensor.value) {
-                api.guiUrls[resourceNameMatches[0]] = JSON.parse(sensor.value);
-            } else {
-                api.guiUrls[resourceNameMatches[0]] = [];
+                var newUrls = JSON.parse(sensor.value);
+                if (!api.guiUrls[resourceNameMatches[0]]) {
+                    api.guiUrls[resourceNameMatches[0]] = [];
+                }
+                api.guiUrls[resourceNameMatches[0]] = api.guiUrls[resourceNameMatches[0]].concat(newUrls);
             }
         };
 

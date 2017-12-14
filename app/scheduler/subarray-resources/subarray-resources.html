@@ -8,8 +8,8 @@
                     {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
                 </div>
                 <div flex class="md-whiteframe-z2" layout="column">
-                    <md-toolbar md-theme="{{vm.subarray.state === 'inactive'? 'grey' : vm.subarray.state === 'active'? 'green' : vm.subarray.state === 'error'? 'amber' : 'deep-purple'}}"
-                        ng-class="{'md-hue-2': vm.subarray.state !== 'inactive'}" class="md-whiteframe-z2"
+                    <md-toolbar md-theme="{{parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'inactive'? 'grey' : parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'? 'green' : parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'error'? 'amber' : 'deep-purple'}}"
+                        ng-class="{'md-hue-2': parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'}" class="md-whiteframe-z2"
                         layout="row" layout-align="center center" title="{{vm.subarray.description}}" style="max-height: 80px; min-height: 80px; position: relative">
                         <div ng-include="'app/scheduler/templates/subarray-config-container.html'"></div>
                         <md-menu style="margin: 0; padding: 0;">
@@ -48,9 +48,9 @@
                         <span class="fa fa-cubes subarray-action-icon hover-opacity"
                             title="Load last known subarray configuration - {{vm.lastKnownSubarrayConfig? vm.lastKnownSubarrayConfig : 'Could not find the last known configuration for any subarrays'}}"
                             md-ink-ripple ng-show="parent.vm.iAmAtLeastCA()"
-                            ng-disabled="!vm.lastKnownSubarrayConfig || vm.subarray.state !== 'inactive'"
-                            ng-click="(!parent.vm.iAmAtLeastCA() && (!vm.lastKnownSubarrayConfig || vm.subarray.state !== 'inactive')) || vm.loadLastKnownSubarrayConfig()"></span>
-                        <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple ng-show="$root.expertOrLO && vm.subarray.state === 'inactive'"
+                            ng-disabled="!vm.lastKnownSubarrayConfig || parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'"
+                            ng-click="(!parent.vm.iAmAtLeastCA() && (!vm.lastKnownSubarrayConfig || parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive')) || vm.loadLastKnownSubarrayConfig()"></span>
+                        <span class="fa fa-power-off subarray-action-icon hover-opacity" md-ink-ripple ng-show="$root.expertOrLO && parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'inactive'"
                             title="Activate Subarray" ng-click="parent.vm.activateSubarray()"></span>
                         <span class="fa fa-recycle subarray-action-icon hover-opacity" md-ink-ripple ng-show="parent.vm.iAmAtLeastCA()"
                             title="Free Subarray" ng-click="parent.vm.freeSubarray()"></span>
@@ -62,32 +62,32 @@
                             </md-button>
                             <md-menu-content style="min-height: 427px">
                                 <md-menu-item>
-                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openBandsDialog($event)" title="Select a Band">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.openBandsDialog($event)" title="Select a Band">
                                         <span style="margin-right: 4px" class="fa fa-signal"></span>
                                         <span>Set Band...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openProductsDialog($event)" title="Select a User Product">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.openProductsDialog($event)" title="Select a User Product">
                                         <span style="margin-right: 4px" class="fa fa-cube"></span>
                                         <span>Set User Product...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openCADialog($event)" title="Select a Control Authority">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.openCADialog($event)" title="Select a Control Authority">
                                         <span style="margin-right: 4px" class="fa fa-user"></span>
                                         <span>Set Control Authority...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.openConfigLabelDialog(vm.subarray.id, $event)">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.openConfigLabelDialog(vm.subarray.id, $event)">
                                         <span style="margin-right: 4px" class="fa fa-at"></span>
                                         <span>Set Config Label...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
-                                    <md-button ng-disabled="vm.subarray.state === 'active'" ng-click="parent.vm.setSubarrayInMaintenance()" title="Toggle Subarray in Maintenance">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.setSubarrayInMaintenance()" title="Toggle Subarray in Maintenance">
                                         <span style="margin-right: 4px" class="fa fa-wrench"></span>
                                         <span>Toggle Maintenance</span>
                                     </md-button>
@@ -101,7 +101,7 @@
                                 </md-menu-item>
                                 <md-menu-item>
                                     <md-button ng-click="vm.openTemplateListDialog($event)" title="Load a resource template, requires subarray to be inactive"
-                                        ng-disabled="vm.subarray.state !== 'inactive'">
+                                        ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'">
                                         <span style="margin-right: 4px" class="fa fa-folder-open-o"></span>
                                         <span>Load Resource Template...</span>
                                     </md-button>
@@ -109,7 +109,7 @@
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
                                     <md-button ng-click="vm.loadLastKnownSubarrayConfig()" title="{{vm.lastKnownSubarrayConfig? vm.lastKnownSubarrayConfig : 'Could not find the last known configuration for any subarrays'}}"
-                                        ng-disabled="!vm.lastKnownSubarrayConfig || vm.subarray.state !== 'inactive'">
+                                        ng-disabled="!vm.lastKnownSubarrayConfig || parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'">
                                         <span style="margin-right: 4px" class="fa fa-cubes"></span>
                                         <span>Load Last Known Subarray Config</span>
                                     </md-button>

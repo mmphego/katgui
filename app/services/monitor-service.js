@@ -45,18 +45,18 @@
         };
 
         api.subscribeSensorName = function(component, sensorName) {
-            api.subscribe('sensor.*.' + component + '.' + sensorName);
+            api.subscribe('sensor.normal.' + component + '.' + sensorName);
         };
 
         api.subscribeSensor = function(sensor) {
             var sensorWithoutComponent = sensor.name.replace(sensor.component + '_', '');
             // Sensor subjects are sensor.*.<component>.<sensorName>
-            api.subscribe('sensor.*.' + sensor.component + '.' + sensorWithoutComponent);
+            api.subscribe('sensor.normal.' + sensor.component + '.' + sensorWithoutComponent);
         };
 
         api.subscribeResource = function(component) {
             // Sensor subjects are sensor.*.<component>.*
-            api.subscribe('sensor.*.' + component + '.*');
+            api.subscribe('sensor.normal.' + component + '.*');
         };
 
         api.subscribe = function(sub) {
@@ -77,13 +77,13 @@
         };
 
         api.unsubscribeSensorName = function(component, sensorName) {
-            api.unsubscribe('sensor.*.' + component + '.' + sensorName);
+            api.unsubscribe('sensor.normal.' + component + '.' + sensorName);
         };
 
         api.unsubscribeSensor = function(sensor) {
             var sensorWithoutComponent = sensor.name.replace(sensor.component + '_', '');
             // Sensor subjects are sensor.*.<component>.<sensorName>
-            api.unsubscribe('sensor.*.' + sensor.component + '.' + sensorWithoutComponent);
+            api.unsubscribe('sensor.normal.' + sensor.component + '.' + sensorWithoutComponent);
         };
 
         api.unsubscribe = function(subscriptions) {
