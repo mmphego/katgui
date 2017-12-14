@@ -52,7 +52,8 @@
         };
 
         vm.initSensors = function () {
-            MonitorService.subscribe(vm.clientSubject + '.>');
+            MonitorService.subscribe(vm.clientSubject + '.kastore.data');
+            MonitorService.subscribe(vm.clientSubject + '.kastore.error');
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
                     MonitorService.subscribeSensor(sensor);
@@ -518,7 +519,8 @@
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $scope.$on('$destroy', function () {
-            MonitorService.unsubscribe(vm.clientSubject + '.>');
+            MonitorService.unsubscribe(vm.clientSubject + '.kastore.data');
+            MonitorService.unsubscribe(vm.clientSubject + '.kastore.error');
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
                     MonitorService.unsubscribeSensor(sensor);

@@ -39,9 +39,9 @@
                 </div>
 
                 <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center" style="padding: 0px 8px; max-height: 17px">
-                    <span class="subheader-text resource-sensor-name" ng-click="vm.setSensorsOrderBy('name')">
+                    <span class="subheader-text resource-sensor-name" ng-click="vm.setSensorsOrderBy('shortName')">
                         <span>Name</span>
-                    <span class="fa" ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'name' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'name' && vm.sensorsOrderBy.reverse}"
+                    <span class="fa" ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'shortName' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'shortName' && vm.sensorsOrderBy.reverse}"
                         style="margin-right: 4px"></span>
                     </span>
                     <span class="subheader-text resource-sensor-status-item" ng-click="vm.setSensorsOrderBy('status')">

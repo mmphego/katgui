@@ -237,9 +237,7 @@
                             $log.info('Reconnected Monitor Connection.');
                             $rootScope.$emit('websocketReconnected');
                         }
-                        MonitorService.listSensors('sys', 'sys_interlock_state', true);
-                        MonitorService.listSensors('katpool', 'katpool_lo_id', true);
-                        MonitorService.listSensors('kataware', 'kataware_alarm_', true);
+                        MonitorService.initGlobalSensors();
                     } else {
                         $timeout($rootScope.connectEvents, 3000);
                     }

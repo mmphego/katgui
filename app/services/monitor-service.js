@@ -14,7 +14,17 @@
         api.deferredMap = {};
         api.connection = null;
         api.lastSyncedTime = null;
-        api.globalSubscribePatterns = {};
+        api.globalSubscriptionFilters = [{
+            component: 'sys',
+            filter: 'sys_interlock_state'
+        }, {
+            component: 'katpool',
+            filter: 'katpool_lo_id'
+        }, {
+            component: 'kataware',
+            filter: 'kataware_alarm_'
+        }];
+        api.globalSubscriptions = {};
 
         //websocket default heartbeat is every 30 seconds
         //so allow for 35 seconds before alerting about timeout
@@ -28,6 +38,12 @@
             return api.deferredMap['timeoutDefer'].promise;
         };
 
+        api.initGlobalSensors = function() {
+            api.globalSubscriptionFilters.forEach(function(globalSub) {
+                api.listSensors(globalSub.component, globalSub.filter);
+            });
+        };
+
         api.subscribeSensorName = function(component, sensorName) {
             api.subscribe('sensor.*.' + component + '.' + sensorName);
         };
@@ -36,6 +52,11 @@
             var sensorWithoutComponent = sensor.name.replace(sensor.component + '_', '');
             // Sensor subjects are sensor.*.<component>.<sensorName>
             api.subscribe('sensor.*.' + sensor.component + '.' + sensorWithoutComponent);
+        };
+
+        api.subscribeResource = function(component) {
+            // Sensor subjects are sensor.*.<component>.*
+            api.subscribe('sensor.*.' + component + '.*');
         };
 
         api.subscribe = function(sub) {
@@ -118,6 +139,7 @@
             api.connection = null;
             api.lastHeartBeat = null;
             $rootScope.connectedToMonitor = false;
+            api.globalSubscriptions = {};
         };
 
         api.onSockJSMessage = function(e) {
@@ -136,13 +158,7 @@
                         api.lastSyncedTime = data.time;
                         api.lastSyncedLST = data.lst;
                     } else if (msg.subject.startsWith('sensor.')) {
-                        if ($state.current.name === 'sensor-list') {
-                            $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
-                        } else if (!api.globalSubscribePatterns[data.component] || (
-                                api.globalSubscribePatterns[data.component].sensors &&
-                                !api.globalSubscribePatterns[data.component].sensors[data.name])) {
-                            $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
-                        }
+                        $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                     } else if (msg.subject === 'portal.sched') {
                         ObsSchedService.receivedScheduleMessage(data);
                     } else if (msg.subject.startsWith('portal.userlogs')) {
@@ -162,24 +178,17 @@
                             SessionService.verifyAs('read_only');
                         }
                     } else {
-                        if (data && data.component && api.globalSubscribePatterns[data.component]) {
-                            if (data.name.includes(api.globalSubscribePatterns[data.component].pattern)) {
-                                var sensorWithoutComponent = data.name.replace(data.component + '_', '');
-                                if (!api.globalSubscribePatterns[data.component].sensors) {
-                                    // dictionary for fast lookup, we check for this on every message!
-                                    // ES6 we could use a Set()
-                                    api.globalSubscribePatterns[data.component].sensors = {};
-                                }
-                                api.globalSubscribePatterns[data.component].sensors[data.name] = 1;
-                                api.subscribe('sensor.*.' + data.component + '.' + sensorWithoutComponent);
-                            } else {
-                                $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                        // req.reply messages
+                        $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                        if (data && data.component) {
+                            var foundGlobalMatch = api.globalSubscriptionFilters.filter(function(globalSub) {
+                                return globalSub.component === data.component &&
+                                    data.name.match(globalSub.filter);
+                            });
+                            if (foundGlobalMatch && !api.globalSubscriptions[data.name]) {
+                                api.globalSubscriptions[data.name] = data;
+                                api.subscribeSensor(data);
                             }
-                            if ($state.current.name === 'sensor-list') {
-                                $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
-                            }
-                        } else {
-                            $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         }
                     }
 
@@ -199,7 +208,7 @@
                         $log.warn('Server hint received: ' + msg.server_hint);
                         $log.warn(msg);
                         if (msg.server_hint === 'retry_later' && msg.hint_method === 'list_sensors') {
-                            $timeout(function () {
+                            $timeout(function() {
                                 api.listSensors(msg.hint_args.component, msg.hint_args.name_filter);
                             }, msg.hint_args.timedelta);
                         }
@@ -245,13 +254,8 @@
             }
         };
 
-        api.listSensors = function(component, regex, globalSubscribe) {
+        api.listSensors = function(component, regex) {
             api.sendMonitorCommand('list_sensors', [component, regex]);
-            if (globalSubscribe) {
-                api.globalSubscribePatterns[component] = {
-                    pattern: regex
-                };
-            }
         };
 
         api.showAggregateSensorsDialog = function(title, content, event) {
@@ -348,24 +352,25 @@
                     },
                     template: [
                         '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}" aria-label="">',
-                            '<div style="padding:0; margin:0; overflow: auto" layout="column" layout-padding >',
-                                '<md-toolbar class="md-primary" layout="row" layout-align="center center"><span>{{title}}</span></md-toolbar>',
-                                '<div flex><pre style="white-space: pre-wrap">{{content}}</pre></div>',
-                                    '<div layout="column" class="resource-sensors-list" style="margin: 0 16px">',
-                                        '<div style="height: 24px" ng-repeat="sensor in subscribedSensors | orderBy:\'name\'">',
-                                            '<div layout="row" class="resource-sensor-item" title="{{sensor.original_name}}">',
-                                                '<span style="width: 450px; overflow: hidden; text-overflow: ellipsis">{{sensor.original_name}}</span>',
-                                                '<span class="resource-sensor-status-item" ng-class="sensorClass(sensorValues[sensor.name].status)">{{sensorValues[sensor.name].status}}</span>',
-                                                '<span class="resource-sensor-time-item" title="Timestamp">{{sensorValues[sensor.name].date}}</span>',
-                                                '<span flex class="resource-sensor-value-item">{{sensorValues[sensor.name].value}}</span>',
-                                            '</div>',
-                                        '</div>',
-                                    '</div>',
-                                '</div>',
-                            '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
-                                '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
-                            '</div>',
-                        '</md-dialog>'].join(''),
+                        '<div style="padding:0; margin:0; overflow: auto" layout="column" layout-padding >',
+                        '<md-toolbar class="md-primary" layout="row" layout-align="center center"><span>{{title}}</span></md-toolbar>',
+                        '<div flex><pre style="white-space: pre-wrap">{{content}}</pre></div>',
+                        '<div layout="column" class="resource-sensors-list" style="margin: 0 16px">',
+                        '<div style="height: 24px" ng-repeat="sensor in subscribedSensors | orderBy:\'name\'">',
+                        '<div layout="row" class="resource-sensor-item" title="{{sensor.original_name}}">',
+                        '<span style="width: 450px; overflow: hidden; text-overflow: ellipsis">{{sensor.original_name}}</span>',
+                        '<span class="resource-sensor-status-item" ng-class="sensorClass(sensorValues[sensor.name].status)">{{sensorValues[sensor.name].status}}</span>',
+                        '<span class="resource-sensor-time-item" title="Timestamp">{{sensorValues[sensor.name].date}}</span>',
+                        '<span flex class="resource-sensor-value-item">{{sensorValues[sensor.name].value}}</span>',
+                        '</div>',
+                        '</div>',
+                        '</div>',
+                        '</div>',
+                        '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
+                        '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
+                        '</div>',
+                        '</md-dialog>'
+                    ].join(''),
                     targetEvent: event
                 });
 

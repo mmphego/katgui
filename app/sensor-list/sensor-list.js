@@ -22,9 +22,10 @@
         vm.hideNominalSensors = $stateParams.hideNominal? $stateParams.hideNominal === 'true': false;
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
+        vm.subscribedSensors = [];
 
         vm.sensorsOrderByFields = [
-            {label: 'Name', value: 'name'},
+            {label: 'Name', value: 'shortName'},
             {label: 'Timestamp', value: 'timestamp'},
             {label: 'Received Timestamp', value: 'received_timestamp'},
             {label: 'Status', value: 'status'},
@@ -42,7 +43,7 @@
         vm.initSensors = function () {
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 MonitorService.listSensors(vm.resourceSensorsBeingDisplayed, '.*');
-                MonitorService.subscribe('sensor.*.' + vm.resourceSensorsBeingDisplayed + '.>');
+                MonitorService.subscribeResource(vm.resourceSensorsBeingDisplayed);
             }
         };
 
@@ -62,7 +63,7 @@
             }
         };
 
-        vm.setSensorsOrderBy('name');
+        vm.setSensorsOrderBy('shortName');
 
         vm.listResourceSensors = function (resourceName) {
             if (vm.resourceSensorsBeingDisplayed === resourceName) {
@@ -70,16 +71,15 @@
             }
 
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                MonitorService.unsubscribe('sensor.*.' + vm.resourceSensorsBeingDisplayed + '.>');
+                vm.unsubscribeResource(vm.resourceSensorsBeingDisplayed);
                 vm.sensorsToDisplay = [];
                 vm.sensorValues = {};
             }
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
             vm.showProgress = true;
-            MonitorService.listSensors(resourceName, '.*');
-            MonitorService.subscribe('sensor.*.' + resourceName + '.>');
             vm.resourceSensorsBeingDisplayed = resourceName;
+            vm.initSensors();
             vm.updateURL();
         };
 
@@ -179,6 +179,7 @@
             // list_sensors request finished
             if (vm.showProgress && subject.startsWith('req.reply')) {
                 vm.showProgress = false;
+                vm.subscribedSensors.push(sensor);
             }
 
             if (sensor.name.startsWith(vm.resourceSensorsBeingDisplayed)) {
@@ -259,8 +260,17 @@
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
+        vm.unsubscribeResource = function (resourceName) {
+            if (resourceName) {
+                vm.subscribedSensors.forEach(function (sensor) {
+                    MonitorService.unsubscribe(['sensor', '*', resourceName, sensor.name].join('.'));
+                });
+                vm.subscribedSensors = [];
+            }
+        };
+
         $scope.$on('$destroy', function () {
-            MonitorService.unsubscribe('sensor.*.' + vm.resourceSensorsBeingDisplayed + '.>');
+            vm.unsubscribeResource(vm.resourceSensorsBeingDisplayed);
             unbindUpdate();
             unbindReconnected();
         });

@@ -24,11 +24,15 @@
         vm.products = [];
         vm.bands = [];
         vm.users = [];
+        vm.resourceBusyStates = ['deactivating', 'configuring', 'configured', 'activating'];
         vm.iAmCA = false;
         vm.modeTypes = ['queue', 'manual'];
         vm.guiUrls = ObsSchedService.guiUrls;
         vm.subscribedSensors = [];
         vm.sensorValues = ObsSchedService.sensorValues;
+        vm.subarraySensorNames = [
+            "allocations", "product", "state", "band", "config_label",
+            "maintenance", "delegated_ca", "pool_resources", "number_ants"];
 
         if (!$stateParams.subarray_id) {
             $state.go($state.current.name, {
@@ -820,7 +824,7 @@
                     classes += ' resource-state-activated';
                 } else if (resourceStateSensor.value === 'error') {
                     classes += ' resource-state-error';
-                } else if (resourceStateSensor.value in ['deactivating', 'configuring', 'configured', 'activating']) {
+                } else if (vm.resourceBusyStates.indexOf(resourceStateSensor.value) > -1) {
                     classes += ' resource-state-busy';
                 }
             }
@@ -829,12 +833,12 @@
 
         vm.initSensors = function() {
             ConfigService.systemConfig.subarrayNrs.forEach(function(subNr) {
-                MonitorService.listSensors('subarray_' + subNr, 'allocations|product|state|band|config_label|maintenance|delegated_ca|pool_resources|number_ants');
+                MonitorService.listSensors('subarray_' + subNr, vm.subarraySensorNames.join('|'));
             });
             MonitorService.listSensors('sched', 'mode_\\d$');
             MonitorService.listSensors('katpool', '(pool_resources_free|resources_faulty|resources_in_maintenance)$');
             ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
-                MonitorService.listSensors(resource, 'state$|gui_urls$');
+                MonitorService.listSensors(resource, resource + '_state$|gui_urls$');
             });
             MonitorService.subscribe('portal.sched');
         };

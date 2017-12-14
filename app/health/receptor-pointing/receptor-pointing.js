@@ -112,6 +112,14 @@
         };
 
         vm.sensorUpdateMessage = function (event, sensor, subject) {
+            // we're only interestested in this displays sensors
+            var isGlobalSensor = vm.sensorsToConnect.filter(function (sensorToConnect) {
+                return sensor.name.endsWith(sensorToConnect) || sensor.name.endsWith('pool_resources');
+            }).length === 0;
+            if (isGlobalSensor) {
+                return;
+            }
+
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
