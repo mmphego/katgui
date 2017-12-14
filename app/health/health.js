@@ -10,6 +10,7 @@
         ConfigService.loadAggregateSensorDetail();
         vm.topStatusTrees = StatusService.topStatusTrees;
         vm.sensorValues = {};
+        vm.aggSensorValues = {};
         vm.subscribedSensors = [];
         vm.getClassesOfSensor = StatusService.getClassesOfSensor;
 
@@ -46,7 +47,7 @@
         vm.getClassesOfSensor = function(sub) {
             var sensorName = sub.component + '_' + sub.sensor;
             var statusClassResult = [sensorName, 'md-whiteframe-z1'];
-            var sensorValue = vm.sensorValues[sensorName];
+            var sensorValue = vm.sensorValues[sensorName] || vm.aggSensorValues[sensorName];
             if (sensorValue) {
                 var inMaintenance = vm.sensorValues.katpool_resources_in_maintenance;
                 if (inMaintenance && (
@@ -67,12 +68,26 @@
             }
         };
 
+        vm.getSensorTextFromSub = function(sub) {
+            var sensorName = sub.component + '_' + sub.sensor;
+            var sensor = vm.sensorValues[sensorName] || vm.aggSensorValues[sensorName];
+            var sensorText = '';
+            if (sensor) {
+                sensorText = sensor.name + ' - ' + sensor.status + ' - ' + sensor.value;
+            }
+            return sensorText;
+        };
+
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
             }
             vm.sensorValues[sensor.name] = sensor;
+            var aggIndex = sensor.name.indexOf('agg_');
+            if (aggIndex > -1) {
+                vm.aggSensorValues['all_' + sensor.name.slice(aggIndex, sensor.name.length)] = sensor;
+            }
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
