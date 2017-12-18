@@ -10,7 +10,9 @@
         vm.receptorHealthTree = ConfigService.receptorHealthTree;
         vm.receptorList = StatusService.receptors;
         vm.subscribedSensors = [];
-        vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst', 'Force Layout'];
+        vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst'];
+        vm.receptorSensorsRegex = '';
+        vm.receptorAggSensorsRegex = '';
 
         if ($localStorage['receptorHealthDisplayMapType']) {
             vm.mapType = $localStorage['receptorHealthDisplayMapType'];
@@ -79,14 +81,14 @@
 
         vm.initSensors = function () {
             if (StatusService.receptorSensors) {
-                var receptorSensorsRegex = StatusService.receptorSensors.join('|');
+                vm.receptorSensorsRegex = StatusService.receptorSensors.join('|');
                 StatusService.receptors.forEach(function (receptor) {
-                    MonitorService.listSensors(receptor, receptorSensorsRegex);
+                    MonitorService.listSensors(receptor, vm.receptorSensorsRegex);
                 });
                 ConfigService.getSystemConfig().then(function(systemConfig) {
-                    var receptorAggSensorsRegex = StatusService.receptorAggSensors.join('|');
+                    vm.receptorAggSensorsRegex = StatusService.receptorAggSensors.join('|');
                     systemConfig.monitor.system_nodes.split(',').forEach(function (monitorNode) {
-                        MonitorService.listSensors('mon_' + monitorNode, receptorAggSensorsRegex);
+                        MonitorService.listSensors('mon_' + monitorNode, vm.receptorAggSensorsRegex);
                     });
                 });
             }
@@ -95,6 +97,9 @@
         vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 150);
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            if (sensor.name.search(vm.receptorSensorsRegex) < 0 && sensor.name.search(vm.receptorAggSensorsRegex) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);

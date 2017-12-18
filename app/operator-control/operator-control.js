@@ -11,18 +11,24 @@
         vm.receptorsData = [];
         vm.sensorValues = {};
         vm.waitingForRequestResult = false;
+        vm.receptorsSensorsRegex = '';
 
         vm.initSensors = function () {
             ConfigService.getReceptorList()
                 .then(function (receptors) {
-                    receptors.forEach(function (receptor) {
+                    receptors.forEach(function (receptor, index) {
                         vm.receptorsData.push({
                             name: receptor
                         });
                         var receptorSensors = ['mode', 'inhibited', 'device_status'].map(function (sensorName) {
                             return receptor + '_' + sensorName;
                         });
-                        MonitorService.listSensors(receptor, receptorSensors.join('|'));
+                        var receptorSensorsRegex = receptorSensors.join('|');
+                        MonitorService.listSensors(receptor, receptorSensorsRegex);
+                        if (index > 0) {
+                            vm.receptorsSensorsRegex += '|';
+                        }
+                        vm.receptorsSensorsRegex += receptorSensorsRegex;
                     });
                 }, function (result) {
                     NotifyService.showSimpleDialog('Error', 'Error retrieving receptor list, please contact CAM support.');
@@ -31,7 +37,10 @@
         };
 
         vm.sensorUpdateMessage = function (event, sensor, subject) {
-            if (subject.startsWith('req.reply') && vm.receptors.indexOf(sensor.component) > -1) {
+            if (sensor.name.search(vm.receptorsSensorsRegex) < 0) {
+                return;
+            }
+            if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
             }

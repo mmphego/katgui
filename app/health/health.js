@@ -12,6 +12,7 @@
         vm.sensorValues = {};
         vm.aggSensorValues = {};
         vm.subscribedSensors = [];
+        vm.sensorsRegex = '';
         vm.getClassesOfSensor = StatusService.getClassesOfSensor;
 
         ConfigService.getStatusTreesForTop()
@@ -38,8 +39,11 @@
                     });
                 });
                 for (var component in components) {
-                    MonitorService.listSensors(component, components[component].sensors.join('|'));
+                    var componentSensorsRegex = components[component].sensors.join('|');
+                    vm.sensorsRegex += componentSensorsRegex + '|';
+                    MonitorService.listSensors(component, componentSensorsRegex);
                 }
+                vm.sensorsRegex += 'katpool_resources_in_maintenance';
                 MonitorService.listSensors('katpool', 'katpool_resources_in_maintenance');
             }
         };
@@ -79,6 +83,9 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (sensor.name.search(vm.sensorsRegex) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);

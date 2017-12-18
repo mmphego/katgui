@@ -93,6 +93,10 @@
         vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 150);
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            var view = StatusService.configHealthSensors[vm.selectedConfigView];
+            if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);

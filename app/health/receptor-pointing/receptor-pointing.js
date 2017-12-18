@@ -18,7 +18,7 @@
         // map subarray number to a colour
         vm.subarrayColors = {1: "#EF6C00", 2: "#2196F3", 3: "#E91E63", 4: "#43A047"};
 
-        vm.sensorsToConnect = [
+        vm.sensorsToConnectRegex = [
             'pos_actual_pointm_azim',
             'pos_actual_pointm_elev',
             'pos_request_pointm_azim',
@@ -28,12 +28,13 @@
             'pos_delta_azim',
             'pos_delta_elev',
             'pos_delta_sky',
-            'mode',
-            'inhibited',
-            'lock',
-            'target',
-            'windstow_active'
-        ];
+            'mode$',
+            'inhibited$',
+            'lock$',
+            'target$',
+            'windstow_active',
+            'pool_resources'
+        ].join('|');
 
         vm.initSensors = function () {
             ConfigService.getSystemConfig()
@@ -45,7 +46,7 @@
                             subarrayColor: "#d7d7d7"
                         };
                         vm.receptors[receptorName] = receptor;
-                        MonitorService.listSensors(receptorName, vm.sensorsToConnect.join('|'));
+                        MonitorService.listSensors(receptorName, vm.sensorsToConnectRegex);
                     });
                     systemConfig.subarrayNrs.forEach(function(subNr) {
                       MonitorService.listSensors('subarray_' + subNr, 'pool_resources$');
@@ -113,10 +114,7 @@
 
         vm.sensorUpdateMessage = function (event, sensor, subject) {
             // we're only interestested in this displays sensors
-            var isGlobalSensor = vm.sensorsToConnect.filter(function (sensorToConnect) {
-                return sensor.name.endsWith(sensorToConnect) || sensor.name.endsWith('pool_resources');
-            }).length === 0;
-            if (isGlobalSensor) {
+            if (sensor.name.search(vm.sensorsToConnectRegex) < 0) {
                 return;
             }
 

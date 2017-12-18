@@ -14,7 +14,7 @@
         vm.showGraphics = false;
         vm.subscribedSensors = [];
 
-        vm.receptorSensorsToConnect = [
+        vm.receptorsSensorsToConnectRegex = [
             'device_status$',
             'mode$',
             'inhibited$',
@@ -22,12 +22,12 @@
             'windstow_active$',
             'marked_in_maintenance$',
             'marked_faulty$'
-        ];
+        ].join('|');
 
-        vm.subarraySensors = [
-            'state',
-            'maintenance'
-        ];
+        vm.subarraySensorsToConnectRegex = [
+            'state$',
+            'maintenance$'
+        ].join('|');
 
         vm.initSensors = function () {
             ConfigService.getSystemConfig()
@@ -37,10 +37,10 @@
                             name: receptorName
                         };
                         vm.receptors[receptorName] = receptor;
-                        MonitorService.listSensors(receptorName, receptorName + '_(' + vm.receptorSensorsToConnect.join('|') + ')');
+                        MonitorService.listSensors(receptorName, vm.receptorsSensorsToConnectRegex);
                     });
                     systemConfig.subarrayNrs.forEach(function(subNr) {
-                        MonitorService.listSensors('subarray_' + subNr, vm.subarraySensors.join('|'));
+                        MonitorService.listSensors('subarray_' + subNr, vm.subarraySensorsToConnectRegex);
                         vm.subarrays['subarray_' + subNr] = {subNr: subNr};
                     });
                     MonitorService.listSensors('katpool', 'katpool_pool_resources_');
@@ -48,6 +48,11 @@
         };
 
         vm.sensorUpdateMessage = function (event, sensor, subject) {
+            if (!sensor.name.startsWith('katpool_pool_resources_') &&
+                    sensor.name.search(vm.receptorsSensorsToConnectRegex) < 0 &&
+                    sensor.name.search(vm.subarraySensorsToConnectRegex) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);

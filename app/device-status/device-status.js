@@ -8,6 +8,7 @@
 
         var vm = this;
         vm.sensorValues = {};
+        vm.sensorsRegex = 'device_status|serial|lru';
         vm.subscribedSensors = [];
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'name'},
@@ -17,10 +18,13 @@
         ];
 
         vm.initSensors = function () {
-            MonitorService.listSensors('all', '(?!agg_.*)device_status|serial|lru');
+            MonitorService.listSensors('all', vm.sensorsRegex);
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (sensor.name.search(vm.sensorsRegex) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
