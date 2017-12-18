@@ -1,6 +1,6 @@
 <div flex ng-controller="AlarmsCtrl as vm" layout="column" style="padding: 8px; min-width: 948px; max-height: 100%; min-height: 100%">
 
-    <div flex class="md-whiteframe-z2" layout="column" style="min-height: 600px;">
+    <div flex class="md-whiteframe-z2" layout="column" style="min-height: 400px;">
         <md-toolbar class="md-whiteframe-z1" style="padding:0;">
             <div style="align-items: center; min-height: 48px" layout="row" md-theme="{{themePrimaryButtons}}">
                 <span flex ng-init="vm.selectAllAlarms = false" ng-click="vm.toggleSelectAllAlarms()"
@@ -127,7 +127,7 @@
         </div>
     </div>
 
-    <div class="md-whiteframe-z2" layout="column" style="margin-top: 16px; margin-bottom: 8px;" ng-init="vm.showKnownAlarmsList = false;">
+    <div class="md-whiteframe-z2" layout="column" style="margin-top: 16px; margin-bottom: 8px" ng-init="vm.showKnownAlarmsList = false;">
         <md-toolbar class="md-whiteframe-z1" style="min-height: 91px">
             <div class="md-toolbar-tools" layout="row">
                <span flex ng-init="vm.selectAllKnownAlarms = false" ng-click="vm.toggleSelectAllKnownAlarms()"
@@ -197,7 +197,7 @@
             </div>
         </md-toolbar>
 
-        <div ng-show="vm.showKnownAlarmsList" flex class="alarms-list" ng-click="vm.selectAllKnownAlarms = false">
+        <div ng-show="vm.showKnownAlarmsList" flex style="min-height: 150px" class="alarms-list" ng-click="vm.selectAllKnownAlarms = false">
             <div
                 ng-repeat="item in filteredKnownAlarms = ($root.alarmsData | alarmsKnownFilter:vm.showKnownNominalAlarms:vm.showKnownMaintenanceAlarms | regexSearch:vm.knownAlarmsOrderByFields:vm.q2 | orderBy:'timestamp':true | orderBy:vm.knownAlarmsOrderBy.value:vm.knownAlarmsOrderBy.reverse) track by $index">
                 <div ng-click="item.selected = !item.selected" flex class="alarm-row-item"

@@ -16,7 +16,7 @@
         vm.sensorValues = {};
         vm.trailDots = 30;
         // map subarray number to a colour
-        vm.subarrayColors = {1: "#EF6C00", 2: "#2196F3", 3: "#E91E63", 4: "#43A047"};
+        vm.subarrayColors = d3.scale.category20();
 
         vm.sensorsToConnectRegex = [
             'pos_actual_pointm_azim',
@@ -124,14 +124,13 @@
             }
             vm.sensorValues[sensor.name] = sensor;
 
-            if (sensor.name.endsWith('pool_resources')) {
+            if (subject.startsWith('sensor.') && sensor.name.endsWith('pool_resources')) {
                 // e.g. subarray_1_pool_resources
                 var sensorNameSplit = sensor.name.split('_');
-                // e.g. subarray_1
-                var subNr = parseInt(sensorNameSplit[sensorNameSplit.length - 3]);
+                var subNr = parseInt(sensorNameSplit[1]);
                 for (var receptorName in vm.receptors) {
                   if (sensor.value.indexOf(receptorName) > -1) {
-                      vm.receptors[receptorName].subarrayColor = vm.subarrayColors[subNr];
+                      vm.receptors[receptorName].subarrayColor = subNr? vm.subarrayColors(subNr) : null;
                       vm.sensorValues[receptorName + '_sub_nr'] = subNr;
                   } else if (vm.receptors[receptorName] === subNr) {
                       // receptor was unassigned
@@ -139,7 +138,7 @@
                       vm.sensorValues[receptorName + '_sub_nr'] = null;
                   }
                 }
-            } else {
+            } else if (!sensor.name.endsWith('pool_resources')) {
               // e.g. m011_<sensor>
               var receptor = sensor.name.split('_')[0];
               sensor.name = sensor.name.replace(receptor + '_', '');
