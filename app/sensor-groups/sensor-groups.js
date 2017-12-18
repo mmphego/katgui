@@ -13,6 +13,7 @@
         vm.sensorsGroupBeingDisplayed = '';
         vm.sensorValues = {};
         vm.hideNominalSensors = false;
+        vm.sensorsRegex = '';
 
         ConfigService.loadSensorGroups().then(function (result) {
             vm.sensorGroupList = Object.keys(result);
@@ -31,16 +32,21 @@
             if (vm.sensorsGroupBeingDisplayed) {
                 vm.showProgress = true;
                 var sensorsRegex = vm.sensorGroups[vm.sensorsGroupBeingDisplayed].sensors.split('|');
-                sensorsRegex.forEach(function(sensorRegex) {
+                sensorsRegex.forEach(function(sensorRegex, index) {
                     var sensorSplitList = sensorRegex.split(':');
                     var component = sensorSplitList[0];
                     var regex = sensorSplitList[1];
+                    if (index > 0) {
+                        vm.sensorsRegex += '|';
+                    }
+                    vm.sensorsRegex += regex;
                     MonitorService.listSensors(component, regex);
                 });
             }
         };
 
         vm.setSensorGroupStrategy = function (sensorGroupName) {
+            vm.sensorsRegex = '';
             vm.subscribedSensors.forEach(function (sensor) {
                 MonitorService.unsubscribeSensor(sensor);
             });
@@ -81,6 +87,9 @@
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (!vm.sensorsRegex || sensor.name.search(vm.sensorsRegex) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 vm.showProgress = false;
                 if (!vm.sensorValues[sensor.name]) {

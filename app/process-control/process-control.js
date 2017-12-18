@@ -7,23 +7,24 @@
                                 ControlService, MOMENT_DATETIME_FORMAT, NotifyService, $state, USER_ROLES) {
 
         var vm = this;
-        var processSensors = ['running', 'args', 'pid', 'return_code'];
         vm.sensorValues = {};
         vm.nodemans = {};
         vm.showProgress = false;
+        vm.processSensors = ['running', 'args', 'pid', 'return_code'];
+        vm.sensorsRegex = vm.processSensors.join('|');
 
         vm.initSensors = function () {
             vm.nodemans = {};
             vm.showProgress = true;
             ConfigService.getSystemConfig()
                 .then(function () {
-                    for (var node in ConfigService.systemConfig.nodes) {
+                    Object.keys(ConfigService.systemConfig.nodes).forEach(function (node, index) {
                         var nodeName = 'nm_' + node;
                         if (!vm.nodemans[nodeName]) {
                           vm.nodemans[nodeName] = {processes: []};
                         }
-                        MonitorService.listSensors(nodeName, processSensors.join('|'));
-                    }
+                        MonitorService.listSensors(nodeName, vm.sensorsRegex);
+                    });
                 });
         };
 
@@ -46,7 +47,7 @@
               vm.sensorValues[process.runningSensor].showDetail = !vm.sensorValues[process.runningSensor].showDetail;
           }
           if (vm.sensorValues[process.runningSensor].showDetail) {
-            process.sensors = processSensors.map(function (processSensor) {
+            process.sensors = vm.processSensors.map(function (processSensor) {
                 var sensor = vm.sensorValues[[process.nm, process.name, processSensor].join('_')];
                 sensor.shortName = processSensor;
                 return sensor;
@@ -85,6 +86,9 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            if (sensor.name.search(vm.sensorsRegex) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 if (sensor.name.endsWith('running') && sensor.original_name) {
