@@ -9,6 +9,7 @@
         var vm = this;
         vm.resourcesNames = {};
         vm.subscribedSensors = [];
+        vm.resourceSensorsRegex = 'katcpmsgs|version|build';
 
         vm.initSensors = function() {
             vm.nodes = ConfigService.resourceGroups;
@@ -23,10 +24,9 @@
                             node: resources[key].node
                         };
                         vm.resourcesNames[key].nodeman = ConfigService.systemConfig['monitor:monctl'][key] ? 'nm_monctl' : 'nm_proxy';
-
                     }
                     for (var resourceName in resources) {
-                        MonitorService.listSensors(resourceName, 'katcpmsgs|version|build');
+                        MonitorService.listSensors(resourceName, vm.resourceSensorsRegex);
                     }
                     MonitorService.listSensors('sys', '^sys_monitor_');
                 });
@@ -72,7 +72,7 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
-            if (sensor.name.startsWith('kataware_alarm_')) {
+            if (!sensor.name.startsWith('sys_monitor_') && sensor.name.search(vm.resourceSensorsRegex) < 0) {
                 return;
             }
             if (subject.startsWith('req.reply')) {
