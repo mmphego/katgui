@@ -121,7 +121,8 @@
                     deferred.resolve($rootScope.systemConfig);
                 }, function(error) {
                     if ($rootScope.portalUrl) {
-                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf (' + error.statusText + ')';
+                        var statusText = error && error.statusText? '(' + error.statusText + ')': '';
+                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf ' + statusText;
                     } else {
                         $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
                     }

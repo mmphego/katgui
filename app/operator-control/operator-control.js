@@ -11,7 +11,6 @@
         vm.receptorsData = [];
         vm.sensorValues = {};
         vm.waitingForRequestResult = false;
-        vm.sensorsRegex = 'mode|inhibit|device.status';
 
         vm.initSensors = function () {
             ConfigService.getReceptorList()
@@ -20,7 +19,10 @@
                         vm.receptorsData.push({
                             name: receptor
                         });
-                        MonitorService.listSensors(receptor, vm.sensorsRegex);
+                        var receptorSensors = ['mode', 'inhibited', 'device_status'].map(function (sensorName) {
+                            return receptor + '_' + sensorName;
+                        });
+                        MonitorService.listSensors(receptor, receptorSensors.join('|'));
                     });
                 }, function (result) {
                     NotifyService.showSimpleDialog('Error', 'Error retrieving receptor list, please contact CAM support.');
@@ -28,8 +30,8 @@
                 });
         };
 
-        vm.statusMessageReceived = function (event, sensor, subject) {
-            if (subject.startsWith('req.reply')) {
+        vm.sensorUpdateMessage = function (event, sensor, subject) {
+            if (subject.startsWith('req.reply') && vm.receptors.indexOf(sensor.component) > -1) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
             }
@@ -118,7 +120,7 @@
             return $rootScope.expertOrLO || $rootScope.currentUser.req_role === USER_ROLES.operator;
         };
 
-        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.statusMessageReceived);
+        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         vm.initSensors();
