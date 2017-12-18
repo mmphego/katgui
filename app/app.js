@@ -387,13 +387,13 @@
                     "_a=(columns:!(programname,severity,message),",
                     "filters:!(('$state':(store:appState),",
                     "meta:(alias:!n,disabled:!f,index:'",
-                    $rootScope.sitename,
+                    $rootScope.systemConfig.system.sitename,
                     "-*',key:programname,negate:!f,type:phrase,value:",
                     programName,
                     "),query:(match:(programname:(query:",
                     programName,
                     ",type:phrase))))),","index:'",
-                    $rootScope.sitename,
+                    $rootScope.systemConfig.system.sitename,
                     "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             } else {
                 kibanaUrl = [
@@ -402,7 +402,7 @@
                     "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
                     "time:(from:now-1h,mode:relative,to:now))&",
                     "_a=(columns:!(programname,severity,message),index:'",
-                    $rootScope.sitename,
+                    $rootScope.systemConfig.system.sitename,
                     "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             }
             window.open(kibanaUrl).focus();

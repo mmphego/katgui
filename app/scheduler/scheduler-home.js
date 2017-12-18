@@ -30,6 +30,7 @@
         vm.guiUrls = ObsSchedService.guiUrls;
         vm.subscribedSensors = [];
         ObsSchedService.guiUrls = [];
+        vm.sensorsRegex = '';
         vm.sensorValues = ObsSchedService.sensorValues;
         vm.subarraySensorNames = [
             "subarray_${subNr}_allocations",
@@ -840,19 +841,30 @@
         };
 
         vm.initSensors = function() {
-            ConfigService.systemConfig.subarrayNrs.forEach(function(subNr) {
-                MonitorService.listSensors('subarray_' + subNr, vm.subarraySensorNames.join('|').replace(/\$\{subNr\}/g, subNr));
+            ConfigService.systemConfig.subarrayNrs.forEach(function(subNr, index) {
+                var subarrayRegex = vm.subarraySensorNames.join('|').replace(/\$\{subNr\}/g, subNr);
+                if (index > 0) {
+                    vm.sensorsRegex += '|';
+                }
+                vm.sensorsRegex += subarrayRegex;
+                MonitorService.listSensors('subarray_' + subNr, subarrayRegex);
             });
             MonitorService.listSensors('sched', 'mode_\\d$');
             MonitorService.listSensors('katpool', '(pool_resources_free|resources_faulty|resources_in_maintenance)$');
             MonitorService.listSensors('all', 'gui.urls$');
+            vm.sensorsRegex += '|mode_\\d$|(pool_resources_free|resources_faulty|resources_in_maintenance)$|gui.urls$';
             ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
                 MonitorService.listSensors(resource, resource + '_state$');
+                vm.sensorsRegex += '|' + resource + '_state$';
             });
             MonitorService.subscribe('portal.sched');
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (sensor.name.search(vm.sensorsRegex) < 0) {
+                return;
+            }
+            console.log(sensor.name);
             if (subject.startsWith('req.reply')) {
                 if (!sensor.name.endsWith('gui_urls')) {
                     MonitorService.subscribeSensor(sensor);
