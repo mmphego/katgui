@@ -16,6 +16,7 @@
             'wind_direction',
             'mean_wind_speed'
         ];
+        vm.sensorsRegex = vm.ancSensors.join('|');
         vm.ancHistoricSensors = [
             'anc_air_pressure',
             'anc_air_temperature',
@@ -81,7 +82,7 @@
         vm.initSensors = function() {
             var startDate = vm.getTimestampFromHistoricalRange();
             vm.dataTimeWindow = new Date().getTime() - startDate;
-            MonitorService.listSensors('anc', '(' + vm.ancSensors.join('|') + ')$');
+            MonitorService.listSensors('anc', vm.sensorsRegex);
             vm.ancSensors.forEach(function(sensorName) {
                 MonitorService.subscribeSensorName('anc', sensorName);
             });
@@ -212,6 +213,9 @@
         vm.downloadAsCSV = function() {};
 
         vm.sensorUpdateMessage = function(event, sensor, subject) {
+            if (sensor.name.search(vm.sensorsRegex) < 0) {
+                return;
+            }
             vm.sensorValues[sensor.name] = sensor;
 
             if (!vm.maxSensorValue[sensor.name]) {

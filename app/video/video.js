@@ -14,6 +14,7 @@
         vm.imageSource = null;
         vm.sensorValues = {};
         vm.stepTimeValue = 1;
+        vm.sensorsRegex = '^anc_vds';
 
         ConfigService.getSystemConfig()
             .then(function(systemConfig) {
@@ -232,10 +233,13 @@
         }
 
         vm.initSensors = function() {
-            MonitorService.listSensors('anc', '^anc_vds');
+            MonitorService.listSensors('anc', vm.sensorsRegex);
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+            if (sensor.name.search(vm.sensorsRegex) < 0) {
+                return;
+            }
             if (subject.startsWith('req.reply')) {
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
@@ -249,15 +253,13 @@
         });
 
         vm.afterInit = function() {
-            // if ($rootScope.currentUser) {
-                // if ($rootScope.expertOrLO ||
-                    // $rootScope.currentUser.req_role === USER_ROLES.operator) {
-                    // vm.canOperateVDS = true;
-                    // vm.initSensors();
-                // }
-            // }
-            vm.canOperateVDS = true;
-            vm.initSensors();
+            if ($rootScope.currentUser) {
+                if ($rootScope.expertOrLO ||
+                    $rootScope.currentUser.req_role === USER_ROLES.operator) {
+                    vm.canOperateVDS = true;
+                    vm.initSensors();
+                }
+            }
         };
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);

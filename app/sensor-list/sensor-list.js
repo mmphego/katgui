@@ -176,13 +176,13 @@
             if (!vm.resourceSensorsBeingDisplayed) {
                 return;
             }
-            // list_sensors request finished
-            if (vm.showProgress && subject.startsWith('req.reply')) {
-                vm.showProgress = false;
-                vm.subscribedSensors.push(sensor);
-            }
 
             if (sensor.name.startsWith(vm.resourceSensorsBeingDisplayed)) {
+                // list_sensors request finished
+                if (vm.showProgress && subject.startsWith('req.reply')) {
+                    vm.showProgress = false;
+                    vm.subscribedSensors.push(sensor);
+                }
                 if (sensor.original_name) {
                     sensor.shortName = sensor.original_name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
                 } else {
