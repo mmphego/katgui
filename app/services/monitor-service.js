@@ -95,7 +95,7 @@
             };
 
             if (api.connection === null) {
-                $log.error('No Monitor Connection Present for subscribing, ignoring command for subs ' + subscriptions);
+                $log.error('No Monitor Connection Present for unsubscribing, ignoring command for unsubs ' + subscriptions);
             } else if (api.connection.readyState) {
                 return api.connection.send(JSON.stringify(jsonRPC));
             } else {
