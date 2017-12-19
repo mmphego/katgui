@@ -850,7 +850,7 @@
             });
             MonitorService.listSensors('sched', 'mode_\\d$');
             MonitorService.listSensors('katpool', '(pool_resources_free|resources_faulty|resources_in_maintenance)$');
-            vm.sensorsRegex += '|mode_\\d$|(pool_resources_free|resources_faulty|resources_in_maintenance)$|gui.urls$';
+            vm.sensorsRegex += '|mode_\\d$|(pool_resources_free|resources_faulty|resources_in_maintenance)$';
             ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
                 MonitorService.listSensors(resource, resource + '_state$');
                 vm.sensorsRegex += '|' + resource + '_state$';
@@ -860,7 +860,7 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
-            if (sensor.name.search(vm.sensorsRegex) < 0) {
+            if (sensor.name.search(vm.sensorsRegex) < 0 && !sensor.name.endsWith('gui_urls')) {
                 return;
             }
             if (subject.startsWith('req.reply')) {
@@ -869,7 +869,7 @@
                     vm.subscribedSensors.push(sensor);
                 }
             }
-            if (vm.subarray && sensor.name === 'subarray_' + vm.subarray.id + '_state' && sensor.value === 'active') {
+            if (vm.subarray && sensor.name === vm.subarray.name + '_state' && sensor.value === 'active') {
                 ObsSchedService.guiUrls = {};
                 ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue.forEach(
                     function(resourceAlloc) {
