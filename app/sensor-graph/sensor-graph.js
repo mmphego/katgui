@@ -52,8 +52,8 @@
         };
 
         vm.initSensors = function () {
-            MonitorService.subscribe(vm.clientSubject + '.kastore.data');
-            MonitorService.subscribe(vm.clientSubject + '.kastore.error');
+            MonitorService.subscribe(
+                [vm.clientSubject + '.katstore.data', vm.clientSubject + '.katstore.error']);
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
                     MonitorService.subscribeSensor(sensor);
@@ -361,8 +361,7 @@
                 if (newData.length > 0) {
                     vm.redrawChart(newData, hasMinMax);
                 }
-            }
-            else if (subject.startsWith('sensor.')) {
+            } else if (subject.startsWith('sensor.')) {
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: message.name}))) {
                     vm.redrawChart([{
                         sensor: message.name,
@@ -526,7 +525,9 @@
                     MonitorService.unsubscribeSensor(sensor);
                 });
             }
-            unbindLoginSuccess();
+            if (unbindLoginSuccess) {
+                unbindLoginSuccess();
+            }
             unbindSensorUpdates();
             unbindReconnected();
         });
