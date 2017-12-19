@@ -29,7 +29,6 @@
         vm.modeTypes = ['queue', 'manual'];
         vm.guiUrls = ObsSchedService.guiUrls;
         vm.subscribedSensors = [];
-        ObsSchedService.guiUrls = [];
         vm.sensorsRegex = '';
         vm.sensorValues = ObsSchedService.sensorValues;
         vm.subarraySensorNames = [
@@ -851,29 +850,27 @@
             });
             MonitorService.listSensors('sched', 'mode_\\d$');
             MonitorService.listSensors('katpool', '(pool_resources_free|resources_faulty|resources_in_maintenance)$');
-            MonitorService.listSensors('all', 'gui.urls$');
             vm.sensorsRegex += '|mode_\\d$|(pool_resources_free|resources_faulty|resources_in_maintenance)$|gui.urls$';
             ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
                 MonitorService.listSensors(resource, resource + '_state$');
                 vm.sensorsRegex += '|' + resource + '_state$';
             });
             MonitorService.subscribe('portal.sched');
+            ObsSchedService.guiUrls = {};
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
             if (sensor.name.search(vm.sensorsRegex) < 0) {
                 return;
             }
-            console.log(sensor.name);
             if (subject.startsWith('req.reply')) {
                 if (!sensor.name.endsWith('gui_urls')) {
                     MonitorService.subscribeSensor(sensor);
                     vm.subscribedSensors.push(sensor);
                 }
             }
-            if (vm.subarray && sensor.name === 'subarray_' + vm.subarray.id + '_state' && sensor.value === 'active' &&
-                    ObsSchedService.sensorValues[sensor.name] && ObsSchedService.sensorValues[sensor.name].value !== 'active') {
-                ObsSchedService.guiUrls = [];
+            if (vm.subarray && sensor.name === 'subarray_' + vm.subarray.id + '_state' && sensor.value === 'active') {
+                ObsSchedService.guiUrls = {};
                 ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue.forEach(
                     function(resourceAlloc) {
                         MonitorService.listSensors(resourceAlloc[0], 'gui.urls$');
@@ -881,6 +878,7 @@
             }
             if (sensor.name.endsWith('gui_urls')) {
                 ObsSchedService.guiUrlsMessageReceived(sensor);
+                vm.guiUrls = ObsSchedService.guiUrls;
             }
             ObsSchedService.sensorValues[sensor.name] = sensor;
             ObsSchedService.receivedResourceMessage(sensor);
