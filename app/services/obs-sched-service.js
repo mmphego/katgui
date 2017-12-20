@@ -24,10 +24,9 @@
         api.resourceTemplates = [];
         api.observationSchedule = [];
         api.scheduleData = [];
-        api.guiUrlsRaw = [];
         api.guiUrls = {};
-        api.resourcesStates = {};
         api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
+        api.sensorValues = {};
 
         api.handleRequestResponse = function(request, defer) {
             var deferred;
@@ -68,17 +67,10 @@
 
         api.markResourceFaulty = function(resource, faulty) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/resource/' + resource + '/faulty/' + faulty)));
-            var tags = [];
-            tags.push(_.find(UserLogService.tags, function(item) {
-                return item.name === 'status';
-            }));
-            var tagResource = _.find(UserLogService.tags, function(item) {
-                return item.name === resource;
-            });
-            if (tagResource) {
-                tags.push(tagResource);
-            }
             if (faulty === 'set') {
+                var tags = UserLogService.tags.filter(function(item) {
+                    return item.name === 'status' || item.name === resource;
+                });
                 var content = 'Marking resource ' + resource + ' as faulty.';
                 var newlog = {
                     start_time: $rootScope.utcDateTime,
@@ -93,18 +85,11 @@
 
         api.markResourceInMaintenance = function(resource, maintenance) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/resource/' + resource + '/maintenance/' + maintenance)));
-            var tags = [];
-            tags.push(_.find(UserLogService.tags, function(item) {
-                return item.name === 'maintenance';
-            }));
-            var tagResource = _.find(UserLogService.tags, function(item) {
-                return item.name === resource;
-            });
-            if (tagResource) {
-                tags.push(tagResource);
-            }
 
             if (maintenance === 'set') {
+                var tags = UserLogService.tags.filter(function(item) {
+                    return item.name === 'maintenance' || item.name === resource;
+                });
                 var content = 'Setting resource ' + resource + ' in maintenance.';
                 var newlog = {
                     start_time: $rootScope.utcDateTime,
@@ -117,12 +102,12 @@
             }
         };
 
-        api.restartMaintenanceDevice = function(sub_nr, resource, device) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/resource/' + resource + '/device/' + device + '/restart')));
+        api.restartMaintenanceDevice = function(sub_nr, resourceName, device) {
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/resource/' + resourceName + '/device/' + device + '/restart')));
         };
 
-        api.listResourceMaintenanceDevices = function(resource) {
-            return $http(createRequest('get', urlBase() + '/resource/' + resource + '/maintenance-device-list'));
+        api.listResourceMaintenanceDevices = function(resourceName) {
+            return $http(createRequest('get', urlBase() + '/resource/' + resourceName + '/maintenance-device-list'));
         };
 
         api.deleteScheduleDraft = function(id) {
@@ -400,29 +385,10 @@
                 var subarrayIndex = _.findIndex(api.subarrays, function(item) {
                     return item.id === sensorName.split('_')[1];
                 });
-                if (subarrayIndex === -1) {
-                    api.subarrays.push({
-                        id: sensorName.split('_')[1]
-                    });
-                    subarrayIndex = api.subarrays.length - 1;
-                }
                 if (subarrayIndex > -1) {
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
                     if (sensorName.endsWith('allocations')) {
-                        var parsedAllocations = sensor.value !== "" ? JSON.parse(sensor.value) : [];
-                        if (!api.subarrays[subarrayIndex].allocations) {
-                            api.subarrays[subarrayIndex].allocations = [];
-                        } else {
-                            api.subarrays[subarrayIndex].allocations.splice(0, api.subarrays[subarrayIndex].allocations.length);
-                        }
-                        if (parsedAllocations.length > 0) {
-                            for (var m in parsedAllocations) {
-                                api.subarrays[subarrayIndex].allocations.push({
-                                    name: parsedAllocations[m][0],
-                                    allocation: parsedAllocations[m][1]
-                                });
-                            }
-                        }
+                        api.sensorValues[sensorName].parsedValue = sensor.value !== "" ? JSON.parse(sensor.value) : [];
                     } else if (sensorName.endsWith('delegated_ca')) {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         var iAmCA;
@@ -434,21 +400,18 @@
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
                     } else {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
-                        if (sensorName.endsWith('pool_resources')) {
-                            $rootScope.$emit('subarrayPoolResourcesSensorUpdate', sensor);
-                        }
                         if (sensorName.endsWith('state')) {
                             //wait a while to make sure on initial load that we get all the subarray sensor values
                             $timeout(function() {
                                 if (api.subarrays[subarrayIndex].state !== 'inactive') {
-                                    $localStorage.lastKnownSubarrayConfig['subarray_' + api.subarrays[subarrayIndex].id] = {
-                                        allocations: api.subarrays[subarrayIndex].allocations.map(function(resource) {
-                                            return resource.name;
-                                        }).join(","),
+                                    $localStorage.lastKnownSubarrayConfig[api.subarrays[subarrayIndex].name] = {
+                                        allocations: api.sensorValues[api.subarrays[subarrayIndex].name + '_allocations'].parsedValue.map(
+                                            function(resource) {
+                                                return resource[0];
+                                            }).join(","),
                                         band: api.subarrays[subarrayIndex].band,
                                         product: api.subarrays[subarrayIndex].product
                                     };
-                                    api.throttlePopulateGUIUrls();
                                 }
                             }, 1000);
                         }
@@ -460,16 +423,11 @@
             } else if (sensorName.endsWith('pool_resources_free')) {
                 api.poolResourcesFree.splice(0, api.poolResourcesFree.length);
                 var resourcesList = sensor.value.split(',');
-                if (resourcesList.length > 0 && resourcesList[0] !== '') {
-                    for (var index in resourcesList) {
-                        api.poolResourcesFree.push({
-                            name: resourcesList[index]
-                        });
-                    }
-                }
-            } else if (sensorName.endsWith('_state')) {
-                var component = sensorName.split('_state')[0];
-                api.resourcesStates[component] = sensor;
+                resourcesList.forEach(function(resourceName) {
+                    api.poolResourcesFree.push({
+                        name: resourceName
+                    });
+                });
             } else if (sensorName.indexOf('mode_') > -1) {
                 var subarrayId = sensorName.split('_')[2];
                 var subarray = _.findWhere(api.subarrays, {
@@ -478,40 +436,22 @@
                 if (subarray) {
                     subarray.mode = sensor.value;
                 }
-            } else {
-                var trimmed = sensorName.replace('katpool_', '');
-                api[trimmed] = sensor.value;
             }
         };
 
-        api.populateGUIUrls = function() {
-            $http(createRequest('get', $rootScope.portalUrl + '/katmonitor/sensor-list/gui.urls')).then(function(result) {
-                api.guiUrlsRaw = result.data;
-                api.guiUrlsRaw.forEach(function (guiUrls) {
-                    var resourceName = guiUrls.name.split('.')[0];
-                    if (guiUrls.value.length > 0) {
-                        // can't JSON parse empty strings
-                        guiUrls.value = JSON.parse(guiUrls.value);
-                        if (!api.guiUrls[resourceName]) {
-                            api.guiUrls[resourceName] = guiUrls;
-                        } else {
-                            guiUrls.value.forEach(function (guiUrl) {
-                                var existingUrlIndex = _.findIndex(api.guiUrls[resourceName].value, {title: guiUrl.title});
-                                if (existingUrlIndex > -1) {
-                                    api.guiUrls[resourceName].value[existingUrlIndex] = guiUrl;
-                                } else {
-                                    api.guiUrls[resourceName].value.push(guiUrl);
-                                }
-                            });
-                        }
-                    }
-                });
-            }, function(error) {
-                $log.error('Could not retrieve gui urls! ' + error);
-            });
+        api.guiUrlsMessageReceived = function(sensor) {
+            // matches something like ptuse_1_gui_urls or m011_gui_urls
+            // and returns ptuse_1 or m011 respectively
+            // `match` returns null if there is no match, otherwise a list of results
+            var resourceNameMatches = sensor.name.match(/^[a-z]+_\d|^[a-z]+_/);
+            if (resourceNameMatches && sensor.value) {
+                var newUrls = JSON.parse(sensor.value);
+                if (!api.guiUrls[resourceNameMatches[0]]) {
+                    api.guiUrls[resourceNameMatches[0]] = [];
+                }
+                api.guiUrls[resourceNameMatches[0]] = api.guiUrls[resourceNameMatches[0]].concat(newUrls);
+            }
         };
-
-        api.throttlePopulateGUIUrls = _.throttle(api.populateGUIUrls, 1000);
 
         api.receivedScheduleMessage = function(message) {
             var obj = message.value;
@@ -764,20 +704,20 @@
         };
 
         api.showSubarrayLogs = function(sub_nr) {
-            $rootScope.openLogWithProgramNameFilter('kat.subarray_' + sub_nr);
+            $rootScope.openKibanaInNewTab('kat.subarray_' + sub_nr);
         };
 
         api.showResourceLogs = function(resourceName) {
-            $rootScope.openLogWithProgramNameFilter('kat.' + resourceName);
+            $rootScope.openKibanaInNewTab('kat.' + resourceName);
         };
 
-        api.listResourceMaintenanceDevicesDialog = function(sub_nr, resource, event) {
+        api.listResourceMaintenanceDevicesDialog = function(sub_nr, resourceName, event) {
             $mdDialog
                 .show({
                     controller: function($rootScope, $scope, $mdDialog) {
-                        $scope.title = 'Select a device in ' + resource + ' to restart';
+                        $scope.title = 'Select a device in ' + resourceName + ' to restart';
                         $scope.devices = [];
-                        api.listResourceMaintenanceDevices(resource)
+                        api.listResourceMaintenanceDevices(resourceName)
                             .then(function(result) {
                                 var resultList = JSON.parse(result.data.result.replace(/\"/g, '').replace(/\'/g, '"'));
                                 for (var i in resultList) {
@@ -791,28 +731,29 @@
                             $mdDialog.hide();
                         };
                         $scope.restartMaintenanceDevice = function(device) {
-                            api.restartMaintenanceDevice(sub_nr, resource, device);
+                            api.restartMaintenanceDevice(sub_nr, resourceName, device);
                         };
                     },
-                    template: '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">' +
-                        '   <div style="padding: 0; margin: 0; overflow: auto" layout="column">' +
-                        '       <md-toolbar class="md-primary" layout="row" layout-align="center center">' +
-                        '           <span flex style="margin: 16px;">{{::title}}</span>' +
-                        '       </md-toolbar>' +
-                        '       <div flex layout="column">' +
-                        '           <div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">' +
-                        '               <md-button style="margin: 0" flex title="Restart {{device}} Device"' +
-                        '                   ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">' +
-                        '                   <span style="margin-right: 8px;" class="fa fa-refresh"></span>' +
-                        '                   <span>{{device}}</span>' +
-                        '               </md-button>' +
-                        '           </div>' +
-                        '       </div>' +
-                        '       <div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">' +
-                        '           <md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>' +
-                        '       </div>' +
-                        '   </div>' +
-                        '</md-dialog>',
+                    template: [
+                        '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">',
+                            '<div style="padding: 0; margin: 0; overflow: auto" layout="column">',
+                                '<md-toolbar class="md-primary" layout="row" layout-align="center center">',
+                                    '<span flex style="margin: 16px;">{{::title}}</span>',
+                                '</md-toolbar>',
+                                '<div flex layout="column">',
+                                    '<div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">',
+                                    '<md-button style="margin: 0" flex title="Restart {{device}} Device"',
+                                        'ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">',
+                                        '<span style="margin-right: 8px;" class="fa fa-refresh"></span>',
+                                        '<span>{{device}}</span>',
+                                    '</md-button>',
+                                    '</div>',
+                                '</div>',
+                                '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
+                                    '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
+                                '</div>',
+                            '</div>',
+                        '</md-dialog>'].join(''),
                     targetEvent: event
                 });
         };
@@ -901,9 +842,13 @@
                     return item.id === subarrayNumber;
                 });
                 if (lastKnownConfig.allocations) {
-                    var currentAllocations = subarray.allocations.map(function(resource) {
-                        return resource.name;
-                    });
+                    var currentAllocationsSensor = api.sensorValues[api.subarrays[subarrayNumber].name + '_allocations'];
+                    var currentAllocations = [];
+                    if (currentAllocationsSensor) {
+                        currentAllocationsSensor.parsedValue.map(function(resourceAlloc) {
+                            return resourceAlloc[0];
+                        });
+                    }
                     var resourcesToAllocate = lastKnownConfig.allocations.split(',');
                     var resourcesGoingToAllocate = _.difference(resourcesToAllocate, currentAllocations);
                     if (resourcesGoingToAllocate.length > 0) {

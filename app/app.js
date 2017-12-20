@@ -4,7 +4,6 @@
     angular.module('katGui', ['ngMaterial', 'ngMessages',
             'ui.bootstrap',
             'ui.router',
-            // 'ui.utils',
             'ngAnimate', 'katGui.services',
             'katGui.admin',
             'katGui.alarms',
@@ -81,6 +80,8 @@
         $rootScope.expertOrLO = false;
         $rootScope.showVideoLinks = false;
         $rootScope.connectedToMonitor = true;
+        $rootScope.katpool_lo_id = {};
+        $rootScope.sys_interlock_state = {};
 
         $rootScope.devMode = window.location.host.startsWith('localhost');
         $rootScope.portalUrl = $rootScope.devMode ? $localStorage.devModePortalURL : window.location.origin;
@@ -106,7 +107,7 @@
             if ($rootScope.systemConfig && !forceConfig) {
                 $timeout(function() {
                     deferred.resolve($rootScope.systemConfig);
-                }, 1);
+                });
             } else {
                 ObsSchedService.subarrays.splice(0, ObsSchedService.subarrays.length);
                 ConfigService.getSystemConfig(forceConfig).then(function(systemConfig) {
@@ -120,7 +121,8 @@
                     deferred.resolve($rootScope.systemConfig);
                 }, function(error) {
                     if ($rootScope.portalUrl) {
-                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf. Is the URL correct?';
+                        var statusText = error && error.statusText? '(' + error.statusText + ')': '';
+                        $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf ' + statusText;
                     } else {
                         $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
                     }
@@ -183,8 +185,6 @@
             vm.currentUser = null;
             vm.userRoles = USER_ROLES;
             $rootScope.alarmsData = AlarmsService.alarmsData;
-            $rootScope.currentLeadOperator = MonitorService.currentLeadOperator;
-            $rootScope.interlockState = MonitorService.interlockState;
 
             vm.utcTime = '';
             vm.localTime = '';
@@ -230,14 +230,15 @@
                 .then(function() {
                     if ($rootScope.connectedToMonitor) {
                         if (reconnecting && $rootScope.currentStateName().startsWith('sched')) {
-                            MonitorService.subscribe('sched');
                             ObsSchedService.getProgramBlocks();
                             ObsSchedService.getScheduleBlocks();
                             ObsSchedService.getProgramBlocksObservationSchedule();
                         }
                         if (reconnecting) {
                             $log.info('Reconnected Monitor Connection.');
+                            $rootScope.$emit('websocketReconnected');
                         }
+                        MonitorService.initGlobalSensors();
                     } else {
                         $timeout($rootScope.connectEvents, 3000);
                     }
@@ -354,10 +355,7 @@
             }
         };
         $rootScope.openCentralLogger = function() {
-            window.open('http://' + ConfigService.systemConfig.system.kibana_server +
-                "/app/kibana#/discover?_g=()&_a=(columns:!(programname,severity,message),index:'" +
-                $rootScope.sitename +
-                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))").focus();
+            $rootScope.openKibanaInNewTab();
         };
         $rootScope.openGangliaLink = function() {
             window.open('http://' + ConfigService.systemConfig.nodes.monctl.split(' ')[0] + '/ganglia').focus();
@@ -365,7 +363,7 @@
         $rootScope.openUrlInNewTab = function(url) {
             window.open(url).focus();
         };
-        vm.openIRCDisplay = function($event) {
+        $rootScope.openIRCDisplay = function($event) {
             NotifyService.showPreDialog(
                 'IRC Information',
                 'IRC Server: irc://katfs.kat.ac.za:6667/#channel_name\n  IRC Logs: https://katfs.kat.ac.za/irclog/logs/katirc/\n',
@@ -378,23 +376,35 @@
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
-        $rootScope.openLogWithProgramNameFilter = function(programName) {
-            var kibanaUrl = [
-                "http://",
-                ConfigService.systemConfig.system.kibana_server,
-                "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:1000),",
-                "time:(from:now-12h,mode:relative,to:now))&",
-                "_a=(columns:!(programname,severity,message),",
-                "filters:!(('$state':(store:appState),",
-                "meta:(alias:!n,disabled:!f,index:'",
-                $rootScope.sitename,
-                "-*',key:programname,negate:!f,type:phrase,value:",
-                programName,
-                "),query:(match:(programname:(query:",
-                programName,
-                ",type:phrase))))),","index:'",
-                $rootScope.sitename,
-                "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+        $rootScope.openKibanaInNewTab = function(programName) {
+            var kibanaUrl;
+            if (programName) {
+                kibanaUrl = [
+                    "http://",
+                    ConfigService.systemConfig.system.kibana_server,
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),",
+                    "filters:!(('$state':(store:appState),",
+                    "meta:(alias:!n,disabled:!f,index:'",
+                    $rootScope.systemConfig.system.sitename,
+                    "-*',key:programname,negate:!f,type:phrase,value:",
+                    programName,
+                    "),query:(match:(programname:(query:",
+                    programName,
+                    ",type:phrase))))),","index:'",
+                    $rootScope.systemConfig.system.sitename,
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+            } else {
+                kibanaUrl = [
+                    "http://",
+                    ConfigService.systemConfig.system.kibana_server,
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),index:'",
+                    $rootScope.systemConfig.system.sitename,
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
+            }
             window.open(kibanaUrl).focus();
         };
 
@@ -422,6 +432,8 @@
         };
 
         $scope.$on('$destroy', function() {
+            MonitorService.unsubscribeSensorName('katpool', 'lo_id');
+            MonitorService.unsubscribeSensorName('sys', 'interlock_state');
             MonitorService.disconnectListener();
             vm.unbindLoginSuccess();
             if (vm.updateTimeDisplayInterval) {
@@ -458,11 +470,6 @@
             templateUrl: 'app/admin/admin.html',
             title: 'User Admin'
         });
-        $stateProvider.state('activity', {
-            url: '/activity',
-            templateUrl: 'app/activity/activity.html',
-            title: 'Activity'
-        });
         $stateProvider.state('alarms', {
             url: '/alarms',
             templateUrl: 'app/alarms/alarms.html',
@@ -494,11 +501,6 @@
                 }
             },
         });
-        $stateProvider.state('subarrayHealth', {
-            url: '/subarray-health',
-            templateUrl: 'app/health/subarray-health/subarray-health.html',
-            title: 'Subarray Health'
-        });
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',
@@ -508,11 +510,6 @@
             url: '/receptor-pointing',
             templateUrl: 'app/health/receptor-pointing/receptor-pointing.html',
             title: 'Receptor Pointing'
-        });
-        $stateProvider.state('customHealth', {
-            url: '/custom-health?layout',
-            templateUrl: 'app/health/custom-health/custom-health.html',
-            title: 'Custom Health'
         });
         $stateProvider.state('home', {
             url: '/home',
@@ -823,6 +820,8 @@
                     $rootScope.requestedStateBeforeLogin = null;
                     $rootScope.requestedStateBeforeLoginParams = null;
                     $state.go(newStateName, newParams, {reload: false});
+                } else if ($rootScope.loggedIn && toState.name === 'login') {
+                    $state.go('home');
                 }
             }
         });

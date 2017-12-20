@@ -3,7 +3,7 @@
     angular.module('katGui.services')
         .factory('NotifyService', NotifyService);
 
-    function NotifyService($rootScope, $mdDialog, $mdToast, $log, $q, $timeout, SensorsService, ConfigService, MOMENT_DATETIME_FORMAT) {
+    function NotifyService($rootScope, $mdDialog, $mdToast, $log, $q, $timeout, ConfigService, MOMENT_DATETIME_FORMAT) {
 
         var api = {};
         api.toastPosition = 'bottom right';
@@ -215,111 +215,6 @@
                 });
         };
 
-        api.showAggregateSensorsDialog = function (title, content, event) {
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.title = title;
-                        $scope.content = content;
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                        $scope.jsonContent = JSON.parse(content);
-                        $scope.parentSensorNameList = $scope.jsonContent.sensors.split(',');
-                        $scope.sensorNameList = [];
-                        $scope.sensorsRegex = [];
-                        $scope.sensors = {};
-
-                        $scope.sensorClass = function (status) {
-                            return status + '-sensor-list-item';
-                        };
-
-                        if (!SensorsService.connection) {
-                            SensorsService.connectListener()
-                                .then(function () {
-                                    setAggSensorStrategies();
-                                }, function () {
-                                    $log.error('Could not establish sensor connection.');
-                                });
-                        } else {
-                            $scope.reusedSensorsServiceConnection = true;
-                            setAggSensorStrategies();
-                        }
-
-                        function setAggSensorStrategies() {
-                            $scope.parentSensorNameList.forEach(function (sensorName) {
-                                getChildSensorsFromAgg(sensorName);
-                                function getChildSensorsFromAgg (sensor) {
-                                    if (sensor.indexOf('agg_') === -1) {
-                                        $scope.sensorNameList.push(sensor);
-                                    } else {
-                                        var childSensors = ConfigService.aggregateSensorDetail[sensor].sensors.split(',');
-                                        childSensors.forEach(function (childSensor) {
-                                            if (sensor.indexOf('agg_') === -1) {
-                                                $scope.sensorNameList.push(childSensor);
-                                            } else {
-                                                getChildSensorsFromAgg(childSensor);
-                                            }
-
-                                        });
-                                    }
-                                }
-                            });
-
-                            $scope.sensorsRegex = [];
-                            $scope.sensorNameList.forEach(function (sensor, index) {
-                                $scope.sensors[sensor] = {name: sensor};
-                                $scope.sensorsRegex.push('^' + sensor);
-                            });
-                            if ($scope.sensorsRegex.length > 0) {
-                                SensorsService.setSensorStrategies($scope.sensorsRegex.join('|'), 'event-rate', 1, 360);
-                            }
-                        }
-
-                        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', function (event, sensor) {
-                            var strList = sensor.name.split(':');
-                            var sensorName = strList[1].replace(/\./g, '_').trim();
-                            if ($scope.sensors[sensorName]) {
-                                $scope.sensors[sensorName] = {name: sensorName};
-                                $scope.sensors[sensorName].value = sensor.value;
-                                $scope.sensors[sensorName].status = sensor.status;
-                                $scope.sensors[sensorName].timestamp = moment.utc(sensor.timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                                $scope.sensors[sensorName].received_timestamp = moment.utc(sensor.received_timestamp, 'X').format(MOMENT_DATETIME_FORMAT);
-                            }
-                        });
-
-                        $scope.$on('$destroy', function () {
-                            unbindUpdate();
-                            if (!$scope.reusedSensorsServiceConnection) {
-                                SensorsService.disconnectListener();
-                            }
-                        });
-                    },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}' aria-label=''>" +
-                    "   <div style='padding:0; margin:0; overflow: auto' layout='column' layout-padding >" +
-                    "       <md-toolbar class='md-primary' layout='row' layout-align='center center'><span>{{title}}</span></md-toolbar>" +
-                    "           <div flex><pre style='white-space: pre-wrap'>{{content}}</pre></div>" +
-                    "           <div layout='column' class='resource-sensors-list' style='margin: 0 16px'>" +
-                    "               <div style='height: 24px' ng-repeat='sensor in sensors'>" +
-                    "                   <div layout='row' class='resource-sensor-item' title='{{sensor.name}}'>" +
-                    "                       <span style='width: 310px; overflow: hidden; text-overflow: ellipsis'>{{sensor.name}}</span>" +
-                    "                       <span class='resource-sensor-status-item' ng-class='sensorClass(sensor.status)'>{{sensor.status}}</span>" +
-                    "                       <span class='resource-sensor-time-item' title='Timestamp (Received: {{sensor.received_timestamp}})'>{{sensor.timestamp}}</span>" +
-                    "                       <span flex class='resource-sensor-value-item'>{{sensor.value}}</span>" +
-                    "                   </div>" +
-                    "               </div>" +
-                    "           </div>" +
-                    "   </div>" +
-                    "   <div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;'>" +
-                    "       <md-button style='margin-left: 8px;' class='md-primary md-raised' md-theme='{{$root.themePrimaryButtons}}' aria-label='OK' ng-click='hide()'>Close</md-button>" +
-                    "   </div>" +
-                    "</md-dialog>",
-                    targetEvent: event
-                });
-
-            $log.info('Showing dialog, title: ' + title + ', message: ' + content);
-        };
-
         api.showHTMLPreSensorDialog = function (title, sensor, event) {
             $mdDialog
                 .show({
@@ -339,7 +234,7 @@
                             '<div style="padding:0; margin:0; overflow: auto" layout="column" layout-padding layout-align="start center">',
                                 '<md-toolbar class="md-primary" layout="row" layout-align="center center"><span>{{title}}</span></md-toolbar>',
                                 '<div flex layout="column" layout-align="start" class="resource-sensor-item" style="min-height: 165px">',
-                                    '<div layout="row"><span class="sensor-dialog-details-name">Name:</span><span>{{sensor.parentName? sensor.parentName + "_" + sensor.python_identifier : sensor.python_identifier}}</span></div>',
+                                    '<div layout="row"><span class="sensor-dialog-details-name">Name:</span><span>{{sensor.name}}</span></div>',
                                     '<div layout="row" style="max-width: 700px"><span class="sensor-dialog-details-name">Description:</span><div>{{sensor.description}}</div></div>',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Status:</span><span ng-class="sensorClass(sensor.status)">{{sensor.status}}</span></div>',
                                     '<div layout="row"><span class="sensor-dialog-details-name">Units:</span><span>{{sensor.units}}</span></div>',

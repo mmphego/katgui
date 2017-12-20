@@ -96,16 +96,6 @@
                 });
         };
 
-        vm.isResourceInMaintenance = function (resource) {
-            resource.maintenance = ObsSchedService.resources_in_maintenance.indexOf(resource.name) !== -1;
-            return resource.maintenance;
-        };
-
-        vm.isResourceFaulty = function (resource) {
-            resource.faulty = ObsSchedService.resources_faulty.indexOf(resource.name) !== -1;
-            return resource.faulty;
-        };
-
         vm.setSubarrayMaintenance = function (maintenance) {
             ObsSchedService.setSubarrayMaintenance(vm.subarray.id, maintenance ? 'set' : 'clear');
         };

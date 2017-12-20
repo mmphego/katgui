@@ -7,11 +7,8 @@
                                    NotifyService, ConfigService, $mdDialog) {
 
         var vm = this;
-        vm.showDeselectTooltip = false;
-        vm.selectedResources = [];
         vm.poolResourcesFree = ObsSchedService.poolResourcesFree;
-        vm.resources_faulty = ObsSchedService.resources_faulty;
-        vm.resources_in_maintenance = ObsSchedService.resources_in_maintenance;
+        $scope.parent = $scope.$parent;
 
         vm.initLastKnownConfig = function () {
             vm.lastKnownSubarrayConfig = ObsSchedService.getLastKnownSubarrayConfig(vm.subarray.id);
@@ -31,70 +28,34 @@
             vm.initLastKnownConfig();
         }
 
-        $scope.parent = $scope.$parent;
-
-        vm.selectAllUnassignedResources = function (selected) {
-            vm.poolResourcesFree.forEach(function (item) {
-                item.selected = selected;
-                if (selected && vm.selectedResources.indexOf(item) === -1) {
-                    vm.selectedResources.push(item);
-                }
+        vm.toggleSelectAllUnassignedResources = function () {
+            var anySelected = _.any(vm.poolResourcesFree, function(resource) {
+                return resource.selected;
             });
-            if (!selected) {
-                vm.selectedResources = [];
-            }
-            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
+            var select = !anySelected;
+            vm.poolResourcesFree.forEach(function (item) {
+                item.selected = select;
+            });
         };
 
         vm.assignSelectedResources = function () {
-            var itemsAssigned = [];
-            vm.poolResourcesFree.forEach(function (item) {
-                if (item.selected) {
-                    itemsAssigned.push(item.name);
-                    item.selected = false;
-                    var indexOfSelected = vm.selectedResources.indexOf(item);
-                    if (indexOfSelected > -1) {
-                        vm.selectedResources.splice(indexOfSelected, 1);
-                    }
-                }
+            var selectedResources = vm.poolResourcesFree.filter(function(resource) {
+                return resource.selected;
             });
-            if (itemsAssigned.length > 0) {
-                var itemsString = itemsAssigned.join(',');
-                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, itemsString);
+            var selectedResourceNames = selectedResources.map(function(resource) {
+                return resource.name;
+            });
+            if (selectedResourceNames) {
+                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, selectedResourceNames.join(','));
             }
-            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
         };
 
-        vm.assignResource = function (resource) {
-            resource.selected = false;
-            var indexOfSelected = vm.selectedResources.indexOf(resource);
-            if (indexOfSelected > -1) {
-                vm.selectedResources.splice(indexOfSelected, 1);
-            }
-            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
-            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resource.name);
+        vm.assignResource = function (resourceName) {
+            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
-        vm.freeAssignedResource = function (resource) {
-            ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resource.name);
-        };
-
-        vm.toggleResourceSelect = function (resource, selectedValue) {
-            if (!$scope.parent.vm.iAmAtLeastCA() || angular.isDefined(resource.selected) && selectedValue === resource.selected) {
-                return;
-            }
-            var selected = selectedValue;
-            if (!angular.isDefined(selected)) {
-                selected = !resource.selected;
-            }
-            resource.selected = selected;
-            var indexOfSelected = vm.selectedResources.indexOf(resource);
-            if (indexOfSelected > -1 && !selected) {
-                vm.selectedResources.splice(indexOfSelected, 1);
-            } else if (selected) {
-                vm.selectedResources.push(resource);
-            }
-            vm.showDeselectTooltip = vm.selectedResources.length !== 0;
+        vm.freeAssignedResource = function (resourceName) {
+            ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resourceName);
         };
 
         vm.openTemplateListDialog = function ($event) {
@@ -144,9 +105,10 @@
         };
 
         vm.saveTemplateDialog = function ($event) {
-            var resourceNames = [];
-            vm.subarray.allocations.forEach(function (allocation) {
-                resourceNames.push(allocation.name);
+
+            var allocations = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue;
+            var resourceNames = allocations.map(function (allocation) {
+                return allocation[0];
             });
             resourceNames = resourceNames.join(',');
 
@@ -237,13 +199,6 @@
                 ObsSchedService.poolResourcesFree.forEach(function (item) {
                     item.selected = false;
                 });
-                if (vm.selectedResources.length > 0) {
-                    vm.selectedResources = [];
-                    vm.showDeselectTooltip = false;
-                } else {
-                    //clear filter search on free resources
-                    vm.q = '';
-                }
             } else if (key === 13) {
                 vm.assignSelectedResources();
             }
@@ -254,9 +209,6 @@
 
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
-            if (vm.unbindDelegateWatch) {
-                vm.unbindDelegateWatch();
-            }
         });
     }
 

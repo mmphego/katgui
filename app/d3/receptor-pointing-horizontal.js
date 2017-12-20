@@ -34,25 +34,20 @@ angular.module('katGui.d3')
                     width, height, chart, focus;
                 var svg, x, y, xAxis, yAxis, xAxisElement, yAxisElement;
 
-                scope.data = [];
                 scope.skyPlotData = [];
                 scope.receptorData = [];
 
-                scope.redrawFunction = function (receptors,
-                                                 showNames,
-                                                 showTrails,
-                                                 showGridLines,
-                                                 trailDots,
-                                                 horizonMaskToggled) {
+                scope.redrawFunction = function (receptors, skyPlot, showNames, showTrails,
+                                                 showGridLines, trailDots, horizonMaskToggled) {
                     scope.trailDots = trailDots;
                     scope.showTrails = showTrails;
-                    scope.data = receptors;
-                    scope.skyPlotData = [];
                     scope.receptorData = [];
+                    scope.skyPlotData = skyPlot;
 
                     //parse the horizon mask data and sort it
                     var newHorizonData = false;
-                    receptors.forEach(function (receptor) {
+                    Object.keys(receptors).forEach(function (receptorName) {
+                        var receptor = receptors[receptorName];
                         if (receptor.horizonMask && !receptor.horizonMaskData) {
                             receptor.horizonMaskData = [];
                             horizonMaskDsv.parse(receptor.horizonMask, function (d) {
@@ -63,18 +58,11 @@ angular.module('katGui.d3')
                             });
                             newHorizonData = true;
                         }
-                        if (receptor.skyPlot) {
-                            scope.skyPlotData.push(receptor);
-                        } else {
-                            scope.receptorData.push(receptor);
-                        }
+                        scope.receptorData.push(receptor);
                     });
 
-                    if (!svg ||
-                        scope.showGridLines !== showGridLines ||
-                        newHorizonData ||
-                        horizonMaskToggled ||
-                        scope.showNames !== showNames) {
+                    if (!svg || scope.showGridLines !== showGridLines || newHorizonData ||
+                            horizonMaskToggled || scope.showNames !== showNames) {
                         scope.showGridLines = showGridLines;
                         scope.showNames = showNames;
                         drawSvg();
@@ -184,8 +172,9 @@ angular.module('katGui.d3')
                         dataToDraw.push(receptor);
                     });
                     if (scope.redrawSkyPlot) {
-                        scope.skyPlotData.forEach(function (receptor) {
-                            dataToDraw.push(receptor);
+                        scope.skyPlotData.forEach(function (skyPlot) {
+                            skyPlot.skyPlot = true;
+                            dataToDraw.push(skyPlot);
                         });
                         scope.redrawSkyPlot = false;
                     }

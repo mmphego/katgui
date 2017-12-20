@@ -1,10 +1,13 @@
+// *******************************************************************
+// TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
+// *******************************************************************
 (function() {
 
     angular.module('katGui')
         .controller('ActivityCtrl', ActivityCtrl);
 
-    function ActivityCtrl($scope, $rootScope, $timeout, $log, $interval, $mdDialog, ObsSchedService, MonitorService,
-        UserLogService, SensorsService, NotifyService, DataService, $localStorage, MOMENT_DATETIME_FORMAT) {
+    function ActivityCtrl($scope, $rootScope, $timeout, $log, $interval, $mdDialog, ObsSchedService,
+        UserLogService, MonitorService, NotifyService, DataService, $localStorage, MOMENT_DATETIME_FORMAT) {
 
         //TODO refactor so that the x-axis is adjusted at the same time for all timelines
         //TODO include sensor names in url
@@ -39,40 +42,11 @@
             vm.sensorTimelines = $localStorage.activityDisplaySensorNames;
         }
 
-        vm.connectListeners = function() {
-            SensorsService.connectListener()
-                .then(function() {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-                    }
-                }, function() {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function() {
-            SensorsService.getTimeoutPromise()
-                .then(function() {
-                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                        vm.connectListeners();
-                    }
-                });
-        };
-
         if ($rootScope.loggedIn) {
-            vm.connectListeners();
+            // vm.connectListeners();
         } else {
             vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function() {
-                vm.connectListeners();
+                // vm.connectListeners();
             });
         }
 
@@ -307,9 +281,9 @@
 
             var requestParams;
             if (sensor.type === 'discrete') {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 10000];
+                // requestParams = [vm.guid, sensor.name, startDate, endDate, 10000];
             } else {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, 10000];
+                // requestParams = [vm.guid, sensor.name, startDate, endDate, 10000];
             }
 
             DataService.sensorData.apply(this, requestParams)
@@ -363,11 +337,8 @@
 
         vm.connectLiveSensorFeed = function(sensorRegex) {
             if (sensorRegex.length > 0) {
-                SensorsService.setSensorStrategies(
-                    sensorRegex,
-                    'event-rate',
-                    1,
-                    10);
+                // MonitorService.listSensors();
+                // TODO subscribe to sensors
             }
         };
 
@@ -378,7 +349,7 @@
         };
 
         vm.removeSensorTimeline = function(sensor) {
-            SensorsService.removeSensorStrategies(sensor.name);
+            // TODO unsub
             var sensorIndex = _.findIndex(vm.sensorTimelines, function(item) {
                 return item.name === sensor.name;
             });
@@ -405,9 +376,6 @@
             unbindUserlogAdd();
             unbindSensorUpdate();
             unwatchSensorTimelines();
-            MonitorService.unsubscribe('sched', '*');
-            MonitorService.unsubscribe('userlogs', '*');
-            SensorsService.disconnectListener();
         });
     }
 })();
