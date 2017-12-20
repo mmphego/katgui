@@ -249,15 +249,17 @@
 
             var requestParams;
             if (sensor.type === 'discrete' || vm.intervalType === 'n') { // discrete sensors and user selected no interval
-                requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
+                // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
+                requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
             } else {
-                requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
+                // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
+                requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
             }
 
             DataService.sensorData.apply(this, requestParams)
                 .then(function (result) {
                     if (result.data instanceof Array) {
-                        vm.sensorDataReceived(null, {value: result.data});
+                        vm.sensorDataReceived(null, result.data, 'katstore.data');
                     }
                     if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
                         vm.sensorNames.push(sensor);
@@ -268,6 +270,7 @@
                     vm.updateGraphUrl();
                 }, function (error) {
                     vm.waitingForSearchResult = false;
+                    vm.sensorDataReceived(null, error, 'katstore.error');
                     $log.info(error);
                 });
         };
@@ -479,6 +482,7 @@
                 var sensorNames = $stateParams.sensors.split(',').map(function (sensorName) {
                     return '^(' + sensorName + ')$';
                 });
+
                 vm.findSensorNames(sensorNames.join('|')).then(function (sensors) {
                     var sensorTypes = [];
                     sensors.forEach(function (sensor) {
@@ -491,19 +495,33 @@
                             'Cannot mix sensor types: ' + sensorTypes);
                         return;
                     }
+                    vm.waitingForSearchResult = true;
                     sensors.forEach(function (sensor) {
                         var requestParams = [];
                         if (vm.searchDiscrete || vm.intervalType === 'n') {
-                            requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
+                            // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
+                            requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
                         } else {
-                            requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                            // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                            requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
                         }
+                        vm.sensorNames.push(sensor);
 
                         DataService.sensorData.apply(this, requestParams)
                             .then(function (result) {
-                                vm.sensorNames.push(sensor);
+                                if (result.data instanceof Array) {
+                                    vm.sensorDataReceived(null, result.data, 'katstore.data');
+                                }
+                                if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
+                                    vm.sensorNames.push(sensor);
+                                }
+                                if (vm.liveData) {
+                                    MonitorService.subscribeSensor(sensor);
+                                }
+                                vm.updateGraphUrl();
                             }, function (error) {
                                 vm.waitingForSearchResult = false;
+                                vm.sensorDataReceived(null, error, 'katstore.error');
                                 $log.info(error);
                             });
                     });
