@@ -1,1 +1,1 @@
-0.1.dev1537+user.fjoubert.nats.e57d612.dirty
+1.0.0
