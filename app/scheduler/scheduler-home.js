@@ -126,6 +126,10 @@
                 toState.name === 'scheduler.program-blocks' ||
                 toState.name === 'scheduler') {
                 vm.subarray = null;
+            } else {
+                vm.subarray = _.findWhere(ObsSchedService.subarrays, {
+                    id: vm.subarray_id
+                });
             }
         });
 
