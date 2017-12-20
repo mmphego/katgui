@@ -9,7 +9,7 @@
                 Current Build: <b>{{$root.systemConfig.version.description}}</b>
             </span>
 
-            <div ng-show="vm.showDetailedCamBuildInfo" layout="column" class="grow-height-animation"
+            <div ng-show="vm.showDetailedCamBuildInfo" layout="column"
                  style="margin-top: 8px; min-height: 120px; overflow: auto">
                 <div layout="row" ng-repeat="(key, value) in $root.systemConfig.version">
                     <span style="width: 140px;">{{key}}:</span>
@@ -25,7 +25,7 @@
             <span>View System Logs</span>
         </md-button>
         <md-button style="margin-right: 180px;" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}"
-                   ng-click="$root.openLogWithProgramNameFilter('katcpmsgs');" title="View KATCP Messages Logs in a new tab">
+                   ng-click="$root.openKibanaInNewTab('katcpmsgs');" title="View KATCP Messages Logs in a new tab">
             <span>View KATCP Messages Log</span>
         </md-button>
 
@@ -101,7 +101,7 @@
                             style="height: 32px; width: 32px; margin: 0">
                             <md-icon class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
                         </md-button>
-                        <md-menu-content width="4" style="padding-left: 16px; padding-right: 16px;">
+                        <md-menu-content width="4">
                             <md-menu-item ng-if="!vm.resourcesNames[key].connected">
                                 <md-button ng-click="vm.startProcess(key);"
                                            title="Start Process">
@@ -129,7 +129,7 @@
                 </div>
 
             </div>
-            <div ng-if="vm.resourcesNames[key].showDetails" class="grow-height-animation" style="cursor: auto;">
+            <div ng-if="vm.resourcesNames[key].showDetails" style="cursor: auto;">
                 <div ng-repeat="sensorKey in $root.objectKeys(vm.resourcesNames[key].sensors) | orderBy:'name' track by $index"
                      style="margin: 4px;">
                     <div style="text-align: end; width: 230px; display: inline-block"><span>{{vm.resourcesNames[key].sensors[sensorKey].name}}:</span>

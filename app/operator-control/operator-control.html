@@ -4,23 +4,22 @@
 
     <div class="md-whiteframe-z1">
         <div md-theme="{{themePrimaryButtons}}" class="operator-controls">
-            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene" ng-click="vm.inhibitAll()" class="md-raised md-primary">Inhibit All</md-button>
-            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene" ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
-            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene" ng-click="vm.stopAll()" class="md-raised md-primary">Stop Observations</md-button>
-            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene" ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene()" ng-click="vm.inhibitAll()" class="md-raised md-primary">Inhibit All</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene()" ng-click="vm.stowAll()" class="md-raised md-primary">Stow All</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene()" ng-click="vm.stopAll()" class="md-raised md-primary">Stop Observations</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene()" ng-click="vm.resumeOperations()" class="md-raised md-primary">Resume Operations</md-button>
             <md-button ng-disabled="vm.waitingForRequestResult || !$root.expertOrLO" ng-click="vm.shutdownSPCorr($event)" class="md-raised md-primary">Power Down SP & CORR</md-button>
-            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene" ng-click="vm.shutdownComputing($event)" class="md-raised md-primary">Shutdown Computing</md-button>
+            <md-button ng-disabled="vm.waitingForRequestResult || !vm.canIntervene()" ng-click="vm.shutdownComputing($event)" class="md-raised md-primary">Shutdown Computing</md-button>
         </div>
 
         <md-list class="receptor-state-list">
             <md-item ng-repeat="rec in vm.receptorsData">
-                <md-item-content ng-class="{'receptor-state-div-error': vm.sensorValues[rec.name + '_sensors_ok'].status === 'error', 'receptor-state-div-warn': vm.sensorValues[rec.name + '_sensors_ok'].status === 'warn'}"
+                <md-item-content ng-class="{'receptor-state-div-error': vm.sensorValues[rec.name + '_device_status'].status === 'error', 'receptor-state-div-warn': vm.sensorValues[rec.name + '_device_status'].status === 'warn'}"
                                  class="receptor-state-div md-whiteframe-z2" layout="column"
-                                 layout-align="start center" title="{{'Sensors ok status: ' + vm.sensorValues[rec.name + '_sensors_ok'].status}}">
+                                 layout-align="start center" title="{{'Device status: ' + vm.sensorValues[rec.name + '_device_status'].status}}">
                     <span style="min-height: 25px; max-width: 140px;" title="Last Changed; Since: {{rec.since}}">{{rec.fromNow}}</span>
                     <span style="font-size: 26px;" flex><b>{{rec.name}}</b></span>
-                    <span class="flash-receptor-state"
-                          ng-class="{'receptor-stop-state': vm.sensorValues[rec.name + '_mode'].value === 'STOP', 'receptor-stow-state': vm.sensorValues[rec.name + '_mode'].value === 'STOW'}">
+                    <span ng-class="vm.getReceptorModeTextClass(rec.name)">
                         <b>{{vm.sensorValues[rec.name + '_mode'].value}}</b>
                     </span>
 

@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('katGui.widgets')
+    angular.module('katGui.widgets', [])
         .controller('ApodWidgetCtrl', ApodWidgetCtrl);
 
     function ApodWidgetCtrl($scope, $rootScope, $http, $log, $sce, NotifyService, ConfigService) {

@@ -1,53 +1,28 @@
-<div ng-controller="DeviceStatusCtrl as vm" layout="column" layout-align="start center">
+<div ng-controller="DeviceStatusCtrl as vm" layout="column">
 
-    <div class="resource-sensors-list" style="margin: 16px;">
-        <md-toolbar class="md-whiteframe-z1" style="position: relative">
-            <div layout="row" layout-align="start center" style="margin-left: 16px; margin-top: 16px">
-                <span flex>Sensors</span>
-                <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors" ng-click="$event.stopPropagation()"
-                             md-theme="{{themePrimaryButtons}}" style="font-size: 16px;">
-                    Hide Nominal Sensors
-                </md-checkbox>
-                <input class="fade-in search-input-box" type="search"
-                       ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Sensors..."/>
-            </div>
+    <div class="resource-sensors-list" style="margin: 16px; min-width: 500px">
+        <md-toolbar class="md-whiteframe-z1 md-toolbar-tools" style="position: relative">
+            <span>Sensors</span>
+            <md-checkbox class="md-primary" ng-model="vm.hideNominalSensors"
+                md-theme="{{themePrimaryButtons}}" style="position: absolute; top: 8px; right: 170px; font-size: 16px">
+                Hide Nominal Sensors
+            </md-checkbox>
+            <input class="fade-in search-input-box" type="search" style="position: absolute; top: 8px; right: 0"
+                   ng-model-options="{ debounce: 300 }" ng-model="vm.q" placeholder="Search Sensors..."/>
 
             <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center"
                  style="padding-left: 8px;">
-                    <span class="subheader-text resource-sensor-name" style="min-width: 350px;max-width: 350px;"
-                          ng-click="vm.setSensorsOrderBy('name')">
-                        <span>Name</span>
-                        <span class="fa"
-                              ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'name' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'name' && vm.sensorsOrderBy.reverse}"
-                              style="margin-right: 4px;"></span>
-                    </span>
-                    <span class="subheader-text resource-sensor-status-item" ng-click="vm.setSensorsOrderBy('status')">
-                        <span>Status</span>
-                        <span class="fa"
-                              ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'status' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'status' && vm.sensorsOrderBy.reverse}"
-                              style="margin-right: 4px;"></span>
-                    </span>
-                    <span class="subheader-text resource-sensor-time-item"
-                          ng-click="vm.setSensorsOrderBy('date')">
-                        <span>Timestamp</span>
-                        <span class="fa"
-                              ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'date' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'date' && vm.sensorsOrderBy.reverse}"
-                              style="margin-right: 4px;"></span>
-                    </span>
-                    <span flex class="subheader-text" style="min-width: 200px;"
-                          ng-click="vm.setSensorsOrderBy('value')">
-                        <span>Value</span>
-                        <span class="fa"
-                              ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'value' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'value' && vm.sensorsOrderBy.reverse}"
-                              style="margin-right: 4px;"></span>
-                    </span>
+                    <span class="subheader-text resource-sensor-name" style="min-width: 350px;max-width: 350px;">Name</span>
+                    <span class="subheader-text resource-sensor-status-item">Status</span>
+                    <span class="subheader-text resource-sensor-time-item">Timestamp</span>
+                    <span flex class="subheader-text" style="min-width: 200px;">Value</span>
             </div>
         </md-toolbar>
         <div flex style="margin-bottom: 16px; padding: 8px 0" class="md-whiteframe-z1">
-            <div ng-repeat="key in vm.sortedSensorNames | regexSearch:vm.sensorsOrderByFields:vm.q:vm.sensorValues track by $index" layout="row"
+            <div ng-repeat="key in $root.objectKeys(vm.sensorValues) | orderBy:key | regexSearch:vm.sensorsOrderByFields:vm.q:vm.sensorValues track by $index" layout="row"
                  ng-if="!vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[key].status !== 'nominal'" class="device-status-row-item">
-                <span class="resource-sensor-name" style="min-width: 350px;max-width: 350px;">{{vm.sensorValues[key].name}}</span>
-                <span class="resource-sensor-status-item" ng-class="vm.sensorClass(vm.sensorValues[key].status)">{{vm.sensorValues[key].status}}</span>
+                <span class="resource-sensor-name" style="min-width: 350px;max-width: 350px;">{{vm.sensorValues[key].original_name}}</span>
+                <span class="resource-sensor-status-item" ng-class="vm.sensorValues[key].status + '-sensor-list-item'">{{vm.sensorValues[key].status}}</span>
                 <span class="resource-sensor-time-item">{{vm.sensorValues[key].date}}</span>
                 <span flex class="resource-sensor-value-item">{{vm.sensorValues[key].value}}</span>
             </div>

@@ -1,7 +1,7 @@
 angular.module('katGui.d3')
 
     .factory('d3Util', function ($q, $timeout, $rootScope, $log, StatusService, ConfigService, MOMENT_DATETIME_FORMAT,
-                                 NotifyService) {
+                                 NotifyService, MonitorService) {
 
         var api = {};
 
@@ -120,7 +120,7 @@ angular.module('katGui.d3')
                     "<div><b>" + fullSensorName + "</b></div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
-                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.timestamp, 'X').format(MOMENT_DATETIME_FORMAT) + "</div>" +
+                    "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.time, 'X').format(MOMENT_DATETIME_FORMAT) + "</div>" +
                     "</div>"
                 );
             } else {
@@ -183,11 +183,13 @@ angular.module('katGui.d3')
             $log.error('Error binding to StatusService data for receptor ' + dataMapName);
         };
 
-        api.showDialogForAggregateSensorInfo = function (sensorName) {
-            if (ConfigService.aggregateSensorDetail[sensorName]) {
-                NotifyService.showAggregateSensorsDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+        api.showDialogForAggregateSensorInfo = function (sensor) {
+            if (ConfigService.aggregateSensorDetail[sensor.sensor]) {
+                MonitorService.showAggregateSensorsDialog(
+                    'Aggregate Sensor ' + sensor.sensor + ' Details',
+                    JSON.stringify(ConfigService.aggregateSensorDetail[sensor.sensor], null, 4));
             } else {
-                $log.error('No such aggregate sensor in ConfigService ' + sensorName);
+                $log.error('No such aggregate sensor in ConfigService ' + sensor.sensor);
             }
         };
 

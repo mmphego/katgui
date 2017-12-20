@@ -76,7 +76,7 @@
             return userlog[vm.orderBy.value] ? userlog[vm.orderBy.value] : '9999-01-01 00:00:00';
         };
 
-        MonitorService.subscribe('userlogs', '*');
+        MonitorService.subscribe('portal.userlogs.*');
 
         vm.onTimeSet = function (value, target, attribute) {
             target[attribute] = $filter('date')(value, DATETIME_FORMAT);
@@ -448,7 +448,7 @@
             if (vm.undbindutcDateTimeSet) {
                 vm.undbindutcDateTimeSet();
             }
-            MonitorService.unsubscribe('userlogs', '*');
+            MonitorService.unsubscribe('portal.userlogs.*');
         });
     }
 })();

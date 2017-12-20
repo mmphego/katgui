@@ -72,7 +72,7 @@ angular.module('katGui.d3')
                 drawValues();
             };
 
-            scope.lazyResize = _.debounce(scope.resizeChart, 300);
+            scope.lazyResize = _.throttle(scope.resizeChart, 300);
 
             var color = d3.scale.category20();
             var bisectDate = d3.bisector(function(d) {
@@ -434,7 +434,7 @@ angular.module('katGui.d3')
                         mousemove(true);
                     };
 
-                    scope.lazyBrush = _.debounce(scope.brushFunction, 300);
+                    scope.lazyBrush = _.throttle(scope.brushFunction, 300);
 
                     brush = d3.svg.brush()
                         .x(x2)
@@ -508,7 +508,6 @@ angular.module('katGui.d3')
                         })
                     ]);
                 }
-
 
                 if (scope.options.useFixedYAxis && !scope.options.yAxisValues) {
                     y.domain([scope.yMin, scope.yMax]);
@@ -736,7 +735,7 @@ angular.module('katGui.d3')
                 el.remove();
             }
 
-            var lazyloadTooltipValues = _.debounce(loadTooltipValues, 150);
+            var lazyloadTooltipValues = _.throttle(loadTooltipValues, 150);
 
             function updateAxis() {
 

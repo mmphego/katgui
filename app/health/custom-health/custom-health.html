@@ -1,8 +1,11 @@
+<!-- *******************************************************************
+TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
+******************************************************************* -->
 <div flex layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; overflow: auto; padding: 8px;"
      ng-class="{'connection-lost-bg':vm.connectionLost}" ng-mouseup="vm.mouseUp()">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
-        <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
+        <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
                    ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true" class="md-fab md-mini md-primary">
             <md-icon class="fa" ng-if="!showLegend" md-font-icon="fa-eye"></md-icon>
             <md-icon class="fa" ng-if="showLegend" md-font-icon="fa-eye-slash"></md-icon>
@@ -34,7 +37,7 @@
         <span flex></span>
     </md-toolbar> -->
     <div flex style="margin-top: 4px; position: relative; overflow: auto" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
-        <status-single-level-tree-map relative-draggable="status-top-label" auto-resize="true" layout-mode="dice" height="tree.size.h" width="tree.size.w"
+        <status-single-level-tree-map relative-draggable="status-top-label" auto-resize="true" height="tree.size.h" width="tree.size.w"
                                       offset-left="tree.offset.left" offset-top="tree.offset.top" ng-repeat="tree in vm.customStatusTrees" data="tree"
                                       style="position: absolute; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
                                       ng-class="tree.elementId">

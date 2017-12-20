@@ -1,3 +1,6 @@
+// *******************************************************************
+// TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
+// *******************************************************************
 (function() {
 
     angular.module('katGui.widgets')

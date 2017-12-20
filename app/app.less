@@ -53,26 +53,6 @@
     url('fonts/Roboto/Roboto-Regular.ttf') @ttf;
 }
 
-.rb {
-    font-family: 'Roboto';
-}
-
-@font-face {
-    font-family: 'Roboto Black';
-    src: url('../fonts/Roboto/Roboto-Black.ttf') @ttf,
-    url('fonts/Roboto/Roboto-Black.ttf') @ttf;
-}
-
-.rbB {
-    font-family: 'Roboto Black';
-}
-
-@font-face {
-    font-family: 'Roboto Light';
-    src: url('../fonts/Roboto/Roboto-Light.ttf') @ttf,
-    url('fonts/Roboto/Roboto-Light.ttf') @ttf;
-}
-
 /* Required for Angular UI Bootstrap */
 .nav, .pagination, .carousel a {
     cursor: pointer;
@@ -80,16 +60,13 @@
 
 .avoid-clicks {
     pointer-events: none;
+    cursor: default;
 }
 
 .md-select-menu-container.md-active md-select-menu > * {
     opacity: 1;
     transition: all 0.1s cubic-bezier(0.55, 0, 0.55, 0.2);
 }
-
-//div[role="button"] {
-//    cursor: auto;
-//}
 
 .margin-bottom-25 {
     margin-bottom: 25px;
@@ -142,10 +119,6 @@
     &:focus {
         outline: none;
     }
-}
-
-.toolbar-time-span {
-    color: white;
 }
 
 body {
@@ -389,7 +362,6 @@ md-toast {
     right: 0;
     bottom: 0;
     padding: 0 8px;
-    cursor: pointer;
 }
 
 .animate-show-grow {
@@ -740,6 +712,10 @@ md-chips .md-chip {
     background-color: rgba(244, 67, 54, 0.4) !important;
 }
 
+.interlock-state-error {
+    background-color: #e51c23 !important;
+}
+
 .connection-lost-bg-bright {
     background-color: rgba(244, 67, 54, 1.0) !important;
 }
@@ -770,10 +746,16 @@ pre {
 
 .md-sidenav-right {
     position: fixed;
+    button {
+        min-width: 100%;
+    }
 }
 
 .md-sidenav-left {
     position: fixed;
+    button {
+        min-width: 100%;
+    }
 }
 
 .opacity-50 {
@@ -874,4 +856,11 @@ pre {
 
 md-dialog {
     border-radius: 0 !important;
+}
+
+.opacity-hover {
+    opacity: 0.3;
+    &:hover {
+        opacity: 1.0;
+    }
 }

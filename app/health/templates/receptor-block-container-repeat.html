@@ -1,18 +1,20 @@
-<div ng-repeat="receptor in vm.receptorsData | filter:{subarray:subarray.id} track by $index" class="receptor-status-block md-whiteframe-z1"
-    ng-class="{'maintenance-bg-hover': receptor.maintenance, 'receptor-svg-container-faulty': receptor.faulty}">
+<div ng-repeat="(receptorName, receptor) in vm.receptors" ng-if="!subarray || receptor.subNr === subarray.subNr" class="md-whiteframe-z1 receptor-status-block"
+    ng-class="{'maintenance-bg-hover': vm.sensorValues[receptorName + '_marked_in_maintenance'].value, 'receptor-svg-container-faulty': vm.sensorValues[receptorName + '_marked_faulty'].value}">
     <div class="receptor-status-content" layout="column">
-        <div flex style="font-size: 20px; font-weight: bold" ng-class="{'receptor-graphic-sensors-nominal': receptor.sensors_ok.status === 'nominal', 'receptor-graphic-sensors-error': receptor.sensors_ok.status === 'error', 'receptor-graphic-stow': receptor.mode.value === 'STOW', 'receptor-graphic-stop': receptor.mode.value === 'STOP'}">{{receptor.name}}<i style="font-size: 12px">{{(receptor.subarray !== 'free' && !vm.sortBySubarrays? ' (' + receptor.subarray + ')' : '')}}</i></div>
-        <div title="AP on Target" ng-if="receptor.windstow_active.value === false" class="nominal-item" ng-class="{'stop-item': receptor.mode.value === 'STOP', 'stow-item': receptor.mode.value === 'STOW', 'error-item': receptor.windstow_active.value}">
-            <b>{{receptor.mode.value}}<span ng-show="receptor.lock.value" class="fa fa-asterisk" title="AP on Target"></span></b>
+        <div flex style="font-size: 20px; font-weight: bold" ng-class="vm.getReceptorBlockClass(receptorName)">
+          {{receptorName}}<i style="font-size: 12px">{{(receptor.subNr !== 'free' && !vm.sortBySubarrays? ' (' + receptor.subNr + ')' : '')}}</i>
         </div>
-        <div ng-if="receptor.windstow_active.value" class="windstow-item"><b>WINDSTOW</b></div>
-        <div class="inhibited-item" ng-show="receptor.inhibited.value">INHIBITED</div>
+        <div title="AP on Target" ng-class="vm.getReceptorModeTextClass(receptorName)">
+            <b>{{vm.sensorValues[receptorName + '_mode'].value}}<span ng-show="vm.sensorValues[receptorName + '_lock'].value" class="fa fa-asterisk" title="AP on Target"></span></b>
+        </div>
+        <div ng-show="vm.sensorValues[receptorName + '_windstow_active'].value" class="windstow-item"><b>WINDSTOW</b></div>
+        <div class="inhibited-item" ng-show="vm.sensorValues[receptorName + '_inhibited'].value">INHIBITED</div>
     </div>
-    <div style="position: absolute; top: 0; right: 0; width: 22px">
+    <div style="position: absolute; top: 0; right: 0; width: 26px">
         <span class="icon-button fa fa-wrench" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor in Maintenance"
-            ng-class="{'maintenance-text opaque': receptor.maintenance}" ng-click="!$root.expertOrLO || vm.markResourceInMaintenance(receptor); $event.stopPropagation()"></span>
+            ng-class="{'maintenance-text opaque': vm.sensorValues[receptorName + '_marked_in_maintenance'].value}" ng-click="!$root.expertOrLO || vm.markResourceInMaintenance(receptor); $event.stopPropagation()"></span>
         <span class="icon-button fa" md-ink-ripple ng-disabled="!$root.expertOrLO" title="Mark Receptor As Faulty"
-            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !receptor.faulty, 'fa-warning error-text opaque': receptor.faulty}"
+            ng-mousedown="$event.stopPropagation()" ng-class="{'fa-exclamation-circle': !vm.sensorValues[receptorName + '_marked_faulty'].value, 'fa-warning error-text opaque': vm.sensorValues[receptorName + '_marked_faulty'].value}"
             ng-click="!$root.expertOrLO || vm.markResourceFaulty(receptor); $event.stopPropagation()"></span>
     </div>
 </div>

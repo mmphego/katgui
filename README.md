@@ -2,8 +2,8 @@ This project is the Operator user interface for CAM in the MeerKAT project.
 
 After cloning the repo do:
 
-Download and install http://nodejs.org/
-Download and install http://yarnpkg.com/
+- Download and install http://nodejs.org/
+- Download and install http://yarnpkg.com/
 
 Navigate to the project folder
 >yarn install

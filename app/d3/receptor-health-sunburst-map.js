@@ -54,7 +54,7 @@ angular.module('katGui.d3')
 
                 scope.dataName = function () {
                     if (scope.dataMapName instanceof Object) {
-                        return scope.dataMapName.name;
+                        return scope.dataMapName.component || scope.dataMapName.name;
                     } else {
                         return scope.dataMapName;
                     }
@@ -112,8 +112,8 @@ angular.module('katGui.d3')
                             var classStr = '';
                             var dataName = '';
                             if (scope.dataMapName instanceof Object) {
-                                classStr = d.sensor + ' health-full-item ';
-                                dataName = d.sensor;
+                                dataName = d.component + '_' + d.sensor;
+                                classStr = dataName + ' health-full-item ';
                             } else {
                                 classStr = d3Util.createSensorId(d, scope.dataName()) + ' health-full-item ';
                                 dataName = prefix + scope.dataName() + '_' + d.sensor;

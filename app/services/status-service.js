@@ -14,7 +14,6 @@
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
         api.controlledResources = [];
-        api.topStatusTreesSensors = {};
         api.receptorTreesSensors = {};
         api.configHealthSensors = {};
         api.updateQueue = [];
@@ -47,7 +46,6 @@
 
         api.setTopStatusTrees = function (statusTrees) {
             api.topStatusTrees.splice(0, api.topStatusTrees.length);
-            api.topStatusTreesSensors = {};
 
             for (var treeName in statusTrees) {
                 var tree = statusTrees[treeName];
@@ -55,8 +53,12 @@
 
                 tree.children = [];
                 tree.subs.forEach(function (sub) {
-                    tree.children.push({sensor: sub.sensor, name: sub.name});
-                    api.topStatusTreesSensors[sub.sensor] = true;
+                    var newSub = {
+                        prefix: sub.component + '_',
+                        component: sub.component,
+                        sensor: sub.sensor,
+                        name: sub.name};
+                    tree.children.push(newSub);
                 });
             }
         };
@@ -78,8 +80,8 @@
             }
         }
 
-        api.receptorMaintenanceMessageReceived = function (message) {
-            api.resourcesInMaintenance = message.msg_data.value;
+        api.receptorMaintenanceMessageReceived = function (sensor) {
+            api.resourcesInMaintenance = sensor.value;
             var attributes = Object.keys(api.sensorValues);
             for (var i = 0; i < attributes.length; i++) {
                 var sensorName = attributes[i];
@@ -95,6 +97,10 @@
         api.applyPendingUpdates = function () {
             while (api.updateQueue.length > 0) {
                 var sensorName = api.updateQueue.shift();
+                // remove the mon_proxyN from the sensor name
+                if (sensorName.startsWith('mon_')) {
+                  sensorName = sensorName.replace(/^mon_.*agg_/, 'agg_');
+                }
                 d3.selectAll('.health-full-item.' + sensorName).attr('class', function (d) {
                     return api.getClassesOfSensor(d, sensorName, true) + ' health-full-item';
                 });
