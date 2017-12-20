@@ -1,1 +1,1 @@
-1.0.1.dev1555+master.c7d8ab9.dirty
+1.0.0
