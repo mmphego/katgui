@@ -21,7 +21,6 @@
         };
 
         api.verify = function (email, password, role) {
-
             var jwtPayload = { "email": email };
             var msg = window.btoa(JSON.stringify(jwtHeader)) + "." + window.btoa(JSON.stringify(jwtPayload));
             msg = msg.replace(/=/g , "");
@@ -91,12 +90,25 @@
                 $log.info('Lead Operator Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
                 api.connection.send($rootScope.currentUser.email);
+                if (api.reconnectInterval) {
+                    $interval.cancel(api.reconnectInterval);
+                    api.reconnectInterval = null;
+                }
             }
         };
 
         api.onSockJSClose = function () {
             $log.info('Disconnected Lead Operator Connection.');
             api.connection = null;
+            if ($rootScope.loggedIn && $rootScope.currentUser.req_role === 'lead_operator') {
+                // if the lo connection closes but we still want to be lo, try to reconnect
+                // every 10 seconds
+                if (!api.reconnectInterval) {
+                    api.reconnectInterval = $interval(function () {
+                        api.connectListener(false);
+                    }, 10000);
+                }
+            }
         };
 
         api.onSockJSMessage = function (e) {
@@ -105,6 +117,13 @@
         };
 
         api.connectListener = function (skipDeferObject) {
+            if (!$rootScope.loggedIn) {
+                if (api.reconnectInterval) {
+                    $interval.cancel(api.reconnectInterval);
+                    api.reconnectInterval = null;
+                }
+                return;
+            }
             $log.info('Lead Operator Connecting...');
             api.connection = new SockJS(urlBase() + '/alive');
             api.connection.onopen = api.onSockJSOpen;

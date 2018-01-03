@@ -175,7 +175,10 @@
                         }
                     }
 
-                    if (data.name === "katpool_lo_id") {
+                    // ignore lo metadata messages, we are only interested in the latest reading
+                    // a metadata message with a stale value could be received when the sensor cache
+                    // or katpool is restarted
+                    if (data.name === "katpool_lo_id" && !data.description) {
                         $rootScope.katpool_lo_id = data;
                         if ($rootScope.currentUser &&
                             $rootScope.currentUser.req_role === 'lead_operator' &&
