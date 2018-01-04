@@ -415,8 +415,14 @@
             </div>
 
         </md-toolbar>
-        <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" ng-class="{'margin-bottom-25': $root.loggedIn}">
-        </md-content>
+        <div layout="row" flex>
+            <md-content id="ui-view-container-div" ui-view flex class="md-content-padding" layout="column" ng-class="{'margin-bottom-25': $root.loggedIn}">
+            </md-content>
+            <div ng-if="$root.loggedIn && $root.showAlarms" class="alarms-collapse-container" ng-click="$root.collapseAlarms = !$root.collapseAlarms">
+                <span class="alarms-collapse-content fa" ng-class="{ 'fa-caret-left': $root.collapseAlarms, 'fa-caret-right': !$root.collapseAlarms}"></span>
+            </div>
+            <alarms-notifier ng-click="$root.collapseAlarms? $root.collapseAlarms = false : $root.collapseAlarms = true" ng-if="$root.loggedIn"></alarms-notifier>
+        </div>
         <div class="" layout="column" >
             <md-toolbar ng-if="$root.loggedIn" md-theme="{{$root.sys_interlock_state.value === 'NONE'? themePrimary: 'amber'}}" class="main-footer-toolbar md-toolbar-tools-small md-whiteframe-z1" layout="row">
                 <div>
@@ -449,7 +455,6 @@
             </md-toolbar>
         </div>
     </div>
-
 </md-content>
 <div ng-if="$root.loggedIn" class="unselectable toolbar-collapse-button"
         ng-click="vm.toggleNavbar()" title="Expand or Collapse Toolbar" layout="row">
@@ -458,8 +463,6 @@
         <span class="fa" ng-class="{ 'fa-caret-up': vm.showNavbar, 'fa-caret-down': !vm.showNavbar}"></span>
     </div>
 </div>
-
-<alarms-notifier ng-if="$root.loggedIn"></alarms-notifier>
 <!--this button is for d3 created buttons to be able to easily infer the current theme, but we do not need to display it-->
 <md-button  id="btnPrimaryTheme" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" style="display: none"></md-button>
 

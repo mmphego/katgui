@@ -48,7 +48,7 @@
         };
 
         api.playSound = function (key) {
-            if (!$rootScope.disableAlarmSounds && myBuffers[key] && myAudioContext) {
+            if ($rootScope.enableAlarmSounds && myBuffers[key] && myAudioContext) {
                 var source = myAudioContext.createBufferSource();
                 source.buffer = myBuffers[key];
                 source.loop = false;

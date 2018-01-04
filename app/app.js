@@ -149,7 +149,7 @@
             $rootScope.sensorListStrategyType = $localStorage['sensorListStrategyType'];
             $rootScope.sensorListStrategyInterval = $localStorage['sensorListStrategyInterval'];
             $rootScope.logNumberOfLines = $localStorage['logNumberOfLines'];
-            $rootScope.disableAlarmSounds = $localStorage['disableAlarmSounds'];
+            $rootScope.enableAlarmSounds = $localStorage['enableAlarmSounds'];
             $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
 
             if (!angular.isDefined($rootScope.showAlarms)) {
