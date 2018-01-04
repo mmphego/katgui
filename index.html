@@ -421,7 +421,7 @@
             <div ng-if="$root.loggedIn && $root.showAlarms" class="alarms-collapse-container" ng-click="$root.collapseAlarms = !$root.collapseAlarms">
                 <span class="alarms-collapse-content fa" ng-class="{ 'fa-caret-left': $root.collapseAlarms, 'fa-caret-right': !$root.collapseAlarms}"></span>
             </div>
-            <alarms-notifier ng-click="$root.collapseAlarms? $root.collapseAlarms = false : $root.collapseAlarms = true" ng-if="$root.loggedIn"></alarms-notifier>
+            <alarms-notifier ng-click="$root.collapseAlarms? $root.collapseAlarms = false : 1" ng-if="$root.loggedIn"></alarms-notifier>
         </div>
         <div class="" layout="column" >
             <md-toolbar ng-if="$root.loggedIn" md-theme="{{$root.sys_interlock_state.value === 'NONE'? themePrimary: 'amber'}}" class="main-footer-toolbar md-toolbar-tools-small md-whiteframe-z1" layout="row">

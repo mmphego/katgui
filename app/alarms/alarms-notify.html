@@ -1,4 +1,4 @@
-<div ng-show="showAlarms" layout="column" layout-align="start end" class="alarms-notify-list md-whiteframe-z2"
+<div ng-show="showAlarms && alarmsData.length > 0" layout="column" layout-align="start end" class="alarms-notify-list md-whiteframe-z2"
     ng-class="{'alarms-notify-collapsed-list': alarmsData.length === 0 || $root.collapseAlarms}">
     <div class="alarm-item large-alarms-animate" ng-repeat="alarm in alarmsData = ($root.alarmsData | filter:vm.alarmsFilter | orderBy:'severity':true)"
         ng-show="!alarm.hidden" ng-class="{'large-alarm-item': hover || showLargeAlarms,
