@@ -18,21 +18,25 @@
         ];
 
         vm.initSensors = function () {
-            MonitorService.listSensors('all', vm.sensorsRegex);
+            MonitorService.listSensorsHttp('all', vm.sensorsRegex).then(function(result) {
+                result.data.forEach(function (sensor) {
+                    MonitorService.subscribeSensor(sensor);
+                    vm.subscribedSensors.push(sensor);
+                    sensor.date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+                    vm.sensorValues[sensor.name] = sensor;
+                    if (!sensor.original_name) {
+                        sensor.original_name = sensor.name;
+                    }
+                });
+            });
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
             if (sensor.name.search(vm.sensorsRegex) < 0) {
                 return;
             }
-            if (subject.startsWith('req.reply')) {
-                MonitorService.subscribeSensor(sensor);
-                vm.subscribedSensors.push(sensor);
-                vm.sensorValues[sensor.name] = sensor;
-            } else {
-                for (var key in sensor) {
-                    vm.sensorValues[sensor.name][key] = sensor[key];
-                }
+            for (var key in sensor) {
+                vm.sensorValues[sensor.name][key] = sensor[key];
             }
             vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
         });
