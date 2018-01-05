@@ -81,7 +81,14 @@
                 var componentSensors = {};
                 var view = StatusService.configHealthSensors[vm.selectedConfigView];
                 if (view) {
-                    MonitorService.listSensors(view.component, view.sensors.join('|'));
+                    MonitorService.listSensorsHttp(view.component, view.sensors.join('|')).then(function (result) {
+                        result.data.forEach(function (sensor) {
+                            MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(sensor);
+                            StatusService.sensorValues[sensor.name] = sensor;
+                            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                        });
+                    });
                 }
             }
         };
@@ -90,19 +97,13 @@
             $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
-        vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 150);
-
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
             var view = StatusService.configHealthSensors[vm.selectedConfigView];
             if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
                 return;
             }
-            if (subject.startsWith('req.reply')) {
-                MonitorService.subscribeSensor(sensor);
-                vm.subscribedSensors.push(sensor);
-            }
-            StatusService.addToUpdateQueue(sensor.name);
             StatusService.sensorValues[sensor.name] = sensor;
+            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
@@ -111,7 +112,6 @@
             vm.subscribedSensors.forEach(function (sensor) {
                 MonitorService.unsubscribeSensor(sensor);
             });
-            $interval.cancel(vm.pendingUpdatesInterval);
             unbindUpdate();
             unbindReconnected();
             StatusService.sensorValues = {};
