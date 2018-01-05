@@ -3,183 +3,73 @@
 }
 
 .treemap-container {
+    text {
+        stroke: transparent;
+    }
+    path, circle, rect {
+        stroke: #fff;
+    }
 }
 
 .unknown-child {
-    background-color: #9E9E9E;
     fill: #9E9E9E;
-    color: #fff;
-    rect {
-        fill: #9E9E9E;
-    }
-    rect.health-full-item {
-        stroke: #fff;
-    }
     text {
         stroke: transparent;
         fill: black;
-        font-weight: bold;
     }
-}
-
-.unknown-child-text {
-    fill: black;
-    stroke: transparent;
-    font-weight: bold;
 }
 
 .nominal-child {
-    background-color: #4CAF50;
     fill: #4CAF50;
-    color: #fff;
-    rect {
-        fill: #4CAF50;
-    }
-    rect.health-full-item {
-        stroke: #fff;
-    }
     text {
-        stroke: transparent;
         fill: white;
-        font-weight: bold;
     }
-}
-
-.nominal-child-text {
-    fill: white;
-    stroke: transparent;
-    font-weight: bold;
 }
 
 .warn-child {
-    background-color: #FFC107;
-    fill: #FFC107 !important;
-    color: #fff;
-    rect {
-        fill: #FFC107;
-    }
-    rect.health-full-item {
-        stroke: #fff;
-    }
+    fill: #FFC107;
     text {
-        stroke: transparent;
         fill: black;
-        font-weight: bold;
     }
-}
-
-.warn-child-text {
-    fill: black;
-    stroke: transparent;
-    font-weight: bold;
 }
 
 .error-child {
-    background-color: #F44336;
     fill: #F44336;
-    color: #fff;
-    rect {
-        fill: #F44336;
-    }
-    rect.health-full-item {
-        stroke: #fff;
-    }
     text {
-        stroke: transparent;
         fill: white;
-        font-weight: bold;
     }
-}
-
-.error-child-text {
-    fill: white;
-    stroke: transparent;
-    font-weight: bold;
 }
 
 .failure-child {
-    background-color: #3F51B5;
-    fill: #3F51B5 !important;
-    color: #fff;
-    rect {
-        fill: #3F51B5;
-    }
-    rect.health-full-item {
-        stroke: #fff;
-    }
+    fill: #3F51B5;
     text {
-        stroke: transparent;
         fill: white;
-        font-weight: bold;
     }
-}
-
-.failure-child-text {
-    fill: white;
-    stroke: transparent;
-    font-weight: bold;
 }
 
 .unreachable-child {
-    background-color: #EC407A;
-    fill: #EC407A !important;
-    color: #fff;
-    rect {
-        fill: #EC407A;
-    }
-    rect.health-full-item {
-        stroke: #fff;
-    }
+    fill: #EC407A;
     text {
-        stroke: transparent;
         fill: black;
-        font-weight: bold;
     }
 }
 
-.unreachable-child-text {
-    fill: black;
-    stroke: transparent;
-    font-weight: bold;
+.inactive-child {
+    fill: #000;
+    text {
+        fill: white;
+    }
 }
 
 .in-maintenance-child {
     stroke: #9C27B0 !important;
     color: #fff;
     border: 8px solid #9C27B0 !important;
-
     text {
         stroke: transparent;
         fill: white;
         font-weight: bold;
     }
-}
-
-.health-full-item {
-    stroke: #fff !important;
-}
-
-.inactive-child {
-    background-color: #000;
-    fill: #000 !important;
-    color: #fff;
-    rect {
-        fill: #000;
-    }
-    rect.health-full-item {
-        stroke: #fff;
-    }
-    text {
-        stroke: transparent;
-        fill: white;
-        font-weight: bold;
-    }
-}
-
-.inactive-child-text {
-    fill: white;
-    stroke: transparent;
-    font-weight: bold;
 }
 
 .transparent-legend {

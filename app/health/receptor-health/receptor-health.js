@@ -3,14 +3,14 @@
     angular.module('katGui.health')
         .controller('ReceptorHealthCtrl', ReceptorHealthCtrl);
 
-    function ReceptorHealthCtrl($log, $interval, $rootScope, $scope, $localStorage, MonitorService,
+    function ReceptorHealthCtrl($log, $timeout, $interval, $rootScope, $scope, $localStorage, MonitorService,
                                 ConfigService, StatusService, NotifyService) {
 
         var vm = this;
         vm.receptorHealthTree = ConfigService.receptorHealthTree;
         vm.receptorList = StatusService.receptors;
         vm.subscribedSensors = [];
-        vm.mapTypes = ['Treemap', 'Pack', 'Partition', 'Icicle', 'Sunburst'];
+        vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
         vm.receptorSensorsRegex = '';
         vm.receptorAggSensorsRegex = '';
 
@@ -30,9 +30,9 @@
 
         vm.populateTree = function (parent, receptor) {
             if (parent.prefix) {
-                StatusService.receptorAggSensors.push(parent.sensor);
+                StatusService.receptorAggSensors[parent.sensor] = 1;
             } else {
-                StatusService.receptorSensors.push(parent.sensor);
+                StatusService.receptorSensors[parent.sensor] = 1;
             }
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function (child) {
@@ -67,8 +67,8 @@
                 .then(function (result) {
                     ConfigService.getReceptorList()
                         .then(function (receptors) {
-                            StatusService.receptorSensors = ['marked_in_maintenance'];
-                            StatusService.receptorAggSensors = [];
+                            StatusService.receptorSensors = {'marked_in_maintenance': 1};
+                            StatusService.receptorAggSensors = {};
                             StatusService.setReceptorsAndStatusTree(result.data, receptors);
                             StatusService.receptors.forEach(function (receptor) {
                                 vm.populateTree(StatusService.statusData[receptor], receptor);
@@ -81,35 +81,52 @@
 
         vm.initSensors = function () {
             if (StatusService.receptorSensors) {
-                vm.receptorSensorsRegex = StatusService.receptorSensors.join('|');
-                StatusService.receptors.forEach(function (receptor) {
-                    MonitorService.listSensors(receptor, vm.receptorSensorsRegex);
-                });
                 ConfigService.getSystemConfig().then(function(systemConfig) {
-                    vm.receptorAggSensorsRegex = StatusService.receptorAggSensors.join('|');
-                    systemConfig.monitor.system_nodes.split(',').forEach(function (monitorNode) {
-                        MonitorService.listSensors('mon_' + monitorNode, vm.receptorAggSensorsRegex);
+                    vm.receptorAggSensorsRegex = Object.keys(StatusService.receptorAggSensors).join('|');
+                    var monitorNodes = systemConfig.monitor.system_nodes.split(',').map(function (nodeName) {
+                        return 'mon_' + nodeName;
                     });
+                    MonitorService.listSensorsHttp(monitorNodes.join(','), vm.receptorAggSensorsRegex).then(function (result) {
+                        result.data.forEach(function (sensor) {
+                            MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(sensor);
+                            // replace mon_proxyN with agg_
+                            if (sensor.name.startsWith('mon_')) {
+                              sensor.name = sensor.name.replace(/^mon_.*agg_/, 'agg_');
+                            }
+                            StatusService.sensorValues[sensor.name] = sensor;
+                            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                        });
+                    }, function (error) {
+                        $log.error(error);
+                    });
+                });
+
+                vm.receptorSensorsRegex = Object.keys(StatusService.receptorSensors).join('|');
+                MonitorService.listSensorsHttp(StatusService.receptors.join(','), vm.receptorSensorsRegex).then(function (result) {
+                    result.data.forEach(function (sensor) {
+                        MonitorService.subscribeSensor(sensor);
+                        vm.subscribedSensors.push(sensor);
+                        StatusService.sensorValues[sensor.name] = sensor;
+                        d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                    });
+                }, function (error) {
+                    $log.error(error);
                 });
             }
         };
-
-        vm.pendingUpdatesInterval = $interval(StatusService.applyPendingUpdates, 150);
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
             if (sensor.name.search(vm.receptorSensorsRegex) < 0 && sensor.name.search(vm.receptorAggSensorsRegex) < 0) {
                 return;
             }
-            if (subject.startsWith('req.reply')) {
-                MonitorService.subscribeSensor(sensor);
-                vm.subscribedSensors.push(sensor);
-            }
-            StatusService.addToUpdateQueue(sensor.name);
             // remove the mon_proxyN from the sensor name
             if (sensor.name.startsWith('mon_')) {
               sensor.name = sensor.name.replace(/^mon_.*agg_/, 'agg_');
             }
             StatusService.sensorValues[sensor.name] = sensor;
+            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+            console.log(sensor.name);
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
@@ -118,7 +135,6 @@
             vm.subscribedSensors.forEach(function (sensor) {
                 MonitorService.unsubscribeSensor(sensor);
             });
-            $interval.cancel(vm.pendingUpdatesInterval);
             unbindUpdate();
             unbindReconnected();
             StatusService.sensorValues = {};

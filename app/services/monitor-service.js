@@ -256,6 +256,10 @@
             api.sendMonitorCommand('list_sensors', [component, regex]);
         };
 
+        api.listSensorsHttp = function(component, regex, readingOnly) {
+            return $http.get(urlBase() + '/list-sensors/' + component + '/' + encodeURI(regex? regex: '') + '?readingOnly=' + (readingOnly? readingOnly: false));
+        };
+
         api.showAggregateSensorsDialog = function(title, content, event) {
             $mdDialog
                 .show({

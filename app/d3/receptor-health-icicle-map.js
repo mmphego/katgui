@@ -90,7 +90,22 @@ angular.module('katGui.d3')
                     //create a svg:g element for each child node
                     var g = svg.selectAll("g")
                         .data(mapLayout.nodes(root))
-                        .enter().append("rect")
+                        .enter()
+                        .append("rect")
+                        .attr("class", function (d) {
+                            var prefix = d.prefix? d.prefix : '';
+                            var classStr = '';
+                            var dataName = '';
+                            if (scope.dataMapName instanceof Object) {
+                                classStr = dataName = d.sensor;
+                            } else {
+                                classStr = d3Util.createSensorId(d, scope.dataName());
+                                dataName = prefix + scope.dataName() + '_' + d.sensor;
+                            }
+                            classStr += ' ' + (StatusService.sensorValues[dataName] ?
+                                    StatusService.sensorValues[dataName].status : 'inactive') + '-child child';
+                            return classStr;
+                        })
                         .attr("x", function (d) {
                             return x(d.x);
                         })
@@ -103,24 +118,8 @@ angular.module('katGui.d3')
                         .attr("height", function (d) {
                             return y(d.dy);
                         })
-                        //style each element according to its status
-                        .attr("class", function (d) {
-                            var prefix = d.prefix? d.prefix : '';
-                            var classStr = '';
-                            var dataName = '';
-                            if (scope.dataMapName instanceof Object) {
-                                classStr = d.sensor + ' health-full-item ';
-                                dataName = d.sensor;
-                            } else {
-                                classStr = d3Util.createSensorId(d, scope.dataName()) + ' health-full-item ';
-                                dataName = prefix + scope.dataName() + '_' + d.sensor;
-                            }
-                            classStr += (StatusService.sensorValues[dataName] ?
-                                    StatusService.sensorValues[dataName].status : 'inactive') + '-child child';
-                            return classStr;
-                        })
                         .call(function (d) {
-                            d3Util.applyTooltipValues(d, tooltip);
+                            d3Util.applyTooltipValues(d, tooltip, scope.dataName());
                         })
                         .on("click", icicleClicked);
 
@@ -140,22 +139,6 @@ angular.module('katGui.d3')
                         })
                         .text(function (d) {
                             return d.name;
-                        })
-                        .attr("class", function (d) {
-                            var prefix = d.prefix? d.prefix : '';
-                            var dataName = '';
-                            if (scope.dataMapName instanceof Object) {
-                                dataName = d.sensor;
-                            } else {
-                                dataName = prefix + scope.dataName() + '_' + d.sensor;
-                            }
-                            var classString = StatusService.sensorValues[dataName] ?
-                                StatusService.sensorValues[dataName].status : 'inactive';
-                            if (d.depth === 0) {
-                                return classString + '-child-text parent ' + dataName;
-                            } else {
-                                return classString + '-child-text child ' + dataName;
-                            }
                         })
                         .attr("text-anchor", "middle")
                         .attr("transform", function (d) {
