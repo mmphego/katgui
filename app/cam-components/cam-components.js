@@ -23,30 +23,58 @@
                             port: resources[key].port,
                             node: resources[key].node
                         };
-                        vm.resourcesNames[key].nodeman = ConfigService.systemConfig['monitor:monctl'][key] ? 'nm_monctl' : 'nm_proxy';
                     }
-                    for (var resourceName in resources) {
-                        MonitorService.listSensors(resourceName, vm.resourceSensorsRegex);
-                    }
-                    MonitorService.listSensors('sys', '^sys_monitor_');
+                    MonitorService.listSensorsHttp(Object.keys(resources).join(','), vm.resourceSensorsRegex, true)
+                        .then(function(result) {
+                            result.data.forEach(function (sensor) {
+                                MonitorService.subscribeSensor(sensor);
+                                vm.subscribedSensors.push(sensor);
+                                var sensorName = sensor.name.replace(sensor.component + '_', '');
+                                if (vm.resourcesNames[sensor.component]) {
+                                    vm.resourcesNames[sensor.component].sensors[sensorName] = {
+                                        name: sensorName,
+                                        value: sensor.value
+                                    };
+                                }
+                            });
+                        });
+                    MonitorService.listSensorsHttp('sys', '^sys_monitor_', true)
+                        .then(function(result) {
+                            result.data.forEach(function (sensor) {
+                                MonitorService.subscribeSensor(sensor);
+                                vm.subscribedSensors.push(sensor);
+                                var connectedComponent = sensor.name.replace('sys_monitor_', '');
+                                vm.resourcesNames[connectedComponent].connected = sensor.value;
+                            });
+                        });
                 });
         };
 
         // TODO nm_monctl shouldnt work on multinode system???
         vm.stopProcess = function(resourceName) {
-            ControlService.stopProcess('nm_monctl', resourceName);
+            ControlService.stopProcess(vm.getNmForResource(resourceName), resourceName);
         };
 
         vm.startProcess = function(resourceName) {
-            ControlService.startProcess('nm_monctl', resourceName);
+            ControlService.startProcess(vm.getNmForResource(resourceName), resourceName);
         };
 
         vm.restartProcess = function(resourceName) {
-            ControlService.restartProcess('nm_monctl', resourceName);
+            ControlService.restartProcess(vm.getNmForResource(resourceName), resourceName);
         };
 
         vm.killProcess = function(resourceName) {
-            ControlService.killProcess('nm_monctl', resourceName);
+            ControlService.killProcess(vm.getNmForResource(resourceName), resourceName);
+        };
+
+        vm.getNmForResource = function(resourceName) {
+            var systemNodes = $rootScope.systemConfig.system.system_nodes.split(',');
+            for (var i = 0; i < systemNodes.length; i++) {
+                var systemNode = systemNodes[i];
+                if ($rootScope.systemConfig['monitor:' + systemNode][resourceName]) {
+                    return 'nm_' + systemNode;
+                }
+            }
         };
 
         vm.toggleKATCPMessageDevices = function(resourceName, newValue) {
@@ -75,36 +103,19 @@
             if (!sensor.name.startsWith('sys_monitor_') && sensor.name.search(vm.resourceSensorsRegex) < 0) {
                 return;
             }
-            if (subject.startsWith('req.reply')) {
-                MonitorService.subscribeSensor(sensor);
-                vm.subscribedSensors.push(sensor);
-                var sensorName = sensor.name.replace(sensor.component + '_', '');
-                if (sensor.name.indexOf('monitor_') > -1) {
-                    var connectedComponent = sensorName.replace('monitor_', '');
-                    vm.resourcesNames[connectedComponent].connected = sensor.value;
-                } else {
-                    if (vm.resourcesNames[sensor.component]) {
-                        vm.resourcesNames[sensor.component].sensors[sensorName] = {
-                            name: sensorName,
-                            value: sensor.value
-                        };
-                    }
-                }
+            var component;
+            if (sensor.name.indexOf('sys_monitor_') > -1) {
+                component = sensor.name.replace('sys_monitor_', '');
+                vm.resourcesNames[component].connected = sensor.value;
             } else {
-                var component;
-                if (sensor.name.indexOf('sys_monitor_') > -1) {
-                    component = sensor.name.replace('sys_monitor_', '');
-                    vm.resourcesNames[component].connected = sensor.value;
-                } else {
-                    // e.g. sensor.archive.cbf_2.logging_katcpmsgs_devices_enabled
-                    var subjectSplit = subject.split('.');
-                    component = subjectSplit[subjectSplit.length - 2];
-                    var sensorNameFromSubject = subjectSplit[subjectSplit.length - 1];
-                    vm.resourcesNames[component].sensors[sensorNameFromSubject] = {
-                        name: sensorNameFromSubject,
-                        value: sensor.value
-                    };
-                }
+                // e.g. sensor.normal.cbf_2.logging_katcpmsgs_devices_enabled
+                var subjectSplit = subject.split('.');
+                component = subjectSplit[subjectSplit.length - 2];
+                var sensorNameFromSubject = subjectSplit[subjectSplit.length - 1];
+                vm.resourcesNames[component].sensors[sensorNameFromSubject] = {
+                    name: sensorNameFromSubject,
+                    value: sensor.value
+                };
             }
         });
 

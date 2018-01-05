@@ -86,7 +86,7 @@
                     var monitorNodes = systemConfig.monitor.system_nodes.split(',').map(function (nodeName) {
                         return 'mon_' + nodeName;
                     });
-                    MonitorService.listSensorsHttp(monitorNodes.join(','), vm.receptorAggSensorsRegex).then(function (result) {
+                    MonitorService.listSensorsHttp(monitorNodes.join(','), vm.receptorAggSensorsRegex, true).then(function (result) {
                         result.data.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
@@ -103,7 +103,7 @@
                 });
 
                 vm.receptorSensorsRegex = Object.keys(StatusService.receptorSensors).join('|');
-                MonitorService.listSensorsHttp(StatusService.receptors.join(','), vm.receptorSensorsRegex).then(function (result) {
+                MonitorService.listSensorsHttp(StatusService.receptors.join(','), vm.receptorSensorsRegex, true).then(function (result) {
                     result.data.forEach(function (sensor) {
                         MonitorService.subscribeSensor(sensor);
                         vm.subscribedSensors.push(sensor);
@@ -126,7 +126,6 @@
             }
             StatusService.sensorValues[sensor.name] = sensor;
             d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
-            console.log(sensor.name);
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
