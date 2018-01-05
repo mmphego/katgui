@@ -38,13 +38,31 @@
                         components[sub.component].sensors.push(sub.sensor);
                     });
                 });
+                var componentSensors = [];
                 for (var component in components) {
-                    var componentSensorsRegex = components[component].sensors.join('|');
-                    vm.sensorsRegex += componentSensorsRegex + '|';
-                    MonitorService.listSensors(component, componentSensorsRegex);
+                    componentSensors.push(components[component].sensors.join('|'));
                 }
-                vm.sensorsRegex += 'katpool_resources_in_maintenance';
-                MonitorService.listSensors('katpool', 'katpool_resources_in_maintenance');
+                vm.sensorsRegex = componentSensors.join('|');
+                MonitorService.listSensorsHttp('all', vm.sensorsRegex).then(function (result) {
+                    result.data.forEach(function (sensor) {
+                        MonitorService.subscribeSensor(sensor);
+                        vm.subscribedSensors.push(sensor);
+                        vm.sensorValues[sensor.name] = sensor;
+                        var aggIndex = sensor.name.indexOf('agg_');
+                        if (aggIndex > -1) {
+                            vm.aggSensorValues['all_' + sensor.name.slice(aggIndex, sensor.name.length)] = sensor;
+                        }
+                    });
+                });
+
+                vm.sensorsRegex += '|resources_in_maintenance';
+                MonitorService.listSensorsHttp('katpool', 'resources_in_maintenance', true).then(function (result) {
+                    result.data.forEach(function (sensor) {
+                        MonitorService.subscribeSensor(sensor);
+                        vm.subscribedSensors.push(sensor);
+                        vm.sensorValues[sensor.name] = sensor;
+                    });
+                });
             }
         };
 
@@ -59,9 +77,9 @@
                     inMaintenance.value.indexOf(sub.component) > -1)) {
                     statusClassResult.push('in-maintenance-child');
                 }
-                statusClassResult.push(sensorValue.status + '-child');
+                statusClassResult.push(sensorValue.status + '-item');
             } else {
-                statusClassResult.push('inactive-child');
+                statusClassResult.push('inactive-item');
             }
             return statusClassResult.join(' ');
         };
@@ -85,10 +103,6 @@
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
             if (sensor.name.search(vm.sensorsRegex) < 0) {
                 return;
-            }
-            if (subject.startsWith('req.reply')) {
-                MonitorService.subscribeSensor(sensor);
-                vm.subscribedSensors.push(sensor);
             }
             vm.sensorValues[sensor.name] = sensor;
             var aggIndex = sensor.name.indexOf('agg_');
