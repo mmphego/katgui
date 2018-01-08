@@ -82,7 +82,11 @@
         vm.initSensors = function() {
             var startDate = vm.getTimestampFromHistoricalRange();
             vm.dataTimeWindow = new Date().getTime() - startDate;
-            MonitorService.listSensors('anc', vm.sensorsRegex);
+            MonitorService.listSensorsHttp('anc', vm.sensorsRegex, true).then(function (result) {
+                result.data.forEach(function (sensor) {
+                    vm.sensorUpdateMessage(null, sensor);
+                });
+            });
             vm.ancSensors.forEach(function(sensorName) {
                 MonitorService.subscribeSensorName('anc', sensorName);
             });
