@@ -261,14 +261,20 @@
             if (regex.length > 100) {
                 var req = {
                     method: 'post',
-                    url: urlBase() + '/list-sensors/' + component + '?readingOnly=' + (readingOnly? readingOnly: false),
+                    url: urlBase() + '/list-sensors/' + component +
+                        '?readingOnly=' + (readingOnly ? readingOnly : false),
                     headers: {},
-                    data: {name_filter: regex}
+                    data: {
+                        name_filter: regex
+                    }
                 };
                 req.headers['Content-Type'] = 'application/json';
                 return $http(req);
             } else {
-                return $http.get(urlBase() + '/list-sensors/' + component + '?name_filter=' + encodeURI(regex? regex: '') + '&readingOnly=' + (readingOnly? readingOnly: false));
+                return $http.get(
+                    urlBase() + '/list-sensors/' + component +
+                    '?name_filter=' + encodeURI(regex ? regex : '') +
+                    '&readingOnly=' + (readingOnly ? readingOnly : false));
             }
         };
 

@@ -48,17 +48,17 @@
                         vm.receptors[receptorName] = receptor;
                     });
                     //systemConfig.system.ants example: m000,m001,m002
-                    MonitorService.listSensorsHttp(systemConfig.system.ants, vm.sensorsToConnectRegex).then(function(result) {
+                    MonitorService.listSensorsHttp(systemConfig.system.ants, vm.sensorsToConnectRegex, true).then(function(result) {
                         result.data.forEach(function(sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
                             vm.sensorUpdateMessage(null, sensor);
                         });
                     });
-                    var subarray_names = systemConfig.subarrayNrs.map(function(subNr) {
+                    var subarrayNames = systemConfig.subarrayNrs.map(function(subNr) {
                         return 'subarray_' + subNr;
                     });
-                    MonitorService.listSensorsHttp(subarray_names, 'pool_resources$').then(function(result) {
+                    MonitorService.listSensorsHttp(subarrayNames.join(','), 'pool_resources$', true).then(function(result) {
                         result.data.forEach(function(sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
