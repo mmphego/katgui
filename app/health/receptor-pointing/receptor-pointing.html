@@ -46,12 +46,12 @@
                  style="overflow: visible; display: inline-block" ng-class="{'border-black-2px': receptor.showHorizonMask}"
                  ng-mouseenter="vm.receptorHoverName=receptorName" ng-mouseleave="vm.receptorHoverName=''">
                 <div class="receptor-legend-item-text">{{receptorName}}</div>
-                <span ng-show="vm.sensorValues[receptorName + '_mode'].value === 'POINT'" class="pointing-showing">P</span>
-                <span ng-show="vm.sensorValues[receptorName + '_lock'].value" class="fa fa-asterisk on-target-span"
+                <span ng-show="vm.receptors[receptorName].mode.value === 'POINT'" class="pointing-showing">P</span>
+                <span ng-show="vm.receptors[receptorName].lock.value" class="fa fa-asterisk on-target-span"
                       title="AP on Target"></span>
-                <span ng-show="vm.sensorValues[receptorName + '_inhibited'].value" class="fa fa-ban inhibited-showing"
+                <span ng-show="vm.receptors[receptorName].inhibited.value" class="fa fa-ban inhibited-showing"
                       title="Inhibited"></span>
-                <span ng-show="vm.sensorValues[receptorName + '_mode'].value === 'STOW'" class="fa fa-dot-circle-o stow-showing"
+                <span ng-show="vm.receptors[receptorName].mode.value === 'STOW'" class="fa fa-dot-circle-o stow-showing"
                       title="Stowed"></span>
             </div>
         </div>
@@ -94,16 +94,16 @@
          style="top: 120px; left: 8px; min-width: 268px"
          layout="column" layout-align="start">
         <span ng-if="vm.receptorHoverName.length > 0" class="{{vm.receptorHoverName+ '_actual'}}" style="width: 100%; text-align: center"><b>{{vm.receptorHoverName}}</b></span>
-        <span>azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_actual_pointm_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_actual_pointm_elev'].value | number:2}}</b></span>
-        <span>azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_pointm_azim'].value | number:2}}</b>, elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_pointm_elev'].value | number:2}}</b> (requested)</span>
-        <span>ra: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_base_ra'].value | number:2}}</b>, dec: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_request_base_dec'].value | number:2}}</b> (requested)</span>
-        <span>Delta sky: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_sky'].value | number:2}}</b></span>
-        <span>Delta azim: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_azim'].value | number:2}}</b>, Delta elev: <b>{{vm.sensorValues[vm.receptorHoverName + '_pos_delta_elev'].value | number:2}}</b></span>
-        <span>Target: <b>{{vm.sensorValues[vm.receptorHoverName + '_target'].value}}</b></span>
-        <span>Lock: <b>{{vm.sensorValues[vm.receptorHoverName + '_lock'].value}}</b></span>
-        <span>Mode: <b>{{vm.sensorValues[vm.receptorHoverName + '_mode'].value}}</b></span>
-        <span>Inhibited: <b>{{vm.sensorValues[vm.receptorHoverName + '_inhibited'].value}}</b></span>
-        <span>Windstow Active: <b>{{vm.sensorValues[vm.receptorHoverName + '_windstow_active'].value}}</b></span>
-        <span>Subarray: <b>{{vm.sensorValues[vm.receptorHoverName + '_sub_nr'].value}}</b></span>
+        <span>azim: <b>{{vm.receptors[vm.receptorHoverName].pos_actual_pointm_azim.value | number:2}}</b>, elev: <b>{{vm.receptors[vm.receptorHoverName].pos_actual_pointm_elev.value | number:2}}</b></span>
+        <span>azim: <b>{{vm.receptors[vm.receptorHoverName].pos_request_pointm_azim.value | number:2}}</b>, elev: <b>{{vm.receptors[vm.receptorHoverName].pos_request_pointm_elev.value | number:2}}</b> (requested)</span>
+        <span>ra: <b>{{vm.receptors[vm.receptorHoverName].pos_request_base_ra.value | number:2}}</b>, dec: <b>{{vm.receptors[vm.receptorHoverName].pos_request_base_dec.value | number:2}}</b> (requested)</span>
+        <span>Delta sky: <b>{{vm.receptors[vm.receptorHoverName].pos_delta_sky.value | number:2}}</b></span>
+        <span>Delta azim: <b>{{vm.receptors[vm.receptorHoverName].pos_delta_azim.value | number:2}}</b>, Delta elev: <b>{{vm.receptors[vm.receptorHoverName].pos_delta_elev.value | number:2}}</b></span>
+        <span>Target: <b>{{vm.receptors[vm.receptorHoverName].target.value}}</b></span>
+        <span>Lock: <b>{{vm.receptors[vm.receptorHoverName].lock.value}}</b></span>
+        <span>Mode: <b>{{vm.receptors[vm.receptorHoverName].mode.value}}</b></span>
+        <span>Inhibited: <b>{{vm.receptors[vm.receptorHoverName].inhibited.value}}</b></span>
+        <span>Windstow Active: <b>{{vm.receptors[vm.receptorHoverName].windstow_active.value}}</b></span>
+        <span>Subarray: <b>{{vm.receptors[vm.receptorHoverName].sub_nr}}</b></span>
     </div>
 </div>
