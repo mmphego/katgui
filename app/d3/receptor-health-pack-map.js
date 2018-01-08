@@ -91,19 +91,18 @@ angular.module('katGui.d3')
                     //create a svg:circle element for each child node
                     svg.selectAll("circle")
                         .data(nodes)
-                        .enter().append("svg:circle")
+                        .enter().append("circle")
                         .attr("class", function (d) {
                             var prefix = d.prefix? d.prefix : '';
                             var classStr = '';
                             var dataName = '';
                             if (scope.dataMapName instanceof Object) {
-                                classStr = d.sensor + ' health-full-item ';
-                                dataName = d.sensor;
+                                classStr = dataName = d.sensor;
                             } else {
-                                classStr = d3Util.createSensorId(d, scope.dataName()) + ' health-full-item ';
+                                classStr = d3Util.createSensorId(d, scope.dataName());
                                 dataName = prefix + scope.dataName() + '_' + d.sensor;
                             }
-                            classStr += (StatusService.sensorValues[dataName] ?
+                            classStr += ' ' + (StatusService.sensorValues[dataName] ?
                                     StatusService.sensorValues[dataName].status : 'inactive') + '-child child';
                             return classStr;
                         })
@@ -120,29 +119,13 @@ angular.module('katGui.d3')
                             return zoomPack(node === d ? root : d);
                         })
                         .call(function (d) {
-                            d3Util.applyTooltipValues(d, tooltip);
+                            d3Util.applyTooltipValues(d, tooltip, scope.dataName());
                         });
 
                     //create a svg:text element for each child node
                     svg.selectAll("text")
                         .data(nodes)
-                        .enter().append("svg:text")
-                        .attr("class", function (d) {
-                            var prefix = d.prefix? d.prefix : '';
-                            var dataName = '';
-                            if (scope.dataMapName instanceof Object) {
-                                dataName = d.sensor;
-                            } else {
-                                dataName = prefix + scope.dataName() + '_' + d.sensor;
-                            }
-                            var classString = StatusService.sensorValues[dataName] ?
-                                StatusService.sensorValues[dataName].status : 'inactive';
-                            if (d.depth === 0) {
-                                return classString + '-child-text parent ' + dataName;
-                            } else {
-                                return classString + '-child-text child ' + dataName;
-                            }
-                        })
+                        .enter().append("text")
                         .attr("x", function (d) {
                             if (d.depth > 0) {
                                 return d.x;
@@ -187,7 +170,7 @@ angular.module('katGui.d3')
                                 return k * d.r;
                             })
                             .call(function (d) {
-                                d3Util.applyTooltipValues(d, tooltip);
+                                d3Util.applyTooltipValues(d, tooltip, scope.dataName());
                             });
 
                         transition.selectAll("text")

@@ -42,7 +42,25 @@
 
         vm.initSensors = function () {
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
-                MonitorService.listSensors(vm.resourceSensorsBeingDisplayed, '.*');
+                MonitorService.listSensorsHttp(vm.resourceSensorsBeingDisplayed, '.*').then(function(result) {
+                    vm.showProgress = false;
+                    result.data.forEach(function (sensor) {
+                        vm.subscribedSensors.push(sensor);
+                        if (sensor.original_name) {
+                            sensor.shortName = sensor.original_name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
+                        } else {
+                            sensor.shortName = sensor.name.replace(vm.resourceSensorsBeingDisplayed + '_', '');
+                        }
+                        sensor.timestamp = moment.utc(sensor.value_ts, 'X').format(MOMENT_DATETIME_FORMAT);
+                        if (sensor.sample_ts) {
+                            sensor.received_timestamp = moment.utc(sensor.sample_ts, 'X').format(MOMENT_DATETIME_FORMAT);
+                        } else {
+                            sensor.received_timestamp = moment.utc().format(MOMENT_DATETIME_FORMAT);
+                        }
+                        vm.sensorValues[sensor.name] = sensor;
+                        vm.sensorsToDisplay.push(sensor);
+                    });
+                });
                 MonitorService.subscribeResource(vm.resourceSensorsBeingDisplayed);
             }
         };
@@ -178,17 +196,6 @@
             }
 
             if (sensor.name.startsWith(vm.resourceSensorsBeingDisplayed)) {
-                // list_sensors request finished
-                if (vm.showProgress && subject.startsWith('req.reply')) {
-                    vm.showProgress = false;
-                    vm.subscribedSensors.push(sensor);
-                }
-                if (sensor.original_name) {
-                    sensor.shortName = sensor.original_name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
-                } else {
-                    sensor.shortName = sensor.name.replace(vm.resourceSensorsBeingDisplayed + '_', '');
-                }
-
                 sensor.timestamp = moment.utc(sensor.value_ts, 'X').format(MOMENT_DATETIME_FORMAT);
                 if (sensor.sample_ts) {
                     sensor.received_timestamp = moment.utc(sensor.sample_ts, 'X').format(MOMENT_DATETIME_FORMAT);

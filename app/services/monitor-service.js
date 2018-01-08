@@ -256,6 +256,28 @@
             api.sendMonitorCommand('list_sensors', [component, regex]);
         };
 
+        api.listSensorsHttp = function(component, regex, readingOnly) {
+            // shouldn't make too long get queries, so change it to a post
+            if (regex.length > 100) {
+                var req = {
+                    method: 'post',
+                    url: urlBase() + '/list-sensors/' + component +
+                        '?readingOnly=' + (readingOnly ? readingOnly : false),
+                    headers: {},
+                    data: {
+                        name_filter: regex
+                    }
+                };
+                req.headers['Content-Type'] = 'application/json';
+                return $http(req);
+            } else {
+                return $http.get(
+                    urlBase() + '/list-sensors/' + component +
+                    '?name_filter=' + encodeURI(regex ? regex : '') +
+                    '&readingOnly=' + (readingOnly ? readingOnly : false));
+            }
+        };
+
         api.showAggregateSensorsDialog = function(title, content, event) {
             $mdDialog
                 .show({

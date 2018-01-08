@@ -91,6 +91,20 @@ angular.module('katGui.d3')
                         .attr("transform", function (d) {
                             return "translate(" + x(d.y) + "," + y(d.x) + ")";
                         })
+                        .attr("class", function (d) {
+                            var prefix = d.prefix? d.prefix : '';
+                            var classStr = '';
+                            var dataName = '';
+                            if (scope.dataMapName instanceof Object) {
+                                classStr = dataName = d.sensor;
+                            } else {
+                                classStr = d3Util.createSensorId(d, scope.dataName());
+                                dataName = prefix + scope.dataName() + '_' + d.sensor;
+                            }
+                            classStr += ' ' + (StatusService.sensorValues[dataName] ?
+                                    StatusService.sensorValues[dataName].status : 'inactive') + '-child child';
+                            return classStr;
+                        })
                         .on("click", click);
 
                     var kx = (width) / root.dx,
@@ -104,23 +118,8 @@ angular.module('katGui.d3')
                         .attr("height", function (d) {
                             return d.dx * ky;
                         })
-                        .attr("class", function (d) {
-                            var prefix = d.prefix? d.prefix : '';
-                            var classStr = '';
-                            var dataName = '';
-                            if (scope.dataMapName instanceof Object) {
-                                classStr = d.sensor + ' health-full-item ';
-                                dataName = d.sensor;
-                            } else {
-                                classStr = d3Util.createSensorId(d, scope.dataName()) + ' health-full-item ';
-                                dataName = prefix + scope.dataName() + '_' + d.sensor;
-                            }
-                            classStr += (StatusService.sensorValues[dataName] ?
-                                    StatusService.sensorValues[dataName].status : 'inactive') + '-child child';
-                            return classStr;
-                        })
                         .call(function (d) {
-                            d3Util.applyTooltipValues(d, tooltip);
+                            d3Util.applyTooltipValues(d, tooltip, scope.dataName());
                         });
 
                     //add the text overlay for each node
@@ -129,22 +128,6 @@ angular.module('katGui.d3')
                         .attr("dy", ".35em")
                         .style("opacity", function (d) {
                             return d.dx * ky > 12 ? 1 : 0;
-                        })
-                        .attr("class", function (d) {
-                            var prefix = d.prefix? d.prefix : '';
-                            var dataName = '';
-                            if (scope.dataMapName instanceof Object) {
-                                dataName = d.sensor;
-                            } else {
-                                dataName = prefix + scope.dataName() + '_' + d.sensor;
-                            }
-                            var classString = StatusService.sensorValues[dataName] ?
-                                StatusService.sensorValues[dataName].status : 'inactive';
-                            if (d.depth === 0) {
-                                return classString + '-child-text parent ' + dataName;
-                            } else {
-                                return classString + '-child-text child ' + dataName;
-                            }
                         })
                         .text(function (d) {
                             return d.name;
@@ -170,7 +153,7 @@ angular.module('katGui.d3')
                                 return d.dx * ky;
                             })
                             .call(function (d) {
-                                d3Util.applyTooltipValues(d, tooltip, scope.dataMapName);
+                                d3Util.applyTooltipValues(d, tooltip, scope.dataName());
                             });
 
                         t.select("text")
