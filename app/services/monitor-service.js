@@ -32,10 +32,8 @@
         api.checkAliveConnectionInterval = 10000;
 
         api.getTimeoutPromise = function() {
-            if (!api.deferredMap['timeoutDefer']) {
-                api.deferredMap['timeoutDefer'] = $q.defer();
-            }
-            return api.deferredMap['timeoutDefer'].promise;
+            api.deferredMap.timeoutDefer = $q.defer();
+            return api.deferredMap.timeoutDefer.promise;
         };
 
         api.initGlobalSensors = function() {
@@ -108,7 +106,7 @@
         api.onSockJSOpen = function() {
             if (api.connection && api.connection.readyState) {
                 $log.info('Monitor Connection Established.');
-                api.deferredMap['connectDefer'].resolve();
+                api.deferredMap.connectDefer.resolve();
                 api.subscribeToDefaultChannels();
                 ConfigService.checkOutOfDateVersion();
             }
@@ -125,8 +123,7 @@
                 $log.warn('Monitor Connection Heartbeat timeout!');
                 api.connection = null;
                 $rootScope.connectedToMonitor = false;
-                api.deferredMap['timeoutDefer'].resolve();
-                api.deferredMap['timeoutDefer'] = null;
+                api.deferredMap.timeoutDefer.resolve();
             }
         };
 
@@ -163,20 +160,6 @@
                         ObsSchedService.receivedScheduleMessage(data);
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
-                    } else if (msg.subject === 'portal.auth.current_lo') {
-                        $rootScope.katpool_lo_id.value = data.lo;
-                        if ($rootScope.currentUser &&
-                            $rootScope.currentUser.req_role === 'lead_operator' &&
-                            $rootScope.katpool_lo_id.value.length > 0 &&
-                            $rootScope.katpool_lo_id.value !== $rootScope.currentUser.email) {
-                            NotifyService.showDialog(
-                                'You have been logged in as the Monitor Role',
-                                'You have lost the Lead Operator Role because ' +
-                                $rootScope.katpool_lo_id.value + ' has assumed the Lead Operator role.');
-                            //$rootScope.logout();
-                            //Do not logout, just loging as a demoted monitor only use
-                            SessionService.verifyAs('read_only');
-                        }
                     } else {
                         // req.reply messages
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
@@ -192,8 +175,23 @@
                         }
                     }
 
-                    if (data.name === "katpool_lo_id") {
+                    // ignore lo metadata messages, we are only interested in the latest reading
+                    // a metadata message with a stale value could be received when the sensor cache
+                    // or katpool is restarted
+                    if (data.name === "katpool_lo_id" && !data.description) {
                         $rootScope.katpool_lo_id = data;
+                        if ($rootScope.currentUser &&
+                            $rootScope.currentUser.req_role === 'lead_operator' &&
+                            $rootScope.katpool_lo_id.value.length > 0 &&
+                            $rootScope.katpool_lo_id.value !== $rootScope.currentUser.email) {
+                            NotifyService.showDialog(
+                                'You have been logged in as the Monitor Role',
+                                'You have lost the Lead Operator Role because ' +
+                                $rootScope.katpool_lo_id.value + ' has assumed the Lead Operator role.');
+                            //$rootScope.logout();
+                            //Do not logout, just loging as a demoted monitor only use
+                            SessionService.verifyAs('read_only');
+                        }
                     } else if (data.name === "sys_interlock_state") {
                         $rootScope.sys_interlock_state = data;
                     } else if (data.name && data.name.startsWith('kataware_alarm')) {
@@ -220,7 +218,7 @@
         };
 
         api.connectListener = function() {
-            api.deferredMap['connectDefer'] = $q.defer();
+            api.deferredMap.connectDefer = $q.defer();
             if (!api.connection) {
                 $log.info('Monitor Connecting...');
                 api.connection = new SockJS(urlBase() + '/client');
@@ -232,16 +230,16 @@
             } else {
                 $timeout(function() {
                     if ($rootScope.connectedToMonitor) {
-                        api.deferredMap['connectDefer'].resolve();
+                        api.deferredMap.connectDefer.resolve();
                     } else {
-                        api.deferredMap['connectDefer'].reject();
+                        api.deferredMap.connectDefer.reject();
                     }
                 }, 1000);
             }
             if (!api.checkAliveInterval) {
                 api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
             }
-            return api.deferredMap['connectDefer'].promise;
+            return api.deferredMap.connectDefer.promise;
         };
 
         api.disconnectListener = function() {
