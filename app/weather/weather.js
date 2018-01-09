@@ -86,6 +86,8 @@
                 result.data.forEach(function (sensor) {
                     vm.sensorUpdateMessage(null, sensor);
                 });
+            }, function(error) {
+                $log.error(error);
             });
             vm.ancSensors.forEach(function(sensorName) {
                 MonitorService.subscribeSensorName('anc', sensorName);

@@ -26,7 +26,7 @@
                     }
                     MonitorService.listSensorsHttp(Object.keys(resources).join(','), vm.resourceSensorsRegex, true)
                         .then(function(result) {
-                            result.data.forEach(function (sensor) {
+                            result.data.forEach(function(sensor) {
                                 MonitorService.subscribeSensor(sensor);
                                 vm.subscribedSensors.push(sensor);
                                 var sensorName = sensor.name.replace(sensor.component + '_', '');
@@ -37,15 +37,19 @@
                                     };
                                 }
                             });
+                        }, function(error) {
+                            $log.error(error);
                         });
                     MonitorService.listSensorsHttp('sys', '^sys_monitor_', true)
                         .then(function(result) {
-                            result.data.forEach(function (sensor) {
+                            result.data.forEach(function(sensor) {
                                 MonitorService.subscribeSensor(sensor);
                                 vm.subscribedSensors.push(sensor);
                                 var connectedComponent = sensor.name.replace('sys_monitor_', '');
                                 vm.resourcesNames[connectedComponent].connected = sensor.value;
                             });
+                        }, function(error) {
+                            $log.error(error);
                         });
                 });
         };

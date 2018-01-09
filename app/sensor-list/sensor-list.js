@@ -60,6 +60,8 @@
                         vm.sensorValues[sensor.name] = sensor;
                         vm.sensorsToDisplay.push(sensor);
                     });
+                }, function(error) {
+                    $log.error(error);
                 });
                 MonitorService.subscribeResource(vm.resourceSensorsBeingDisplayed);
             }

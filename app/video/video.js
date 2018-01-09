@@ -244,6 +244,8 @@
                         vm.zoom = sensor.value;
                     }
                 });
+            }, function(error) {
+                $log.error(error);
             });
         };
 

@@ -54,6 +54,8 @@
                             vm.subscribedSensors.push(sensor);
                             vm.sensorUpdateMessage(null, sensor);
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                     var subarrayNames = systemConfig.subarrayNrs.map(function(subNr) {
                         return 'subarray_' + subNr;
@@ -64,6 +66,8 @@
                             vm.subscribedSensors.push(sensor);
                             vm.sensorUpdateMessage(null, sensor);
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                 });
         };

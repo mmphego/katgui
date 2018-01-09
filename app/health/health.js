@@ -4,7 +4,7 @@
         .controller('HealthCtrl', HealthCtrl);
 
     function HealthCtrl($rootScope, $scope, ConfigService, StatusService, NotifyService,
-        MonitorService, d3Util, $timeout) {
+        MonitorService, d3Util, $timeout, $log) {
 
         var vm = this;
         ConfigService.loadAggregateSensorDetail();
@@ -53,6 +53,8 @@
                             vm.aggSensorValues['all_' + sensor.name.slice(aggIndex, sensor.name.length)] = sensor;
                         }
                     });
+                }, function(error) {
+                    $log.error(error);
                 });
 
                 vm.sensorsRegex += '|resources_in_maintenance';
@@ -62,6 +64,8 @@
                         vm.subscribedSensors.push(sensor);
                         vm.sensorValues[sensor.name] = sensor;
                     });
+                }, function(error) {
+                    $log.error(error);
                 });
             }
         };

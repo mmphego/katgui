@@ -51,6 +51,8 @@
                             vm.showProgress = false;
                             $log.error(error);
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                 });
             }

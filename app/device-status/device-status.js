@@ -28,6 +28,8 @@
                         sensor.original_name = sensor.name;
                     }
                 });
+            }, function(error) {
+                $log.error(error);
             });
         };
 

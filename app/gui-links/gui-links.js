@@ -40,6 +40,8 @@
                     }
                     vm.sensorValues[sensor.name] = sensor;
                 });
+            }, function(error) {
+                $log.error(error);
             });
         };
 

@@ -54,6 +54,8 @@
                             vm.subscribedSensors.push(sensor);
                             vm.sensorValues[sensor.name] = sensor;
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                     MonitorService.listSensorsHttp(subarrayNames.join(','), vm.subarraySensorsToConnectRegex, true).then(function(result) {
                         result.data.forEach(function(sensor) {
@@ -61,6 +63,8 @@
                             vm.subscribedSensors.push(sensor);
                             vm.sensorValues[sensor.name] = sensor;
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                     MonitorService.listSensorsHttp('katpool', 'katpool_pool_resources_', true).then(function(result) {
                         result.data.forEach(function(sensor) {
@@ -84,6 +88,8 @@
                                 });
                             }
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                 });
         };

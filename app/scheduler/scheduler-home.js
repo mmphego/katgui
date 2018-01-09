@@ -865,15 +865,19 @@
                         });
                     }
 
+                    function handleListSensorsError(error) {
+                        $log.error(error);
+                    }
+
                     MonitorService.listSensorsHttp(subarrayNames, vm.subarraySensorNames.join('|'), true)
-                        .then(handleListSensorsResult);
+                        .then(handleListSensorsResult, handleListSensorsError);
                     MonitorService.listSensorsHttp('sched', vm.schedSensorNames.join('|'), true)
-                        .then(handleListSensorsResult);
+                        .then(handleListSensorsResult, handleListSensorsError);
                     MonitorService.listSensorsHttp('katpool', vm.katpoolSensorNames.join('|'), true)
-                        .then(handleListSensorsResult);
+                        .then(handleListSensorsResult, handleListSensorsError);
                     // systemConfig['katconn:resources'].single_ctl example: m011,ptuse_N,cbf_N,sdp_N
                     MonitorService.listSensorsHttp(systemConfig['katconn:resources'].single_ctl, 'state$', true)
-                        .then(handleListSensorsResult);
+                        .then(handleListSensorsResult, handleListSensorsError);
 
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),

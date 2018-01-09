@@ -88,6 +88,8 @@
                             StatusService.sensorValues[sensor.name] = sensor;
                             d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                 }
             }

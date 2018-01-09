@@ -27,6 +27,8 @@
                             vm.subscribedSensors.push(sensor);
                             vm.sensorValues[sensor.name] = sensor;
                         });
+                    }, function(error) {
+                        $log.error(error);
                     });
                 }, function(result) {
                     NotifyService.showSimpleDialog('Error', 'Error retrieving receptor list, please contact CAM support.');
