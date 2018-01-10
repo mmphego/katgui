@@ -233,21 +233,30 @@
         }
 
         vm.initSensors = function() {
-            MonitorService.listSensors('anc', vm.sensorsRegex);
+            MonitorService.listSensorsHttp('anc', vm.sensorsRegex, true).then(function (result) {
+                result.data.forEach(function (sensor) {
+                    MonitorService.subscribeSensor(sensor);
+                    vm.subscribedSensors.push(sensor);
+                    vm.sensorValues[sensor.name] = sensor;
+                    if (sensor.name.endsWith(vm.vds_name + '_focus_position')) {
+                        vm.focus = sensor.value;
+                    } else if (sensor.name.endsWith(vm.vds_name + '_zoom_position')) {
+                        vm.zoom = sensor.value;
+                    }
+                });
+            }, function(error) {
+                $log.error(error);
+            });
         };
 
         var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
             if (sensor.name.search(vm.sensorsRegex) < 0) {
                 return;
             }
-            if (subject.startsWith('req.reply')) {
-                MonitorService.subscribeSensor(sensor);
-                vm.subscribedSensors.push(sensor);
-            }
             vm.sensorValues[sensor.name] = sensor;
-            if (sensor.name === vm.vds_name + '_focus_position') {
+            if (sensor.name.endsWith(vm.vds_name + '_focus_position')) {
                 vm.focus = sensor.value;
-            } else if (sensor.name === vm.vds_name + '_zoom_position') {
+            } else if (sensor.name.endsWith(vm.vds_name + '_zoom_position')) {
                 vm.zoom = sensor.value;
             }
         });

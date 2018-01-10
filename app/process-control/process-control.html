@@ -1,8 +1,9 @@
-<div ng-controller="ProcessControlCtrl as vm" layout="column" layout-wrap layout-align="start start">
+<!-- <div ng-controller="ProcessControlCtrl as vm" layout="column" layout-wrap layout-align="start start"> -->
+<div ng-controller="ProcessControlCtrl as vm">
     <div flex class="overlay-progress-circular" layout="row" layout-align="center center" ng-if="vm.showProgress">
         <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
-    <div ng-repeat="nmKey in $root.objectKeys(vm.nodemans) | orderBy:nmKey track by nmKey" style="margin: 8px; min-width: 320px; max-width: 320px">
+    <div ng-repeat="nmKey in $root.objectKeys(vm.nodemans) | orderBy:vm.sortNodemans track by nmKey" class="nm-process-list-container">
         <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="start center"
           ng-init="vm[nmKey + 'showDetails'] = true">
             <span flex ng-init="vm[nmKey + 'showProcList'] = true" ng-click="vm[nmKey + 'showProcList'] = !vm[nmKey + 'showProcList']">
@@ -21,34 +22,21 @@
             <div ng-repeat="process in vm.nodemans[nmKey].processes | orderBy:'name'" class="process-control-container"
                 ng-click="vm.toggleProcessDetail(process)">
                 <div flex role="heading" class="process-control-bg-transition md-whiteframe-z1"
-                  style="padding: 6px; cursor: pointer" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.sensorValues[process.runningSensor].showDetail}">
+                  style="padding: 2px; cursor: pointer" layout="row" layout-align="start center" ng-class="{'bg-light-grey-0-3': vm.sensorValues[process.runningSensor].showDetail}">
                     <span ng-class="{'green-color': vm.sensorValues[process.runningSensor].value, 'red-color': !vm.sensorValues[process.runningSensor].value}"
                         style="width: 160px; margin: 0;"><b>{{process.name | uppercase}}</b></span>
 
                     <div layout="row" style="position: absolute; right: 0; top: 0">
-                        <md-button ng-click="vm.tailProcess(nmKey, process); $event.stopPropagation()"
-                          title="Tail last 30 lines of process log">
-                            <i class="fa fa-file-text-o"></i>
-                        </md-button>
-                        <md-button ng-show="$root.expertOrLO && !vm.sensorValues[process.runningSensor].value"
-                          ng-click="vm.startProcess(nmKey, process); $event.stopPropagation()" title="Start Process">
-                            <i class="fa fa-play"></i>
-                        </md-button>
-                        <md-button ng-show="$root.expertOrLO && vm.sensorValues[process.runningSensor].value"
-                          ng-click="vm.restartProcess(nmKey, process); $event.stopPropagation()"
-                          title="Restart Process">
-                            <i class="fa fa-refresh"></i>
-                        </md-button>
-                        <md-button ng-show="$root.expertOrLO && vm.sensorValues[process.runningSensor].value"
-                          ng-click="vm.killProcess(nmKey, process); $event.stopPropagation()"
-                          title="Kill Process">
-                            <i class="fa fa-remove"></i>
-                        </md-button>
-                        <md-button ng-show="$root.expertOrLO && vm.sensorValues[process.runningSensor].value"
-                          ng-click="vm.stopProcess(nmKey, process); $event.stopPropagation()"
-                          title="Stop Process">
-                            <i class="fa fa-stop"></i>
-                        </md-button>
+                        <span class="icon-button fa fa-file-text-o" md-ink-ripple title="Tail last 30 lines of process log"
+                            ng-click="vm.tailProcess(nmKey, process); $event.stopPropagation()"></span>
+                        <span class="icon-button fa fa-play" md-ink-ripple ng-show="$root.expertOrLO && !vm.sensorValues[process.runningSensor].value"
+                            title="Restart Process" ng-click="vm.startProcess(nmKey, process); $event.stopPropagation()"></span>
+                        <span class="icon-button fa fa-refresh" md-ink-ripple ng-show="$root.expertOrLO && vm.sensorValues[process.runningSensor].value"
+                            title="Restart Process" ng-click="vm.restartProcess(nmKey, process); $event.stopPropagation()"></span>
+                        <span class="icon-button fa fa-remove" md-ink-ripple ng-show="$root.expertOrLO && vm.sensorValues[process.runningSensor].value"
+                            title="Kill Process" ng-click="vm.killProcess(nmKey, process); $event.stopPropagation()"></span>
+                        <span class="icon-button fa fa-stop" md-ink-ripple ng-show="$root.expertOrLO && vm.sensorValues[process.runningSensor].value"
+                            title="Stop Process" ng-click="vm.stopProcess(nmKey, process); $event.stopPropagation()"></span>
                     </div>
                 </div>
                 <div ng-if="vm.sensorValues[process.runningSensor].showDetail" style="cursor: auto" ng-click="$event.stopPropagation()">
