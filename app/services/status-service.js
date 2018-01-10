@@ -1,5 +1,5 @@
 /*jshint loopfunc: true */
-(function () {
+(function() {
 
     angular.module('katGui.services')
         .service('StatusService', StatusService);
@@ -18,17 +18,17 @@
         api.configHealthSensors = {};
         api.updateQueue = [];
 
-        api.addToUpdateQueue = function (sensor) {
+        api.addToUpdateQueue = function(sensor) {
             api.updateQueue.push(sensor);
         };
 
-        api.setReceptorsAndStatusTree = function (statusTree, receptors) {
+        api.setReceptorsAndStatusTree = function(statusTree, receptors) {
             api.receptors.splice(0, api.receptors.length);
-            receptors.forEach(function (receptor) {
+            receptors.forEach(function(receptor) {
                 api.receptors.push(receptor);
             });
 
-            api.controlledResources.forEach(function (resource) {
+            api.controlledResources.forEach(function(resource) {
                 var newStatusDataResource = {};
                 if (api.statusData[resource]) {
                     newStatusDataResource = api.statusData[resource];
@@ -44,7 +44,7 @@
             });
         };
 
-        api.setTopStatusTrees = function (statusTrees) {
+        api.setTopStatusTrees = function(statusTrees) {
             api.topStatusTrees.splice(0, api.topStatusTrees.length);
 
             for (var treeName in statusTrees) {
@@ -52,19 +52,20 @@
                 api.topStatusTrees.push(tree);
 
                 tree.children = [];
-                tree.subs.forEach(function (sub) {
+                tree.subs.forEach(function(sub) {
                     var newSub = {
                         prefix: sub.component + '_',
                         component: sub.component,
                         sensor: sub.sensor,
-                        name: sub.name};
+                        name: sub.name
+                    };
                     tree.children.push(newSub);
                 });
             }
         };
 
         function applyValueToSensor(node, sensorName, value, rootName) {
-            var prefix = node.prefix? node.prefix : '';
+            var prefix = node.prefix ? node.prefix : '';
             if (sensorName === prefix + rootName + '_' + node.sensor) {
                 if (!node.sensorValue) {
                     node.sensorValue = {};
@@ -72,54 +73,37 @@
                 for (var attr in value) {
                     node.sensorValue[attr] = value[attr];
                 }
-            }
-            else if (node.children && node.children.length > 0) {
+            } else if (node.children && node.children.length > 0) {
                 for (var child in node.children) {
                     applyValueToSensor(node.children[child], sensorName, value, rootName);
                 }
             }
         }
 
-        api.receptorMaintenanceMessageReceived = function (sensor) {
+        api.receptorMaintenanceMessageReceived = function(sensor) {
+            // TODO redo
             api.resourcesInMaintenance = sensor.value;
             var attributes = Object.keys(api.sensorValues);
             for (var i = 0; i < attributes.length; i++) {
                 var sensorName = attributes[i];
-                d3.selectAll('rect.health-full-item.' + sensorName).attr('class', function (d) {
+                d3.selectAll('rect.health-full-item.' + sensorName).attr('class', function(d) {
                     return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
-                d3.selectAll('g.health-full-item.' + sensorName).attr('class', function (d) {
+                d3.selectAll('g.health-full-item.' + sensorName).attr('class', function(d) {
                     return api.getClassesOfSensor(d, attributes[i], true) + ' health-full-item';
                 });
             }
         };
 
-        api.applyPendingUpdates = function () {
+        api.applyPendingUpdates = function() {
             while (api.updateQueue.length > 0) {
-                var sensorName = api.updateQueue.shift();
-                // remove the mon_proxyN from the sensor name
-                if (sensorName.startsWith('mon_')) {
-                  sensorName = sensorName.replace(/^mon_.*agg_/, 'agg_');
-                }
-                d3.selectAll('.health-full-item.' + sensorName).attr('class', function (d) {
-                    return api.getClassesOfSensor(d, sensorName, true) + ' health-full-item';
-                });
-                d3.selectAll('text.' + sensorName).attr('class', function (d) {
-                    var classString = api.sensorValues[sensorName] ?
-                        api.sensorValues[sensorName].status : 'inactive';
-                    if (d.depth === 0) {
-                        return classString + '-child-text parent ' + sensorName;
-                    } else {
-                        return classString + '-child-text child ' + sensorName;
-                    }
-                });
-                d3.selectAll('.text-bg-rect.' + sensorName).attr('class', function (d) {
-                    return api.getClassesOfSensor(d, sensorName, false) + ' text-bg-rect';
-                });
+                var sensorName = api.updateQueue.pop();
+                d3.select('.' + sensorName)
+                    .attr('class', api.sensorValues[sensorName].status + '-child ' + sensorName);
             }
         };
 
-        api.getClassesOfSensor = function (d, sensorToUpdateName, checkMaintenance) {
+        api.getClassesOfSensor = function(d, sensorToUpdateName, checkMaintenance) {
             if (!d) {
                 return;
             }
@@ -128,9 +112,9 @@
             if (checkMaintenance && api.resourcesInMaintenance.indexOf(d.sensor.replace('agg_', '').split('_')[0]) > -1) {
                 statusClassResult += ' in-maintenance-child ';
             } else if (d.sensorValue.status !== undefined) {
-               statusClassResult += ' ' + d.sensorValue.status + '-child';
+                statusClassResult += ' ' + d.sensorValue.status + '-child';
             } else if (api.itemsToUpdate[d.sensor]) {
-               statusClassResult += ' ' + api.itemsToUpdate[d.sensor].status + '-child';
+                statusClassResult += ' ' + api.itemsToUpdate[d.sensor].status + '-child';
             }
 
             statusClassResult += d.dx > 300 ? " child-big-text" : " child";

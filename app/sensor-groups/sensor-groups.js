@@ -40,7 +40,20 @@
                         vm.sensorsRegex += '|';
                     }
                     vm.sensorsRegex += regex;
-                    MonitorService.listSensors(component, regex);
+                    MonitorService.listSensorsHttp(component, regex).then(function (result) {
+                        result.data.forEach(function(sensor) {
+                            vm.showProgress = false;
+                            MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(sensor);
+                            vm.sensorValues[sensor.name] = sensor;
+                            vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+                        }, function (error) {
+                            vm.showProgress = false;
+                            $log.error(error);
+                        });
+                    }, function(error) {
+                        $log.error(error);
+                    });
                 });
             }
         };
@@ -90,22 +103,14 @@
             if (!vm.sensorsRegex || sensor.name.search(vm.sensorsRegex) < 0) {
                 return;
             }
-            if (subject.startsWith('req.reply')) {
-                vm.showProgress = false;
-                if (!vm.sensorValues[sensor.name]) {
-                    MonitorService.subscribeSensor(sensor);
-                    vm.subscribedSensors.push(sensor);
+            if (vm.sensorValues[sensor.name]) {
+                for (var key in sensor) {
+                    vm.sensorValues[sensor.name][key] = sensor[key];
                 }
-                vm.sensorValues[sensor.name] = sensor;
-                vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
             } else {
-                if (vm.sensorValues[sensor.name]) {
-                    for (var key in sensor) {
-                        vm.sensorValues[sensor.name][key] = sensor[key];
-                    }
-                }
-                vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+                vm.sensorValues[sensor.name] = sensor;
             }
+            vm.sensorValues[sensor.name].date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
