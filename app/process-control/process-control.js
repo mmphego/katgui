@@ -101,12 +101,9 @@
         };
 
         vm.sortNodemans = function(nmKey) {
-            // sort the nm processes layout, process length first, then proxies second
-            if (nmKey === "nm_sim") {
-                // sort nm_sim last
-                return "z9000";
-            } else if (nmKey.search(/nm_proxy\d/) > -1) {
-                return "z" + (1000 + parseInt(nmKey.split('nm_proxy')[1]));
+            if (nmKey.startsWith("nm_sim") || nmKey.startsWith("nm_proxy")) {
+                // sort nm_proxy and nm_sim last
+                return "z" + nmKey;
             } else {
                 return nmKey;
             }
