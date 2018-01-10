@@ -102,11 +102,13 @@
 
         vm.sortNodemans = function(nmKey) {
             // sort the nm processes layout, process length first, then proxies second
-            if (nmKey.search(/nm_proxy\d/) > -1) {
-                var sortOrder = 1000 - parseInt(nmKey.split('nm_proxy')[1] * 10);
-                return sortOrder - vm.nodemans[nmKey].processes.length;
+            if (nmKey === "nm_sim") {
+                // sort nm_sim last
+                return "z9000";
+            } else if (nmKey.search(/nm_proxy\d/) > -1) {
+                return "z" + (1000 + parseInt(nmKey.split('nm_proxy')[1]));
             } else {
-                return vm.nodemans[nmKey].processes.length;
+                return nmKey;
             }
         };
 

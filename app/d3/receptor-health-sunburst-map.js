@@ -130,6 +130,12 @@ angular.module('katGui.d3')
 
                     //add the text overlay for each element
                     var text = g.append("text")
+                        .classed("parent", function (d) {
+                            return d.depth === 0;
+                        })
+                        .classed("child", function (d) {
+                            return d.depth > 0;
+                        })
                         .attr("transform", function (d) {
                             if (d.depth > 0) {
                                 return "rotate(" + computeTextRotation(d) + ")";
