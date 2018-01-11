@@ -40,13 +40,16 @@
             "subarray_._maintenance",
             "subarray_._delegated_ca",
             "subarray_._pool_resources",
-            "subarray_._number_ants"
+            "subarray_._number_ants",
+            "subarray_._dump_rate"
         ];
         vm.schedSensorNames = [
-            'mode_\\d$'
+            'sched_mode_\\d$'
         ];
         vm.katpoolSensorNames = [
-            'pool_resources_free', 'resources_faulty', 'resources_in_maintenance'
+            'katpool_pool_resources_free',
+            'katpool_resources_faulty',
+            'katpool_resources_in_maintenance'
         ];
 
         if (!$stateParams.subarray_id) {
@@ -870,13 +873,27 @@
                     }
 
                     MonitorService.listSensorsHttp(subarrayNames, vm.subarraySensorNames.join('|'), true)
-                        .then(handleListSensorsResult, handleListSensorsError);
+                        .then(function (result) {
+                            result.data.forEach(function(sensor) {
+                                MonitorService.subscribeSensor(sensor);
+                                vm.subscribedSensors.push(sensor);
+                                if (sensor.name.endsWith('pool_resources')) {
+                                    $timeout(function () {
+                                        vm.sensorUpdateMessage(null, sensor);
+                                    }, 1000, sensor);
+                                } else {
+                                    vm.sensorUpdateMessage(null, sensor);
+                                }
+                            });
+                        }, handleListSensorsError);
                     MonitorService.listSensorsHttp('sched', vm.schedSensorNames.join('|'), true)
                         .then(handleListSensorsResult, handleListSensorsError);
                     MonitorService.listSensorsHttp('katpool', vm.katpoolSensorNames.join('|'), true)
                         .then(handleListSensorsResult, handleListSensorsError);
                     // systemConfig['katconn:resources'].single_ctl example: m011,ptuse_N,cbf_N,sdp_N
-                    MonitorService.listSensorsHttp(systemConfig['katconn:resources'].single_ctl, 'state$', true)
+                    MonitorService.listSensorsHttp(
+                            systemConfig['katconn:resources'].single_ctl,
+                            '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').state$', true)
                         .then(handleListSensorsResult, handleListSensorsError);
 
                     vm.sensorsRegex = [
@@ -894,8 +911,22 @@
             if (sensor.name.search(vm.sensorsRegex) < 0) {
                 return;
             }
+            ObsSchedService.sensorValues[sensor.name] = sensor;
+            ObsSchedService.receivedResourceMessage(sensor);
             if (vm.subarray && sensor.name === vm.subarray.name + '_state' && sensor.value === 'active') {
+                if (!ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources']) {
+                    $timeout(function () {
+                        vm.updateGuiUrls();
+                    }, 3000);
+                    return;
+                }
                 ObsSchedService.guiUrls = {};
+                vm.updateGuiUrls();
+            }
+        };
+
+        vm.updateGuiUrls = function () {
+            if (ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources']) {
                 var resourceNames = ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources'].value;
                 MonitorService.listSensorsHttp(resourceNames, 'gui.urls$', true).then(function(result) {
                     result.data.forEach(function(guiUrlSensor) {
@@ -904,8 +935,6 @@
                     vm.guiUrls = ObsSchedService.guiUrls;
                 });
             }
-            ObsSchedService.sensorValues[sensor.name] = sensor;
-            ObsSchedService.receivedResourceMessage(sensor);
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
