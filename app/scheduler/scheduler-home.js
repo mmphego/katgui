@@ -22,6 +22,8 @@
         vm.connectionLost = false;
         vm.subarray = null;
         vm.products = [];
+        vm.dumpRatesMap = {};
+        vm.defaultDumpRatesMap = {};
         vm.bands = [];
         vm.users = [];
         vm.resourceBusyStates = ['deactivating', 'configuring', 'configured', 'activating'];
@@ -88,6 +90,8 @@
         ConfigService.getProductConfig()
             .then(function(productConfig) {
                 vm.products = [];
+                vm.dumpRatesMap = {};
+                vm.defaultDumpRatesMap = {};
                 var productKeys = Object.keys(productConfig);
                 productKeys.forEach(function(product) {
                     vm.products.push({
@@ -95,6 +99,21 @@
                         sp_product: productConfig[product].sp_product,
                         cbf_product: productConfig[product].cbf_product
                     });
+                    if (productConfig[product].allowed_dumprates) {
+                        vm.dumpRatesMap[product] = productConfig[product].allowed_dumprates.split(',').map(
+                            function(dumpRate) {
+                                return {
+                                    hz: dumpRate,
+                                    seconds: Math.round(1e2 * (1 / dumpRate)) / 1e2
+                                };
+                            });
+                    } else {
+                        vm.dumpRatesMap[product] = [{
+                            hz: productConfig[product].default_dumprate,
+                            seconds:  Math.round(1e2 * (1 / productConfig[product].default_dumprate)) / 1e2
+                        }];
+                    }
+                    vm.defaultDumpRatesMap[product] = productConfig[product].default_dumprate;
                 });
             });
 
@@ -278,7 +297,16 @@
         };
 
         vm.setProduct = function(product) {
-            ObsSchedService.setProduct(vm.subarray.id, product);
+            ObsSchedService.setProduct(vm.subarray.id, product, vm.defaultDumpRatesMap[product]);
+        };
+
+        vm.setDumpRate = function(dumpRate) {
+            if (vm.subarray.product) {
+                ObsSchedService.setProduct(vm.subarray.id, vm.subarray.product, dumpRate);
+            } else {
+                NotifyService.showSimpleDialog(
+                    'Error setting the dump rate', 'Please select a product before selecting a dump rate');
+            }
         };
 
         vm.openProductsDialog = function(event) {
@@ -873,12 +901,12 @@
                     }
 
                     MonitorService.listSensorsHttp(subarrayNames, vm.subarraySensorNames.join('|'), true)
-                        .then(function (result) {
+                        .then(function(result) {
                             result.data.forEach(function(sensor) {
                                 MonitorService.subscribeSensor(sensor);
                                 vm.subscribedSensors.push(sensor);
                                 if (sensor.name.endsWith('pool_resources')) {
-                                    $timeout(function () {
+                                    $timeout(function() {
                                         vm.sensorUpdateMessage(null, sensor);
                                     }, 1000, sensor);
                                 } else {
@@ -915,7 +943,7 @@
             ObsSchedService.receivedResourceMessage(sensor);
             if (vm.subarray && sensor.name === vm.subarray.name + '_state' && sensor.value === 'active') {
                 if (!ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources']) {
-                    $timeout(function () {
+                    $timeout(function() {
                         vm.updateGuiUrls();
                     }, 3000);
                     return;
@@ -925,7 +953,7 @@
             }
         };
 
-        vm.updateGuiUrls = function () {
+        vm.updateGuiUrls = function() {
             if (ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources']) {
                 var resourceNames = ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources'].value;
                 MonitorService.listSensorsHttp(resourceNames, 'gui.urls$', true).then(function(result) {

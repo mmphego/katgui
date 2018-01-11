@@ -50,6 +50,24 @@
             </md-menu-item>
         </md-menu-content>
     </md-menu>
+    <md-menu>
+        <span ng-disabled="!$root.expertOrLO" title="Selected Dump Rate" ng-click="$root.expertOrLO && $mdMenu.open($event)"
+            md-ink-ripple>
+             <i>Dump Rate: </i><b>{{vm.subarray.dump_rate}}hz</b>
+         </span>
+        <md-menu-content>
+            <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
+                <span>
+                    Select a product first...
+                </span>
+            </md-menu-item>
+            <md-menu-item ng-repeat="dumpRate in parent.vm.dumpRatesMap[vm.subarray.product] track by $index">
+                <md-button ng-click="parent.vm.setDumpRate(dumpRate.hz)">
+                    {{dumpRate.hz + 'hz (' + dumpRate.seconds + 's)'}}
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
     <span ng-show="vm.subarray.config_label" title="Config Label" style="margin: 0 12px; cursor: default">
          <i>Config Label: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
      </span>
