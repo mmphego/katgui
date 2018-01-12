@@ -22,6 +22,7 @@
         vm.connectionLost = false;
         vm.subarray = null;
         vm.products = [];
+        vm.bandsMap = {};
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.bands = [];
@@ -104,16 +105,21 @@
                             function(dumpRate) {
                                 return {
                                     hz: dumpRate,
-                                    seconds: Math.round(1e2 * (1 / dumpRate)) / 1e2
+                                    seconds: Math.round(1e2 / dumpRate) / 1e2
                                 };
                             });
                     } else {
                         vm.dumpRatesMap[product] = [{
                             hz: productConfig[product].default_dumprate,
-                            seconds:  Math.round(1e2 * (1 / productConfig[product].default_dumprate)) / 1e2
+                            seconds:  Math.round(1e2 / productConfig[product].default_dumprate) / 1e2
                         }];
                     }
                     vm.defaultDumpRatesMap[product] = productConfig[product].default_dumprate;
+                    if (productConfig[product].allowed_bands) {
+                        vm.bandsMap[product] = productConfig[product].allowed_bands.split(',');
+                    } else {
+                        vm.bandsMap[product] = [];
+                    }
                 });
             });
 
@@ -297,7 +303,19 @@
         };
 
         vm.setProduct = function(product) {
-            ObsSchedService.setProduct(vm.subarray.id, product, vm.defaultDumpRatesMap[product]);
+            if (!product || product.length === 0) {
+                ObsSchedService.setProduct(vm.subarray.id, '');
+            }
+            else if (vm.bandsMap[product].length > 0) {
+                ObsSchedService.setProduct(vm.subarray.id, product, vm.defaultDumpRatesMap[product]);
+                if (vm.bandsMap[product].indexOf(vm.subarray.band) === -1) {
+                    vm.setBand(vm.bandsMap[product][0]);
+                }
+            } else {
+                NotifyService.showSimpleDialog(
+                    'Error setting the product',
+                    'The selected product does not have any allowable bands configured. Cannot set the product ' + product + '.');
+            }
         };
 
         vm.setDumpRate = function(dumpRate) {

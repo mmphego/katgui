@@ -398,6 +398,9 @@
                             }
                         }
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
+                    } else if (sensorName.endsWith('dump_rate')) {
+                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                        api.subarrays[subarrayIndex][trimmedSensorName + '_seconds'] = Math.round(1e2 / sensor.value) / 1e2;
                     } else {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         if (sensorName.endsWith('state')) {
