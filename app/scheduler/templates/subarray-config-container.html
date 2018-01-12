@@ -68,7 +68,7 @@
             </md-menu-item>
             <md-menu-item ng-repeat="dumpRate in parent.vm.dumpRatesMap[vm.subarray.product] track by $index">
                 <md-button ng-click="parent.vm.setDumpRate(dumpRate.hz)">
-                    {{dumpRate.hz + 'hz (' + dumpRate.seconds + 's)'}}
+                    {{dumpRate.hz + 'hz (' + dumpRate.seconds + 's)' + (parent.vm.defaultDumpRatesMap[vm.subarray.product] === dumpRate.hz? ' - default': '')}}
                 </md-button>
             </md-menu-item>
         </md-menu-content>
