@@ -24,7 +24,7 @@
             component: 'kataware',
             filter: 'kataware_alarm_'
         }];
-        api.globalSubscriptions = {};
+        api.globalSubscriptions = [];
 
         //websocket default heartbeat is every 30 seconds
         //so allow for 35 seconds before alerting about timeout
@@ -38,8 +38,36 @@
 
         api.initGlobalSensors = function() {
             api.globalSubscriptionFilters.forEach(function(globalSub) {
-                api.listSensors(globalSub.component, globalSub.filter);
+                api.listSensorsHttp(globalSub.component, globalSub.filter).then(function (result) {
+                    result.data.forEach(function(sensor) {
+                        api.globalSubscriptions.push(sensor);
+                        api.subscribeSensor(sensor);
+                        api.handlePotentialGlobalSensorMessage(sensor);
+                    });
+                });
             });
+        };
+
+        api.handlePotentialGlobalSensorMessage = function (sensor) {
+            if (sensor.name === "katpool_lo_id") {
+                $rootScope.katpool_lo_id = sensor;
+                if ($rootScope.currentUser &&
+                    $rootScope.currentUser.req_role === 'lead_operator' &&
+                    $rootScope.katpool_lo_id.value.length > 0 &&
+                    $rootScope.katpool_lo_id.value !== $rootScope.currentUser.email) {
+                    NotifyService.showDialog(
+                        'You have been logged in as the Monitor Role',
+                        'You have lost the Lead Operator Role because ' +
+                        $rootScope.katpool_lo_id.value + ' has assumed the Lead Operator role.');
+                    //$rootScope.logout();
+                    //Do not logout, just loging as a demoted monitor only use
+                    SessionService.verifyAs('read_only');
+                }
+            } else if (sensor.name === "sys_interlock_state") {
+                $rootScope.sys_interlock_state = sensor;
+            } else if (sensor.name.startsWith('kataware_alarm')) {
+                AlarmsService.receivedAlarmMessage(sensor);
+            }
         };
 
         api.subscribeSensorName = function(component, sensorName) {
@@ -136,7 +164,7 @@
             api.connection = null;
             api.lastHeartBeat = null;
             $rootScope.connectedToMonitor = false;
-            api.globalSubscriptions = {};
+            api.globalSubscriptions = [];
         };
 
         api.onSockJSMessage = function(e) {
@@ -156,60 +184,20 @@
                         api.lastSyncedLST = data.lst;
                     } else if (msg.subject.startsWith('sensor.')) {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                        api.handlePotentialGlobalSensorMessage(data);
                     } else if (msg.subject === 'portal.sched') {
                         ObsSchedService.receivedScheduleMessage(data);
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else {
-                        // req.reply messages
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
-                        if (data && data.component) {
-                            var foundGlobalMatch = api.globalSubscriptionFilters.filter(function(globalSub) {
-                                return globalSub.component === data.component &&
-                                    data.name.match(globalSub.filter);
-                            });
-                            if (foundGlobalMatch && !api.globalSubscriptions[data.name]) {
-                                api.globalSubscriptions[data.name] = data;
-                                api.subscribeSensor(data);
-                            }
-                        }
-                    }
-
-                    // ignore lo metadata messages, we are only interested in the latest reading
-                    // a metadata message with a stale value could be received when the sensor cache
-                    // or katpool is restarted
-                    if (data.name === "katpool_lo_id" && !data.description) {
-                        $rootScope.katpool_lo_id = data;
-                        if ($rootScope.currentUser &&
-                            $rootScope.currentUser.req_role === 'lead_operator' &&
-                            $rootScope.katpool_lo_id.value.length > 0 &&
-                            $rootScope.katpool_lo_id.value !== $rootScope.currentUser.email) {
-                            NotifyService.showDialog(
-                                'You have been logged in as the Monitor Role',
-                                'You have lost the Lead Operator Role because ' +
-                                $rootScope.katpool_lo_id.value + ' has assumed the Lead Operator role.');
-                            //$rootScope.logout();
-                            //Do not logout, just loging as a demoted monitor only use
-                            SessionService.verifyAs('read_only');
-                        }
-                    } else if (data.name === "sys_interlock_state") {
-                        $rootScope.sys_interlock_state = data;
-                    } else if (data.name && data.name.startsWith('kataware_alarm')) {
-                        AlarmsService.receivedAlarmMessage(data);
+                        api.handlePotentialGlobalSensorMessage(data);
                     }
                 } else {
                     msg = e.data;
                     if (msg.error) {
                         $log.error('There was an error sending a jsonrpc request:');
                         $log.error(msg);
-                    } else if (msg.server_hint) {
-                        $log.warn('Server hint received: ' + msg.server_hint);
-                        $log.warn(msg);
-                        if (msg.server_hint === 'retry_later' && msg.hint_method === 'list_sensors') {
-                            $timeout(function() {
-                                api.listSensors(msg.hint_args.component, msg.hint_args.name_filter);
-                            }, msg.hint_args.timedelta);
-                        }
                     } else {
                         $log.warn('Dangling websocket message: ' + msg);
                     }
@@ -244,6 +232,9 @@
 
         api.disconnectListener = function() {
             if (api.connection && api.connection.readyState) {
+                api.globalSubscriptions.forEach(function(sensor) {
+                    api.unsubscribeSensor(sensor);
+                });
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;

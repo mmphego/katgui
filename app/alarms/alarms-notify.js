@@ -9,7 +9,7 @@
             restrict: 'E',
             template: [
             '<div ng-show="showAlarms" layout="column" layout-align="start end" class="alarms-notify-list">',
-            '   <div class="alarm-item large-alarms-animate" ng-repeat="alarm in $root.alarmsData | filter:{priority:\'new\'} | orderBy:\'dateUnix\'" ng-show="!alarm.hidden"' +
+            '   <div class="alarm-item" ng-repeat="alarm in $root.alarmsData | filter:{priority:\'new\'} | orderBy:\'dateUnix\'" ng-show="!alarm.hidden"' +
             '       ng-class="{\'large-alarm-item\': hover || showLargeAlarms, ' +
             '                   \'small-alarm-item\': !hover && !showLargeAlarms, ' +
             '                   \'alarm-critical\': alarm.severity === \'critical\', ' +
