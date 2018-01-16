@@ -156,7 +156,7 @@
         };
 
         vm.viewAlarmSystemConfig = function ($event) {
-            ConfigService.getConfigFileContents('static/alarms/common.conf')
+            ConfigService.getConfigFileContents('katcamconfig/static/alarms/common.conf')
                 .then(function (commonResult) {
                     ConfigService.getConfigFileContents(ConfigService.systemConfig.kataware.alarms)
                         .then(function (alarmsResult) {
