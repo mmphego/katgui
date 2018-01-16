@@ -1,6 +1,6 @@
 <div layout="row" layout-align="center" class="subarray-config-container">
     <span md-ink-ripple ng-click="parent.vm.showSubarrayLogs()" class="icon-button fa fa-file-text-o opaque-hover" title="Show Subarray logs"
-        style="font-size: 18px; height: 22px; padding: 2px 4px"></span>
+        style="font-size: 18px; height: 22px; padding: 2px"></span>
     <md-menu>
         <span ng-disabled="!$root.expertOrLO" title="Control Authority" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
@@ -15,19 +15,6 @@
             <md-menu-item ng-repeat="user in parent.vm.users | orderBy:'email' track by $index">
                 <md-button ng-click="parent.vm.delegateControl(user.email)">
                     {{user.email}}
-                </md-button>
-            </md-menu-item>
-        </md-menu-content>
-    </md-menu>
-    <md-menu>
-        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdMenu.open($event)"
-            md-ink-ripple>
-             <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
-         </span>
-        <md-menu-content>
-            <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
-                <md-button ng-click="parent.vm.setBand(band)">
-                    {{band}}
                 </md-button>
             </md-menu-item>
         </md-menu-content>
@@ -50,7 +37,43 @@
             </md-menu-item>
         </md-menu-content>
     </md-menu>
-    <span ng-show="vm.subarray.config_label" title="Config Label" style="margin: 0 12px; cursor: default">
-         <i>Config Label: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
+    <md-menu>
+        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdMenu.open($event)"
+            md-ink-ripple>
+             <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
+         </span>
+        <md-menu-content>
+            <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
+                <span>
+                    Select a product first...
+                </span>
+            </md-menu-item>
+            <md-menu-item ng-repeat="band in parent.vm.bandsMap[vm.subarray.product] | orderBy:band track by $index">
+                <md-button ng-click="parent.vm.setBand(band)">
+                    {{band}}
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+    <md-menu>
+        <span ng-disabled="!$root.expertOrLO" title="Selected Dump Rate" ng-click="$root.expertOrLO && $mdMenu.open($event)"
+            md-ink-ripple>
+             <i>DR: </i><b>{{vm.subarray.dump_rate}}hz ({{vm.subarray.dump_rate_seconds}}s)</b>
+         </span>
+        <md-menu-content>
+            <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
+                <span>
+                    Select a product first...
+                </span>
+            </md-menu-item>
+            <md-menu-item ng-repeat="dumpRate in parent.vm.dumpRatesMap[vm.subarray.product] track by $index">
+                <md-button ng-click="parent.vm.setDumpRate(dumpRate.hz)">
+                    {{dumpRate.hz + 'hz (' + dumpRate.seconds + 's)' + (parent.vm.defaultDumpRatesMap[vm.subarray.product] === dumpRate.hz? ' - default': '')}}
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu>
+    <span ng-show="vm.subarray.config_label" title="Subarray Config Label" style="cursor: default">
+         <i>CL: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
      </span>
 </div>

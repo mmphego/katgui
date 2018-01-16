@@ -398,6 +398,9 @@
                             }
                         }
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
+                    } else if (sensorName.endsWith('dump_rate')) {
+                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                        api.subarrays[subarrayIndex][trimmedSensorName + '_seconds'] = Math.round(1e2 / sensor.value) / 1e2;
                     } else {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         if (sensorName.endsWith('state')) {
@@ -410,7 +413,8 @@
                                                 return resource[0];
                                             }).join(","),
                                         band: api.subarrays[subarrayIndex].band,
-                                        product: api.subarrays[subarrayIndex].product
+                                        product: api.subarrays[subarrayIndex].product,
+                                        dump_rate: api.subarrays[subarrayIndex].dump_rate
                                     };
                                 }
                             }, 1000);
@@ -687,8 +691,12 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/bands/' + sub_nr + '/' + band)));
         };
 
-        api.setProduct = function(sub_nr, product) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/products/' + sub_nr + '/' + product)));
+        api.setProduct = function(sub_nr, product, dumpRate) {
+            api.handleRequestResponse(
+                $http(createRequest('post', urlBase() + '/product/' + sub_nr, {
+                    product: product,
+                    dump_rate: dumpRate
+                })));
         };
 
         api.delegateControl = function(sub_nr, userName) {
@@ -736,24 +744,25 @@
                     },
                     template: [
                         '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">',
-                            '<div style="padding: 0; margin: 0; overflow: auto" layout="column">',
-                                '<md-toolbar class="md-primary" layout="row" layout-align="center center">',
-                                    '<span flex style="margin: 16px;">{{::title}}</span>',
-                                '</md-toolbar>',
-                                '<div flex layout="column">',
-                                    '<div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">',
-                                    '<md-button style="margin: 0" flex title="Restart {{device}} Device"',
-                                        'ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">',
-                                        '<span style="margin-right: 8px;" class="fa fa-refresh"></span>',
-                                        '<span>{{device}}</span>',
-                                    '</md-button>',
-                                    '</div>',
-                                '</div>',
-                                '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
-                                    '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
-                                '</div>',
-                            '</div>',
-                        '</md-dialog>'].join(''),
+                        '<div style="padding: 0; margin: 0; overflow: auto" layout="column">',
+                        '<md-toolbar class="md-primary" layout="row" layout-align="center center">',
+                        '<span flex style="margin: 16px;">{{::title}}</span>',
+                        '</md-toolbar>',
+                        '<div flex layout="column">',
+                        '<div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">',
+                        '<md-button style="margin: 0" flex title="Restart {{device}} Device"',
+                        'ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">',
+                        '<span style="margin-right: 8px;" class="fa fa-refresh"></span>',
+                        '<span>{{device}}</span>',
+                        '</md-button>',
+                        '</div>',
+                        '</div>',
+                        '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
+                        '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
+                        '</div>',
+                        '</div>',
+                        '</md-dialog>'
+                    ].join(''),
                     targetEvent: event
                 });
         };
@@ -842,13 +851,10 @@
                     return item.id === subarrayNumber;
                 });
                 if (lastKnownConfig.allocations) {
-                    var currentAllocationsSensor = api.sensorValues[api.subarrays[subarrayNumber].name + '_allocations'];
-                    var currentAllocations = [];
-                    if (currentAllocationsSensor) {
-                        currentAllocationsSensor.parsedValue.map(function(resourceAlloc) {
-                            return resourceAlloc[0];
-                        });
-                    }
+                    var currentAllocationsSensor = api.sensorValues[api.subarrays[subarrayNumber - 1].name + '_allocations'];
+                    var currentAllocations = currentAllocationsSensor.parsedValue.map(function(resourceAlloc) {
+                        return resourceAlloc[0];
+                    });
                     var resourcesToAllocate = lastKnownConfig.allocations.split(',');
                     var resourcesGoingToAllocate = _.difference(resourcesToAllocate, currentAllocations);
                     if (resourcesGoingToAllocate.length > 0) {
@@ -858,7 +864,9 @@
                 if (subarray.band !== lastKnownConfig.band) {
                     api.setBand(subarrayNumber, lastKnownConfig.band);
                 }
-                if (subarray.product !== lastKnownConfig.product) {
+                if (lastKnownConfig.dump_rate) {
+                    api.setProduct(subarrayNumber, lastKnownConfig.product ? lastKnownConfig.product : '', lastKnownConfig.dump_rate);
+                } else if (subarray.product !== lastKnownConfig.product) {
                     api.setProduct(subarrayNumber, lastKnownConfig.product);
                 }
             }
