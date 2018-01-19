@@ -1,6 +1,6 @@
-<md-virtual-repeat-container id="scheduleDataRepeat" flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2"
+<div id="scheduleDataRepeat" flex md-theme="{{themePrimaryButtons}}" class="md-whiteframe-z2"
     ng-class="{'maintenance-bg':vm.subarray.maintenance}" style="y-overflow: scroll">
-    <div md-virtual-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray.id})"
+    <div ng-repeat="item in vm.currentScheduleData = (vm.scheduleData | filter:{sub_nr:vm.subarray.id}) track by item.id"
         style="padding: 0 2px 0 0; z-index: 0" ng-class="{'selected-schedule-row md-whiteframe-z3': item === vm.selectedSchedule}" class="schedule-draft-item"
         layout="row" layout-align="start center" ng-click='vm.setSelectedSchedule(item)'>
 
@@ -96,4 +96,4 @@
             </md-menu-content>
         </md-menu>
     </div>
-</md-virtual-repeat-container>
+</div>
