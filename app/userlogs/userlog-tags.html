@@ -31,12 +31,12 @@
                 </span>
             </div>
         </md-toolbar>
-        <md-virtual-repeat-container flex style="padding-left: 16px; margin-bottom: 8px; min-height: 1100px; max-height: 1100px;" class="md-whiteframe-z1">
-            <div md-virtual-repeat="tag in vm.tags | filter:{'activated':!vm.displayDeactivated || tag.activated} | regexSearch:vm.tagsOrderByFields:vm.q | orderBy:vm.tagsOrderBy.value:vm.tagsOrderBy.reverse"
+        <div flex style="padding-left: 16px; margin-bottom: 8px; min-height: 1100px; max-height: 1100px;" class="md-whiteframe-z1">
+            <div ng-repeat="tag in vm.tags | filter:{'activated':!vm.displayDeactivated || tag.activated} | regexSearch:vm.tagsOrderByFields:vm.q | orderBy:vm.tagsOrderBy.value:vm.tagsOrderBy.reverse"
                  class="tag-row-item" layout="row" layout-align="start center" ng-click="vm.editTag(tag, $event)" ng-class="{'deactivated-tag': !tag.activated}">
                 <span class="tag-name">{{tag.name}}</span>
                 <span flex>{{tag.slug}}</span>
             </div>
-        </md-virtual-repeat-container>
+        </div>
     </div>
 </div>

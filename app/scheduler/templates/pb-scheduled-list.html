@@ -19,6 +19,8 @@
             <div class="pb-schedule-item-header-title" ng-click="$root.showSBDetails(pb, $event, 'Program Block: ' + pb.pb_id)">
                 <span ng-show="pb.id > -1">Program Block - <b>{{pb.pb_id}}</b></span>
                 <b ng-show="!pb.id && pb.id !== 0">{{pb.pb_id}}</b>
+                <i style="font-size: 0.8em" title="Total estimated remaining time for this Program Block (formatted as d hh:mm:ss). Only takes into account schedule blocks with the expected_duration_seconds field and does not take into account active Schedule Blocks">
+                    {{pb.expectedDuration? ' - ' + pb.expectedDuration: ''}}</i>
             </div>
             <md-menu ng-show="pb.id > -1" style="position: absolute; top: 4px; right: 4px">
                 <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
