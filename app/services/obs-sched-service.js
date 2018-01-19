@@ -316,7 +316,6 @@
             var deferred = $q.defer();
             $http(createRequest('get', urlBase() + '/pb/observation-schedule'))
                 .then(function(result) {
-                    var pbEstimatedTimeMap = {};
                     api.observationSchedule.splice(0, api.observationSchedule.length);
                     var jsonResult = JSON.parse(result.data.result);
                     jsonResult.forEach(function(jsonItem) {
