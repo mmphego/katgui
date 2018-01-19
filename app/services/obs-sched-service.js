@@ -131,8 +131,8 @@
                     deleteUrl += '?orphan_sbs=1';
                 }
                 $http(createRequest('delete', deleteUrl)).then(function(result) {
-                    if (result.data.pb_error) {
-                        NotifyService.showSimpleDialog('Error deleting Program Block', result.data.error);
+                    if (result.data.result.pb_error) {
+                        NotifyService.showSimpleDialog('Error deleting Program Block', result.data.result);
                     } else {
                         NotifyService.showSimpleToast(result.data.result);
                     }
