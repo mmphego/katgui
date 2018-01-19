@@ -857,8 +857,8 @@
             ObsSchedService.verifyScheduleBlock(sb.sub_nr, sb.id_code);
         };
 
-        vm.setupSubarrayFromPB = function(sub_nr, pb_id, event) {
-            ObsSchedService.setupSubarrayFromPB(sub_nr, pb_id, event);
+        vm.setupSubarrayFromPB = function(sub_nr, pb_id, assignOnly, event) {
+            ObsSchedService.setupSubarrayFromPB(sub_nr, pb_id, assignOnly, event);
         };
 
         vm.removeSBFromAnyPB = function(sb) {
@@ -870,6 +870,18 @@
                     NotifyService.showSimpleDialog('Error removing SB from PB',
                         'Error while removing Schedule Block (' + sb.id_code + ') from Program Block!');
                 });
+        };
+
+        vm.deleteProgramBlock = function(pb, orphanSBs) {
+            ObsSchedService.deleteProgramBlock(pb, orphanSBs);
+        };
+
+        vm.unassignPBFromSubarrays = function(pb) {
+            pb.schedule_blocks.forEach(function(sb) {
+                if (sb.state === 'APPROVED' && sb.sub_nr) {
+                    ObsSchedService.unassignScheduleBlock(sb.sub_nr, sb.id_code);
+                }
+            });
         };
 
         vm.hasScheduleBlocks = function(item) {

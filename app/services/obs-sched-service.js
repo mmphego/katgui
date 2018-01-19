@@ -122,6 +122,26 @@
             });
         };
 
+        api.deleteProgramBlock = function(pb, orphanSBs) {
+            var orphanDialogText = orphanSBs? " and orphan it's uncompleted Schedule Blocks?" : " and all it's uncompleted Schedule Blocks?";
+            NotifyService.showImportantConfirmDialog(
+                null, 'Delete Program Block?', 'Are you sure you want to delete ' + pb.pb_id + orphanDialogText, 'Yes', 'Cancel').then(function() {
+                var deleteUrl = urlBase() + '/pb/' + pb.pb_id;
+                if (orphanSBs) {
+                    deleteUrl += '?orphan_sbs=1';
+                }
+                $http(createRequest('delete', deleteUrl)).then(function(result) {
+                    if (result.data.result.pb_error) {
+                        NotifyService.showSimpleDialog('Error deleting Program Block', result.data.result);
+                    } else {
+                        NotifyService.showSimpleToast(result.data.result);
+                    }
+                }, function(error) {
+                    NotifyService.showHttpErrorDialog('Error sending request', error.data.message);
+                });
+            });
+        };
+
         api.scheduleDraft = function(sub_nr, id) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id + '/schedule')));
         };
@@ -301,12 +321,36 @@
                     jsonResult.forEach(function(jsonItem) {
                         api.observationSchedule.push(jsonItem);
                     });
+                    api.populateObservationPbExpectedDurations();
                     deferred.resolve(api.observationSchedule);
                 }, function(error) {
                     $log.error(error);
                     deferred.reject(error);
                 });
             return deferred.promise;
+        };
+
+        api.populateObservationPbExpectedDurations = function() {
+            api.observationSchedule.forEach(function(pb) {
+                pb.expected_duration_seconds = 0;
+                pb.schedule_blocks.forEach(function (sb) {
+                    if (sb.expected_duration_seconds) {
+                        pb.expected_duration_seconds += sb.expected_duration_seconds;
+                    }
+                });
+                if (pb.expected_duration_seconds) {
+                    var momentDuration = moment.duration(pb.expected_duration_seconds, 'seconds');
+                    var durationHours = momentDuration.hours().toString().padStart(2, 0);
+                    var durationMinutes = momentDuration.minutes().toString().padStart(2, 0);
+                    var durationSeconds = momentDuration.seconds().toString().padStart(2, 0);
+                    var durationStr = durationHours + ':' + durationMinutes + ':' + durationSeconds;
+                    var durationDays = momentDuration.days();
+                    if (durationDays) {
+                        durationStr = durationDays + 'd ' + durationStr;
+                    }
+                    pb.expectedDuration = durationStr;
+                }
+            });
         };
 
         api.getScheduledScheduleBlocks = function() {
@@ -521,6 +565,8 @@
             }
             if (orderChangeCall) {
                 api.throttleGetProgramBlocksObservationSchedule();
+            } else {
+                api.populateObservationPbExpectedDurations();
             }
         };
 
@@ -659,6 +705,8 @@
             }
             if (orderChangeCall) {
                 api.throttleGetProgramBlocksObservationSchedule();
+            } else {
+                api.populateObservationPbExpectedDurations();
             }
         };
 
@@ -872,8 +920,12 @@
             }
         };
 
-        api.setupSubarrayFromPB = function(subarrayNumber, pb_id, event) {
-            $http(createRequest('post', urlBase() + '/subarray/' + subarrayNumber + '/setup/' + pb_id))
+        api.setupSubarrayFromPB = function(subarrayNumber, pb_id, assignOnly, event) {
+            var postUrl = urlBase() + '/subarray/' + subarrayNumber + '/setup/' + pb_id;
+            if (assignOnly) {
+                postUrl += '?assign_only=1';
+            }
+            $http(createRequest('post', postUrl))
                 .then(function(result) {
                     NotifyService.showSetupSubarrayDialog(
                         event, "Setup Subarray " + subarrayNumber + " results", result.data.results, subarrayNumber);
