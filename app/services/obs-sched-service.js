@@ -340,15 +340,10 @@
                 });
                 if (pb.expected_duration_seconds) {
                     var momentDuration = moment.duration(pb.expected_duration_seconds, 'seconds');
-                    var durationHours = momentDuration.hours().toString().padStart(2, 0);
+                    var durationHours = Math.floor(momentDuration.asHours()).toString().padStart(2, 0);
                     var durationMinutes = momentDuration.minutes().toString().padStart(2, 0);
                     var durationSeconds = momentDuration.seconds().toString().padStart(2, 0);
-                    var durationStr = durationHours + ':' + durationMinutes + ':' + durationSeconds;
-                    var durationDays = momentDuration.days();
-                    if (durationDays) {
-                        durationStr = durationDays + 'd ' + durationStr;
-                    }
-                    pb.expectedDuration = durationStr;
+                    pb.expectedDuration = durationHours + ':' + durationMinutes + ':' + durationSeconds;
                 }
             });
         };
@@ -589,7 +584,7 @@
                         api.programBlocks[pbIndex].schedule_blocks.push(sb);
                     }
                 } else {
-                    $log.warning('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
+                    $log.warn('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
                         ', but could not find any program blocks with that id!');
                 }
             } else if (!sb.pb_id) {
