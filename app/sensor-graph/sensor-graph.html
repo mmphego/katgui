@@ -128,9 +128,11 @@
     </div>
 
     <div flex layout="column" class="md-whiteframe-z1" style="margin: 8px;">
-        <md-toolbar layout="row" layout-align="end center" class="md-whiteframe-z1 ">
-            <div flex layout="row" layout-align="center center" md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools-medium">
-                <md-chips flex class="custom-chips" md-on-remove="vm.chipRemoved($chip)" md-on-add="vm.chipAppended($chip)"
+        <md-toolbar layout="row" layout-align="start center" class="md-whiteframe-z1" id="sensor-graph-chips-toolbar"
+            style="min-width: 100%; height: 64px">
+            <div flex layout="row" layout-align="start center" md-theme="{{themePrimaryButtons}}" class="md-toolbar-tools-medium"
+                style="min-height: 100%">
+                <md-chips flex class="custom-chips-large" md-on-remove="vm.chipRemoved($chip)" md-on-add="vm.chipAppended($chip)"
                     md-require-match ng-model="vm.sensorNames" delete-button-label="Remove" delete-hint="Remove from Sensor Graph"
                     title="Filter on Sensor List Results">
                     <md-autocomplete md-autoselect="true" md-search-text="vm.chipsSearchText" md-items="item in vm.chipsQuerySearch(vm.chipsSearchText)"
@@ -148,6 +150,9 @@
                         </span>
                     </md-chip-template>
                 </md-chips>
+            </div>
+            <div resizeable="#sensor-graph-chips-toolbar" style="position: absolute; right: 2px; bottom: 0; cursor: ns-resize">
+                <span flex class="fa fa-arrows-v"></span>
             </div>
         </md-toolbar>
         <multi-line-chart flex data="vm.sensorData" load-options-function="vm.loadOptions" redraw-function="vm.redrawChart"
