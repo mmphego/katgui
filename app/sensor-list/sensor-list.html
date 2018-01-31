@@ -70,7 +70,7 @@
                 <div flex class="overlay-progress-circular" layout="row" layout-align="center center" ng-if="vm.showProgress">
                     <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                 </div>
-                <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | filter:filterByNotNominal | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) track by key"
+                <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) | filter:filterByNotNominal track by key"
                     ng-class="{'selected-for-chart-row': vm.sensorValues[key].selectedForChart}" layout="row"
                     layout-align="start center" ng-click="vm.plotLiveSensorFeed(key)">
                     <span title="" class="resource-sensor-name">{{vm.sensorValues[key].shortName}}</span>
