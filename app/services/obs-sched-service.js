@@ -387,6 +387,45 @@
             return deferred.promise;
         };
 
+        api.getAutoScheduledScheduleBlocks = function() {
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase() + '/sb/auto-scheduled/' + sub_nr))
+                .then(function(result) {
+                    var jsonResult = JSON.parse(result.data.result);
+                    var newScheduleDataIdCodes = [];
+                    for (var i in jsonResult) {
+                        var existingSbIndex = _.findIndex(api.scheduleData, {
+                            id_code: jsonResult[i].id_code
+                        });
+                        if (existingSbIndex > -1) {
+                            //Update existing schedule blocks
+                            api.scheduleData.splice(existingSbIndex, 1);
+                        }
+                        api.scheduleData.push(jsonResult[i]);
+                        newScheduleDataIdCodes.push(jsonResult[i].id_code);
+                    }
+                    //Remove old schedule blocks that has had a state change
+                    var existingSbIdCodes = api.scheduleData.map(function(sb) {
+                        return sb.id_code;
+                    });
+                    var sbIdCodesToRemove = _.difference(existingSbIdCodes, newScheduleDataIdCodes);
+                    sbIdCodesToRemove.forEach(function(sbIdCode) {
+                        var existingSbIndex = _.findIndex(api.scheduleData, function(sb) {
+                            return sb.id_code === sbIdCode;
+                        });
+                        if (existingSbIndex > -1) {
+                            api.scheduleData.splice(existingSbIndex, 1);
+                        }
+                    });
+
+                    deferred.resolve(api.scheduleData);
+                }, function(error) {
+                    $log.error(error);
+                    deferred.reject(error);
+                });
+            return deferred.promise;
+        };
+
         api.throttleGetProgramBlocksObservationSchedule = _.throttle(api.getProgramBlocksObservationSchedule, 300);
 
         api.getCompletedScheduleBlocks = function(sub_nr, max_nr) {
