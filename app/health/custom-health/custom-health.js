@@ -142,7 +142,7 @@
         };
 
         vm.exportToUrl = function() {
-            NotifyService.showSimpleDialog('Exported URL', window.location.href);
+            NotifyService.showSimpleDialog('Exported URL', $location.absUrl());
         };
 
         vm.buildUrl = function () {
