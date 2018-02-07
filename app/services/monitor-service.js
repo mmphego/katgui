@@ -335,17 +335,20 @@
                                 });
                             }
                             for (var component in componentSensors) {
-                                api.listSensors(component, componentSensors[component].sensors.join('|'));
+                                api.listSensorsHttp(component, componentSensors[component].sensors.join('|'), true).then(function (result) {
+                                    result.data.forEach(function (sensor) {
+                                        api.subscribeSensor(sensor);
+                                        if (!$scope.sensorValues[sensor.name]) {
+                                            $scope.subscribedSensors.push(sensor);
+                                        }
+                                        sensor.date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+                                        $scope.sensorValues[sensor.name] = sensor;
+                                    });
+                                });
                             }
                         }
 
                         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
-                            if (subject.startsWith('req.reply')) {
-                                api.subscribeSensor(sensor);
-                                if (!$scope.sensorValues[sensor.name]) {
-                                    $scope.subscribedSensors.push(sensor);
-                                }
-                            }
                             sensor.date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
                             $scope.sensorValues[sensor.name] = sensor;
                         });
@@ -369,7 +372,7 @@
                         '<div layout="column" class="resource-sensors-list" style="margin: 0 16px">',
                         '<div style="height: 24px" ng-repeat="sensor in subscribedSensors | orderBy:\'name\'">',
                         '<div layout="row" class="resource-sensor-item" title="{{sensor.original_name}}">',
-                        '<span style="width: 450px; overflow: hidden; text-overflow: ellipsis">{{sensor.original_name}}</span>',
+                        '<span style="width: 450px; overflow: hidden; text-overflow: ellipsis">{{sensor.original_name? sensor.original_name: sensor.name}}</span>',
                         '<span class="resource-sensor-status-item" ng-class="sensorClass(sensorValues[sensor.name].status)">{{sensorValues[sensor.name].status}}</span>',
                         '<span class="resource-sensor-time-item" title="Timestamp">{{sensorValues[sensor.name].date}}</span>',
                         '<span flex class="resource-sensor-value-item">{{sensorValues[sensor.name].value}}</span>',
