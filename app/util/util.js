@@ -5,6 +5,7 @@ angular.module('katGui.util')
     .directive('autoGrow', autoGrow)
     .factory('KatGuiUtil', katGuiUtil)
     .filter('regexSearch', regexSearchFilter)
+    .filter('regexSearchAndOrder', regexSearchAndOrderFilter)
     .filter('prettifyJSON', function() {
         return function(input) {
             return JSON.prettify.prettyPrint(input);
@@ -310,6 +311,27 @@ function regexSearchFilter() {
         } else {
             return input;
         }
+    };
+}
+
+function regexSearchAndOrderFilter() {
+    return function(input, fields, regex, orderByField, reverse, objDict) {
+        var searchFilterResults = regexSearchFilter()(input, fields, regex, objDict);
+        return searchFilterResults.sort(function (a, b) {
+            var reverseMultiplier = reverse? -1 : 1;
+            if (!orderByField) {
+                orderByField = 'name';
+            }
+            var aString = objDict[a][orderByField].toString();
+            var bString = objDict[b][orderByField].toString();
+            if (aString < bString) {
+                return -1 * reverseMultiplier;
+            } else if (aString > bString) {
+                return 1 * reverseMultiplier;
+            } else {
+                return 0;
+            }
+        });
     };
 }
 

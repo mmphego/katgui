@@ -10,6 +10,7 @@
         }
 
         var api = {};
+        api.resources = {};
         api.receptorHealthTree = {};
         api.receptorList = [];
         api.KATObsPortalURL = null;
@@ -18,6 +19,7 @@
         api.aggregateSensorDetail = null;
         api.resourceGroups = ['Components', 'Proxies'];
         api.sensorGroups = {};
+        api.loadingSystemConfigPromises = [];
 
         api.loadSensorGroups = function () {
             var deferred = $q.defer();
@@ -54,26 +56,43 @@
 
         api.getSystemConfig = function (forceConfig) {
             var deferred = $q.defer();
+            if (api.loadingSystemConfig) {
+                api.loadingSystemConfigPromises.push(deferred);
+                return deferred.promise;
+            }
             if (api.systemConfig && !forceConfig) {
                 $timeout(function () {
                     deferred.resolve(api.systemConfig);
-                }, 1);
+                });
             } else if (urlBase() && KatGuiUtil.isValidURL(urlBase())) {
+                api.loadingSystemConfig = true;
+
                 $http(createRequest('get', urlBase() + '/system-config'))
                     .then(function (result) {
                         api.systemConfig = result.data;
+                        $rootScope.systemConfig = api.systemConfig;
                         deferred.resolve(api.systemConfig);
                         if (api.systemConfig && api.systemConfig.system && api.systemConfig.system.subarray_nrs) {
                             api.systemConfig.subarrayNrs = api.systemConfig.system.subarray_nrs.split(',');
                         }
+                        api.loadingSystemConfig = false;
+                        api.loadingSystemConfigPromises.forEach(function (deferred) {
+                            deferred.resolve(api.systemConfig);
+                        });
+                        api.loadingSystemConfigPromises = [];
                     }, function (message) {
                         $log.error(message);
                         deferred.reject(message);
+                        api.loadingSystemConfig = false;
+                        api.loadingSystemConfigPromises.forEach(function (deferred) {
+                            deferred.reject(api.systemConfig);
+                        });
+                        api.loadingSystemConfigPromises = [];
                     });
             } else {
                 $timeout(function () {
                     deferred.reject("No valid portalUrl has been specified.");
-                }, 1);
+                });
             }
             return deferred.promise;
         };
@@ -243,6 +262,58 @@
             } else {
                 $log.warn('There\'s no cached katgui build date! This could be because katgui is being served uncompiled.');
             }
+        };
+
+        api.listResourcesFromConfig = function () {
+            var deferred = $q.defer();
+            api.getSystemConfig()
+                .then(function (systemConfig) {
+                    for (var node in systemConfig['katconn:resources']) {
+                        var processList = systemConfig['katconn:resources'][node].split(',');
+                        for (var i in processList) {
+                            if (processList[i].length > 0) {
+                                var group = 'Components';
+                                if (node === 'single_ctl') {
+                                    group = 'Proxies';
+                                }
+                                var processClientConfig = systemConfig['katconn:clients'][processList[i]].split(':');
+                                api.resources[processList[i]] = {
+                                    name: processList[i],
+                                    host: processClientConfig[0],
+                                    port: processClientConfig[1],
+                                    node: group
+                                };
+                            }
+                        }
+                    }
+                    deferred.resolve(api.resources);
+                });
+            return deferred.promise;
+        };
+
+        api.listResources = function () {
+            var deferred = $q.defer();
+            $http.get(urlBase() + '/resource')
+                .then(function (result) {
+                    for (var i in result.data) {
+                        for (var node in ConfigService.systemConfig['katconn:resources']) {
+                            var processList = ConfigService.systemConfig['katconn:resources'][node];
+                            if (processList.indexOf(result.data[i].name) > -1) {
+                                var group = 'Components';
+                                if (node === 'single_ctl') {
+                                    group = 'Proxies';
+                                }
+                                result.data[i].node = group;
+                                break;
+                            }
+                        }
+                        api.resources[result.data[i].name] = result.data[i];
+                    }
+                    deferred.resolve(api.resources);
+                }, function (result) {
+                    deferred.reject(result);
+                });
+            return deferred.promise;
         };
 
         function createRequest(method, url) {

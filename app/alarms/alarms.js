@@ -35,7 +35,7 @@
         });
 
     function AlarmsCtrl($rootScope, $scope, ControlService, AlarmsService, ConfigService, $log, NotifyService,
-                        USER_ROLES) {
+                        MonitorService, USER_ROLES) {
 
         var vm = this;
         vm.canOperateAlarms = false;
@@ -174,7 +174,7 @@
             if (item.value.indexOf('agg_') > -1) {
                 var sensorName = item.value.split(',')[2].split(' ')[0];
                 if (ConfigService.aggregateSensorDetail[sensorName]) {
-                    NotifyService.showAggregateSensorsDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+                    MonitorService.showAggregateSensorsDialog('Aggregate Sensor ' + sensorName + ' Details', JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
                 } else {
                     NotifyService.showSimpleToast('Cannot find aggregate sensor details in ConfigService ' + sensorName);
                 }

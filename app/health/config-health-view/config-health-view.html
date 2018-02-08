@@ -1,7 +1,7 @@
 <div flex style="min-width: 600px; min-height: 600px" ng-controller="ConfigHealthViewCtrl as vm">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
         ng-class="{'transparent-legend':transparentLegend && !showLegend}">
-        <md-button flex style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false"
+        <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false"
             ng-click="showLegend = !showLegend" ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true"
             class="md-primary md-raised md-icon-button">
             <span md-theme="white" class="fa fa-eye" ng-show="showLegend" title="Show Legend"></span>

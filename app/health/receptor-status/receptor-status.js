@@ -3,222 +3,155 @@
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
-    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, SensorsService, $state, $interval, $log,
-                                NotifyService, ObsSchedService) {
+    function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, MonitorService, $state, $interval, $log,
+                                NotifyService, ObsSchedService, $timeout) {
 
         var vm = this;
-        vm.receptorsData = [];
-        vm.subarrays = {subarray_free: {id: 'free', state: 'inactive'}};
+        vm.receptors = {};
+        vm.sensorValues = {};
+        vm.subarrays = {subarray_free: {subNr: 'free'}};
         vm.sortBySubarrays = false;
-        vm.showGraphics = true;
-        vm.guid = KatGuiUtil.generateUUID();
-        vm.disconnectIssued = false;
-        vm.connectInterval = null;
-        vm.connectionLost = false;
+        vm.showGraphics = false;
+        vm.subscribedSensors = [];
 
-        vm.receptorSensorsToConnect = [
-            'sensors_ok',
-            'mode',
-            'inhibited',
-            'lock',
-            'windstow_active'
-        ];
+        vm.receptorsSensorsToConnectRegex = [
+            'device_status$',
+            'mode$',
+            'inhibited$',
+            'lock$',
+            'windstow_active$',
+            'marked_in_maintenance$',
+            'marked_faulty$'
+        ].join('|');
 
-        vm.subarraySensorsToConnect = [
-            'state',
-            'allocations',
-            'maintenance'
-        ];
-
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        vm.connectionLost = false;
-                        NotifyService.showSimpleToast('Reconnected :)');
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectionLost = true;
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectionLost = true;
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
-                    }
-                });
-        };
+        vm.subarraySensorsToConnectRegex = [
+            'state$',
+            'maintenance$'
+        ].join('|');
 
         vm.initSensors = function () {
-            vm.receptorsData.splice(0, vm.receptorsData.length);
-            ConfigService.getReceptorList()
-                .then(function (result) {
-                    var receptorSensorsRegex = [];
-                    result.forEach(function (item, index) {
-                        vm.receptorsData.push({name: item, subarray: 'free'});
-                        for (var i = 0; i < vm.receptorSensorsToConnect.length; i++) {
-                            receptorSensorsRegex.push(item + '_' + vm.receptorSensorsToConnect[i]);
-                        }
+            ConfigService.getSystemConfig()
+                .then(function (systemConfig) {
+                    systemConfig.system.ants.split(',').forEach(function (receptorName) {
+                        var receptor = {
+                            name: receptorName
+                        };
+                        vm.receptors[receptorName] = receptor;
+                        MonitorService.listSensors(receptorName, vm.receptorsSensorsToConnectRegex);
                     });
-                    receptorSensorsRegex.push('subarray_._state');
-                    receptorSensorsRegex.push('subarray_._allocations');
-                    receptorSensorsRegex.push('subarray_._maintenance');
-                    for (var i = 1; i <= 4; i++) {
-                        vm.subarrays['subarray_' + i] = {id: i.toString()};
-                    }
-                    receptorSensorsRegex.push('katpool_resources_in_maintenance');
-                    receptorSensorsRegex.push('katpool_resources_faulty');
-                    SensorsService.setSensorStrategies(receptorSensorsRegex.join('|'), 'event-rate', 1, 360);
+                    systemConfig.subarrayNrs.forEach(function(subNr) {
+                        MonitorService.listSensors('subarray_' + subNr, vm.subarraySensorsToConnectRegex);
+                        vm.subarrays['subarray_' + subNr] = {subNr: subNr};
+                    });
+                    MonitorService.listSensors('katpool', 'katpool_pool_resources_');
                 });
         };
-        vm.connectListeners();
 
-        vm.statusMessageReceived = function (event, message) {
-            if (message.value) {
-                var sensor = message.name.split(':')[1];
+        vm.sensorUpdateMessage = function (event, sensor, subject) {
+            if (!sensor.name.startsWith('katpool_pool_resources_') &&
+                    sensor.name.search(vm.receptorsSensorsToConnectRegex) < 0 &&
+                    sensor.name.search(vm.subarraySensorsToConnectRegex) < 0) {
+                return;
+            }
+            if (subject.startsWith('req.reply')) {
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
+            }
+            vm.sensorValues[sensor.name] = sensor;
 
-                vm.receptorsData.forEach(function (receptor) {
-                    if (sensor.startsWith('katpool')) {
-                        if (sensor.endsWith('resources_in_maintenance')) {
-                            receptor.maintenance = false;
-                            var resourcesList = message.value.value.split(',');
-                            resourcesList.forEach(function (res) {
-                                if (receptor.name === res) {
-                                    receptor.maintenance = true;
-                                }
-                            });
-                        }
-                        if (sensor.endsWith('resources_faulty')) {
-                            receptor.faulty = false;
-                            var resourcesList = message.value.value.split(',');
-                            resourcesList.forEach(function (res) {
-                                if (receptor.name === res) {
-                                    receptor.faulty = true;
-                                }
-                            });
-                        }
-                    } else if (sensor.startsWith(receptor.name)) {
-                        receptor[sensor.replace(receptor.name + '_', '')] = message.value;
+            if (sensor.name === 'katpool_pool_resources_free') {
+                sensor.value.split(',').forEach(function (freeReceptor) {
+                    if (vm.receptors[freeReceptor]) {
+                        vm.receptors[freeReceptor].subNr = 'free';
                     }
                 });
-
-                if (sensor.startsWith('subarray_')) {
-                    var resource = sensor.split('_').slice(0, 2).join('_');
-                    var sensorName = sensor.replace(resource + '_', '');
-                    if (sensor.endsWith('allocations')) {
-                        if (message.value.value.length > 0) {
-                            vm.subarrays[resource]['oldAllocations'] = vm.subarrays[resource]['allocations'];
-                            var newAllocations = JSON.parse(message.value.value);
-                            vm.subarrays[resource]['allocations'] = newAllocations;
-                            var oldAllocsToFree = [];
-                            _.each(vm.subarrays[resource]['oldAllocations'], function (oldAllocation) {
-                                var foundOldAlloc = _.find(newAllocations, function (newAllocation) {
-                                   return oldAllocation[0] === newAllocation[0];
-                                });
-                                if (!foundOldAlloc) {
-                                    oldAllocsToFree.push(oldAllocation);
-                                }
-                            });
-                            if (oldAllocsToFree.length > 0) {
-                                oldAllocsToFree.forEach(function (oldAlloc) {
-                                    var receptor = _.find(vm.receptorsData, function (receptor) {
-                                        return receptor.name === oldAlloc[0];
-                                    });
-                                    if (receptor) {
-                                        receptor.subarray = 'free';
-                                    }
-                                });
-                            }
-                        } else {
-                            vm.subarrays[resource]['allocations'] = [];
-                        }
-
-                        var receptorsChangedSubarrays = [];
-
-                        vm.receptorsData.forEach(function (receptor) {
-                            _.find(vm.subarrays[resource].allocations, function (d) {
-                                if (d[0] === receptor.name) {
-                                    var subarrayId = resource.split('_')[1];
-                                    if (subarrayId !== receptor.subarray) {
-                                        receptor.oldSubarray = receptor.subarray;
-                                        receptorsChangedSubarrays.push(receptor);
-                                    }
-                                    receptor.subarray = subarrayId;
-                                    if (d[1] === 'None') {
-                                        receptor.allocatedSubarray = false;
-                                        receptor.assignedSubarray = true;
-                                    } else {
-                                        receptor.allocatedSubarray = true;
-                                        receptor.assignedSubarray = false;
-                                    }
-                                    return true;
-                                }
-                                return false;
-                            });
-                        });
-
-                        //resource moved from one subarray to another
-                        _.each(receptorsChangedSubarrays, function (receptor) {
-                            var oldAlloc = _.find(vm.subarrays['subarray_' + receptor.oldSubarray].allocations, function (d) {
-                                return d[0] === receptor.name;
-                            });
-                            if (oldAlloc) {
-                                var oldAllocIndex = vm.subarrays['subarray_' + receptor.oldSubarray].allocations.indexOf(oldAlloc);
-                                vm.subarrays['subarray_' + receptor.oldSubarray].allocations.splice(oldAllocIndex, 1);
-                            }
-                            delete receptor.oldSubarray;
-                        });
-                    } else {
-                        vm.subarrays[resource][sensorName] = message.value.value;
+            } else if (sensor.name.startsWith('katpool_pool_resources_')) {
+                var sensorNameSplit = sensor.name.split('_');
+                var subNr = sensorNameSplit[sensorNameSplit.length - 1];
+                sensor.value.split(',').forEach(function (receptorName) {
+                    if (vm.receptors[receptorName]) {
+                        vm.receptors[receptorName].subNr = subNr;
                     }
-                }
-
-                if (!$scope.$$phase) {
-                    $scope.$digest();
-                }
+                });
             }
         };
 
-        vm.markResourceFaulty = function (resource) {
-            ObsSchedService.markResourceFaulty(resource.name, resource.faulty? 'clear' : 'set');
+        vm.markResourceFaulty = function (receptor) {
+            var faultySensor = vm.sensorValues[receptor.name + '_marked_faulty'];
+            if (faultySensor) {
+                ObsSchedService.markResourceFaulty(receptor.name, faultySensor.value? 'clear' : 'set');
+            }
         };
 
-        vm.markResourceInMaintenance = function (resource) {
-            ObsSchedService.markResourceInMaintenance(resource.name, resource.maintenance ? 'clear' : 'set');
+        vm.markResourceInMaintenance = function (receptor) {
+            var inMaintenanceSensor = vm.sensorValues[receptor.name + '_marked_in_maintenance'];
+            if (inMaintenanceSensor) {
+                ObsSchedService.markResourceInMaintenance(receptor.name, inMaintenanceSensor.value? 'clear' : 'set');
+            }
         };
 
-        vm.listResourceMaintenanceDevicesDialog = function (resource, $event) {
-            ObsSchedService.listResourceMaintenanceDevicesDialog(vm.subarray.id, resource.name, $event);
+        vm.getReceptorBlockClass = function (receptorName) {
+            var classes = '';
+            var deviceStatus = vm.sensorValues[receptorName + '_device_status'];
+            var mode = vm.sensorValues[receptorName + '_mode'];
+            if (deviceStatus) {
+                classes += ' receptor-graphic-sensors-' + deviceStatus.status;
+            }
+            if (mode) {
+                classes += ' receptor-graphic-' + mode.value.toLowerCase();
+            }
+            return classes;
         };
 
-        vm.navigateToSchedulerDetails = function (subarray_id) {
-            $state.go('scheduler.observations.detail', {subarray_id: subarray_id});
+        vm.getReceptorSvgClass = function (receptorName) {
+            var classes = '';
+            var inMaintenance = vm.sensorValues[receptorName + '_marked_in_maintenance'];
+            var faulty = vm.sensorValues[receptorName + '_marked_faulty'];
+            var deviceStatus = vm.sensorValues[receptorName + '_device_status'];
+            var mode = vm.sensorValues[receptorName + '_mode'];
+            if (inMaintenance && inMaintenance.value) {
+                classes += ' maintenance-bg-hover';
+            }
+            if (faulty && faulty.value) {
+                classes += ' receptor-svg-container-faulty';
+            }
+            if (deviceStatus) {
+                classes += ' receptor-graphic-sensors-' + deviceStatus.status;
+            }
+            if (mode) {
+                classes += ' receptor-graphic-' + mode.value.toLowerCase();
+            }
+            return classes;
         };
 
-        vm.getReceptorBlockClass = function (receptor) {
-            return receptor.sensors_ok && receptor.sensors_ok.status? receptor.sensors_ok.status + '-item' : 'unknown-item';
+        vm.getReceptorModeTextClass = function (receptorName) {
+            var classes = '';
+            var mode = vm.sensorValues[receptorName + '_mode'];
+            var windstowActive = vm.sensorValues[receptorName + '_windstow_active'];
+            if (mode) {
+                if (mode.value === 'POINT') {
+                    classes += ' nominal-item';
+                } else {
+                    classes += ' receptor-' + mode.value.toLowerCase() + '-state';
+                }
+            }
+            if (windstowActive && windstowActive.value) {
+                classes += ' error-item';
+            }
+            return classes;
         };
 
-        vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
+        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
+        vm.initSensors();
 
         $scope.$on('$destroy', function () {
-            vm.cancelListeningToSensorMessages();
-            SensorsService.disconnectListener();
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            unbindReconnected();
+            unbindSensorUpdates();
         });
     }
 })();

@@ -3,91 +3,48 @@
     angular.module('katGui')
         .controller('OperatorControlCtrl', OperatorControlCtrl);
 
-    function OperatorControlCtrl($rootScope, $scope, $state, $interval, $log, USER_ROLES, MOMENT_DATETIME_FORMAT, ReceptorStateService,
-                                 KatGuiUtil, ControlService, NotifyService, ConfigService, SensorsService) {
+    function OperatorControlCtrl($rootScope, $scope, $state, $interval, $log, USER_ROLES, MOMENT_DATETIME_FORMAT,
+                                 KatGuiUtil, ControlService, NotifyService, ConfigService, MonitorService) {
 
         var vm = this;
-
+        vm.subscribedSensors = [];
         vm.receptorsData = [];
         vm.sensorValues = {};
         vm.waitingForRequestResult = false;
-        vm.canIntervene = false;
-        vm.connectInterval = null;
-        vm.sensorsToConnectRegex = '^(m...|ant.).(mode|inhibit|sensors.ok)';
-
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectionLost = false;
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectionLost = true;
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    if (!vm.disconnectIssued) {
-                        NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                        if (!vm.connectInterval) {
-                            vm.connectionLost = true;
-                            vm.connectInterval = $interval(vm.connectListeners, 10000);
-                            vm.connectListeners();
-                        }
-                    }
-                });
-        };
-
-        vm.connectListeners();
+        vm.receptorsSensorsRegex = '';
 
         vm.initSensors = function () {
             ConfigService.getReceptorList()
                 .then(function (receptors) {
-                    receptors.forEach(function (receptor) {
-                        var modeValue = '';
-                        var lastUpdate = null;
-                        if (vm.sensorValues[receptor + '_' + 'mode']) {
-                            modeValue = vm.sensorValues[receptor + '_' + 'mode'].value;
-                            lastUpdate = vm.sensorValues[receptor + '_' + 'mode'].timestamp;
-                        }
-                        var inhibitValue = false;
-                        if (vm.sensorValues[receptor + '_' + 'inhibited']) {
-                            inhibitValue = vm.sensorValues[receptor + '_' + 'inhibited'].value;
-                            lastUpdate = vm.sensorValues[receptor + '_' + 'mode'].timestamp;
-                        }
-                        var lastUpdateValue;
-                        if (lastUpdate) {
-                            lastUpdateValue = moment(lastUpdate, 'X').format(MOMENT_DATETIME_FORMAT);
-                        }
-                        SensorsService.setSensorStrategies(vm.sensorsToConnectRegex, 'event-rate', 1, 360);
+                    receptors.forEach(function (receptor, index) {
                         vm.receptorsData.push({
-                            name: receptor,
-                            inhibited: inhibitValue,
-                            state: modeValue,
-                            lastUpdate: lastUpdateValue
+                            name: receptor
                         });
+                        var receptorSensors = ['mode', 'inhibited', 'device_status'].map(function (sensorName) {
+                            return receptor + '_' + sensorName;
+                        });
+                        var receptorSensorsRegex = receptorSensors.join('|');
+                        MonitorService.listSensors(receptor, receptorSensorsRegex);
+                        if (index > 0) {
+                            vm.receptorsSensorsRegex += '|';
+                        }
+                        vm.receptorsSensorsRegex += receptorSensorsRegex;
                     });
                 }, function (result) {
                     NotifyService.showSimpleDialog('Error', 'Error retrieving receptor list, please contact CAM support.');
                     $log.error(result);
                 });
-
         };
 
-        vm.statusMessageReceived = function (event, message) {
-            var sensor = message.name.split(':')[1];
-            vm.sensorValues[sensor] = message.value;
+        vm.sensorUpdateMessage = function (event, sensor, subject) {
+            if (sensor.name.search(vm.receptorsSensorsRegex) < 0) {
+                return;
+            }
+            if (subject.startsWith('req.reply')) {
+                MonitorService.subscribeSensor(sensor);
+                vm.subscribedSensors.push(sensor);
+            }
+            vm.sensorValues[sensor.name] = sensor;
         };
 
         vm.stowAll = function () {
@@ -151,21 +108,38 @@
                 });
         };
 
-        vm.afterInit = function() {
-            vm.canIntervene = $rootScope.expertOrLO || $rootScope.currentUser.req_role === USER_ROLES.operator;
+        vm.getReceptorModeTextClass = function (receptorName) {
+            var classes = '';
+            var mode = vm.sensorValues[receptorName + '_mode'];
+            var windstowActive = vm.sensorValues[receptorName + '_windstow_active'];
+            if (mode) {
+                if (mode.value === 'POINT') {
+                    classes += ' nominal-item';
+                } else {
+                    classes += ' receptor-' + mode.value.toLowerCase() + '-state';
+                }
+            }
+            if (windstowActive && windstowActive.value) {
+                classes += ' error-item';
+            }
+            return classes;
         };
 
-        vm.cancelListeningToSensorMessages = $rootScope.$on('sensorsServerUpdateMessage', vm.statusMessageReceived);
-        vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', vm.afterInit);
-        vm.afterInit();
+        vm.canIntervene = function () {
+            return $rootScope.expertOrLO || $rootScope.currentUser.req_role === USER_ROLES.operator;
+        };
+
+        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
+
+        vm.initSensors();
 
         $scope.$on('$destroy', function () {
-            if (vm.unbindLoginSuccess) {
-                vm.unbindLoginSuccess();
-            }
-            vm.cancelListeningToSensorMessages();
-            vm.disconnectIssued = true;
-            SensorsService.disconnectListener();
+            vm.subscribedSensors.forEach(function (sensor) {
+                MonitorService.unsubscribeSensor(sensor);
+            });
+            unbindSensorUpdates();
+            unbindReconnected();
         });
     }
 })();

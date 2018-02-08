@@ -3,8 +3,8 @@
     angular.module('katGui')
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
-    function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q,
-                             SensorsService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
+    function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q, KatGuiUtil,
+                             MonitorService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
 
         var vm = this;
         var SAMPLES_QUERY_LIMIT = 1000000;
@@ -26,9 +26,9 @@
         vm.useFixedXAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
-        vm.connectInterval = null;
+        vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
 
-        vm.sensorServiceConnected = SensorsService.connected;
+        vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
         }
@@ -51,55 +51,24 @@
             vm.reloadAllData();
         };
 
-        //TODO add an option to append to current data instead of deleting existing
-
-        vm.connectListeners = function () {
-            SensorsService.connectListener()
-                .then(function () {
-                    vm.initSensors();
-                    if (vm.connectInterval) {
-                        $interval.cancel(vm.connectInterval);
-                        vm.connectInterval = null;
-                        NotifyService.showSimpleToast('Reconnected :)');
-                    }
-                }, function () {
-                    $log.error('Could not establish sensor connection. Retrying every 10 seconds.');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                    }
-                });
-            vm.handleSocketTimeout();
-        };
-
-        vm.handleSocketTimeout = function () {
-            SensorsService.getTimeoutPromise()
-                .then(function () {
-                    NotifyService.showSimpleToast('Connection timeout! Attempting to reconnect...');
-                    if (!vm.connectInterval) {
-                        vm.connectInterval = $interval(vm.connectListeners, 10000);
-                        vm.connectListeners();
-                    }
-                });
-        };
-
-        if ($rootScope.loggedIn) {
-            vm.connectListeners();
-        } else {
-            vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
-                vm.connectListeners();
-            });
-        }
-
         vm.initSensors = function () {
+            MonitorService.subscribe(
+                [vm.clientSubject + '.katstore.data', vm.clientSubject + '.katstore.error']);
             if (vm.liveData) {
-                var sensorNames = [];
                 vm.sensorNames.forEach(function (sensor) {
-                    sensorNames.push(sensor.name);
+                    MonitorService.subscribeSensor(sensor);
                 });
-                //remove leading and trailing | characters
-                vm.connectLiveFeed(sensorNames.join('|').replace(/(^\|)|(\|$)/g, ''));
             }
         };
+
+        var unbindLoginSuccess;
+        if ($rootScope.loggedIn) {
+            vm.initSensors();
+        } else {
+            unbindLoginSuccess = $rootScope.$on('loginSuccess', function () {
+                vm.initSensors();
+            });
+        }
 
         vm.onTimeSet = function () {
             vm.sensorStartDatetime = moment.utc(vm.sensorStartDatetime.getTime() - vm.sensorStartDatetime.getTimezoneOffset() * 60000).toDate();
@@ -181,19 +150,13 @@
 
         vm.clearData = function () {
             if (vm.liveData) {
-                vm.removeSensorStrategies();
+                vm.sensorNames.forEach(function (sensor) {
+                    MonitorService.unsubscribeSensor(sensor);
+                });
             }
             vm.sensorNames.splice(0, vm.sensorNames.length);
             vm.clearChart();
             vm.updateGraphUrl();
-        };
-
-        vm.removeSensorStrategies = function () {
-            var sensorNamesList = [];
-            vm.sensorNames.forEach(function (item) {
-                sensorNamesList.push(item.name);
-            });
-            vm.disconnectLiveFeed(sensorNamesList.join('|'));
         };
 
         vm.validateSearchInputLength = function (searchStr) {
@@ -286,9 +249,9 @@
 
             var requestParams;
             if (sensor.type === 'discrete' || vm.intervalType === 'n') { // discrete sensors and user selected no interval
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
+                requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
             } else {
-                requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
+                requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
             }
 
             DataService.sensorData.apply(this, requestParams)
@@ -300,7 +263,7 @@
                         vm.sensorNames.push(sensor);
                     }
                     if (vm.liveData) {
-                        vm.connectLiveFeed(sensor.name);
+                        MonitorService.subscribeSensor(sensor);
                     }
                     vm.updateGraphUrl();
                 }, function (error) {
@@ -373,68 +336,55 @@
             });
         };
 
-        vm.connectLiveFeed = function (sensorRegex) {
-            if (sensorRegex.length > 0) {
-                SensorsService.setSensorStrategies(
-                    sensorRegex,
-                    $rootScope.sensorListStrategyType,
-                    $rootScope.sensorListStrategyInterval,
-                    $rootScope.sensorListStrategyInterval);
-            }
-        };
-
-        vm.disconnectLiveFeed = function (sensorRegex) {
-            SensorsService.removeSensorStrategies(sensorRegex);
-        };
-
-        vm.sensorDataReceived = function (event, sensor) {
-
+        vm.sensorDataReceived = function (event, message, subject) {
             var hasMinMax = vm.intervalType !== 'n' && !vm.searchDiscrete;
-
-            if (sensor.value && sensor.value instanceof Array) {
+            if (subject.endsWith('katstore.data')) {
                 vm.waitingForSearchResult = false;
-                var newData = [];
-                var newSensorNames = {};
-                for (var attr in sensor.value) {
-                    var sensorName = sensor.value[attr][4];
-
-                    newData.push({
-                        status: sensor.value[attr][5],
-                        sensor: sensorName,
-                        value: sensor.value[attr][3],
-                        value_ts: sensor.value[attr][1],
-                        sample_ts: sensor.value[attr][0],
-                        minValue: sensor.value[attr][6],
-                        maxValue: sensor.value[attr][7]
-                    });
-                    newSensorNames[sensorName] = {};
+                if (message.inform_data) {
+                    // inform message from katstore_ws about samples to be published
+                    return;
                 }
-
+                if (!(message instanceof Array)) {
+                    message = [message];
+                }
+                var newData = message.map(function(sample) {
+                    return {
+                        status: sample[5],
+                        sensor: sample[4],
+                        value: sample[3],
+                        value_ts: sample[1],
+                        sample_ts: sample[0],
+                        minValue: sample[6],
+                        maxValue: sample[7]
+                    };
+                });
                 if (newData.length > 0) {
                     vm.redrawChart(newData, hasMinMax);
                 }
-            }
-            else if (sensor.value) {
-                var realSensorName = sensor.name.split(':')[1].replace(/\./g, '_').replace(/-/g, '_');
-                if (angular.isDefined(_.findWhere(vm.sensorNames, {name: realSensorName}))) {
-
+            } else if (subject.startsWith('sensor.')) {
+                if (angular.isDefined(_.findWhere(vm.sensorNames, {name: message.name}))) {
                     vm.redrawChart([{
-                        sensor: realSensorName,
-                        value_ts: sensor.value.timestamp * 1000,
-                        sample_ts: sensor.value.received_timestamp * 1000,
-                        value: sensor.value.value
+                        sensor: message.name,
+                        value_ts: message.value_ts * 1000,
+                        sample_ts: message.time * 1000,
+                        value: message.value
                     }], hasMinMax);
                 }
+            } else if (subject.endsWith('katstore.error')) {
+                vm.waitingForSearchResult = false;
+                NotifyService.showPreDialog(message.err_code + ': Error retrieving katstore data', message.err_msg);
             }
         };
 
-        var unbindUpdate = $rootScope.$on('sensorsServerUpdateMessage', vm.sensorDataReceived);
+        var unbindSensorUpdates = $rootScope.$on('sensorUpdateMessage', vm.sensorDataReceived);
 
         vm.liveDataChanged = function () {
             if (vm.liveData) {
                 vm.initSensors();
             } else {
-                vm.removeSensorStrategies();
+                vm.sensorNames.forEach(function (sensor) {
+                    MonitorService.unsubscribeSensor(sensor);
+                });
             }
         };
 
@@ -476,7 +426,8 @@
         };
 
         vm.chipRemoved = function (chip) {
-            vm.disconnectLiveFeed(chip.name);
+            // vm.disconnectLiveFeed(chip.name);
+            MonitorService.unsubscribeSensor(chip);
             vm.removeSensorLine(chip.name);
             vm.updateGraphUrl();
         };
@@ -543,9 +494,9 @@
                     sensors.forEach(function (sensor) {
                         var requestParams = [];
                         if (vm.searchDiscrete || vm.intervalType === 'n') {
-                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
+                            requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
                         } else {
-                            requestParams = [SensorsService.guid, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                            requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
                         }
 
                         DataService.sensorData.apply(this, requestParams)
@@ -564,18 +515,21 @@
             }
         }, 1000);
 
-        vm.unbindKatstoreErrorMessage = $rootScope.$on('sensorServiceMessageError', function (event, message) {
-            vm.waitingForSearchResult = false;
-            NotifyService.showPreDialog(message.msg_data.err_code + ': Error retrieving katstore data', message.msg_data.err_msg);
-        });
+        var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $scope.$on('$destroy', function () {
-            unbindUpdate();
-            SensorsService.disconnectListener();
-            if (vm.unbindLoginSuccess) {
-                vm.unbindLoginSuccess();
+            MonitorService.unsubscribe(vm.clientSubject + '.kastore.data');
+            MonitorService.unsubscribe(vm.clientSubject + '.kastore.error');
+            if (vm.liveData) {
+                vm.sensorNames.forEach(function (sensor) {
+                    MonitorService.unsubscribeSensor(sensor);
+                });
             }
-            vm.unbindKatstoreErrorMessage();
+            if (unbindLoginSuccess) {
+                unbindLoginSuccess();
+            }
+            unbindSensorUpdates();
+            unbindReconnected();
         });
     }
 })();
