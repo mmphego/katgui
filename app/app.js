@@ -113,8 +113,8 @@
                 ConfigService.getSystemConfig(forceConfig).then(function(systemConfig) {
                     $rootScope.systemConfig = systemConfig;
                     StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
-                    if (systemConfig.vds && systemConfig.vds.vds_source) {
-                        $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
+                    if (systemConfig.vds) {
+                        $rootScope.showVideoLinks = true;
                     }
                     $rootScope.sitename = ConfigService.systemConfig.system.sitename;
                     $rootScope.confConnectionError = null;
