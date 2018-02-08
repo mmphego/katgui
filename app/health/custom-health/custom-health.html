@@ -1,7 +1,4 @@
-<!-- *******************************************************************
-TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
-******************************************************************* -->
-<div flex layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; overflow: auto; padding: 8px;"
+<div flex layout="column" ng-controller="CustomHealthCtrl as vm" style="min-width: 1100px; position: relative"
      ng-class="{'connection-lost-bg':vm.connectionLost}" ng-mouseup="vm.mouseUp()">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
@@ -20,28 +17,12 @@ TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
             <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
         </div>
     </div>
-    <!-- <md-toolbar layout="row" layout-align="center center" md-theme="{{themePrimary}}" class="custom-health-toolbar md-whiteframe-z1"
-        ng-init="vm.showToolbar = true" ng-show="vm.showToolbar" style="width: calc(100% - 8px);">
-
-        <input type="text" style="width: 300px; height: 32px; color: #333333; margin-left: 8px" ng-model="vm.regex" placeholder="Enter Sensor Regex"/>
-        <span style="margin-left: 8px;">Width:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedWidth" placeholder="View Width"/>
-        <span style="margin-left: 8px;">Height:</span><input type="number" style="width: 60px; height: 32px; color: #333333; margin-left: 2px;" ng-model="vm.selectedHeight" placeholder="View Height"/>
-        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.addView()"
-                   class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">
-            Add View
-        </md-button>
-        <md-button md-theme="{{themePrimaryButtons}}" ng-click="vm.exportToUrl()"
-                   class="md-primary md-raised" style="font-size: 14px; margin-left: 8px;">
-            Export to Url
-        </md-button>
-        <span flex></span>
-    </md-toolbar> -->
     <div flex style="margin-top: 4px; position: relative; overflow: auto" ng-init="vm.selectedHeight = 400; vm.selectedWidth = 200">
-        <status-single-level-tree-map relative-draggable="status-top-label" auto-resize="true" height="tree.size.h" width="tree.size.w"
+        <status-single-level-tree-map relative-draggable="status-top-label" auto-resize="true" height="tree.size.height" width="tree.size.width"
                                       offset-left="tree.offset.left" offset-top="tree.offset.top" ng-repeat="tree in vm.customStatusTrees" data="tree"
-                                      style="position: absolute; margin-left: 4px; margin-right:4px; margin-bottom: 8px;vertical-align: top"
-                                      ng-class="tree.elementId">
-            <div resizeable="{{'.' + tree.elementId}}" class="resize-grip">
+                                      style="position: absolute; vertical-align: top"
+                                      id="{{tree.elementId}}">
+            <div resizeable="{{'#' + tree.elementId}}" dynamic-resize-element="1000" class="resize-grip" style="bottom: 8px">
                 <span flex class="fa fa-arrows-v"></span>
             </div>
             <md-button md-theme="{{themePrimaryButtons}}" class="custom-health-hide-tree md-raised md-primary"
@@ -51,12 +32,12 @@ TODO: WARNING THIS DISPLAY WAS EXPERIMENTAL AND IS NOT USED ANYMORE
         </status-single-level-tree-map>
     </div>
     <div class="treemap-tooltip" style="visibility: hidden; background-color: #ffffff"></div>
-    <md-button flex md-theme="{{themePrimaryButtons}}" class="md-fab md-mini md-primary custom-health-hide-toolbar-button"
-               title="Create regex view" ng-click="vm.showEnterSensorRegexDialog($event)">
-        <md-icon class="fa" md-font-icon="fa-plus"></md-icon>
-    </md-button>
-    <md-button flex md-theme="{{themePrimaryButtons}}" class="md-primary md-raised custom-health-hide-toolbar-button" style='margin-right: 60px; margin-top: 8px'
-               title="Export as URL" ng-click="vm.exportToUrl($event)">
-        <span>URL</span>
-    </md-button>
+    <div class="custom-health-hide-toolbar-button">
+        <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" title="Export as URL" ng-click="vm.exportToUrl($event)">
+            Export URL
+        </md-button>
+        <md-button md-theme="{{themePrimaryButtons}}" class="md-primary md-raised" title="Create regex view" ng-click="vm.showEnterSensorRegexDialog($event)">
+            Create View
+        </md-button>
+    </div>
 </div>
