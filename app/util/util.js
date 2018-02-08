@@ -114,7 +114,7 @@ angular.module('katGui.util')
             link: function(scope, element, attr) {
                 var timeout = 0;
                 if (attr.dynamicResizeElement) {
-                    timeout = 1000;
+                    timeout = parseInt(attr.dynamicResizeElement);
                 }
 
                 $timeout(function() {
