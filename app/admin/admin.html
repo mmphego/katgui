@@ -1,103 +1,72 @@
-<div class="view-container" flex ng-controller="AdminCtrl as vm" layout="column" style="min-width: 1100px">
+<div flex ng-controller="AdminCtrl as vm" layout="column" style="min-width: 1100px; margin: 16px">
 
-    <div class="md-whiteframe-z1" layout="column" layout-align="start center" style="margin-bottom: 16px; position: relative; min-height: 269px;">
-        <md-toolbar class="panel-toolbar md-whiteframe-z1" layout="row" layout-align="center">
-            <span class="md-toolbar-tools" flex>{{currentUser.name}}'s Account Details</span>
-        </md-toolbar>
-        <div style="width: 100%; height: auto;">
-            <div class="md-whiteframe-z3" flex layout="row" layout-align="start center" style="margin: 32px; height: 80px; overflow: auto;">
-                <div flex style="max-width: 265px; min-width: 265px; text-align: center; display: inline-block;" layout="row">
-                    <span class="cell-span">{{currentUser.name}}<md-tooltip>My Name</md-tooltip></span>
-                </div>
-                <div flex style="max-width: 335px; min-width: 335px; text-align: center; display: inline-block;" layout="row">
-                    <span class="cell-span">{{currentUser.email}}<md-tooltip>My Email Address</md-tooltip></span>
-                </div>
-                <div flex layout-align="start center" style="text-align: center; display: inline-block;" layout="row">
-                    <span class="cell-span" ng-if="currentUser.roles.length > 0" ng-repeat="role in currentUser.roles | orderBy:role">{{role}},<md-tooltip>My Roles</md-tooltip></span>
-                    <span class="cell-span" ng-if="currentUser.roles.length === 0">No Roles Assigned<md-tooltip>My Roles</md-tooltip></span>
-                </div>
-            </div>
-        </div>
-        <md-button ng-click="vm.resetPassword($event, currentUser);" class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" style="height: 45px;margin: 8px;">Reset My
-            Password
+    <md-toolbar class="panel-toolbar-small md-whiteframe-z1" layout="row" layout-align="start center">
+        <span style="margin-left: 8px">{{currentUser.name}}'s Account Details</span>
+    </md-toolbar>
+    <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="padding: 0 8px" md-theme="{{themePrimaryButtons}}">
+        <span flex style="min-width: 265px; max-width: 265px">
+            {{currentUser.name}}
+        </span>
+        <span flex style="min-width: 273px; max-width: 273px">
+            {{currentUser.email}}
+        </span>
+        <span flex>
+            {{currentUser.roles? currentUser.roles.join(','): 'No Roles Assigned'}}
+        </span>
+        <md-button ng-click="vm.resetPassword($event, currentUser)" class="md-primary md-raised">
+            Reset My Password
         </md-button>
     </div>
 
-    <div ng-if="vm.isUserAdmin" class="md-whiteframe-z1" flex layout="column" style="margin-bottom: 16px; position: relative; min-height: 452px;">
+    <div ng-if="vm.isUserAdmin" class="md-whiteframe-z1" flex layout="column" style="margin: 8px 0; position: relative">
         <md-toolbar class="panel-toolbar md-whiteframe-z1">
-            <div class="unselectable md-toolbar-tools" layout="row">
-                <span flex ng-click="vm.setOrderBy('id')" style="cursor: pointer;"><span>katGUI Users<md-tooltip>Sort by database ID</md-tooltip></span></span>
-                <input class="fade-in search-input-box" style="min-width: 250px;" type="search"
-                       ng-model-options="{ debounce: 300 }" ng-model="q" placeholder="Search Users..."/>
-                <md-checkbox md-theme="{{themePrimaryButtons}}" class="fade-in md-primary" style="font-size: 16px;" ng-model="vm.showDeactivatedUsers">
-                    Show Only Deactivated Users
-                </md-checkbox>
-                <md-button  style="margin: 0" ng-click="vm.createUser()" class="md-icon-button" md-theme="{{themePrimaryButtons}}">
-                    <md-icon class="fa" md-font-icon="fa-plus" style="margin-top: 8px;"></md-icon>
-                    <md-tooltip>Create A User</md-tooltip>
+            <div class="unselectable md-toolbar-tools" layout="row" md-theme="{{themePrimaryButtons}}">
+                <span flex>Users</span>
+                <md-button ng-click="vm.addUser($event)" class="md-primary md-raised">
+                    Add User
                 </md-button>
+                <md-checkbox class="md-primary" ng-model="vm.showDeactivatedUsers" style="font-size: 16px">
+                    Show Deactivated Users
+                </md-checkbox>
+                <input class="search-input-box" style="min-width: 250px; margin: 0 8px" type="search"
+                       ng-model-options="{ debounce: 300 }" ng-model="q" placeholder="Search Users..."/>
             </div>
 
-            <div flex class="unselectable list-subheader-title" style="padding-top: 8px; z-index: 0;" layout="row" layout-align="center center">
-                <span style="max-width: 265px;min-width: 265px;" class="subheader-text" ng-click="vm.setOrderBy('name')">
-                    <span style="padding: 8px">Name</span>
-                    <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'name' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'name' && vm.orderBy.reverse}"
-                          style="margin-right: 4px;"></span>
+            <div class="unselectable list-subheader-title" style="position: absolute; bottom: 0" layout="row" layout-align="start center">
+                <span style="max-width: 265px; min-width: 265px" class="subheader-text" ng-click="vm.setOrderBy('name')">
+                    <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'name' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'name' && vm.orderBy.reverse}"></span>
+                    <span>Name</span>
                 </span>
-                <span style="max-width: 273px;min-width: 273px;" class="subheader-text" ng-click="vm.setOrderBy('email')">
-                    <span style="padding: 8px">Email</span>
-                    <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'email' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'email' && vm.orderBy.reverse}"
-                          style="margin-right: 4px;"></span>
+                <span style="max-width: 273px;min-width: 273px" class="subheader-text" ng-click="vm.setOrderBy('email')">
+                    <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'email' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'email' && vm.orderBy.reverse}"></span>
+                    <span>Email</span>
                 </span>
                 <span flex ng-click="vm.setOrderBy('roles')" class="subheader-text">
-                    <span style="padding: 8px">Allowed Roles</span>
-                    <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'roles' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'roles' && vm.orderBy.reverse}"
-                          style="margin-right: 4px;"></span>
+                    <span class="fa" ng-class="{'fa-caret-up': vm.orderBy.value === 'roles' && !vm.orderBy.reverse, 'fa-caret-down': vm.orderBy.value === 'roles' && vm.orderBy.reverse}"></span>
+                    <span>Allowed Roles</span>
                 </span>
             </div>
         </md-toolbar>
 
-        <div id="userListId" flex class="user-list" md-theme="{{themePrimaryButtons}}">
+        <div class="user-list" flex md-theme="{{themePrimaryButtons}}">
             <div class="user-row" flex layout="row" layout-align="start center"
                  ng-repeat="user in vm.userData | filter:{activated: !vm.showDeactivatedUsers} | regexSearch:vm.orderByFields:q | orderBy:vm.orderBy.value:vm.orderBy.reverse track by user.id"
-                 ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }">
-                <input flex type="text" placeholder="Name" class="user-admin-input" md-theme="{{themePrimary}}" ng-attr-id="{{ 'user-name-input-' + user.name }}"
-                       label="Name" ng-disabled="!user.editing" ng-model="user.name" style="max-width: 265px; min-width: 265px;"/>
-                <input flex type="text" class="user-admin-input" style="max-width: 265px; min-width: 265px;" placeholder="Name" md-theme="{{themePrimary}}"
-                       label="Email" ng-disabled="!user.editing" ng-model="user.email" title="Email"/>
-                <div flex ng-show="!user.editing">
-                    <span ng-repeat="role in user.roles">{{role}},</span>
-                </div>
-                <md-select flex ng-show="user.editing" ng-model="user.roles" class="opaque-disabled-select" multiple style="margin: 0"
-                            class="md-primary"  placeholder="No Roles Assigned">
-                    <md-option ng-value="role.value" ng-repeat="role in vm.userRoles">{{role.name}}</md-option>
-                </md-select>
-
-                <div ng-show="user.editing" class="user-editing-buttons" layout="row" layout-align="end center">
-                    <button title="Deactivate User" ng-show="!user.temp && user.activated" class="user-row-button" ng-click="vm.deactivateUser(user)">
-                        <span class="fa fa-ban"></span>
-                    </button>
-                    <button title="Activate User" ng-show="!user.temp && !user.activated" class="user-row-button" ng-click="vm.activateUser(user)">
-                        <span class="fa fa-certificate"></span>
-                    </button>
-                    <button title="Undo User Changes" class="user-row-button" ng-click="vm.undoUserChanges(user)">
-                        <span class="fa fa-undo"></span>
-                    </button>
-                    <button title="Save User Changes" class="user-row-button" ng-click="vm.saveUser(user, $event)">
-                        <span class="fa fa-check"></span>
-                    </button>
-                </div>
-                <button title="Reset Password" ng-show="!user.temp && !user.editing" class="user-row-button" ng-click="vm.resetPassword($event, user)">
-                    <span class="fa fa-key"></span>
-                </button>
-                <div ng-show="!user.editing">
-                    <button title="Edit User" ng-click="vm.editUser(user, $event)" class="user-row-button">
-                        <span class="fa fa-edit"></span>
-                    </button>
-                </div>
-                <md-tooltip ng-if="!user.activated">
-                    <span>Deactivated User</span>
-                </md-tooltip>
+                 ng-if="user.activated || vm.showDeactivatedUsers" ng-class="{ 'deactivated-user': !user.activated, 'activated-user': user.activated }"
+                 ng-click="vm.editUser(user, $event)">
+                 <span style="max-width: 265px; min-width: 265px">{{user.name}}</span>
+                 <span style="max-width: 273px; min-width: 273px">{{user.email}}</span>
+                 <span flex>
+                     {{user.roles? user.roles.join(','): 'No Roles Assigned'}}
+                 </span>
+                 <button title="Deactivate User" ng-show="user.activated" class="user-row-button" ng-click="vm.deactivateUser(user); $event.stopPropagation()">
+                     <span class="fa fa-ban"></span>
+                 </button>
+                 <button title="Activate User" ng-show="!user.activated" class="user-row-button" ng-click="vm.activateUser(user); $event.stopPropagation()">
+                     <span class="fa fa-certificate"></span>
+                 </button>
+                 <button title="Reset Password" class="user-row-button" ng-click="vm.resetPassword(user, $event); $event.stopPropagation()">
+                     <span class="fa fa-key"></span>
+                 </button>
             </div>
         </div>
     </div>

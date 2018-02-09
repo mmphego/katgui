@@ -5,10 +5,8 @@
     margin-bottom: 16px;
     overflow: auto;
 
-
     .user-row {
-        padding-left: 8px;
-        padding-right: 8px;
+        padding: 0 8px;
         border-bottom: 1px solid rgba(158, 158, 158, 0.5);
         height: 49px;
         overflow: hidden;
@@ -17,41 +15,7 @@
             background: rgba(158, 158, 158, 0.2);;
         }
     }
-
-    input {
-        background: transparent;
-    }
-
 }
-
-//.md-select-custom-disabled-text[disabled] {
-//    .md-select-label {
-//        cursor: not-allowed;
-////        color: rgba(0,0,0,0.9) !important;
-//        border-bottom: 0;
-//        font-size: 12px;
-//    }
-//
-//    .md-select-icon {
-////        color: rgba(0,0,0,0.26) !important;
-//    }
-//}
-//
-md-select.md-default-theme[disabled] .md-select-label {
-//    color: rgba(0,0,0,0.26);
-    color: currentColor;
-}
-
-.cell-span {
-    border: 1px solid transparent;
-}
-
-.user-editing-buttons {
-//    max-width: 150px;
-//    min-width: 150px;
-    float: right;
-}
-
 
 .deactivated-user {
     background: rgba(255, 224, 178, 0.1);
@@ -63,7 +27,7 @@ md-select.md-default-theme[disabled] .md-select-label {
 }
 
 .activated-user {
-
+    text-decoration: none;
 }
 
 .user-row-button {
@@ -91,11 +55,4 @@ md-select.md-default-theme[disabled] .md-select-label {
     border-top: 0;
     border-left: 0;
     border-right: 0;
-//    border-bottom: 1px solid currentColor;
-}
-
-.opaque-disabled-select {
-    span {
-        color: currentColor !important;
-    }
 }

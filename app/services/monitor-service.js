@@ -189,6 +189,8 @@
                         ObsSchedService.receivedScheduleMessage(data);
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
+                    } else if (msg.subject.startsWith('portal.auth')) {
+                        SessionService.receivedSessionMessage(msg.subject, data);
                     } else {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         api.handlePotentialGlobalSensorMessage(data);

@@ -13,6 +13,7 @@
         var api = {};
         api.connection = null;
         api.deferredMap = {};
+        api.userSessions = {};
         $rootScope.jwt = $localStorage['currentUserToken'];
 
         var jwtHeader = {
@@ -143,6 +144,19 @@
             } else {
                 $log.error('Attempting to disconnect an already disconnected connection!');
             }
+        };
+
+        api.receivedSessionMessage = function (subject, data) {
+            $log.info(subject + ' message received');
+            $log.info(data);
+            if ($rootScope.expertOrLO) {
+                if (!api.userSessions[data.email]) {
+                    api.userSessions[data.email] = [data];
+                } else {
+                    api.userSessions[data.email].push(data);
+                }
+            }
+            $log.info(api.userSessions);
         };
 
         function logoutResultSuccess() {

@@ -14,14 +14,6 @@
             {label: 'Roles', value: 'roles'}
         ];
         vm.orderBy = vm.orderByFields[0];
-        vm.userRoles = [
-            {"name": "User Administrator", value: "user_admin"},
-            {"name": "Control Authority", value: "control_authority"},
-            {"name": "Lead Operator", value: "lead_operator"},
-            {"name": "Operator", value: "operator"},
-            {"name": "Expert", value: "expert"},
-            {"name": "Read Only", value: "read_only"}
-        ];
         vm.userData = UserService.users;
 
         vm.setOrderBy = function (column) {
@@ -37,27 +29,19 @@
             vm.orderBy = newOrderBy;
         };
 
-        vm.createUser = function () {
-            UserService.addTempCreatedUser({
-                id: 'ztemp_' + KatGuiUtil.generateUUID(),
-                name: 'new user',
-                email: 'new_user@ska.ac.za',
+        vm.setOrderBy('name');
+
+        vm.addUser = function (event) {
+            UserService.editUserDialog({
+                name: '',
+                email: '',
                 roles: ['read_only'],
-                activated: true,
-                temp: true
-            });
-            vm.editUser(vm.userData[vm.userData.length - 1]);
+                activated: true
+            }, event);
         };
 
         vm.editUser = function (user) {
-            if (!user.editing) {
-                user.originalUser = {
-                    name: user.name,
-                    email: user.email,
-                    roles: user.roles
-                };
-                user.editing = true;
-            }
+            UserService.editUserDialog(user, event);
         };
 
         vm.saveUser = function (user) {
@@ -84,24 +68,7 @@
         };
 
         vm.listUsers = function () {
-            vm.userListProcessingServerCall = true;
-            UserService.listUsers().then(function () {
-                vm.userListProcessingServerCall = false;
-            });
-        };
-
-        vm.undoUserChanges = function (user) {
-            if (user.temp) {
-                UserService.removeTempUser(user);
-            } else {
-                user.editing = false;
-                if (user.originalUser) {
-                    user.name = user.originalUser.name;
-                    user.email = user.originalUser.email;
-                    user.roles = user.originalUser.roles;
-                }
-                user.originalUser = undefined;
-            }
+            UserService.listUsers();
         };
 
         vm.deactivateUser = function (user) {
@@ -114,62 +81,9 @@
             vm.saveUser(user);
         };
 
-        vm.resetPassword = function (event, user) {
-            var passwordHash = null;
-            $mdDialog
-                .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
-                        $scope.hide = function () {
-                            $mdDialog.hide();
-                        };
-                        $scope.cancel = function () {
-                            $mdDialog.cancel();
-                        };
-                        $scope.answer = function (answer) {
-                            $mdDialog.hide(answer);
-                        };
-                    },
-                    template: "<md-dialog style='padding: 0;' md-theme='{{$root.themePrimary}}'><md-content style='padding: 0; margin: 0; width: 396px;' layout='column' layout-padding>" +
-                    "<md-toolbar class='md-primary long-input' layout='row' layout-align='center center'><span style='font-weight: bold;'>Password Reset</span></md-toolbar>" +
-                    "<md-input-container md-no-float md-theme='{{$root.themePrimaryButtons}}' id='resetPasswordInput' type='password' class='long-input' style='padding: 16px'>" +
-                    "<input placeholder='New Password' type='password' md-autofocus ng-model='password'>" +
-                    "</md-input-container>" +
-                    "<div layout='row' layout-align='end' style='margin-top: 8px; margin-right: 8px; margin-bottom: 8px;'>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' class='md-primary md-raised' ng-click='cancel()'>Cancel</md-button>" +
-                    "<md-button style='margin-left: 8px;' md-theme='{{$root.themePrimaryButtons}}' class='md-primary md-raised' ng-click='answer(password)'><span>Reset</span></md-button>" +
-                    "</div>" +
-                    "</md-content></md-dialog>",
-                    targetEvent: event
-                })
-                .then(function (answer) {
-                    passwordHash = CryptoJS.SHA256(answer).toString();
-                    UserService.resetPassword(user, passwordHash).then(function (result) {
-                        NotifyService.showSimpleToast('Password successfully reset.');
-                    }, function (result) {
-                        NotifyService.showSimpleToast('There was an error resetting the password.');
-                        $log.error(result);
-                    });
-                }, function () {
-                    $log.info('Cancelled Password reset.');
-                });
+        vm.resetPassword = function (user, event) {
+            UserService.resetPasswordDialog(user, event);
         };
-
-        vm.keydown = function (e, key) {
-            if (key === 27 && vm.sortedUserData) {
-                //escape
-                for (var i = vm.sortedUserData.length - 1; i > -1; i--) {
-                    if (vm.sortedUserData[i].temp || vm.sortedUserData[i].originalUser) {
-                        vm.undoUserChanges(vm.sortedUserData[i]);
-                        break;
-                    }
-                }
-                if (!$scope.$$phase) {
-                    $scope.$apply();
-                }
-            }
-        };
-
-        vm.unbindShortcuts = $rootScope.$on("keydown", vm.keydown);
 
         vm.afterInit = function() {
             if ($rootScope.currentUser) {
