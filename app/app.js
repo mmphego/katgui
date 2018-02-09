@@ -5,7 +5,7 @@
             'ui.bootstrap',
             'ui.router',
             'ngAnimate', 'katGui.services',
-            'katGui.admin',
+            'katGui.user',
             'katGui.alarms',
             'katGui.config',
             'katGui.d3',
@@ -465,9 +465,9 @@
             templateUrl: 'app/login-form/login-form.html',
             title: 'Login'
         });
-        $stateProvider.state('admin', {
-            url: '/admin',
-            templateUrl: 'app/admin/admin.html',
+        $stateProvider.state('users', {
+            url: '/users',
+            templateUrl: 'app/users/users.html',
             title: 'User Admin'
         });
         $stateProvider.state('alarms', {
