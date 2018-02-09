@@ -11,9 +11,9 @@
             {{currentUser.email}}
         </span>
         <span flex>
-            {{currentUser.roles? currentUser.roles.join(','): 'No Roles Assigned'}}
+            {{currentUser.roles? currentUser.roles.join(', '): 'No Roles Assigned'}}
         </span>
-        <md-button ng-click="vm.resetPassword($event, currentUser)" class="md-primary md-raised">
+        <md-button ng-click="vm.resetPassword(currentUser, $event)" class="md-primary md-raised">
             Reset My Password
         </md-button>
     </div>
@@ -56,17 +56,12 @@
                  <span style="max-width: 265px; min-width: 265px">{{user.name}}</span>
                  <span style="max-width: 273px; min-width: 273px">{{user.email}}</span>
                  <span flex>
-                     {{user.roles? user.roles.join(','): 'No Roles Assigned'}}
+                     {{user.roles? user.roles.join(', '): 'No Roles Assigned'}}
                  </span>
-                 <button title="Deactivate User" ng-show="user.activated" class="user-row-button" ng-click="vm.deactivateUser(user); $event.stopPropagation()">
-                     <span class="fa fa-ban"></span>
-                 </button>
-                 <button title="Activate User" ng-show="!user.activated" class="user-row-button" ng-click="vm.activateUser(user); $event.stopPropagation()">
-                     <span class="fa fa-certificate"></span>
-                 </button>
-                 <button title="Reset Password" class="user-row-button" ng-click="vm.resetPassword(user, $event); $event.stopPropagation()">
-                     <span class="fa fa-key"></span>
-                 </button>
+                 <span title="View User Session Details" ng-show="vm.userSessions[user.email]" class="fa fa-list hover-opacity user-icon-button" md-ink-ripple ng-click="vm.showSessionDetails(user); $event.stopPropagation()"></span>
+                 <span title="Deactivate User" ng-show="user.activated" class="fa fa-ban hover-opacity user-icon-button" md-ink-ripple ng-click="vm.deactivateUser(user); $event.stopPropagation()"></span>
+                 <span title="Activate User" ng-show="!user.activated" class="fa fa-certificate hover-opacity user-icon-button" md-ink-ripple ng-click="vm.activateUser(user); $event.stopPropagation()"></span>
+                 <span title="Reset Password" class="fa fa-key hover-opacity user-icon-button" md-ink-ripple ng-click="vm.resetPassword(user, $event); $event.stopPropagation()"></span>
             </div>
         </div>
     </div>

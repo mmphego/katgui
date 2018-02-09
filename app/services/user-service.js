@@ -159,7 +159,7 @@
                             $mdDialog.cancel();
                         };
                         $scope.accept = function () {
-                            $mdDialog.hide($scope.password);
+                            $mdDialog.hide($scope.newPassword);
                         };
                     },
                     template: [
