@@ -180,7 +180,7 @@
             vm.subarray = _.findWhere(ObsSchedService.subarrays, {
                 id: $stateParams.subarray_id
             });
-            if (vm.subarray) {
+            if (vm.subarray && $rootScope.currentUser) {
                 vm.iAmCA = vm.subarray.delegated_ca === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'control_authority';
             }
         };
