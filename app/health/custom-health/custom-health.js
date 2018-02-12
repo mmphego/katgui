@@ -109,6 +109,7 @@
                         StatusService.sensorValues[sensor.name] = sensor;
                     });
                     vm.customStatusTrees.push(newView);
+                    vm.debounceUpdateUrl();
                 }, function(error) {
                     $log.error(error);
                 });
@@ -147,6 +148,7 @@
 
         vm.buildUrl = function () {
             var url = '';
+
             var items = document.getElementsByTagName('status-single-level-tree-map');
             for (var i = 0; i < items.length; i++) {
                 var innerText = items[i].getElementsByClassName('status-top-label-text')[0].innerText.split(':');
@@ -170,7 +172,7 @@
                 }
                 url += encodeURI(component + ':' + regex + ':' + newOffset.left + ',' + newOffset.top + ',' + newSize.width + ',' + newSize.height + ';');
             }
-            return url.length > 0? url: $location.absUrl();
+            return url.length > 0? url: null;
         };
 
         vm.mouseUp = function() {
@@ -178,14 +180,15 @@
         };
 
         vm.updateUrl = function() {
-            if (vm.regexStrings.length > 0) {
+            var newUrl = vm.buildUrl();
+            if (newUrl !== $location.absUrl()) {
                 $state.go('customHealth', {
-                    layout: vm.buildUrl()
+                    layout: newUrl
                 }, {
                     notify: false,
                     reload: false
                 });
-            } //else: this is the init step and dom elements are not created yet
+            }
         };
 
         vm.debounceUpdateUrl = _.debounce(vm.updateUrl, 500);
