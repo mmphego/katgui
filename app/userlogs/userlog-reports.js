@@ -110,7 +110,8 @@
                                 pdf.autoTable(columns, logLines, {
                                     startY: pdf.autoTableEndPosY() + 50,
                                     theme: 'striped',
-                                    margin: {top: 8, bottom: 8}});
+                                    margin: {top: 8, bottom: 8},
+                                    overflow: 'linebreak'});
                             });
                             pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
                             vm.exportingPdf = false;
