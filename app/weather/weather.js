@@ -80,7 +80,7 @@
             });
 
         vm.initSensors = function() {
-            var startDate = vm.getTimestampFromHistoricalRange();
+            var startDate = vm.getTimestampFromHistoricalRange() / 1000;
             vm.dataTimeWindow = new Date().getTime() - startDate;
             MonitorService.listSensorsHttp('anc', vm.sensorsRegex, true).then(function (result) {
                 result.data.forEach(function (sensor) {
@@ -95,14 +95,23 @@
 
             vm.ancHistoricSensors.forEach(function(dataSensorName) {
                 var interval = vm.relativeTimeToSeconds(vm.sensorGroupingInterval, vm.historicalRange);
-                var dataLimit = vm.dataTimeWindow / (interval * 1000);
-                var requestParams = [null, dataSensorName, startDate, new Date().getTime(), dataLimit, interval];
+                var dataLimit = parseInt(vm.dataTimeWindow / (interval * 1000));
                 vm.loadWindOptions({
                     dataLimit: dataLimit
                 });
-                DataService.sensorData.apply(this, requestParams)
+                var requestParams = {
+                    name: dataSensorName,
+                    // start: startDate,
+                    start: 1515642974,
+                    end: 'now',
+                    limit: dataLimit,
+                    allFields: vm.includeValueTimestamp,
+                    interval: interval
+                };
+
+                DataService.sensorData.call(this, requestParams)
                     .then(function(result) {
-                        vm.sensorDataReceived(result.data);
+                        vm.sensorDataReceived(result.data.data);
                     }, function(error) {
                         $log.info(error);
                         NotifyService.showPreDialog('Error retrieving historical weather data', error);
@@ -115,12 +124,12 @@
             var newWindData = [];
             var newSensorNames = {};
             sensorData.forEach(function (sensor) {
-                var sensorName = sensor[4];
+                var sensorName = sensor.name;
                 var latestSensor = {
-                    status: sensor[5],
+                    status: sensor.status,
                     sensor: sensorName,
-                    value: sensor[3],
-                    sample_ts: sensor[0],
+                    value: sensor.avg_value,
+                    sample_ts: sensor.min_sample_time * 1000,
                 };
                 if (sensorName.startsWith('anc_air_')) {
                     if (sensorName === 'anc_air_pressure') {
@@ -129,22 +138,22 @@
                     newData.push(latestSensor);
                 } else {
                     latestSensor = {
-                        status: sensor[5],
+                        status: sensor.status,
                         sensor: sensorName,
-                        value: sensor[3],
-                        sample_ts: sensor[0],
+                        value: sensor.avg_value,
+                        sample_ts: sensor.min_sample_time * 1000,
                     };
                     newWindData.push(latestSensor);
                 }
-                if (!vm.maxSensorValue[sensor.name]) {
-                    vm.maxSensorValue[sensor.name] = {
-                        timestamp: moment.utc(sensor.time, 'X').format('HH:mm:ss'),
-                        value: sensor.value
+                if (!vm.maxSensorValue[sensorName]) {
+                    vm.maxSensorValue[sensorName] = {
+                        timestamp: moment.utc(sensor.min_sample_time, 'X').format('HH:mm:ss'),
+                        value: sensor.avg_value
                     };
-                } else if (sensor.value > vm.maxSensorValue[sensor.name].value) {
-                    vm.maxSensorValue[sensor.name] = {
-                        timestamp: moment.utc(sensor.time, 'X').format('HH:mm:ss'),
-                        value: sensor.value
+                } else if (sensor.value > vm.maxSensorValue[sensorName].value) {
+                    vm.maxSensorValue[sensorName] = {
+                        timestamp: moment.utc(sensor.min_sample_time, 'X').format('HH:mm:ss'),
+                        value: sensor.avg_value
                     };
                 }
             });

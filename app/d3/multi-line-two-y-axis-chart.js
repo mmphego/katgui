@@ -54,25 +54,35 @@ angular.module('katGui.d3')
                     var redrawSVG = scope.nestedData.length === 0 || forceRedraw;
                     if (newData) {
                         newData.forEach(function (d) {
-                            d.date = new Date(parseFloat(d.sample_ts));
+                            var unixEpoch = (d['sample_time'] || d['min_sample_time']) * 1000;
+                            if (isNaN(unixEpoch)) {
+                                // this is sensor data from nats, not katstore
+                                unixEpoch = (d['sample_ts']);
+                            }
+                            d.date = new Date(unixEpoch);
                             d.value = parseFloat(d.value);
 
-                            var existingDataLine = _.findWhere(scope.nestedData, {key: d.sensor});
+                            var existingDataLine = _.findWhere(scope.nestedData, {key: d.name || d.sensor});
                             if (existingDataLine) {
-                                if (existingDataLine.values[existingDataLine.values.length - 1].sample_ts < existingDataLine.values[0].sample_ts) {
+                                if (d.date < existingDataLine.values[existingDataLine.values.length - 1].date) {
                                     doSort = true;
                                 }
                                 while (existingDataLine.values.length > 0 &&
-                                new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
+                                       new Date().getTime() - existingDataLine.values[0].date.getTime() > dataWindowDuration) {
                                     existingDataLine.values.splice(0, 1);
                                 }
                                 existingDataLine.values.push(d);
                                 if (existingDataLine.values.length > 1 &&
-                                    existingDataLine.values[0].sample_ts === existingDataLine.values[existingDataLine.values.length - 1].sample_ts) {
+                                    existingDataLine.values[0].date === existingDataLine.values[existingDataLine.values.length - 1].date) {
                                     existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
                                 }
                             } else {
-                                scope.nestedData.push({key: d.sensor, values: [d], rightAxis: d.rightAxis, color: d.color});
+                                scope.nestedData.push({
+                                    key: d.name || d.sensor,
+                                    values: [d],
+                                    color: d.color,
+                                    rightAxis: d.rightAxis
+                                });
                             }
                         });
                     }
@@ -80,7 +90,7 @@ angular.module('katGui.d3')
                     if (doSort) {
                         scope.nestedData.forEach(function (d) {
                             d.values = _.sortBy(d.values, function (item) {
-                                return item.sample_ts;
+                                return item.date;
                             });
                         });
                         $log.info('Sorting all two-axis data sets.');

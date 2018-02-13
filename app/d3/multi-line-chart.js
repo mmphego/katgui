@@ -54,7 +54,7 @@ angular.module('katGui.d3')
             };
             var svg, x, y, x2, y2, xAxis, yAxis, xAxis2, line, line2, minline, maxline,
                 xAxisElement, yAxisElement, xAxisElement2, context, focus, brush, nowLine, nowText,
-                timestampKey;
+                timestampKey, timestampKeyTs;
 
             $timeout(function() {
                 scope.unbindResize = scope.$watch(function() {
@@ -100,7 +100,8 @@ angular.module('katGui.d3')
                 discreteSensors: false,
                 overrideMargins: null
             };
-            timestampKey = 'sample_ts';
+            timestampKey = 'sample_time';
+            timestampKeyTs = 'sample_ts';
 
             scope.loadOptionsFunction = function(options, forceRedraw) {
                 var optionsChanged = false;
@@ -111,7 +112,8 @@ angular.module('katGui.d3')
                     }
                 });
 
-                timestampKey = scope.options.plotUsingValueTimestamp? 'value_ts': 'sample_ts';
+                timestampKey = scope.options.plotUsingValueTimestamp? 'value_time': 'sample_time';
+                timestampKeyTs = scope.options.plotUsingValueTimestamp? 'value_ts': 'sample_ts';
 
                 if (scope.options.scrollXAxisWindowBy) {
                     if (scope.scrollXAxisInterval) {
@@ -154,7 +156,12 @@ angular.module('katGui.d3')
                 }
 
                 newData.forEach(function(d) {
-                    d.date = new Date(d[timestampKey]);
+                    var unixEpoch = (d[timestampKey] || d['min_' + timestampKey]) * 1000;
+                    if (isNaN(unixEpoch)) {
+                        // this is sensor data from nats, not katstore
+                        unixEpoch = (d[timestampKeyTs]);
+                    }
+                    d.date = new Date(unixEpoch);
                     if (scope.options.discreteSensors) {
                         if (!scope.options.yAxisValues) {
                             scope.options.yAxisValues = [];
@@ -163,25 +170,25 @@ angular.module('katGui.d3')
                     }
 
                     var existingDataLine = _.findWhere(scope.nestedData, {
-                        key: d.sensor
+                        key: d.name || d.sensor
                     });
                     if (existingDataLine) {
                         if ((scope.options.dataLimit && existingDataLine.values.length > scope.options.dataLimit) ||
                             (scope.options.removeOutOfTimeWindowData && x.domain()[0].getTime() > 0 && existingDataLine.values[0].date < x.domain()[0])) {
                             existingDataLine.values.splice(0, 1);
                         }
-                        if (d[timestampKey] < existingDataLine.values[0][timestampKey] ||
-                            d[timestampKey] < existingDataLine.values[existingDataLine.values.length - 1][timestampKey]) {
+                        if (d.date < existingDataLine.values[0].date ||
+                            d.date < existingDataLine.values[existingDataLine.values.length - 1].date) {
                             doSort = true;
                         }
                         existingDataLine.values.push(d);
                         if (existingDataLine.values.length > 1 &&
-                            existingDataLine.values[0][timestampKey] === existingDataLine.values[existingDataLine.values.length - 1][timestampKey]) {
+                            existingDataLine.values[0].date === existingDataLine.values[existingDataLine.values.length - 1].date) {
                             existingDataLine.values.splice(existingDataLine.values.length - 1, 1);
                         }
                     } else {
                         scope.nestedData.push({
-                            key: d.sensor,
+                            key: d.name || d.sensor,
                             values: [d],
                             color: d.color
                         });
@@ -199,7 +206,7 @@ angular.module('katGui.d3')
                 if (doSort) {
                     scope.nestedData.forEach(function(d) {
                         d.values = _.sortBy(d.values, function(item) {
-                            return item[timestampKey];
+                            return item.date;
                         });
                     });
                     $log.info('Sorting all data sets.');
@@ -353,31 +360,31 @@ angular.module('katGui.d3')
                         return x(d.date);
                     })
                     .y(function(d) {
-                        return y(d.value);
+                        return y(d.value || d.avg_value);
                     });
 
                 minline = d3.svg.line()
                     .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                     .defined(function(d) {
-                        return angular.isDefined(d.minValue) && d.minValue !== null;
+                        return angular.isDefined(d.min_value) && d.min_value !== null;
                     })
                     .x(function(d) {
                         return x(d.date);
                     })
                     .y(function(d) {
-                        return y(d.minValue);
+                        return y(d.min_value);
                     });
 
                 maxline = d3.svg.line()
                     .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                     .defined(function(d) {
-                        return angular.isDefined(d.maxValue) && d.maxValue !== null;
+                        return angular.isDefined(d.max_value) && d.max_value !== null;
                     })
                     .x(function(d) {
                         return x(d.date);
                     })
                     .y(function(d) {
-                        return y(d.maxValue);
+                        return y(d.max_value);
                     });
 
                 xAxisElement = focus.append("g")
@@ -404,7 +411,7 @@ angular.module('katGui.d3')
                             return x2(d.date);
                         })
                         .y(function(d) {
-                            return y2(d.value);
+                            return y2(d.value || d.avg_value);
                         });
 
                     context = svg.append("g")
@@ -517,24 +524,24 @@ angular.module('katGui.d3')
                         yExtent = [
                             d3.min(scope.nestedData, function(sensors) {
                                 return d3.min(sensors.values, function(d) {
-                                    if (d.minValue) {
-                                        return d.minValue;
+                                    if (d.min_value) {
+                                        return d.min_value;
                                     }
-                                    var parsedValue = parseFloat(d.value);
+                                    var parsedValue = parseFloat(d.value || d.avg_value);
                                     if (isNaN(parsedValue)) {
-                                        return d.value;
+                                        return d.value || d.avg_value;
                                     }
                                     return parsedValue;
                                 });
                             }),
                             d3.max(scope.nestedData, function(sensors) {
                                 return d3.max(sensors.values, function(d) {
-                                    if (d.maxValue) {
-                                        return d.maxValue;
+                                    if (d.max_value) {
+                                        return d.max_value;
                                     }
-                                    var parsedValue = parseFloat(d.value);
+                                    var parsedValue = parseFloat(d.value || d.avg_value);
                                     if (isNaN(parsedValue)) {
-                                        return d.value;
+                                        return d.value || d.avg_value;
                                     }
                                     return parsedValue;
                                 });
@@ -805,27 +812,28 @@ angular.module('katGui.d3')
                     if (scope.options.discreteSensors && d0) {
                         d = d0;
                         xTranslate = (x(d.date) + margin.left);
-                        yTranslate = (y(d.value) + margin.top);
+                        yTranslate = (y(d.value || d.avg_value) + margin.top);
                         focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                         focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                        d.TooltipValue = d.value;
+                        d.TooltipValue = d.value || d.avg_value;
                         tooltipValues.push(d);
                     }
                     else if (d0 && d0.date && d1 && d1.date) {
                         d = x0 - d0.date > d1.date - x0 ? d1 : d0;
                         xTranslate = (x(d.date) + margin.left);
-                        yTranslate = (y(d.value) + margin.top);
+                        yTranslate = (y(d.value || d.avg_value) + margin.top);
                         focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                         focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                        d.TooltipValue = d.value;
+                        d.TooltipValue = d.value || d.avg_value;
                         tooltipValues.push(d);
                     }
                 });
                 if (tooltipValues.length > 0) {
                     var html = "";
                     for (var i in tooltipValues) {
-                        html += "<div class='" + tooltipValues[i].sensor + "' style='display: flex'>";
-                        html += "<i style='flex: 1 100%'>" + (tooltipValues[i].sensor ? tooltipValues[i].sensor : tooltipValues[i].name) + "</i>";
+                        var sensorName = tooltipValues[i].sensor || tooltipValues[i].name;
+                        html += "<div class='" + sensorName + "' style='display: flex'>";
+                        html += "<i style='flex: 1 100%'>" + sensorName + "</i>";
                         html += "<b style='margin-left: 8px; white-space: pre'> " + tooltipValues[i].TooltipValue + "</b>";
                         html += "<div style='min-width: 120px'><span style='margin-left: 6px'>" + moment.utc(tooltipValues[i].date).format(MOMENT_DATETIME_FORMAT) + "</span></div>";
                         html += "</div>";
@@ -851,15 +859,14 @@ angular.module('katGui.d3')
 
             scope.downloadCsv = function(useUnixTimestamps, includeValueTimestamp) {
                 scope.nestedData.forEach(function(sensorValues, index) {
-                    var lengthBeforeUnique = sensorValues.values.length;
-                    sensorValues.values = _.uniq(sensorValues.values, function (item) {
-                        return item[timestampKey];
-                    });
-                    var lengthAfterUnique = sensorValues.values.length;
-                    if (lengthBeforeUnique > lengthAfterUnique) {
-                        $log.warn('Duplicate sensor values found, trimmed ' + (lengthBeforeUnique - lengthAfterUnique) + ' samples for ' + sensorValues.key);
+                    var hasStatus = sensorValues.values && sensorValues.values[0].status !== undefined;
+                    var csvContent;
+                    if (hasStatus) {
+                        csvContent = ["timestamp,status,value"];
+                    } else {
+                        csvContent = ["timestamp,value"];
                     }
-                    var csvContent = ["timestamp,status,value"];
+
                     if (includeValueTimestamp) {
                         csvContent[0] = "value_timestamp," + csvContent[0];
                     }
@@ -867,18 +874,34 @@ angular.module('katGui.d3')
                         var dataString = '';
                         var sensorInfo = sensorValues.values[i];
                         if (useUnixTimestamps) {
-                            if (includeValueTimestamp) {
-                                dataString += (sensorInfo.value_ts * 1000) + ',';
+                            if (includeValueTimestamp && (sensorInfo.value_time || sensorInfo.value_ts)) {
+                                dataString += ((sensorInfo.value_time || (sensorInfo.value_ts / 1000))) + ',';
+                            } else if (includeValueTimestamp) {
+                                dataString += ',';
                             }
-                            dataString += (sensorInfo.sample_ts * 1000) + ',';
+                            dataString += ((sensorInfo.sample_time || sensorInfo.sample_ts / 1000)) + ',';
                         } else {
-                            if (includeValueTimestamp) {
-                                dataString += moment.utc(sensorInfo.value_ts).format(MOMENT_DATETIME_FORMAT) + ',';
+                            var value_time = null;
+                            var sample_time = null;
+                            if (sensorInfo.value_time) {
+                                value_time = sensorInfo.value_time * 1000;
                             }
-                            dataString += moment.utc(sensorInfo.sample_ts).format(MOMENT_DATETIME_FORMAT) + ',';
+                            if (sensorInfo.sample_time) {
+                                sample_time = sensorInfo.sample_time * 1000;
+                            }
+                            if (includeValueTimestamp && (value_time || sensorInfo.value_ts)) {
+                                dataString += moment.utc((value_time || sensorInfo.value_ts)).format(MOMENT_DATETIME_FORMAT) + ',';
+                            } else if (includeValueTimestamp) {
+                                dataString += ',';
+                            }
+                            dataString += moment.utc(sample_time || sensorInfo.sample_ts).format(MOMENT_DATETIME_FORMAT) + ',';
                         }
-                        dataString += sensorValues.values[i].status + ',';
-                        dataString += sensorValues.values[i].value;
+                        if (hasStatus && sensorValues.values[i].status) {
+                            dataString += sensorValues.values[i].status + ',';
+                        } else if (hasStatus) {
+                            dataString += ',';
+                        }
+                        dataString += (sensorValues.values[i].value || sensorValues.values[i].avg_value);
                         csvContent.push(dataString);
                     }
                     var csvData = new Blob([csvContent.join('\r\n')], { type: 'text/csv' });
