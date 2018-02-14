@@ -23,6 +23,7 @@
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
+        vm.currentSensorNameColumnWidth = 400;
 
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'shortName'},
@@ -95,6 +96,7 @@
                 vm.sensorsToDisplay = [];
                 vm.sensorValues = {};
             }
+            vm.resetSensorNameColumnWidth('.resource-sensor-name', 400);
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
             vm.showProgress = true;
@@ -190,6 +192,40 @@
 
         vm.keys = function(obj) {
             return Object.keys(obj);
+        };
+
+        vm.resizeColumn = function (columnClassId, newSize) {
+            document.querySelectorAll(columnClassId).forEach(function (node) {
+                if (node.classList.contains('subheader-text')) {
+                    node.style.minWidth = (newSize - 38) + 'px';
+                } else {
+                    node.style.minWidth = newSize + 'px';
+                }
+
+            });
+        };
+
+        vm.resetSensorNameColumnWidth  = function (columnClassId, newSize) {
+            vm.currentSensorNameColumnWidth = newSize;
+            vm.resizeColumn(columnClassId, newSize);
+        };
+
+        vm.increaseSensorNameColumnWidth = function(columnClassId) {
+            if (vm.currentSensorNameColumnWidth < 1100) {
+                vm.currentSensorNameColumnWidth += 200;
+            } else {
+                vm.currentSensorNameColumnWidth = 800;
+            }
+            vm.resizeColumn(columnClassId, vm.currentSensorNameColumnWidth);
+        };
+
+        vm.decreaseSensorNameColumnWidth = function(columnClassId) {
+            if (vm.currentSensorNameColumnWidth > 300) {
+                vm.currentSensorNameColumnWidth -= 200;
+            } else {
+                vm.currentSensorNameColumnWidth = 200;
+            }
+            vm.resizeColumn(columnClassId, vm.currentSensorNameColumnWidth);
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
