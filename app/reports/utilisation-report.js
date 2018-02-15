@@ -114,10 +114,10 @@
 
                 rows = [{
                     value: 'In Maintenance',
-                    percentageOfTotal_1: vm.subarrayMaintenanceDurations['1'].percentageOfTotal || '',
-                    percentageOfTotal_2: vm.subarrayMaintenanceDurations['2'].percentageOfTotal || '',
-                    percentageOfTotal_3: vm.subarrayMaintenanceDurations['3'].percentageOfTotal || '',
-                    percentageOfTotal_4: vm.subarrayMaintenanceDurations['4'].percentageOfTotal || ''
+                    percentageOfTotal_1: (vm.subarrayMaintenanceDurations['1'].percentageOfTotal || '') + '(' + vm.subarrayMaintenanceDurations['1'].duration')',
+                    percentageOfTotal_2: (vm.subarrayMaintenanceDurations['2'].percentageOfTotal || '') + '(' + vm.subarrayMaintenanceDurations['2'].duration')',
+                    percentageOfTotal_3: (vm.subarrayMaintenanceDurations['3'].percentageOfTotal || '') + '(' + vm.subarrayMaintenanceDurations['3'].duration')',
+                    percentageOfTotal_4: (vm.subarrayMaintenanceDurations['4'].percentageOfTotal || '') + '(' + vm.subarrayMaintenanceDurations['4'].duration')'
                 }];
                 schedColumns[0].title = "";
 
