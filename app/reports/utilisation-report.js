@@ -18,7 +18,7 @@
             vm.creatingReceptorReport = false;
             vm.creatingSubarrayReport = false;
             vm.subarrayReportSensorsRegex = "subarray...state|subarray...maintenance|subarray...product|subarray...band|sched.mode..";
-            vm.receptorsReportSensorsRegex = "katpool.pool.resources.[1-4]|katpool.resources.faulty|katpool.resources.in.maintenance";
+            vm.receptorsReportSensorsRegex = "katpool.pool.resources|katpool.resources.faulty|katpool.resources.in.maintenance";
             vm.interlockReportSensorsRegex = "sys.interlock.state";
             vm.scheduleReportSensorsRegex = "sched.active.schedule..";
             vm.poolResourcesAssignedDurations = {};
@@ -85,22 +85,21 @@
                 pdf.text('From: ' + vm.startDatetimeReadable + '\tTo: ' + vm.endDatetimeReadable + '\t\t(Report Duration: ' + vm.reportTimeWindowSecondsDurationReadable + ' hours)', 20, 45);
 
                 var schedColumns = [
-                    {title: "", dataKey: "value"},
-                    {title: "1", dataKey: "percentageOfTotal_1"},
-                    {title: "2", dataKey: "percentageOfTotal_2"},
-                    {title: "3", dataKey: "percentageOfTotal_3"},
-                    {title: "4", dataKey: "percentageOfTotal_4"}
+                    {title: "", dataKey: "value"}
                 ];
+                vm.subarrayNrs.forEach(function (subNr) {
+                    schedColumns.push({title: subNr, dataKey: "percentageOfTotal_" + subNr});
+                });
                 var schedModeKeys = Object.keys(vm.schedModeDurations);
                 var rows = [];
                 schedModeKeys.forEach(function (key) {
-                    rows.push({
-                        value: key,
-                        percentageOfTotal_1: vm.schedModeDurations[key]['1'].percentageOfTotal,
-                        percentageOfTotal_2: vm.schedModeDurations[key]['2'].percentageOfTotal,
-                        percentageOfTotal_3: vm.schedModeDurations[key]['3'].percentageOfTotal,
-                        percentageOfTotal_4: vm.schedModeDurations[key]['4'].percentageOfTotal
+                    var newSchedModeRow = {
+                        value: key
+                    };
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSchedModeRow["percentageOfTotal_" + subNr] =  vm.schedModeDurations[key][subNr].percentageOfTotal;
                     });
+                    rows.push(newSchedModeRow);
                 });
 
                 pdf.setFontSize(20);
@@ -112,13 +111,18 @@
                     theme: 'striped',
                     margin: {top: 8, bottom: 8}});
 
-                rows = [{
-                    value: 'In Maintenance',
-                    percentageOfTotal_1: vm.subarrayMaintenanceDurations['1'].percentageOfTotal || '',
-                    percentageOfTotal_2: vm.subarrayMaintenanceDurations['2'].percentageOfTotal || '',
-                    percentageOfTotal_3: vm.subarrayMaintenanceDurations['3'].percentageOfTotal || '',
-                    percentageOfTotal_4: vm.subarrayMaintenanceDurations['4'].percentageOfTotal || ''
-                }];
+                var inMaintenanceRow = {
+                    value: 'In Maintenance'
+                };
+                vm.subarrayNrs.forEach(function (subNr) {
+                    var percentageStr = (vm.subarrayMaintenanceDurations[subNr].percentageOfTotal || '');
+                    var durationStr = '';
+                    if (vm.subarrayMaintenanceDurations[subNr].duration) {
+                        durationStr = ' (' + (vm.subarrayMaintenanceDurations[subNr].duration || '') + ')';
+                    }
+                    inMaintenanceRow['percentageOfTotal_' + subNr] = percentageStr + durationStr;
+                });
+                rows = [inMaintenanceRow];
                 schedColumns[0].title = "";
 
                 pdf.setFontSize(20);
@@ -134,13 +138,13 @@
                 rows = [];
                 schedColumns[0].title = "";
                 subarrayStateKeys.forEach(function (key) {
-                    rows.push({
-                        value: key,
-                        percentageOfTotal_1: vm.subarrayStateDurations[key]['1'].percentageOfTotal,
-                        percentageOfTotal_2: vm.subarrayStateDurations[key]['2'].percentageOfTotal,
-                        percentageOfTotal_3: vm.subarrayStateDurations[key]['3'].percentageOfTotal,
-                        percentageOfTotal_4: vm.subarrayStateDurations[key]['4'].percentageOfTotal
+                    var newSubarrayStateRow = {
+                        value: key
+                    };
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayStateRow["percentageOfTotal_" + subNr] =  vm.subarrayStateDurations[key][subNr].percentageOfTotal;
                     });
+                    rows.push(newSubarrayStateRow);
                 });
                 pdf.setFontSize(20);
                 pdf.text('Subarray State', 20, pdf.autoTableEndPosY() + 45);
@@ -155,13 +159,13 @@
                 var subarrayBandKeys = Object.keys(vm.subarrayBandDurations);
                 rows = [];
                 subarrayBandKeys.forEach(function (key) {
-                    rows.push({
+                    var newSubarrayBandRow = {
                         value: key !== ""? key: "None",
-                        percentageOfTotal_1: vm.subarrayBandDurations[key]['1'].percentageOfTotal,
-                        percentageOfTotal_2: vm.subarrayBandDurations[key]['2'].percentageOfTotal,
-                        percentageOfTotal_3: vm.subarrayBandDurations[key]['3'].percentageOfTotal,
-                        percentageOfTotal_4: vm.subarrayBandDurations[key]['4'].percentageOfTotal
+                    };
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayBandRow["percentageOfTotal_" + subNr] =  vm.subarrayBandDurations[key][subNr].percentageOfTotal;
                     });
+                    rows.push(newSubarrayBandRow);
                 });
 
                 pdf.setFontSize(20);
@@ -177,13 +181,13 @@
                 var subarrayProductKeys = Object.keys(vm.subarrayProductDurations);
                 rows = [];
                 subarrayProductKeys.forEach(function (key) {
-                    rows.push({
+                    var newSubarrayProductRow = {
                         value: key !== ""? key: "None",
-                        percentageOfTotal_1: vm.subarrayProductDurations[key]['1'].percentageOfTotal,
-                        percentageOfTotal_2: vm.subarrayProductDurations[key]['2'].percentageOfTotal,
-                        percentageOfTotal_3: vm.subarrayProductDurations[key]['3'].percentageOfTotal,
-                        percentageOfTotal_4: vm.subarrayProductDurations[key]['4'].percentageOfTotal
+                    };
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newSubarrayProductRow["percentageOfTotal_" + subNr] =  vm.subarrayProductDurations[key][subNr].percentageOfTotal;
                     });
+                    rows.push(newSubarrayProductRow);
                 });
 
                 pdf.setFontSize(20);
@@ -198,30 +202,29 @@
                 var poolResourcesKeys = Object.keys(vm.poolResourcesAssignedDurations).sort();
                 rows = [];
                 poolResourcesKeys.forEach(function (key) {
-                    rows.push({
+                    var newPoolResourcesRow = {
                         resource: key,
                         durationTotal: vm.poolResourcesAssignedDurations[key].durationTotal,
                         percentageTotal: vm.poolResourcesAssignedDurations[key].percentageTotal,
                         faulty: vm.poolResourcesAssignedDurations[key].faulty.percentageOfTotal,
-                        in_maintenance: vm.poolResourcesAssignedDurations[key].in_maintenance.percentageOfTotal,
-                        percentageOfTotal_1: vm.poolResourcesAssignedDurations[key]['1'].percentageOfTotal,
-                        percentageOfTotal_2: vm.poolResourcesAssignedDurations[key]['2'].percentageOfTotal,
-                        percentageOfTotal_3: vm.poolResourcesAssignedDurations[key]['3'].percentageOfTotal,
-                        percentageOfTotal_4: vm.poolResourcesAssignedDurations[key]['4'].percentageOfTotal
+                        in_maintenance: vm.poolResourcesAssignedDurations[key].in_maintenance.percentageOfTotal
+                    };
+                    vm.subarrayNrs.forEach(function (subNr) {
+                        newPoolResourcesRow["percentageOfTotal_" + subNr] =  vm.poolResourcesAssignedDurations[key][subNr].percentageOfTotal;
                     });
+                    rows.push(newPoolResourcesRow);
                 });
 
                 var resourceColumns = [
                     {title: "Resource", dataKey: "resource"},
-                    {title: "Total Duration", dataKey: "durationTotal"},
-                    {title: "Total %", dataKey: "percentageTotal"},
-                    {title: "1", dataKey: "percentageOfTotal_1"},
-                    {title: "2", dataKey: "percentageOfTotal_2"},
-                    {title: "3", dataKey: "percentageOfTotal_3"},
-                    {title: "4", dataKey: "percentageOfTotal_4"},
-                    {title: "faulty", dataKey: "faulty"},
-                    {title: "in_maintenance", dataKey: "in_maintenance"}
+                    {title: "Total Duration", dataKey: "durationTotal"}
                 ];
+                vm.subarrayNrs.forEach(function (subNr) {
+                    resourceColumns.push({title: subNr, dataKey: "percentageOfTotal_" + subNr});
+                });
+                resourceColumns.push({title: "faulty", dataKey: "faulty"});
+                resourceColumns.push({title: "in_maintenance", dataKey: "in_maintenance"});
+                resourceColumns.push({title: "Total %", dataKey: "percentageTotal"});
 
                 pdf.setFontSize(20);
                 pdf.text('Resource Utilisation', 20, pdf.autoTableEndPosY() + 45);
