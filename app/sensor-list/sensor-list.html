@@ -43,9 +43,9 @@
                     <span class="fa" ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'shortName' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'shortName' && vm.sensorsOrderBy.reverse}"
                         style="margin-right: 4px"></span>
                     </span>
-                    <span class="fa fa-caret-left opacity-hover" style="margin-left: -28px;margin-right: 4px" ng-click="vm.decreaseSensorNameColumnWidth('.resource-sensor-name'); $event.stopPropagation()"></span>
+                    <span class="fa fa-caret-left opacity-hover" style="margin-left: -28px;margin-right: 4px" ng-click="vm.decreaseSensorNameColumnWidth(); $event.stopPropagation()"></span>
                     <span class="opacity-hover" ng-click="vm.resetSensorNameColumnWidth(400)">|</span>
-                    <span class="fa fa-caret-right opacity-hover" style="margin: 0 4px" ng-click="vm.increaseSensorNameColumnWidth('.resource-sensor-name'); $event.stopPropagation()"></span>
+                    <span class="fa fa-caret-right opacity-hover" style="margin: 0 4px" ng-click="vm.increaseSensorNameColumnWidth(); $event.stopPropagation()"></span>
                     <span class="subheader-text resource-sensor-status-item" ng-click="vm.setSensorsOrderBy('status')">
                         <span>Status</span>
                     <span class="fa" ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'status' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'status' && vm.sensorsOrderBy.reverse}"
