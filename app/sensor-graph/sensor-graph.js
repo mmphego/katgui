@@ -423,11 +423,17 @@
 
         vm.increaseSearchWidth = function () {
             vm.searchWidth += 150;
+            if (vm.searchWidth > 1200) {
+                vm.searchWidth = 1200;
+            }
             $localStorage['sensorGraphSearchWidth'] = vm.searchWidth;
         };
 
         vm.decreaseSearchWidth = function () {
             vm.searchWidth -= 150;
+            if (vm.searchWidth < 366) {
+                vm.searchWidth = 366;
+            }
             $localStorage['sensorGraphSearchWidth'] = vm.searchWidth;
         };
 
