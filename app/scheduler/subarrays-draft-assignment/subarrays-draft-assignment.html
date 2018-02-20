@@ -67,7 +67,7 @@
                     </md-menu>
                 </md-toolbar>
                 <div id="scheduleDraftDataRepeat" md-theme="{{themePrimary}}" flex class="md-whiteframe-z2"
-                    ng-class="{'maintenance-bg':vm.subarray.maintenance}">
+                    ng-class="{'maintenance-bg':vm.subarray.maintenance}" style="overflow: auto">
                     <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:vm.subarray.id, state:'APPROVED'} | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse track by item.id"
                         flex layout="row" layout-align="start center" ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}"
                         class="schedule-draft-item" layout="column" ng-show="item">

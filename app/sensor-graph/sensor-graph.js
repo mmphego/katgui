@@ -34,6 +34,7 @@
         vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
         vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
         vm.searchStaleSensors = $localStorage['searchStaleSensors']? true: false;
+        vm.searchWidth = $localStorage['sensorGraphSearchWidth']? $localStorage['sensorGraphSearchWidth'] : 366;
 
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
@@ -399,6 +400,27 @@
                 vm.searchText = oldSearchText;
             }, 0);
             event.stopPropagation();
+        };
+
+        vm.increaseSearchWidth = function () {
+            vm.searchWidth += 150;
+            if (vm.searchWidth > 1200) {
+                vm.searchWidth = 1200;
+            }
+            $localStorage['sensorGraphSearchWidth'] = vm.searchWidth;
+        };
+
+        vm.decreaseSearchWidth = function () {
+            vm.searchWidth -= 150;
+            if (vm.searchWidth < 366) {
+                vm.searchWidth = 366;
+            }
+            $localStorage['sensorGraphSearchWidth'] = vm.searchWidth;
+        };
+
+        vm.resetSearchWidth = function (newSize) {
+            vm.searchWidth = newSize;
+            $localStorage['sensorGraphSearchWidth'] = vm.searchWidth;
         };
 
         vm.autoCompleteKeyPressed = function (event) {

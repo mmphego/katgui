@@ -24,6 +24,22 @@
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
 
+        if ($localStorage.currentSensorNameColumnWidth) {
+            vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
+        } else {
+            vm.currentSensorNameColumnWidth = 400;
+        }
+
+        vm.sensorNameResizeClassName = '_sensor-list-name-resize';
+        vm.sensorNameResizeStyle = document.getElementById(vm.sensorNameResizeClassName);
+        if (!vm.sensorNameResizeStyle) {
+            vm.sensorNameResizeStyle = document.createElement('style');
+            vm.sensorNameResizeStyle.type = 'text/css';
+            vm.sensorNameResizeStyle.id = vm.sensorNameResizeClassName;
+            vm.sensorNameResizeStyle.innerHTML = '.' + vm.sensorNameResizeClassName + ' {min-width: ' + vm.currentSensorNameColumnWidth + 'px;}';
+            document.getElementsByTagName('head')[0].appendChild(vm.sensorNameResizeStyle);
+        }
+
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'shortName'},
             {label: 'Timestamp', value: 'timestamp'},
@@ -190,6 +206,24 @@
 
         vm.keys = function(obj) {
             return Object.keys(obj);
+        };
+
+        vm.resetSensorNameColumnWidth  = function (newSize) {
+            vm.setCurrentSensorNameColumnWidth(newSize);
+        };
+
+        vm.increaseSensorNameColumnWidth = function(columnClassId) {
+            vm.setCurrentSensorNameColumnWidth(vm.currentSensorNameColumnWidth + 200);
+        };
+
+        vm.decreaseSensorNameColumnWidth = function(columnClassId) {
+            vm.setCurrentSensorNameColumnWidth(vm.currentSensorNameColumnWidth - 200);
+        };
+
+        vm.setCurrentSensorNameColumnWidth = function(newSize) {
+            vm.currentSensorNameColumnWidth = newSize;
+            $localStorage.currentSensorNameColumnWidth = newSize;
+            vm.sensorNameResizeStyle.innerHTML = '.' + vm.sensorNameResizeClassName + ' {min-width: ' + vm.currentSensorNameColumnWidth + 'px }';
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {

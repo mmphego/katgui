@@ -65,7 +65,7 @@
                 }
             } else if (sensor.name === "sys_interlock_state") {
                 $rootScope.sys_interlock_state = sensor;
-            } else if (sensor.name.startsWith('kataware_alarm')) {
+            } else if (sensor.name.startsWith('kataware_alarm_')) {
                 AlarmsService.receivedAlarmMessage(sensor);
             }
         };

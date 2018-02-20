@@ -1,9 +1,12 @@
 <div layout="row" ng-controller="SensorGraphCtrl as vm" md-theme="{{themePrimary}}" flex ng-click="vm.showDatePicker = false;vm.showEndDatePicker = false;"
     style="cursor: auto; min-height: 640px">
 
-    <div layout="column" style="margin: 8px; min-width: 366px; max-width: 366px; min-height: 600px">
+    <div layout="column" style="margin: 8px; min-height: 600px" ng-style="{width: vm.searchWidth + 'px'}">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
             <span flex>Tools</span>
+            <span class="fa fa-caret-left opacity-hover" style="margin-left: -28px;margin-right: 4px" ng-click="vm.decreaseSearchWidth(); $event.stopPropagation()"></span>
+            <span class="opacity-hover" ng-click="vm.resetSearchWidth(366)">|</span>
+            <span class="fa fa-caret-right opacity-hover" style="margin: 0 4px" ng-click="vm.increaseSearchWidth(); $event.stopPropagation()"></span>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" layout="column" layout-align="start center" md-theme="{{themePrimaryButtons}}">
 
@@ -70,7 +73,7 @@
                     <md-option value="d">Day(s)</md-option>
                 </md-select>
             </div>
-            <div layout="row" style="min-height: 40px">
+            <div layout="row" style="min-height: 40px; width: calc(100% - 8px)">
                 <md-autocomplete md-theme="{{themePrimary}}" style="background: inherit; min-width: 310px;" md-no-cache="true" ng-disabled="vm.waitingForSearchResult"
                     md-search-text="vm.searchText" md-items="item in vm.querySearch(vm.searchText)" md-selected-item="vm.selectedSearchItem"
                     placeholder="Type a sensor regular expression. E.g. wind" md-autofocus ng-keydown="vm.autoCompleteKeyPressed($event)"
@@ -86,7 +89,7 @@
             </div>
 
             <div style="min-height: 5px; width: 100%; padding: 4px 8px;" ng-show="!vm.waitingForSearchResult"></div>
-            <md-progress-linear style="padding: 4px 8px;" ng-show="vm.waitingForSearchResult" class="md-primary"
+            <md-progress-linear style="padding: 4px 8px; width: calc(100% - 2px)" ng-show="vm.waitingForSearchResult" class="md-primary"
                 md-mode="indeterminate"></md-progress-linear>
 
             <div flex class="sensor-search-name-list unselectable md-whiteframe-z1">
