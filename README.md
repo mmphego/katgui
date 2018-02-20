@@ -1,4 +1,4 @@
-This project is the Operator user interface for CAM in the MeerKAT project.
+katgui is the Operator user interface for CAM in the MeerKAT project.
 
 After cloning the repo do:
 
@@ -11,7 +11,19 @@ Navigate to the project folder
 To use gulp to host the project locally on port 8000 do:
 >gulp webserver
 
+(If needed install the gulp task runner globally using `sudo nmp install -g gulp`)
+
+Note: that running the webserver task will open a browser window to `http://localhost:8000/localhostindex.html`.
+The `localhostindex.html` file is created from the `index.html` file by the webserver task. This is necessary
+in order to change the `<base href="/katgui/">` to `<base href="/">` for locally hosted instances of the gui.
+This allows us to run angularjs in 'HTML5' mode, which removes the hash from the url. This means that when the
+index.html file is changed, the gulp webserver task needs to be stopped and started again to rebuild the
+`localhostindex.html` file.
+
 To build the production version do:
 >gulp build
 
 Which will minify and concat to the dist/ folder.
+
+After the production version has been built, make sure to commit and the new version to github. This effectively
+creates a new release that is 'deployed' when pulling the katgui project on the target CAM portal node.

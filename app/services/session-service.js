@@ -1,18 +1,19 @@
-(function () {
+(function() {
 
     angular.module('katGui.services')
         .service('SessionService', SessionService);
 
     function SessionService($http, $state, $rootScope, $localStorage, $mdDialog,
-                            KatGuiUtil, $timeout, $q, $interval, $log, $location, NotifyService) {
+        KatGuiUtil, $timeout, $q, $interval, $log, $location, NotifyService, MOMENT_DATETIME_FORMAT) {
 
         function urlBase() {
-            return $rootScope.portalUrl? $rootScope.portalUrl + '/katauth' : '';
+            return $rootScope.portalUrl ? $rootScope.portalUrl + '/katauth' : '';
         }
 
         var api = {};
         api.connection = null;
         api.deferredMap = {};
+        api.userSessions = {};
         $rootScope.jwt = $localStorage['currentUserToken'];
 
         var jwtHeader = {
@@ -20,11 +21,12 @@
             "typ": "JWT"
         };
 
-        api.verify = function (email, password, role) {
-
-            var jwtPayload = { "email": email };
+        api.verify = function(email, password, role) {
+            var jwtPayload = {
+                "email": email
+            };
             var msg = window.btoa(JSON.stringify(jwtHeader)) + "." + window.btoa(JSON.stringify(jwtPayload));
-            msg = msg.replace(/=/g , "");
+            msg = msg.replace(/=/g, "");
             var pass = CryptoJS.HmacSHA256(msg, CryptoJS.SHA256(password).toString());
             $rootScope.auth_jwt = msg + '.' + pass.toString(CryptoJS.enc.Base64);
             $rootScope.jwt = $rootScope.auth_jwt;
@@ -32,7 +34,7 @@
                 .then(verifySuccess, verifyError);
         };
 
-        api.verifyAs = function (role) {
+        api.verifyAs = function(role) {
             var req = {
                 method: 'get',
                 url: urlBase() + '/user/verify/' + role,
@@ -40,7 +42,7 @@
                     'Authorization': 'CustomJWT ' + $rootScope.jwt
                 }
             };
-            $http(req).then(function (result) {
+            $http(req).then(function(result) {
                 if (result.data.session_id) {
                     if (result.data.confirmation_token) {
                         $log.info('Found confirmation token');
@@ -57,26 +59,26 @@
                         api.login(result.data.session_id);
                     }
                 }
-            }, function (error) {
+            }, function(error) {
                 $log.error(error);
             });
 
         };
 
-        api.login = function (session_id) {
+        api.login = function(session_id) {
             $rootScope.jwt = session_id;
             $http(createRequest('post', urlBase() + '/user/login', {}))
-                .then(function(result){
+                .then(function(result) {
                     loginSuccess(result, session_id);
                 }, loginError);
         };
 
-        api.logout = function () {
-            return $http(createRequest('post', urlBase() + '/user/logout',{}))
+        api.logout = function() {
+            return $http(createRequest('post', urlBase() + '/user/logout', {}))
                 .then(logoutResultSuccess, logoutResultError);
         };
 
-        api.recoverLogin = function () {
+        api.recoverLogin = function() {
             if ($rootScope.jwt) {
                 var b = $rootScope.jwt.split(".");
                 var payload = JSON.parse(CryptoJS.enc.Base64.parse(b[1]).toString(CryptoJS.enc.Utf8));
@@ -86,25 +88,45 @@
             }
         };
 
-        api.onSockJSOpen = function () {
+        api.onSockJSOpen = function() {
             if (api.connection && api.connection.readyState) {
                 $log.info('Lead Operator Connection Established.');
                 api.deferredMap['connectDefer'].resolve();
                 api.connection.send($rootScope.currentUser.email);
+                if (api.reconnectInterval) {
+                    $interval.cancel(api.reconnectInterval);
+                    api.reconnectInterval = null;
+                }
             }
         };
 
-        api.onSockJSClose = function () {
+        api.onSockJSClose = function() {
             $log.info('Disconnected Lead Operator Connection.');
             api.connection = null;
+            if ($rootScope.loggedIn && $rootScope.currentUser.req_role === 'lead_operator') {
+                // if the lo connection closes but we still want to be lo, try to reconnect
+                // every 10 seconds
+                if (!api.reconnectInterval) {
+                    api.reconnectInterval = $interval(function() {
+                        api.connectListener(false);
+                    }, 10000);
+                }
+            }
         };
 
-        api.onSockJSMessage = function (e) {
+        api.onSockJSMessage = function(e) {
             //we got a ping for LO so send a pong with our email
             api.connection.send($rootScope.currentUser.email);
         };
 
-        api.connectListener = function (skipDeferObject) {
+        api.connectListener = function(skipDeferObject) {
+            if (!$rootScope.loggedIn) {
+                if (api.reconnectInterval) {
+                    $interval.cancel(api.reconnectInterval);
+                    api.reconnectInterval = null;
+                }
+                return;
+            }
             $log.info('Lead Operator Connecting...');
             api.connection = new SockJS(urlBase() + '/alive');
             api.connection.onopen = api.onSockJSOpen;
@@ -117,13 +139,93 @@
             }
         };
 
-        api.disconnectListener = function () {
+        api.disconnectListener = function() {
             if (api.connection) {
                 $log.info('Disconnecting Lead Operator.');
                 api.connection.close();
             } else {
                 $log.error('Attempting to disconnect an already disconnected connection!');
             }
+        };
+
+        api.receivedSessionMessage = function(subject, data) {
+            if (subject === "portal.auth.session.deleted") {
+                if (api.userSessions[data.user]) {
+                    delete api.userSessions[data.user];
+                }
+                if ($rootScope.currentUser && data.user === $rootScope.currentUser.email) {
+                    // this user's session was deleted, log him out!
+                    api.logout();
+                    NotifyService.showSimpleDialog(
+                        "Logged out", "Your session has been terminated by an administrator, please contact the lead operator or login again.");
+                }
+            }
+            else if ($rootScope.expertOrLO) {
+                if (!api.userSessions[data.user]) {
+                    api.userSessions[data.user] = [data];
+                } else {
+                    api.userSessions[data.user].push(data);
+                }
+            }
+        };
+
+        api.listUserSessions = function() {
+            $http(createRequest('get', urlBase() + '/sessions')).then(function(result) {
+                result.data.forEach(function(session) {
+                    api.userSessions[session.user] = [session];
+                });
+            }, function(error) {
+                $log.error('Error listing user sessions!');
+                $log.error(error);
+            });
+        };
+
+        api.showSessionDetails = function(user) {
+            $mdDialog
+                .show({
+                    controller: function($rootScope, $scope, $mdDialog) {
+                        $scope.sessions = api.userSessions[user.email];
+                        $scope.user = user;
+
+                        $scope.secondsToDate = function(input) {
+                            return new Date(parseFloat(input));
+                        };
+
+                        $scope.logoutUser = function() {
+                            api.deleteUserSession(user.email);
+                            $mdDialog.hide();
+                        };
+
+                        $scope.cancel = function() {
+                            $mdDialog.hide();
+                        };
+                    },
+                    template: [
+                        '<md-dialog>',
+                            '<md-toolbar md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1 md-primary"><div class="md-toolbar-tools">User Session Activity - {{user.email}}</div></md-toolbar>',
+                            '<md-dialog-content style="padding: 32px; overflow: auto" md-theme="{{$root.themePrimaryButtons}}" layout="column">',
+                                '<label>{{sessions.length > 1? "Recent session activity:" : "No recent session activity sniffed."}}</label>',
+                                '<div ng-repeat="session in sessions">',
+                                    '<span ng-if="session.full_url">{{session.method + " - " + session.full_url}}</span>',
+                                '</div>',
+                            '</md-dialog-content>',
+                            '<md-dialog-actions  md-theme="{{$root.themePrimaryButtons}}" layout="row">',
+                                '<span flex></span>',
+                                '<md-button md-theme="red" class="md-raised md-primary" ng-click="logoutUser()">Logout User</md-button>',
+                                '<md-button ng-click="cancel()">Close</md-button>',
+                            '</md-dialog-actions>',
+                        '</md-dialog>'
+                    ].join('')
+                });
+        };
+
+        api.deleteUserSession = function(userEmail) {
+            $http(createRequest('delete', urlBase() + '/session/' + userEmail)).then(function(result) {
+                NotifyService.showSimpleToast('Logged out user: ' + userEmail);
+            }, function(error) {
+                $log.error('Error deleting user session!');
+                $log.error(error);
+            });
         };
 
         function logoutResultSuccess() {
@@ -204,39 +306,40 @@
         function confirmRole(session_id, payload) {
             $mdDialog
                 .show({
-                    controller: function ($rootScope, $scope, $mdDialog) {
+                    controller: function($rootScope, $scope, $mdDialog) {
                         var readonly_session_id = session_id;
                         var requested_session_id = payload.session_id;
                         $scope.current_lo = payload.current_lo;
                         $scope.requested_role = payload.req_role;
 
-                        $scope.proceed = function () {
+                        $scope.proceed = function() {
                             api.login(requested_session_id);
                             $mdDialog.hide();
                         };
 
-                        $scope.cancel = function () {
+                        $scope.cancel = function() {
                             api.login(readonly_session_id);
                             $mdDialog.hide();
                         };
                     },
                     template: [
                         '<md-dialog md-theme="{{$root.themePrimary}}" class="md-whiteframe-z1">',
-                            '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>',
-                            '<md-dialog-content class="md-padding" layout="column">',
-                                '<p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>',
-                                '<p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be demoted to the Monitor Role.</p>',
-                            '</md-dialog-content>',
-                            '<md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">',
-                                '<md-button ng-click="cancel()" class="md-primary md-raised">',
-                                    'Login As Monitor Only',
-                                '</md-button>',
-                                '<md-button ng-click="proceed()" class="md-primary md-raised">',
-                                    'Login As Lead Operator',
-                                '</md-button>',
-                            '</md-dialog-actions>',
-                        '</md-dialog>'].join('')
-                    });
+                        '<md-toolbar class="md-toolbar-tools md-whiteframe-z1">Confirm login as {{$root.rolesMap[requested_role]}}</md-toolbar>',
+                        '<md-dialog-content class="md-padding" layout="column">',
+                        '<p><b>{{current_lo ? current_lo : "No one"}}</b> is the current Lead Operator.</p>',
+                        '<p ng-show="current_lo">If you proceed <b>{{current_lo}}</b> will be demoted to the Monitor Role.</p>',
+                        '</md-dialog-content>',
+                        '<md-dialog-actions layout="row" md-theme="{{$root.themePrimaryButtons}}">',
+                        '<md-button ng-click="cancel()" class="md-primary md-raised">',
+                        'Login As Monitor Only',
+                        '</md-button>',
+                        '<md-button ng-click="proceed()" class="md-primary md-raised">',
+                        'Login As Lead Operator',
+                        '</md-button>',
+                        '</md-dialog-actions>',
+                        '</md-dialog>'
+                    ].join('')
+                });
         }
 
         function loginSuccess(result, session_id) {
@@ -256,7 +359,7 @@
                     $rootScope.connectEvents();
                     if (payload.req_role === 'lead_operator' && !api.connection) {
                         api.connectListener(false);
-                    } else if (api.connection){
+                    } else if (api.connection) {
                         api.disconnectListener();
                     }
                     $rootScope.expertOrLO = payload.req_role === 'expert' || payload.req_role === 'lead_operator';

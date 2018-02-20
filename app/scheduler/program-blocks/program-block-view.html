@@ -5,8 +5,8 @@
             placeholder="Search Program Blocks..." style="position: absolute; right: 4px; top: 4px; width: 200px; min-width: 200px"/>
         <div ng-include="'app/scheduler/templates/pb-view-header.html'"></div>
     </md-toolbar>
-    <md-virtual-repeat-container flex class="md-whiteframe-z1" md-theme="{{$root.themePrimaryButtons}}">
-        <div md-virtual-repeat="pb in vm.programBlocks | regexSearch:vm.pbsOrderByFields:vm.q | orderBy:vm.pbsOrderBy.value:vm.pbsOrderBy.reverse" class="pb-view-item" layout="row" ng-init="pb.showSBList = false"
+    <div flex class="md-whiteframe-z1" md-theme="{{$root.themePrimaryButtons}}" style="overflow: auto">
+        <div ng-repeat="pb in vm.programBlocks | regexSearch:vm.pbsOrderByFields:vm.q | orderBy:vm.pbsOrderBy.value:vm.pbsOrderBy.reverse track by pb.id" class="pb-view-item" layout="row" ng-init="pb.showSBList = false"
             layout-align="start center" ng-click="pb.showSBList = !pb.showSBList">
             <div class="sb-ordering-container" title="Director Priority | PB Order | PB Sequence" layout="column">
                 <div ng-click="parent.vm.directorPriorityDialog(pb, $event)">{{pb.director_priority}}</div>
@@ -31,8 +31,18 @@
                 <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                 <md-menu-content style="max-height: 475px">
                     <md-menu-item ng-repeat="sub_nr in $root.systemConfig.subarrayNrs">
-                        <md-button ng-click="parent.vm.setupSubarrayFromPB(sub_nr, pb.id, $event)" title="Setup subarray {{sub_nr}} using this observation specification and schedule block list">
+                        <md-button ng-click="parent.vm.setupSubarrayFromPB(sub_nr, pb.id, false, $event)" title="Setup subarray {{sub_nr}} using this observation specification and schedule block list">
                             Setup Subarray {{sub_nr}} with this PB</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item ng-repeat="sub_nr in $root.systemConfig.subarrayNrs">
+                        <md-button ng-click="parent.vm.setupSubarrayFromPB(sub_nr, pb.id, true, $event)" title="Setup subarray {{sub_nr}} using this observation specification and schedule block list">
+                            Assign PB's SB's to Subarray {{sub_nr}}</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-click="parent.vm.unassignPBFromSubarrays(pb, $event)" title="Unassign all APPROVED Schedule Blocks from all subarray.">
+                            Unassign PB's SB's from all Subarrays</md-button>
                     </md-menu-item>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>
@@ -55,6 +65,15 @@
                     </md-menu-item>
                     <md-menu-divider></md-menu-divider>
                     <md-menu-item>
+                        <md-button ng-click="parent.vm.deleteProgramBlock(pb, true)" title="Delete this Program Block and orphan it's uncompleted Schedule Blocks">
+                            Delete PB and orphan its SB's</md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="parent.vm.deleteProgramBlock(pb, false)" title="Delete this Program Block and all it's uncompleted Schedule Blocks">
+                            Delete PB and all its SB's</md-button>
+                    </md-menu-item>
+                    <md-menu-divider></md-menu-divider>
+                    <md-menu-item>
                         <md-button ng-disabled="!pb.obs_constraints" ng-click="$root.showSBDetails(pb.obs_constraints, $event, pb.pb_id + ' Observation Constraints')" title="View Observation Constraints">
                             View Obs Constraints</md-button>
                     </md-menu-item>
@@ -65,5 +84,5 @@
                 </md-menu-content>
             </md-menu>
         </div>
-    </md-virtual-repeat-container>
+    </div>
 </div>

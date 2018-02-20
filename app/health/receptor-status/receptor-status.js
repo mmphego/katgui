@@ -1,15 +1,19 @@
-(function () {
+(function() {
 
     angular.module('katGui.health')
         .controller('ReceptorStatusCtrl', ReceptorStatusCtrl);
 
     function ReceptorStatusCtrl($rootScope, $scope, KatGuiUtil, ConfigService, MonitorService, $state, $interval, $log,
-                                NotifyService, ObsSchedService, $timeout) {
+        NotifyService, ObsSchedService, $timeout) {
 
         var vm = this;
         vm.receptors = {};
         vm.sensorValues = {};
-        vm.subarrays = {subarray_free: {subNr: 'free'}};
+        vm.subarrays = {
+            subarray_free: {
+                subNr: 'free'
+            }
+        };
         vm.sortBySubarrays = false;
         vm.showGraphics = false;
         vm.subscribedSensors = [];
@@ -29,38 +33,76 @@
             'maintenance$'
         ].join('|');
 
-        vm.initSensors = function () {
+        vm.initSensors = function() {
             ConfigService.getSystemConfig()
-                .then(function (systemConfig) {
-                    systemConfig.system.ants.split(',').forEach(function (receptorName) {
+                .then(function(systemConfig) {
+                    systemConfig.system.ants.split(',').forEach(function(receptorName) {
                         var receptor = {
                             name: receptorName
                         };
                         vm.receptors[receptorName] = receptor;
-                        MonitorService.listSensors(receptorName, vm.receptorsSensorsToConnectRegex);
                     });
-                    systemConfig.subarrayNrs.forEach(function(subNr) {
-                        MonitorService.listSensors('subarray_' + subNr, vm.subarraySensorsToConnectRegex);
-                        vm.subarrays['subarray_' + subNr] = {subNr: subNr};
+                    var subarrayNames = systemConfig.subarrayNrs.map(function(subNr) {
+                        vm.subarrays['subarray_' + subNr] = {
+                            subNr: subNr
+                        };
+                        return 'subarray_' + subNr;
                     });
-                    MonitorService.listSensors('katpool', 'katpool_pool_resources_');
+                    MonitorService.listSensorsHttp(systemConfig.system.ants, vm.receptorsSensorsToConnectRegex, true).then(function(result) {
+                        result.data.forEach(function(sensor) {
+                            MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(sensor);
+                            vm.sensorValues[sensor.name] = sensor;
+                        });
+                    }, function(error) {
+                        $log.error(error);
+                    });
+                    MonitorService.listSensorsHttp(subarrayNames.join(','), vm.subarraySensorsToConnectRegex, true).then(function(result) {
+                        result.data.forEach(function(sensor) {
+                            MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(sensor);
+                            vm.sensorValues[sensor.name] = sensor;
+                        });
+                    }, function(error) {
+                        $log.error(error);
+                    });
+                    MonitorService.listSensorsHttp('katpool', 'katpool_pool_resources_', true).then(function(result) {
+                        result.data.forEach(function(sensor) {
+                            MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(sensor);
+                            vm.sensorValues[sensor.name] = sensor;
+
+                            if (sensor.name === 'katpool_pool_resources_free') {
+                                sensor.value.split(',').forEach(function(freeReceptor) {
+                                    if (vm.receptors[freeReceptor]) {
+                                        vm.receptors[freeReceptor].subNr = 'free';
+                                    }
+                                });
+                            } else if (sensor.name.startsWith('katpool_pool_resources_')) {
+                                var sensorNameSplit = sensor.name.split('_');
+                                var subNr = sensorNameSplit[sensorNameSplit.length - 1];
+                                sensor.value.split(',').forEach(function(receptorName) {
+                                    if (vm.receptors[receptorName]) {
+                                        vm.receptors[receptorName].subNr = subNr;
+                                    }
+                                });
+                            }
+                        });
+                    }, function(error) {
+                        $log.error(error);
+                    });
                 });
         };
 
-        vm.sensorUpdateMessage = function (event, sensor, subject) {
+        vm.sensorUpdateMessage = function(event, sensor, subject) {
             if (!sensor.name.startsWith('katpool_pool_resources_') &&
-                    sensor.name.search(vm.receptorsSensorsToConnectRegex) < 0 &&
-                    sensor.name.search(vm.subarraySensorsToConnectRegex) < 0) {
+                sensor.name.search(vm.receptorsSensorsToConnectRegex) < 0 &&
+                sensor.name.search(vm.subarraySensorsToConnectRegex) < 0) {
                 return;
             }
-            if (subject.startsWith('req.reply')) {
-                MonitorService.subscribeSensor(sensor);
-                vm.subscribedSensors.push(sensor);
-            }
             vm.sensorValues[sensor.name] = sensor;
-
             if (sensor.name === 'katpool_pool_resources_free') {
-                sensor.value.split(',').forEach(function (freeReceptor) {
+                sensor.value.split(',').forEach(function(freeReceptor) {
                     if (vm.receptors[freeReceptor]) {
                         vm.receptors[freeReceptor].subNr = 'free';
                     }
@@ -68,7 +110,7 @@
             } else if (sensor.name.startsWith('katpool_pool_resources_')) {
                 var sensorNameSplit = sensor.name.split('_');
                 var subNr = sensorNameSplit[sensorNameSplit.length - 1];
-                sensor.value.split(',').forEach(function (receptorName) {
+                sensor.value.split(',').forEach(function(receptorName) {
                     if (vm.receptors[receptorName]) {
                         vm.receptors[receptorName].subNr = subNr;
                     }
@@ -76,21 +118,21 @@
             }
         };
 
-        vm.markResourceFaulty = function (receptor) {
+        vm.markResourceFaulty = function(receptor) {
             var faultySensor = vm.sensorValues[receptor.name + '_marked_faulty'];
             if (faultySensor) {
-                ObsSchedService.markResourceFaulty(receptor.name, faultySensor.value? 'clear' : 'set');
+                ObsSchedService.markResourceFaulty(receptor.name, faultySensor.value ? 'clear' : 'set');
             }
         };
 
-        vm.markResourceInMaintenance = function (receptor) {
+        vm.markResourceInMaintenance = function(receptor) {
             var inMaintenanceSensor = vm.sensorValues[receptor.name + '_marked_in_maintenance'];
             if (inMaintenanceSensor) {
-                ObsSchedService.markResourceInMaintenance(receptor.name, inMaintenanceSensor.value? 'clear' : 'set');
+                ObsSchedService.markResourceInMaintenance(receptor.name, inMaintenanceSensor.value ? 'clear' : 'set');
             }
         };
 
-        vm.getReceptorBlockClass = function (receptorName) {
+        vm.getReceptorBlockClass = function(receptorName) {
             var classes = '';
             var deviceStatus = vm.sensorValues[receptorName + '_device_status'];
             var mode = vm.sensorValues[receptorName + '_mode'];
@@ -103,7 +145,7 @@
             return classes;
         };
 
-        vm.getReceptorSvgClass = function (receptorName) {
+        vm.getReceptorSvgClass = function(receptorName) {
             var classes = '';
             var inMaintenance = vm.sensorValues[receptorName + '_marked_in_maintenance'];
             var faulty = vm.sensorValues[receptorName + '_marked_faulty'];
@@ -124,7 +166,7 @@
             return classes;
         };
 
-        vm.getReceptorModeTextClass = function (receptorName) {
+        vm.getReceptorModeTextClass = function(receptorName) {
             var classes = '';
             var mode = vm.sensorValues[receptorName + '_mode'];
             var windstowActive = vm.sensorValues[receptorName + '_windstow_active'];
@@ -146,8 +188,8 @@
 
         vm.initSensors();
 
-        $scope.$on('$destroy', function () {
-            vm.subscribedSensors.forEach(function (sensor) {
+        $scope.$on('$destroy', function() {
+            vm.subscribedSensors.forEach(function(sensor) {
                 MonitorService.unsubscribeSensor(sensor);
             });
             unbindReconnected();

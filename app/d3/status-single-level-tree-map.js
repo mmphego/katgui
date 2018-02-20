@@ -64,7 +64,7 @@ angular.module('katGui.d3')
                 drawTreemap(width, height);
 
                 $timeout(function() {
-                resizeElement('force', 'draw');
+                    resizeElement('force', 'draw');
                 }, 250);
 
                 function resizeElement(newVal, oldVal) {
@@ -91,8 +91,8 @@ angular.module('katGui.d3')
 
                     var treemap = d3.layout.treemap()
                         .sort(function(a, b) {
-                            var aFullName = a.prefix + a.sensor;
-                            var bFullName = b.prefix + b.sensor;
+                            var aFullName = (a.prefix ? a.prefix : '') + a.sensor;
+                            var bFullName = (b.prefix ? b.prefix : '') + b.sensor;
                             return aFullName > bFullName ? -1 : aFullName < bFullName ? 1 : 0;
                         })
                         .round(false)
@@ -129,8 +129,8 @@ angular.module('katGui.d3')
                     function drawData() {
                         dataDiv = d3.select(element[0]).append("div")
                             .attr("class", "md-whiteframe-z2 data-div")
-                            .style("width", "100%")
-                            .style("height", "calc(100% - 38px)");
+                            .style("width", "calc(100%)")
+                            .style("height", "calc(100% - 44px)");
 
                         var svg = dataDiv.append("svg")
                             .attr("width", scope.autoResize ? "100%" : w)
@@ -170,7 +170,7 @@ angular.module('katGui.d3')
                                 return d.dy - 2;
                             })
                             .attr("class", function(d) {
-                                var sensorName = d.prefix + d.sensor;
+                                var sensorName = (d.prefix ? d.prefix : '') + d.sensor;
                                 var classes = [sensorName];
                                 var sensor = StatusService.sensorValues[sensorName];
                                 if (StatusService.sensorValues.katpool_resources_in_maintenance &&
@@ -187,7 +187,7 @@ angular.module('katGui.d3')
 
                         cell.append("g")
                             .attr("class", function(d) {
-                                var sensorName = d.prefix + d.sensor;
+                                var sensorName = (d.prefix ? d.prefix : '') + d.sensor;
                                 var classes = [sensorName, 'text-rect', 'child-text'];
                                 var sensor = StatusService.sensorValues[sensorName];
                                 if (sensor && sensor.status) {

@@ -66,9 +66,9 @@
                         </md-menu-content>
                     </md-menu>
                 </md-toolbar>
-                <md-virtual-repeat-container id="scheduleDraftDataRepeat" md-theme="{{themePrimary}}" flex class="md-whiteframe-z2"
-                    ng-class="{'maintenance-bg':vm.subarray.maintenance}">
-                    <div md-virtual-repeat="item in vm.scheduleDraftData | filter:{sub_nr:vm.subarray.id, state:'APPROVED'} | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse"
+                <div id="scheduleDraftDataRepeat" md-theme="{{themePrimary}}" flex class="md-whiteframe-z2"
+                    ng-class="{'maintenance-bg':vm.subarray.maintenance}" style="overflow: auto">
+                    <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:vm.subarray.id, state:'APPROVED'} | orderBy:vm.draftsOrderBy.value:vm.draftsOrderBy.reverse track by item.id"
                         flex layout="row" layout-align="start center" ng-class="{'selected-schedule-row': item === vm.selectedScheduleDraft}"
                         class="schedule-draft-item" layout="column" ng-show="item">
                         <md-progress-linear md-theme="grey" ng-show="item.verification_state === 'VERIFYING'" class="md-primary progress-bar-fill"
@@ -128,7 +128,7 @@
                             </md-menu-content>
                         </md-menu>
                     </div>
-                </md-virtual-repeat-container>
+                </div>
             </div>
             <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" style="min-height: 100%; max-width: 41px; min-width: 41px; margin: 2px 0 0 4px"
                 ng-disabled="!parent.vm.iAmAtLeastCA() || vm.selectedSBs.length === 0" ng-click="vm.assignSelectedScheduleBlocks()"
@@ -157,8 +157,8 @@
                     placeholder="Search Approved..." />
             </div>
         </md-toolbar>
-        <md-virtual-repeat-container flex>
-            <div md-virtual-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null, state:'APPROVED'} | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:id_code:true"
+        <div flex style="overflow: auto">
+            <div ng-repeat="item in vm.scheduleDraftData | filter:{sub_nr:null, state:'APPROVED'} | regexSearch:vm.draftsOrderByFields:vm.q | orderBy:id_code:true track by item.id"
                 title="{{item.id_code}} - {{item.description}} - {{item.type}} - {{item.desired_start_time}}"
                 ng-class="{'selected-resource-item': item.selected}" class="schedule-draft-item" layout="row"
                 layout-align="start center" ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = item.selected; vm.toggleSBSelect(item)"
@@ -182,6 +182,6 @@
                 <span class="icon-button fa fa-remove fixed-width-18" md-ink-ripple style="padding: 6px 2px" ng-disabled="!parent.vm.iAmAtLeastCA()"
                     ng-mousedown="$event.stopPropagation()" title="Delete Schedule Block" ng-click="!parent.vm.iAmAtLeastCA() || vm.removeDraft(item); $event.stopPropagation()"></span>
             </div>
-        </md-virtual-repeat-container>
+        </div>
     </div>
 </div>

@@ -24,7 +24,7 @@
             component: 'kataware',
             filter: 'kataware_alarm_'
         }];
-        api.globalSubscriptions = {};
+        api.globalSubscriptions = [];
 
         //websocket default heartbeat is every 30 seconds
         //so allow for 35 seconds before alerting about timeout
@@ -32,16 +32,42 @@
         api.checkAliveConnectionInterval = 10000;
 
         api.getTimeoutPromise = function() {
-            if (!api.deferredMap['timeoutDefer']) {
-                api.deferredMap['timeoutDefer'] = $q.defer();
-            }
-            return api.deferredMap['timeoutDefer'].promise;
+            api.deferredMap.timeoutDefer = $q.defer();
+            return api.deferredMap.timeoutDefer.promise;
         };
 
         api.initGlobalSensors = function() {
             api.globalSubscriptionFilters.forEach(function(globalSub) {
-                api.listSensors(globalSub.component, globalSub.filter);
+                api.listSensorsHttp(globalSub.component, globalSub.filter).then(function (result) {
+                    result.data.forEach(function(sensor) {
+                        api.globalSubscriptions.push(sensor);
+                        api.subscribeSensor(sensor);
+                        api.handlePotentialGlobalSensorMessage(sensor);
+                    });
+                });
             });
+        };
+
+        api.handlePotentialGlobalSensorMessage = function (sensor) {
+            if (sensor.name === "katpool_lo_id") {
+                $rootScope.katpool_lo_id = sensor;
+                if ($rootScope.currentUser &&
+                    $rootScope.currentUser.req_role === 'lead_operator' &&
+                    $rootScope.katpool_lo_id.value.length > 0 &&
+                    $rootScope.katpool_lo_id.value !== $rootScope.currentUser.email) {
+                    NotifyService.showDialog(
+                        'You have been logged in as the Monitor Role',
+                        'You have lost the Lead Operator Role because ' +
+                        $rootScope.katpool_lo_id.value + ' has assumed the Lead Operator role.');
+                    //$rootScope.logout();
+                    //Do not logout, just loging as a demoted monitor only use
+                    SessionService.verifyAs('read_only');
+                }
+            } else if (sensor.name === "sys_interlock_state") {
+                $rootScope.sys_interlock_state = sensor;
+            } else if (sensor.name.startsWith('kataware_alarm_')) {
+                AlarmsService.receivedAlarmMessage(sensor);
+            }
         };
 
         api.subscribeSensorName = function(component, sensorName) {
@@ -108,7 +134,7 @@
         api.onSockJSOpen = function() {
             if (api.connection && api.connection.readyState) {
                 $log.info('Monitor Connection Established.');
-                api.deferredMap['connectDefer'].resolve();
+                api.deferredMap.connectDefer.resolve();
                 api.subscribeToDefaultChannels();
                 ConfigService.checkOutOfDateVersion();
             }
@@ -125,8 +151,7 @@
                 $log.warn('Monitor Connection Heartbeat timeout!');
                 api.connection = null;
                 $rootScope.connectedToMonitor = false;
-                api.deferredMap['timeoutDefer'].resolve();
-                api.deferredMap['timeoutDefer'] = null;
+                api.deferredMap.timeoutDefer.resolve();
             }
         };
 
@@ -139,7 +164,7 @@
             api.connection = null;
             api.lastHeartBeat = null;
             $rootScope.connectedToMonitor = false;
-            api.globalSubscriptions = {};
+            api.globalSubscriptions = [];
         };
 
         api.onSockJSMessage = function(e) {
@@ -159,59 +184,22 @@
                         api.lastSyncedLST = data.lst;
                     } else if (msg.subject.startsWith('sensor.')) {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
+                        api.handlePotentialGlobalSensorMessage(data);
                     } else if (msg.subject === 'portal.sched') {
                         ObsSchedService.receivedScheduleMessage(data);
                     } else if (msg.subject.startsWith('portal.userlogs')) {
                         UserLogService.receivedUserlogMessage(msg.subject, data);
-                    } else if (msg.subject === 'portal.auth.current_lo') {
-                        $rootScope.katpool_lo_id.value = data.lo;
-                        if ($rootScope.currentUser &&
-                            $rootScope.currentUser.req_role === 'lead_operator' &&
-                            $rootScope.katpool_lo_id.value.length > 0 &&
-                            $rootScope.katpool_lo_id.value !== $rootScope.currentUser.email) {
-                            NotifyService.showDialog(
-                                'You have been logged in as the Monitor Role',
-                                'You have lost the Lead Operator Role because ' +
-                                $rootScope.katpool_lo_id.value + ' has assumed the Lead Operator role.');
-                            //$rootScope.logout();
-                            //Do not logout, just loging as a demoted monitor only use
-                            SessionService.verifyAs('read_only');
-                        }
+                    } else if (msg.subject.startsWith('portal.auth')) {
+                        SessionService.receivedSessionMessage(msg.subject, data);
                     } else {
-                        // req.reply messages
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
-                        if (data && data.component) {
-                            var foundGlobalMatch = api.globalSubscriptionFilters.filter(function(globalSub) {
-                                return globalSub.component === data.component &&
-                                    data.name.match(globalSub.filter);
-                            });
-                            if (foundGlobalMatch && !api.globalSubscriptions[data.name]) {
-                                api.globalSubscriptions[data.name] = data;
-                                api.subscribeSensor(data);
-                            }
-                        }
-                    }
-
-                    if (data.name === "katpool_lo_id") {
-                        $rootScope.katpool_lo_id = data;
-                    } else if (data.name === "sys_interlock_state") {
-                        $rootScope.sys_interlock_state = data;
-                    } else if (data.name && data.name.startsWith('kataware_alarm')) {
-                        AlarmsService.receivedAlarmMessage(data);
+                        api.handlePotentialGlobalSensorMessage(data);
                     }
                 } else {
                     msg = e.data;
                     if (msg.error) {
                         $log.error('There was an error sending a jsonrpc request:');
                         $log.error(msg);
-                    } else if (msg.server_hint) {
-                        $log.warn('Server hint received: ' + msg.server_hint);
-                        $log.warn(msg);
-                        if (msg.server_hint === 'retry_later' && msg.hint_method === 'list_sensors') {
-                            $timeout(function() {
-                                api.listSensors(msg.hint_args.component, msg.hint_args.name_filter);
-                            }, msg.hint_args.timedelta);
-                        }
                     } else {
                         $log.warn('Dangling websocket message: ' + msg);
                     }
@@ -220,7 +208,7 @@
         };
 
         api.connectListener = function() {
-            api.deferredMap['connectDefer'] = $q.defer();
+            api.deferredMap.connectDefer = $q.defer();
             if (!api.connection) {
                 $log.info('Monitor Connecting...');
                 api.connection = new SockJS(urlBase() + '/client');
@@ -232,20 +220,23 @@
             } else {
                 $timeout(function() {
                     if ($rootScope.connectedToMonitor) {
-                        api.deferredMap['connectDefer'].resolve();
+                        api.deferredMap.connectDefer.resolve();
                     } else {
-                        api.deferredMap['connectDefer'].reject();
+                        api.deferredMap.connectDefer.reject();
                     }
                 }, 1000);
             }
             if (!api.checkAliveInterval) {
                 api.checkAliveInterval = $interval(api.checkAlive, api.checkAliveConnectionInterval);
             }
-            return api.deferredMap['connectDefer'].promise;
+            return api.deferredMap.connectDefer.promise;
         };
 
         api.disconnectListener = function() {
             if (api.connection && api.connection.readyState) {
+                api.globalSubscriptions.forEach(function(sensor) {
+                    api.unsubscribeSensor(sensor);
+                });
                 api.connection.close();
                 $interval.cancel(api.checkAliveInterval);
                 api.checkAliveInterval = null;
@@ -256,6 +247,28 @@
 
         api.listSensors = function(component, regex) {
             api.sendMonitorCommand('list_sensors', [component, regex]);
+        };
+
+        api.listSensorsHttp = function(component, regex, readingOnly) {
+            // shouldn't make too long get queries, so change it to a post
+            if (regex.length > 100) {
+                var req = {
+                    method: 'post',
+                    url: urlBase() + '/list-sensors/' + component +
+                        '?readingOnly=' + (readingOnly ? readingOnly : false),
+                    headers: {},
+                    data: {
+                        name_filter: regex
+                    }
+                };
+                req.headers['Content-Type'] = 'application/json';
+                return $http(req);
+            } else {
+                return $http.get(
+                    urlBase() + '/list-sensors/' + component +
+                    '?name_filter=' + encodeURI(regex ? regex : '') +
+                    '&readingOnly=' + (readingOnly ? readingOnly : false));
+            }
         };
 
         api.showAggregateSensorsDialog = function(title, content, event) {
@@ -324,17 +337,20 @@
                                 });
                             }
                             for (var component in componentSensors) {
-                                api.listSensors(component, componentSensors[component].sensors.join('|'));
+                                api.listSensorsHttp(component, componentSensors[component].sensors.join('|'), true).then(function (result) {
+                                    result.data.forEach(function (sensor) {
+                                        api.subscribeSensor(sensor);
+                                        if (!$scope.sensorValues[sensor.name]) {
+                                            $scope.subscribedSensors.push(sensor);
+                                        }
+                                        sensor.date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
+                                        $scope.sensorValues[sensor.name] = sensor;
+                                    });
+                                });
                             }
                         }
 
                         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
-                            if (subject.startsWith('req.reply')) {
-                                api.subscribeSensor(sensor);
-                                if (!$scope.sensorValues[sensor.name]) {
-                                    $scope.subscribedSensors.push(sensor);
-                                }
-                            }
                             sensor.date = moment.utc(sensor.time, 'X').format(MOMENT_DATETIME_FORMAT);
                             $scope.sensorValues[sensor.name] = sensor;
                         });
@@ -358,7 +374,7 @@
                         '<div layout="column" class="resource-sensors-list" style="margin: 0 16px">',
                         '<div style="height: 24px" ng-repeat="sensor in subscribedSensors | orderBy:\'name\'">',
                         '<div layout="row" class="resource-sensor-item" title="{{sensor.original_name}}">',
-                        '<span style="width: 450px; overflow: hidden; text-overflow: ellipsis">{{sensor.original_name}}</span>',
+                        '<span style="width: 450px; overflow: hidden; text-overflow: ellipsis">{{sensor.original_name? sensor.original_name: sensor.name}}</span>',
                         '<span class="resource-sensor-status-item" ng-class="sensorClass(sensorValues[sensor.name].status)">{{sensorValues[sensor.name].status}}</span>',
                         '<span class="resource-sensor-time-item" title="Timestamp">{{sensorValues[sensor.name].date}}</span>',
                         '<span flex class="resource-sensor-value-item">{{sensorValues[sensor.name].value}}</span>',

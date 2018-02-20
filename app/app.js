@@ -5,7 +5,7 @@
             'ui.bootstrap',
             'ui.router',
             'ngAnimate', 'katGui.services',
-            'katGui.admin',
+            'katGui.user',
             'katGui.alarms',
             'katGui.config',
             'katGui.d3',
@@ -113,8 +113,8 @@
                 ConfigService.getSystemConfig(forceConfig).then(function(systemConfig) {
                     $rootScope.systemConfig = systemConfig;
                     StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
-                    if (systemConfig.vds && systemConfig.vds.vds_source) {
-                        $rootScope.showVideoLinks = KatGuiUtil.isValidURL(systemConfig.vds.vds_source);
+                    if (systemConfig.vds) {
+                        $rootScope.showVideoLinks = true;
                     }
                     $rootScope.sitename = ConfigService.systemConfig.system.sitename;
                     $rootScope.confConnectionError = null;
@@ -465,9 +465,9 @@
             templateUrl: 'app/login-form/login-form.html',
             title: 'Login'
         });
-        $stateProvider.state('admin', {
-            url: '/admin',
-            templateUrl: 'app/admin/admin.html',
+        $stateProvider.state('users', {
+            url: '/users',
+            templateUrl: 'app/users/users.html',
             title: 'User Admin'
         });
         $stateProvider.state('alarms', {
@@ -510,6 +510,11 @@
             url: '/receptor-pointing',
             templateUrl: 'app/health/receptor-pointing/receptor-pointing.html',
             title: 'Receptor Pointing'
+        });
+        $stateProvider.state('customHealth', {
+            url: '/custom-health?layout',
+            templateUrl: 'app/health/custom-health/custom-health.html',
+            title: 'Custom Health'
         });
         $stateProvider.state('home', {
             url: '/home',

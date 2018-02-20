@@ -122,6 +122,26 @@
             });
         };
 
+        api.deleteProgramBlock = function(pb, orphanSBs) {
+            var orphanDialogText = orphanSBs? " and orphan it's uncompleted Schedule Blocks?" : " and all it's uncompleted Schedule Blocks?";
+            NotifyService.showImportantConfirmDialog(
+                null, 'Delete Program Block?', 'Are you sure you want to delete ' + pb.pb_id + orphanDialogText, 'Yes', 'Cancel').then(function() {
+                var deleteUrl = urlBase() + '/pb/' + pb.pb_id;
+                if (orphanSBs) {
+                    deleteUrl += '?orphan_sbs=1';
+                }
+                $http(createRequest('delete', deleteUrl)).then(function(result) {
+                    if (result.data.result.pb_error) {
+                        NotifyService.showSimpleDialog('Error deleting Program Block', result.data.result);
+                    } else {
+                        NotifyService.showSimpleToast(result.data.result);
+                    }
+                }, function(error) {
+                    NotifyService.showHttpErrorDialog('Error sending request', error.data.message);
+                });
+            });
+        };
+
         api.scheduleDraft = function(sub_nr, id) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id + '/schedule')));
         };
@@ -301,12 +321,31 @@
                     jsonResult.forEach(function(jsonItem) {
                         api.observationSchedule.push(jsonItem);
                     });
+                    api.populateObservationPbExpectedDurations();
                     deferred.resolve(api.observationSchedule);
                 }, function(error) {
                     $log.error(error);
                     deferred.reject(error);
                 });
             return deferred.promise;
+        };
+
+        api.populateObservationPbExpectedDurations = function() {
+            api.observationSchedule.forEach(function(pb) {
+                pb.expected_duration_seconds = 0;
+                pb.schedule_blocks.forEach(function (sb) {
+                    if (sb.expected_duration_seconds) {
+                        pb.expected_duration_seconds += sb.expected_duration_seconds;
+                    }
+                });
+                if (pb.expected_duration_seconds) {
+                    var momentDuration = moment.duration(pb.expected_duration_seconds, 'seconds');
+                    var durationHours = Math.floor(momentDuration.asHours()).toString().padStart(2, 0);
+                    var durationMinutes = momentDuration.minutes().toString().padStart(2, 0);
+                    var durationSeconds = momentDuration.seconds().toString().padStart(2, 0);
+                    pb.expectedDuration = durationHours + ':' + durationMinutes + ':' + durationSeconds;
+                }
+            });
         };
 
         api.getScheduledScheduleBlocks = function() {
@@ -398,6 +437,9 @@
                             }
                         }
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
+                    } else if (sensorName.endsWith('dump_rate')) {
+                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                        api.subarrays[subarrayIndex][trimmedSensorName + '_seconds'] = Math.round(1e2 / sensor.value) / 1e2;
                     } else {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         if (sensorName.endsWith('state')) {
@@ -410,7 +452,8 @@
                                                 return resource[0];
                                             }).join(","),
                                         band: api.subarrays[subarrayIndex].band,
-                                        product: api.subarrays[subarrayIndex].product
+                                        product: api.subarrays[subarrayIndex].product,
+                                        dump_rate: api.subarrays[subarrayIndex].dump_rate
                                     };
                                 }
                             }, 1000);
@@ -517,6 +560,8 @@
             }
             if (orderChangeCall) {
                 api.throttleGetProgramBlocksObservationSchedule();
+            } else {
+                api.populateObservationPbExpectedDurations();
             }
         };
 
@@ -539,7 +584,7 @@
                         api.programBlocks[pbIndex].schedule_blocks.push(sb);
                     }
                 } else {
-                    $log.warning('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
+                    $log.warn('Trying to update program blocks with sb.pb_id: ' + sb.pb_id +
                         ', but could not find any program blocks with that id!');
                 }
             } else if (!sb.pb_id) {
@@ -655,6 +700,8 @@
             }
             if (orderChangeCall) {
                 api.throttleGetProgramBlocksObservationSchedule();
+            } else {
+                api.populateObservationPbExpectedDurations();
             }
         };
 
@@ -687,8 +734,12 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/bands/' + sub_nr + '/' + band)));
         };
 
-        api.setProduct = function(sub_nr, product) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/products/' + sub_nr + '/' + product)));
+        api.setProduct = function(sub_nr, product, dumpRate) {
+            api.handleRequestResponse(
+                $http(createRequest('post', urlBase() + '/product/' + sub_nr, {
+                    product: product,
+                    dump_rate: dumpRate
+                })));
         };
 
         api.delegateControl = function(sub_nr, userName) {
@@ -736,24 +787,25 @@
                     },
                     template: [
                         '<md-dialog style="padding: 0;" md-theme="{{$root.themePrimary}}">',
-                            '<div style="padding: 0; margin: 0; overflow: auto" layout="column">',
-                                '<md-toolbar class="md-primary" layout="row" layout-align="center center">',
-                                    '<span flex style="margin: 16px;">{{::title}}</span>',
-                                '</md-toolbar>',
-                                '<div flex layout="column">',
-                                    '<div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">',
-                                    '<md-button style="margin: 0" flex title="Restart {{device}} Device"',
-                                        'ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">',
-                                        '<span style="margin-right: 8px;" class="fa fa-refresh"></span>',
-                                        '<span>{{device}}</span>',
-                                    '</md-button>',
-                                    '</div>',
-                                '</div>',
-                                '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
-                                    '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
-                                '</div>',
-                            '</div>',
-                        '</md-dialog>'].join(''),
+                        '<div style="padding: 0; margin: 0; overflow: auto" layout="column">',
+                        '<md-toolbar class="md-primary" layout="row" layout-align="center center">',
+                        '<span flex style="margin: 16px;">{{::title}}</span>',
+                        '</md-toolbar>',
+                        '<div flex layout="column">',
+                        '<div layout="row" layout-align="center center" ng-repeat="device in devices track by $index">',
+                        '<md-button style="margin: 0" flex title="Restart {{device}} Device"',
+                        'ng-click="restartMaintenanceDevice(device); $event.stopPropagation()">',
+                        '<span style="margin-right: 8px;" class="fa fa-refresh"></span>',
+                        '<span>{{device}}</span>',
+                        '</md-button>',
+                        '</div>',
+                        '</div>',
+                        '<div layout="row" layout-align="end" style="margin-top: 8px; margin-right: 8px; margin-bottom: 8px; min-height: 40px;">',
+                        '<md-button style="margin-left: 8px;" class="md-primary md-raised" md-theme="{{$root.themePrimaryButtons}}" aria-label="OK" ng-click="hide()">Close</md-button>',
+                        '</div>',
+                        '</div>',
+                        '</md-dialog>'
+                    ].join(''),
                     targetEvent: event
                 });
         };
@@ -842,13 +894,10 @@
                     return item.id === subarrayNumber;
                 });
                 if (lastKnownConfig.allocations) {
-                    var currentAllocationsSensor = api.sensorValues[api.subarrays[subarrayNumber].name + '_allocations'];
-                    var currentAllocations = [];
-                    if (currentAllocationsSensor) {
-                        currentAllocationsSensor.parsedValue.map(function(resourceAlloc) {
-                            return resourceAlloc[0];
-                        });
-                    }
+                    var currentAllocationsSensor = api.sensorValues[api.subarrays[subarrayNumber - 1].name + '_allocations'];
+                    var currentAllocations = currentAllocationsSensor.parsedValue.map(function(resourceAlloc) {
+                        return resourceAlloc[0];
+                    });
                     var resourcesToAllocate = lastKnownConfig.allocations.split(',');
                     var resourcesGoingToAllocate = _.difference(resourcesToAllocate, currentAllocations);
                     if (resourcesGoingToAllocate.length > 0) {
@@ -858,14 +907,20 @@
                 if (subarray.band !== lastKnownConfig.band) {
                     api.setBand(subarrayNumber, lastKnownConfig.band);
                 }
-                if (subarray.product !== lastKnownConfig.product) {
+                if (lastKnownConfig.dump_rate) {
+                    api.setProduct(subarrayNumber, lastKnownConfig.product ? lastKnownConfig.product : '', lastKnownConfig.dump_rate);
+                } else if (subarray.product !== lastKnownConfig.product) {
                     api.setProduct(subarrayNumber, lastKnownConfig.product);
                 }
             }
         };
 
-        api.setupSubarrayFromPB = function(subarrayNumber, pb_id, event) {
-            $http(createRequest('post', urlBase() + '/subarray/' + subarrayNumber + '/setup/' + pb_id))
+        api.setupSubarrayFromPB = function(subarrayNumber, pb_id, assignOnly, event) {
+            var postUrl = urlBase() + '/subarray/' + subarrayNumber + '/setup/' + pb_id;
+            if (assignOnly) {
+                postUrl += '?assign_only=1';
+            }
+            $http(createRequest('post', postUrl))
                 .then(function(result) {
                     NotifyService.showSetupSubarrayDialog(
                         event, "Setup Subarray " + subarrayNumber + " results", result.data.results, subarrayNumber);

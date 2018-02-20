@@ -22,6 +22,9 @@
         vm.connectionLost = false;
         vm.subarray = null;
         vm.products = [];
+        vm.bandsMap = {};
+        vm.dumpRatesMap = {};
+        vm.defaultDumpRatesMap = {};
         vm.bands = [];
         vm.users = [];
         vm.resourceBusyStates = ['deactivating', 'configuring', 'configured', 'activating'];
@@ -32,15 +35,25 @@
         vm.sensorsRegex = '';
         vm.sensorValues = ObsSchedService.sensorValues;
         vm.subarraySensorNames = [
-            "subarray_${subNr}_allocations",
-            "subarray_${subNr}_product",
-            "subarray_${subNr}_state",
-            "subarray_${subNr}_band",
-            "subarray_${subNr}_config_label",
-            "subarray_${subNr}_maintenance",
-            "subarray_${subNr}_delegated_ca",
-            "subarray_${subNr}_pool_resources",
-            "subarray_${subNr}_number_ants"];
+            "subarray_._allocations",
+            "subarray_._product",
+            "subarray_._state",
+            "subarray_._band",
+            "subarray_._config_label",
+            "subarray_._maintenance",
+            "subarray_._delegated_ca",
+            "subarray_._pool_resources",
+            "subarray_._number_ants",
+            "subarray_._dump_rate"
+        ];
+        vm.schedSensorNames = [
+            'sched_mode_\\d$'
+        ];
+        vm.katpoolSensorNames = [
+            'katpool_pool_resources_free',
+            'katpool_resources_faulty',
+            'katpool_resources_in_maintenance'
+        ];
 
         if (!$stateParams.subarray_id) {
             $state.go($state.current.name, {
@@ -78,6 +91,8 @@
         ConfigService.getProductConfig()
             .then(function(productConfig) {
                 vm.products = [];
+                vm.dumpRatesMap = {};
+                vm.defaultDumpRatesMap = {};
                 var productKeys = Object.keys(productConfig);
                 productKeys.forEach(function(product) {
                     vm.products.push({
@@ -85,6 +100,26 @@
                         sp_product: productConfig[product].sp_product,
                         cbf_product: productConfig[product].cbf_product
                     });
+                    if (productConfig[product].allowed_dumprates) {
+                        vm.dumpRatesMap[product] = productConfig[product].allowed_dumprates.split(',').map(
+                            function(dumpRate) {
+                                return {
+                                    hz: dumpRate,
+                                    seconds: Math.round(1e2 / dumpRate) / 1e2
+                                };
+                            });
+                    } else {
+                        vm.dumpRatesMap[product] = [{
+                            hz: productConfig[product].default_dumprate,
+                            seconds:  Math.round(1e2 / productConfig[product].default_dumprate) / 1e2
+                        }];
+                    }
+                    vm.defaultDumpRatesMap[product] = productConfig[product].default_dumprate;
+                    if (productConfig[product].allowed_bands) {
+                        vm.bandsMap[product] = productConfig[product].allowed_bands.split(',');
+                    } else {
+                        vm.bandsMap[product] = [];
+                    }
                 });
             });
 
@@ -145,7 +180,7 @@
             vm.subarray = _.findWhere(ObsSchedService.subarrays, {
                 id: $stateParams.subarray_id
             });
-            if (vm.subarray) {
+            if (vm.subarray && $rootScope.currentUser) {
                 vm.iAmCA = vm.subarray.delegated_ca === $rootScope.currentUser.email && $rootScope.currentUser.req_role === 'control_authority';
             }
         };
@@ -268,7 +303,28 @@
         };
 
         vm.setProduct = function(product) {
-            ObsSchedService.setProduct(vm.subarray.id, product);
+            if (!product || product.length === 0) {
+                ObsSchedService.setProduct(vm.subarray.id, '');
+            }
+            else if (vm.bandsMap[product].length > 0) {
+                ObsSchedService.setProduct(vm.subarray.id, product, vm.defaultDumpRatesMap[product]);
+                if (vm.bandsMap[product].indexOf(vm.subarray.band) === -1) {
+                    vm.setBand(vm.bandsMap[product][0]);
+                }
+            } else {
+                NotifyService.showSimpleDialog(
+                    'Error setting the product',
+                    'The selected product does not have any allowable bands configured. Cannot set the product ' + product + '.');
+            }
+        };
+
+        vm.setDumpRate = function(dumpRate) {
+            if (vm.subarray.product) {
+                ObsSchedService.setProduct(vm.subarray.id, vm.subarray.product, dumpRate);
+            } else {
+                NotifyService.showSimpleDialog(
+                    'Error setting the dump rate', 'Please select a product before selecting a dump rate');
+            }
         };
 
         vm.openProductsDialog = function(event) {
@@ -801,8 +857,8 @@
             ObsSchedService.verifyScheduleBlock(sb.sub_nr, sb.id_code);
         };
 
-        vm.setupSubarrayFromPB = function(sub_nr, pb_id, event) {
-            ObsSchedService.setupSubarrayFromPB(sub_nr, pb_id, event);
+        vm.setupSubarrayFromPB = function(sub_nr, pb_id, assignOnly, event) {
+            ObsSchedService.setupSubarrayFromPB(sub_nr, pb_id, assignOnly, event);
         };
 
         vm.removeSBFromAnyPB = function(sb) {
@@ -814,6 +870,18 @@
                     NotifyService.showSimpleDialog('Error removing SB from PB',
                         'Error while removing Schedule Block (' + sb.id_code + ') from Program Block!');
                 });
+        };
+
+        vm.deleteProgramBlock = function(pb, orphanSBs) {
+            ObsSchedService.deleteProgramBlock(pb, orphanSBs);
+        };
+
+        vm.unassignPBFromSubarrays = function(pb) {
+            pb.schedule_blocks.forEach(function(sb) {
+                if (sb.state === 'APPROVED' && sb.sub_nr) {
+                    ObsSchedService.unassignScheduleBlock(sb.sub_nr, sb.id_code);
+                }
+            });
         };
 
         vm.hasScheduleBlocks = function(item) {
@@ -844,50 +912,90 @@
         };
 
         vm.initSensors = function() {
-            ConfigService.systemConfig.subarrayNrs.forEach(function(subNr, index) {
-                var subarrayRegex = vm.subarraySensorNames.join('|').replace(/\$\{subNr\}/g, subNr);
-                if (index > 0) {
-                    vm.sensorsRegex += '|';
-                }
-                vm.sensorsRegex += subarrayRegex;
-                MonitorService.listSensors('subarray_' + subNr, subarrayRegex);
-            });
-            MonitorService.listSensors('sched', 'mode_\\d$');
-            MonitorService.listSensors('katpool', '(pool_resources_free|resources_faulty|resources_in_maintenance)$');
-            vm.sensorsRegex += '|mode_\\d$|(pool_resources_free|resources_faulty|resources_in_maintenance)$';
-            ConfigService.systemConfig['katconn:resources'].single_ctl.split(',').forEach(function(resource) {
-                MonitorService.listSensors(resource, resource + '_state$');
-                vm.sensorsRegex += '|' + resource + '_state$';
-            });
+            ConfigService.getSystemConfig()
+                .then(function(systemConfig) {
+                    var subarrayNames = systemConfig.subarrayNrs.map(function(subNr) {
+                        return 'subarray_' + subNr;
+                    });
+
+                    function handleListSensorsResult(result) {
+                        result.data.forEach(function(sensor) {
+                            MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(sensor);
+                            vm.sensorUpdateMessage(null, sensor);
+                        });
+                    }
+
+                    function handleListSensorsError(error) {
+                        $log.error(error);
+                    }
+
+                    MonitorService.listSensorsHttp(subarrayNames, vm.subarraySensorNames.join('|'), true)
+                        .then(function(result) {
+                            result.data.forEach(function(sensor) {
+                                MonitorService.subscribeSensor(sensor);
+                                vm.subscribedSensors.push(sensor);
+                                if (sensor.name.endsWith('pool_resources')) {
+                                    $timeout(function() {
+                                        vm.sensorUpdateMessage(null, sensor);
+                                    }, 1000, sensor);
+                                } else {
+                                    vm.sensorUpdateMessage(null, sensor);
+                                }
+                            });
+                        }, handleListSensorsError);
+                    MonitorService.listSensorsHttp('sched', vm.schedSensorNames.join('|'), true)
+                        .then(handleListSensorsResult, handleListSensorsError);
+                    MonitorService.listSensorsHttp('katpool', vm.katpoolSensorNames.join('|'), true)
+                        .then(handleListSensorsResult, handleListSensorsError);
+                    // systemConfig['katconn:resources'].single_ctl example: m011,ptuse_N,cbf_N,sdp_N
+                    MonitorService.listSensorsHttp(
+                            systemConfig['katconn:resources'].single_ctl,
+                            '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').state$', true)
+                        .then(handleListSensorsResult, handleListSensorsError);
+
+                    vm.sensorsRegex = [
+                        vm.subarraySensorNames.join('|'),
+                        vm.schedSensorNames.join('|'),
+                        vm.katpoolSensorNames.join('|'),
+                        'state$'
+                    ].join('|');
+                });
             MonitorService.subscribe('portal.sched');
             ObsSchedService.guiUrls = {};
         };
 
-        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
-            if (sensor.name.search(vm.sensorsRegex) < 0 && !sensor.name.endsWith('gui_urls')) {
+        vm.sensorUpdateMessage = function(event, sensor, subject) {
+            if (sensor.name.search(vm.sensorsRegex) < 0) {
                 return;
-            }
-            if (subject.startsWith('req.reply')) {
-                if (!sensor.name.endsWith('gui_urls')) {
-                    MonitorService.subscribeSensor(sensor);
-                    vm.subscribedSensors.push(sensor);
-                }
-            }
-            if (vm.subarray && sensor.name === vm.subarray.name + '_state' && sensor.value === 'active') {
-                ObsSchedService.guiUrls = {};
-                ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue.forEach(
-                    function(resourceAlloc) {
-                        MonitorService.listSensors(resourceAlloc[0], 'gui.urls$');
-                    });
-            }
-            if (sensor.name.endsWith('gui_urls')) {
-                ObsSchedService.guiUrlsMessageReceived(sensor);
-                vm.guiUrls = ObsSchedService.guiUrls;
             }
             ObsSchedService.sensorValues[sensor.name] = sensor;
             ObsSchedService.receivedResourceMessage(sensor);
-        });
+            if (vm.subarray && sensor.name === vm.subarray.name + '_state' && sensor.value === 'active') {
+                if (!ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources']) {
+                    $timeout(function() {
+                        vm.updateGuiUrls();
+                    }, 3000);
+                    return;
+                }
+                ObsSchedService.guiUrls = {};
+                vm.updateGuiUrls();
+            }
+        };
 
+        vm.updateGuiUrls = function() {
+            if (ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources']) {
+                var resourceNames = ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources'].value;
+                MonitorService.listSensorsHttp(resourceNames, 'gui.urls$', true).then(function(result) {
+                    result.data.forEach(function(guiUrlSensor) {
+                        ObsSchedService.guiUrlsMessageReceived(guiUrlSensor);
+                    });
+                    vm.guiUrls = ObsSchedService.guiUrls;
+                });
+            }
+        };
+
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $scope.$on('$destroy', function() {

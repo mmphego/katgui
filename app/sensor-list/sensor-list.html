@@ -1,5 +1,4 @@
 <div layout="column" flex ng-controller="SensorListCtrl as vm" style="min-height: 640px; min-width: 1000px">
-
     <div flex layout="row" style="margin: 8px">
         <div layout="column" style="width: 220px">
             <div layout="column" ng-repeat="node in vm.nodes | orderBy:node:true track by $index" class="md-whiteframe-z1"
@@ -38,12 +37,15 @@
                     />
                 </div>
 
-                <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center" style="padding: 0px 8px; max-height: 17px">
-                    <span class="subheader-text resource-sensor-name" ng-click="vm.setSensorsOrderBy('shortName')">
+                <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center" style="padding: 0px 8px; max-height: 17px; overflow: hidden">
+                    <span class="subheader-text resource-sensor-name" ng-class="vm.sensorNameResizeClassName" ng-click="vm.setSensorsOrderBy('shortName')">
                         <span>Name</span>
                     <span class="fa" ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'shortName' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'shortName' && vm.sensorsOrderBy.reverse}"
                         style="margin-right: 4px"></span>
                     </span>
+                    <span class="fa fa-caret-left opacity-hover" style="margin-left: -28px;margin-right: 4px" ng-click="vm.decreaseSensorNameColumnWidth(); $event.stopPropagation()"></span>
+                    <span class="opacity-hover" ng-click="vm.resetSensorNameColumnWidth(400)">|</span>
+                    <span class="fa fa-caret-right opacity-hover" style="margin: 0 4px" ng-click="vm.increaseSensorNameColumnWidth(); $event.stopPropagation()"></span>
                     <span class="subheader-text resource-sensor-status-item" ng-click="vm.setSensorsOrderBy('status')">
                         <span>Status</span>
                     <span class="fa" ng-class="{'fa-caret-up': vm.sensorsOrderBy.value === 'status' && !vm.sensorsOrderBy.reverse, 'fa-caret-down': vm.sensorsOrderBy.value === 'status' && vm.sensorsOrderBy.reverse}"
@@ -66,14 +68,14 @@
                     </span>
                 </div>
             </md-toolbar>
-            <div flex style="padding: 4px 8px; overflow: auto; position: relative" class="md-whiteframe-z1">
+            <div flex style="padding: 4px 8px; overflow: auto" class="md-whiteframe-z1">
                 <div flex class="overlay-progress-circular" layout="row" layout-align="center center" ng-if="vm.showProgress">
                     <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                 </div>
-                <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | filter:filterByNotNominal | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) track by key"
+                <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) | filter:filterByNotNominal track by key"
                     ng-class="{'selected-for-chart-row': vm.sensorValues[key].selectedForChart}" layout="row"
                     layout-align="start center" ng-click="vm.plotLiveSensorFeed(key)">
-                    <span title="" class="resource-sensor-name">{{vm.sensorValues[key].shortName}}</span>
+                    <span title="" class="resource-sensor-name" ng-class="vm.sensorNameResizeClassName">{{vm.sensorValues[key].shortName}}</span>
                     <span class="resource-sensor-status-item" ng-class="vm.sensorClass(vm.sensorValues[key].status)">{{vm.sensorValues[key].status}}</span>
                     <span class="resource-sensor-time-item">{{vm.sensorValues[key].received_timestamp}}</span>
                     <span class="resource-sensor-time-item" ng-show="vm.showValueTimestamp">{{vm.sensorValues[key].timestamp}}</span>
