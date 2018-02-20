@@ -23,7 +23,22 @@
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
-        vm.currentSensorNameColumnWidth = 400;
+
+        if ($localStorage.currentSensorNameColumnWidth) {
+            vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
+        } else {
+            vm.currentSensorNameColumnWidth = 400;
+        }
+
+        vm.sensorNameResizeClassName = '_sensor-list-name-resize';
+        vm.sensorNameResizeStyle = document.getElementById(vm.sensorNameResizeClassName);
+        if (!vm.sensorNameResizeStyle) {
+            vm.sensorNameResizeStyle = document.createElement('style');
+            vm.sensorNameResizeStyle.type = 'text/css';
+            vm.sensorNameResizeStyle.id = vm.sensorNameResizeClassName;
+            vm.sensorNameResizeStyle.innerHTML = '.' + vm.sensorNameResizeClassName + ' {min-width: ' + vm.currentSensorNameColumnWidth + 'px;}';
+            document.getElementsByTagName('head')[0].appendChild(vm.sensorNameResizeStyle);
+        }
 
         vm.sensorsOrderByFields = [
             {label: 'Name', value: 'shortName'},
@@ -96,7 +111,6 @@
                 vm.sensorsToDisplay = [];
                 vm.sensorValues = {};
             }
-            vm.resetSensorNameColumnWidth('.resource-sensor-name', 400);
             vm.sensorsPlotNames.splice(0, vm.sensorsPlotNames.length);
             vm.clearChart();
             vm.showProgress = true;
@@ -194,38 +208,22 @@
             return Object.keys(obj);
         };
 
-        vm.resizeColumn = function (columnClassId, newSize) {
-            document.querySelectorAll(columnClassId).forEach(function (node) {
-                if (node.classList.contains('subheader-text')) {
-                    node.style.minWidth = (newSize - 38) + 'px';
-                } else {
-                    node.style.minWidth = newSize + 'px';
-                }
-
-            });
-        };
-
-        vm.resetSensorNameColumnWidth  = function (columnClassId, newSize) {
-            vm.currentSensorNameColumnWidth = newSize;
-            vm.resizeColumn(columnClassId, newSize);
+        vm.resetSensorNameColumnWidth  = function (newSize) {
+            vm.setCurrentSensorNameColumnWidth(newSize);
         };
 
         vm.increaseSensorNameColumnWidth = function(columnClassId) {
-            if (vm.currentSensorNameColumnWidth < 1100) {
-                vm.currentSensorNameColumnWidth += 200;
-            } else {
-                vm.currentSensorNameColumnWidth = 800;
-            }
-            vm.resizeColumn(columnClassId, vm.currentSensorNameColumnWidth);
+            vm.setCurrentSensorNameColumnWidth(vm.currentSensorNameColumnWidth + 200);
         };
 
         vm.decreaseSensorNameColumnWidth = function(columnClassId) {
-            if (vm.currentSensorNameColumnWidth > 300) {
-                vm.currentSensorNameColumnWidth -= 200;
-            } else {
-                vm.currentSensorNameColumnWidth = 200;
-            }
-            vm.resizeColumn(columnClassId, vm.currentSensorNameColumnWidth);
+            vm.setCurrentSensorNameColumnWidth(vm.currentSensorNameColumnWidth - 200);
+        };
+
+        vm.setCurrentSensorNameColumnWidth = function(newSize) {
+            vm.currentSensorNameColumnWidth = newSize;
+            $localStorage.currentSensorNameColumnWidth = newSize;
+            vm.sensorNameResizeStyle.innerHTML = '.' + vm.sensorNameResizeClassName + ' {min-width: ' + vm.currentSensorNameColumnWidth + 'px }';
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
