@@ -65,7 +65,7 @@
                 }
             } else if (sensor.name === "sys_interlock_state") {
                 $rootScope.sys_interlock_state = sensor;
-            } else if (sensor.name.startsWith('kataware_alarm')) {
+            } else if (sensor.name.startsWith('kataware_alarm_')) {
                 AlarmsService.receivedAlarmMessage(sensor);
             }
         };
@@ -83,6 +83,11 @@
         api.subscribeResource = function(component) {
             // Sensor subjects are sensor.*.<component>.*
             api.subscribe('sensor.normal.' + component + '.*');
+        };
+
+        api.unsubscribeResource = function(component) {
+            // Sensor subjects are sensor.*.<component>.*
+            api.unsubscribe('sensor.normal.' + component + '.*');
         };
 
         api.subscribe = function(sub) {
