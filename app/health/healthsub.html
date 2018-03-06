@@ -17,7 +17,7 @@
             <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
         </div>
     </div>
-    <div flex ng-repeat="tree in vm.subStatusTrees" layout="column" style="max-height: 100%; min-height: 100%; padding: 2px">
+    <div flex ng-repeat="tree in vm.StatusTrees['sub']" layout="column" style="max-height: 100%; min-height: 100%; padding: 2px">
         <md-toolbar class="status-top-label md-toolbar-tools-medium md-whiteframe-z1">
             <label>{{tree.name}}</label>
         </md-toolbar>

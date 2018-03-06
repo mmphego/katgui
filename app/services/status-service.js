@@ -9,13 +9,11 @@
         var api = {};
         api.statusData = {};
         api.receptors = [];
-        /*api.StatusTrees = {};
+        api.StatusTrees = {};
         api.StatusTrees["top"] = {};
         api.StatusTrees["sub"] = {};
-        api.StatusTrees["cbf"] = {};*/
-        api.topStatusTrees = [];
-        api.subStatusTrees = [];
-        api.cbfStatusTrees = [];
+        api.StatusTrees["cbf"] = {};
+        api.topStatusTrees = api.StatusTrees["top"];
         api.itemsToUpdate = {};
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
@@ -57,46 +55,6 @@
             for (var treeName in statusTrees) {
                 var tree = statusTrees[treeName];
                 api.topStatusTrees.push(tree);
-
-                tree.children = [];
-                tree.subs.forEach(function(sub) {
-                    var newSub = {
-                        prefix: sub.component + '_',
-                        component: sub.component,
-                        sensor: sub.sensor,
-                        name: sub.name
-                    };
-                    tree.children.push(newSub);
-                });
-            }
-        };
-
-        api.setSubStatusTrees = function(statusTrees) {
-            api.subStatusTrees.splice(0, api.subStatusTrees.length);
-
-            for (var treeName in statusTrees) {
-                var tree = statusTrees[treeName];
-                api.subStatusTrees.push(tree);
-
-                tree.children = [];
-                tree.subs.forEach(function(sub) {
-                    var newSub = {
-                        prefix: sub.component + '_',
-                        component: sub.component,
-                        sensor: sub.sensor,
-                        name: sub.name
-                    };
-                    tree.children.push(newSub);
-                });
-            }
-        };
-
-        api.setCbfStatusTrees = function(statusTrees) {
-            api.cbfStatusTrees.splice(0, api.cbfStatusTrees.length);
-
-            for (var treeName in statusTrees) {
-                var tree = statusTrees[treeName];
-                api.cbfStatusTrees.push(tree);
 
                 tree.children = [];
                 tree.subs.forEach(function(sub) {

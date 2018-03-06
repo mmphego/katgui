@@ -9,16 +9,16 @@
         var vm = this;
         var which = 'sub';
         ConfigService.loadAggregateSensorDetail();
-        vm.subStatusTrees = StatusService.subStatusTrees;
+        vm.theStatusTrees = StatusService.StatusTrees[which];
         vm.sensorValues = {};
         vm.aggSensorValues = {};
         vm.subscribedSensors = [];
         vm.sensorsRegex = '';
         vm.getClassesOfSensor = StatusService.getClassesOfSensor;
 
-        ConfigService.getStatusTreesForSub()
+        ConfigService.getStatusTreesFor(which)
             .then(function(result) {
-                StatusService.setSubStatusTrees(result.data);
+                StatusService.setStatusTrees(result.data, which);
                 $timeout(vm.initSensors, 500);
             }, function() {
                 NotifyService.showSimpleDialog(
@@ -27,9 +27,9 @@
         ConfigService.getSystemConfig();
 
         vm.initSensors = function() {
-            if (StatusService.subStatusTrees {
+            if (StatusService.StatusTrees[which]) {
                 var components = {};
-                StatusService.subStatusTrees.forEach(function(tree) {
+                StatusService.StatusTrees[which].forEach(function(tree) {
                     tree.subs.forEach(function(sub) {
                         if (!components[sub.component]) {
                             components[sub.component] = {

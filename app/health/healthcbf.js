@@ -9,16 +9,16 @@
         var vm = this;
         var which = 'cbf';
         ConfigService.loadAggregateSensorDetail();
-        vm.cbfStatusTrees = StatusService.cbfStatusTrees;
+        vm.theStatusTrees = StatusService.StatusTrees[which];
         vm.sensorValues = {};
         vm.aggSensorValues = {};
         vm.subscribedSensors = [];
         vm.sensorsRegex = '';
         vm.getClassesOfSensor = StatusService.getClassesOfSensor;
 
-        ConfigService.getStatusTreesForCbf()
+        ConfigService.getStatusTreesFor(which)
             .then(function(result) {
-                StatusService.setCbfStatusTrees(result.data);
+                StatusService.setStatusTrees(result.data, which);
                 $timeout(vm.initSensors, 500);
             }, function() {
                 NotifyService.showSimpleDialog(
@@ -27,9 +27,9 @@
         ConfigService.getSystemConfig();
 
         vm.initSensors = function() {
-            if (StatusService.cbfStatusTrees) {
+            if (StatusService.StatusTrees[which]) {
                 var components = {};
-                StatusService.cbfStatusTrees.forEach(function(tree) {
+                StatusService.StatusTrees[which].forEach(function(tree) {
                     tree.subs.forEach(function(sub) {
                         if (!components[sub.component]) {
                             components[sub.component] = {
