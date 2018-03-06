@@ -1,9 +1,9 @@
 (function() {
 
     angular.module('katGui.healthcbf', ['katGui', 'katGui.d3'])
-        .controller('HealthCtrl', HealthCtrl);
+        .controller('HealthCtrlCbf', HealthCtrlCbf);
 
-    function HealthCtrl($rootScope, $scope, ConfigService, StatusService, NotifyService,
+    function HealthCtrlCbf($rootScope, $scope, ConfigService, StatusService, NotifyService,
         MonitorService, d3Util, $timeout, $log) {
 
         var vm = this;

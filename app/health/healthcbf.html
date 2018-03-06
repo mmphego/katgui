@@ -1,4 +1,4 @@
-<div flex layout="row" layout-align="center start" ng-controller="HealthCtrl as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
+<div flex layout="row" layout-align="center start" ng-controller="HealthCtrlCbf as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
@@ -17,7 +17,7 @@
             <div layout="row" layout-align="start center"><div class="color-patch inactive-child" title="Black"></div><span>CAM Sensor Error</span></div>
         </div>
     </div>
-    <div flex ng-repeat="tree in vm.cbfStatusTrees" layout="column" style="max-height: 100%; min-height: 100%; padding: 2px">
+    <div flex ng-repeat="tree in vm.StatusTrees['cbf']" layout="column" style="max-height: 100%; min-height: 100%; padding: 2px">
         <md-toolbar class="status-top-label md-toolbar-tools-medium md-whiteframe-z1">
             <label>{{tree.name}}</label>
         </md-toolbar>
