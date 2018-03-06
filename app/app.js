@@ -526,7 +526,7 @@
         $stateProvider.state('config-health-view', {
             url: '/config-health-view/{configItem}',
             templateUrl: 'app/health/config-health-view/config-health-view.html',
-            title: 'Config Health',
+            title: 'Config Health {configItem}',
             params: {
                 configItem: {
                     value: null,

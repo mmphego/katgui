@@ -9,10 +9,10 @@
         var api = {};
         api.statusData = {};
         api.receptors = [];
-        api.StatusTrees = {};
+        /*api.StatusTrees = {};
         api.StatusTrees["top"] = {};
         api.StatusTrees["sub"] = {};
-        api.StatusTrees["cbf"] = {};
+        api.StatusTrees["cbf"] = {};*/
         api.topStatusTrees = [];
         api.subStatusTrees = [];
         api.cbfStatusTrees = [];
