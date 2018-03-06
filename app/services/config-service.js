@@ -156,6 +156,14 @@
             return $http(createRequest('get', urlBase() + '/statustrees/top_view'));
         };
 
+        api.getStatusTreesForSub = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/sub_view'));
+        };
+
+        api.getStatusTreesForCbf = function () {
+            return $http(createRequest('get', urlBase() + '/statustrees/cbf_view'));
+        };
+
         api.getReceptorList = function () {
             api.receptorList.splice(0, api.receptorList.length);
 

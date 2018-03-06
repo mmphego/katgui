@@ -9,11 +9,14 @@
         var api = {};
         api.statusData = {};
         api.receptors = [];
-        api.StatusTrees = {};
+        /*api.StatusTrees = {};
         api.StatusTrees["top"] = {};
         api.StatusTrees["sub"] = {};
         api.StatusTrees["cbf"] = {};
-        api.topStatusTrees = api.StatusTrees["top"];
+        api.topStatusTrees = api.StatusTrees["top"];*/
+        api.topStatusTrees = []; 
+        api.subStatusTrees = []; 
+        api.cbfStatusTrees = []; 
         api.itemsToUpdate = {};
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
@@ -69,12 +72,12 @@
             }
         };
 
-        api.setStatusTrees = function(statusTrees, which) {
-            api.StatusTrees[which].splice(0, api.StatusTrees[which].length);
+        api.setSubStatusTrees = function(statusTrees) {
+            api.subStatusTrees.splice(0, api.subStatusTrees.length);
 
             for (var treeName in statusTrees) {
                 var tree = statusTrees[treeName];
-                api.StatusTrees[which].push(tree);
+                api.subStatusTrees.push(tree);
 
                 tree.children = [];
                 tree.subs.forEach(function(sub) {
@@ -88,6 +91,28 @@
                 });
             }
         };
+
+
+        api.setCbfStatusTrees = function(statusTrees) {
+            api.cbfStatusTrees.splice(0, api.cbfStatusTrees.length);
+
+            for (var treeName in statusTrees) {
+                var tree = statusTrees[treeName];
+                api.cbfStatusTrees.push(tree);
+
+                tree.children = [];
+                tree.subs.forEach(function(sub) {
+                    var newSub = {
+                        prefix: sub.component + '_',
+                        component: sub.component,
+                        sensor: sub.sensor,
+                        name: sub.name
+                    };
+                    tree.children.push(newSub);
+                });
+            }
+        };
+
 
         function applyValueToSensor(node, sensorName, value, rootName) {
             var prefix = node.prefix ? node.prefix : '';
