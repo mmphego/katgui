@@ -11,7 +11,7 @@
         var api = {};
 
         api.sensorsInfo = function (sensorsRegex, searchNumericOnly, includeStaleSensors) {
-            // example: api/search/?stale=true&q=device.status&numeric=true
+            // example: katstore/api/search/?stale=true&q=device.status&numeric=true
             var requestStr = urlBase() +
                 'api/search/?meta=true&q=' + sensorsRegex +
                 '&numeric=' + (searchNumericOnly? 'true' : 'false') +
@@ -20,7 +20,7 @@
         };
 
         api.sensorData = function (params) {
-            // example: api/query/?sensor=anc_air_relative_humidity&start_time=1515040457&end_time=1515562457&limit=1000000&interval=600&avg=1
+            // example: katstore/api/query/?sensor=anc_air_relative_humidity&start_time=1515040457&end_time=1515562457&limit=1000000&interval=600&avg=1
             var requestStr = urlBase() +
                 'api/query/?sensor=' + params.name +
                 '&start_time=' + params.start +
@@ -36,12 +36,11 @@
         };
 
         api.sampleValueDuration = function (sensorNames, startDate, endDate) {
-            // TODO change this request to point to the new katstore endpoints
+            // example: katstore/sample-value-duration?sensors=agg*&start_time=1520180800&end_time=1520380800
             var requestStr = urlBase() +
                 'sample-value-duration?sensors=' + sensorNames +
-                '&start=' + startDate +
-                '&end=' + endDate +
-                '&time_type=s';
+                '&start_time=' + startDate +
+                '&end_time=' + endDate;
                 return $http.get(requestStr);
         };
 
