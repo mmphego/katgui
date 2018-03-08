@@ -20,6 +20,7 @@
         api.resourceGroups = ['Components', 'Proxies'];
         api.sensorGroups = {};
         api.loadingSystemConfigPromises = [];
+        api.CBFCustomViewFilter = {};
 
         api.loadSensorGroups = function () {
             var deferred = $q.defer();

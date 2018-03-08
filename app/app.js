@@ -212,9 +212,14 @@
             ConfigService.getCustomHealthViews().then(
                 function(result) {
                     $rootScope.customHealthViews = [];
-                    _.each(result.data, function(value, key, obj) {
+                    for (var key in result.data) {
                         $rootScope.customHealthViews.push(key);
-                    });
+                        /* OJ: This is temporary and should be
+                        fixed(for now I am only getting values of cbf)*/
+                        if (key === 'cbf') {
+                            ConfigService.CBFCustomViewFilter = result.data[key].filter;
+                        }
+                    };
                 },
                 function(error) {
                     $log.error(error);
@@ -512,9 +517,20 @@
             templateUrl: 'app/health/receptor-health/receptor-health.html',
             title: 'Receptor Health'
         });
-        $stateProvider.state('custom-health-view', {
+        $stateProvider.state('customHealth', {
             url: '/custom-health-view/{configItem}',
-            templateUrl: 'app/health/custom-health-view/custom-health-view.html',
+            templateUrl: 'app/health/custom-health/custom-health.html',
+            title: 'Custom Health',
+            params: {
+                layout: {
+                    value: null,
+                    squash: true
+                }
+            },
+        });
+        $stateProvider.state('customHealthView', {
+            url: '/custom-health-view/{configItem}',
+            templateUrl: 'app/health/custom-health/custom-health-view.html',
             title: 'Custom Health',
             params: {
                 configItem: {
@@ -543,11 +559,6 @@
             url: '/receptor-pointing',
             templateUrl: 'app/health/receptor-pointing/receptor-pointing.html',
             title: 'Receptor Pointing'
-        });
-        $stateProvider.state('customHealth', {
-            url: '/custom-health?layout',
-            templateUrl: 'app/health/custom-health/custom-health.html',
-            title: 'Custom Health'
         });
         $stateProvider.state('home', {
             url: '/home',

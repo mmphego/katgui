@@ -1,9 +1,9 @@
 (function() {
 
     angular.module('katGui.health')
-        .controller('CustomHealthCtrl', CustomHealthCtrl);
+        .controller('CustomHealthViewCtrl', CustomHealthViewCtrl);
 
-    function CustomHealthCtrl($scope, $rootScope, $interval, MonitorService, KatGuiUtil, $location, $stateParams,
+    function CustomHealthViewCtrl($scope, $rootScope, $interval, MonitorService, KatGuiUtil, $location, $stateParams,
         $timeout, $log, $mdDialog, $state, NotifyService, ConfigService, StatusService) {
 
         var vm = this;

@@ -171,7 +171,7 @@
                             <md-button><span class="fa fa-heartbeat"></span><span>Custom Health</span></md-button>
                         </div>
                         <div ng-repeat="configItem in $root.customHealthViews track by $index" class="menu-item menu-item-indented" layout="row" layout-align="start center">
-                            <md-button ng-click="vm.sideNavStateGo('custom-health-view', {configItem: configItem})"><span class="fa fa-file-code-o"></span> <span>{{configItem.toUpperCase()}}</span></md-button>
+                            <md-button ng-click="vm.sideNavStateGo('customHealth', {layout: configItem})"><span class="fa fa-file-code-o"></span> <span>{{configItem.toUpperCase()}}</span></md-button>
                         </div>
                     </md-item-content>
                 </md-item>
