@@ -27,7 +27,7 @@
         ConfigService.getSystemConfig();
 
         vm.initSensors = function() {
-            if (StatusService.ubtatusTrees) {
+            if (StatusService.subStatusTrees) {
                 var components = {};
                 StatusService.subStatusTrees.forEach(function(tree) {
                     tree.subs.forEach(function(sub) {

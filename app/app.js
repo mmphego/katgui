@@ -10,6 +10,8 @@
             'katGui.config',
             'katGui.d3',
             'katGui.health',
+            'katGui.healthsub',
+            'katGui.healthcbf',
             'katGui.widgets',
             'katGui.landing',
             'katGui.util',
