@@ -4,6 +4,14 @@ After cloning the repo do:
 
 - Download and install http://nodejs.org/
 - Download and install http://yarnpkg.com/
+You could be lucky by trying the following:
+>sudo apt-get install curl
+>curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+>sudo apt-get install -y nodejs
+
+>curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+>echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+>sudo apt-get update && sudo apt-get install yarn
 
 Navigate to the project folder
 >yarn install
