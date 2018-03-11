@@ -196,32 +196,11 @@
             api.correlatorList.splice(0, api.correlatorList.length);
 
             var deferred = $q.defer();
-            $http(createRequest('get', urlBase() + '/installed-config/receptors'))
-                .then(function (result) {
-                    result.data.forEach(function (item) {
-                        if (api.correlatorList.length < 4) {
-                            api.correlatorList.push(item);
-                            };
-                    });
-                    deferred.resolve(api.correlatorList);
-                }, function (result) {
-                    $log.error(result);
-                    deferred.reject();
-                });
-
-            return deferred.promise;
-        };
-
-
-        api.getCorrelatorListBAC = function () {
-            api.correlatorList.splice(0, api.correlatorList.length);
-
-            var deferred = $q.defer();
             $http(createRequest('get', urlBase() + '/system-config/sections/system/dataproxy_nrs'))
                 .then(function (result) {
-                    var correlators = result.data.split(',');
-                    correlators.forEach(function (item) {
-                        api.correlatorList.push('m00'+item);
+                    result.data.split(',').forEach(function (item) {
+                        api.correlatorList.push('cbf_'+String(item));
+                        };
                     });
                     deferred.resolve(api.correlatorList);
                 }, function (result) {
