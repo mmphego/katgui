@@ -9,6 +9,7 @@
         var api = {};
         api.statusData = {};
         api.receptors = [];
+        api.correlators = [];
         /*api.StatusTrees = {};
         api.StatusTrees["top"] = {};
         api.StatusTrees["sub"] = {};
@@ -21,6 +22,7 @@
         api.sensorValues = {};
         api.resourcesInMaintenance = '';
         api.controlledResources = [];
+        api.correlatorTreesSensors = {};
         api.receptorTreesSensors = {};
         api.configHealthSensors = {};
         api.customHealthSensors = {};
@@ -45,6 +47,28 @@
 
                 newStatusDataResource.sensor = statusTree.sensor.replace('.', '_').replace('-', '_');
                 if (api.receptors.indexOf(resource) > -1) {
+                    newStatusDataResource.children = statusTree.children;
+                }
+
+                api.statusData[resource] = newStatusDataResource;
+            });
+        };
+
+        api.setCorrelatorsAndStatusTree = function(statusTree, correlators) {
+            api.correlators.splice(0, api.correlators.length);
+            correlators.forEach(function(correlator) {
+                api.correlators.push(correlator);
+            });
+
+            api.controlledResources.forEach(function(resource) {
+                var newStatusDataResource = {};
+                if (api.statusData[resource]) {
+                    newStatusDataResource = api.statusData[resource];
+                }
+                newStatusDataResource.name = resource;
+
+                newStatusDataResource.sensor = statusTree.sensor.replace('.', '_').replace('-', '_');
+                if (api.correlators.indexOf(resource) > -1) {
                     newStatusDataResource.children = statusTree.children;
                 }
 
