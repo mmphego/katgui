@@ -514,6 +514,11 @@
             templateUrl: 'app/health/healthcbf.html',
             title: 'CBF Health & State'
         });
+        $stateProvider.state('correlatorHealth', {
+            url: '/correlator-health',
+            templateUrl: 'app/health/correlator-health/correlator-health.html',
+            title: 'Correlator Health'
+        });
         $stateProvider.state('receptorHealth', {
             url: '/receptor-health',
             templateUrl: 'app/health/receptor-health/receptor-health.html',
