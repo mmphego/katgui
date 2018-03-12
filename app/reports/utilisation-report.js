@@ -383,22 +383,22 @@
 
                 DataService.sampleValueDuration(vm.receptorsReportSensorsRegex, startDate, endDate).then(function (result) {
                     vm.creatingReceptorReport = false;
-                    if (result.data) {
+                    if (result.data.data) {
 
-                        result.data.map(function (item, itemIndex, data) {
+                        result.data..data.map(function (item, itemIndex, data) {
                             if (itemIndex > 0) {
                                 data[itemIndex - 1][2] = data[itemIndex][2];
                             }
                         });
 
-                        result.data.forEach(function (item, itemIndex, data) {
+                        result.data.data.forEach(function (item, itemIndex, data) {
                             var subNr;
-                            var duration = moment.duration(item[2], 's');
+
                             var reportItem = {
-                                sensorName: item[0],
-                                value: item[1],
-                                durationSeconds: item[2] !== null? item[2]: 0,
-                                duration: vm.durationToString(duration)
+                                sensorName: item.name,
+                                value: item.value,
+                                durationSeconds: item.sum !== null? item.sum: 0,
+                                duration: vm.durationToString(item.sum)
                             };
 
                             if (reportItem.duration) {
@@ -466,14 +466,13 @@
 
                 DataService.sampleValueDuration(vm.scheduleReportSensorsRegex, startDate, endDate).then(function (result) {
                     var SBIdCodes = {};
-                    if (result.data) {
-                        result.data.forEach(function (item) {
-                            var duration = moment.duration(item[2], 's');
+                    if (result.data.data) {
+                        result.data.data.forEach(function (item) {
                             var reportItem = {
-                                sensorName: item[0],
-                                value: item[1],
-                                durationSeconds: item[2],
-                                duration: vm.durationToString(duration)
+                                sensorName: item.name,
+                                value: item.value,
+                                durationSeconds: item.sum,
+                                duration: vm.durationToString(item.sum)
                             };
 
                             if (reportItem.duration) {
@@ -509,13 +508,13 @@
                 DataService.sampleValueDuration(vm.interlockReportSensorsRegex, startDate, endDate).then(function (result) {
                     vm.creatingInterlockReport = false;
                     if (result.data) {
-                        result.data.forEach(function (item) {
-                            var duration = moment.duration(item[2], 's');
+                        result.data.data.forEach(function (item) {
+
                             var reportItem = {
-                                sensorName: item[0],
-                                value: item[1],
-                                durationSeconds: item[2] !== null? item[2]: 0,
-                                duration: vm.durationToString(duration)
+                                sensorName: item.name,
+                                value: item.value,
+                                durationSeconds: item.sum !== null? item.sum: 0,
+                                duration: vm.durationToString(item.sum)
                             };
 
                             if (reportItem.duration) {
