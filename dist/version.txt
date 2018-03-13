@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version": "1.0.0", "buildDate": "1520947212457"}
+=======
+{"version": "1.0.0", "buildDate": "1520944213641"}
+>>>>>>> 6e8d83ae55483c523f8dcebfbe8a2596cf890a15
