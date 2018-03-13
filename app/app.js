@@ -230,9 +230,14 @@
             ConfigService.getConfigHealthViews().then(
                 function(result) {
                     $rootScope.configHealthViews = [];
+                    var the_keys = [];
                     _.each(result.data, function(value, key, obj) {
-                        $rootScope.configHealthViews.push(key);
+                        the_keys.push(key);
                     });
+                    the_keys.sort();
+                    for (var key = 0; key < the_keys.length; key++) {
+                        $rootScope.configHealthViews.push(the_keys[key]);
+                    };
                 },
                 function(error) {
                     $log.error(error);
