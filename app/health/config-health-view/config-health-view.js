@@ -21,8 +21,8 @@
             vm.treeChartSize = JSON.parse($localStorage['configHealthDisplaySize']);
         } else {
             vm.treeChartSize = {
-                width: 480,
-                height: 480
+                width: 720,
+                height: 720
             };
         }
 
