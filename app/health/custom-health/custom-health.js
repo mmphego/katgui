@@ -11,8 +11,6 @@
         vm.customStatusTrees = [];
         vm.regexStrings = [];
         vm.subscribedSensors = [];
-        vm.debounceUpdateUrl = _.debounce(vm.updateUrl, 500);
-        vm.CBFCustomViewFilter = ConfigService.CBFCustomViewFilter;
         vm.allowedDimensions = [{
             height: 400,
             width: 200
@@ -46,10 +44,8 @@
             vm.customStatusTrees = [];
             vm.regexStrings = [];
             vm.subscribedSensors = [];
-            vm.updateUrl();
-            console.log(vm.CBFCustomViewFilter);
-            if (vm.CBFCustomViewFilter) {
-                var layouts = vm.CBFCustomViewFilter.split(';');
+            if ($stateParams.layout) {
+                var layouts = $stateParams.layout.split(';');
                 layouts.forEach(function(layout) {
                     if (layout) {
                         var colonSplit = layout.split(':');
@@ -150,12 +146,52 @@
             NotifyService.showSimpleDialog('Exported URL', $location.absUrl());
         };
 
-        vm.updateUrl = function() {
-            $state.go('customHealth', {
-                layout: vm.CBFCustomViewFilter? vm.CBFCustomViewFilter: null},
-                {notify: false, reload: true
+        vm.buildUrl = function () {
+            var url = '';
+
+            var items = document.getElementsByTagName('status-single-level-tree-map');
+            for (var i = 0; i < items.length; i++) {
+                var innerText = items[i].getElementsByClassName('status-top-label-text')[0].innerText.split(':');
+                var component = innerText[0];
+                var regex = innerText[1];
+                var newOffset = {
+                    top: items[i].offsetTop,
+                    left: items[i].offsetLeft
+                };
+                var newSize = {
+                    width: items[i].clientWidth,
+                    height: items[i].clientHeight
+                };
+                var existingItemIndex = _.findIndex(vm.regexStrings, {
+                    name: regex,
+                    component: component
                 });
+                if (existingItemIndex > -1) {
+                    vm.regexStrings[existingItemIndex].offset = newOffset;
+                    vm.regexStrings[existingItemIndex].size = newSize;
+                }
+                url += encodeURI(component + ':' + regex + ':' + newOffset.left + ',' + newOffset.top + ',' + newSize.width + ',' + newSize.height + ';');
+            }
+            return url.length > 0? url: null;
         };
+
+        vm.mouseUp = function() {
+            vm.debounceUpdateUrl();
+        };
+
+        vm.updateUrl = function() {
+            var newUrl = vm.buildUrl();
+            if (newUrl !== $location.absUrl()) {
+                $state.go('customHealth', {
+                    layout: newUrl
+                }, {
+                    notify: false,
+                    reload: false
+                });
+            }
+        };
+
+        vm.debounceUpdateUrl = _.debounce(vm.updateUrl, 500);
 
         vm.showEnterSensorRegexDialog = function(event) {
             $mdDialog

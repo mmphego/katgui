@@ -542,7 +542,7 @@
         });
         $stateProvider.state('customHealthView', {
             url: '/custom-health-view/{configItem}',
-            templateUrl: 'app/health/custom-health/custom-health-view.html',
+            templateUrl: 'app/health/custom-health-view/custom-health-view.html',
             title: 'Custom Health',
             params: {
                 configItem: {
