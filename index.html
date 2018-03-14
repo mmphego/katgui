@@ -165,7 +165,7 @@
                 </md-item>
                 <md-item>
                     <md-item-content style="margin-top: 8px; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;" layout="column">
-                        <div ng-repeat="configItem in $root.configHealthViews track by $index" class="menu-item" layout="row" layout-align="start center">
+                        <div ng-repeat="configItem in $root.configHealthViews | orderBy track by $index" class="menu-item" layout="row" layout-align="start center">
                             <md-button ng-click="vm.sideNavStateGo('config-health', {configItem: configItem})"><span class="fa fa-file-code-o"></span><span>{{configItem.toUpperCase()}} Health</span></md-button>
                         </div>
                     </md-item-content>
