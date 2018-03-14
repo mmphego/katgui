@@ -21,8 +21,8 @@
             vm.treeChartSize = JSON.parse($localStorage['configHealthDisplaySize']);
         } else {
             vm.treeChartSize = {
-                width: 480,
-                height: 480
+                width: 720,
+                height: 720
             };
         }
 
@@ -86,7 +86,7 @@
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
                             StatusService.sensorValues[sensor.name] = sensor;
-                            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
                         });
                     }, function(error) {
                         $log.error(error);
@@ -172,7 +172,7 @@
                 return;
             }
             StatusService.sensorValues[sensor.name] = sensor;
-            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
