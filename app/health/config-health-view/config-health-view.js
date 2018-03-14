@@ -21,8 +21,8 @@
             vm.treeChartSize = JSON.parse($localStorage['configHealthDisplaySize']);
         } else {
             vm.treeChartSize = {
-                width: 480,
-                height: 480
+                width: 720,
+                height: 720
             };
         }
 
@@ -86,7 +86,7 @@
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
                             StatusService.sensorValues[sensor.name] = sensor;
-                            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
                         });
                     }, function(error) {
                         $log.error(error);
@@ -99,13 +99,80 @@
             $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
+        vm.getJsonKey = function(jsonArray, jsonValue) {
+            angular.forEach(jsonArray, function(value, index) {
+            for(var key in value) {
+                if (value.name === jsonValue) {
+                    results = index;
+                }
+            }
+            });
+            return results;
+        };
+
+        vm.getDiffSensors = function (array1, array2) {
+            names1 = [];
+            names2 = [];
+            sensors = [];
+
+            array1.forEach(function (sensor) {
+                names1.push(sensor.name)
+            });
+            array2.forEach(function (sensor) {
+                names2.push(sensor.name)
+            });
+            diffNames = _.difference(names2, names1);
+            for(var i in diffNames) {
+                sensors.push(array2[vm.getJsonKey(array2, diffNames[i])])
+            }
+            return sensors;
+        };
+
+        vm.checkDiffSensors = function ()  {
+            if (!vm.selectedConfigView.startsWith('cbf')) {
+                return;
+            }
+            MonitorService.listSensorsHttp('cbf_1,cbf_2,cbf_3,cbf_4', 'device_status', true).then(function (result) {
+                vm.newList = [];
+                result.data.forEach(function (sensor) {
+                    vm.newList.push(sensor);
+                });
+
+                if(vm.newList.length !== vm.subscribedSensors.length) {
+                    if (vm.newList.length > vm.subscribedSensors.length) {
+                        sensors = vm.getDiffSensors(vm.subscribedSensors, vm.newList);
+                        sensors.forEach(function (sensor) {
+                            MonitorService.subscribeSensor(sensor);
+                            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                        });
+                    }
+                    else {
+                        sensors = vm.getDiffSensors(vm.newList, vm.subscribedSensors);
+                        sensors.forEach(function (sensor) {
+                            MonitorService.unsubscribeSensor(sensor);
+                            d3.selectAll('.' + sensor.name).attr('class', 'unknown' + '-child ' + sensor.name);
+                        });
+                    }
+                    vm.subscribedSensors.forEach(function (sensor) {
+                        MonitorService.unsubscribeSensor(sensor);
+                    });
+                    vm.subscribedSensors = [];
+                    for( var sensor in vm.newList) {
+                        MonitorService.subscribeSensor(vm.newList[sensor]);
+                        vm.subscribedSensors.push(vm.newList[sensor]);
+                    }
+                }
+            });
+        };
+
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+            vm.checkDiffSensors();
             var view = StatusService.configHealthSensors[vm.selectedConfigView];
             if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
                 return;
             }
             StatusService.sensorValues[sensor.name] = sensor;
-            d3.select('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);

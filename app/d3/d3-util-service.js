@@ -125,7 +125,7 @@ angular.module('katGui.d3')
                 );
             } else {
                 tooltip.html(
-                    "<div style='font-size: 14px'>Error Reading Sensor Value</div>"
+                    "<div style='font-size: 14px'>Error Reading Sensor Value: "+fullSensorName+"</div>"
                 );
             }
         };
