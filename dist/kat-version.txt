@@ -1,1 +1,1 @@
-1.0.2.dev1676+release.karoocamv19.edbe20a.dirty
+1.0.2.dev1677+user.lize.sensor.list.update.9f1892e.dirty

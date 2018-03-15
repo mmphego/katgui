@@ -1,3 +1,5 @@
+ <form novalidate name="frm1" autocomplete="off" ng-submit="vm.searchFilter=searchText">
+
 <div layout="column" flex ng-controller="SensorListCtrl as vm" style="min-height: 640px; min-width: 1000px">
     <div flex layout="row" style="margin: 8px">
         <div layout="column" style="width: 220px">
@@ -36,11 +38,11 @@
                         md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0">
                         Hide Nominal Sensors
                     </md-checkbox>
-                    <input type="text" class="fade-in search-input-box" style="margin: 0 4px" name="search" placeholder="Filter Sensors..."
+                    <input type="text" class="fade-in search-input-box" style="margin: 0 4px" name="search" placeholder="Search ... (press enter)"
                      ng-model="searchText" ng-enter="vm.searchFilter=searchText"
                     />
                     <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="vm.searchFilter=searchText"
-                        style="max-width: 28px; min-width: 28px; margin: 0 4px">
+                        style="max-width: 28px; min-width: 28px; margin: 0 4px" type="submit" ng-show="false">
                         <span class="fa fa-caret-right"></span>
                     </md-button>
                 </div>
