@@ -1,1 +1,1 @@
-1.0.2.dev1677+user.lize.sensor.list.update.9f1892e.dirty
+1.0.2.dev1678+user.lize.sensor.list.update.147ab8e.dirty
