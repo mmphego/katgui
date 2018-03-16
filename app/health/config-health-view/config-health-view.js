@@ -33,18 +33,13 @@
         vm.populateSensorNames = function(viewName, parent) {
             if (!StatusService.configHealthSensors[viewName]) {
                 StatusService.configHealthSensors[viewName] = {
-                    component: parent.component,
                     sensors: []
                 };
             };
             // Only populate if parent.sensor defined
             if (parent.sensor) {
-                if (parent.component) {
-                    if (parent.component != 'all' )
-                        StatusService.configHealthSensors[viewName].sensors.push(parent.component+'_'+parent.sensor);
-                    else
-                        StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
-                }
+                if (parent.component && parent.component != 'all' )
+                    StatusService.configHealthSensors[viewName].sensors.push(parent.component+'_'+parent.sensor);
                 else
                     StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
             };
@@ -88,14 +83,14 @@
                     MonitorService.unsubscribeSensor(sensor);
                 });
                 vm.subscribedSensors = [];
-                var componentSensors = {};
                 var view = StatusService.configHealthSensors[vm.selectedConfigView];
-                if (StatusService.configHealthSensors[vm.selectedConfigView]) {
+                if (view) {
                     MonitorService.listSensorsHttp('all', view.sensors.join('|')).then(function (result) {
                         result.data.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
                             StatusService.sensorValues[sensor.name] = sensor;
+                            $log.info("Register "+sensor.name);
                             d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
                         });
                     }, function(error) {
