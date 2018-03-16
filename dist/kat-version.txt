@@ -1,1 +1,1 @@
-1.0.2.dev1674+feature.camv19.katgui.cbf.health.0173e23.dirty
+1.0.2.dev1678+user.lize.sensor.list.update.147ab8e.dirty
