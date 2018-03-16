@@ -36,8 +36,18 @@
                     component: parent.component,
                     sensors: []
                 };
-            }
-            StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
+            };
+            // Only populate if parent.sensor defined
+            if (parent.sensor) {
+                if (parent.component) {
+                    if (parent.component != 'all' )
+                        StatusService.configHealthSensors[viewName].sensors.push(parent.component+'_'+parent.sensor);
+                    else
+                        StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
+                }
+                else
+                    StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
+            };
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function(child) {
                     vm.populateSensorNames(viewName, child);
@@ -80,8 +90,8 @@
                 vm.subscribedSensors = [];
                 var componentSensors = {};
                 var view = StatusService.configHealthSensors[vm.selectedConfigView];
-                if (view) {
-                    MonitorService.listSensorsHttp(view.component, view.sensors.join('|')).then(function (result) {
+                if (StatusService.configHealthSensors[vm.selectedConfigView]) {
+                    MonitorService.listSensorsHttp('all', view.sensors.join('|')).then(function (result) {
                         result.data.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);

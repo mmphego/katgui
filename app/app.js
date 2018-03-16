@@ -530,20 +530,14 @@
             title: 'Receptor Health'
         });
         $stateProvider.state('customHealth', {
-            url: '/custom-health-view/{configItem}',
+            url: '/custom-health',
             templateUrl: 'app/health/custom-health/custom-health.html',
-            title: 'Custom Health',
-            params: {
-                layout: {
-                    value: null,
-                    squash: true
-                }
-            },
+            title: 'Custom Health'
         });
         $stateProvider.state('customHealthView', {
             url: '/custom-health-view/{configItem}',
             templateUrl: 'app/health/custom-health-view/custom-health-view.html',
-            title: 'Custom Health',
+            title: 'Custom Health View',
             params: {
                 configItem: {
                     value: null,
