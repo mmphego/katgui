@@ -292,13 +292,6 @@
                 }
         };
 
-        vm.toggleUpdates = function () {
-            vm.noSensorUpdates = !vm.noSensorUpdates;
-            if (!vm.noSensorUpdates) {
-                vm.updateURL();
-            }
-        };
-
         //create to function to bind to, but dont do anything with it yet
         vm.downloadAsCSV = function () {};
 
