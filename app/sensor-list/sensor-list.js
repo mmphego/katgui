@@ -21,7 +21,6 @@
         vm.yAxisMaxValue = 100;
         vm.hideNominalSensors = $stateParams.hideNominal? $stateParams.hideNominal === 'true': false;
         vm.hideWarnSensors = $stateParams.hideWarn? $stateParams.hideWarn === 'true': false;
-        vm.noSensorUpdates = true;
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
@@ -282,14 +281,13 @@
         };
 
         vm.updateURL = function () {
-            if (!vm.noSensorUpdates) {
-                $state.go('sensor-list', {
-                    component: vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: null,
-                    filter: vm.searchFilter? vm.searchFilter: null,
-                    hideNominal: vm.hideNominalSensors? 'true': null,
-                    hideWarn: vm.hideWarnSensors? 'true': null},
-                    { notify: false, reload: false });
-                }
+            $state.go('sensor-list', {
+                component: vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: null,
+                filter: vm.searchFilter? vm.searchFilter: null,
+                hideNominal: vm.hideNominalSensors? 'true': null,
+                hideWarn: vm.hideWarnSensors? 'true': null},
+                { notify: false, reload: false });
+            }
         };
 
         //create to function to bind to, but dont do anything with it yet
