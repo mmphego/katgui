@@ -35,14 +35,16 @@
                 StatusService.configHealthSensors[viewName] = {
                     sensors: []
                 };
-            };
+            }
             // Only populate if parent.sensor defined
             if (parent.sensor) {
-                if (parent.component && parent.component != 'all' )
+                if (parent.component && parent.component !== 'all' ) {
                     StatusService.configHealthSensors[viewName].sensors.push(parent.component+'_'+parent.sensor);
-                else
+                }
+                else {
                     StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
-            };
+                }
+            }
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function(child) {
                     vm.populateSensorNames(viewName, child);
@@ -104,32 +106,19 @@
             $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
-        vm.getJsonKey = function(jsonArray, jsonValue) {
-            angular.forEach(jsonArray, function(value, index) {
-            for(var key in value) {
-                if (value.name === jsonValue) {
-                    results = index;
-                }
-            }
-            });
-            return results;
-        };
-
         vm.getDiffSensors = function (array1, array2) {
-            names1 = [];
-            names2 = [];
-            sensors = [];
-
-            array1.forEach(function (sensor) {
-                names1.push(sensor.name)
+            var names1 = array1.map(function(sensor) {
+               return sensor.name;
             });
-            array2.forEach(function (sensor) {
-                names2.push(sensor.name)
+            var names2 = array2.map(function(sensor) {
+               return sensor.name;
             });
-            diffNames = _.difference(names2, names1);
-            for(var i in diffNames) {
-                sensors.push(array2[vm.getJsonKey(array2, diffNames[i])])
-            }
+            var diffNames = _.difference(names2, names1);
+            var sensors = diffNames.map(function (sensorName) {
+                return _.find(array2, function (sensor) {
+                    return sensor.name === sensorName;
+                });
+            });
             return sensors;
         };
 
@@ -144,6 +133,7 @@
                 });
 
                 if(vm.newList.length !== vm.subscribedSensors.length) {
+                    var sensors;
                     if (vm.newList.length > vm.subscribedSensors.length) {
                         sensors = vm.getDiffSensors(vm.subscribedSensors, vm.newList);
                         sensors.forEach(function (sensor) {

@@ -107,7 +107,7 @@ angular.module('katGui.d3')
             var prefix = d.prefix? d.prefix : '';
             //var fullSensorName = prefix + (rootName? rootName + '_' : '') + d.sensor;
             var fullSensorName = d.sensor?
-                prefix + (d.component && d.component != 'all'? d.component + '_' : '') + d.sensor :
+                prefix + (d.component && d.component !== 'all'? d.component + '_' : '') + d.sensor :
                 prefix + rootName;
             if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
                 sensorValue = StatusService.sensorValues[pythonIdentifier];
@@ -116,7 +116,7 @@ angular.module('katGui.d3')
                 sensorValue = StatusService.sensorValues[fullSensorName];
             } else  {
                 sensorValue = d.sensorValue;
-            };
+            }
             if (!d.sensor) {
                 tooltip.html(
                     "<div style='font-size: 14px'>" +

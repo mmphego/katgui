@@ -221,7 +221,7 @@
                         if (key === 'cbf') {
                             ConfigService.CBFCustomViewFilter = result.data[key].filter;
                         }
-                    };
+                    }
                 },
                 function(error) {
                     $log.error(error);
@@ -237,7 +237,7 @@
                     the_keys.sort();
                     for (var key = 0; key < the_keys.length; key++) {
                         $rootScope.configHealthViews.push(the_keys[key]);
-                    };
+                    }
                 },
                 function(error) {
                     $log.error(error);
