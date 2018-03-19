@@ -42,12 +42,12 @@
                     </div>
                     <div layout="row" layout-align="start center" style="margin-top: 8px; width: 268px;">
                         <span style="margin-right: 6px; width: 100px">Focus:</span>
-                        <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="900" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)">
+                        <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="{{vm.focusParams.min}}" max="{{vm.focusParams.max}}" ng-model="vm.focus" ng-change="vm.focusChanged(vm.focus)">
                         </md-slider>
                     </div>
                     <div layout="row" layout-align="start center" style="margin-top: 8px; width: 268px;">
                         <span style="margin-right: 6px; width: 100px">Zoom (in > out):</span>
-                        <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="0" max="905" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)">
+                        <md-slider class="md-primary" style="background: transparent; width: 150px; margin-left: 8px;" min="{{vm.zoomParams.min}}" max="{{vm.zoomParams.max}}" ng-model="vm.zoom" ng-change="vm.zoomChanged(vm.zoom)">
                         </md-slider>
                     </div>
                     <div layout="row" layout-align="start center" style="margin-top: 8px; width: 268px;">

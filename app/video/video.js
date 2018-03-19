@@ -15,6 +15,14 @@
         vm.sensorValues = {};
         vm.stepTimeValue = 1;
         vm.sensorsRegex = '^anc_vds';
+        vm.focusParams = {
+          'min': 0,
+          'max': 900
+        }
+        vm.zoomParams = {
+          'min': 0,
+          'max': 905
+        }
 
         ConfigService.getSystemConfig()
             .then(function(systemConfig) {
