@@ -143,6 +143,7 @@
                         sensors = vm.getDiffSensors(vm.subscribedSensors, vm.newList);
                         sensors.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
+                            vm.subscribedSensors.push(vm.newList[sensor]);
                         });
                     }
                     else {
@@ -152,12 +153,7 @@
                             d3.selectAll('.' + sensor.name).attr('class', 'unknown' + '-child ' + sensor.name);
                         });
                     }
-
                     vm.subscribedSensors = [];
-                    for( var sensor in vm.newList) {
-                        MonitorService.subscribeSensor(vm.newList[sensor]);
-                        vm.subscribedSensors.push(vm.newList[sensor]);
-                    }
                 }
             });
         };
