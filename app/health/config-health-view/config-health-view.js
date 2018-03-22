@@ -184,7 +184,6 @@
                 vm.checkDiffSensors();
             }
             var view = StatusService.configHealthSensors[vm.selectedConfigView];
-            console.log(view);
             if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
                 return;
             }
