@@ -12,6 +12,10 @@
         vm.configItemsSelect = [];
         vm.subscribedSensors = [];
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
+        vm.backOffMiliSec = 5000;
+        vm.oldTime = '';
+        vm.component = '';
+        vm.cbfSensorRegx = 'device_status|cbf([a-z]{3}|[a-z]{0})_[1-4]_i0_xeng_vaccs_synchronised|cbf([a-z]{3}|[a-z]{0})_[1-4]_i0_feng_rxtime_ok';
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -79,11 +83,22 @@
                 NotifyService.showSimpleDialog("Error retrieving config health views from katconf-webserver, is the service running?");
             });
 
+        vm.getFormatedComponent = function() {
+            // Helper function to get the componet name from cbf1 to be cbf_1
+            var componet = '';
+            if (vm.selectedConfigView) {
+                var lastChar = vm.selectedConfigView.charAt(vm.selectedConfigView.length-1);
+                componet = vm.selectedConfigView.replace(/[1-4]/g, "_" + lastChar);
+            }
+            return componet;
+        }
+
         vm.initSensors = function() {
             if (vm.selectedConfigView) {
                 vm.subscribedSensors.forEach(function (sensor) {
                     MonitorService.unsubscribeSensor(sensor);
                 });
+                vm.component = vm.getFormatedComponent();
                 vm.subscribedSensors = [];
                 var view = StatusService.configHealthSensors[vm.selectedConfigView];
                 if (view) {
@@ -126,7 +141,13 @@
             if (!vm.selectedConfigView.startsWith('cbf')) {
                 return;
             }
-            MonitorService.listSensorsHttp('cbf_1,cbf_2,cbf_3,cbf_4', 'device_status', true).then(function (result) {
+            vm.oldTime = (new Date).getTime();
+
+            if (!vm.component) {
+                $log.info("Failed to grep component name");
+                return;
+            }
+            MonitorService.listSensorsHttp(vm.component, vm.cbfSensorRegx, true).then(function (result) {
                 vm.newList = [];
                 result.data.forEach(function (sensor) {
                     vm.newList.push(sensor);
@@ -138,7 +159,6 @@
                         sensors = vm.getDiffSensors(vm.subscribedSensors, vm.newList);
                         sensors.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
-                            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
                         });
                     }
                     else {
@@ -148,9 +168,7 @@
                             d3.selectAll('.' + sensor.name).attr('class', 'unknown' + '-child ' + sensor.name);
                         });
                     }
-                    vm.subscribedSensors.forEach(function (sensor) {
-                        MonitorService.unsubscribeSensor(sensor);
-                    });
+
                     vm.subscribedSensors = [];
                     for( var sensor in vm.newList) {
                         MonitorService.subscribeSensor(vm.newList[sensor]);
@@ -161,8 +179,12 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
-            vm.checkDiffSensors();
+            var backOffTime = vm.oldTime + vm.backOffMiliSec
+            if ((new Date).getTime() > backOffTime) {
+                vm.checkDiffSensors();
+            }
             var view = StatusService.configHealthSensors[vm.selectedConfigView];
+            console.log(view);
             if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
                 return;
             }
