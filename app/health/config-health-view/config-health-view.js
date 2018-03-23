@@ -153,7 +153,6 @@
                             d3.selectAll('.' + sensor.name).attr('class', 'unknown' + '-child ' + sensor.name);
                         });
                     }
-                    vm.subscribedSensors = [];
                 }
             });
         };
