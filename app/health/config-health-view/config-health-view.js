@@ -8,10 +8,13 @@
 
         var vm = this;
         vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
-        vm.configHealhViews = {};
+        vm.configHealthViews = {};
         vm.configItemsSelect = [];
         vm.subscribedSensors = [];
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
+        vm.backOffMilliseconds = 5000;
+        vm.oldTime = '';
+        vm.view = [];
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -33,11 +36,18 @@
         vm.populateSensorNames = function(viewName, parent) {
             if (!StatusService.configHealthSensors[viewName]) {
                 StatusService.configHealthSensors[viewName] = {
-                    component: parent.component,
                     sensors: []
                 };
             }
-            StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
+            // Only populate if parent.sensor defined
+            if (parent.sensor) {
+                if (parent.component && parent.component !== 'all' ) {
+                    StatusService.configHealthSensors[viewName].sensors.push(parent.component+'_'+parent.sensor);
+                }
+                else {
+                    StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
+                }
+            }
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function(child) {
                     vm.populateSensorNames(viewName, child);
@@ -57,13 +67,13 @@
 
         ConfigService.getConfigHealthViews().then(
             function(result) {
-                vm.configHealhViews = result.data;
-                Object.keys(vm.configHealhViews).forEach(function (viewKey) {
-                    vm.configHealhViews[viewKey].forEach(function (view) {
+                vm.configHealthViews = result.data;
+                Object.keys(vm.configHealthViews).forEach(function (viewKey) {
+                    vm.configHealthViews[viewKey].forEach(function (view) {
                         vm.populateSensorNames(viewKey, view);
                     });
                 });
-                $rootScope.configHealthViews = Object.keys(vm.configHealhViews);
+                $rootScope.configHealthViews = Object.keys(vm.configHealthViews);
                 vm.redrawCharts();
                 vm.initSensors();
             },
@@ -78,14 +88,14 @@
                     MonitorService.unsubscribeSensor(sensor);
                 });
                 vm.subscribedSensors = [];
-                var componentSensors = {};
-                var view = StatusService.configHealthSensors[vm.selectedConfigView];
-                if (view) {
-                    MonitorService.listSensorsHttp(view.component, view.sensors.join('|')).then(function (result) {
+                vm.view = StatusService.configHealthSensors[vm.selectedConfigView];
+                if (vm.view) {
+                    MonitorService.listSensorsHttp('all', vm.view.sensors.join('|')).then(function (result) {
                         result.data.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
                             StatusService.sensorValues[sensor.name] = sensor;
+                            $log.info("Register "+sensor.name);
                             d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
                         });
                     }, function(error) {
@@ -99,32 +109,19 @@
             $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
-        vm.getJsonKey = function(jsonArray, jsonValue) {
-            angular.forEach(jsonArray, function(value, index) {
-            for(var key in value) {
-                if (value.name === jsonValue) {
-                    results = index;
-                }
-            }
-            });
-            return results;
-        };
-
         vm.getDiffSensors = function (array1, array2) {
-            names1 = [];
-            names2 = [];
-            sensors = [];
-
-            array1.forEach(function (sensor) {
-                names1.push(sensor.name)
+            var names1 = array1.map(function(sensor) {
+               return sensor.name;
             });
-            array2.forEach(function (sensor) {
-                names2.push(sensor.name)
+            var names2 = array2.map(function(sensor) {
+               return sensor.name;
             });
-            diffNames = _.difference(names2, names1);
-            for(var i in diffNames) {
-                sensors.push(array2[vm.getJsonKey(array2, diffNames[i])])
-            }
+            var diffNames = _.difference(names2, names1);
+            var sensors = diffNames.map(function (sensorName) {
+                return _.find(array2, function (sensor) {
+                    return sensor.name === sensorName;
+                });
+            });
             return sensors;
         };
 
@@ -132,18 +129,21 @@
             if (!vm.selectedConfigView.startsWith('cbf')) {
                 return;
             }
-            MonitorService.listSensorsHttp('cbf_1,cbf_2,cbf_3,cbf_4', 'device_status', true).then(function (result) {
+            vm.oldTime = (new Date).getTime();
+
+            MonitorService.listSensorsHttp('all', vm.view.sensors.join('|'), true).then(function (result) {
                 vm.newList = [];
                 result.data.forEach(function (sensor) {
                     vm.newList.push(sensor);
                 });
 
                 if(vm.newList.length !== vm.subscribedSensors.length) {
+                    var sensors;
                     if (vm.newList.length > vm.subscribedSensors.length) {
                         sensors = vm.getDiffSensors(vm.subscribedSensors, vm.newList);
                         sensors.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
-                            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                            vm.subscribedSensors.push(vm.newList[sensor]);
                         });
                     }
                     else {
@@ -153,20 +153,15 @@
                             d3.selectAll('.' + sensor.name).attr('class', 'unknown' + '-child ' + sensor.name);
                         });
                     }
-                    vm.subscribedSensors.forEach(function (sensor) {
-                        MonitorService.unsubscribeSensor(sensor);
-                    });
-                    vm.subscribedSensors = [];
-                    for( var sensor in vm.newList) {
-                        MonitorService.subscribeSensor(vm.newList[sensor]);
-                        vm.subscribedSensors.push(vm.newList[sensor]);
-                    }
                 }
             });
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
-            vm.checkDiffSensors();
+            var backOffTime = vm.oldTime + vm.backOffMilliseconds
+            if ((new Date).getTime() > backOffTime) {
+                vm.checkDiffSensors();
+            }
             var view = StatusService.configHealthSensors[vm.selectedConfigView];
             if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
                 return;

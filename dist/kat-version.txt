@@ -1,1 +1,1 @@
-1.0.2.dev1682+release.karoocamv19.e1a7c1f.dirty
+v1.0.1.dev1686+hotfix/ofaletse/CB-2765/CB-2769/handle_subscription_better_of_cbf_sensors.gc1fb0f5-dirty
