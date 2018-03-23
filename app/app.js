@@ -10,8 +10,6 @@
             'katGui.config',
             'katGui.d3',
             'katGui.health',
-            'katGui.healthsub',
-            'katGui.healthcbf',
             'katGui.widgets',
             'katGui.landing',
             'katGui.util',
@@ -508,16 +506,6 @@
             url: '/health',
             templateUrl: 'app/health/health.html',
             title: 'TOP Health & State'
-        });
-        $stateProvider.state('healthsub', {
-            url: '/healthsub',
-            templateUrl: 'app/health/healthsub.html',
-            title: 'SUB Health & State'
-        });
-        $stateProvider.state('healthcbf', {
-            url: '/healthcbf',
-            templateUrl: 'app/health/healthcbf.html',
-            title: 'CBF Health & State'
         });
         $stateProvider.state('correlatorHealth', {
             url: '/correlator-health',
