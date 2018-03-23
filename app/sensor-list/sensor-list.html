@@ -1,3 +1,21 @@
+<!-- Nested node template -->
+<script type="text/ng-template" id="nodes_renderer.html">
+  <div ui-tree-handle class="tree-node tree-node-content" layout="row" layout-align="start center">
+    <md-button ng-click="toggle(this)" data-nodrag title="Toggle node" class="inline-action-button no-margin-no-padding md-small">
+        <span class="fa" ng-show="node.nodes.length" ng-class="{'fa-plus-square-o': collapsed, 'fa-minus-square-o': !collapsed}"></span>
+        <span class="fa" ng-show="!node.nodes.length"></span>
+    </md-button>
+    <span title="" ng-class="vm.sensorNameResizeClassName" ng-style="'vm.sensorTreeNameNgStyle({{node.tree_depth}})''">{{node.name}}</span>
+    <span class="resource-sensor-status-item" ng-class="vm.sensorClass('{{node.status}}')">{{node.status}}</span>
+    <span class="resource-sensor-time-item">{{node.received_timestamp}}</span>
+    <span class="resource-sensor-time-item" ng-show="vm.showValueTimestamp">{{node.timestamp}}</span>
+    <span title="{{node.value}}" class="resource-sensor-value-item">{{node.value}}</span>
+  </div>
+  <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
+    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+    </li>
+  </ol>
+</script>
 
 <div layout="column" flex ng-controller="SensorListCtrl as vm" style="min-height: 640px; min-width: 1000px" ng-keypress="setFilterOnEnter($event, searchText)">
     <div flex layout="row" style="margin: 8px">
@@ -87,6 +105,19 @@
                     <span title="{{vm.sensorValues[key].value}}" class="resource-sensor-value-item" ng-click="vm.displaySensorValue($event, vm.sensorValues[key]); $event.stopPropagation();">
                         {{vm.sensorValues[key].value}}
                     </span>
+                </div>
+            </div>
+            <div flex style="padding: 4px 8px; overflow: auto" class="md-whiteframe-z1">
+                <div flex class="overlay-progress-circular" layout="row" layout-align="center center" ng-if="vm.showProgress">
+                    <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                </div>
+                <div>
+                    <div ui-tree id="tree-root" data-drag-enabled="false" data-nodrop-enabled="false" >
+                        <ol ui-tree-nodes="" ng-model="vm.sensorTreeNodes">
+                            <li ng-repeat="node in vm.sensorTreeNodes" ui-tree-node ng-include="'nodes_renderer.html'">
+                            </li>
+                        </ol>
+                    </div>
                 </div>
             </div>
         </div>

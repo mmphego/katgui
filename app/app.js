@@ -4,6 +4,7 @@
     angular.module('katGui', ['ngMaterial', 'ngMessages',
             'ui.bootstrap',
             'ui.router',
+            'ui.tree',
             'ngAnimate', 'katGui.services',
             'katGui.user',
             'katGui.alarms',

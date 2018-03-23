@@ -25,6 +25,94 @@
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
 
+        vm.sensorTreeNodes= [{
+            'name': 'node1',
+            'status': 'nominal',
+            'received_timestamp': '2018-03-13 21:28:30',
+            'timestamp': '2018-03-13 21:20:30',
+            'value': 123,
+            'tree_depth': 0,
+            'nodes': [
+              {
+                'name': 'node1.1',
+                'status': 'warn',
+                'received_timestamp': '2018-03-13 21:28:30',
+                'timestamp': '2018-03-13 21:21:30',
+                'value': 234.4,
+                'tree_depth': 1,
+                'nodes': [
+                  {
+                    'name': 'node1.1.1',
+                    'status': 'nominal',
+                    'received_timestamp': '2018-03-13 21:28:30',
+                    'timestamp': '2018-03-13 21:21:30',
+                    'value': '345',
+                    'tree_depth': 2,
+                    'nodes': []
+                  }
+                ]
+              },
+              {
+                'name': 'node1.2',
+                'status': 'error',
+                'received_timestamp': '2018-03-13 21:28:30',
+                'timestamp': '2018-03-13 21:21:30',
+                'value': '456',
+                'tree_depth': 1,
+                'nodes': []
+              }
+            ]
+          }, {
+            'name': 'node2',
+            'status': 'nominal',
+            'received_timestamp': '2018-03-13 21:28:30',
+            'timestamp': '2018-03-13 21:21:30',
+            'value': '567',
+            'tree_depth': 0,
+            'nodes': [
+              {
+                'name': 'node2.1',
+                'status': 'nominal',
+                'received_timestamp': '2018-03-13 21:28:30',
+                'timestamp': '2018-03-13 21:21:30',
+                'value': '678',
+                'tree_depth': 1,
+                'nodes': []
+              },
+              {
+                'name': 'node2.2',
+                'status': 'nominal',
+                'received_timestamp': '2018-03-13 21:28:30',
+                'timestamp': '2018-03-13 21:21:30',
+                'value': true,
+                'tree_depth': 1,
+                'nodes': []
+              }
+            ]
+          }, {
+            'name': 'node3',
+            'status': 'nominal',
+            'received_timestamp': '2018-03-13 21:28:30',
+            'timestamp': '2018-03-13 21:21:30',
+            'value': '012',
+            'tree_depth': 0,
+            'nodes': [
+              {
+                'name': 'node3.1',
+                'status': 'nominal',
+                'received_timestamp': '2018-03-13 21:28:30',
+                'timestamp': '2018-03-13 21:21:30',
+                'value': '123',
+                'tree_depth': 1,
+                'nodes': []
+              }
+            ]
+          }];
+
+         $scope.toggle = function (scope) {
+            scope.toggle();
+          }
+
         if ($localStorage.currentSensorNameColumnWidth) {
             vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
         } else {
@@ -67,6 +155,11 @@
                 value: 'value'
             }
         ];
+
+        vm.sensorTreeNameNgStyle = function (depth) {
+           return { 'min-width': vm.currentSensorNameColumnWidth - 20*(depth+1) + 'px;',
+                    'max-width': vm.currentSensorNameColumnWidth - 20*(depth+1) + 'px;'};
+        }
 
         if ($localStorage.sensorListShowValueTimestamp) {
             vm.showValueTimestamp = $localStorage.sensorListShowValueTimestamp;
