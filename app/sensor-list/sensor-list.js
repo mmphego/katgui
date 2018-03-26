@@ -1,17 +1,17 @@
-(function () {
+(function() {
 
     angular.module('katGui')
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, $timeout, KatGuiUtil, $interval, $stateParams, MonitorService,
-                            $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
+        $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
 
         var vm = this;
         vm.resources = ConfigService.resources;
         vm.resourcesNames = [];
         vm.sensorsToDisplay = [];
         vm.resourceSensorsBeingDisplayed = '';
-        vm.searchFilter = $stateParams.filter? $stateParams.filter: '';
+        vm.searchFilter = $stateParams.filter ? $stateParams.filter : '';
         vm.sensorsPlotNames = [];
 
         vm.showTips = false;
@@ -19,9 +19,8 @@
         vm.useFixedYAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
-        vm.hideNominalSensors = $stateParams.hideNominal? $stateParams.hideNominal === 'true': false;
-        vm.hideWarnSensors = $stateParams.hideWarn? $stateParams.hideWarn === 'true': false;
-        vm.noSensorUpdates = true;
+        vm.hideNominalSensors = $stateParams.hideNominal ? $stateParams.hideNominal === 'true' : false;
+        vm.hideWarnSensors = $stateParams.hideWarn ? $stateParams.hideWarn === 'true' : false;
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
@@ -42,27 +41,46 @@
             document.getElementsByTagName('head')[0].appendChild(vm.sensorNameResizeStyle);
         }
 
-        vm.sensorsOrderByFields = [
-            {label: 'Name', value: 'shortName'},
-            {label: 'Timestamp', value: 'timestamp'},
-            {label: 'Received Timestamp', value: 'received_timestamp'},
-            {label: 'Status', value: 'status'},
-            {label: 'Value', value: 'value'}
+        $scope.setFilterOnEnter = function(keyEvent, searchText) {
+          if (keyEvent.which === 13)
+            vm.searchFilter=searchText;
+        }
+
+        vm.sensorsOrderByFields = [{
+                label: 'Name',
+                value: 'shortName'
+            },
+            {
+                label: 'Timestamp',
+                value: 'timestamp'
+            },
+            {
+                label: 'Received Timestamp',
+                value: 'received_timestamp'
+            },
+            {
+                label: 'Status',
+                value: 'status'
+            },
+            {
+                label: 'Value',
+                value: 'value'
+            }
         ];
 
         if ($localStorage.sensorListShowValueTimestamp) {
             vm.showValueTimestamp = $localStorage.sensorListShowValueTimestamp;
         }
 
-        vm.saveLocalStorage = function () {
+        vm.saveLocalStorage = function() {
             $localStorage.sensorListShowValueTimestamp = vm.showValueTimestamp;
         };
 
-        vm.initSensors = function () {
+        vm.initSensors = function() {
             if (vm.resourceSensorsBeingDisplayed.length > 0) {
                 MonitorService.listSensorsHttp(vm.resourceSensorsBeingDisplayed, '.*').then(function(result) {
                     vm.showProgress = false;
-                    result.data.forEach(function (sensor) {
+                    result.data.forEach(function(sensor) {
                         vm.subscribedSensors.push(sensor);
                         if (sensor.original_name) {
                             sensor.shortName = sensor.original_name.replace(vm.resourceSensorsBeingDisplayed + '.', '');
@@ -85,8 +103,10 @@
             }
         };
 
-        vm.setSensorsOrderBy = function (column) {
-            var newOrderBy = _.findWhere(vm.sensorsOrderByFields, {value: column});
+        vm.setSensorsOrderBy = function(column) {
+            var newOrderBy = _.findWhere(vm.sensorsOrderByFields, {
+                value: column
+            });
             if ((vm.sensorsOrderBy || {}).value === column) {
                 if (newOrderBy.reverse === undefined) {
                     newOrderBy.reverse = true;
@@ -103,7 +123,7 @@
 
         vm.setSensorsOrderBy('shortName');
 
-        vm.listResourceSensors = function (resourceName) {
+        vm.listResourceSensors = function(resourceName) {
             if (vm.resourceSensorsBeingDisplayed === resourceName) {
                 return;
             }
@@ -121,15 +141,15 @@
             vm.updateURL();
         };
 
-        vm.sensorClass = function (status) {
+        vm.sensorClass = function(status) {
             return status + '-sensor-list-item';
         };
 
-        vm.plotLiveSensorFeed = function (sensorName) {
+        vm.plotLiveSensorFeed = function(sensorName) {
             var sensor = vm.sensorValues[sensorName];
             var remove = sensor.selectedForChart;
             if (remove) {
-                var sensorIndex = _.findIndex(vm.sensorsPlotNames, function (item) {
+                var sensorIndex = _.findIndex(vm.sensorsPlotNames, function(item) {
                     return item.name === sensorName;
                 });
                 if (sensorIndex > -1) {
@@ -138,12 +158,15 @@
                 }
                 sensor.selectedForChart = false;
             } else {
-                vm.sensorsPlotNames.push({name: sensorName, class: sensorName});
+                vm.sensorsPlotNames.push({
+                    name: sensorName,
+                    class: sensorName
+                });
                 sensor.selectedForChart = true;
             }
         };
 
-        vm.chipRemoved = function ($chip) {
+        vm.chipRemoved = function($chip) {
             for (var i = 0; i < vm.sensorsToDisplay.length; i++) {
                 if (vm.sensorsToDisplay[i].python_identifier === $chip.name.split('.')[1]) {
                     vm.sensorsToDisplay[i].selectedForChart = false;
@@ -153,7 +176,7 @@
             vm.removeSensorLine($chip.name);
         };
 
-        vm.chipAppended = function (chip) {
+        vm.chipAppended = function(chip) {
             if (chip.name) {
                 var sensorPlotNameFound = false;
                 for (var i = 0; i < vm.sensorsPlotNames.length; i++) {
@@ -167,24 +190,24 @@
                     vm.plotLiveSensorFeed(chip, false);
                 }
             }
-            vm.sensorsPlotNames = vm.sensorsPlotNames.filter(function (item) {
+            vm.sensorsPlotNames = vm.sensorsPlotNames.filter(function(item) {
                 return item.name && item.name.length > 0;
             });
         };
 
-        vm.chipsQuerySearch = function (query) {
+        vm.chipsQuerySearch = function(query) {
             var results = query ? vm.sensorsToDisplay.filter(vm.createFilterFor(query)) : [];
             return results;
         };
 
-        vm.createFilterFor = function (query) {
+        vm.createFilterFor = function(query) {
             return function filterFn(item) {
                 return (item.name ? item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 : item.indexOf(query) > -1);
             };
         };
 
-        vm.clearChartData = function () {
-            vm.sensorsToDisplay.forEach(function (sensor) {
+        vm.clearChartData = function() {
+            vm.sensorsToDisplay.forEach(function(sensor) {
                 sensor.selectedForChart = false;
             });
 
@@ -192,17 +215,29 @@
             vm.clearChart();
         };
 
-        vm.maximiseSensorGraph = function () {
+        vm.maximiseSensorGraph = function() {
             var element = angular.element(document.querySelector('.sensor-list-chart-container'));
-            element.css({top: '60px', left: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 68px)'});
+            element.css({
+                top: '60px',
+                left: '8px',
+                width: 'calc(100% - 16px)',
+                height: 'calc(100% - 68px)'
+            });
         };
 
-        vm.restoreSensorGraphSize = function () {
+        vm.restoreSensorGraphSize = function() {
             var element = angular.element(document.querySelector('.sensor-list-chart-container'));
-            element.css({top: 'auto', left: 'auto', right: '20px', bottom: '20px', width: '500px', height: '500px'});
+            element.css({
+                top: 'auto',
+                left: 'auto',
+                right: '20px',
+                bottom: '20px',
+                width: '500px',
+                height: '500px'
+            });
         };
 
-        vm.displaySensorValue = function ($event, sensor) {
+        vm.displaySensorValue = function($event, sensor) {
             NotifyService.showHTMLPreSensorDialog(sensor.name + ' value at ' + sensor.received_timestamp, sensor, $event);
         };
 
@@ -210,7 +245,7 @@
             return Object.keys(obj);
         };
 
-        vm.resetSensorNameColumnWidth  = function (newSize) {
+        vm.resetSensorNameColumnWidth = function(newSize) {
             vm.setCurrentSensorNameColumnWidth(newSize);
         };
 
@@ -228,7 +263,7 @@
             vm.sensorNameResizeStyle.innerHTML = '.' + vm.sensorNameResizeClassName + ' {min-width: ' + vm.currentSensorNameColumnWidth + 'px }';
         };
 
-        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
             if (!vm.resourceSensorsBeingDisplayed) {
                 return;
             }
@@ -252,7 +287,7 @@
 
             if (vm.sensorsPlotNames.length > 0 &&
                 _.findIndex(vm.sensorsPlotNames,
-                    function (item) {
+                    function(item) {
                         return item.name === sensor.name;
                     }) > -1) {
                 vm.redrawChart([{
@@ -264,7 +299,7 @@
             }
         });
 
-        vm.showOptionsChanged = function () {
+        vm.showOptionsChanged = function() {
             if (!$scope.$$phase) {
                 $scope.$apply();
             }
@@ -275,39 +310,36 @@
             });
         };
 
-        $scope.filterByStatus = function (sensor) {
-            show = !vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[sensor].status !== 'nominal';
+        $scope.filterByStatus = function(sensor) {
+            var show = !vm.hideNominalSensors || vm.hideNominalSensors && vm.sensorValues[sensor].status !== 'nominal';
             show = show && (!vm.hideWarnSensors || vm.hideWarnSensors && vm.sensorValues[sensor].status !== 'warn');
-            return show
+            return show;
         };
 
-        vm.updateURL = function () {
-            if (!vm.noSensorUpdates) {
-                $state.go('sensor-list', {
-                    component: vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: null,
-                    filter: vm.searchFilter? vm.searchFilter: null,
-                    hideNominal: vm.hideNominalSensors? 'true': null,
-                    hideWarn: vm.hideWarnSensors? 'true': null},
-                    { notify: false, reload: false });
-                }
-        };
-
-        vm.toggleUpdates = function () {
-            vm.noSensorUpdates = !vm.noSensorUpdates;
-            if (!vm.noSensorUpdates) {
-                vm.updateURL();
-            }
+        vm.updateURL = function() {
+            $state.go('sensor-list', {
+                component: vm.resourceSensorsBeingDisplayed ? vm.resourceSensorsBeingDisplayed : null,
+                filter: vm.searchFilter ? vm.searchFilter : null,
+                hideNominal: vm.hideNominalSensors ? 'true' : null,
+                hideWarn: vm.hideWarnSensors ? 'true' : null
+            }, {
+                notify: false,
+                reload: false
+            });
         };
 
         //create to function to bind to, but dont do anything with it yet
-        vm.downloadAsCSV = function () {};
+        vm.downloadAsCSV = function() {};
 
         if (vm.resourcesNames.length === 0) {
             vm.nodes = ConfigService.resourceGroups;
             ConfigService.listResourcesFromConfig()
-                .then(function () {
+                .then(function() {
                     for (var key in ConfigService.resources) {
-                        vm.resourcesNames.push({name: key, node: ConfigService.resources[key].node});
+                        vm.resourcesNames.push({
+                            name: key,
+                            node: ConfigService.resources[key].node
+                        });
                     }
                     if ($stateParams.component) {
                         vm.listResourceSensors($stateParams.component);
@@ -317,14 +349,14 @@
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
-        vm.unsubscribeResource = function (resourceName) {
+        vm.unsubscribeResource = function(resourceName) {
             if (resourceName) {
                 vm.subscribedSensors = [];
                 MonitorService.unsubscribeResource(resourceName);
             }
         };
 
-        $scope.$on('$destroy', function () {
+        $scope.$on('$destroy', function() {
             vm.unsubscribeResource(vm.resourceSensorsBeingDisplayed);
             unbindUpdate();
             unbindReconnected();

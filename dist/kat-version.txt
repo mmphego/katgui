@@ -1,1 +1,1 @@
-v1.0.1.dev1686+hotfix/ofaletse/CB-2765/CB-2769/handle_subscription_better_of_cbf_sensors.gc1fb0f5-dirty
+1.0.2.dev1689+user.lize.camv19.sensor.list.updates.61de82d.dirty
