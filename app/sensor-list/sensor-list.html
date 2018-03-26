@@ -3,7 +3,7 @@
     <div flex layout="row" style="margin: 8px">
         <div layout="column" style="width: 220px">
             <div layout="column" ng-repeat="node in vm.nodes | orderBy:node:true track by $index" class="md-whiteframe-z1"
-                style="margin-bottom: 8px;" ng-class="{'at-least-100-high': node === 'Proxies'}">
+                style="margin-bottom: 8px;" ng-class="{'at-least-400-high': node === 'Proxies'}">
                 <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="center center">
                     <span>{{node}}</span>
                 </md-toolbar>
@@ -38,12 +38,8 @@
                         Hide Nominal Sensors
                     </md-checkbox>
                     <input type="text" class="fade-in search-input-box" style="margin: 0 4px" name="search" placeholder="Search...(press enter)"
-                     ng-model="searchText" ng-enter="setFilterOnEnter($event, searchText)"
+                      ng-model="searchText" ng-enter="setFilterOnEnter($event, searchText)"
                     />
-                    <md-button class="md-primary md-raised" md-theme="{{themePrimaryButtons}}" ng-click="vm.searchFilter=searchText"
-                        style="max-width: 28px; min-width: 28px; margin: 0 4px" type="submit" ng-show="false">
-                        <span class="fa fa-caret-right"></span>
-                    </md-button>
                 </div>
 
                 <div flex class="unselectable list-subheader-title" layout="row" layout-align="start center" style="padding: 0px 8px; max-height: 17px; overflow: hidden">

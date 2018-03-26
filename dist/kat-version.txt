@@ -1,1 +1,1 @@
-1.0.2.dev1688+release.karoocamv19.3760d06.dirty
+1.0.2.dev1689+user.lize.camv19.sensor.list.updates.61de82d.dirty
