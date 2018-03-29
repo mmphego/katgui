@@ -10,11 +10,6 @@
         api.statusData = {};
         api.receptors = [];
         api.correlators = [];
-        /*api.StatusTrees = {};
-        api.StatusTrees["top"] = {};
-        api.StatusTrees["sub"] = {};
-        api.StatusTrees["cbf"] = {};
-        api.topStatusTrees = api.StatusTrees["top"];*/
         api.topStatusTrees = []; 
         api.subStatusTrees = []; 
         api.cbfStatusTrees = []; 

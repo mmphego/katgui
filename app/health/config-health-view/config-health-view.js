@@ -12,6 +12,9 @@
         vm.configItemsSelect = [];
         vm.subscribedSensors = [];
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
+        vm.backOffMilliseconds = 5000;
+        vm.oldTime = '';
+        vm.view = [];
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -85,9 +88,9 @@
                     MonitorService.unsubscribeSensor(sensor);
                 });
                 vm.subscribedSensors = [];
-                var view = StatusService.configHealthSensors[vm.selectedConfigView];
-                if (view) {
-                    MonitorService.listSensorsHttp('all', view.sensors.join('|')).then(function (result) {
+                vm.view = StatusService.configHealthSensors[vm.selectedConfigView];
+                if (vm.view) {
+                    MonitorService.listSensorsHttp('all', vm.view.sensors.join('|')).then(function (result) {
                         result.data.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
@@ -126,7 +129,9 @@
             if (!vm.selectedConfigView.startsWith('cbf')) {
                 return;
             }
-            MonitorService.listSensorsHttp('cbf_1,cbf_2,cbf_3,cbf_4', 'device_status', true).then(function (result) {
+            vm.oldTime = (new Date).getTime();
+
+            MonitorService.listSensorsHttp('all', vm.view.sensors.join('|'), true).then(function (result) {
                 vm.newList = [];
                 result.data.forEach(function (sensor) {
                     vm.newList.push(sensor);
@@ -138,7 +143,7 @@
                         sensors = vm.getDiffSensors(vm.subscribedSensors, vm.newList);
                         sensors.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
-                            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+                            vm.subscribedSensors.push(vm.newList[sensor]);
                         });
                     }
                     else {
@@ -148,20 +153,15 @@
                             d3.selectAll('.' + sensor.name).attr('class', 'unknown' + '-child ' + sensor.name);
                         });
                     }
-                    vm.subscribedSensors.forEach(function (sensor) {
-                        MonitorService.unsubscribeSensor(sensor);
-                    });
-                    vm.subscribedSensors = [];
-                    for( var sensor in vm.newList) {
-                        MonitorService.subscribeSensor(vm.newList[sensor]);
-                        vm.subscribedSensors.push(vm.newList[sensor]);
-                    }
                 }
             });
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
-            vm.checkDiffSensors();
+            var backOffTime = vm.oldTime + vm.backOffMilliseconds
+            if ((new Date).getTime() > backOffTime) {
+                vm.checkDiffSensors();
+            }
             var view = StatusService.configHealthSensors[vm.selectedConfigView];
             if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
                 return;

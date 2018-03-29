@@ -41,6 +41,11 @@
             document.getElementsByTagName('head')[0].appendChild(vm.sensorNameResizeStyle);
         }
 
+        $scope.setFilterOnEnter = function(keyEvent, searchText) {
+          if (keyEvent.which === 13)
+            vm.searchFilter=searchText;
+        }
+
         vm.sensorsOrderByFields = [{
                 label: 'Name',
                 value: 'shortName'
