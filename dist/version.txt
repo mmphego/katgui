@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-{"version": "1.0.1", "buildDate": "1521428337482"}
-=======
-{"version": "1.0.1", "buildDate": "1522064412638"}
->>>>>>> master
+{"version": "1.0.1", "buildDate": "1522342199482"}
