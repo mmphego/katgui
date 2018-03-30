@@ -15,6 +15,19 @@
         vm.sensorValues = {};
         vm.stepTimeValue = 1;
         vm.sensorsRegex = '^anc_vds';
+        /*
+            Note the following constants(vm.focusParams and vm.zoomParams) map the
+            with the params(min, max) for sensors vds-focus and vds-zoom respectively
+            vds translator handle all the scaling.
+        */
+        vm.focusParams = {
+          'min': 0,
+          'max': 900
+        }
+        vm.zoomParams = {
+          'min': 0,
+          'max': 905
+        }
 
         ConfigService.getSystemConfig()
             .then(function(systemConfig) {
