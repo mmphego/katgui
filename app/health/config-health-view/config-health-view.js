@@ -15,6 +15,7 @@
         vm.backOffMilliseconds = 5000;
         vm.oldTime = '';
         vm.view = [];
+        vm.newList = [];
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -130,27 +131,20 @@
                 return;
             }
             vm.oldTime = (new Date).getTime();
-
             MonitorService.listSensorsHttp('all', vm.view.sensors.join('|'), true).then(function (result) {
-                vm.newList = [];
-                result.data.forEach(function (sensor) {
-                    vm.newList.push(sensor);
-                });
-
-                if(vm.newList.length !== vm.subscribedSensors.length) {
+                if (vm.newList.length == 0 || vm.newList.length < vm.subscribedSensors.length) {
+                    vm.newList = [];
+                    result.data.forEach(function (sensor) {
+                        vm.newList.push(sensor);
+                    });
+                }
+                if (vm.newList.length !== vm.subscribedSensors.length) {
                     var sensors;
                     if (vm.newList.length > vm.subscribedSensors.length) {
                         sensors = vm.getDiffSensors(vm.subscribedSensors, vm.newList);
                         sensors.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(vm.newList[sensor]);
-                        });
-                    }
-                    else {
-                        sensors = vm.getDiffSensors(vm.newList, vm.subscribedSensors);
-                        sensors.forEach(function (sensor) {
-                            MonitorService.unsubscribeSensor(sensor);
-                            d3.selectAll('.' + sensor.name).attr('class', 'unknown' + '-child ' + sensor.name);
                         });
                     }
                 }
