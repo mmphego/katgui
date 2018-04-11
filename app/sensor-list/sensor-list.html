@@ -1,9 +1,9 @@
 <!-- Nested node template -->
 <script type="text/ng-template" id="nodes_renderer.html">
   <div ui-tree-handle class="tree-node tree-node-content" layout="row" layout-align="start center">
-    <md-button ng-click="toggle(this)" data-nodrag title="Toggle node" class="inline-action-button no-margin-no-padding md-small">
-        <span class="fa" ng-show="node.nodes.length" ng-class="{'fa-plus-square-o': collapsed, 'fa-minus-square-o': !collapsed}"></span>
-        <span class="fa" ng-show="!node.nodes.length"></span>
+    <md-button ng-click="toggleTreeNode(this)" data-nodrag title="Toggle node" class="inline-action-button no-margin-no-padding md-small">
+        <span class="fa" ng-show="!node.leaf" ng-class="{'fa-plus-square-o': collapsed, 'fa-minus-square-o': !collapsed}"></span>
+        <span class="fa" ng-show="node.leaf"></span>
     </md-button>
     <span title="" ng-class="vm.sensorNameResizeClassName" ng-style="'vm.sensorTreeNameNgStyle({{node.tree_depth}})''">{{node.name}}</span>
     <span class="resource-sensor-status-item" ng-class="vm.sensorClass('{{node.status}}')">{{node.status}}</span>
@@ -12,7 +12,8 @@
     <span title="{{node.value}}" class="resource-sensor-value-item">{{node.value}}</span>
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+    <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'"
+        data-collapsed="!item.expanded">
     </li>
   </ol>
 </script>
@@ -42,6 +43,14 @@
                         <label>{{vm.resourceSensorsBeingDisplayed? vm.resourceSensorsBeingDisplayed: ''}}</label>
                         <i style="font-size: 12px">{{vm.resourceSensorsBeingDisplayed? ' (' + filteredSensors.length + ')': ''}}</i>
                     </div>
+                    <md-button class="md-primary" ng-click="collapseAllTreeNodes()"
+                        md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0">
+                        Collapse
+                    </md-button>
+                    <md-button class="md-primary" ng-click="expandAllTreeNodes()"
+                        md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0">
+                        Expand
+                    </md-button>
                     <md-checkbox class="md-primary" ng-model="vm.showValueTimestamp" ng-click="$event.stopPropagation()"
                         md-theme="{{themePrimaryButtons}}" style="font-size: 13px; margin: 0 4px; padding: 0"
                         ng-change="vm.updateURL()">
@@ -95,7 +104,7 @@
                 <div flex class="overlay-progress-circular" layout="row" layout-align="center center" ng-if="vm.showProgress">
                     <md-progress-circular md-mode="indeterminate"></md-progress-circular>
                 </div>
-                <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) | filter:filterByStatus track by key"
+                <div ng-repeat="key in vm.filteredSensors()"
                     ng-class="{'selected-for-chart-row': vm.sensorValues[key].selectedForChart}" layout="row"
                     layout-align="start center" ng-click="vm.plotLiveSensorFeed(key)">
                     <span title="" class="resource-sensor-name" ng-class="vm.sensorNameResizeClassName">{{vm.sensorValues[key].shortName}}</span>
@@ -113,8 +122,9 @@
                 </div>
                 <div>
                     <div ui-tree id="tree-root" data-drag-enabled="false" data-nodrop-enabled="false" >
-                        <ol ui-tree-nodes="" ng-model="vm.sensorTreeNodes">
-                            <li ng-repeat="node in vm.sensorTreeNodes" ui-tree-node ng-include="'nodes_renderer.html'">
+                        <ol ui-tree-nodes="" ng-model="vm.displayableSensorTreeNodes">
+                            <li ng-repeat="node in vm.displayableSensorTreeNodes" ui-tree-node
+                                ng-include="'nodes_renderer.html'" data-collapsed="!item.expanded">
                             </li>
                         </ol>
                     </div>

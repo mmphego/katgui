@@ -4,7 +4,8 @@
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, $timeout, KatGuiUtil, $interval, $stateParams, MonitorService,
-        $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
+                            $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state,
+                            regexSearchAndOrderFilter) {
 
         var vm = this;
         vm.resources = ConfigService.resources;
@@ -13,6 +14,9 @@
         vm.resourceSensorsBeingDisplayed = '';
         vm.searchFilter = $stateParams.filter ? $stateParams.filter : '';
         vm.sensorsPlotNames = [];
+        vm.allSensorTreeNodes = [];
+        vm.displayableSensorTreeNodes = [];
+        vm.lastTreeSensorNames = [];
 
         vm.showTips = false;
         vm.showContextZoom = false;
@@ -24,94 +28,6 @@
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
-
-        vm.sensorTreeNodes= [{
-            'name': 'node1',
-            'status': 'nominal',
-            'received_timestamp': '2018-03-13 21:28:30',
-            'timestamp': '2018-03-13 21:20:30',
-            'value': 123,
-            'tree_depth': 0,
-            'nodes': [
-              {
-                'name': 'node1.1',
-                'status': 'warn',
-                'received_timestamp': '2018-03-13 21:28:30',
-                'timestamp': '2018-03-13 21:21:30',
-                'value': 234.4,
-                'tree_depth': 1,
-                'nodes': [
-                  {
-                    'name': 'node1.1.1',
-                    'status': 'nominal',
-                    'received_timestamp': '2018-03-13 21:28:30',
-                    'timestamp': '2018-03-13 21:21:30',
-                    'value': '345',
-                    'tree_depth': 2,
-                    'nodes': []
-                  }
-                ]
-              },
-              {
-                'name': 'node1.2',
-                'status': 'error',
-                'received_timestamp': '2018-03-13 21:28:30',
-                'timestamp': '2018-03-13 21:21:30',
-                'value': '456',
-                'tree_depth': 1,
-                'nodes': []
-              }
-            ]
-          }, {
-            'name': 'node2',
-            'status': 'nominal',
-            'received_timestamp': '2018-03-13 21:28:30',
-            'timestamp': '2018-03-13 21:21:30',
-            'value': '567',
-            'tree_depth': 0,
-            'nodes': [
-              {
-                'name': 'node2.1',
-                'status': 'nominal',
-                'received_timestamp': '2018-03-13 21:28:30',
-                'timestamp': '2018-03-13 21:21:30',
-                'value': '678',
-                'tree_depth': 1,
-                'nodes': []
-              },
-              {
-                'name': 'node2.2',
-                'status': 'nominal',
-                'received_timestamp': '2018-03-13 21:28:30',
-                'timestamp': '2018-03-13 21:21:30',
-                'value': true,
-                'tree_depth': 1,
-                'nodes': []
-              }
-            ]
-          }, {
-            'name': 'node3',
-            'status': 'nominal',
-            'received_timestamp': '2018-03-13 21:28:30',
-            'timestamp': '2018-03-13 21:21:30',
-            'value': '012',
-            'tree_depth': 0,
-            'nodes': [
-              {
-                'name': 'node3.1',
-                'status': 'nominal',
-                'received_timestamp': '2018-03-13 21:28:30',
-                'timestamp': '2018-03-13 21:21:30',
-                'value': '123',
-                'tree_depth': 1,
-                'nodes': []
-              }
-            ]
-          }];
-
-         $scope.toggle = function (scope) {
-            scope.toggle();
-          }
 
         if ($localStorage.currentSensorNameColumnWidth) {
             vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
@@ -232,6 +148,137 @@
             vm.resourceSensorsBeingDisplayed = resourceName;
             vm.initSensors();
             vm.updateURL();
+        };
+
+        vm.filteredSensors = function () {
+            var regexFilteredSensorNames = regexSearchAndOrderFilter(
+                vm.keys(vm.sensorValues),
+                vm.sensorsOrderByFields,
+                vm.searchFilter,
+                vm.sensorsOrderBy.value,
+                vm.sensorsOrderBy.reverse,
+                vm.sensorValues);
+            filteredSensorNames = [];
+            for (var i = 0; i < regexFilteredSensorNames.length; i++) {
+                sensorName = regexFilteredSensorNames[i];
+                if ($scope.filterByNotNominal(sensorName)) {
+                    filteredSensorNames.push(sensorName)
+                }
+            }
+            vm.updateSensorTree(filteredSensorNames)
+            return filteredSensorNames;
+        };
+
+        vm.updateSensorTree = function (sensorNames) {
+            //  Build up a tree structure from the sensor names, using the
+            //  dots to separate each level of the tree.
+            //  E.g. For sensors 'a', 'b.a', 'b.b', 'c.a', 'c.b.a'
+            //
+            //    |- a
+            //    |- b
+            //    |  |- b.a
+            //    |  |- b.b
+            //    |
+            //    |- c
+            //       |- c.a
+            //       |- c.b
+            //          |- c.b.a
+            //
+            if (!_.isEqual(sensorNames, vm.lastTreeSensorNames)) {
+                vm.lastTreeSensorNames = sensorNames;
+                var treeNodes = [];
+                for (var i = 0; i < sensorNames.length; i++) {
+                    var sensorName = sensorNames[i];
+                    var sensor = vm.sensorValues[sensorName];
+                    var fields = sensor.original_name.split('.');
+                    var name = '';
+                    var listNodes = treeNodes;
+                    // first field is component name which we don't want in the tree,
+                    // so drop it.
+                    fields = fields.slice(1);
+                    for (var depth = 0; depth < fields.length; depth++) {
+                        //name += fields[depth];
+                        name = fields[depth];
+                        var listNode = {
+                            'name': name,
+                            'tree_depth': depth,
+                            //'collapsed': true,
+                            'leaf': false,
+                            'nodes': [],
+                        };
+                        // add the sensor details, if this is a leaf node
+                        if (depth == fields.length - 1) {
+                            listNode['value'] = sensor.value;
+                            listNode['status'] = sensor.status;
+                            listNode['timestamp'] = sensor.timestamp;
+                            listNode['received_timestamp'] = sensor.received_timestamp;
+                            listNode['leaf'] = true;
+                        }
+                        // check if the node exists already
+                        var existingIndex = -1;
+                        for (var k = 0; k < listNodes.length; k++) {
+                            if (listNodes[k].name == name) {
+                                existingIndex = k;
+                                break;
+                            }
+                        }
+                        if (existingIndex >= 0) {
+                            listNodes = listNodes[existingIndex]['nodes'];
+                        }
+                        else {
+                            listNodes.push(listNode);
+                            listNodes = listNode['nodes'];
+                        }
+                        // go one level deeper
+                        //name += '.';
+                    }
+                }
+                vm.allSensorTreeNodes = treeNodes;
+                // Lazy loading:  initial display is collapsed, so make sure child nodes
+                // are not loaded.  This lets the display show quicker.
+                vm.displayableSensorTreeNodes = vm.createDisplayableSensorTreeBranch(
+                    treeNodes);
+            }
+        };
+
+        vm.createDisplayableSensorTreeBranch = function(fullNodes) {
+            //  Return shallow nodes (i.e. copy of fullNode, but no visible children).
+            //  This allows the ui tree to expand the branch one level only.
+            var shallowTreeNodes = [];
+            for (var i = 0; i < fullNodes.length; i++) {
+                var fullNode = fullNodes[i];
+                var shallowNode = {};
+                for (var key in fullNode) {
+                    shallowNode[key] = fullNode[key];
+                }
+                shallowNode['nodes'] = []  // ignore all children for ui tree
+                shallowNode['fullNodes'] = fullNode['nodes']  // keep real children
+                shallowTreeNodes.push(shallowNode);
+            }
+            return shallowTreeNodes;
+        };
+
+        $scope.toggleTreeNode = function (scope) {
+            var node = scope.$nodeScope.$modelValue;
+            if (!node.nodes.length) {
+                // lazy loading:  next level must now be added to displayable nodes
+                var fullNodes = node['fullNodes'];
+                var displayableNodes = vm.createDisplayableSensorTreeBranch(fullNodes);
+                node.nodes = displayableNodes
+            }
+            if (scope.$nodeScope.$modelValue.nodes.length > 0) {
+                scope.toggle();
+            }
+        }
+
+        $scope.collapseAllTreeNodes = function () {
+            $scope.$broadcast('angular-ui-tree:collapse-all');
+        };
+
+        $scope.expandAllTreeNodes = function () {
+            vm.displayableSensorTreeNodes = vm.allSensorTreeNodes;
+            // immediately broadcasting fails, so using a timeout here
+            $timeout(function() {$scope.$broadcast('angular-ui-tree:expand-all');}, 0);
         };
 
         vm.sensorClass = function(status) {
