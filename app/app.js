@@ -405,7 +405,7 @@
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
                     "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
-                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "time:(from:now-10m,mode:relative,to:now))&",
                     "_a=(columns:!(programname,severity,message),",
                     "filters:!(('$state':(store:appState),",
                     "meta:(alias:!n,disabled:!f,index:'",
@@ -422,7 +422,7 @@
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
                     "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
-                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "time:(from:now-10m,mode:relative,to:now))&",
                     "_a=(columns:!(programname,severity,message),index:'",
                     $rootScope.systemConfig.system.sitename,
                     "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
