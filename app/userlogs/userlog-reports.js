@@ -16,8 +16,7 @@
             vm.tags = UserLogService.tags;
             vm.logFiles = ['activity', 'alarm'];
             vm.nodeNames = [];
-            vm.processSensors = ['running', 'args', 'pid', 'return_code'];
-            vm.sensorsRegex = vm.processSensors.join('|');
+            vm.sensorsRegex = 'running';
             vm.selectedLogFiles = [];
             vm.filterTags = [];
             vm.reportUserlogs = [];
@@ -50,7 +49,6 @@
                         });
                         MonitorService.listSensorsHttp(nodeNames.join(','), vm.sensorsRegex).then(function(result) {
                             result.data.forEach(function(sensor) {
-                                MonitorService.subscribeSensor(sensor);
                                 if (sensor.name.endsWith('running') && sensor.original_name) {
                                     // e.g. nm_monctl.anc.running
                                     var splitName = sensor.original_name.split('.');
