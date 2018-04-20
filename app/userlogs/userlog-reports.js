@@ -3,8 +3,10 @@
     angular.module('katGui')
         .controller('UserlogReportsCtrl', UserlogReportsCtrl);
 
-        function UserlogReportsCtrl($rootScope, $scope, $localStorage, $filter, UserLogService,
-                                    $log, $stateParams, NotifyService, $timeout, $state, MOMENT_DATETIME_FORMAT) {
+        function UserlogReportsCtrl($rootScope, $scope, $localStorage, $filter,
+                                    UserLogService, ConfigService, MonitorService,
+                                    $log, $stateParams, NotifyService, $timeout,
+                                    $state, MOMENT_DATETIME_FORMAT) {
 
             var vm = this;
             vm.startTime = new Date();
@@ -12,7 +14,8 @@
             vm.startDatetimeReadable = moment(vm.startTime.getTime()).format('YYYY-MM-DD 00:00:00');
             vm.endDatetimeReadable = moment(vm.endTime.getTime()).format('YYYY-MM-DD 23:59:59');
             vm.tags = UserLogService.tags;
-            vm.logFiles = UserLogService.logFiles;
+            vm.logFiles = ['activity', 'alarm'];
+            vm.sensorsRegex = 'running';
             vm.selectedLogFiles = [];
             vm.filterTags = [];
             vm.reportUserlogs = [];
@@ -36,6 +39,29 @@
             vm.onEndTimeSet = function () {
                 vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(MOMENT_DATETIME_FORMAT);
             };
+
+            vm.getLogFiles = function () {
+                ConfigService.getSystemConfig()
+                    .then(function() {
+                        var nodeNames = Object.keys(ConfigService.systemConfig.nodes).map(function(node) {
+                            return 'nm_' + node;
+                        });
+                        MonitorService.listSensorsHttp(nodeNames.join(','), vm.sensorsRegex).then(function(result) {
+                            result.data.forEach(function(sensor) {
+                                if (sensor.name.endsWith('running') && sensor.original_name) {
+                                    // e.g. nm_monctl.anc.running
+                                    var splitName = sensor.original_name.split('.');
+                                    var processName = splitName[1];
+                                    vm.logFiles.push('kat.'+processName);
+                                }
+                            });
+                        }, function(error) {
+                            $log.error(error);
+                        });
+                    });
+            };
+
+            vm.getLogFiles();
 
             vm.querySearch = function (query) {
                 var results = query ? vm.tags.filter(vm.createFilterFor(query)) : [];
