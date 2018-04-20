@@ -15,7 +15,6 @@
             vm.endDatetimeReadable = moment(vm.endTime.getTime()).format('YYYY-MM-DD 23:59:59');
             vm.tags = UserLogService.tags;
             vm.logFiles = ['activity', 'alarm'];
-            vm.nodeNames = [];
             vm.sensorsRegex = 'running';
             vm.selectedLogFiles = [];
             vm.filterTags = [];
