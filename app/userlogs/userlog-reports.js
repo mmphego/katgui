@@ -123,22 +123,22 @@
 
                 if (vm.selectedLogFiles.length > 0) {
 
-                    UserLogService.queryLogFiles(vm.selectedLogFiles, vm.startDatetimeReadable, vm.endDatetimeReadable).then(
+                    UserLogService.queryLogFiles(
+                        vm.selectedLogFiles, vm.startDatetimeReadable, vm.endDatetimeReadable).then(
                         function (result) {
-                            Object.keys(result.data).forEach(function (key) {
+                            var logLines = [];
+                            for (var key in result.data){
                                 columns = [{title: key, key: "line"}];
-                                var logLines = [];
                                 result.data[key].forEach(function (line) {
-                                    if (line.length > 0) {
-                                        logLines.push({line: line});
-                                    }
+                                    logLines.push({line: line});
                                 });
                                 pdf.autoTable(columns, logLines, {
                                     startY: pdf.autoTableEndPosY() + 50,
                                     theme: 'striped',
                                     margin: {top: 8, bottom: 8},
                                     overflow: 'linebreak'});
-                            });
+                                    logLines = [];
+                            }
                             pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
                             vm.exportingPdf = false;
                         }, function (error) {

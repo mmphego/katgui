@@ -57,6 +57,21 @@
             return deferred.promise;
         };
 
+
+        api.queryLogFiles = function (logFiles, startTime, endTime) {
+            var defer = $q.defer();
+            $http(createRequest(
+                'get', urlBase() + '/logs/' + logFiles + '/' + startTime + '/' + endTime)).then(
+                function (result) {
+                    defer.resolve(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Could not retrieve logs", error);
+                    defer.reject(error);
+                });
+            return defer.promise;
+        };
+
+
         api.listTags = function () {
             var deferred = $q.defer();
             $http(createRequest('get', urlBase() + '/tags')).then(
@@ -147,22 +162,7 @@
             return deferred.promise;
         };
 
-        api.queryLogFiles = function (logFiles, start_time, end_time) {
-            var defer = $q.defer();
-            var searchQuery = {
-                file_names: logFiles,
-                start_time: start_time,
-                end_time: end_time
-            };
-            $http(createRequest('post', urlBase() + '/search-logs', searchQuery)).then(
-                function (result) {
-                    defer.resolve(result);
-                }, function (error) {
-                    NotifyService.showHttpErrorDialog("Error searching log files", error);
-                    defer.reject(error);
-                });
-            return defer.promise;
-        };
+
 
         api.uploadFileToUrl = function (file, userlog_id) {
             var defer = $q.defer();
