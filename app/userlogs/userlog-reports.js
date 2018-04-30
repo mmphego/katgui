@@ -137,7 +137,7 @@
                                     margin: {top: 8, bottom: 8},
                                     overflow: 'linebreak'
                                 });
-                                    logLines = [];
+                                logLines = [];
                             }
                             pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
                             vm.exportingPdf = false;
