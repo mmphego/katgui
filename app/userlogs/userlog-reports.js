@@ -14,9 +14,9 @@
             vm.startDatetimeReadable = moment(vm.startTime.getTime()).format('YYYY-MM-DD 00:00:00');
             vm.endDatetimeReadable = moment(vm.endTime.getTime()).format('YYYY-MM-DD 23:59:59');
             vm.tags = UserLogService.tags;
-            vm.logFiles = ['activity', 'alarm'];
+            vm.programNames = ['activity', 'alarm'];
             vm.sensorsRegex = 'running';
-            vm.selectedLogFiles = [];
+            vm.selectedProgramNames = [];
             vm.filterTags = [];
             vm.reportUserlogs = [];
             vm.andTagFiltering = false;
@@ -40,7 +40,7 @@
                 vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(MOMENT_DATETIME_FORMAT);
             };
 
-            vm.getLogFiles = function () {
+            vm.getProgramNames = function () {
                 ConfigService.getSystemConfig()
                     .then(function() {
                         var nodeNames = Object.keys(ConfigService.systemConfig.nodes).map(function(node) {
@@ -52,16 +52,15 @@
                                     // e.g. nm_monctl.anc.running
                                     var splitName = sensor.original_name.split('.');
                                     var processName = splitName[1];
-                                    vm.logFiles.push('kat.'+processName);
+                                    vm.programNames.push('kat.'+processName);
                                 }
                             });
                         }, function(error) {
                             $log.error(error);
                         });
                     });
-            };
 
-            vm.getLogFiles();
+            };
 
             vm.querySearch = function (query) {
                 var results = query ? vm.tags.filter(vm.createFilterFor(query)) : [];
@@ -121,13 +120,13 @@
                         content: {overflow: 'linebreak'},
                         tag_list: {overflow: 'linebreak'}}});
 
-                if (vm.selectedLogFiles.length > 0) {
+                if (vm.selectedProgramNames.length > 0) {
 
-                    UserLogService.queryLogFiles(
-                        vm.selectedLogFiles, vm.startDatetimeReadable, vm.endDatetimeReadable).then(
+                    UserLogService.querySystemLogs(
+                        vm.selectedProgramNames, vm.startDatetimeReadable, vm.endDatetimeReadable).then(
                         function (result) {
                             var logLines = [];
-                            for (var key in result.data){
+                            for (var key in result.data) {
                                 columns = [{title: key, key: "line"}];
                                 result.data[key].forEach(function (line) {
                                     logLines.push({line: line});
@@ -136,7 +135,8 @@
                                     startY: pdf.autoTableEndPosY() + 50,
                                     theme: 'striped',
                                     margin: {top: 8, bottom: 8},
-                                    overflow: 'linebreak'});
+                                    overflow: 'linebreak'
+                                });
                                     logLines = [];
                             }
                             pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
@@ -206,7 +206,7 @@
                         });
                     }
                 });
-                UserLogService.getLogFiles();
+                vm.getProgramNames();
                 $timeout(function () {
                     var startTimeParam = moment($stateParams.startTime, MOMENT_DATETIME_FORMAT, true);
                     var endTimeParam = moment($stateParams.startTime, MOMENT_DATETIME_FORMAT, true);
