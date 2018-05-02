@@ -7,7 +7,9 @@
                                   ConfigService, StatusService, NotifyService, $stateParams) {
 
         var vm = this;
-        vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
+        // OJ Temporarily disable map types, details in CB-2770
+        //vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
+        vm.mapTypes = ['Sunburst'];
         vm.configHealthViews = {};
         vm.configItemsSelect = [];
         vm.subscribedSensors = [];
