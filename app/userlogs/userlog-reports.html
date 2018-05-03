@@ -44,10 +44,9 @@
                             data-ng-model="vm.endTime" ng-keypress="vm.showEndDatePicker = false" ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(vm.endTime)"></datetimepicker>
                     </div>
-                    <md-input-container md-theme="{{$root.themePrimaryButtons}}" title="{{vm.selectedLogFiles}}" style="min-width: 250px; max-width: 250px">
-                        <label>Include log files...</label>
-                        <md-select ng-model="vm.selectedLogFiles" multiple>
-                            <md-option ng-value="logFile" ng-repeat="logFile in vm.logFiles | orderBy:logFile">{{logFile}}</md-option>
+                    <md-input-container md-theme="{{$root.themePrimaryButtons}}" title="{{vm.selectedProgramNames}}" style="min-width: 250px; max-width: 250px">
+                        <md-select ng-model="vm.selectedProgramNames" multiple placeholder="Select program name(s)">
+                            <md-option ng-value="programName" ng-repeat="programName in vm.programNames | orderBy:programName">{{programName}}</md-option>
                         </md-select>
                     </md-input-container>
                     <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event)"
