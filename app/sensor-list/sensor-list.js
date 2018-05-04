@@ -161,7 +161,7 @@
             filteredSensorNames = [];
             for (var i = 0; i < regexFilteredSensorNames.length; i++) {
                 sensorName = regexFilteredSensorNames[i];
-                if ($scope.filterByNotNominal(sensorName)) {
+                if ($scope.filterByStatus(sensorName)) {
                     filteredSensorNames.push(sensorName)
                 }
             }
