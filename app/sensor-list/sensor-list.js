@@ -73,8 +73,8 @@
         ];
 
         vm.sensorTreeNameNgStyle = function (depth) {
-           return { 'min-width': vm.currentSensorNameColumnWidth - 20*(depth+1) + 'px;',
-                    'max-width': vm.currentSensorNameColumnWidth - 20*(depth+1) + 'px;'};
+           depth = Number(depth);
+           return { 'min-width': vm.currentSensorNameColumnWidth - 20*(depth+1) + 'px'};
         }
 
         if ($localStorage.sensorListShowValueTimestamp) {
@@ -202,7 +202,6 @@
                         var listNode = {
                             'name': name,
                             'tree_depth': depth,
-                            //'collapsed': true,
                             'leaf': false,
                             'nodes': [],
                         };

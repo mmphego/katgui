@@ -5,7 +5,7 @@
         <span class="fa" ng-show="!node.leaf" ng-class="{'fa-plus-square-o': collapsed, 'fa-minus-square-o': !collapsed}"></span>
         <span class="fa" ng-show="node.leaf"></span>
     </md-button>
-    <span title="" ng-class="vm.sensorNameResizeClassName" ng-style="'vm.sensorTreeNameNgStyle({{node.tree_depth}})''">{{node.name}}</span>
+    <span title="" ng-style="vm.sensorTreeNameNgStyle('{{node.tree_depth}}')">{{node.name}}</span>
     <span class="resource-sensor-status-item" ng-class="vm.sensorClass('{{node.status}}')">{{node.status}}</span>
     <span class="resource-sensor-time-item">{{node.received_timestamp}}</span>
     <span class="resource-sensor-time-item" ng-show="vm.showValueTimestamp">{{node.timestamp}}</span>
