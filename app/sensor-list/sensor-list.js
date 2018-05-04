@@ -190,12 +190,20 @@
                 for (var i = 0; i < sensorNames.length; i++) {
                     var sensorName = sensorNames[i];
                     var sensor = vm.sensorValues[sensorName];
-                    var fields = sensor.original_name.split('.');
+                    var fields = [];
                     var name = '';
                     var listNodes = treeNodes;
-                    // first field is component name which we don't want in the tree,
-                    // so drop it.
-                    fields = fields.slice(1);
+                    if (sensor.hasOwnProperty('original_name')) {
+                        fields = sensor.original_name.split('.');
+                        // first field is component name which we don't want in the tree,
+                        // so drop it.
+                        fields = fields.slice(1);
+                    }
+                    else {
+                        // haven't gotten the original KATCP name somehow, so just use
+                        // the escaped name, excluding component.
+                        fields = [sensor.shortName]
+                    }
                     for (var depth = 0; depth < fields.length; depth++) {
                         //name += fields[depth];
                         name = fields[depth];
