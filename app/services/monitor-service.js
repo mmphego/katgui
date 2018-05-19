@@ -148,7 +148,7 @@
         };
 
         api.subscribeToDefaultChannels = function() {
-            api.subscribe(['portal.time', 'portal.auth.>']);
+            api.subscribe(['portal.time', 'portal.auth.>', 'interface_changed.>']);
         };
 
         api.checkAlive = function() {
@@ -196,6 +196,10 @@
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject.startsWith('portal.auth')) {
                         SessionService.receivedSessionMessage(msg.subject, data);
+                    } else if (msg.subject.startsWith('interface_changed')) {
+                        if (angular.isString(data) && data.startsWith('cbf')) {
+                            $rootScope.$emit('interfaceChangedMessage')
+                        }
                     } else {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         api.handlePotentialGlobalSensorMessage(data);
