@@ -197,8 +197,8 @@
                     } else if (msg.subject.startsWith('portal.auth')) {
                         SessionService.receivedSessionMessage(msg.subject, data);
                     } else if (msg.subject.startsWith('interface_changed')) {
-                        if (angular.isString(data) && data.startsWith('cbf')) {
-                            $rootScope.$emit('interfaceChangedMessage')
+                        if (angular.isString(data)) {
+                            $rootScope.$emit('interfaceChangedMessage', data)
                         }
                     } else {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);

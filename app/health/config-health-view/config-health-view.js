@@ -107,7 +107,11 @@
             $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
-        var unbindReconnected = $rootScope.$on('interfaceChangedMessage', vm.initSensors);
+        var handleInterfaceChanged = $rootScope.$on('interfaceChangedMessage', function (event, component) {
+            if (component.startsWith('cbfmon')) {
+                vm.initSensors();
+            }
+        });
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
             var view = StatusService.configHealthSensors[vm.selectedConfigView];
@@ -125,6 +129,7 @@
                 MonitorService.unsubscribeSensor(sensor);
             });
             unbindUpdate();
+            handleInterfaceChanged();
             unbindReconnected();
             StatusService.sensorValues = {};
         });
