@@ -197,6 +197,8 @@
                     } else if (msg.subject.startsWith('portal.auth')) {
                         SessionService.receivedSessionMessage(msg.subject, data);
                     } else if (msg.subject.startsWith('interface_changed')) {
+                        // Filtering out messages e.g
+                        // 'interface_changed.remove_sensor' and 'interface_changed.add_sensor'
                         if (angular.isString(data)) {
                             $rootScope.$emit('interfaceChangedMessage', data)
                         }
