@@ -41,6 +41,7 @@
             document.getElementsByTagName('head')[0].appendChild(vm.sensorNameResizeStyle);
         }
 
+        ConfigService.loadAggregateSensorDetail();
         $scope.setFilterOnEnter = function(keyEvent, searchText) {
           if (keyEvent.which === 13)
             vm.searchFilter=searchText;
@@ -238,7 +239,17 @@
         };
 
         vm.displaySensorValue = function($event, sensor) {
-            NotifyService.showHTMLPreSensorDialog(sensor.name + ' value at ' + sensor.received_timestamp, sensor, $event);
+            // shortName is of the form agg_m011_lna_x_power_enabled
+            var sensorName = sensor.shortName;
+            // Check if it is aggregate sensor
+            if (sensorName.indexOf('agg_') > -1) {
+                MonitorService.showAggregateSensorsDialog(
+                    'Aggregate Sensor ' + sensorName + ' Details',
+                    JSON.stringify(ConfigService.aggregateSensorDetail[sensorName], null, 4));
+            }
+            else {
+              NotifyService.showHTMLPreSensorDialog(sensor.name + ' value at ' + sensor.received_timestamp, sensor, $event);
+            }
         };
 
         vm.keys = function(obj) {
