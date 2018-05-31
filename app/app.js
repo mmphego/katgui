@@ -125,7 +125,7 @@
                         var statusText = error && error.statusText? '(' + error.statusText + ')': '';
                         $rootScope.confConnectionError = 'Could not connect to ' + $rootScope.portalUrl + '/katconf ' + statusText;
                     } else {
-                        $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devg.camlab.kat.ac.za';
+                        $rootScope.confConnectionError = 'Development mode: Please specify a host to connect to. E.g. monctl.devf.camlab.kat.ac.za';
                     }
                     //retry every 10 seconds to get the system config
                     if (vm.getSystemConfigTimeout) {
