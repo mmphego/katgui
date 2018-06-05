@@ -105,10 +105,7 @@ angular.module('katGui.d3')
             var sensorValue;
             var pythonIdentifier = d.sensor.replace(/\./g, '_');
             var prefix = d.prefix? d.prefix : '';
-            //var fullSensorName = prefix + (rootName? rootName + '_' : '') + d.sensor;
-            var fullSensorName = d.sensor?
-                prefix + (d.component && d.component !== 'all'? d.component + '_' : '') + d.sensor :
-                prefix + rootName;
+            var fullSensorName = prefix + (rootName? rootName + '_' : '') + d.sensor;
             if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
                 sensorValue = StatusService.sensorValues[pythonIdentifier];
             }
