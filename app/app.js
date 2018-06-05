@@ -100,6 +100,7 @@
 
         $rootScope.configHealthViews = [];
         $rootScope.customHealthViews = [];
+        $rootScope.receptorHealthViews = [];
 
         SessionService.recoverLogin();
 
@@ -240,6 +241,23 @@
                 function(error) {
                     $log.error(error);
                 });
+
+            ConfigService.getReceptorHealthViews().then(
+                function(result) {
+                    $rootScope.receptorHealthViews = [];
+                    var the_keys = [];
+                    _.each(result.data, function(value, key, obj) {
+                        the_keys.push(key);
+                    });
+                    the_keys.sort();
+                    for (var key = 0; key < the_keys.length; key++) {
+                        $rootScope.receptorHealthViews.push(the_keys[key]);
+                    }
+                },
+                function(error) {
+                    $log.error(error);
+                });
+
         };
 
         vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function() {
@@ -513,9 +531,15 @@
             title: 'Correlator Health'
         });
         $stateProvider.state('receptorHealth', {
-            url: '/receptor-health',
+            url: '/receptor-health/{healthView}',
             templateUrl: 'app/health/receptor-health/receptor-health.html',
-            title: 'Receptor Health'
+            title: 'Receptor Health',
+            params: {
+                healthView: {
+                    value: null,
+                    squash: true
+                }
+            },
         });
         $stateProvider.state('customHealth', {
             url: '/custom-health',

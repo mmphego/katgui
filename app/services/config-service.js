@@ -107,6 +107,10 @@
             return $http(createRequest('get', urlBase() + '/statustrees/config_views'));
         };
 
+        api.getReceptorHealthViews = function() {
+            return $http(createRequest('get', urlBase() + '/statustrees/receptors_view'));
+        };
+
         api.getCustomHealthViews = function() {
             return $http(createRequest('get', urlBase() + '/statustrees/custom_views'));
         };
@@ -154,8 +158,8 @@
             }
         };
 
-        api.getStatusTreeForReceptor = function() {
-            return $http(createRequest('get', urlBase() + '/statustrees/receptors_view/receptors'));
+        api.getStatusTreeForReceptor = function(healthView) {
+            return $http(createRequest('get', urlBase() + '/statustrees/receptors_view/' + healthView));
         };
 
         api.getStatusTreeForCorrelator = function() {

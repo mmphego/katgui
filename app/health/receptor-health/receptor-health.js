@@ -3,7 +3,7 @@
     angular.module('katGui.health')
         .controller('ReceptorHealthCtrl', ReceptorHealthCtrl);
 
-    function ReceptorHealthCtrl($log, $timeout, $interval, $rootScope, $scope, $localStorage, MonitorService,
+    function ReceptorHealthCtrl($log, $timeout, $interval, $rootScope, $stateParams, $scope, $localStorage, MonitorService,
                                 ConfigService, StatusService, NotifyService) {
 
         var vm = this;
@@ -13,7 +13,7 @@
         vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
         vm.receptorSensorsRegex = '';
         vm.receptorAggSensorsRegex = '';
-
+        vm.selectedHealthView = $stateParams.healthView ? $stateParams.healthView : '';
         if ($localStorage['receptorHealthDisplayMapType']) {
             vm.mapType = $localStorage['receptorHealthDisplayMapType'];
         }
@@ -63,7 +63,7 @@
 
         ConfigService.getSystemConfig().then(function (systemConfig) {
             StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
-            ConfigService.getStatusTreeForReceptor()
+            ConfigService.getStatusTreeForReceptor(vm.selectedHealthView)
                 .then(function (result) {
                     ConfigService.getReceptorList()
                         .then(function (receptors) {
