@@ -110,7 +110,7 @@
         };
 
         var handleInterfaceChanged = $rootScope.$on('portalCacheUpdateDone', function (event, data) {
-            if (JSON.parse(data.component).component.startsWith('cbfmon')) {
+            if (data.component.startsWith('cbfmon')) {
                 vm.initSensors();
             }
         });
