@@ -109,8 +109,8 @@
             $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
         };
 
-        var handleInterfaceChanged = $rootScope.$on('interfaceChangedMessage', function (event, component) {
-            if (component.startsWith('cbfmon')) {
+        var handleInterfaceChanged = $rootScope.$on('portalCacheUpdateDone', function (event, data) {
+            if (JSON.parse(data.component).component.startsWith('cbfmon')) {
                 vm.initSensors();
             }
         });
