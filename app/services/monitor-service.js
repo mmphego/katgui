@@ -148,7 +148,7 @@
         };
 
         api.subscribeToDefaultChannels = function() {
-            api.subscribe(['portal.time', 'portal.auth.>', 'interface_changed.>']);
+            api.subscribe(['portal.time', 'portal.auth.>', 'portal.cache_update_done']);
         };
 
         api.checkAlive = function() {
@@ -196,12 +196,8 @@
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject.startsWith('portal.auth')) {
                         SessionService.receivedSessionMessage(msg.subject, data);
-                    } else if (msg.subject.startsWith('interface_changed')) {
-                        // Filtering out messages e.g
-                        // 'interface_changed.remove_sensor' and 'interface_changed.add_sensor'
-                        if (angular.isString(data)) {
-                            $rootScope.$emit('interfaceChangedMessage', data)
-                        }
+                    } else if (msg.subject.startsWith('portal.cache_update_done')) {
+                        $rootScope.$emit('portalCacheUpdateDone', data);
                     } else {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         api.handlePotentialGlobalSensorMessage(data);
