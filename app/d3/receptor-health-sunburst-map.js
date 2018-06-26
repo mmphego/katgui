@@ -108,9 +108,14 @@ angular.module('katGui.d3')
                             var prefix = d.prefix? d.prefix : '';
                             var classStr = '';
                             var dataName = '';
+                            debugger;
                             if (scope.dataMapName instanceof Object) {
                                 dataName = d.component + '_' + d.sensor;
-                                classStr = dataName;
+                                if (d.component == "all") {
+                                  classStr = dataName = d.sensor;
+                                } else {
+                                  classStr = dataName;
+                                }
                             } else {
                                 classStr = d3Util.createSensorId(d, scope.dataName());
                                 dataName = prefix + scope.dataName() + '_' + d.sensor;
