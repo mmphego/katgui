@@ -35,7 +35,11 @@
             <md-button class="md-raised md-primary" ng-click="$root.stateGo('health')"><span class="fa fa-heart"></span>Top Health</md-button>
             <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorStatus')"><span class="fa fa-th"></span>Receptor Status</md-button>
             <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorPointing')"><span class="fa fa-crosshairs"></span>Receptor Pointing</md-button>
-            <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorHealth')"><span class="fa fa-th-large"></span>Receptor Health</md-button>
+            <div ng-repeat="healthView in $root.receptorHealthViews | orderBy: reverse:true" layout="column">
+                <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorHealth', {healthView: healthView})">
+                    <span class="fa fa-th-large"></span> <span>{{healthView.toUpperCase()}} HEALTH</span>
+                </md-button>
+            </div>
         </div>
     </div>
 
