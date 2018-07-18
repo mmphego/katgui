@@ -422,18 +422,28 @@
                 kibanaUrl = [
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
-                    "/app/logtrail#/?q=programname.keyword:",
-                    programName,
-                    "&h=All&t=Now&i=",
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-10m,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),",
+                    "filters:!(('$state':(store:appState),",
+                    "meta:(alias:!n,disabled:!f,index:'",
                     $rootScope.systemConfig.system.sitename,
-                    "-*&_g=()"].join("");
+                    "-*',key:programname,negate:!f,type:phrase,value:",
+                    programName,
+                    "),query:(match:(programname:(query:",
+                    programName,
+                    ",type:phrase))))),","index:'",
+                    $rootScope.systemConfig.system.sitename,
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             } else {
                 kibanaUrl = [
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
-                    "/app/logtrail#/?q=&h=All&t=Now&i=",
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-10m,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),index:'",
                     $rootScope.systemConfig.system.sitename,
-                    "-*&_g=()"].join("");
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             }
             window.open(kibanaUrl).focus();
         };
