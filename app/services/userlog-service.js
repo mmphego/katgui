@@ -12,6 +12,7 @@
         var api = {};
         api.userlogs = [];
         api.tags = [];
+        api.compoundTags = [];
         api.tagsMap = {};
         api.taxonomies = [];
         api.mandatoryTagsList = ['shift', 'time-loss', 'observation', 'status', 'maintenance'];
@@ -279,6 +280,51 @@
             return defer.promise;
         };
 
+        api.querycompoundTags = function (compoundTag, userlog_id) {
+            var options = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'CustomJWT ' + $rootScope.jwt
+                },
+                responseType: 'blob'
+            };
+            $http.get(urlBase() + '/' + userlog_id + '/metadata/query' + file_name, options).then(
+                function (result) {
+                    var blob = result.data;
+                    var url = $window.URL || $window.webkitURL;
+                    var file_url = url.createObjectURL(blob);
+                    var downloadLink = angular.element('<a></a>');
+                    downloadLink.attr('href', file_url);
+                    downloadLink.attr('download', file_alias);
+                    downloadLink[0].click();
+                    url.revokeObjectURL(file_url);
+                }, function () {
+                    $log.error(urlBase() + '/get/attach');
+                });
+        };
+
+        api.createcompoundTag = function (compoundTag, userlog_id) {
+            var defer = $q.defer();
+            var newcompoundTag = {
+                name: compoundTag.name,
+                slug: compoundTag.slug,
+                activated: compoundTag.activated
+            };
+            $http(createRequest('post', urlBase() + '/userlogs/metadata/add', newcompoundTag, userlog_id)).then( //loop through api.compoundTags???
+                function (result) {
+                    compoundTag.id = result.data.id;
+                    compoundTag.name = compoundTag.name;
+                    compoundTag.slug = compoundTag.slug;
+                    //FIXME : api.compoundTags.push(compoundTag);
+                    NotifyService.showSimpleToast("Created compound tag " + compoundTag.name + " id:" + result.data.id + ".");
+                    defer.resolve(result);
+                }, function (result) {
+                    NotifyService.showHttpErrorDialog("Error creating compund tag", result);
+                    defer.reject(result);
+                });
+            return defer.promise;
+        };
+
         function createRequest(method, url, data) {
             var req = {
                 method: method,
@@ -344,6 +390,7 @@
                         $scope.editMode = editMode;
                         $scope.log = log;
                         $scope.tags = api.tags;
+                        $scope.compoundTags = api.compoundTags;
                         $scope.start_time = log.start_time? log.start_time: '';
                         $scope.end_time = log.end_time? log.end_time: '';
                         $scope.content = log.content;

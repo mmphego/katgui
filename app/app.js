@@ -756,7 +756,11 @@
                 }, content: {
                     value: null,
                     squash: true
+                }, compoundTags: {
+                    value: null,
+                    squash: true
                 }
+
             }
         };
         $urlRouterProvider.when(userlogsState.url, function ($location, $state, $match) {
@@ -774,6 +778,11 @@
             url: '/userlog-tags',
             templateUrl: 'app/userlogs/userlog-tags.html',
             title: 'User Log Tag Management'
+        });
+        $stateProvider.state('userlog-compoundTags', {
+            url: '/userlog-compoundTags',
+            templateUrl: 'app/userlogs/userlog-compoundTags.html',
+            title: 'User Log Compound Tag Management'
         });
         $stateProvider.state('userlog-reports', {
             url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}',
@@ -797,6 +806,10 @@
                     squash: true
                 },
                 matchAllTags: {
+                    value: null,
+                    squash: true
+                },
+                compoundTagIds: {
                     value: null,
                     squash: true
                 }
