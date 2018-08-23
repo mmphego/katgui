@@ -995,6 +995,67 @@
             }
         };
 
+        vm.getResources = function (spec, dry_run_alloc, alloc) {
+            resources = [];
+            if (spec) {
+                if (!spec.indexOf('{') > -1) {
+                    resources = spec.split(',')
+                }
+            }
+            if (dry_run_alloc) {
+                resources = dry_run_alloc.split(',');
+            }
+            if (alloc) {
+                resources = alloc.split(',');
+            }
+            return resources;
+        }
+
+        vm.addUserLog = function ($event, sb) {
+            var content = '';
+            var end_time = '';
+            var allocations = [];
+            var assignedResources = [];
+            var start_time = $rootScope.utcDateTime;
+            if (sb) {
+                dryrun_link = ConfigService.GetKATTaskFileServerURL() + "/tailtask/" + sb.id_code + "/dryrun"
+                content = "Schedule block: " + sb.id_code + "\n\nDry run link: " + dryrun_link;
+                if (sb.actual_start_time) {
+                    start_time = sb.actual_start_time.split('.')[0];
+                }
+                if (sb.actual_end_time) {
+                    end_time = sb.actual_end_time.split('.')[0];
+                }
+                allocations = vm.getResources(sb.antenna_spec, sb.antennas_dry_run_alloc,
+                    sb.antennas_alloc).concat(vm.getResources(sb.controlled_resources_spec,
+                      sb.controlled_resources_dry_run_alloc, sb.controlled_resources_alloc));
+                for (var i = 0; i < allocations.length; i++) {
+                    var tag = _.findWhere(UserLogService.tags, {name: allocations[i]})
+                    if (tag) {
+                        assignedResources.push(tag);
+                    }
+                }
+            }
+            else {
+                allocations = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue;
+                for (var i = 0; i < allocations.length; i++) {
+                    var tag = _.findWhere(UserLogService.tags, {name: allocations[i][0]})
+                    if (tag) {
+                        assignedResources.push(tag);
+                    }
+                }
+            }
+            var newUserLog = {
+                start_time: start_time,
+                end_time: end_time,
+                tags: assignedResources,
+                user_id: $rootScope.currentUser.id,
+                content: content,
+                attachments: []
+            };
+            $rootScope.editUserLog(newUserLog, event);
+        };
+
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
