@@ -733,7 +733,7 @@
             title: 'Weather'
         });
         var userlogsState = {
-            url: '/userlogs?action&id&startTime&endTime&tags&content',
+            url: '/userlogs?action&id&startTime&endTime&tags&content&compoundTags',
             templateUrl: 'app/userlogs/userlogs.html',
             title: 'User Logging',
             //makes the params optional
@@ -777,15 +777,10 @@
         $stateProvider.state('userlog-tags', {
             url: '/userlog-tags',
             templateUrl: 'app/userlogs/userlog-tags.html',
-            title: 'User Log Tag Management'
-        });
-        $stateProvider.state('userlog-compoundTags', {
-            url: '/userlog-compoundTags',
-            templateUrl: 'app/userlogs/userlog-compoundTags.html',
-            title: 'User Log Compound Tag Management'
+            title: 'User Log Tag Management',
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTagIds}',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -817,7 +812,7 @@
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTagIds',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -844,6 +839,10 @@
                 matchAllTags: {
                     value: null,
                     squash: true
+                },
+                compoundTagIds: {
+                    value:null,
+                    squash:true
                 }
             },
             title: 'User Log Reports'

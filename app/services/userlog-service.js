@@ -280,7 +280,32 @@
             return defer.promise;
         };
 
-        api.querycompoundTags = function (compoundTag, userlog_id) {
+        api.createCompoundTags = function (compoundTags, userlog_id) {
+            var promises = [];
+            for (var i = 0; i < compoundTags.length; i++) {
+                var defer = $q.defer();
+                var newCompoundTag = {
+                    value: compoundTags[i],
+                };
+                $http(createRequest('post', urlBase() + '/' + userlog_id + '/compound-tags/add', newCompoundTag)).then(
+                    function (result) {
+                        NotifyService.showSimpleToast("Created compound tag " + result.config.data.value + " id:" + result.data.id + ".");
+                        defer.resolve(result);
+                    }, function (result) {
+                        NotifyService.showHttpErrorDialog("Error creating compound tag", result);
+                        defer.reject(result);
+                    });
+                    promises.push(defer)
+            }
+            return $q.all(promises);
+        };
+
+        api.queryCompoundTags = function (compoundTags, userlog_id) {
+            
+
+        };
+
+        api.getCompoundTagsFromUrl = function (compoundTags, userlog_id) {
             var options = {
                 headers: {
                     'Content-Type': 'application/json',
@@ -288,7 +313,7 @@
                 },
                 responseType: 'blob'
             };
-            $http.get(urlBase() + '/' + userlog_id + '/metadata/query' + file_name, options).then(
+            $http.get(urlBase() + '/' + '/' + userlog_id + '/query' + compoundTags, options).then(
                 function (result) {
                     var blob = result.data;
                     var url = $window.URL || $window.webkitURL;
@@ -299,30 +324,8 @@
                     downloadLink[0].click();
                     url.revokeObjectURL(file_url);
                 }, function () {
-                    $log.error(urlBase() + '/get/attach');
+                    $log.error(urlBase() + '/get/compound_tags');
                 });
-        };
-
-        api.createcompoundTag = function (compoundTag, userlog_id) {
-            var defer = $q.defer();
-            var newcompoundTag = {
-                name: compoundTag.name,
-                slug: compoundTag.slug,
-                activated: compoundTag.activated
-            };
-            $http(createRequest('post', urlBase() + '/userlogs/metadata/add', newcompoundTag, userlog_id)).then( //loop through api.compoundTags???
-                function (result) {
-                    compoundTag.id = result.data.id;
-                    compoundTag.name = compoundTag.name;
-                    compoundTag.slug = compoundTag.slug;
-                    //FIXME : api.compoundTags.push(compoundTag);
-                    NotifyService.showSimpleToast("Created compound tag " + compoundTag.name + " id:" + result.data.id + ".");
-                    defer.resolve(result);
-                }, function (result) {
-                    NotifyService.showHttpErrorDialog("Error creating compund tag", result);
-                    defer.reject(result);
-                });
-            return defer.promise;
         };
 
         function createRequest(method, url, data) {
@@ -398,6 +401,7 @@
                         $scope.attachments = log.attachments;
                         $scope.uploadingFiles = false;
                         $scope.validTags = true;
+                        $scope.addingCompoundTags = false;
                         $scope.mandatoryTagsListString = api.mandatoryTagsListString;
                         $scope.showInvalidTagsTooltip = false;
                         $scope.openedWithoutStartTime = $scope.start_time !== null && $scope.start_time.length > 0;
@@ -520,9 +524,22 @@
                                 }
                             } else {
                                 newLog.tag_ids = tagIdList;
-                                if ($scope.filesToUpload) {
+                                if ($scope.compoundTags && $scope.filesToUpload) {
                                     $scope.uploadingFiles = true;
-                                    api.addUserLog(newLog).then(function (result) {
+                                    $scope.addingCompoundTags = true;
+                                    api.addUserLog(newLog).then(function (result){
+                                        var new_userlog_id = result.data.id;
+                                        api.uploadFileToUrl($scope.filesToUpload, new_userlog_id).then(function () {
+                                            $scope.uploadingFiles = false;
+                                        });
+                                        api.createCompoundTags($scope.compoundTags, new_userlog_id).then(function () {
+                                            $scope.addingCompoundTags = false;
+                                        });
+                                        $mdDialog.hide();
+                                        defer.resolve();
+                                    });
+                                } else if ($scope.filesToUpload) {
+                                     api.addUserLog(newLog).then(function (result) {
                                             var new_userlog_id = result.data.id;
                                             api.uploadFileToUrl($scope.filesToUpload, new_userlog_id).then(function () {
                                                 $scope.uploadingFiles = false;
@@ -531,6 +548,17 @@
                                             });
                                         });
 
+                                } else if ($scope.compoundTags) {
+                                    $scope.addingCompoundTags = true;
+                                    api.addUserLog(newLog).then(function (result) {
+                                          var new_userlog_id = result.data.id;
+                                          api.createCompoundTags($scope.compoundTags, new_userlog_id).then(function () {
+                                              $scope.addingCompoundTags = false;
+                                              $mdDialog.hide();
+                                              defer.resolve();
+                                          });
+                                    });
+                                // TODO: Handle both attachment and compound tags
                                 } else {
                                     api.addUserLog(newLog).then(function () {
                                         $mdDialog.hide();
