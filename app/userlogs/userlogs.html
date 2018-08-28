@@ -63,6 +63,9 @@
             <span class="subheader-text" style="cursor: default; width: 50px">
                 Tags
             </span>
+            <span class="subheader-text" style="cursor: default; width: 150px">
+                Compound Tags
+            </span>
             <span class="subheader-text" style="cursor: default; margin-right: 50px">
                 <span class="fa fa-paperclip"></span>
             </span>
@@ -99,6 +102,9 @@
                     <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}
                     <span class="fa fa-paperclip"></span>)
                     </span>
+                </span>
+                <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
+                    {{uselog.compound_tags.join(',')}}
                 </span>
                 <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
                            ng-click="vm.editUserLog(userlog, $event)">
@@ -179,6 +185,9 @@
                     <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}
                     <span class="fa fa-paperclip"></span>)
                     </span>
+                </span>
+                <span style="width: 125px; font-size: 12px">
+                    {{userlog.compound_tags.join(',')}}
                 </span>
                 <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
                            ng-click="vm.editUserLog(userlog, $event)">

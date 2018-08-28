@@ -207,6 +207,7 @@
                 start_time: vm.newLogStartTimeText,
                 end_time: '',
                 tags: vm.filterTags,
+                compound_tags: [],
                 user_id: $rootScope.currentUser.id,
                 content: '',
                 attachments: []

@@ -39,6 +39,7 @@
             var query = '?start_time=' + start + '&end_time=' + end;
             $http(createRequest('get', urlBase() + '/query' + query)).then(
                 function (result) {
+
                     if (result && result.data) {
                         result.data.forEach(function (userlog) {
                             if (_.findIndex(api.userlogs, {id: userlog.id}) === -1) {
@@ -46,6 +47,7 @@
                             }
                         });
                         deferred.resolve(result.data);
+
                     } else {
                         $log.error('Could not retrieve any users.');
                         deferred.reject(result);
@@ -280,12 +282,12 @@
             return defer.promise;
         };
 
-        api.createCompoundTags = function (compoundTags, userlog_id) {
+        api.createCompoundTags = function (compound_tags, userlog_id) {
             var promises = [];
-            for (var i = 0; i < compoundTags.length; i++) {
+            for (var i = 0; i < compound_tags.length; i++) {
                 var defer = $q.defer();
                 var newCompoundTag = {
-                    value: compoundTags[i],
+                    value: compound_tags[i]
                 };
                 $http(createRequest('post', urlBase() + '/' + userlog_id + '/compound-tags/add', newCompoundTag)).then(
                     function (result) {
@@ -298,11 +300,6 @@
                     promises.push(defer)
             }
             return $q.all(promises);
-        };
-
-        api.queryCompoundTags = function (compoundTags, userlog_id) {
-            
-
         };
 
         api.getCompoundTagsFromUrl = function (compoundTags, userlog_id) {
@@ -364,6 +361,7 @@
                         userlog.start_time = messageData.start_time;
                         userlog.end_time = messageData.end_time;
                         userlog.tags = messageData.tags;
+                        userlog.compound_tags = messageData.compound_tags;
                         userlog.content = messageData.content;
                         userlog.attachments = messageData.attachments;
                         userlog.attachment_count = messageData.attachment_count;
@@ -377,6 +375,7 @@
                 if (userlog) {
                     $rootScope.$apply(function () {
                         userlog.attachments = messageData;
+                        userlog.compound_tags = messageData;
                         userlog.attachment_count = messageData.length;
                     });
                 }
@@ -393,7 +392,7 @@
                         $scope.editMode = editMode;
                         $scope.log = log;
                         $scope.tags = api.tags;
-                        $scope.compoundTags = api.compoundTags;
+                        $scope.compound_tags = log.compound_tags;
                         $scope.start_time = log.start_time? log.start_time: '';
                         $scope.end_time = log.end_time? log.end_time: '';
                         $scope.content = log.content;
@@ -524,7 +523,7 @@
                                 }
                             } else {
                                 newLog.tag_ids = tagIdList;
-                                if ($scope.compoundTags && $scope.filesToUpload) {
+                                if ($scope.compound_tags && $scope.filesToUpload) {
                                     $scope.uploadingFiles = true;
                                     $scope.addingCompoundTags = true;
                                     api.addUserLog(newLog).then(function (result){
@@ -547,18 +546,16 @@
                                                 defer.resolve();
                                             });
                                         });
-
-                                } else if ($scope.compoundTags) {
+                                } else if ($scope.compound_tags) {
                                     $scope.addingCompoundTags = true;
                                     api.addUserLog(newLog).then(function (result) {
                                           var new_userlog_id = result.data.id;
-                                          api.createCompoundTags($scope.compoundTags, new_userlog_id).then(function () {
+                                          api.createCompoundTags($scope.compound_tags, new_userlog_id).then(function () {
                                               $scope.addingCompoundTags = false;
                                               $mdDialog.hide();
                                               defer.resolve();
                                           });
                                     });
-                                // TODO: Handle both attachment and compound tags
                                 } else {
                                     api.addUserLog(newLog).then(function () {
                                         $mdDialog.hide();
