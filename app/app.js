@@ -60,7 +60,7 @@
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, $q, THEMES,
         AlarmsService, ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
         CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService,
-        MOMENT_DATETIME_FORMAT) {
+        MOMENT_DATETIME_FORMAT, UserLogService) {
         var vm = this;
 
         var theme = _.find(THEMES, function(theme) {
@@ -416,24 +416,43 @@
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
+
+        $rootScope.editUserLog = function (newUserLog, event) {
+            UserLogService.editUserLog(
+                newUserLog, $rootScope.currentUser.id === newUserLog.user_id, 'userlogDialogContentElement', event)
+                .then(function() {
+                    $state.transitionTo('userlogs', null, { notify: false, reload: false });
+                });
+        };
+
         $rootScope.openKibanaInNewTab = function(programName) {
             var kibanaUrl;
             if (programName) {
                 kibanaUrl = [
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
-                    "/app/logtrail#/?q=programname.keyword:",
-                    programName,
-                    "&h=All&t=Now&i=",
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-10m,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),",
+                    "filters:!(('$state':(store:appState),",
+                    "meta:(alias:!n,disabled:!f,index:'",
                     $rootScope.systemConfig.system.sitename,
-                    "-*&_g=()"].join("");
+                    "-*',key:programname,negate:!f,type:phrase,value:",
+                    programName,
+                    "),query:(match:(programname:(query:",
+                    programName,
+                    ",type:phrase))))),","index:'",
+                    $rootScope.systemConfig.system.sitename,
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             } else {
                 kibanaUrl = [
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
-                    "/app/logtrail#/?q=&h=All&t=Now&i=",
+                    "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
+                    "time:(from:now-10m,mode:relative,to:now))&",
+                    "_a=(columns:!(programname,severity,message),index:'",
                     $rootScope.systemConfig.system.sitename,
-                    "-*&_g=()"].join("");
+                    "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
             }
             window.open(kibanaUrl).focus();
         };
