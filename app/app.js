@@ -831,7 +831,7 @@
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTagIds',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTags',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -859,7 +859,7 @@
                     value: null,
                     squash: true
                 },
-                compoundTagIds: {
+                compoundTags: {
                     value:null,
                     squash:true
                 }

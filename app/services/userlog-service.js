@@ -12,7 +12,6 @@
         var api = {};
         api.userlogs = [];
         api.tags = [];
-        api.compoundTags = [];
         api.tagsMap = {};
         api.taxonomies = [];
         api.mandatoryTagsList = ['shift', 'time-loss', 'observation', 'status', 'maintenance'];
@@ -291,7 +290,7 @@
                 };
                 $http(createRequest('post', urlBase() + '/' + userlog_id + '/compound-tags/add', newCompoundTag)).then(
                     function (result) {
-                        NotifyService.showSimpleToast("Created compound tag " + result.config.data.value + " id:" + result.data.id + ".");
+                        NotifyService.showSimpleToast("Created compound tag " + result.config.data.value + ".");
                         defer.resolve(result);
                     }, function (result) {
                         NotifyService.showHttpErrorDialog("Error creating compound tag", result);
@@ -300,29 +299,6 @@
                     promises.push(defer)
             }
             return $q.all(promises);
-        };
-
-        api.getCompoundTagsFromUrl = function (compoundTags, userlog_id) {
-            var options = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'CustomJWT ' + $rootScope.jwt
-                },
-                responseType: 'blob'
-            };
-            $http.get(urlBase() + '/' + '/' + userlog_id + '/query' + compoundTags, options).then(
-                function (result) {
-                    var blob = result.data;
-                    var url = $window.URL || $window.webkitURL;
-                    var file_url = url.createObjectURL(blob);
-                    var downloadLink = angular.element('<a></a>');
-                    downloadLink.attr('href', file_url);
-                    downloadLink.attr('download', file_alias);
-                    downloadLink[0].click();
-                    url.revokeObjectURL(file_url);
-                }, function () {
-                    $log.error(urlBase() + '/get/compound_tags');
-                });
         };
 
         function createRequest(method, url, data) {
@@ -375,7 +351,6 @@
                 if (userlog) {
                     $rootScope.$apply(function () {
                         userlog.attachments = messageData;
-                        userlog.compound_tags = messageData;
                         userlog.attachment_count = messageData.length;
                     });
                 }
