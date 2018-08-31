@@ -799,7 +799,7 @@
             title: 'User Log Tag Management',
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTagIds}',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTags}',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -823,7 +823,7 @@
                     value: null,
                     squash: true
                 },
-                compoundTagIds: {
+                compoundTags: {
                     value: null,
                     squash: true
                 }
