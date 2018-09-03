@@ -232,6 +232,7 @@
                 });
                 if ($stateParams.action === 'add') {
                     var tags = [];
+                    var compound_tags = [];
                     var content = '';
                     if ($stateParams.content) {
                         content = $stateParams.content.replace(/\\n/g, '\n'); // preserve newlines
@@ -242,10 +243,14 @@
                             return tagNames.indexOf(tag.name) > -1;
                         });
                     }
+                    if ($stateParams.compoundTags) {
+                        compound_tags = $stateParams.compoundTags.split(',');
+                    }
                     var newUserLog = {
                         start_time: $stateParams.startTime,
                         end_time: $stateParams.endTime,
                         tags: tags,
+                        compound_tags: compound_tags,
                         user_id: $rootScope.currentUser.id,
                         content: content,
                         attachments: []

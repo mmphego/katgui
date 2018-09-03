@@ -470,6 +470,7 @@
                                 start_time: $scope.start_time,
                                 end_time: $scope.end_time,
                                 content: $scope.content,
+                                compoundTags: $scope.compound_tags,
                                 metadata: $scope.attachments
                             };
                             var tagIdList = [];
