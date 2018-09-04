@@ -507,7 +507,7 @@
                                         api.uploadFileToUrl($scope.filesToUpload, new_userlog_id).then(function () {
                                             $scope.uploadingFiles = false;
                                         });
-                                        api.createCompoundTags($scope.compoundTags, new_userlog_id).then(function () {
+                                        api.createCompoundTags($scope.compound_tags, new_userlog_id).then(function () {
                                             $scope.addingCompoundTags = false;
                                         });
                                         $mdDialog.hide();
