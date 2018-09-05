@@ -228,7 +228,7 @@
                 end_time: ulog.end_time,
                 content: ulog.content,
                 tag_ids: ulog.tag_ids,
-                metadata: ulog.metadata
+                attachments: ulog.attachments
             };
             $http(createRequest('post', urlBase() + '/' + ulog.id, modifiedUserLog)).then(
                 function (result) {
@@ -471,7 +471,7 @@
                                 end_time: $scope.end_time,
                                 content: $scope.content,
                                 compoundTags: $scope.compound_tags,
-                                metadata: $scope.attachments
+                                attachments: $scope.attachments
                             };
                             var tagIdList = [];
                             newTagList.forEach(function (tag) {
