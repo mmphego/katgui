@@ -48,13 +48,20 @@
             </div>
         </div>
         <div class="md-whiteframe-z1" style="margin: 8px 0" flex>
-            <md-input-container id="userlogDialogContentElement" md-is-error="content.length === 0" style="margin: 16px 0; min-height: 280px; max-height: 280px" class="md-block" flex>
+            <md-input-container id="userlogDialogContentElement" md-is-error="content.length === 0" style="margin: 16px 0; min-height: 190px; max-height: 190px" class="md-block" flex>
                 <label>Log Content</label>
                 <textarea style="overflow-y: scroll; resize: none; width: 100%; min-height: 280px; max-height: 280px; height: 280px" ng-disabled="!editMode" md-select-on-focus rows="10" md-maxlength="10000" ng-model="content"></textarea>
             </md-input-container>
         </div>
 
-        <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 48px; border: 2px solid rgba(0, 0, 0, 0.0)" ng-class="{'chips-tag-input-error': !validTags}">
+        <div class="md-whiteframe-z1" style="margin: 8px 0" flex>
+            <md-input-container style="margin: 24px 0; min-height: 80px; max-height: 80px" class="md-block" flex>
+                <label>Compound Tags</label>
+                <textarea style="overflow-y: scroll; resize: none; min-height: 80px; max-height: 50px; height: 50px" ng-disabled="editMode" ng-list="&#10;" ng-trim="false" md-select-on-focus rows="2" md-maxlength="1000" ng-model="compound_tags"></textarea>
+            </md-input-container>
+        </div>
+
+        <div layout="row" layout-align="start center" class="md-whiteframe-z1" style="min-height: 64px; border: 2px solid rgba(0, 0, 0, 0.0)" ng-class="{'chips-tag-input-error': !validTags}">
             <md-tooltip md-visible="showInvalidTagsTooltip" md-autohide="false">
                 Select at least one of the mandatory tags: {{mandatoryTagsListString}}
             </md-tooltip>
