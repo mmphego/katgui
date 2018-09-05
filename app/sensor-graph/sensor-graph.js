@@ -4,7 +4,7 @@
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
     function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q, KatGuiUtil,
-                             MonitorService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
+                             MonitorService, UserLogService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
 
         var vm = this;
         var SAMPLES_QUERY_LIMIT = 1000000;
@@ -17,6 +17,7 @@
         vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
         vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
+        vm.selectedSensor = "";
         vm.waitingForSearchResult = false;
         vm.showTips = false;
         vm.showContextZoom = true;
@@ -27,6 +28,7 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
+        UserLogService.listTags();
 
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
@@ -37,6 +39,52 @@
         vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
         vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
         vm.searchWidth = $localStorage['sensorGraphSearchWidth']? $localStorage['sensorGraphSearchWidth'] : 366;
+
+        vm.selectedSensor = '';
+        vm.getSelectedSensor = function(sensor) {
+            vm.selectedSensor = sensor;
+        }
+
+        vm.openUserLog = function() {
+          var content = '';
+          var end_time = '';
+          var allocations = [];
+          var assignedResources = [];
+          var start_time = $rootScope.utcDateTime;
+
+          if (vm.selectedSensor) {
+              content = "Sensor(s): "
+              vm.sensorNames.forEach(function (sensor) {
+                  content += sensor.name +";"
+              });
+              start_time = $stateParams.startTime;
+              end_time = $stateParams.endTime;
+
+              var tag = _.findWhere(
+                  UserLogService.tags,
+                  {name: vm.selectedSensor.component})
+              if (tag) {
+                  assignedResources.push(tag);
+              }
+          }
+          var newUserLog = {
+              start_time: start_time,
+              end_time: end_time,
+              tags: assignedResources,
+              compound_tags: [],
+              user_id: $rootScope.currentUser.id,
+              content: content,
+              attachments: []
+          };
+          $rootScope.editUserLog(newUserLog, event);
+        };
+
+        vm.menuItems = [
+          {
+            text:"Add user log",
+            callback: vm.openUserLog
+          }
+        ];
 
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
@@ -217,6 +265,7 @@
         };
 
         vm.findSensorData = function (sensor, suppressToast) {
+            vm.selectedSensor = sensor
             var startDate = vm.sensorStartDatetime.getTime();
             var endDate = vm.sensorEndDatetime.getTime();
             if (vm.showRelativeTime) {

@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    angular.module('katGui', ['ngMaterial', 'ngMessages',
+    angular.module('katGui', ['ngMaterial', 'ngMessages', 'ngRightClick',
             'ui.bootstrap',
             'ui.router',
             'ngAnimate', 'katGui.services',

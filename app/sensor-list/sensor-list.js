@@ -4,7 +4,7 @@
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, $timeout, KatGuiUtil, $interval, $stateParams, MonitorService,
-        $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
+        $log, $mdDialog, MOMENT_DATETIME_FORMAT, UserLogService, NotifyService, ConfigService, $localStorage, $state) {
 
         var vm = this;
         vm.resources = ConfigService.resources;
@@ -13,7 +13,6 @@
         vm.resourceSensorsBeingDisplayed = '';
         vm.searchFilter = $stateParams.filter ? $stateParams.filter : '';
         vm.sensorsPlotNames = [];
-
         vm.showTips = false;
         vm.showContextZoom = false;
         vm.useFixedYAxis = false;
@@ -24,6 +23,8 @@
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
+        vm.selectedSensor = '';
+        UserLogService.listTags();
 
         if ($localStorage.currentSensorNameColumnWidth) {
             vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
@@ -72,6 +73,51 @@
         if ($localStorage.sensorListShowValueTimestamp) {
             vm.showValueTimestamp = $localStorage.sensorListShowValueTimestamp;
         }
+
+        vm.selectedSensor = '';
+        vm.getSelectedSensor = function(sensor) {
+            vm.selectedSensor = sensor;
+        }
+
+        vm.openUserLog = function() {
+          var content = '';
+          var end_time = '';
+          var allocations = [];
+          var assignedResources = [];
+          var start_time = $rootScope.utcDateTime;
+
+          if (vm.selectedSensor) {
+              var sensor = vm.sensorValues[vm.selectedSensor]
+              content = "Sensor: " + sensor.shortName +
+              " Status: " + sensor.status +
+              " Time: " + sensor.received_timestamp +
+              "\nValue: " + sensor.value
+          }
+          var tag = _.findWhere(
+              UserLogService.tags,
+              {name: vm.resourceSensorsBeingDisplayed})
+          if (tag) {
+              assignedResources.push(tag);
+          }
+
+          var newUserLog = {
+              start_time: start_time,
+              end_time: end_time,
+              tags: assignedResources,
+              compound_tags: [],
+              user_id: $rootScope.currentUser.id,
+              content: content,
+              attachments: []
+          };
+          $rootScope.editUserLog(newUserLog, event);
+        };
+
+        vm.menuItems = [
+          {
+            text:"Add user log",
+            callback: vm.openUserLog
+          }
+        ];
 
         vm.saveLocalStorage = function() {
             $localStorage.sensorListShowValueTimestamp = vm.showValueTimestamp;
