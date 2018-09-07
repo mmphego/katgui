@@ -103,7 +103,7 @@
               " Status: " + sensor.status +
               " Time: " + sensor.received_timestamp +
               "\nValue: " + sensor.value
-              start_time = sensor.timestamp
+              startTime = sensor.timestamp
               compoundTag = vm.deriveCompoundTag(sensor)
               if (compoundTag) {
                   compoundTags.push(vm.deriveCompoundTag(sensor))

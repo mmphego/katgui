@@ -82,8 +82,8 @@
 
           }
           var newUserLog = {
-              start_time: start_time,
-              end_time: end_time,
+              start_time: startTime,
+              end_time: endTime,
               tags: assignedResources,
               compound_tags: compoundTags,
               user_id: $rootScope.currentUser.id,
