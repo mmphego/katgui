@@ -425,6 +425,16 @@
                 });
         };
 
+        $rootScope.deriveCompoundTag = function(sensorName) {
+            var compoundTag = '';
+            try {
+              compoundTag = sensorName.replace(/\./g, '_:_')
+            } catch (error) {
+                $log.error('Could not extract compound tag string ' + error);
+            }
+            return compoundTag
+        }
+
         $rootScope.openKibanaInNewTab = function(programName) {
             var kibanaUrl;
             if (programName) {

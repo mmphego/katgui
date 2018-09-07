@@ -78,16 +78,6 @@
             vm.selectedSensor = sensor;
         }
 
-        vm.deriveCompoundTag = function(sensor) {
-            try {
-              compoundTag = sensor.original_name.replace(/\./g, '_:_')
-            } catch (error) {
-                compoundTag = '';
-                $log.error('Could not extract compound tag string ' + error);
-            }
-            return compoundTag
-        }
-
         vm.openUserLog = function() {
           UserLogService.listTags();
           var content = '';
@@ -104,7 +94,7 @@
               " Time: " + sensor.received_timestamp +
               "\nValue: " + sensor.value
               startTime = sensor.timestamp
-              compoundTag = vm.deriveCompoundTag(sensor)
+              compoundTag = $rootScope.deriveCompoundTag(sensor.original_name)
               if (compoundTag) {
                   compoundTags.push(compoundTag)
               }

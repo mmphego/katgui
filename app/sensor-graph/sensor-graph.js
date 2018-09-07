@@ -44,16 +44,6 @@
             vm.selectedSensor = sensor;
         }
 
-        vm.deriveCompoundTag = function(sensor) {
-            try {
-              compoundTag = sensor.attributes.katcp_name.replace(/\./g, '_:_')
-            } catch (error) {
-                compoundTag = '';
-                $log.error('Could not extract compound tag string ' + error);
-            }
-            return compoundTag
-        }
-
         vm.openUserLog = function() {
           UserLogService.listTags();
           var content = '';
@@ -62,11 +52,11 @@
           var assignedResources = [];
           var compoundTags = []
           var startTime = $rootScope.utcDateTime;
-          if (vm.selectedSensor) {
+          if (vm.sensorNames.length > 0) {
               content = "Sensor(s): "
               vm.sensorNames.forEach(function (sensor) {
                   content += sensor.name + ";"
-                  compoundTag = vm.deriveCompoundTag(sensor)
+                  compoundTag = $rootScope.deriveCompoundTag(sensor.attributes.katcp_name)
                   if (compoundTag) {
                       compoundTags.push(compoundTag)
                   }
