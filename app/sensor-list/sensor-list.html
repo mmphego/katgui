@@ -79,7 +79,7 @@
                 </div>
                 <div ng-repeat="key in filteredSensors = (vm.keys(vm.sensorValues) | regexSearchAndOrder:vm.sensorsOrderByFields:vm.searchFilter:vm.sensorsOrderBy.value:vm.sensorsOrderBy.reverse:vm.sensorValues) | filter:filterByStatus track by key"
                     ng-class="{'selected-for-chart-row': vm.sensorValues[key].selectedForChart}" layout="row"
-                    layout-align="start center" ng-click="vm.plotLiveSensorFeed(key)" ng-right-click="vm.getSelectedSensor(key)" menu-items="vm.menuItems">
+                    layout-align="start center" ng-click="vm.plotLiveSensorFeed(key)" ng-right-click="vm.setSelectedSensor(key)" menu-items="vm.menuItems">
                     <span title="" class="resource-sensor-name" ng-class="vm.sensorNameResizeClassName">{{vm.sensorValues[key].shortName}}</span>
                     <span class="resource-sensor-status-item" ng-class="vm.sensorClass(vm.sensorValues[key].status)">{{vm.sensorValues[key].status}}</span>
                     <span class="resource-sensor-time-item">{{vm.sensorValues[key].received_timestamp}}</span>

@@ -74,7 +74,7 @@
         }
 
         vm.selectedSensor = '';
-        vm.getSelectedSensor = function(sensor) {
+        vm.setSelectedSensor = function(sensor) {
             vm.selectedSensor = sensor;
         }
 

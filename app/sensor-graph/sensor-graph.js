@@ -17,7 +17,6 @@
         vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
         vm.sensorSearchNames = [];
         vm.sensorSearchStr = "";
-        vm.selectedSensor = "";
         vm.waitingForSearchResult = false;
         vm.showTips = false;
         vm.showContextZoom = true;
@@ -38,11 +37,6 @@
         vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
         vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
         vm.searchWidth = $localStorage['sensorGraphSearchWidth']? $localStorage['sensorGraphSearchWidth'] : 366;
-
-        vm.selectedSensor = '';
-        vm.getSelectedSensor = function(sensor) {
-            vm.selectedSensor = sensor;
-        }
 
         vm.openUserLog = function() {
           UserLogService.listTags();
@@ -269,7 +263,6 @@
         };
 
         vm.findSensorData = function (sensor, suppressToast) {
-            vm.selectedSensor = sensor
             var startDate = vm.sensorStartDatetime.getTime();
             var endDate = vm.sensorEndDatetime.getTime();
             if (vm.showRelativeTime) {
