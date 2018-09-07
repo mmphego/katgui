@@ -95,7 +95,7 @@
 
         vm.menuItems = [
           {
-            text:"Add user log",
+            text:"Add user log...",
             callback: vm.openUserLog
           }
         ];

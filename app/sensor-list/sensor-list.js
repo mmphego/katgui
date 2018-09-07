@@ -106,7 +106,7 @@
               startTime = sensor.timestamp
               compoundTag = vm.deriveCompoundTag(sensor)
               if (compoundTag) {
-                  compoundTags.push(vm.deriveCompoundTag(sensor))
+                  compoundTags.push(compoundTag)
               }
           }
           var tag = _.findWhere(
@@ -120,7 +120,7 @@
               start_time: startTime,
               end_time: endTime,
               tags: assignedResources,
-              compoundTags: compoundTags,
+              compound_tags: compoundTags,
               user_id: $rootScope.currentUser.id,
               content: content,
               attachments: []
@@ -130,7 +130,7 @@
 
         vm.menuItems = [
           {
-            text:"Add user log",
+            text:"Add user log...",
             callback: vm.openUserLog
           }
         ];
