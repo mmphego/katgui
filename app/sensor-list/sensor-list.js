@@ -24,7 +24,6 @@
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
         vm.selectedSensor = '';
-        UserLogService.listTags();
 
         if ($localStorage.currentSensorNameColumnWidth) {
             vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
@@ -79,12 +78,24 @@
             vm.selectedSensor = sensor;
         }
 
+        vm.deriveCompoundTag = function(sensor) {
+            try {
+              compoundTag = sensor.original_name.replace(/\./g, '_:_')
+            } catch (error) {
+                compoundTag = '';
+                $log.error('Could not extract compound tag string ' + error);
+            }
+            return compoundTag
+        }
+
         vm.openUserLog = function() {
+          UserLogService.listTags();
           var content = '';
-          var end_time = '';
+          var endTime = '';
           var allocations = [];
+          var compoundTags = [];
           var assignedResources = [];
-          var start_time = $rootScope.utcDateTime;
+          var startTime = $rootScope.utcDateTime;
 
           if (vm.selectedSensor) {
               var sensor = vm.sensorValues[vm.selectedSensor]
@@ -92,6 +103,11 @@
               " Status: " + sensor.status +
               " Time: " + sensor.received_timestamp +
               "\nValue: " + sensor.value
+              start_time = sensor.timestamp
+              compoundTag = vm.deriveCompoundTag(sensor)
+              if (compoundTag) {
+                  compoundTags.push(vm.deriveCompoundTag(sensor))
+              }
           }
           var tag = _.findWhere(
               UserLogService.tags,
@@ -101,10 +117,10 @@
           }
 
           var newUserLog = {
-              start_time: start_time,
-              end_time: end_time,
+              start_time: startTime,
+              end_time: endTime,
               tags: assignedResources,
-              compound_tags: [],
+              compoundTags: compoundTags,
               user_id: $rootScope.currentUser.id,
               content: content,
               attachments: []

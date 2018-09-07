@@ -28,7 +28,6 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
-        UserLogService.listTags();
 
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
@@ -45,33 +44,48 @@
             vm.selectedSensor = sensor;
         }
 
+        vm.deriveCompoundTag = function(sensor) {
+            try {
+              compoundTag = sensor.attributes.katcp_name.replace(/\./g, '_:_')
+            } catch (error) {
+                compoundTag = '';
+                $log.error('Could not extract compound tag string ' + error);
+            }
+            return compoundTag
+        }
+
         vm.openUserLog = function() {
+          UserLogService.listTags();
           var content = '';
-          var end_time = '';
+          var endTime = '';
           var allocations = [];
           var assignedResources = [];
-          var start_time = $rootScope.utcDateTime;
-
+          var compoundTags = []
+          var startTime = $rootScope.utcDateTime;
           if (vm.selectedSensor) {
               content = "Sensor(s): "
               vm.sensorNames.forEach(function (sensor) {
-                  content += sensor.name +";"
+                  content += sensor.name + ";"
+                  compoundTag = vm.deriveCompoundTag(sensor)
+                  if (compoundTag) {
+                      compoundTags.push(compoundTag)
+                  }
+                  var tag = _.findWhere(
+                      UserLogService.tags,
+                      {name: sensor.component})
+                  if (tag) {
+                      assignedResources.push(tag);
+                  }
               });
-              start_time = $stateParams.startTime;
-              end_time = $stateParams.endTime;
+              startTime = $stateParams.startTime;
+              endTime = $stateParams.endTime;
 
-              var tag = _.findWhere(
-                  UserLogService.tags,
-                  {name: vm.selectedSensor.component})
-              if (tag) {
-                  assignedResources.push(tag);
-              }
           }
           var newUserLog = {
               start_time: start_time,
               end_time: end_time,
               tags: assignedResources,
-              compound_tags: [],
+              compound_tags: compoundTags,
               user_id: $rootScope.currentUser.id,
               content: content,
               attachments: []
