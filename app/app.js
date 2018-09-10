@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    angular.module('katGui', ['ngMaterial', 'ngMessages',
+    angular.module('katGui', ['ngMaterial', 'ngMessages', 'ngRightClick',
             'ui.bootstrap',
             'ui.router',
             'ngAnimate', 'katGui.services',
@@ -424,6 +424,16 @@
                     $state.transitionTo('userlogs', null, { notify: false, reload: false });
                 });
         };
+
+        $rootScope.deriveCompoundTag = function(sensorName) {
+            var compoundTag = '';
+            try {
+              compoundTag = sensorName.replace(/\./g, '_:_')
+            } catch (error) {
+                $log.error('Could not extract compound tag string ' + error);
+            }
+            return compoundTag
+        }
 
         $rootScope.openKibanaInNewTab = function(programName) {
             var kibanaUrl;

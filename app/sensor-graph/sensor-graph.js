@@ -4,7 +4,7 @@
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
     function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q, KatGuiUtil,
-                             MonitorService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
+                             MonitorService, UserLogService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
 
         var vm = this;
         var SAMPLES_QUERY_LIMIT = 1000000;
@@ -37,6 +37,52 @@
         vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
         vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
         vm.searchWidth = $localStorage['sensorGraphSearchWidth']? $localStorage['sensorGraphSearchWidth'] : 366;
+
+        vm.openUserLog = function() {
+          UserLogService.listTags();
+          var content = '';
+          var endTime = '';
+          var allocations = [];
+          var assignedResources = [];
+          var compoundTags = []
+          var startTime = $rootScope.utcDateTime;
+          if (vm.sensorNames.length > 0) {
+              content = "Sensor(s): "
+              vm.sensorNames.forEach(function (sensor) {
+                  content += sensor.name + ";"
+                  compoundTag = $rootScope.deriveCompoundTag(sensor.attributes.katcp_name)
+                  if (compoundTag) {
+                      compoundTags.push(compoundTag)
+                  }
+                  var tag = _.findWhere(
+                      UserLogService.tags,
+                      {name: sensor.component})
+                  if (tag) {
+                      assignedResources.push(tag);
+                  }
+              });
+              startTime = $stateParams.startTime;
+              endTime = $stateParams.endTime;
+
+          }
+          var newUserLog = {
+              start_time: startTime,
+              end_time: endTime,
+              tags: assignedResources,
+              compound_tags: compoundTags,
+              user_id: $rootScope.currentUser.id,
+              content: content,
+              attachments: []
+          };
+          $rootScope.editUserLog(newUserLog, event);
+        };
+
+        vm.menuItems = [
+          {
+            text:"Add user log...",
+            callback: vm.openUserLog
+          }
+        ];
 
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
