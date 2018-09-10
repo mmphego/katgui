@@ -97,7 +97,7 @@
                     });
                     userlog.tag_list = tagNames.join(',');
                     userlog.compound_tags.forEach(function (compound_tag){
-                        compound_tags.push(compound_tags);
+                        compound_tags.push(compound_tag);
                     });
                 });
 
