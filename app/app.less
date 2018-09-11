@@ -2,7 +2,6 @@
 @import "../node_modules/font-awesome/less/font-awesome";
 @import "../node_modules/angular-material/angular-material.min.css";
 @import "../node_modules/angular-bootstrap-datetimepicker/src/css/datetimepicker.css";
-@import "../node_modules/angular-right-click/src/css/ng-right-click.css";
 /* Component LESS */
 @import "login-form/login-form";
 @import "landing/landing";
@@ -841,4 +840,31 @@ md-dialog {
     &:hover {
         opacity: 1.0;
     }
+}
+
+.ng-right-click-ul{
+	position: absolute;
+	min-width: 150px;
+	box-shadow: 9px 9px 9px -9px #ddd;
+	background: #fff;
+	top: 100%;
+	z-index: 9999;
+	list-style: none;
+	padding: 0;
+	cursor: default;
+	border: 3px solid #808080;
+	border-radius: 4px;
+}
+.ng-right-click-ul li{
+	padding: 1px;
+	cursor: pointer;
+	margin: 5px 0;
+	font-size: 18px;
+}
+.ng-right-click-ul li:hover{
+	background: #C0C0C0;
+}
+.ng-right-click-ul li.disabled{
+	pointer-events:none;
+	color: rgba(0,0,0,0.3);
 }
