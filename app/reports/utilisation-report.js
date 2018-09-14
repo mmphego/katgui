@@ -385,7 +385,7 @@
                     vm.creatingReceptorReport = false;
                     if (result.data.data) {
 
-                        result.data..data.map(function (item, itemIndex, data) {
+                        result.data.data.map(function (item, itemIndex, data) {
                             if (itemIndex > 0) {
                                 data[itemIndex - 1][2] = data[itemIndex][2];
                             }
