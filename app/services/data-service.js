@@ -26,7 +26,7 @@
                 '&start_time=' + params.start +
                 '&end_time=' + params.end +
                 '&limit=' + params.limit;
-            if (params.interval) {
+            if (params.interval >= 0) {
                 requestStr += '&interval=' + params.interval + '&avg=1';
             }
             if (params.allFields) {

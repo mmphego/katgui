@@ -309,6 +309,10 @@
             if (vm.intervalType !== 'n') {
                 requestParams.interval = interval;
             }
+            else {
+                requestParams.interval = 0;
+            }
+
 
             DataService.sensorData.call(this, requestParams)
                 .then(function (result) {
