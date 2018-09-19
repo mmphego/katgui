@@ -44,10 +44,9 @@
                             data-ng-model="vm.endTime" ng-keypress="vm.showEndDatePicker = false" ng-click="$event.stopPropagation()"
                             data-on-set-time="vm.showEndDatePicker = false; vm.onEndTimeSet(vm.endTime)"></datetimepicker>
                     </div>
-                    <md-input-container md-theme="{{$root.themePrimaryButtons}}" title="{{vm.selectedLogFiles}}" style="min-width: 250px; max-width: 250px">
-                        <label>Include log files...</label>
-                        <md-select ng-model="vm.selectedLogFiles" multiple>
-                            <md-option ng-value="logFile" ng-repeat="logFile in vm.logFiles | orderBy:logFile">{{logFile}}</md-option>
+                    <md-input-container md-theme="{{$root.themePrimaryButtons}}" title="{{vm.selectedProgramNames}}" style="min-width: 250px; max-width: 250px">
+                        <md-select ng-model="vm.selectedProgramNames" multiple placeholder="Select program name(s)">
+                            <md-option ng-value="programName" ng-repeat="programName in vm.programNames | orderBy:programName">{{programName}}</md-option>
                         </md-select>
                     </md-input-container>
                     <md-button class="add-tab md-primary md-raised" ng-click="vm.queryUserlogs(event)"
@@ -102,7 +101,7 @@
                 <span style="width: 125px">Start</span>
                 <span style="width: 125px">End</span>
                 <span flex>Content</span>
-                <span style="margin-right: 32px">Tags</span>
+                <span style="margin-right: 74px">Tags</span>
             </div>
             <div ng-repeat="userlog in vm.filteredReportUserlogs = (vm.reportUserlogs | regexSearch:vm.userLogsFields:vm.searchInputText | filter:vm.filterByTag) track by $index" ng-click="vm.editUserLog(userlog, $event)" class="user-log-row">
                 <div layout="row" layout-align="start center" style="position: relative; border-top: 1px solid #d7d7d7" title="{{userlog.content}}">
@@ -122,6 +121,11 @@
                     <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
                         <span ng-show="userlog.attachment_count>0">({{userlog.attachment_count}}
                         <span class="fa fa-paperclip"></span>)
+                        </span>
+                    </span>
+                    <span style="min-width: 24px; margin-left: 8px; font-size: 12px">
+                        <span ng-show="userlog.compound_tags.length>0">({{userlog.compound_tags.length}}
+                        <span class="fa fa-tags"></span>)
                         </span>
                     </span>
                 </div>

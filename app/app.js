@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    angular.module('katGui', ['ngMaterial', 'ngMessages',
+    angular.module('katGui', ['ngMaterial', 'ngMessages', 'ngRightClick',
             'ui.bootstrap',
             'ui.router',
             'ngAnimate', 'katGui.services',
@@ -60,7 +60,7 @@
     function ApplicationCtrl($rootScope, $scope, $state, $interval, $mdSidenav, $localStorage, $q, THEMES,
         AlarmsService, ConfigService, USER_ROLES, MonitorService, KatGuiUtil, SessionService,
         CENTRAL_LOGGER_PORT, $log, NotifyService, $timeout, StatusService, ObsSchedService,
-        MOMENT_DATETIME_FORMAT) {
+        MOMENT_DATETIME_FORMAT, UserLogService) {
         var vm = this;
 
         var theme = _.find(THEMES, function(theme) {
@@ -99,6 +99,8 @@
         };
 
         $rootScope.configHealthViews = [];
+        $rootScope.customHealthViews = [];
+        $rootScope.receptorHealthViews = [];
 
         SessionService.recoverLogin();
 
@@ -208,16 +210,54 @@
                 $rootScope.getSystemConfig();
             }
 
-            ConfigService.getConfigHealthViews().then(
+            ConfigService.getCustomHealthViews().then(
                 function(result) {
-                    $rootScope.configHealthViews = [];
-                    _.each(result.data, function(value, key, obj) {
-                        $rootScope.configHealthViews.push(key);
-                    });
+                    $rootScope.customHealthViews = [];
+                    for (var key in result.data) {
+                        $rootScope.customHealthViews.push(key);
+                        /* OJ: This is temporary and should be
+                        fixed(for now I am only getting values of cbf)*/
+                        if (key === 'cbf') {
+                            ConfigService.CBFCustomViewFilter = result.data[key].filter;
+                        }
+                    }
                 },
                 function(error) {
                     $log.error(error);
                 });
+
+            ConfigService.getConfigHealthViews().then(
+                function(result) {
+                    $rootScope.configHealthViews = [];
+                    var the_keys = [];
+                    _.each(result.data, function(value, key, obj) {
+                        the_keys.push(key);
+                    });
+                    the_keys.sort();
+                    for (var key = 0; key < the_keys.length; key++) {
+                        $rootScope.configHealthViews.push(the_keys[key]);
+                    }
+                },
+                function(error) {
+                    $log.error(error);
+                });
+
+            ConfigService.getReceptorHealthViews().then(
+                function(result) {
+                    $rootScope.receptorHealthViews = [];
+                    var the_keys = [];
+                    _.each(result.data, function(value, key, obj) {
+                        the_keys.push(key);
+                    });
+                    the_keys.sort();
+                    for (var key = 0; key < the_keys.length; key++) {
+                        $rootScope.receptorHealthViews.push(the_keys[key]);
+                    }
+                },
+                function(error) {
+                    $log.error(error);
+                });
+
         };
 
         vm.unbindLoginSuccess = $rootScope.$on('loginSuccess', function() {
@@ -376,6 +416,25 @@
                 NotifyService.showSimpleDialog('Error Viewing Logfiles', 'There is no KATLogFileServer IP defined in config, please contact CAM support.');
             }
         };
+
+        $rootScope.editUserLog = function (newUserLog, event) {
+            UserLogService.editUserLog(
+                newUserLog, $rootScope.currentUser.id === newUserLog.user_id, 'userlogDialogContentElement', event)
+                .then(function() {
+                    $state.transitionTo('userlogs', null, { notify: false, reload: false });
+                });
+        };
+
+        $rootScope.deriveCompoundTag = function(sensorName) {
+            var compoundTag = '';
+            try {
+              compoundTag = sensorName.replace(/\./g, '_:_')
+            } catch (error) {
+                $log.error('Could not extract compound tag string ' + error);
+            }
+            return compoundTag
+        }
+
         $rootScope.openKibanaInNewTab = function(programName) {
             var kibanaUrl;
             if (programName) {
@@ -383,7 +442,7 @@
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
                     "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
-                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "time:(from:now-10m,mode:relative,to:now))&",
                     "_a=(columns:!(programname,severity,message),",
                     "filters:!(('$state':(store:appState),",
                     "meta:(alias:!n,disabled:!f,index:'",
@@ -400,7 +459,7 @@
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
                     "/app/kibana#/discover?_g=(refreshInterval:(display:Off,pause:!f,value:30000),",
-                    "time:(from:now-1h,mode:relative,to:now))&",
+                    "time:(from:now-10m,mode:relative,to:now))&",
                     "_a=(columns:!(programname,severity,message),index:'",
                     $rootScope.systemConfig.system.sitename,
                     "-*',interval:auto,query:(match_all:()),sort:!('@timestamp',desc))"].join("");
@@ -483,15 +542,42 @@
         $stateProvider.state('health', {
             url: '/health',
             templateUrl: 'app/health/health.html',
-            title: 'Health & State'
+            title: 'TOP Health & State'
+        });
+        $stateProvider.state('correlatorHealth', {
+            url: '/correlator-health',
+            templateUrl: 'app/health/correlator-health/correlator-health.html',
+            title: 'Correlator Health'
         });
         $stateProvider.state('receptorHealth', {
-            url: '/receptor-health',
+            url: '/receptor-health/{healthView}',
             templateUrl: 'app/health/receptor-health/receptor-health.html',
-            title: 'Receptor Health'
+            title: 'Receptor Health',
+            params: {
+                healthView: {
+                    value: null,
+                    squash: true
+                }
+            },
         });
-        $stateProvider.state('config-health', {
-            url: '/config-health/{configItem}',
+        $stateProvider.state('customHealth', {
+            url: '/custom-health',
+            templateUrl: 'app/health/custom-health/custom-health.html',
+            title: 'Custom Health'
+        });
+        $stateProvider.state('customHealthView', {
+            url: '/custom-health-view/{configItem}',
+            templateUrl: 'app/health/custom-health-view/custom-health-view.html',
+            title: 'Custom Health View',
+            params: {
+                configItem: {
+                    value: null,
+                    squash: true
+                }
+            },
+        });
+        $stateProvider.state('config-health-view', {
+            url: '/config-health-view/{configItem}',
             templateUrl: 'app/health/config-health-view/config-health-view.html',
             title: 'Config Health',
             params: {
@@ -510,11 +596,6 @@
             url: '/receptor-pointing',
             templateUrl: 'app/health/receptor-pointing/receptor-pointing.html',
             title: 'Receptor Pointing'
-        });
-        $stateProvider.state('customHealth', {
-            url: '/custom-health?layout',
-            templateUrl: 'app/health/custom-health/custom-health.html',
-            title: 'Custom Health'
         });
         $stateProvider.state('home', {
             url: '/home',
@@ -681,7 +762,7 @@
             title: 'Weather'
         });
         var userlogsState = {
-            url: '/userlogs?action&id&startTime&endTime&tags&content',
+            url: '/userlogs?action&id&startTime&endTime&tags&content&compoundTags',
             templateUrl: 'app/userlogs/userlogs.html',
             title: 'User Logging',
             //makes the params optional
@@ -704,7 +785,11 @@
                 }, content: {
                     value: null,
                     squash: true
+                }, compoundTags: {
+                    value: null,
+                    squash: true
                 }
+
             }
         };
         $urlRouterProvider.when(userlogsState.url, function ($location, $state, $match) {
@@ -721,10 +806,10 @@
         $stateProvider.state('userlog-tags', {
             url: '/userlog-tags',
             templateUrl: 'app/userlogs/userlog-tags.html',
-            title: 'User Log Tag Management'
+            title: 'User Log Tag Management',
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTags}',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -747,12 +832,16 @@
                 matchAllTags: {
                     value: null,
                     squash: true
+                },
+                compoundTags: {
+                    value: null,
+                    squash: true
                 }
             },
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTags',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -779,6 +868,10 @@
                 matchAllTags: {
                     value: null,
                     squash: true
+                },
+                compoundTags: {
+                    value:null,
+                    squash:true
                 }
             },
             title: 'User Log Reports'

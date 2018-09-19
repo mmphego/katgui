@@ -1,4 +1,4 @@
-<div flex style="min-width: 600px; min-height: 600px" ng-controller="ConfigHealthViewCtrl as vm">
+<div flex style="min-width: 600px; min-height: 600px" ng-controller="CorrelatorHealthCtrl as vm">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true" ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend" ng-mouseenter="transparentLegend = false" ng-mouseleave="transparentLegend = true" class="md-primary md-raised md-icon-button">
             <span md-theme="white" class="fa fa-eye" ng-show="showLegend" title="Show Legend"></span>
@@ -52,15 +52,8 @@
 
                 </md-menu-content>
             </md-menu>
-
         </div>
-        <div ng-repeat="item in vm.configHealthViews[vm.selectedConfigView] track by $index" ng-switch="vm.mapType" style="display: inline-block">
-            <receptor-health-pack-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Pack"></receptor-health-pack-map>
-            <receptor-health-partition-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Partition"></receptor-health-partition-map>
-            <receptor-health-icicle-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Icicle"></receptor-health-icicle-map>
-            <receptor-health-sunburst-map class="treemap-container" size-storage-key="configHealthDisplaySize" receptor="item" ng-switch-when="Sunburst"></receptor-health-sunburst-map>
-        </div>
-
+        <correlator-health-list redraw-charts="vm.redraw" flex></correlator-health-list>
     </div>
     <div class="treemap-tooltip" style="visibility: hidden; background-color: #ffffff"></div>
 </div>

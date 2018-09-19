@@ -103,6 +103,10 @@ angular-resource@~1.6:
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/angular-resource/-/angular-resource-1.6.5.tgz#d1e712ab01afa5d2ec649f5e471673a704f2be40"
 
+angular-right-click@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/angular-right-click/-/angular-right-click-0.1.1.tgz#cb4be8cfb541e28464c249fe1e28af1853df6e70"
+
 angular-ui-router@~0.4:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/angular-ui-router/-/angular-ui-router-0.4.3.tgz#6c29546fe50b8d2f74614dcb8660d6fc40d6e167"
@@ -1421,7 +1425,7 @@ gulp-webserver@0.9.1:
     tiny-lr "0.1.4"
     watch "^0.11.0"
 
-gulp@~3.9:
+gulp@^3.9.1:
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/gulp/-/gulp-3.9.1.tgz#571ce45928dd40af6514fc4011866016c13845b4"
   dependencies:

@@ -1,10 +1,10 @@
 angular.module('katGui.d3')
 
-    .directive('receptorHealthSunburstMap', function ($rootScope, StatusService, d3Util, $localStorage) {
+    .directive('correlatorHealthSunburstMap', function ($rootScope, StatusService, d3Util, $localStorage) {
         return {
             restrict: 'E',
             scope: {
-                dataMapName: '=receptor',
+                dataMapName: '=correlator',
                 sizeStorageKey: '@'
             },
             link: function (scope, element) {
@@ -21,7 +21,7 @@ angular.module('katGui.d3')
                     .sort(function (a, b) {
                         return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
                     });
-                scope.sizeStorageKey = scope.sizeStorageKey? scope.sizeStorageKey : 'receptorHealthDisplaySize';
+                scope.sizeStorageKey = scope.sizeStorageKey? scope.sizeStorageKey : 'correlatorHealthDisplaySize';
 
                 if ($localStorage[scope.sizeStorageKey]) {
                     scope.chartSize = JSON.parse($localStorage[scope.sizeStorageKey]);
@@ -110,11 +110,7 @@ angular.module('katGui.d3')
                             var dataName = '';
                             if (scope.dataMapName instanceof Object) {
                                 dataName = d.component + '_' + d.sensor;
-                                if (d.component == "all") {
-                                  classStr = dataName = d.sensor;
-                                } else {
-                                  classStr = dataName;
-                                }
+                                classStr = dataName;
                             } else {
                                 classStr = d3Util.createSensorId(d, scope.dataName());
                                 dataName = prefix + scope.dataName() + '_' + d.sensor;

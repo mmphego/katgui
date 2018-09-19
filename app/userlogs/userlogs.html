@@ -66,6 +66,9 @@
             <span class="subheader-text" style="cursor: default; margin-right: 50px">
                 <span class="fa fa-paperclip"></span>
             </span>
+            <span class="subheader-text" style="cursor: default; width: 50px">
+                <span class="fa fa-tags"></span>
+            </span>
         </div>
         <md-button ng-init="vm.expandEntries = false" ng-click="vm.expandEntries = !vm.expandEntries" title="{{vm.expandEntries? 'Collapse All' : 'Expand All'}}" class="inline-action-button"
             style="margin-top: 16px; position: absolute; bottom: -8px; right: -8px">
@@ -100,8 +103,13 @@
                     <span class="fa fa-paperclip"></span>)
                     </span>
                 </span>
+                <span style="min-width: 48px; margin-left: 50px; font-size: 12px">
+                    <span ng-show="userlog.compound_tags.length>0">({{userlog.compound_tags.length}})
+                    <span class="fa fa-tags"></span>
+                    </span>
+                </span>
                 <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
-                           ng-click="vm.editUserLog(userlog, $event)">
+                           ng-click="$root.editUserLog(userlog, $event)">
                     <span style="display: inherit" ng-class="{'fa fa-edit': userlog.user_id === $root.currentUser.id, 'fa fa-eye': userlog.user_id !== $root.currentUser.id}"></span>
                 </md-button>
             </div>
@@ -180,8 +188,13 @@
                     <span class="fa fa-paperclip"></span>)
                     </span>
                 </span>
+                <span style="width: 48px; font-size: 12px">
+                    <span ng-show="userlog.compound_tags.length>0">({{userlog.compound_tags.length}}
+                      <span class="fa fa-tags"></span>)
+                    </span>
+                </span>
                 <md-button title="Edit User Log" class="inline-action-button" style="margin: 0"
-                           ng-click="vm.editUserLog(userlog, $event)">
+                           ng-click="$root.editUserLog(userlog, $event)">
                     <span style="display: inherit" ng-class="{'fa fa-edit': userlog.user_id === $root.currentUser.id, 'fa fa-eye': userlog.user_id !== $root.currentUser.id}"></span>
                 </md-button>
             </div>

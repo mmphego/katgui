@@ -98,7 +98,7 @@
                             <span class="icon-button fa fa-ellipsis-v" md-ink-ripple style="padding: 6px" ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
                             <md-menu-content>
                                 <md-menu-item>
-                                    <md-button ng-disabled="!(item.type === 'OBSERVATION' && parent.vm.iAmAtLeastCA())" ng-click="vm.verifyDraft(item)">Verify Draft</md-button>
+                                    <md-button ng-disabled="!(item.type === 'OBSERVATION' && parent.vm.iAmAtLeastCA())" ng-click="vm.verifyDraft(item)">Verify Assigned</md-button>
                                 </md-menu-item>
                                 <md-menu-item>
                                     <md-button ng-click="parent.vm.viewSBTasklog(item, 'dryrun')">View Dryrun</md-button>
@@ -125,6 +125,12 @@
                                     <md-button ng-disabled="!parent.vm.iAmAtLeastCA() || item.pb_id === null || item.pb_id === undefined"
                                         ng-click="parent.vm.removeSBFromAnyPB(item)" title="Remove Schedule block from any Program Block">Remove SB From PB</md-button>
                                 </md-menu-item>
+                                <md-menu-item>
+                                    <md-button ng-click="parent.vm.addUserLog($event, item)" title="Add user log">
+                                        <span style="margin-right: 4px"></span>
+                                        <span>Add User Log...</span>
+                                    </md-button>
+                                </md-menu-item>
                             </md-menu-content>
                         </md-menu>
                     </div>
@@ -142,7 +148,8 @@
                 <div ng-include="'app/scheduler/templates/sb-scheduled-list-header.html'" class="list-subheader-title"
                     style="height: 32px; width: 100%"></div>
             </md-toolbar>
-            <div layout="column" style="min-height: 350px; max-height: 350px; overflow: auto" ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div style="min-height: 350px; max-height: 350px; overflow: auto" ng-if="vm.subarray.mode !== 'auto'" layout="column" flex ng-include="'app/scheduler/templates/pb-scheduled-list.html'"></div>
+            <div style="min-height: 350px; max-height: 350px; overflow: auto" ng-if="vm.subarray.mode === 'auto'" layout="column" flex ng-include="'app/scheduler/templates/auto-schedule-list.html'"></div>
         </div>
     </div>
 

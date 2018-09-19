@@ -1,25 +1,25 @@
 (function () {
 
     angular.module('katGui.health')
-        .controller('ReceptorHealthCtrl', ReceptorHealthCtrl);
+        .controller('CorrelatorHealthCtrl', CorrelatorHealthCtrl);
 
-    function ReceptorHealthCtrl($log, $timeout, $interval, $rootScope, $stateParams, $scope, $localStorage, MonitorService,
+    function CorrelatorHealthCtrl($log, $timeout, $interval, $rootScope, $scope, $localStorage, MonitorService,
                                 ConfigService, StatusService, NotifyService) {
 
         var vm = this;
-        vm.receptorHealthTree = ConfigService.receptorHealthTree;
-        vm.receptorList = StatusService.receptors;
+        vm.correlatorHealthTree = ConfigService.correlatorHealthTree;
+        vm.correlatorList = StatusService.correlators;
         vm.subscribedSensors = [];
         vm.mapTypes = ['Pack', 'Partition', 'Icicle', 'Sunburst'];
-        vm.receptorSensorsRegex = '';
-        vm.receptorAggSensorsRegex = '';
-        vm.selectedHealthView = $stateParams.healthView ? $stateParams.healthView : '';
-        if ($localStorage['receptorHealthDisplayMapType']) {
-            vm.mapType = $localStorage['receptorHealthDisplayMapType'];
+        vm.correlatorSensorsRegex = '';
+        vm.correlatorAggSensorsRegex = '';
+
+        if ($localStorage['correlatorHealthDisplayMapType']) {
+            vm.mapType = $localStorage['correlatorHealthDisplayMapType'];
         }
 
-        if ($localStorage['receptorHealthDisplaySize']) {
-            vm.treeChartSize = JSON.parse($localStorage['receptorHealthDisplaySize']);
+        if ($localStorage['correlatorHealthDisplaySize']) {
+            vm.treeChartSize = JSON.parse($localStorage['correlatorHealthDisplaySize']);
         } else {
             vm.treeChartSize = {width: 480, height: 480};
         }
@@ -28,15 +28,15 @@
             vm.mapType = 'Sunburst';
         }
 
-        vm.populateTree = function (parent, receptor) {
+        vm.populateTree = function (parent, correlator) {
             if (parent.prefix) {
-                StatusService.receptorAggSensors[parent.sensor] = 1;
+                StatusService.correlatorAggSensors[parent.sensor] = 1;
             } else {
-                StatusService.receptorSensors[parent.sensor] = 1;
+                StatusService.correlatorSensors[parent.sensor] = 1;
             }
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function (child) {
-                    vm.populateTree(child, receptor);
+                    vm.populateTree(child, correlator);
                 });
             } else if (parent.subs && parent.subs.length > 0) {
                 parent.subs.forEach(function (sub) {
@@ -44,34 +44,34 @@
                         parent.children = [];
                     }
                     parent.children.push({name: sub, sensor: sub, hidden: true});
-                    StatusService.receptorSensors[sub] = 1;
+                    StatusService.correlatorSensors[sub] = 1;
                 });
             }
         };
 
         vm.chartSizeChanged = function () {
-            //this function is implemented in receptor-health-items
-            //this works because receptor-health-items inherits scope
-            $localStorage['receptorHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);
+            //this function is implemented in correlator-health-items
+            //this works because correlator-health-items inherits scope
+            $localStorage['correlatorHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);
             vm.redrawCharts();
         };
 
         vm.mapTypeChanged = function () {
-            $localStorage['receptorHealthDisplayMapType'] = vm.mapType;
+            $localStorage['correlatorHealthDisplayMapType'] = vm.mapType;
             vm.redrawCharts();
         };
 
         ConfigService.getSystemConfig().then(function (systemConfig) {
             StatusService.controlledResources = systemConfig.katobs.controlled_resources.split(',');
-            ConfigService.getStatusTreeForReceptor(vm.selectedHealthView)
+            ConfigService.getStatusTreeForCorrelator()
                 .then(function (result) {
-                    ConfigService.getReceptorList()
-                        .then(function (receptors) {
-                            StatusService.receptorSensors = {'marked_in_maintenance': 1};
-                            StatusService.receptorAggSensors = {};
-                            StatusService.setReceptorsAndStatusTree(result.data, receptors);
-                            StatusService.receptors.forEach(function (receptor) {
-                                vm.populateTree(StatusService.statusData[receptor], receptor);
+                    ConfigService.getCorrelatorList()
+                        .then(function (correlators) {
+                            StatusService.correlatorSensors = {'marked_in_maintenance': 1};
+                            StatusService.correlatorAggSensors = {};
+                            StatusService.setCorrelatorsAndStatusTree(result.data, correlators);
+                            StatusService.correlators.forEach(function (correlator) {
+                                vm.populateTree(StatusService.statusData[correlator], correlator);
                             });
                             vm.initSensors();
                             vm.redrawCharts();
@@ -80,13 +80,13 @@
         });
 
         vm.initSensors = function () {
-            if (StatusService.receptorSensors) {
+            if (StatusService.correlatorSensors) {
                 ConfigService.getSystemConfig().then(function(systemConfig) {
-                    vm.receptorAggSensorsRegex = Object.keys(StatusService.receptorAggSensors).join('|');
+                    vm.correlatorAggSensorsRegex = Object.keys(StatusService.correlatorAggSensors).join('|');
                     var monitorNodes = systemConfig.monitor.system_nodes.split(',').map(function (nodeName) {
                         return 'mon_' + nodeName;
                     });
-                    MonitorService.listSensorsHttp(monitorNodes.join(','), vm.receptorAggSensorsRegex, true).then(function (result) {
+                    MonitorService.listSensorsHttp(monitorNodes.join(','), vm.correlatorAggSensorsRegex, true).then(function (result) {
                         result.data.forEach(function (sensor) {
                             MonitorService.subscribeSensor(sensor);
                             vm.subscribedSensors.push(sensor);
@@ -102,8 +102,8 @@
                     });
                 });
 
-                vm.receptorSensorsRegex = Object.keys(StatusService.receptorSensors).join('|');
-                MonitorService.listSensorsHttp(StatusService.receptors.join(','), vm.receptorSensorsRegex, true).then(function (result) {
+                vm.correlatorSensorsRegex = Object.keys(StatusService.correlatorSensors).join('|');
+                MonitorService.listSensorsHttp(StatusService.correlators.join(','), vm.correlatorSensorsRegex, true).then(function (result) {
                     result.data.forEach(function (sensor) {
                         MonitorService.subscribeSensor(sensor);
                         vm.subscribedSensors.push(sensor);
@@ -117,7 +117,7 @@
         };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
-            if (sensor.name.search(vm.receptorSensorsRegex) < 0 && sensor.name.search(vm.receptorAggSensorsRegex) < 0) {
+            if (sensor.name.search(vm.correlatorSensorsRegex) < 0 && sensor.name.search(vm.correlatorAggSensorsRegex) < 0) {
                 return;
             }
             // remove the mon_proxyN from the sensor name

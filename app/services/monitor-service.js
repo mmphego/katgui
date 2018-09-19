@@ -85,6 +85,11 @@
             api.subscribe('sensor.normal.' + component + '.*');
         };
 
+        api.unsubscribeResource = function(component) {
+            // Sensor subjects are sensor.*.<component>.*
+            api.unsubscribe('sensor.normal.' + component + '.*');
+        };
+
         api.subscribe = function(sub) {
             var jsonRPC = {
                 'jsonrpc': '2.0',
@@ -143,7 +148,7 @@
         };
 
         api.subscribeToDefaultChannels = function() {
-            api.subscribe(['portal.time', 'portal.auth.>']);
+            api.subscribe(['portal.time', 'portal.auth.>', 'portal.cache_update_done']);
         };
 
         api.checkAlive = function() {
@@ -191,6 +196,8 @@
                         UserLogService.receivedUserlogMessage(msg.subject, data);
                     } else if (msg.subject.startsWith('portal.auth')) {
                         SessionService.receivedSessionMessage(msg.subject, data);
+                    } else if (msg.subject.startsWith('portal.cache_update_done')) {
+                        $rootScope.$emit('portalCacheUpdateDone', data);
                     } else {
                         $rootScope.$emit('sensorUpdateMessage', data, msg.subject);
                         api.handlePotentialGlobalSensorMessage(data);

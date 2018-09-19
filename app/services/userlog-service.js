@@ -14,7 +14,6 @@
         api.tags = [];
         api.tagsMap = {};
         api.taxonomies = [];
-        api.logFiles = [];
         api.mandatoryTagsList = ['shift', 'time-loss', 'observation', 'status', 'maintenance'];
         api.mandatoryTagsListString = api.mandatoryTagsList.join(', ');
 
@@ -39,6 +38,7 @@
             var query = '?start_time=' + start + '&end_time=' + end;
             $http(createRequest('get', urlBase() + '/query' + query)).then(
                 function (result) {
+
                     if (result && result.data) {
                         result.data.forEach(function (userlog) {
                             if (_.findIndex(api.userlogs, {id: userlog.id}) === -1) {
@@ -46,6 +46,7 @@
                             }
                         });
                         deferred.resolve(result.data);
+
                     } else {
                         $log.error('Could not retrieve any users.');
                         deferred.reject(result);
@@ -56,6 +57,21 @@
                 });
             return deferred.promise;
         };
+
+
+        api.querySystemLogs = function (programNames, startTime, endTime) {
+            var defer = $q.defer();
+            $http(createRequest(
+                'get', urlBase() + '/logs/' + programNames + '/' + startTime + '/' + endTime)).then(
+                function (result) {
+                    defer.resolve(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Could not retrieve logs", error);
+                    defer.reject(error);
+                });
+            return defer.promise;
+        };
+
 
         api.listTags = function () {
             var deferred = $q.defer();
@@ -121,44 +137,6 @@
                     defer.resolve(result);
                 }, function (error) {
                     NotifyService.showHttpErrorDialog("Could not retrieve any activity logs", error);
-                    defer.reject(error);
-                });
-            return defer.promise;
-        };
-
-        api.getLogFiles = function () {
-            var deferred = $q.defer();
-            $http(createRequest('get', urlBase() + '/log-files')).then(
-                function (result) {
-                    if (result && result.data) {
-                        api.logFiles.splice(0, api.logFiles.length);
-                        result.data.forEach(function (logFile) {
-                            api.logFiles.push(logFile);
-                        });
-                        deferred.resolve(api.logFiles);
-                    } else {
-                        $log.error('Could not retrieve the list of log files.');
-                        deferred.reject();
-                    }
-                }, function (error) {
-                    NotifyService.showHttpErrorDialog('Could not retrieve the list of log files.', error);
-                    deferred.reject();
-                });
-            return deferred.promise;
-        };
-
-        api.queryLogFiles = function (logFiles, start_time, end_time) {
-            var defer = $q.defer();
-            var searchQuery = {
-                file_names: logFiles,
-                start_time: start_time,
-                end_time: end_time
-            };
-            $http(createRequest('post', urlBase() + '/search-logs', searchQuery)).then(
-                function (result) {
-                    defer.resolve(result);
-                }, function (error) {
-                    NotifyService.showHttpErrorDialog("Error searching log files", error);
                     defer.reject(error);
                 });
             return defer.promise;
@@ -250,7 +228,7 @@
                 end_time: ulog.end_time,
                 content: ulog.content,
                 tag_ids: ulog.tag_ids,
-                metadata: ulog.metadata
+                attachments: ulog.attachments
             };
             $http(createRequest('post', urlBase() + '/' + ulog.id, modifiedUserLog)).then(
                 function (result) {
@@ -303,6 +281,26 @@
             return defer.promise;
         };
 
+        api.createCompoundTags = function (compound_tags, userlog_id) {
+            var promises = [];
+            for (var i = 0; i < compound_tags.length; i++) {
+                var defer = $q.defer();
+                var newCompoundTag = {
+                    value: compound_tags[i]
+                };
+                $http(createRequest('post', urlBase() + '/' + userlog_id + '/compound-tags/add', newCompoundTag)).then(
+                    function (result) {
+                        NotifyService.showSimpleToast("Created compound tag " + result.config.data.value + ".");
+                        defer.resolve(result);
+                    }, function (result) {
+                        NotifyService.showHttpErrorDialog("Error creating compound tag", result);
+                        defer.reject(result);
+                    });
+                    promises.push(defer)
+            }
+            return $q.all(promises);
+        };
+
         function createRequest(method, url, data) {
             var req = {
                 method: method,
@@ -339,6 +337,7 @@
                         userlog.start_time = messageData.start_time;
                         userlog.end_time = messageData.end_time;
                         userlog.tags = messageData.tags;
+                        userlog.compound_tags = messageData.compound_tags;
                         userlog.content = messageData.content;
                         userlog.attachments = messageData.attachments;
                         userlog.attachment_count = messageData.attachment_count;
@@ -368,6 +367,7 @@
                         $scope.editMode = editMode;
                         $scope.log = log;
                         $scope.tags = api.tags;
+                        $scope.compound_tags = log.compound_tags;
                         $scope.start_time = log.start_time? log.start_time: '';
                         $scope.end_time = log.end_time? log.end_time: '';
                         $scope.content = log.content;
@@ -375,6 +375,7 @@
                         $scope.attachments = log.attachments;
                         $scope.uploadingFiles = false;
                         $scope.validTags = true;
+                        $scope.addingCompoundTags = false;
                         $scope.mandatoryTagsListString = api.mandatoryTagsListString;
                         $scope.showInvalidTagsTooltip = false;
                         $scope.openedWithoutStartTime = $scope.start_time !== null && $scope.start_time.length > 0;
@@ -469,7 +470,8 @@
                                 start_time: $scope.start_time,
                                 end_time: $scope.end_time,
                                 content: $scope.content,
-                                metadata: $scope.attachments
+                                compoundTags: $scope.compound_tags,
+                                attachments: $scope.attachments
                             };
                             var tagIdList = [];
                             newTagList.forEach(function (tag) {
@@ -497,9 +499,22 @@
                                 }
                             } else {
                                 newLog.tag_ids = tagIdList;
-                                if ($scope.filesToUpload) {
+                                if ($scope.compound_tags && $scope.filesToUpload) {
                                     $scope.uploadingFiles = true;
-                                    api.addUserLog(newLog).then(function (result) {
+                                    $scope.addingCompoundTags = true;
+                                    api.addUserLog(newLog).then(function (result){
+                                        var new_userlog_id = result.data.id;
+                                        api.uploadFileToUrl($scope.filesToUpload, new_userlog_id).then(function () {
+                                            $scope.uploadingFiles = false;
+                                        });
+                                        api.createCompoundTags($scope.compound_tags, new_userlog_id).then(function () {
+                                            $scope.addingCompoundTags = false;
+                                        });
+                                        $mdDialog.hide();
+                                        defer.resolve();
+                                    });
+                                } else if ($scope.filesToUpload) {
+                                     api.addUserLog(newLog).then(function (result) {
                                             var new_userlog_id = result.data.id;
                                             api.uploadFileToUrl($scope.filesToUpload, new_userlog_id).then(function () {
                                                 $scope.uploadingFiles = false;
@@ -507,7 +522,16 @@
                                                 defer.resolve();
                                             });
                                         });
-
+                                } else if ($scope.compound_tags) {
+                                    $scope.addingCompoundTags = true;
+                                    api.addUserLog(newLog).then(function (result) {
+                                          var new_userlog_id = result.data.id;
+                                          api.createCompoundTags($scope.compound_tags, new_userlog_id).then(function () {
+                                              $scope.addingCompoundTags = false;
+                                              $mdDialog.hide();
+                                              defer.resolve();
+                                          });
+                                    });
                                 } else {
                                     api.addUserLog(newLog).then(function () {
                                         $mdDialog.hide();

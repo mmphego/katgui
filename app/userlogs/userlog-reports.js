@@ -3,8 +3,10 @@
     angular.module('katGui')
         .controller('UserlogReportsCtrl', UserlogReportsCtrl);
 
-        function UserlogReportsCtrl($rootScope, $scope, $localStorage, $filter, UserLogService,
-                                    $log, $stateParams, NotifyService, $timeout, $state, MOMENT_DATETIME_FORMAT) {
+        function UserlogReportsCtrl($rootScope, $scope, $localStorage, $filter,
+                                    UserLogService, ConfigService, MonitorService,
+                                    $log, $stateParams, NotifyService, $timeout,
+                                    $state, MOMENT_DATETIME_FORMAT) {
 
             var vm = this;
             vm.startTime = new Date();
@@ -12,11 +14,13 @@
             vm.startDatetimeReadable = moment(vm.startTime.getTime()).format('YYYY-MM-DD 00:00:00');
             vm.endDatetimeReadable = moment(vm.endTime.getTime()).format('YYYY-MM-DD 23:59:59');
             vm.tags = UserLogService.tags;
-            vm.logFiles = UserLogService.logFiles;
-            vm.selectedLogFiles = [];
+            vm.programNames = ['activity', 'alarm'];
+            vm.sensorsRegex = 'running';
+            vm.selectedProgramNames = [];
             vm.filterTags = [];
             vm.reportUserlogs = [];
             vm.andTagFiltering = false;
+            vm.compound_tags = [];
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -26,6 +30,7 @@
                 {label: 'Start Time', value: 'start_time'},
                 {label: 'Name', value: 'user.name'},
                 {label: 'End Time', value: 'end_time'},
+                {label: 'Compound Tag', value: 'compound_tags'},
                 {label: 'Content', value: 'content'}
             ];
 
@@ -35,6 +40,28 @@
 
             vm.onEndTimeSet = function () {
                 vm.endDatetimeReadable = moment(vm.endTime.getTime()).format(MOMENT_DATETIME_FORMAT);
+            };
+
+            vm.getProgramNames = function () {
+                ConfigService.getSystemConfig()
+                    .then(function() {
+                        var nodeNames = Object.keys(ConfigService.systemConfig.nodes).map(function(node) {
+                            return 'nm_' + node;
+                        });
+                        MonitorService.listSensorsHttp(nodeNames.join(','), vm.sensorsRegex).then(function(result) {
+                            result.data.forEach(function(sensor) {
+                                if (sensor.name.endsWith('running') && sensor.original_name) {
+                                    // e.g. nm_monctl.anc.running
+                                    var splitName = sensor.original_name.split('.');
+                                    var processName = splitName[1];
+                                    vm.programNames.push('kat.'+processName);
+                                }
+                            });
+                        }, function(error) {
+                            $log.error(error);
+                        });
+                    });
+
             };
 
             vm.querySearch = function (query) {
@@ -64,10 +91,14 @@
                 vm.filteredReportUserlogs.forEach(function (userlog) {
                     userlog.userName = userlog.user.name;
                     var tagNames = [];
+                    var compound_tags = [];
                     userlog.tags.forEach(function (tag) {
                         tagNames.push(tag.name);
                     });
                     userlog.tag_list = tagNames.join(',');
+                    userlog.compound_tags.forEach(function (compound_tag){
+                        compound_tags.push(compound_tag);
+                    });
                 });
 
                 var columns = [
@@ -75,7 +106,8 @@
                     {title: "Start", dataKey: "start_time"},
                     {title: "End", dataKey: "end_time"},
                     {title: "Content", dataKey: "content"},
-                    {title: "Tags", dataKey: "tag_list"}
+                    {title: "Tags", dataKey: "tag_list"},
+                    {title: "Compound Tags", dataKey: "compound_tags"}
                 ];
 
                 pdf.setFontSize(20);
@@ -93,26 +125,28 @@
                         start_time: {columnWidth: 120},
                         end_time: {columnWidth: 120},
                         content: {overflow: 'linebreak'},
-                        tag_list: {overflow: 'linebreak'}}});
+                        tag_list: {overflow: 'linebreak'},
+                        compound_tags: {overflow: 'linebreak'}}});
 
-                if (vm.selectedLogFiles.length > 0) {
+                if (vm.selectedProgramNames.length > 0) {
 
-                    UserLogService.queryLogFiles(vm.selectedLogFiles, vm.startDatetimeReadable, vm.endDatetimeReadable).then(
+                    UserLogService.querySystemLogs(
+                        vm.selectedProgramNames, vm.startDatetimeReadable, vm.endDatetimeReadable).then(
                         function (result) {
-                            Object.keys(result.data).forEach(function (key) {
+                            var logLines = [];
+                            for (var key in result.data) {
                                 columns = [{title: key, key: "line"}];
-                                var logLines = [];
                                 result.data[key].forEach(function (line) {
-                                    if (line.length > 0) {
-                                        logLines.push({line: line});
-                                    }
+                                    logLines.push({line: line});
                                 });
                                 pdf.autoTable(columns, logLines, {
                                     startY: pdf.autoTableEndPosY() + 50,
                                     theme: 'striped',
                                     margin: {top: 8, bottom: 8},
-                                    overflow: 'linebreak'});
-                            });
+                                    overflow: 'linebreak'
+                                });
+                                logLines = [];
+                            }
                             pdf.save('Userlog_Report_' + exportTime.replace(/ /g, '.') + '.pdf');
                             vm.exportingPdf = false;
                         }, function (error) {
@@ -180,7 +214,7 @@
                         });
                     }
                 });
-                UserLogService.getLogFiles();
+                vm.getProgramNames();
                 $timeout(function () {
                     var startTimeParam = moment($stateParams.startTime, MOMENT_DATETIME_FORMAT, true);
                     var endTimeParam = moment($stateParams.startTime, MOMENT_DATETIME_FORMAT, true);

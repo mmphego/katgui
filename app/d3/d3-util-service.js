@@ -114,10 +114,18 @@ angular.module('katGui.d3')
             } else  {
                 sensorValue = d.sensorValue;
             }
-            if (sensorValue) {
+            if (!d.sensor) {
                 tooltip.html(
                     "<div style='font-size: 14px'>" +
                     "<div><b>" + fullSensorName + "</b></div>" +
+                    "<div>No sensor defined</div>" +
+                    "</div>"
+                );
+            } else if (sensorValue) {
+                tooltip.html(
+                    "<div style='font-size: 14px'>" +
+                    "<div><b>" + fullSensorName + "</b></div>" +
+                    //"<div>" + prefix+","+rootName+","+d.component+","+d.sensor+"</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>value:</span>" + sensorValue.value + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>status:</span>" + sensorValue.status + "</div>" +
                     "<div><span style='width: 100px; display: inline-block; font-style: italic'>timestamp:</span>" + moment.utc(sensorValue.time, 'X').format(MOMENT_DATETIME_FORMAT) + "</div>" +
@@ -125,7 +133,7 @@ angular.module('katGui.d3')
                 );
             } else {
                 tooltip.html(
-                    "<div style='font-size: 14px'>Error Reading Sensor Value</div>"
+                    "<div style='font-size: 14px'>Error Reading Sensor Value: "+fullSensorName+"</div>"
                 );
             }
         };

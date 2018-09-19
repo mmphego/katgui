@@ -202,24 +202,18 @@
             }
         };
 
+
         vm.addUserLog = function (event) {
             var newUserLog = {
                 start_time: vm.newLogStartTimeText,
                 end_time: '',
                 tags: vm.filterTags,
+                compound_tags: [],
                 user_id: $rootScope.currentUser.id,
                 content: '',
                 attachments: []
             };
-            vm.editUserLog(newUserLog, event);
-        };
-
-        vm.editUserLog = function (userlog, event) {
-            UserLogService.editUserLog(
-                userlog, $rootScope.currentUser.id === userlog.user_id, 'userlogDialogContentElement', event)
-                .then(function() {
-                    $state.transitionTo('userlogs', null, { notify: false, reload: false });
-                });
+            $rootScope.editUserLog(newUserLog, event);
         };
 
         vm.afterInit = function() {
@@ -238,6 +232,7 @@
                 });
                 if ($stateParams.action === 'add') {
                     var tags = [];
+                    var compound_tags = [];
                     var content = '';
                     if ($stateParams.content) {
                         content = $stateParams.content.replace(/\\n/g, '\n'); // preserve newlines
@@ -248,17 +243,21 @@
                             return tagNames.indexOf(tag.name) > -1;
                         });
                     }
+                    if ($stateParams.compoundTags) {
+                        compound_tags = $stateParams.compoundTags.split(',');
+                    }
                     var newUserLog = {
                         start_time: $stateParams.startTime,
                         end_time: $stateParams.endTime,
                         tags: tags,
+                        compound_tags: compound_tags,
                         user_id: $rootScope.currentUser.id,
                         content: content,
                         attachments: []
                     };
                     // allow some time before showing the dialog to avoid the dialog overlay bugging out
                     $timeout(function () {
-                        vm.editUserLog(newUserLog, event);
+                        $rootScope.editUserLog(newUserLog, event);
                     }, 250);
                 } else if ($stateParams.action === 'edit' && $stateParams.id) {
                     UserLogService.getUserLogById($stateParams.id).then(function (result) {
@@ -298,7 +297,7 @@
 
                         // allow some time before showing the dialog to avoid the dialog overlay bugging out
                         $timeout(function () {
-                            vm.editUserLog(userlog, event);
+                            $rootScope.editUserLog(userlog, event);
                         }, 250);
                     });
                 }

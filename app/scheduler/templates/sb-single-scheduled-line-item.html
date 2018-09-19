@@ -27,7 +27,7 @@
 </div>
 <span md-ink-ripple class="icon-button fa" title="{{sb.state !== 'ACTIVE'? 'Execute': 'Stop Execution'}}"
     ng-class="{'fa-play green-color': sb.state !== 'ACTIVE' && sb.obs_readiness === 'READY_TO_EXECUTE', 'fa-stop red-color': sb.state === 'ACTIVE', 'opacity-0': sb.state !== 'ACTIVE' && sb.obs_readiness !== 'READY_TO_EXECUTE'}"
-    style="min-width: 26px; max-width: 26px"
+    style="min-width: 39px; max-width: 39px; text-align: start;"
     ng-click="sb.state === 'ACTIVE'? parent.vm.stopExecuteSchedule(sb) : parent.vm.executeSchedule(sb); $event.stopPropagation()"></span>
 <md-menu md-theme="{{$root.themePrimaryButtons}}">
     <span class="icon-button fa fa-ellipsis-v" md-ink-ripple ng-click="$mdMenu.open($event); $event.stopPropagation()"></span>
@@ -86,6 +86,12 @@
         <md-menu-item>
             <md-button ng-disabled="!parent.vm.iAmAtLeastCA() || sb.pb_id === null || sb.pb_id === undefined"
                 ng-click="parent.vm.removeSBFromAnyPB(sb)" title="Remove Schedule block from any Program Block">Remove SB From PB</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-click="parent.vm.addUserLog($event, item)" title="Add user log">
+                <span style="margin-right: 4px"></span>
+                <span>Add User Log...</span>
+            </md-button>
         </md-menu-item>
     </md-menu-content>
 </md-menu>
