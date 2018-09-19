@@ -101,8 +101,7 @@
                 });
                 var requestParams = {
                     name: dataSensorName,
-                    // start: startDate,
-                    start: 1515642974,
+                    start: startDate,
                     end: 'now',
                     limit: dataLimit,
                     allFields: vm.includeValueTimestamp,
@@ -124,7 +123,7 @@
             var newWindData = [];
             var newSensorNames = {};
             sensorData.forEach(function (sensor) {
-                var sensorName = sensor.name;
+                var sensorName = sensor.sensor;
                 var latestSensor = {
                     status: sensor.status,
                     sensor: sensorName,
