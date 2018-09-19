@@ -298,6 +298,9 @@
             if (!vm.searchDiscrete) {
                 interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
             }
+            else {
+                interval = 0;
+            }
 
             var requestParams = {
                 name: sensor.name,
