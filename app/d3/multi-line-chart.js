@@ -888,7 +888,7 @@ angular.module('katGui.d3')
                             }
                             if (sensorInfo.min_value_time) {
                                 value_time = sensorInfo.min_value_time * 1000;
-			    }
+                            }
                             if (sensorInfo.sample_time) {
                                 sample_time = sensorInfo.sample_time * 1000;
                             }
