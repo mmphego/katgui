@@ -874,17 +874,20 @@ angular.module('katGui.d3')
                         var dataString = '';
                         var sensorInfo = sensorValues.values[i];
                         if (useUnixTimestamps) {
-                            if (includeValueTimestamp && (sensorInfo.value_time || sensorInfo.value_ts)) {
-                                dataString += ((sensorInfo.value_time || (sensorInfo.value_ts / 1000))) + ',';
+                            if (includeValueTimestamp && (sensorInfo.value_time || sensorInfo.value_ts || sensorInfo.min_value_time)) {
+                                dataString += ((sensorInfo.value_time || (sensorInfo.value_ts / 1000) || sensorInfo.min_value_time)) + ',';
                             } else if (includeValueTimestamp) {
                                 dataString += ',';
                             }
-                            dataString += ((sensorInfo.sample_time || sensorInfo.sample_ts / 1000)) + ',';
+                            dataString += ((sensorInfo.sample_time || sensorInfo.sample_ts / 1000 || sensorInfo.min_sample_time)) + ',';
                         } else {
                             var value_time = null;
                             var sample_time = null;
                             if (sensorInfo.value_time) {
                                 value_time = sensorInfo.value_time * 1000;
+                            }
+                            if (sensorInfo.min_value_time) {
+                                value_time = sensorInfo.min_value_time * 1000;
                             }
                             if (sensorInfo.sample_time) {
                                 sample_time = sensorInfo.sample_time * 1000;

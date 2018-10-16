@@ -25,7 +25,8 @@
                 'api/query/?sensor=' + params.name +
                 '&start_time=' + params.start +
                 '&end_time=' + params.end +
-                '&limit=' + params.limit;
+                '&limit=' + params.limit +
+                '&include_value_time=True';
             if (params.interval >= 0) {
                 requestStr += '&interval=' + params.interval + '&avg=1';
             }
