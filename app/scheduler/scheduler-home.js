@@ -1020,7 +1020,7 @@
             if (sb) {
                 dryrun_link = ConfigService.GetKATTaskFileServerURL() + "/tailtask/" + sb.id_code + "/dryrun"
                 content = "Schedule block: " + sb.id_code + "\n\nDry run link: " + dryrun_link;
-                compoundTag = ["SB_:" + sb.id_code + ":_"]
+                compoundTag = ["SB_:{" + sb.id_code + "}:_"]
                 if (sb.actual_start_time) {
                     start_time = sb.actual_start_time.split('.')[0];
                 }
