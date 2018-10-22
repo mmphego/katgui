@@ -33,6 +33,7 @@
         <div md-theme="{{$root.themePrimaryButtons}}" layout="column">
             <md-button class="md-raised md-primary" ng-click="$root.stateGo('operator-control')"><span class="fa fa-cogs"></span>Operator Controls</md-button>
             <md-button class="md-raised md-primary" ng-click="$root.stateGo('health')"><span class="fa fa-heart"></span>Top Health</md-button>
+            <md-button class="md-raised md-primary" ng-click="$root.stateGo('skarabHealth')"><span class="fa fa-futbol-o"></span>SKARAB Health</md-button>
             <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorStatus')"><span class="fa fa-th"></span>Receptor Status</md-button>
             <md-button class="md-raised md-primary" ng-click="$root.stateGo('receptorPointing')"><span class="fa fa-crosshairs"></span>Receptor Pointing</md-button>
             <div ng-repeat="healthView in $root.receptorHealthViews | orderBy: reverse:true" layout="column">

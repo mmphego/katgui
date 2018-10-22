@@ -544,6 +544,11 @@
             templateUrl: 'app/health/health.html',
             title: 'TOP Health & State'
         });
+        $stateProvider.state('skarabHealth', {
+            url: '/skarab-health',
+            templateUrl: 'app/health/skarab-health/skarab-health.html',
+            title: 'SKARAB Health'
+        });
         $stateProvider.state('correlatorHealth', {
             url: '/correlator-health',
             templateUrl: 'app/health/correlator-health/correlator-health.html',
