@@ -4,7 +4,7 @@
         .controller('SensorListCtrl', SensorListCtrl);
 
     function SensorListCtrl($scope, $rootScope, $timeout, KatGuiUtil, $interval, $stateParams, MonitorService,
-        $log, $mdDialog, MOMENT_DATETIME_FORMAT, NotifyService, ConfigService, $localStorage, $state) {
+        $log, $mdDialog, MOMENT_DATETIME_FORMAT, UserLogService, NotifyService, ConfigService, $localStorage, $state) {
 
         var vm = this;
         vm.resources = ConfigService.resources;
@@ -13,7 +13,6 @@
         vm.resourceSensorsBeingDisplayed = '';
         vm.searchFilter = $stateParams.filter ? $stateParams.filter : '';
         vm.sensorsPlotNames = [];
-
         vm.showTips = false;
         vm.showContextZoom = false;
         vm.useFixedYAxis = false;
@@ -24,6 +23,7 @@
         vm.sensorValues = {};
         vm.showValueTimestamp = false;
         vm.subscribedSensors = [];
+        vm.selectedSensor = '';
 
         if ($localStorage.currentSensorNameColumnWidth) {
             vm.currentSensorNameColumnWidth = $localStorage.currentSensorNameColumnWidth;
@@ -72,6 +72,58 @@
         if ($localStorage.sensorListShowValueTimestamp) {
             vm.showValueTimestamp = $localStorage.sensorListShowValueTimestamp;
         }
+
+        vm.selectedSensor = '';
+        vm.setSelectedSensor = function(sensor) {
+            vm.selectedSensor = sensor;
+        }
+
+        vm.openUserLog = function() {
+          UserLogService.listTags();
+          var content = '';
+          var endTime = '';
+          var allocations = [];
+          var compoundTags = [];
+          var assignedResources = [];
+          var startTime = $rootScope.utcDateTime;
+
+          if (vm.selectedSensor) {
+              var sensor = vm.sensorValues[vm.selectedSensor]
+              content = "Sensor: " + sensor.shortName +
+              " Status: " + sensor.status +
+              " Time: " + sensor.received_timestamp +
+              "\nValue: " + sensor.value
+              startTime = sensor.timestamp
+              compoundTag = $rootScope.deriveCompoundTag(sensor.original_name)
+              if (compoundTag) {
+                  compoundTags.push(compoundTag)
+              }
+          }
+          var tag = _.findWhere(
+              UserLogService.tags,
+              {name: vm.resourceSensorsBeingDisplayed})
+          if (tag) {
+              assignedResources.push(tag);
+          }
+
+          var newUserLog = {
+              start_time: startTime,
+              end_time: endTime,
+              tags: assignedResources,
+              compound_tags: compoundTags,
+              user_id: $rootScope.currentUser.id,
+              content: content,
+              attachments: []
+          };
+          $rootScope.editUserLog(newUserLog, event);
+        };
+
+        vm.menuItems = [
+          {
+            text:"Add user log...",
+            callback: vm.openUserLog
+          }
+        ];
 
         vm.saveLocalStorage = function() {
             $localStorage.sensorListShowValueTimestamp = vm.showValueTimestamp;

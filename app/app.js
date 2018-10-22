@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    angular.module('katGui', ['ngMaterial', 'ngMessages',
+    angular.module('katGui', ['ngMaterial', 'ngMessages', 'ngRightClick',
             'ui.bootstrap',
             'ui.router',
             'ngAnimate', 'katGui.services',
@@ -425,6 +425,16 @@
                 });
         };
 
+        $rootScope.deriveCompoundTag = function(sensorName) {
+            var compoundTag = '';
+            try {
+              compoundTag = sensorName.replace(/\./g, '_:_')
+            } catch (error) {
+                $log.error('Could not extract compound tag string ' + error);
+            }
+            return compoundTag
+        }
+
         $rootScope.openKibanaInNewTab = function(programName) {
             var kibanaUrl;
             if (programName) {
@@ -752,7 +762,7 @@
             title: 'Weather'
         });
         var userlogsState = {
-            url: '/userlogs?action&id&startTime&endTime&tags&content',
+            url: '/userlogs?action&id&startTime&endTime&tags&content&compoundTags',
             templateUrl: 'app/userlogs/userlogs.html',
             title: 'User Logging',
             //makes the params optional
@@ -775,7 +785,11 @@
                 }, content: {
                     value: null,
                     squash: true
+                }, compoundTags: {
+                    value: null,
+                    squash: true
                 }
+
             }
         };
         $urlRouterProvider.when(userlogsState.url, function ($location, $state, $match) {
@@ -792,10 +806,10 @@
         $stateProvider.state('userlog-tags', {
             url: '/userlog-tags',
             templateUrl: 'app/userlogs/userlog-tags.html',
-            title: 'User Log Tag Management'
+            title: 'User Log Tag Management',
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTags}',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -818,12 +832,16 @@
                 matchAllTags: {
                     value: null,
                     squash: true
+                },
+                compoundTags: {
+                    value: null,
+                    squash: true
                 }
             },
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTags',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
@@ -850,6 +868,10 @@
                 matchAllTags: {
                     value: null,
                     squash: true
+                },
+                compoundTags: {
+                    value:null,
+                    squash:true
                 }
             },
             title: 'User Log Reports'

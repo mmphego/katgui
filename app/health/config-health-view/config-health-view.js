@@ -120,6 +120,13 @@
             if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
                 return;
             }
+            /* Remove the mon_N from the sensor name,
+               this is because for now static portal config does not know about
+               monitor(e.g mon_proxy01, mon_monctl) prefix
+            */
+            if (sensor.name.startsWith('mon_')) {
+                sensor.name = sensor.name.replace(/^mon_.*agg_/, 'agg_');
+            }
             StatusService.sensorValues[sensor.name] = sensor;
             d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
         });

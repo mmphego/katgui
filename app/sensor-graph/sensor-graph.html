@@ -92,7 +92,7 @@
             <div flex class="sensor-search-name-list unselectable md-whiteframe-z1">
                 <div class="sensor-search-result-item" ng-repeat="sensor in vm.sensorSearchNames | orderBy:'name' track by $index"
                     ng-click="vm.findSensorData(sensor);" title="{{sensor.attributes.description}}">
-                    <span>{{sensor.name}}</span>
+                    <span ng-right-click menu-items="vm.menuItems">{{sensor.name}}</span>
                 </div>
             </div>
 
@@ -158,7 +158,7 @@
                 <span flex class="fa fa-arrows-v"></span>
             </div>
         </md-toolbar>
-        <multi-line-chart flex data="vm.sensorData" load-options-function="vm.loadOptions" redraw-function="vm.redrawChart"
+        <multi-line-chart flex data="vm.sensorData" ng-right-click menu-items="vm.menuItems" load-options-function="vm.loadOptions" redraw-function="vm.redrawChart"
             clear-function="vm.clearChart" remove-sensor-function="vm.removeSensorLine" download-csv="vm.downloadAsCSV"
             y-max="vm.yAxisMaxValue" y-min="vm.yAxisMinValue" mouse-over-tooltip="true"></multi-line-chart>
         <div layout="row" class="floating-chart-actions">

@@ -20,6 +20,7 @@
             vm.filterTags = [];
             vm.reportUserlogs = [];
             vm.andTagFiltering = false;
+            vm.compound_tags = [];
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -29,6 +30,7 @@
                 {label: 'Start Time', value: 'start_time'},
                 {label: 'Name', value: 'user.name'},
                 {label: 'End Time', value: 'end_time'},
+                {label: 'Compound Tag', value: 'compound_tags'},
                 {label: 'Content', value: 'content'}
             ];
 
@@ -89,10 +91,14 @@
                 vm.filteredReportUserlogs.forEach(function (userlog) {
                     userlog.userName = userlog.user.name;
                     var tagNames = [];
+                    var compound_tags = [];
                     userlog.tags.forEach(function (tag) {
                         tagNames.push(tag.name);
                     });
                     userlog.tag_list = tagNames.join(',');
+                    userlog.compound_tags.forEach(function (compound_tag){
+                        compound_tags.push(compound_tag);
+                    });
                 });
 
                 var columns = [
@@ -100,7 +106,8 @@
                     {title: "Start", dataKey: "start_time"},
                     {title: "End", dataKey: "end_time"},
                     {title: "Content", dataKey: "content"},
-                    {title: "Tags", dataKey: "tag_list"}
+                    {title: "Tags", dataKey: "tag_list"},
+                    {title: "Compound Tags", dataKey: "compound_tags"}
                 ];
 
                 pdf.setFontSize(20);
@@ -118,7 +125,8 @@
                         start_time: {columnWidth: 120},
                         end_time: {columnWidth: 120},
                         content: {overflow: 'linebreak'},
-                        tag_list: {overflow: 'linebreak'}}});
+                        tag_list: {overflow: 'linebreak'},
+                        compound_tags: {overflow: 'linebreak'}}});
 
                 if (vm.selectedProgramNames.length > 0) {
 
