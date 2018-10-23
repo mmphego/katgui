@@ -80,8 +80,8 @@
             });
 
         vm.initSensors = function() {
-            var startDate = vm.getTimestampFromHistoricalRange() / 1000;
-            vm.dataTimeWindow = new Date().getTime() - startDate;
+            var startDateSec = vm.getTimestampFromHistoricalRange() / 1000;
+            vm.dataTimeWindow = new Date().getTime() - startDateSec;
             MonitorService.listSensorsHttp('anc', vm.sensorsRegex, true).then(function (result) {
                 result.data.forEach(function (sensor) {
                     vm.sensorUpdateMessage(null, sensor);
@@ -101,7 +101,7 @@
                 });
                 var requestParams = {
                     name: dataSensorName,
-                    start: startDate,
+                    start: startDateSec,
                     end: 'now',
                     limit: dataLimit,
                     allFields: vm.includeValueTimestamp,

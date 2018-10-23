@@ -265,23 +265,23 @@
         };
 
         vm.findSensorData = function (sensor, suppressToast) {
-            var startDate = vm.sensorStartDatetime.getTime();
-            var endDate = vm.sensorEndDatetime.getTime();
+            var startDateMs = vm.sensorStartDatetime.getTime();
+            var endDateMs = vm.sensorEndDatetime.getTime();
             if (vm.showRelativeTime) {
-                endDate = (vm.getMillisecondsDifference(
+                endDateMs = (vm.getMillisecondsDifference(
                     vm.plusMinus,
-                    startDate,
+                    startDateMs,
                     vm.intervalNum,
                     vm.intervalType));
             }
 
-            if (endDate < startDate) {
-                startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime();
+            if (endDateMs < startDateMs) {
+                startDateMs = endDateMs;
+                endDateMs = vm.sensorStartDatetime.getTime();
             }
             // katstore api takes seconds, we have it as ms here
-            startDate = startDate / 1000;
-            endDate = endDate / 1000;
+            startDateSec = startDateMs / 1000;
+            endDateSec = endDateMs / 1000;
 
             if (vm.useFixedXAxis) {
                 vm.showOptionsChanged();
@@ -304,8 +304,8 @@
 
             var requestParams = {
                 name: sensor.name,
-                start: startDate,
-                end: endDate,
+                start: startDateSec,
+                end: endDateSec,
                 limit: SAMPLES_QUERY_LIMIT,
                 allFields: vm.includeValueTimestamp
             };
@@ -514,8 +514,8 @@
                 vm.sensorEndDatetime = moment.utc($stateParams.endTime, MOMENT_DATETIME_FORMAT, true).toDate();
                 vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
                 vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
-                var startDate = vm.sensorStartDatetime.getTime();
-                var endDate = vm.sensorEndDatetime.getTime();
+                var startDateMs = vm.sensorStartDatetime.getTime();
+                var endDateMs = vm.sensorEndDatetime.getTime();
                 var intervalParams = $stateParams.interval.split(',');
                 var discreteParam = $stateParams.discrete;
                 if (discreteParam === 'discrete') {
@@ -538,8 +538,8 @@
                 var sensorNames = $stateParams.sensors.split(',');
 
                 // katstore api takes seconds, we have it as ms here
-                startDate = startDate / 1000;
-                endDate = endDate / 1000;
+                startDateSec = startDateMs / 1000;
+                endDateSec = endDateMs / 1000;
 
                 vm.findSensorNames(sensorNames.join('|'), true).then(function (sensors) {
                     var sensorTypes = [];
@@ -561,8 +561,8 @@
                     sensors.forEach(function (sensor) {
                         var requestParams = {
                             name: sensor.name,
-                            start: startDate,
-                            end: endDate,
+                            start: startDateSec,
+                            end: endDateSec,
                             limit: SAMPLES_QUERY_LIMIT,
                             allFields: vm.includeValueTimestamp
                         };
