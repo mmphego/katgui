@@ -21,7 +21,8 @@ angular.module('katGui.d3')
 
             var chart_margin = {
               left: 30
-            }
+            };
+
             var svg;
             var width, height, radius;
 
@@ -58,7 +59,7 @@ angular.module('katGui.d3')
                                  	  .style("fill-opacity", .8)
                                     .style("stroke-width", 5);
 
-                                  let x =  d3.event.pageX;
+                                  var x =  d3.event.pageX;
                                   if (d.slot > 43*2/3)
                                     x = x-350;
                                   tooltipdiv.html(
@@ -98,7 +99,7 @@ angular.module('katGui.d3')
                                 .attr("class", function(d) {
                                   return d.status + "-child";
                                 });
-                 }
+                 };
 
 
                 var area = svg.append("g")

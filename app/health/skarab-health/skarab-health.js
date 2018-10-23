@@ -16,9 +16,9 @@
         // initialise data with racks and slots
         vm.data = [];
         var id = 0;
-        for (let i=1; i<(vm.NUM_OF_RACKS+1); i++) {
-          for (let j=1; j<(vm.NUM_OF_SLOTS+1); j++) {
-            let obj = {};
+        for (var i=1; i<(vm.NUM_OF_RACKS+1); i++) {
+          for (var j=1; j<(vm.NUM_OF_SLOTS+1); j++) {
+            var obj = {};
             obj.rack = i;
             obj.slot = j;
             obj.position = '';
@@ -36,13 +36,13 @@
         vm.initPositionSensors = function() {
 
 //          let sensorsRegex = 'skarab.position';
-          let sensorsRegex = 'device_status';
+          var sensorsRegex = 'device_status';
           MonitorService.listSensorsHttp('all', sensorsRegex).then(function (result) {
-              for (let i=0; i<result.data.length; i++) {
-                let sensor = result.data[i];
-                let position = sensor.value;
+              for (var i=0; i<result.data.length; i++) {
+                var sensor = result.data[i];
+                var position = sensor.value;
                 position = 'B09-30+1';
-                let device_status_name = sensor.name.replace('position', 'device_status');
+                var device_status_name = sensor.name.replace('position', 'device_status');
                 vm.updatePositionSensor(position, device_status_name);
               }
               vm.initStatusSensors();
@@ -53,7 +53,7 @@
         };
 
         vm.initStatusSensors = function() {
-          let sensorsRegex = 'device_status';
+          var sensorsRegex = 'device_status';
           MonitorService.listSensorsHttp('all', sensorsRegex).then(function (result) {
               result.data.forEach(function (sensor) {
                 vm.updateStatusSensor(sensor);
@@ -70,12 +70,12 @@
             return;
           }
 
-          let p = position.split(/[-,+]/);
-          let rack = Number(p[0].substring(1));
-          let slot = Number(p[1]);
+          var p = position.split(/[-,+]/);
+          var rack = Number(p[0].substring(1));
+          var slot = Number(p[1]);
 
-          for (let i=0; i<vm.data.length; i++) {
-            let obj = vm.data[i];
+          for (var i=0; i<vm.data.length; i++) {
+            var obj = vm.data[i];
             if (obj.rack==rack && obj.slot==slot) {
               obj.position = position;
               obj.sensor_name = sensorName;
@@ -85,8 +85,8 @@
         };
 
         vm.updateStatusSensor = function(sensor) {
-          for (let i=0; i<vm.data.length; i++) {
-            let obj = vm.data[i];
+          for (var i=0; i<vm.data.length; i++) {
+            var obj = vm.data[i];
             if (obj.sensor_name==sensor.name) {
               obj.sensor_value = sensor;
               obj.status = sensor.status;

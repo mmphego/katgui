@@ -58,7 +58,9 @@ gulp.task('css:main', ['clean'], function () {
     return gulp.src(['node_modules/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
         'app/app.less'])
         .pipe(insert.prepend('@fa-font-path: "fonts";'))
-        .pipe(less().on('error', util.log))
+        .pipe(less().on('error', function(e){
+	    console.log(e);
+	}))
         .pipe(cssmin({
             keepSpecialComments: false,
             shorthandCompacting: false,
@@ -97,7 +99,9 @@ gulp.task('js', ['clean'], function () {
         .pipe(concat('app.full.min.' + buildDate + '.js'))
         .pipe(insert.append('document.katguiBuildDate = ' + buildDate))
         .pipe(ngannotate())
-        .pipe(uglify())
+        .pipe(uglify().on("error", function(e){
+	    console.log(e);
+	 }))
         .pipe(gulp.dest('dist/'));
 });
 
