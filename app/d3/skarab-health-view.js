@@ -64,12 +64,12 @@ angular.module('katGui.d3')
                                     x = x-350;
                                   tooltipdiv.html(
                                         "<table>" +
-                                        "<tr><th colspan='2'>" + d.sensor_value.name + " value at <br>" + format(new Date(d.sensor_value.time*1000)) + "</th></tr>" +
+                                        "<tr><th colspan='2'>" + d.name + " value at <br>" + format(new Date(d.sensor.time*1000)) + "</th></tr>" +
                                         "<tr><td class='sensor_field'>Location</td><td>" + d.position + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Description</td><td>" + d.sensor_value.description + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Status</td><td>" + d.sensor_value.status + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value</td><td>" + d.sensor_value.value + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value Timestamp</td><td>" + format(new Date(d.sensor_value.value_ts*1000)) + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Description</td><td>" + d.sensor.description + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Status</td><td>" + d.sensor.status + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Value</td><td>" + d.sensor.value + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Value Timestamp</td><td>" + format(new Date(d.sensor.value_ts*1000)) + "</td></tr>" +
                                         "</table>")
                                        .style("left", x + "px")
                                        .style("top", (d3.event.pageY-50) + "px");
@@ -122,12 +122,12 @@ angular.module('katGui.d3')
                   .call(draw_circle);
 
                var textArea = area.append('g');
-               var texts = textArea.selectAll("text")
+               var slotTexts = textArea.selectAll("text")
                                 .data(['05','10','15','20','25','30','35','40'])
                                 .enter()
                                 .append("text");
 
-              texts.attr("x", function(d) { return x(d)-8; })
+              slotTexts.attr("x", function(d) { return x(d)-8; })
                     .attr("y", function(d) { return y(scope.vm.NUM_OF_RACKS+1)+radius; })
                     .text( function (d) { return ""+d; })
                     .attr("font-family", "sans-serif")
@@ -135,12 +135,12 @@ angular.module('katGui.d3')
                     .attr("fill", "grey");
 
               textArea = area.append('g');
-              texts = textArea.selectAll("text")
+              var rackTexts = textArea.selectAll("text")
                                .data(['1','2','3','4','5','6','7','8','9'])
                                .enter()
                                .append("text");
 
-              texts.attr("x", function(d) { return x(0); })
+              rackTexts.attr("x", function(d) { return x(0); })
                    .attr("y", function(d) { return y(d)+8; })
                    .text( function (d) { return ""+d; })
                    .attr("font-family", "sans-serif")

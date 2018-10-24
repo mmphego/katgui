@@ -22,8 +22,8 @@
             obj.rack = i;
             obj.slot = j;
             obj.position = '';
-            obj.sensor_name = '';
-            obj.sensor_value = {};
+            obj.sensorName = '';
+            obj.sensorValue = {};
             obj.status = 'unknown';
             obj.id = id;
             vm.data.push(obj);
@@ -35,15 +35,15 @@
 
         vm.initPositionSensors = function() {
 
-//          let sensorsRegex = 'skarab.position';
+          //// TODO: use vm.sensorsRegex when the real sensors are available.
           var sensorsRegex = 'device_status';
           MonitorService.listSensorsHttp('all', sensorsRegex).then(function (result) {
               for (var i=0; i<result.data.length; i++) {
                 var sensor = result.data[i];
                 var position = sensor.value;
                 position = 'B09-30+1';
-                var device_status_name = sensor.name.replace('position', 'device_status');
-                vm.updatePositionSensor(position, device_status_name);
+                var deviceStatusName = sensor.name.replace('position', 'device_status');
+                vm.updatePositionSensor(position, deviceStatusName);
               }
               vm.initStatusSensors();
 
@@ -53,6 +53,7 @@
         };
 
         vm.initStatusSensors = function() {
+          //// TODO: use vm.sensorsRegex when the real sensors are available.
           var sensorsRegex = 'device_status';
           MonitorService.listSensorsHttp('all', sensorsRegex).then(function (result) {
               result.data.forEach(function (sensor) {
@@ -74,11 +75,14 @@
           var rack = Number(p[0].substring(1));
           var slot = Number(p[1]);
 
+//// TODO: There could be two sensors linked to the same position
+// (one each from cbfhealth and cbfhealth2 proxies). Current code does not
+// allow for that. If tie-breaker is required then need to reimplement this
           for (var i=0; i<vm.data.length; i++) {
             var obj = vm.data[i];
             if (obj.rack==rack && obj.slot==slot) {
               obj.position = position;
-              obj.sensor_name = sensorName;
+              obj.sensorName = sensorName;
               return;
             }
           }
@@ -87,8 +91,8 @@
         vm.updateStatusSensor = function(sensor) {
           for (var i=0; i<vm.data.length; i++) {
             var obj = vm.data[i];
-            if (obj.sensor_name==sensor.name) {
-              obj.sensor_value = sensor;
+            if (obj.sensorName==sensor.name) {
+              obj.sensor = sensor;
               obj.status = sensor.status;
               if (vm.updateStatus)
                 vm.updateStatus(obj);
