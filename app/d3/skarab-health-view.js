@@ -167,6 +167,10 @@ angular.module('katGui.d3')
                 }
             });
 
+            scope.$on('$destroy', function() {
+              unbindResize();
+            });
+
 
             scope.vm.updateStatus = function(obj) {
               if (!circles)
@@ -190,10 +194,6 @@ angular.module('katGui.d3')
                       return d.status + "-child";
                     });
             };
-
-            scope.$on('$destroy', function() {
-                $interval.cancel(scope.unbindResize());
-            });
         }
     };
 });
