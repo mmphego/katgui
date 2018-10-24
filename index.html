@@ -89,6 +89,7 @@
 <script src="app/d3/correlator-health-sunburst-map.js"></script>
 <script src="app/d3/status-single-level-tree-map.js"></script>
 <script src="app/d3/timeline.js"></script>
+<script src="app/d3/skarab-health-view.js"></script>
 
 <script src="app/app.js"></script>
 <script src="app/about/about.js"></script>
@@ -100,6 +101,7 @@
 <script src="app/operator-control/operator-control.js"></script>
 <script src="app/health/health.js"></script>
 <script src="app/health/correlator-health/correlator-health.js"></script>
+<script src="app/health/skarab-health/skarab-health.js"></script>
 <script src="app/health/receptor-health/receptor-health.js"></script>
 <script src="app/health/receptor-status/receptor-status.js"></script>
 <script src="app/health/receptor-pointing/receptor-pointing.js"></script>
@@ -161,9 +163,15 @@
                         <div class="menu-item" layout="row" layout-align="start center">
                             <md-button><span class="fa fa-heart"></span><span>Health Views</span></md-button>
                         </div>
+
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('health')">
                             <md-button><span class="fa fa-heart"></span><span>Top Health</span></md-button>
                         </div>
+
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('skarabHealth')">
+                            <md-button><span class="fa fa-futbol-o"></span><span>SKARAB Health</span></md-button>
+                        </div>
+
                         <div class="menu-item menu-item-indented" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('correlatorHealth')">
                             <md-button><span class="fa fa-th-large"></span><span>Correlator Health</span></md-button>
                         </div>
