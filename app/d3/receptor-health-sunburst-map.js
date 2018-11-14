@@ -144,7 +144,7 @@ angular.module('katGui.d3')
                             if (d.depth > 0) {
                                 return "rotate(" + computeTextRotation(d) + ")";
                             } else {
-                                return "translate(-25,0)";
+                                return "translate(0,0)";
                             }
                         })
                         .attr("x", function (d) {
