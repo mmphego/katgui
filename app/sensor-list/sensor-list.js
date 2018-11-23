@@ -94,10 +94,23 @@
               " Time: " + sensor.received_timestamp +
               "\nValue: " + sensor.value
               startTime = sensor.timestamp
-              compoundTag = $rootScope.deriveCompoundTag(sensor.original_name)
-              if (compoundTag) {
+              if (sensor.original_name){
+                compoundTag = $rootScope.deriveCompoundTag(sensor.original_name)
+                if (compoundTag) {
                   compoundTags.push(compoundTag)
-              }
+                }
+              } else {
+                  _device_name = sensor.shortName.split(/_(.+)/)[0]
+                  _sensor = sensor.shortName.split(/_(.+)/)[1]
+                  if (_device_name && _sensor) {
+                    sensor.shortName = _device_name.concat('.', _sensor)
+                  }
+                  original_name = sensor.component.concat('.', sensor.shortName)
+                  compoundTag = $rootScope.deriveCompoundTag(original_name)
+                  if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                  }
+                }
           }
           var tag = _.findWhere(
               UserLogService.tags,
