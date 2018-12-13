@@ -235,7 +235,7 @@ angular.module('katGui.d3')
                             var proj_actual = projection([d.pos_actual_pointm_azim.value, d.pos_actual_pointm_elev.value]);
                             d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
                             d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
-                            d.proj_actual = round(proj_actual[0], 20) + ',' + round(proj_actual[1], 20);
+                            d.proj_actual = round(proj_actual[0], 25) + ',' + round(proj_actual[1], 25);
                             if (!scope.positions[d.proj_actual]) {
                                 scope.positions[d.proj_actual] = [];
                             }
@@ -281,9 +281,9 @@ angular.module('katGui.d3')
                             .append("foreignObject")
                             .attr("transform", function (d) {
                                     var proj = d.split(',');
-                                    proj[0] = parseInt(proj[0]) + 12;
-                                    proj[1] = parseInt(proj[1]);
-                                    return "translate(" + proj + ")";
+                                    proj[0] = parseInt(proj[0]) - 12;
+                                    proj[1] = parseInt(proj[1]) + 4;
+                                    return "translate(" + proj + ")\n";
                             })
                             .append('xhtml:div')
                             .html(function(d){
@@ -291,7 +291,7 @@ angular.module('katGui.d3')
                                 var names = val.map(a => a.name);
                                 var combinedNames = [];
                                 var list = [];
-                                
+
                                 for (var i = 0; i < names.length; i++) {
                                     var name = names[i];
                                     if (list.length == 0)
@@ -316,7 +316,7 @@ angular.module('katGui.d3')
                                     } else if (list.length == 2) {
                                         result += list[0] + ', ' + list[1] + ', ';
                                     } else
-                                        result += list[0] + '...' + list[list.length -1] + ', ';
+                                        result += '[' + list[0] + '-' + list[list.length -1] + '], ';
 
                                 }
                                 return result.slice(0, -2);
@@ -340,9 +340,9 @@ angular.module('katGui.d3')
                         .attr('font-family', 'FontAwesome')
                         .attr('font-size', '19px')
                         .attr('stroke-width', '0.5px')
-                        .attr('opacity', 0.7)
-                        .attr('fill', 'none')
-                        .text('\uf005')
+                        .attr('opacity', 0.5)
+                        .attr('fill', 'black')
+                        .text('\uf00d')
                         .on("mouseover", mouseOver)
                         .on("mouseout", mouseOut);
 
@@ -353,7 +353,7 @@ angular.module('katGui.d3')
                         .enter().append("circle")
                         .attr("class", function (d) {
                             var name = scope.positions[d][0].name;
-                            var c = 'blue';
+                            var c = scope.positions[d][0].subarrayColor;
 
                             var style = document.getElementById(name + '_actual_style_tag');
                             if (style && style.parentNode) {
@@ -372,7 +372,7 @@ angular.module('katGui.d3')
                             classStr += " receptor-circle";
                             return classStr;
                         })
-                        .attr('opacity', 0.5)
+                        .attr('opacity', 0.3)
                         .attr("transform", function (d) {
                                 return "translate(" + d + ")";
                         })
