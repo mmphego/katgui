@@ -372,7 +372,13 @@ angular.module('katGui.d3')
                             classStr += " receptor-circle";
                             return classStr;
                         })
-                        .attr('opacity', 0.3)
+                        .style("opacity", function(d) {
+                            if (scope.positions[d].length > 1) {
+                                return 0.7;
+                            } else {
+                                return 1;
+                            }
+                        })
                         .attr("transform", function (d) {
                                 return "translate(" + d + ")";
                         })
