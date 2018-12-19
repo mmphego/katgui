@@ -17,7 +17,7 @@
         vm.trailDots = 30;
         // map subarray number to a colour
         vm.subarrayColors = d3.scale.category20();
-        vm.subarrayNrs=[];
+        vm.subarrayNrs = [];
 
         vm.sensorsToConnectRegex = [
             'pos_actual_pointm_azim',
