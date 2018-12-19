@@ -235,7 +235,7 @@ angular.module('katGui.d3')
                             var proj_actual = projection([d.pos_actual_pointm_azim.value, d.pos_actual_pointm_elev.value]);
                             d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
                             d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
-                            d.proj_actual = round(proj_actual[0], 5) + ',' + round(proj_actual[1], 5);
+                            d.proj_actual = round(proj_actual[0], 25) + ',' + round(proj_actual[1], 25);
                             if (!scope.positions[d.proj_actual]) {
                                 scope.positions[d.proj_actual] = [];
                             }
@@ -261,31 +261,68 @@ angular.module('katGui.d3')
                             var items = scope.positions[d.proj_actual];
                             d.tooltipHtml = "<div>";
                             for (var i in items) {
-
                                 d.tooltipHtml += "<b>" + items[i].name + " </b>";
-                                if (items[i].pos_actual_pointm_azim && items[i].pos_actual_pointm_elev) {
-                                    d.tooltipHtml += "<br/>azim: " + Math.round(items[i].pos_actual_pointm_azim.value * pm) / pm + ", elev: " + Math.round(items[i].pos_actual_pointm_elev.value * pm) / pm;
-                                }
-                                if (items[i].pos_request_pointm_azim && items[i].pos_request_pointm_elev) {
-                                    d.tooltipHtml += "<br/>azim: " + Math.round(items[i].pos_request_pointm_azim.value * pm) / pm + ", elev: " + Math.round(items[i].pos_request_pointm_elev.value * pm) / pm + " (requested)";
-                                }
-                                if (items[i].pos_request_base_ra && items[i].pos_request_base_dec) {
-                                    d.tooltipHtml += "<br/>ra: " + Math.round(items[i].pos_request_base_ra.value * pm) / pm + ", dec: " + Math.round(items[i].pos_request_base_dec.value * pm) / pm + " (requested)";
-                                }
-                                if (items[i].pos_delta_sky) {
-                                    d.tooltipHtml += "<br/>Delta sky: " + Math.round(items[i].pos_delta_sky.value * pm) / pm;
-                                }
-                                if (items[i].pos_delta_azim && items[i].pos_delta_elev) {
-                                    d.tooltipHtml += "<br/>Delta azim: " + Math.round(items[i].pos_delta_azim.value * pm) / pm + ", Delta elev: " + Math.round(items[i].pos_delta_elev.value * pm) / pm;
-                                }
-                                if (items[i].target) {
-                                    d.tooltipHtml += "<br/>Target: " + items[i].target.value;
-                                }
-                                d.tooltipHtml += "<br/>";
                             }
                             d.tooltipHtml += "</div>";
                         }
                     });
+
+                    //draw the names of the receptor name
+                    if (scope.showNames) {
+                        svg.selectAll("g.name-pos-text")
+                            .data(Object.keys(scope.positions))
+                            .enter().append("g")
+                            .attr("class", function (d) {
+                                if (d.skyPlot) {
+                                    return "";
+                                }
+                                return "name-pos-text";
+                            })
+                            .append("foreignObject")
+                            .attr("transform", function (d) {
+                                    var proj = d.split(',');
+                                    proj[0] = parseInt(proj[0]) - 12;
+                                    proj[1] = parseInt(proj[1]) + 4;
+                                    return "translate(" + proj + ")\n";
+                            })
+                            .append('xhtml:div')
+                            .html(function(d){
+                                var val = scope.positions[d];
+                                var names = val.map(function(a) {return a.name;} );
+                                var combinedNames = [];
+                                var list = [];
+
+                                for (var i = 0; i < names.length; i++) {
+                                    var name = names[i];
+                                    if (list.length == 0)
+                                        list.push(name);
+                                    else {
+                                        var last = list[list.length - 1];
+                                        var x = Number(last.substr(1));
+                                        var y = Number(name.substr(1));
+                                        if (y-x>1) {
+                                            combinedNames.push(list);
+                                            list = [name];
+                                        } else
+                                            list.push(name);
+                                    }
+                                }
+                                combinedNames.push(list);
+                                var result = '';
+                                for (i = 0; i < combinedNames.length; i++) {
+                                    list = combinedNames[i];
+                                    if (list.length == 1) {
+                                        result += list[0] + ', ';
+                                    } else if (list.length == 2) {
+                                        result += list[0] + ', ' + list[1] + ', ';
+                                    } else
+                                        result += '[' + list[0] + '-' + list[list.length -1] + '], ';
+
+                                }
+                                return result.slice(0, -2);
+                            });
+
+                    }
 
                     //draw a crosshair where the requested position is
                     svg.selectAll("g.requested-pos")
@@ -303,58 +340,54 @@ angular.module('katGui.d3')
                         .attr('font-family', 'FontAwesome')
                         .attr('font-size', '19px')
                         .attr('stroke-width', '0.5px')
-                        .text('\uf05b')
+                        .attr('opacity', 0.5)
+                        .attr('fill', 'black')
+                        .text('\uf00d')
                         .on("mouseover", mouseOver)
                         .on("mouseout", mouseOut);
 
                     //draw a color circle where the actual position is
                     //and setup tooltip behaviour
                     svg.selectAll("g.actual-pos")
-                        .data(dataToDraw)
+                        .data(Object.keys(scope.positions))
                         .enter().append("circle")
                         .attr("class", function (d) {
-                            var c = color(d.name + '_actual');
-                            if (d.skyPlot) {
-                                c = 'black';
-                            } else if (d.subarrayColor) {
-                                c = d.subarrayColor;
-                            }
-                            var style = document.getElementById(d.name + '_actual_style_tag');
+                            var name = scope.positions[d][0].name;
+                            var c = scope.positions[d][0].subarrayColor;
+
+                            var style = document.getElementById(name + '_actual_style_tag');
                             if (style && style.parentNode) {
                                 style.parentNode.removeChild(style);
                             }
                             style = document.createElement('style');
                             style.type = 'text/css';
-                            style.id = d.name + '_actual_style_tag';
-                            style.innerHTML = '.' + d.name + '_actual {color:' + c + '; stroke:' + c + '; fill:' + c + '}';
+                            style.id = name + '_actual_style_tag';
+                            style.innerHTML = '.' + name + '_actual {color:' + c + '; stroke:' + c + '; fill:' + c + '}';
                             document.getElementsByTagName('head')[0].appendChild(style);
 
-                            var classStr = "actual-pos " + d.name + "_actual";
-                            if (d.proj_actual && scope.positions[d.proj_actual].length > 1) {
+                            var classStr = "actual-pos " + name + "_actual";
+                            if (scope.positions[d].length > 1) {
                                 classStr += " actual-pos-border";
-                            }
-                            if (!d.skyPlot) {
-                                classStr += " receptor-circle";
-                            }
+                            };
+                            classStr += " receptor-circle";
                             return classStr;
                         })
-                        .attr("transform", function (d) {
-                            if (d.proj_actual) {
-                                return "translate(" + (d.proj_actual_az_x) + "," + (d.proj_actual_el_y) + ")";
+                        .style("opacity", function(d) {
+                            if (scope.positions[d].length > 1) {
+                                return 0.7;
                             } else {
-                                return 'translate(-100, -100)';
+                                return 1;
                             }
+                        })
+                        .attr("transform", function (d) {
+                                return "translate(" + d + ")";
                         })
                         .attr("r", function (d) {
                             //for points in the same position, draw overlapping big circles
-                            if (d.proj_actual) {
-                                if (scope.positions[d.proj_actual].length > 1) {
+                                if (scope.positions[d].length > 1) {
                                     return 10;
                                 } else {
                                     return 4;
-                                }
-                            } else {
-                                return 0;
                             }
                         })
                         .on("mouseover", mouseOver)
@@ -369,45 +402,10 @@ angular.module('katGui.d3')
                                 if (i !== itemsList.length - 1 && itemsList.length - 1 - i >= scope.trailDots) {
                                     itemsList[i].remove();
                                 } else if (i !== itemsList.length - 1) {
-                                    angular.element(itemsList[i]).attr("r", 2);
+                                    angular.element(itemsList[i]).attr("r", 1);
                                 }
                             }
                         });
-                    }
-
-                    //draw the names of the receptor name
-                    if (scope.showNames) {
-                        svg.selectAll("g.name-pos-text")
-                            .data(dataToDraw)
-                            .enter().append("g")
-                            .attr("class", function (d) {
-                                if (d.skyPlot) {
-                                    return "";
-                                }
-                                return "name-pos-text";
-                            })
-                            .append("text")
-                            .attr("transform", function (d) {
-                                if (d.proj_actual) {
-                                    var proj = d.proj_actual.split(',');
-                                    proj[0] = parseInt(proj[0]);
-                                    proj[1] = parseInt(proj[1]);
-                                    var i;
-                                    for (i = 0; i < scope.positions[d.proj_actual].length; i++) {
-                                        if (scope.positions[d.proj_actual][i].name === d.name) {
-                                            break;
-                                        }
-                                    }
-                                    proj[0] += 8;
-                                    proj[1] += 12 * i;
-                                    return "translate(" + proj + ")";
-                                } else {
-                                    return 'translate(-100, -100)';
-                                }
-                            })
-                            .text(function (d) {
-                                return d.name;
-                            });
                     }
                 }
 
@@ -424,7 +422,15 @@ angular.module('katGui.d3')
                 function mouseOver(d) {
                     var mouse = d3.mouse(element[0]);
                     var elementBR = element[0].getBoundingClientRect();
-                    tooltip.html(d.tooltipHtml);
+                    var names = scope.positions[d];
+                    tooltipHtml = "<div>";
+                    for (var i in names) {
+                        name = names[i].name;
+                        tooltipHtml += "<b>" + name + " </b>";
+                    }
+                    tooltipHtml += "<div>";
+
+                    tooltip.html(tooltipHtml);
                     var tooltipWidth = tooltip[0][0].offsetWidth;
                     var tooltipHeight = tooltip[0][0].offsetHeight;
 
@@ -434,7 +440,8 @@ angular.module('katGui.d3')
                         y = elementBR.bottom - tooltipHeight - 80;
                     } else if (y < elementBR.top) {
                         y = elementBR.top + 80;
-                    }
+                    } else
+                        y = y + 80;
 
                     if (x + tooltipWidth > elementBR.right) {
                         x = elementBR.right - tooltipWidth - 80;

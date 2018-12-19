@@ -253,7 +253,7 @@ angular.module('katGui.d3')
                         .attr('stroke-width', '0.5px')
                         .on("mouseover", mouseOver)
                         .on("mouseout", mouseOut)
-                        .text('\uf05b');
+                        .text('\uf00d');
 
                     //draw a color circle where the actual position is
                     //and setup tooltip behaviour
