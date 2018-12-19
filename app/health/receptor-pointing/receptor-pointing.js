@@ -17,6 +17,7 @@
         vm.trailDots = 30;
         // map subarray number to a colour
         vm.subarrayColors = d3.scale.category20();
+        vm.subarrayNrs=[];
 
         vm.sensorsToConnectRegex = [
             'pos_actual_pointm_azim',
@@ -46,6 +47,7 @@
                             subarrayColor: "#d7d7d7"
                         };
                         vm.receptors[receptorName] = receptor;
+                        vm.subarrayNrs = systemConfig.system.subarray_nrs.split(',');
                     });
                     //systemConfig.system.ants example: m000,m001,m002
                     MonitorService.listSensorsHttp(systemConfig.system.ants, vm.sensorsToConnectRegex, true).then(function(result) {
