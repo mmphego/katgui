@@ -288,7 +288,7 @@ angular.module('katGui.d3')
                             .append('xhtml:div')
                             .html(function(d){
                                 var val = scope.positions[d];
-                                var names = val.map(a => a.name);
+                                var names = val.map(function(a) {return a.name;} );
                                 var combinedNames = [];
                                 var list = [];
 
