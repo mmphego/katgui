@@ -399,7 +399,6 @@
                                 duration: vm.durationToString(moment.duration(item.sum, 's'))
 
                             };
-
                             if (reportItem.duration) {
                                 reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
@@ -427,22 +426,25 @@
                                         vm.poolResourcesAssignedDurations[resource].durationTotal = vm.durationToString(duration);
                                         vm.poolResourcesAssignedDurations[resource].percentageTotal = vm.percentageOfTotalToString(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds);
                                     }
-                                    if (!vm.poolResourcesAssignedDurations[resource][key]) {
-                                        vm.poolResourcesAssignedDurations[resource][key] = {
-                                            duration: reportItem.duration,
-                                            durationSeconds: reportItem.durationSeconds,
-                                            percentageOfTotal: reportItem.percentageOfTotal,
-                                            sensorName: reportItem.sensorName,
-                                            value: resource
-                                        };
-                                    } else {
-                                        var existingResourceItem = vm.poolResourcesAssignedDurations[resource][key];
-                                        existingResourceItem.durationSeconds += reportItem.durationSeconds;
-                                        existingResourceItem.duration = reportItem.duration;
-                                        existingResourceItem.percentageOfTotal = reportItem.percentageOfTotal;
-                                        vm.poolResourcesAssignedDurations[resource][key] = existingResourceItem;
-                                    }
-                                });
+
+                                      if (vm.poolResourcesAssignedDurations[resource][key]) {
+                                          if (!vm.poolResourcesAssignedDurations[resource][key].value) {
+                                              vm.poolResourcesAssignedDurations[resource][key] = {
+                                                  duration: reportItem.duration,
+                                                  durationSeconds: reportItem.durationSeconds,
+                                                  percentageOfTotal: vm.percentageOfTotalToString(reportItem.durationSeconds),
+                                                  sensorName: reportItem.sensorName,
+                                                  value: resource
+                                              };
+                                          } else {
+                                            var existingResourceItem = vm.poolResourcesAssignedDurations[resource][key];
+                                            existingResourceItem.durationSeconds += reportItem.durationSeconds;
+                                            existingResourceItem.duration = reportItem.duration;
+                                            existingResourceItem.percentageOfTotal = vm.percentageOfTotalToString(existingResourceItem.durationSeconds);
+                                            vm.poolResourcesAssignedDurations[resource][key] = existingResourceItem;
+                                          }
+                                     }
+                                 });
                             }
                         });
                     }
