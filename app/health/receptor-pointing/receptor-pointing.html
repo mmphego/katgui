@@ -106,4 +106,27 @@
         <span>Windstow Active: <b>{{vm.receptors[vm.receptorHoverName].windstow_active.value}}</b></span>
         <span>Subarray: <b>{{vm.receptors[vm.receptorHoverName].sub_nr}}</b></span>
     </div>
+
+    <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true" ng-class="{'transparent-legend':transparentLegend && !showLegend}">
+        <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend" ng-mouseenter="transparentLegend = false"
+          ng-mouseleave="transparentLegend = true" class="md-primary md-raised md-icon-button">
+            <span md-theme="white" class="fa fa-eye" ng-show="showLegend" title="Show Legend"></span>
+            <span md-theme="white" class="fa fa-eye-slash" ng-show="!showLegend" title="Hide Legend"></span>
+        </md-button>
+
+        <div class="md-whiteframe-z3 position-legend" layout="column" ng-show="showLegend" style="background: white; padding: 8px;">
+            <div layout="row" layout-align="start center">
+                <i class="fa fa-times receptor-requested-target-element"></i>
+                <span>Requested Position</span>
+            </div>
+
+            <div layout="row" layout-align="start center" ng-repeat="sub in vm.subarrayNrs">
+                <div class="subarrayColor" ng-style="{'background-color':'{{vm.subarrayColors(sub)}}'}"></div>
+                <span>Actual Position (Subarray #{{sub}})</span>
+            </div>
+            <div layout="row" layout-align="start center">
+                <div class="circle-receptor" ></div><span>Actual Position (Unallocated)</span>
+            </div>
+        </div>
+    </div>
 </div>

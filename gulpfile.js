@@ -60,6 +60,7 @@ gulp.task('css:main', ['clean'], function () {
         .pipe(insert.prepend('@fa-font-path: "fonts";'))
         .pipe(less().on('error', function(e){
 	    console.log(e);
+	    throw e;
 	}))
         .pipe(cssmin({
             keepSpecialComments: false,
@@ -101,6 +102,7 @@ gulp.task('js', ['clean'], function () {
         .pipe(ngannotate())
         .pipe(uglify().on("error", function(e){
 	    console.log(e);
+	    throw e;
 	 }))
         .pipe(gulp.dest('dist/'));
 });
