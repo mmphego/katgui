@@ -10,17 +10,13 @@ angular.module('katGui.d3')
         link: function(scope, element) {
             const format = d3.time.format.utc("%Y-%m-%d %X");
 
-            var circles = null;
+            var rectangles = null;
 
             var margin = {
-                top: 20,
+                top: 10,
                 right: 20,
-                left: 20,
-                bottom: 50
-            };
-
-            var chart_margin = {
-              left: 30
+                left: 50,
+                bottom: 30
             };
 
             var svg;
@@ -28,30 +24,56 @@ angular.module('katGui.d3')
 
             scope.vm.redrawStatus = function () {
 
-              width = element[0].clientWidth-margin.left-margin.right;
-              height = width*scope.vm.NUM_OF_RACKS/scope.vm.NUM_OF_SLOTS;
+              width = element[0].clientWidth - margin.left - margin.right;
+              height = element[0].clientHeight - margin.top - margin.bottom;
 
-              radius = width/(scope.vm.NUM_OF_SLOTS*2)-5;
+              unitWidth = width/scope.vm.NUM_OF_RACKS - 2;
+              unitHeight = height/scope.vm.NUM_OF_SLOTS - 2;
+
               d3.select('svg').remove();
 
-              d3.select(element[0]).append("svg")
+              var tooltipdiv = d3.select(element[0]).append("div")
+                 .attr("class", "skarab-tooltip")
+                 .style("opacity", 0);
+
+              svg = d3.select(element[0]).append("svg")
                       .attr("width", element[0].clientWidth)
-                      .attr("height", height + margin.bottom)
-                      .attr("transform", "translate(0" + ", " + margin.top + ")");
+                      .attr("height", element[0].clientHeight);
 
-              svg = d3.select('svg');
 
-               var x = d3.scale.linear().domain([0,scope.vm.NUM_OF_SLOTS+1]).range([0, width]);
-               var y = d3.scale.linear().domain([0,scope.vm.NUM_OF_RACKS+1]).range([0, height]);
+              var area = svg.append("g")
+                           .attr("transform","translate(" + margin.left + "," + margin.top + ")")
+                           .attr("width", width)
+                           .attr("height", height);
 
-               var xAxis = d3.svg.axis().scale(x).orient("top").ticks(10);
-               var yAxis = d3.svg.axis().scale(y).orient("right").ticks(10);
+              area.append("rect")
+                  .attr("x", 0)
+                  .attr("y", 0)
+                  .attr("width", width)
+                  .attr("height", height)
+                  .attr('fill', '#BDBDBD');
 
-              function draw_circle(selection) {
-                 var circleAttributes
-                     = selection.attr("cx", function (d) { return x(d.slot); })
-                                .attr("cy", function (d) { return y(d.rack); })
-                                .attr("ObjectID",function(d) {return d.id;})
+              var graph = area.append("g")
+                              .attr("x", 0)
+                              .attr("y", 0)
+                              .attr("width", width-1)
+                              .attr("height", height)
+                              .attr("transform","translate(1,0)")
+
+              var x = d3.scale.linear().domain([0,scope.vm.NUM_OF_RACKS]).range([0, width]);
+              var y = d3.scale.linear().domain([0,scope.vm.NUM_OF_SLOTS]).range([0, height]);
+
+              var xAxis = d3.svg.axis().scale(x).orient("top").ticks(10);
+              var yAxis = d3.svg.axis().scale(y).orient("right").ticks(10);
+
+              function draw_rectangles(selection) {
+                 var rectangleAttributes
+                     = selection.attr("x", function (d) { return x(d.rack-1); })
+                                .attr("y", function (d) { return y(d.slot-1); })
+                                .attr("ObjectID",function(d)
+                                                  {
+                                                    return d.id;
+                                                  })
                                 .style("stroke", "white")
                                 .style("stroke-width", 0)
                                 .on('mouseover',function(d) {
@@ -60,19 +82,42 @@ angular.module('katGui.d3')
                                     .style("stroke-width", 5);
 
                                   var x =  d3.event.pageX;
-                                  if (d.slot > 43*2/3)
-                                    x = x-350;
+                                  var y =  d3.event.pageY;
+                                  if (d.rack > scope.vm.NUM_OF_RACKS*2/3)
+                                    x = x-450;
+                                  if (d.slot > scope.vm.NUM_OF_SLOTS*2/3)
+                                    y = y-200;
+                                  else
+                                    y -= 50;
+
+                                  var date = '';
+                                  var description = '';
+                                  var value = '';
+                                  var timestamp = '';
+                                  var status = 'empty';
+                                  var name = '';
+
+                                  if (d.sensor) {
+                                    date = format(new Date(d.sensor.time*1000));
+                                    description = d.description;
+                                    status = d.sensor.status;
+                                    value = d.sensor.value;
+                                    timestamp = format(new Date(d.sensor.value_ts*1000));
+                                    name = d.name;
+                                  }
                                   tooltipdiv.html(
                                         "<table>" +
-                                        "<tr><th colspan='2'>" + d.name + " value at <br>" + format(new Date(d.sensor.time*1000)) + "</th></tr>" +
+                                        "<tr><th colspan='2'>" + d.sensorName + "</th></tr>" +
+                                        "<tr><td class='sensor_field'>Original Name</td><td>" + name + "</td></tr>" +
                                         "<tr><td class='sensor_field'>Location</td><td>" + d.position + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Description</td><td>" + d.sensor.description + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Status</td><td>" + d.sensor.status + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value</td><td>" + d.sensor.value + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value Timestamp</td><td>" + format(new Date(d.sensor.value_ts*1000)) + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Description</td><td>" + description + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Status</td><td>" + status + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Value</td><td>" + value + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Value Timestamp</td><td>" + timestamp + "</td></tr>" +
+                                        "<tr><td class='sensor_field'>Value Reveiced</td><td>" + date + "</td></tr>" +
                                         "</table>")
                                        .style("left", x + "px")
-                                       .style("top", (d3.event.pageY-50) + "px");
+                                       .style("top", y + "px");
 
                                   tooltipdiv.transition()
                                        .duration(200)
@@ -83,52 +128,35 @@ angular.module('katGui.d3')
                                      .style("fill-opacity", 1)
                                      .style("stroke-width", 0);
 
-                                     tooltipdiv.transition()
-                                         .duration(500)
-                                         .style("opacity", 0);
+                                   tooltipdiv.transition()
+                                       .duration(500)
+                                       .style("opacity", 0);
                                  })
-                                .attr("r", function (d) {
-                                  if (d.status=='empty')
-                                    return 0;
-
-                                  if (d.status=='nominal')
-                                    return radius/2;
-
-                                   return radius;
+                                .attr("width", function (d) {
+                                  return unitWidth;
+                                })
+                                .attr("height", function (d) {
+                                  return unitHeight;
                                 })
                                 .attr("class", function(d) {
                                   return d.status + "-child";
                                 });
                  };
 
+              rectangles = graph.selectAll("rect")
+                .data(scope.vm.data)
+                .enter()
+                .append("rect")
+                .call(draw_rectangles);
 
-                var area = svg.append("g")
-                                 .attr("transform","translate(" + chart_margin.left + ",0)")
-                                 .attr("width", width)
-                                 .attr("height", height);
+              var textArea = area.append('g');
+              var slotTexts = textArea.selectAll("text")
+                              .data(['05','10','15','20','25','30','35','40'])
+                              .enter()
+                              .append("text");
 
-                 area.append("rect")
-                     .attr("x", x(0)+radius)
-                     .attr("y", y(1)-radius-margin.top/2)
-                     .attr("width", x(scope.vm.NUM_OF_SLOTS+1)-2*radius)
-                     .attr("height", y(scope.vm.NUM_OF_RACKS+1)-radius)
-                     .attr('fill', '#BDBDBD');
-
-
-                circles = area.selectAll("circle")
-                  .data(scope.vm.data)
-                  .enter()
-                  .append("circle")
-                  .call(draw_circle);
-
-               var textArea = area.append('g');
-               var slotTexts = textArea.selectAll("text")
-                                .data(['05','10','15','20','25','30','35','40'])
-                                .enter()
-                                .append("text");
-
-              slotTexts.attr("x", function(d) { return x(d)-8; })
-                    .attr("y", function(d) { return y(scope.vm.NUM_OF_RACKS+1)+radius; })
+              slotTexts.attr("x", function(d) { return -20; })
+                    .attr("y", function(d) { return y(d) - 7; })
                     .text( function (d) { return ""+d; })
                     .attr("font-family", "sans-serif")
                     .attr("font-size", "14px")
@@ -140,16 +168,12 @@ angular.module('katGui.d3')
                                .enter()
                                .append("text");
 
-              rackTexts.attr("x", function(d) { return x(0); })
-                   .attr("y", function(d) { return y(d)+8; })
+              rackTexts.attr("x", function(d) { return x(d) - unitWidth/2; })
+                   .attr("y", function(d) { return height + 15; })
                    .text( function (d) { return ""+d; })
                    .attr("font-family", "sans-serif")
                    .attr("font-size", "14px")
                    .attr("fill", "grey");
-
-               var tooltipdiv = d3.select(element[0]).append("div")
-                  .attr("class", "skarab-tooltip")
-                  .style("opacity", 0);
             };
 
             var unbindResize = scope.$watch(function() {
@@ -173,23 +197,9 @@ angular.module('katGui.d3')
 
 
             scope.vm.updateStatus = function(obj) {
-              if (!circles)
+              if (!rectangles)
                 return;
-              circles.data([obj], function(d) {return d.id;})
-                    .transition()
-                    .duration(1000)
-                    .attr("r", 0)
-                    .transition()
-                    .duration(1000)
-                    .attr("r", function (d) {
-                      if (d.status=='empty')
-                        return 0;
-
-                      if (d.status=='nominal')
-                        return radius/2;
-
-                       return radius;
-                    })
+              rectangles.data([obj], function(d) {return d.id;})
                     .attr("class", function(d) {
                       return d.status + "-child";
                     });
