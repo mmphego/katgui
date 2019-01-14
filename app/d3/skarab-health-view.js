@@ -34,8 +34,8 @@ angular.module('katGui.d3')
               d3.select('svg').remove();
 
               var tooltipdiv = d3.select(element[0]).append("div")
-                 .attr("class", "skarab-tooltip")
-                 .style("opacity", 0);
+                                .attr("class", "skarab-tooltip")
+                                .style("opacity", 0);
 
               svg = d3.select(element[0]).append("svg")
                       .attr("width", element[0].clientWidth)
@@ -43,9 +43,9 @@ angular.module('katGui.d3')
 
 
               var area = svg.append("g")
-                           .attr("transform","translate(" + margin.left + "," + margin.top + ")")
-                           .attr("width", width)
-                           .attr("height", height);
+                            .attr("transform","translate(" + margin.left + "," + margin.top + ")")
+                            .attr("width", width)
+                            .attr("height", height);
 
               area.append("rect")
                   .attr("x", 0)
@@ -68,80 +68,59 @@ angular.module('katGui.d3')
               var yAxis = d3.svg.axis().scale(y).orient("right").ticks(10);
 
               function draw_rectangles(selection) {
-                 var rectangleAttributes
-                     = selection.attr("x", function (d) { return x(d.rack-1); })
-                                .attr("y", function (d) { return y(d.slot-1); })
-                                .attr("ObjectID",function(d) { return d.id; })
-                                .style("stroke", "white")
-                                .style("stroke-width", 0)
-                                .attr("width", function (d) {
-                                  return unitWidth;
-                                })
-                                .attr("height", function (d) {
-                                  return unitHeight;
-                                })
-                                .attr("class", function(d) {
-                                  return d.status + "-child";
-                                })
-                                .on('mouseover',function(d) {
-                                  d3.select(this)
-                                 	  .style("fill-opacity", .8)
-                                    .style("stroke-width", 5);
+                 var rectangleAttributes =
+                    selection.attr("x", function (d) { return x(d.rack-1); })
+                            .attr("y", function (d) { return y(d.slot-1); })
+                            .attr("ObjectID",function(d) { return d.id; })
+                            .style("stroke", "white")
+                            .style("stroke-width", 0)
+                            .attr("width", function (d) {
+                              return unitWidth;
+                            })
+                            .attr("height", function (d) {
+                              return unitHeight;
+                            })
+                            .attr("class", function(d) {
+                              return d.status + "-child";
+                            })
+                            .on('mouseover',function(d) {
+                              d3.select(this)
+                             	  .style("fill-opacity", .8)
+                                .style("stroke-width", 5)
+                                .style("cursor", function(d) {
+                                  if (d.name)
+                                    return "pointer";
 
-                                  var x =  d3.event.pageX;
-                                  var y =  d3.event.pageY;
-                                  if (d.rack > scope.vm.NUM_OF_RACKS*2/3)
-                                    x = x-450;
-                                  if (d.slot > scope.vm.NUM_OF_SLOTS*2/3)
-                                    y = y-200;
-                                  else
-                                    y -= 50;
+                                  return 'default';
+                                });
 
-                                  var date = '';
-                                  var description = '';
-                                  var value = '';
-                                  var timestamp = '';
-                                  var status = 'empty';
-                                  var name = '';
+                              d3.select('#' + d.position.replace(':', '')).transition()
+                                .duration(500)
+                                .style("opacity", 1);
+                            })
+                            .on('mouseout',function (d) {
+                              d3.select(this)
+                               .style("fill-opacity", 1)
+                               .style("stroke-width", 0)
+                               .style("cursor", "default");
 
-                                  if (d.sensor) {
-                                    date = format(new Date(d.sensor.time*1000));
-                                    description = d.description;
-                                    status = d.sensor.status;
-                                    value = d.sensor.value;
-                                    timestamp = format(new Date(d.sensor.value_ts*1000));
-                                    name = d.name;
-                                  }
-                                  tooltipdiv.html(
-                                        "<table>" +
-                                        "<tr><th colspan='2'>" + d.sensorName + "</th></tr>" +
-                                        "<tr><td class='sensor_field'>Original Name</td><td>" + name + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Location</td><td>" + d.position + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Description</td><td>" + description + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Status</td><td>" + status + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value</td><td>" + value + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value Timestamp</td><td>" + timestamp + "</td></tr>" +
-                                        "<tr><td class='sensor_field'>Value Reveiced</td><td>" + date + "</td></tr>" +
-                                        "</table>")
-                                       .style("left", x + "px")
-                                       .style("top", y + "px");
+                              d3.select('#' + d.position.replace(':', ''))
+                                .transition()
+                                .duration(500)
+                                .style("opacity", function(d) {
+                                  if (d.status=='empty' || d.status=='nominal')
+                                    return 0;
 
-                                  tooltipdiv.transition()
-                                       .duration(200)
-                                       .style("opacity", .9);
-                                 })
-                                 .on('mouseout',function (d) {
-                                   d3.select(this)
-                                     .style("fill-opacity", 1)
-                                     .style("stroke-width", 0);
-
-                                   tooltipdiv.transition()
-                                       .duration(500)
-                                       .style("opacity", 0);
-                                 })
-                                 .on('click', function(d){
-                                   scope.vm.navigateToSensorList('cbfhealth', 'skarab02-03');
-                                 });
+                                  return 1;
+                                });
+                            })
+                            .on('click', function(d){
+                              if (d.name) {
+                                var components = d.name.split('\.');
+                                scope.vm.navigateToSensorList(components[0],
+                                  components[2].substring(0, 11));
+                              }
+                            });
                  };
 
               rectangles = graph.selectAll("rect")
@@ -161,11 +140,15 @@ angular.module('katGui.d3')
                           .attr("y", function (d) { return y(d.slot) - 5; })
                           .attr("ObjectID", function(d) { return d.id; })
                           .style('text-anchor', 'middle')
+                          .attr('id', function(d) { return d.position.replace(':', ''); })
                           .text(function(d) {
-                            if (d.status=='empty' || d.status=='nominal')
-                              return '';
-                              
                             return d.position;
+                          })
+                          .style("opacity", function(d) {
+                            if (d.status=='empty' || d.status=='nominal')
+                              return 0;
+
+                            return 1;
                           });
 
               var textArea = area.append('g');
@@ -223,6 +206,14 @@ angular.module('katGui.d3')
                     .attr("class", function(d) {
                       return d.status + "-child";
                     });
+
+              skarabTexts.data([obj], function(d) {return d.id})
+                         .style("opacity", function(d) {
+                            if (d.status=='empty' || d.status=='nominal')
+                              return 0;
+
+                            return 1;
+                          });
             };
         }
     };
