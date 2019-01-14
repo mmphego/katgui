@@ -4,7 +4,7 @@
         .controller('SKARABHealthCtrl', SKARABHealthCtrl);
 
     function SKARABHealthCtrl($rootScope, $scope, ConfigService, StatusService, NotifyService,
-        MonitorService, d3Util, $timeout, $log) {
+        MonitorService, d3Util, $timeout, $log, $state) {
 
         var vm = this;
         vm.NUM_OF_RACKS = 9;
@@ -60,6 +60,13 @@
             }, function(error) {
                 $log.error(error);
             });
+        };
+
+        vm.navigateToSensorList = function(component, filter) {
+          $state.go('sensor-list',{
+            component: component,
+            filter: filter
+          });
         };
 
         vm.updatePositionSensor = function(position, sensorName) {

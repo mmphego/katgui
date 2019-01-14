@@ -11,6 +11,7 @@ angular.module('katGui.d3')
             const format = d3.time.format.utc("%Y-%m-%d %X");
 
             var rectangles = null;
+            var skarabTexts = null;
 
             var margin = {
                 top: 10,
@@ -70,12 +71,18 @@ angular.module('katGui.d3')
                  var rectangleAttributes
                      = selection.attr("x", function (d) { return x(d.rack-1); })
                                 .attr("y", function (d) { return y(d.slot-1); })
-                                .attr("ObjectID",function(d)
-                                                  {
-                                                    return d.id;
-                                                  })
+                                .attr("ObjectID",function(d) { return d.id; })
                                 .style("stroke", "white")
                                 .style("stroke-width", 0)
+                                .attr("width", function (d) {
+                                  return unitWidth;
+                                })
+                                .attr("height", function (d) {
+                                  return unitHeight;
+                                })
+                                .attr("class", function(d) {
+                                  return d.status + "-child";
+                                })
                                 .on('mouseover',function(d) {
                                   d3.select(this)
                                  	  .style("fill-opacity", .8)
@@ -132,15 +139,9 @@ angular.module('katGui.d3')
                                        .duration(500)
                                        .style("opacity", 0);
                                  })
-                                .attr("width", function (d) {
-                                  return unitWidth;
-                                })
-                                .attr("height", function (d) {
-                                  return unitHeight;
-                                })
-                                .attr("class", function(d) {
-                                  return d.status + "-child";
-                                });
+                                 .on('click', function(d){
+                                   scope.vm.navigateToSensorList('cbfhealth', 'skarab02-03');
+                                 });
                  };
 
               rectangles = graph.selectAll("rect")
@@ -148,6 +149,24 @@ angular.module('katGui.d3')
                 .enter()
                 .append("rect")
                 .call(draw_rectangles);
+
+              var skarabArea = area.append('g');
+
+              skarabTexts = skarabArea.selectAll('text')
+                                  .data(scope.vm.data)
+                                  .enter()
+                                  .append('text');
+
+              skarabTexts.attr("x", function (d) { return x(d.rack-1) + unitWidth/2; })
+                          .attr("y", function (d) { return y(d.slot) - 5; })
+                          .attr("ObjectID", function(d) { return d.id; })
+                          .style('text-anchor', 'middle')
+                          .text(function(d) {
+                            if (d.status=='empty' || d.status=='nominal')
+                              return '';
+                              
+                            return d.position;
+                          });
 
               var textArea = area.append('g');
               var slotTexts = textArea.selectAll("text")
@@ -199,6 +218,7 @@ angular.module('katGui.d3')
             scope.vm.updateStatus = function(obj) {
               if (!rectangles)
                 return;
+
               rectangles.data([obj], function(d) {return d.id;})
                     .attr("class", function(d) {
                       return d.status + "-child";
