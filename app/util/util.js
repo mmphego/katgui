@@ -213,20 +213,20 @@ angular.module('katGui.util')
                         startY = event.pageY;
 
                         targetElementA.css({
-                            height: innerHeightA + diff
+                            height: ((innerHeightA + diff)/(innerHeightA + innerHeightB) * 100) + '%'
                         });
                         targetElementB.css({
-                            height: innerHeightB - diff
+                            height: ((innerHeightB - diff)/(innerHeightA + innerHeightB) * 100) + '%'
                         });
                     } else {
                       var diff = event.pageX - startX;
                       startX = event.pageX;
 
                       targetElementA.css({
-                          width: innerWidthA + diff
+                          width: ((innerWidthA + diff)/(innerWidthA + innerWidthB) * 100) + '%'
                       });
                       targetElementB.css({
-                          width: innerWidthB - diff
+                          width: ((innerWidthB - diff)/(innerWidthA + innerWidthB) * 100) + '%'
                       });
 
                     }
