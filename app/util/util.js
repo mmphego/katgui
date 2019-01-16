@@ -203,8 +203,10 @@ angular.module('katGui.util')
 
                     var targetElementA = angular.element(document.querySelector(targetNames[0]));
                     var innerHeightA = targetElementA.innerHeight();
+                    var innerWidthA = targetElementA.innerWidth();
                     var targetElementB = angular.element(document.querySelector(targetNames[1]));
                     var innerHeightB = targetElementB.innerHeight();
+                    var innerWidthB = targetElementB.innerWidth();
 
                     if (resize_dir == 'horizontal') {
                         var diff = event.pageY - startY;
@@ -217,6 +219,15 @@ angular.module('katGui.util')
                             height: innerHeightB - diff
                         });
                     } else {
+                      var diff = event.pageX - startX;
+                      startX = event.pageX;
+
+                      targetElementA.css({
+                          width: innerWidthA + diff
+                      });
+                      targetElementB.css({
+                          width: innerWidthB - diff
+                      });
 
                     }
                 }
