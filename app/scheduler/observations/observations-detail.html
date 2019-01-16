@@ -142,39 +142,49 @@
 
 
     <div layout="column" style="margin-left: 2px; width: 30%;" layout-align="start stretch" id='right-resize'>
-        <md-toolbar style="max-height: 35px; min-height: 35px" class="md-whiteframe-z1" layout="column"
-            layout-align="center start">
-            <span style="margin-left: 8px">Resources</span>
-        </md-toolbar>
-        <div flex class="schedule-block-resource-window md-whiteframe-z1" style="min-height: 284px; overflow: auto; min-width: 150px"
-            layout="column" layout-wrap layout-align="start start">
-            <div class="resource-counter-overlay" title="The amount of receptors assigned to this subarray">
-                {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
-            </div>
-            <div ng-repeat="resourceAlloc in parent.vm.sensorValues[vm.subarray.name + '_allocations'].parsedValue" ng-class="parent.vm.classForResource(resourceAlloc[0])"
-                class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
-                layout-align="start center">
-                <div flex layout="column">
-                    <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resourceAlloc[0]), 'maintenance-text': parent.vm.isResourceInMaintenance(resourceAlloc[0])}">
-                        {{resourceAlloc[0]}}</span>
-                    <i title="Schedule Block allocated to resource" style="font-size: 10px">{{resourceAlloc[1]}}</i>
-                </div>
-                <span style="width: 18px; padding: 6px 0" class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO"
-                    md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resourceAlloc[0]) && vm.subarray.maintenance" title="Restart Maintenance Device"
-                    ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resourceAlloc[0], $event); $event.stopPropagation()"></span>
-                <span style="width: 18px; padding: 6px 0" class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple
-                    title="Mark Resource As Faulty" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resourceAlloc[0]), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resourceAlloc[0])}"
-                    ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resourceAlloc[0]); $event.stopPropagation()"></span>
-            </div>
+
+        <div id='top-div' style="height: calc(50% - 2px);">
+          <md-toolbar style="max-height: 35px; min-height: 35px" class="md-whiteframe-z1" layout="column"
+              layout-align="center start">
+              <span style="margin-left: 8px">Resources</span>
+          </md-toolbar>
+          <div flex class="schedule-block-resource-window md-whiteframe-z1" style="height: calc(100% - 35px); overflow: auto; min-width: 150px"
+              layout="column" layout-wrap layout-align="start start">
+              <div class="resource-counter-overlay" title="The amount of receptors assigned to this subarray">
+                  {{parent.vm.sensorValues[vm.subarray.name + '_number_ants'].value}}
+              </div>
+              <div ng-repeat="resourceAlloc in parent.vm.sensorValues[vm.subarray.name + '_allocations'].parsedValue" ng-class="parent.vm.classForResource(resourceAlloc[0])"
+                  class="resource-item" style="max-height: 80px; position: relative; padding-right: 0" layout="row"
+                  layout-align="start center">
+                  <div flex layout="column">
+                      <span flex style="font-size: 14px" ng-class="{'error-text': parent.vm.isResourceFaulty(resourceAlloc[0]), 'maintenance-text': parent.vm.isResourceInMaintenance(resourceAlloc[0])}">
+                          {{resourceAlloc[0]}}</span>
+                      <i title="Schedule Block allocated to resource" style="font-size: 10px">{{resourceAlloc[1]}}</i>
+                  </div>
+                  <span style="width: 18px; padding: 6px 0" class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO"
+                      md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resourceAlloc[0]) && vm.subarray.maintenance" title="Restart Maintenance Device"
+                      ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resourceAlloc[0], $event); $event.stopPropagation()"></span>
+                  <span style="width: 18px; padding: 6px 0" class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple
+                      title="Mark Resource As Faulty" ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resourceAlloc[0]), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resourceAlloc[0])}"
+                      ng-click="!parent.vm.iAmAtLeastCA() || parent.vm.markResourceFaulty(resourceAlloc[0]); $event.stopPropagation()"></span>
+              </div>
+          </div>
         </div>
-        <md-toolbar style="margin-left: 0; position: relative; margin-top: 8px" class="panel-toolbar-small md-whiteframe-z1">
-            <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
-                <span>Schedule Block Details</span>
-            </div>
-            <span style="position: absolute; top: 4px; right: 4px" class="fa hover-opacity" ng-class="{'fa-chevron-down': vm.showSchedSBDetails, 'fa-chevron-up': !vm.showSchedSBDetails}"
-                md-ink-ripple title="Hide schedule block detail" ng-click="vm.showSchedSBDetails = !vm.showSchedSBDetails"></span>
-        </md-toolbar>
-        <pre flex style="min-height: 278px" ng-show="vm.showSchedSBDetails" class="sb-details-pre md-whiteframe-z1"
-            ng-bind-html='vm.selectedSchedule | prettifyJSON'></pre>
+
+        <hr resizeabledivs="#top-div--#bottom-div" style="cursor: ns-resize; width: 100%; border-top: 5px solid #eeeeee; opacity: 0; margin: 0;">
+
+        <div id='bottom-div' style="height: calc(50% - 2px);">
+          <md-toolbar style="margin-left: 0; position: relative; margin-top: 8px; max-height: 35px; min-height: 35px" class="panel-toolbar-small md-whiteframe-z1">
+              <div flex style="margin-left: 8px;" layout="row" layout-align="start center">
+                  <span>Schedule Block Details</span>
+              </div>
+              <span style="position: absolute; top: 4px; right: 4px" class="fa hover-opacity" ng-class="{'fa-chevron-down': vm.showSchedSBDetails, 'fa-chevron-up': !vm.showSchedSBDetails}"
+                  md-ink-ripple title="Hide schedule block detail" ng-click="vm.showSchedSBDetails = !vm.showSchedSBDetails"></span>
+          </md-toolbar>
+          <pre flex style="height: calc(100% - 42px)" ng-show="vm.showSchedSBDetails" class="sb-details-pre md-whiteframe-z1"
+              ng-bind-html='vm.selectedSchedule | prettifyJSON'></pre>
+
+        </div>
+
     </div>
 </div>
