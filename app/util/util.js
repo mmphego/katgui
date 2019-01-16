@@ -164,11 +164,56 @@ angular.module('katGui.util')
             }
         };
     })
-    .directive('resizeabledivs', function($document) {
+    .directive('resizeabledivs', function($document, $localStorage) {
         return {
             link: function(scope, element, attr) {
                 var startX = 0;
                 var startY = 0;
+
+                var resizeabledivs = attr.resizeabledivs;
+                var targetNames = [];
+                var resize_dir = '';
+
+                // componentA||componentB vertical split between components
+                // componentA--componentB horizontal split between components
+                if (resizeabledivs.includes('||')) {
+                    targetNames = resizeabledivs.split('||');
+                    resize_dir = 'vertical';
+                } else if (resizeabledivs.includes('--')) {
+                    targetNames = resizeabledivs.split('--');
+                    resize_dir = 'horizontal';
+                } else {
+                    console.error('resizeabledivs must be of format componentA||componentB or componentA--componentB ');
+                    return;
+                }
+
+
+                var targetElementA = angular.element(document.querySelector(targetNames[0]));
+                var targetElementB = angular.element(document.querySelector(targetNames[1]));
+
+                var controllerA = targetElementA.controller().constructor.name;
+                var targetASize = $localStorage[targetNames[0] + '-' + controllerA];
+                var targetBSize = $localStorage[targetNames[1] + '-' + controllerA];
+
+                if (resize_dir == 'horizontal') {
+                    if (targetASize && targetBSize) {
+                        targetElementA.css({
+                            height: targetASize
+                        });
+                        targetElementB.css({
+                            height: targetBSize
+                        });
+                    }
+                } else {
+                  if (targetASize && targetBSize) {
+                      targetElementA.css({
+                          width: targetASize
+                      });
+                      targetElementB.css({
+                          width: targetBSize
+                      });
+                  }
+                }
 
                 element.on('mousedown', function(event) {
                     // Prevent default dragging of selected content
@@ -184,27 +229,9 @@ angular.module('katGui.util')
                 function mousemove(event) {
                     event.preventDefault();
 
-                    var resizeabledivs = attr.resizeabledivs;
-                    var targetNames = [];
-                    var resize_dir = '';
-
-                    // componentA||componentB vertical split between components
-                    // componentA--componentB horizontal split between components
-                    if (resizeabledivs.includes('||')) {
-                        targetNames = resizeabledivs.split('||');
-                        resize_dir = 'vertical';
-                    } else if (resizeabledivs.includes('--')) {
-                        targetNames = resizeabledivs.split('--');
-                        resize_dir = 'horizontal';
-                    } else {
-                        console.error('resizeabledivs must be of format componentA||componentB or componentA--componentB ');
-                        return;
-                    }
-
-                    var targetElementA = angular.element(document.querySelector(targetNames[0]));
                     var innerHeightA = targetElementA.innerHeight();
                     var innerWidthA = targetElementA.innerWidth();
-                    var targetElementB = angular.element(document.querySelector(targetNames[1]));
+
                     var innerHeightB = targetElementB.innerHeight();
                     var innerWidthB = targetElementB.innerWidth();
 
@@ -212,23 +239,33 @@ angular.module('katGui.util')
                         var diff = event.pageY - startY;
                         startY = event.pageY;
 
+                        var heightA = ((innerHeightA + diff)/(innerHeightA + innerHeightB) * 100) + '%';
+                        var heightB = ((innerHeightB - diff)/(innerHeightA + innerHeightB) * 100) + '%';
+
+                        $localStorage[targetNames[0] + '-' + controllerA] = heightA
                         targetElementA.css({
-                            height: ((innerHeightA + diff)/(innerHeightA + innerHeightB) * 100) + '%'
+                            height: heightA
                         });
+                        $localStorage[targetNames[1] + '-' + controllerA] = heightB
                         targetElementB.css({
-                            height: ((innerHeightB - diff)/(innerHeightA + innerHeightB) * 100) + '%'
+                            height: heightB
                         });
                     } else {
                       var diff = event.pageX - startX;
                       startX = event.pageX;
 
+                      var widthA = ((innerWidthA + diff)/(innerWidthA + innerWidthB) * 100) + '%';
+                      var widthB = ((innerWidthB - diff)/(innerWidthA + innerWidthB) * 100) + '%';
+
+                      $localStorage[targetNames[0] + '-' + controllerA] = widthA
                       targetElementA.css({
-                          width: ((innerWidthA + diff)/(innerWidthA + innerWidthB) * 100) + '%'
-                      });
-                      targetElementB.css({
-                          width: ((innerWidthB - diff)/(innerWidthA + innerWidthB) * 100) + '%'
+                          width: widthA
                       });
 
+                      $localStorage[targetNames[1] + '-' + controllerA] = widthB
+                      targetElementB.css({
+                          width: widthB
+                      });
                     }
                 }
 
