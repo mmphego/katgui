@@ -164,6 +164,70 @@ angular.module('katGui.util')
             }
         };
     })
+    .directive('resizeabledivs', function($document) {
+        return {
+            link: function(scope, element, attr) {
+                var startX = 0;
+                var startY = 0;
+
+                element.on('mousedown', function(event) {
+                    // Prevent default dragging of selected content
+                    event.preventDefault();
+
+                    startX = event.pageX;
+                    startY = event.pageY;
+
+                    $document.on('mousemove', mousemove);
+                    $document.on('mouseup', mouseup);
+                });
+
+                function mousemove(event) {
+                    event.preventDefault();
+
+                    var resizeabledivs = attr.resizeabledivs;
+                    var targetNames = [];
+                    var resize_dir = '';
+
+                    // componentA||componentB vertical split between components
+                    // componentA--componentB horizontal split between components
+                    if (resizeabledivs.includes('||')) {
+                        targetNames = resizeabledivs.split('||');
+                        resize_dir = 'vertical';
+                    } else if (resizeabledivs.includes('--')) {
+                        targetNames = resizeabledivs.split('--');
+                        resize_dir = 'horizontal';
+                    } else {
+                        console.error('resizeabledivs must be of format componentA||componentB or componentA--componentB ');
+                        return;
+                    }
+
+                    var targetElementA = angular.element(document.querySelector(targetNames[0]));
+                    var innerHeightA = targetElementA.innerHeight();
+                    var targetElementB = angular.element(document.querySelector(targetNames[1]));
+                    var innerHeightB = targetElementB.innerHeight();
+
+                    if (resize_dir == 'horizontal') {
+                        var diff = event.pageY - startY;
+                        startY = event.pageY;
+
+                        targetElementA.css({
+                            height: innerHeightA + diff
+                        });
+                        targetElementB.css({
+                            height: innerHeightB - diff
+                        });
+                    } else {
+
+                    }
+                }
+
+                function mouseup() {
+                    $document.off('mousemove', mousemove);
+                    $document.off('mouseup', mouseup);
+                }
+            }
+        }
+    })
     .directive('relativeDraggable', ['$document', function($document) {
         return {
             link: function(scope, element, attr) {
