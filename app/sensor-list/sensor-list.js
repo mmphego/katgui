@@ -104,9 +104,10 @@
                         interval: intervalNum + ',' + intervalType,
                         discrete: vm.searchDiscrete? 'discrete' : null});
                 }
-                catch {
-                  NotifyService.showSimpleDialog('Error',
-                    'Unexpected error occurred, Please Navigate manually to sensor graph');
+                catch (error) {
+                    NotifyService.showSimpleDialog('Error',
+                      'Unexpected error occurred (' + error
+                      + ') Please navigate manually to sensor graph ');
                 }
             }
         };
