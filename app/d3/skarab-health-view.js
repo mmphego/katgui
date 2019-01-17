@@ -16,7 +16,7 @@ angular.module('katGui.d3')
             var margin = {
                 top: 10,
                 right: 20,
-                left: 50,
+                left: 60,
                 bottom: 30
             };
 
@@ -59,18 +59,18 @@ angular.module('katGui.d3')
                               .attr("y", 0)
                               .attr("width", width-1)
                               .attr("height", height)
-                              .attr("transform","translate(1,0)")
+                              .attr("transform","translate(1,1)")
 
-              var x = d3.scale.linear().domain([0,scope.vm.NUM_OF_RACKS]).range([0, width]);
-              var y = d3.scale.linear().domain([0,scope.vm.NUM_OF_SLOTS]).range([0, height]);
+              var x = d3.scale.linear().domain([scope.vm.NUM_OF_RACKS, 0]).range([0, width]);
+              var y = d3.scale.linear().domain([scope.vm.NUM_OF_SLOTS, 0]).range([0, height]);
 
               var xAxis = d3.svg.axis().scale(x).orient("top").ticks(10);
               var yAxis = d3.svg.axis().scale(y).orient("right").ticks(10);
 
               function draw_rectangles(selection) {
                  var rectangleAttributes =
-                    selection.attr("x", function (d) { return x(d.rack-1); })
-                            .attr("y", function (d) { return y(d.slot-1); })
+                    selection.attr("x", function (d) { return x(d.rack); })
+                            .attr("y", function (d) { return y(d.slot); })
                             .attr("ObjectID",function(d) { return d.id; })
                             .style("stroke", "white")
                             .style("stroke-width", 0)
@@ -93,26 +93,12 @@ angular.module('katGui.d3')
 
                                   return 'default';
                                 });
-
-                              d3.select('#' + d.position.replace(':', '')).transition()
-                                .duration(500)
-                                .style("opacity", 1);
                             })
                             .on('mouseout',function (d) {
                               d3.select(this)
                                .style("fill-opacity", 1)
                                .style("stroke-width", 0)
                                .style("cursor", "default");
-
-                              d3.select('#' + d.position.replace(':', ''))
-                                .transition()
-                                .duration(500)
-                                .style("opacity", function(d) {
-                                  if (d.status=='empty' || d.status=='nominal')
-                                    return 0;
-
-                                  return 1;
-                                });
                             })
                             .on('click', function(d){
                               if (d.name) {
@@ -136,19 +122,24 @@ angular.module('katGui.d3')
                                   .enter()
                                   .append('text');
 
-              skarabTexts.attr("x", function (d) { return x(d.rack-1) + unitWidth/2; })
-                          .attr("y", function (d) { return y(d.slot) - 5; })
+              skarabTexts.attr("x", function (d) { return x(d.rack) + unitWidth/2; })
+                          .attr("y", function (d) { return y(d.slot-1) - 5; })
                           .attr("ObjectID", function(d) { return d.id; })
                           .style('text-anchor', 'middle')
+                          .attr('fill', function(d) {
+//                                      return '#455A64';
+//                                      if (d.status == 'nominal')
+//                                        return 'black';
+                                      return 'white';
+                                    })
                           .attr('id', function(d) { return d.position.replace(':', ''); })
                           .text(function(d) {
-                            return d.position;
-                          })
-                          .style("opacity", function(d) {
-                            if (d.status=='empty' || d.status=='nominal')
-                              return 0;
+                            if (d.name) {
+                              var subs = d.name.split('.');
+                              subs.pop();
 
-                            return 1;
+                              return subs.pop().replace('skarab', '');
+                            }
                           });
 
               var textArea = area.append('g');
@@ -158,21 +149,30 @@ angular.module('katGui.d3')
                               .append("text");
 
               slotTexts.attr("x", function(d) { return -20; })
-                    .attr("y", function(d) { return y(d) - 7; })
+                    .attr("y", function(d) { return y(d-1) - 7; })
                     .text( function (d) { return ""+d; })
                     .attr("font-family", "sans-serif")
                     .attr("font-size", "14px")
                     .attr("fill", "grey");
 
+              textArea.append('text').text('SLOT')
+                      .attr("x", function(d) { return -height/2; })
+                      .attr("y", function(d) { return -30; })
+                      .attr("font-family", "sans-serif")
+                      .attr("font-size", "16px")
+                      .attr("transform", "rotate(270)")
+
+
               textArea = area.append('g');
               var rackTexts = textArea.selectAll("text")
-                               .data(['1','2','3','4','5','6','7','8','9'])
+                               .data(['9','8','7','6','5','4','3','2','1'])
                                .enter()
                                .append("text");
 
-              rackTexts.attr("x", function(d) { return x(d) - unitWidth/2; })
+              rackTexts.attr("x", function(d) { return x(d) + unitWidth/2; })
                    .attr("y", function(d) { return height + 15; })
-                   .text( function (d) { return ""+d; })
+                   .style('text-anchor', 'middle')
+                   .text( function (d) { return "RACK B"+d; })
                    .attr("font-family", "sans-serif")
                    .attr("font-size", "14px")
                    .attr("fill", "grey");
@@ -206,14 +206,6 @@ angular.module('katGui.d3')
                     .attr("class", function(d) {
                       return d.status + "-child";
                     });
-
-              skarabTexts.data([obj], function(d) {return d.id})
-                         .style("opacity", function(d) {
-                            if (d.status=='empty' || d.status=='nominal')
-                              return 0;
-
-                            return 1;
-                          });
             };
         }
     };
