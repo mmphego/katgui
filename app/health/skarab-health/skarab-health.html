@@ -1,4 +1,4 @@
-<div flex layout="row" layout-align="center start" ng-controller="SKARABHealthCtrl as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
+<div flex layout="column" layout-align="start start" ng-controller="SKARABHealthCtrl as vm" style="min-width: 1100px; overflow: auto; margin-top: 4px;">
     <div class="legend-popup" style="background: transparent; pointer-events: none;" layout="row" ng-init="transparentLegend = true"
          ng-class="{'transparent-legend':transparentLegend && !showLegend}">
         <md-button style="pointer-events: auto;" md-theme="{{themePrimaryButtons}}" ng-init="showLegend = false" ng-click="showLegend = !showLegend"
@@ -18,6 +18,67 @@
         </div>
     </div>
 
-    <skarab-health-view></skarab-health-view>
 
+  <div style='background-color: rgb(31, 119, 180); margin-bottom: 10px; margin-left: 10px;'>
+    <h3 style='margin-left: 20px;'>Subarray 1</h3>
+    <div ng-repeat="antenna in vm.testdata1" class='test-antenna'>
+      <h4>{{antenna.name}}</h4>
+      <div class="circleBase type3 nominal-child"></div>
+      <div class="circleBase type3 nominal-child"></div>
+    </div>
+  </div>
+
+  <div style='background-color: rgb(255, 127, 14); margin-bottom: 10px; margin-left: 10px;'>
+    <h3 style='margin-left: 20px;'>Subarray 2</h3>
+    <div ng-repeat="antenna in vm.testdata2" class='test-antenna'>
+      <h4>{{antenna.name}}</h4>
+      <div class="circleBase type3 nominal-child"></div>
+      <div class="circleBase type3 nominal-child"></div>
+    </div>
+  </div>
+<!--
+  <div style='background-color: rgb(174, 199, 232); margin-bottom: 10px; margin-left: 10px;'>
+    <h3 style='margin-left: 20px;'>Subarray 3</h3>
+    <div ng-repeat="antenna in vm.testdata1" class='test-antenna'>
+      <h4>{{antenna.name}}</h4>
+      <div class="circleBase type3 nominal-child"></div>
+      <div class="circleBase type3 nominal-child"></div>
+    </div>
+  </div>
+ -->
+ <!--
+  <div style='background-color: rgb(255, 187, 120); margin-bottom: 10px; margin-left: 10px;'>
+    <h3 style='margin-left: 20px;'>Subarray 4</h3>
+    <div ng-repeat="antenna in vm.testdata3" class='test-antenna'>
+      <h4>{{antenna.name}}</h4>
+      <div class="circleBase type3 nominal-child"></div>
+      <div class="circleBase type3 nominal-child"></div>
+    </div>
+  </div>
+   -->
+<!--
+  <div style='background-color: rgb(31, 119, 180); margin-bottom: 10px;'>
+    <div ng-repeat="antenna in vm.testdata1" class='test-antenna'>
+      <h4>{{antenna.name}}</h4>
+      <div class="circleBase type3 nominal-child"></div>
+      <div class="circleBase type3 nominal-child"></div>
+    </div>
+  </div>
+
+  <div style='background-color: rgb(255, 127, 14); margin-bottom: 10px;'>
+    <div ng-repeat="antenna in vm.testdata2" class='test-antenna'>
+      <h4>{{antenna.name}}</h4>
+      <div class="circleBase type3 nominal-child"></div>
+      <div class="circleBase type3 nominal-child"></div>
+    </div>
+  </div>
+
+  <div style='background-color: rgb(31, 119, 180); margin-bottom: 10px;'>
+    <div ng-repeat="antenna in vm.testdata1" class='test-antenna'>
+      <h4>{{antenna.name}}</h4>
+      <div class="circleBase type3 nominal-child"></div>
+      <div class="circleBase type3 nominal-child"></div>
+    </div>
+  </div>
+ -->
 </div>
