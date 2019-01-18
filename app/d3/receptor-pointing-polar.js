@@ -30,9 +30,11 @@ angular.module('katGui.d3')
                 var horizonMaskDsv = d3.dsv(" ", "text/plain");
                 scope.skyPlotData = [];
                 scope.receptorData = [];
+                scope.elevationLimit = 0;
 
                 scope.redrawFunction = function (receptors, skyPlot, showNames, showTrails,
-                                                 showGridLines, trailDots, horizonMaskToggled) {
+                                                 showGridLines, trailDots, horizonMaskToggled,
+                                                 elevationLimit) {
 
                     scope.showTrails = showTrails;
                     scope.trailDots = trailDots;
@@ -60,7 +62,9 @@ angular.module('katGui.d3')
                         scope.showGridLines !== showGridLines ||
                         newHorizonData ||
                         horizonMaskToggled ||
-                        scope.showNames !== showNames) {
+                        scope.showNames !== showNames||
+                        (scope.elevationLimit != elevationLimit)) {
+                        scope.elevationLimit = elevationLimit;
                         scope.showGridLines = showGridLines;
                         scope.showNames = showNames;
                         drawSvg();
@@ -95,10 +99,15 @@ angular.module('katGui.d3')
                         height = 0;
                     }
 
+                    // 90deg projection
+                    var x2 = flippedStereographic(0, Math.PI/2);
+                    var x1 = flippedStereographic(0, Math.PI * (90 - scope.elevationLimit)/180);
+                    var scaleFactor = x2[1]/x1[1];
+
                     //setup d3 projection for stereographic display
                     projection = d3.geo.projection(flippedStereographic)
-                        .scale(scale)
-                        .clipAngle(130)
+                        .clipAngle(90-scope.elevationLimit)
+                        .scale(scale * scaleFactor)
                         .rotate([0, -90])
                         .translate([width / 2 + 0.5, height / 2 + 0.5])
                         .precision(0.01);
@@ -158,10 +167,11 @@ angular.module('katGui.d3')
                         .data(d3.range(360))
                         .enter().append("line")
                         .each(function (d) {
-                            var p0 = projection([d, 0]),
-                                p1 = projection([d, d % 10 ? -1 : -2]);
+                            var p0 = projection([d, scope.elevationLimit]),
+                                p1 = projection([d, scope.elevationLimit + (d % 10 ? -1 : -2)]);
 
                             d3.select(this)
+                                .style('opacity', 0.5)
                                 .attr("x1", p0[0])
                                 .attr("y1", p0[1])
                                 .attr("x2", p1[0])
@@ -173,7 +183,7 @@ angular.module('katGui.d3')
                         .data(d3.range(0, 360, 10))
                         .enter().append("text")
                         .each(function (d) {
-                            var p = projection([d, -4]);
+                            var p = projection([d, scope.elevationLimit-4]);
                             d3.select(this)
                                 .attr("x", p[0])
                                 .attr("y", p[1]);
@@ -197,6 +207,18 @@ angular.module('katGui.d3')
                                 .attr("y", p[1]);
                         })
                         .attr("dy", ".35em")
+                        .style('fill', function(d) {
+                          if (scope.elevationLimit == d)
+                            return '#3D5AFE';
+                        })
+                        .style('font-weight', function(d) {
+                          if (scope.elevationLimit == d)
+                            return 'bold';
+                        })
+                        .style('font-size', function(d) {
+                          if (scope.elevationLimit == d)
+                            return '16px';
+                        })
                         .text(function (d) {
                             return d + "°";
                         });
