@@ -34,16 +34,14 @@
                     <span>Show Gridlines</span>
                 </md-checkbox>
             </md-menu-item>
+
             <md-menu-item>
-              <md-tooltip>Minimium Elevation AngleAngle</md-tooltip>
-              <section class="example-section" style='padding-left: 0;'>
-                <md-radio-group ng-model="vm.selectedMinElevation" ng-change="vm.redraw(false)"
-                  layout="row" layout-align="space-between start">
-                  <md-radio-button ng-value="angle" ng-repeat="angle in vm.elevationOptions" class="md-primary">
-                    {{angle}}&#176;
-                  </md-radio-button>
-                </md-radio-group>
-              </section>
+              <span style='padding-left:0; padding-right:10px;'>
+                  Elevation Zoom (&#176)</span>
+              <md-slider md-discrete ng-model="vm.selectedMinElevation"
+                  style='padding-right:5px; padding-right:15px'
+                  step="10" min="0" max="80" ng-change="vm.redraw(false)"">
+              </md-slider>
             </md-menu-item>
         </md-menu-content>
     </md-menu>
