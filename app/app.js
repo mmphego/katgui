@@ -467,6 +467,24 @@
             window.open(kibanaUrl).focus();
         };
 
+        $rootScope.openLogtrailInNewTab = function(programName) {
+            var logtrailUrl;
+            if (programName) {
+                logtrailUrl = [
+                    "http://",
+                    ConfigService.systemConfig.system.kibana_server,
+                    "/app/logtrail#/?q=programname: kat.",
+                    programName,
+                    "&h=All&t=Now&i=",
+                    $rootScope.systemConfig.system.sitename,
+                    "*&_g=()"].join("")
+                    window.open(logtrailUrl).focus();
+            }
+            else {
+                NotifyService.showSimpleDialog('Error opening logtrail', 'Unexpected error occurred');
+            }
+        }
+
         //todo material milestone v0.12 will have an option to not close menu when an item is clicked
         $rootScope.openMenu = function($mdOpenMenu, $event, menuContentId) {
             var menu = $mdOpenMenu($event);
