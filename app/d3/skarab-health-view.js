@@ -126,12 +126,7 @@ angular.module('katGui.d3')
                           .attr("y", function (d) { return y(d.slot-1) - 5; })
                           .attr("ObjectID", function(d) { return d.id; })
                           .style('text-anchor', 'middle')
-                          .attr('fill', function(d) {
-//                                      return '#455A64';
-//                                      if (d.status == 'nominal')
-//                                        return 'black';
-                                      return 'white';
-                                    })
+                          .attr('fill', 'white')
                           .attr('id', function(d) { return d.position.replace(':', ''); })
                           .text(function(d) {
                             if (d.name) {
