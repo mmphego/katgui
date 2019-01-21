@@ -373,19 +373,20 @@ angular.module('katGui.d3')
                         .data(Object.keys(scope.positions))
                         .enter().append("circle")
                         .attr("class", function (d) {
-                            var name = scope.positions[d][0].name;
-                            var c = scope.positions[d][0].subarrayColor;
+                            for (var i=0; i<scope.positions[d].length; i++) {
+                                var name = scope.positions[d][i].name;
+                                var c = scope.positions[d][i].subarrayColor;
 
-                            var style = document.getElementById(name + '_actual_style_tag');
-                            if (style && style.parentNode) {
-                                style.parentNode.removeChild(style);
+                                var style = document.getElementById(name + '_actual_style_tag');
+                                if (style && style.parentNode) {
+                                    style.parentNode.removeChild(style);
+                                }
+                                style = document.createElement('style');
+                                style.type = 'text/css';
+                                style.id = name + '_actual_style_tag';
+                                style.innerHTML = '.' + name + '_actual {color:' + c + '; stroke:' + c + '; fill:' + c + '}';
+                                document.getElementsByTagName('head')[0].appendChild(style);
                             }
-                            style = document.createElement('style');
-                            style.type = 'text/css';
-                            style.id = name + '_actual_style_tag';
-                            style.innerHTML = '.' + name + '_actual {color:' + c + '; stroke:' + c + '; fill:' + c + '}';
-                            document.getElementsByTagName('head')[0].appendChild(style);
-
                             var classStr = "actual-pos " + name + "_actual";
                             if (scope.positions[d].length > 1) {
                                 classStr += " actual-pos-border";
