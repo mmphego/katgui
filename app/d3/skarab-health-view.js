@@ -22,20 +22,18 @@ angular.module('katGui.d3')
 
             var svg;
             var width, height, radius;
+            var border = 2;
 
             scope.vm.redrawStatus = function () {
 
               width = element[0].clientWidth - margin.left - margin.right;
               height = element[0].clientHeight - margin.top - margin.bottom;
 
-              unitWidth = width/scope.vm.NUM_OF_RACKS - 2;
-              unitHeight = height/scope.vm.NUM_OF_SLOTS - 2;
+
+              unitWidth = width/scope.vm.NUM_OF_RACKS - border;
+              unitHeight = height/scope.vm.NUM_OF_SLOTS - border;
 
               d3.select('svg').remove();
-
-              var tooltipdiv = d3.select(element[0]).append("div")
-                                .attr("class", "skarab-tooltip")
-                                .style("opacity", 0);
 
               svg = d3.select(element[0]).append("svg")
                       .attr("width", element[0].clientWidth)
