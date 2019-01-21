@@ -263,7 +263,6 @@ angular.module('katGui.d3')
                             }
                             scope.positions[d.proj_actual].push(d);
                         }
-
                         if (d.pos_request_pointm_azim && d.pos_request_pointm_elev) {
                             var proj_requested = projection([d.pos_request_pointm_azim.value, d.pos_request_pointm_elev.value]);
                             d.proj_requested_az_x = Math.floor(proj_requested[0] * pm) / pm;

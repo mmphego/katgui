@@ -13,7 +13,7 @@
         vm.targets = [];
         vm.targetsToDisplay = [];
         vm.filters = [];
-        vm.selectedMinElevation = 20;
+        vm.selectedMinElevation = 15;
         vm.sensorValues = {};
         vm.trailDots = 30;
 
