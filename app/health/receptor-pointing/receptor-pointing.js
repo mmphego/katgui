@@ -13,8 +13,10 @@
         vm.targets = [];
         vm.targetsToDisplay = [];
         vm.filters = [];
+        vm.selectedMinElevation = 15;
         vm.sensorValues = {};
         vm.trailDots = 30;
+
         // map subarray number to a colour
         vm.subarrayColors = d3.scale.category20();
         vm.subarrayNrs = [];
@@ -169,7 +171,7 @@
         vm.redraw = function(horizonMaskToggled) {
             vm.redrawChart(
                 vm.receptors, vm.skyPlotData, vm.showNames, vm.showTrails,
-                vm.showGridLines, vm.trailDots, horizonMaskToggled);
+                vm.showGridLines, vm.trailDots, horizonMaskToggled, vm.selectedMinElevation);
         };
 
         vm.toggleHorizonMask = function(receptor) {
