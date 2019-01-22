@@ -246,7 +246,7 @@ angular.module('katGui.d3')
                             var proj_requested = projection([d.pos_request_pointm_azim.value, d.pos_request_pointm_elev.value]);
                             d.proj_requested_az_x = Math.floor(proj_requested[0] * pm) / pm;
                             d.proj_requested_el_y = Math.floor(proj_requested[1] * pm) / pm;
-                            d.proj_requested = d.proj_requested_az_x + ',' + d.proj_requested_el_y;
+                            d.proj_requested = round(d.proj_requested_az_x, 25) + ',' + round(d.proj_requested_el_y, 25);
                             if (!scope.positions_requested[d.proj_requested]) {
                                 scope.positions_requested[d.proj_requested] = [];
                             }
@@ -352,8 +352,9 @@ angular.module('katGui.d3')
                         .data(Object.keys(scope.positions))
                         .enter().append("circle")
                         .attr("class", function (d) {
-                            var name = scope.positions[d][0].name;
-                            var c = scope.positions[d][0].subarrayColor;
+                          for (var i=0; i<scope.positions[d].length; i++) {
+                            var name = scope.positions[d][i].name;
+                            var c = scope.positions[d][i].subarrayColor;
 
                             var style = document.getElementById(name + '_actual_style_tag');
                             if (style && style.parentNode) {
@@ -364,6 +365,7 @@ angular.module('katGui.d3')
                             style.id = name + '_actual_style_tag';
                             style.innerHTML = '.' + name + '_actual {color:' + c + '; stroke:' + c + '; fill:' + c + '}';
                             document.getElementsByTagName('head')[0].appendChild(style);
+                          }
 
                             var classStr = "actual-pos " + name + "_actual";
                             if (scope.positions[d].length > 1) {
@@ -380,7 +382,11 @@ angular.module('katGui.d3')
                             }
                         })
                         .attr("transform", function (d) {
-                                return "translate(" + d + ")";
+                          if (scope.positions[d].length > 1)
+                            return "translate(" + d + ")";
+                          else
+                            return "translate(" + scope.positions[d][0].proj_actual_az_x
+                                    + ',' + scope.positions[d][0].proj_actual_el_y + ")";
                         })
                         .attr("r", function (d) {
                             //for points in the same position, draw overlapping big circles
