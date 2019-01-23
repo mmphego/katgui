@@ -17,9 +17,34 @@
         vm.sensorValues = {};
         vm.trailDots = 30;
 
+
         // map subarray number to a colour
-        vm.subarrayColors = d3.scale.category20();
+        vm.subarrayColors = d3.scale.category20().domain(d3.range(1,20));
+        // vm.subarrayColors = d3.range(20).map(d3.scale.category20());
+        // vm.subarrayColors = d3.scale.category20();
         vm.subarrayNrs = [];
+
+        vm.contrastColor = function (hex) {
+            if (hex.indexOf('#') === 0) {
+              hex = hex.slice(1);
+            }
+            var r = (255 - parseInt(hex.slice(0, 2), 16)).toString(16),
+            g = (255 - parseInt(hex.slice(2, 4), 16)).toString(16),
+            b = (255 - parseInt(hex.slice(4, 6), 16)).toString(16);
+            // pad each with zeros and return
+            return '#' + vm.padZero(r) + vm.padZero(g) + vm.padZero(b);
+        }
+
+        vm.padZero = function (str, len) {
+            len = len || 2;
+            var zeros = new Array(len).join('0');
+            return (zeros + str).slice(-len);
+        }
+
+        vm.color = vm.contrastColor(vm.subarrayColors(3));
+
+
+       // vm.color = 'red';
 
         vm.sensorsToConnectRegex = [
             'pos_actual_pointm_azim',
@@ -165,6 +190,14 @@
                 var receptor = sensor.name.split('_')[0];
                 sensor.name = sensor.name.replace(receptor + '_', '');
                 vm.receptors[receptor][sensor.name] = sensor;
+
+                // work out the class for the receptor
+                var classNames = receptor + '_actual receptor-legend-item md-whiteframe-z1 unselectable';
+                if (vm.receptors[receptor]['mode'] && vm.receptors[receptor]['mode'].value==='POINT'
+                    && vm.receptors[receptor]['lock'] && !vm.receptors[receptor]['lock'].value)
+                  classNames += ' unlocked' + vm.receptors[receptor].sub_nr;
+
+                vm.receptors[receptor]['class_names'] = classNames;
             }
         };
 
