@@ -235,7 +235,13 @@ angular.module('katGui.d3')
                             var proj_actual = projection([d.pos_actual_pointm_azim.value, d.pos_actual_pointm_elev.value]);
                             d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
                             d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
-                            d.proj_actual = round(proj_actual[0], 25) + ',' + round(proj_actual[1], 25);
+
+                            // round to 5deg az and el for grouping purposes
+                            var group_azel = [round(d.pos_actual_pointm_azim.value, 5),
+                                                round(d.pos_actual_pointm_elev.value, 5)];
+                            var group_xy = projection(group_azel);
+
+                            d.proj_actual = Math.round(group_xy[0]) + ',' + Math.round(group_xy[1]);
                             if (!scope.positions[d.proj_actual]) {
                                 scope.positions[d.proj_actual] = [];
                             }
@@ -246,7 +252,13 @@ angular.module('katGui.d3')
                             var proj_requested = projection([d.pos_request_pointm_azim.value, d.pos_request_pointm_elev.value]);
                             d.proj_requested_az_x = Math.floor(proj_requested[0] * pm) / pm;
                             d.proj_requested_el_y = Math.floor(proj_requested[1] * pm) / pm;
-                            d.proj_requested = round(d.proj_requested_az_x, 25) + ',' + round(d.proj_requested_el_y, 25);
+
+                            // round to 5deg az and el for grouping purposes
+                            var group_azel = [round(d.pos_request_pointm_azim.value, 5),
+                                                round(d.pos_request_pointm_elev.value, 5)];
+                            var group_xy = projection(group_azel);
+
+                            d.proj_requested = Math.round(group_xy[0]) + ',' + Math.round(group_xy[1]);
                             if (!scope.positions_requested[d.proj_requested]) {
                                 scope.positions_requested[d.proj_requested] = [];
                             }

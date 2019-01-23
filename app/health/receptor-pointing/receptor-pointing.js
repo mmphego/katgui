@@ -163,6 +163,14 @@
                 var receptor = sensor.name.split('_')[0];
                 sensor.name = sensor.name.replace(receptor + '_', '');
                 vm.receptors[receptor][sensor.name] = sensor;
+
+                // work out the class for the receptor
+                var classNames = receptor + '_actual receptor-legend-item md-whiteframe-z1 unselectable';
+                if (vm.receptors[receptor]['mode'] && vm.receptors[receptor]['mode'].value==='POINT'
+                    && vm.receptors[receptor]['lock'] && !vm.receptors[receptor]['lock'].value)
+                  classNames += ' unlocked' + str(vm.receptors[receptor].sub_nr);
+
+                vm.receptors[receptor]['class_names'] = classNames;
             }
         };
 
