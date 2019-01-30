@@ -257,7 +257,13 @@ angular.module('katGui.d3')
                             var proj_actual = projection([d.pos_actual_pointm_azim.value, d.pos_actual_pointm_elev.value]);
                             d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
                             d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
-                            d.proj_actual = round(proj_actual[0], 25) + ',' + round(proj_actual[1], 25);
+
+                            // round to 5deg az and el for grouping purposes
+                            var group_azel = [round(d.pos_actual_pointm_azim.value, 5),
+                                                round(d.pos_actual_pointm_elev.value, 5)];
+                            var group_xy = projection(group_azel);
+                            d.proj_actual = Math.round(group_xy[0]) + ',' + Math.round(group_xy[1]);
+
                             if (!scope.positions[d.proj_actual]) {
                                 scope.positions[d.proj_actual] = [];
                             }
@@ -268,6 +274,10 @@ angular.module('katGui.d3')
                             d.proj_requested_az_x = Math.floor(proj_requested[0] * pm) / pm;
                             d.proj_requested_el_y = Math.floor(proj_requested[1] * pm) / pm;
                             d.proj_requested = d.proj_requested_az_x + ',' + d.proj_requested_el_y;
+
+                            // // TODO: Requested positions are not grouped. We should
+                            // // check with operators if they would like to group requested
+                            // // positions as well. Then implement as actual position grouping.
                             if (!scope.positions_requested[d.proj_requested]) {
                                 scope.positions_requested[d.proj_requested] = [];
                             }
@@ -402,7 +412,11 @@ angular.module('katGui.d3')
                             }
                         })
                         .attr("transform", function (d) {
+                            if (scope.positions[d].length > 1)
                                 return "translate(" + d + ")";
+                            else
+                                return "translate(" + scope.positions[d][0].proj_actual_az_x
+                                        + ',' + scope.positions[d][0].proj_actual_el_y + ")";
                         })
                         .attr("r", function (d) {
                             //for points in the same position, draw overlapping big circles
