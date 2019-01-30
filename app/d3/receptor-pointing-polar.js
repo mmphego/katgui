@@ -258,7 +258,7 @@ angular.module('katGui.d3')
                             d.proj_actual_az_x = Math.floor(proj_actual[0] * pm) / pm;
                             d.proj_actual_el_y = Math.floor(proj_actual[1] * pm) / pm;
 
-                            // round to 5deg az and el for grouping purposes
+                            // round to 0.5 deg az and el for grouping purposes
                             var group_azel = [round(d.pos_actual_pointm_azim.value, 5),
                                                 round(d.pos_actual_pointm_elev.value, 5)];
                             var group_xy = projection(group_azel);
