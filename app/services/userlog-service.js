@@ -363,7 +363,7 @@
             var defer = $q.defer();
             $mdDialog
                 .show({
-                    controller: function ($rootScope, $scope, $mdDialog, $filter, $log) {
+                    controller: function ($rootScope, $scope, $mdDialog, $filter, $log, $state) {
                         $scope.editMode = editMode;
                         $scope.log = log;
                         $scope.tags = api.tags;
@@ -456,6 +456,11 @@
                             $scope.showInvalidTagsTooltip = false;
                             $mdDialog.hide();
                             defer.resolve();
+                        };
+
+                        $scope.openUserLogById = function (id) {
+                            $mdDialog.hide();
+                            $state.go('userlogs-report', {userlogId:id}, {reload: true, inherit: false});
                         };
 
                         $scope.submit = function () {
