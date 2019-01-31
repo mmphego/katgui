@@ -435,14 +435,14 @@
                     programName,
                     "&h=All&t=Now&i=",
                     $rootScope.systemConfig.system.sitename,
-                    "-*&_g=()"].join("");
+                    "*&_g=()"].join("");
             } else {
                 kibanaUrl = [
                     "http://",
                     ConfigService.systemConfig.system.kibana_server,
                     "/app/logtrail#/?q=&h=All&t=Now&i=",
                     $rootScope.systemConfig.system.sitename,
-                    "-*&_g=()"].join("");
+                    "*&_g=()"].join("");
             }
             window.open(kibanaUrl).focus();
         };
