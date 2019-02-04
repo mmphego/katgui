@@ -363,7 +363,8 @@
             var defer = $q.defer();
             $mdDialog
                 .show({
-                    controller: function ($rootScope, $scope, $mdDialog, $filter, $log, $state) {
+                    controller: function ($rootScope, $scope, $mdDialog, $filter,
+                                            $log, $state, $window) {
                         $scope.editMode = editMode;
                         $scope.log = log;
                         $scope.tags = api.tags;
@@ -458,9 +459,20 @@
                             defer.resolve();
                         };
 
-                        $scope.openUserLogById = function (id) {
-                            $mdDialog.hide();
-                            $state.go('userlogs-report', {userlogId:id}, {reload: true, inherit: false});
+                        $scope.copyUserLogURL = function (id) {
+                            var url = $state.href('userlogs-report',
+                                                    {userlogId:id},
+                                                    {absolute: true, inherit: false});
+
+                            // copy url to clipboard
+                            var body = angular.element($window.document.body);
+                            var textarea = angular.element('<textarea/>');
+                            textarea.val(url);
+                            body.append(textarea);
+                            textarea[0].select();
+                            $window.document.execCommand('copy');
+                            textarea.remove();
+                            NotifyService.showSimpleToast("URL copied to clipboard");
                         };
 
                         $scope.submit = function () {

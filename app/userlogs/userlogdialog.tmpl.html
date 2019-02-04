@@ -3,9 +3,10 @@
     <md-toolbar class="md-toolbar-tools md-whiteframe-z1" layout="row" layout-align="space-between center">
         <span>{{editMode && log.id? 'User Log Editor (' + log.id + ')': editMode? 'New User Log': 'User Log Viewer (' + log.id + ')'}}</span>
 
-        <md-button title="Open User Log"  class="inline-action-button" style="margin: 0"
-                  ng-click="openUserLogById(log.id)">
-            <span class="fa fa-external-link" style='font-size: 18px'></span>
+        <md-button class="inline-action-button" style="margin: 0"
+                  ng-click="copyUserLogURL(log.id)">
+            <md-tooltip>Copy User Log URL to clipboard</md-tooltip>
+            <span class="fa fa-link" style='font-size: 18px'></span>
         </md-button>
 
     </md-toolbar>
