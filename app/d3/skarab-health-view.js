@@ -3,10 +3,6 @@ angular.module('katGui.d3')
 .directive('skarabHealthView', function($rootScope, $timeout, d3Util) {
     return {
         restrict: 'E',
-        controller: 'SKARABHealthCtrl',
-        controllerAs: 'vm',
-        scope: {
-        },
         link: function(scope, element) {
             const format = d3.time.format.utc("%Y-%m-%d %X");
 
@@ -199,6 +195,17 @@ angular.module('katGui.d3')
                     .attr("class", function(d) {
                       return d.status + "-child";
                     });
+
+              skarabTexts.data([obj], function(d) {return d.id;})
+                    .text(function(d) {
+                      if (d.name) {
+                        var subs = d.name.split('.');
+                        subs.pop();
+
+                        return subs.pop().replace('skarab', '');
+                      }
+                    });
+
             };
         }
     };
