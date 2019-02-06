@@ -1,12 +1,14 @@
 <div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative; overflow: hidden"
      ng-class="{'connection-lost-bg':!$root.connectedToMonitor}">
 
-     <style id="unlocked3">
-       .unlocked3 {
+     <style id="unlocked">
+       .unlocked {
          min-height: 35px;
-         border: 5px solid {{vm.color}};
+         background-color:#ffffff00;
+         border: 5px solid;
        }
      </style>
+
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 120px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'pointing-menu-content')">
             <md-icon md-menu-origin class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
