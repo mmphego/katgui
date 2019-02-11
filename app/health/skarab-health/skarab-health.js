@@ -53,7 +53,7 @@
           var sensorsRegex = 'skarab.*_device_status';
           MonitorService.listSensorsHttp('all', sensorsRegex).then(function (result) {
               result.data.forEach(function (sensor) {
-                vm.updateStatusSensor(sensor);
+                vm.initStatusSensor(sensor);
                 MonitorService.subscribeSensor(sensor);
                 vm.subscribedSensors.push(sensor);
               });
@@ -92,14 +92,25 @@
           }
         };
 
+        vm.initStatusSensor = function(sensor) {
+          for (var i=0; i<vm.data.length; i++) {
+            var obj = vm.data[i];
+            if (obj.sensorName==sensor.name) {
+              obj.name = sensor.original_name;
+              obj.description = sensor.description;
+              obj.sensor = sensor;
+              obj.status = sensor.status;
+              if (vm.updateStatus)
+                vm.updateStatus(obj);
+              return;
+            }
+          }
+        };
+
         vm.updateStatusSensor = function(sensor) {
           for (var i=0; i<vm.data.length; i++) {
             var obj = vm.data[i];
             if (obj.sensorName==sensor.name) {
-              if (!obj.sensor) {
-                obj.name = sensor.original_name;
-                obj.description = sensor.description;
-              }
               obj.sensor = sensor;
               obj.status = sensor.status;
               if (vm.updateStatus)
