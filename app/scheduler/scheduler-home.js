@@ -1017,6 +1017,8 @@
             var allocations = [];
             var assignedResources = [];
             var start_time = $rootScope.utcDateTime;
+            var compoundTag = null;
+
             if (sb) {
                 dryrun_link = ConfigService.GetKATTaskFileServerURL() + "/tailtask/" + sb.id_code + "/dryrun"
                 content = "Schedule block: " + sb.id_code + "\n\nDry run link: " + dryrun_link;
