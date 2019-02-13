@@ -828,10 +828,14 @@
             title: 'User Log Tag Management',
         });
         $stateProvider.state('userlog-reports', {
-            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTags}',
+            url: '/userlog-reports/{startTime}/{endTime}/{tagIds}/{filter}/{compoundTags}/{userlogId}',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
+                userlogId: {
+                    value: null,
+                    squash: true
+                },
                 startTime: {
                     value: null,
                     squash: true
@@ -860,10 +864,14 @@
             title: 'User Log Reports'
         });
         $stateProvider.state('userlogs-report', {
-            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTags',
+            url: '/userlogs-report?startTime&endTime&tagIds&tags&filter&matchAllTags&compoundTags&userlogId',
             templateUrl: 'app/userlogs/userlog-reports.html',
             //makes the params optional
             params: {
+                userlogId: {
+                    value: null,
+                    squash: true
+                },
                 startTime: {
                     value: null,
                     squash: true

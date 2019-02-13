@@ -1,6 +1,14 @@
 <div flex ng-controller="ReceptorPointingCtrl as vm" layout="column" style="position: relative; overflow: hidden"
      ng-class="{'connection-lost-bg':!$root.connectedToMonitor}">
 
+     <style id="unlocked">
+       .unlocked {
+         min-height: 35px;
+         background-color:#ffffff00;
+         border: 5px solid;
+       }
+     </style>
+
     <md-menu md-theme="{{themePrimaryButtons}}" style="margin: 0; position: absolute; right: 8px; top: 120px;">
         <md-button class="md-icon-button inline-action-button" ng-click="$root.openMenu($mdOpenMenu, $event, 'pointing-menu-content')">
             <md-icon md-menu-origin class="fa" md-font-icon="fa-ellipsis-v"></md-icon>
@@ -50,7 +58,7 @@
         <div style="height: 90px; margin-bottom: 12px" ng-show="vm.showReceptorStates">
             <!-- <div ng-repeat="(receptorName, receptor) in vm.receptorsData | filter:{'skyPlot':false} track by $index" -->
             <div ng-repeat="(receptorName, receptor) in vm.receptors"
-                 class="{{receptorName + '_actual receptor-legend-item md-whiteframe-z1 unselectable'}}"
+                 class="{{vm.receptors[receptorName]['class_names']}}"
                  ng-click="vm.toggleHorizonMask(receptor)" title="{{'Click to toggle the horizon mask for ' + receptorName}}"
                  style="overflow: visible; display: inline-block" ng-class="{'border-black-2px': receptor.showHorizonMask}"
                  ng-mouseenter="vm.receptorHoverName=receptorName" ng-mouseleave="vm.receptorHoverName=''">
