@@ -88,8 +88,10 @@
         };
 
         vm.editInstructionSet = function (sb, event) {
+            // can you believe there is no way of making a $mdDialog wider
+            // I'm appending non-printable spaces after title to make $mdDialog widner
             var confirm = $mdDialog.prompt()
-                .title('Edit Instruction Set for ' + sb.id_code)
+                .title('Edit Instruction Set for ' + sb.id_code + "\u00A0".repeat(100))
                 .textContent('')
                 .placeholder('Instruction Set')
                 .ariaLabel('Instruction Set')
