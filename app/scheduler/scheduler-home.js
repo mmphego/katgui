@@ -911,6 +911,33 @@
             return classes;
         };
 
+        vm.showReactivateReceptor = function(resources, resourceName) {
+            // return true only if
+            // - all resources other than receptors are in 'activated' states
+            // - given resourceName is a receptor and is in 'error' state
+            if (!resourceName.startsWith('m0'))
+              return false;
+
+            var resourceStateSensor = vm.sensorValues[resourceName + '_state'];
+            if (resourceStateSensor) {
+                if (resourceStateSensor.value != 'error')
+                    return false;
+            }
+
+            for (var i=0; i<resources.length; i++) {
+              var resource = resources[i];
+              if (!resource[0].startsWith('m0')) {
+                resourceStateSensor = vm.sensorValues[resource[0] + '_state'];
+                if (resourceStateSensor) {
+                    if (resourceStateSensor.value != 'activated')
+                        return false;
+                }
+              }
+            }
+
+            return true;
+        }
+
         vm.initSensors = function() {
             ConfigService.getSystemConfig()
                 .then(function(systemConfig) {
