@@ -158,6 +158,11 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/verify')));
         };
 
+        api.executeDryRun = function(id_code) {
+            // api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + '/' + id_code + '/dryrun')));
+            console.log("Buntu's dryrun test");
+        };
+
         api.executeSchedule = function(sub_nr, id_code) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/execute')));
         };

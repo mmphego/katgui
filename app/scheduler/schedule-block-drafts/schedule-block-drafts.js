@@ -62,6 +62,15 @@
         vm.verifyDraft = function (item) {
             ObsSchedService.verifyScheduleBlock(item.sub_nr, item.id_code);
         };
+        /* TODO: Modify app/services/obs-sched-service.js to include the function - executeDryRun(),
+           this must have a condition that looks like this
+
+           if ObsSchedService.unassignScheduleBlock:
+                verify given constraints
+        */
+        vm.executeDryRun = function (item) {
+            ObsSchedService.executeDryRun(item.id_code);
+        };
 
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code);

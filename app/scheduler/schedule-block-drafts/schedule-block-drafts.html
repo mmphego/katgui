@@ -77,6 +77,9 @@
                                 <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.editInstructionSet(item, $event)">Edit Instruction Set</md-button>
                             </md-menu-item>
                             <md-menu-item>
+                                <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.executeDryRun(item)">Execute Dryrun</md-button>
+                            </md-menu-item>
+                            <md-menu-item>
                                 <md-button ng-disabled="item.type !== 'OBSERVATION'" ng-click="vm.viewSBTasklog(item)">View Dryrun</md-button>
                             </md-menu-item>
                             <md-menu-divider></md-menu-divider>
