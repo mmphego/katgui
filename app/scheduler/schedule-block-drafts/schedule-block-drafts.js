@@ -9,6 +9,7 @@
         vm.selectedScheduleDraft = null;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
+        vm.subarrayColors = d3.scale.category20().domain(d3.range(1,20));
         $scope.$parent.vm.subarray = null;
         $scope.parent = $scope.$parent;
 
@@ -62,11 +63,16 @@
         vm.verifyDraft = function (item) {
             ObsSchedService.verifyScheduleBlock(item.sub_nr, item.id_code);
         };
-        /* TODO: Modify app/services/obs-sched-service.js to include the function - executeDryRun(),
-           this must have a condition that looks like this
 
-           if ObsSchedService.unassignScheduleBlock:
-                verify given constraints
+        vm.getSubArrayColor = function(sub_nr) {
+          if (sub_nr) {
+            color = vm.subarrayColors(sub_nr);
+            return color;
+          }
+          return 'none';
+        }
+        /* TODO: Modify the executeDryRun function in app/services/obs-sched-service.js to include 
+           the katportal endpoint, being developed in https://skaafrica.atlassian.net/browse/MT-531
         */
         vm.executeDryRun = function (item) {
             ObsSchedService.executeDryRun(item.id_code);
