@@ -71,11 +71,11 @@
           }
           return 'none';
         }
-        /* TODO: Modify the executeDryRun function in app/services/obs-sched-service.js to include 
+        /* TODO: Modify the verifyDraft function in app/services/obs-sched-service.js to include
            the katportal endpoint, being developed in https://skaafrica.atlassian.net/browse/MT-531
         */
-        vm.executeDryRun = function (item) {
-            ObsSchedService.executeDryRun(item.id_code);
+        vm.verifyDraft = function (item) {
+            ObsSchedService.verifyDraft(item.id_code);
         };
 
         vm.removeDraft = function (item) {
