@@ -79,7 +79,7 @@
                                 <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.editInstructionSet(item, $event)">Edit Instruction Set</md-button>
                             </md-menu-item>
                             <md-menu-item ng-if="!item.sub_nr">
-                                <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.verifyDraft(item)">Verify Unassigned</md-button>
+                                <md-button ng-disabled="!parent.vm.iAmAtLeastCA()" ng-click="vm.verifyUnassignedDraft(item)">Verify Unassigned</md-button> 
                             </md-menu-item>
                             <md-menu-item>
                                 <md-button ng-disabled="item.type !== 'OBSERVATION'" ng-click="vm.viewSBTasklog(item)">View Dryrun</md-button>

@@ -158,9 +158,8 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/verify')));
         };
 
-        api.verifyDraft = function(id_code) {
-            // api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + '/' + id_code + '/dryrun')));
-            console.log("Buntu's dryrun test");
+        api.verifyUnassignedScheduleBlock = function(id_code) {
+            api.handleRequestResponse($http(createRequest('get', urlBase() + '/sb/' + id_code + '/dryrun')));
         };
 
         api.executeSchedule = function(sub_nr, id_code) {
