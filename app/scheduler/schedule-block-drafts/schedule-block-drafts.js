@@ -71,7 +71,7 @@
           }
           return 'none';
         }
-    
+
         vm.verifyUnassignedDraft = function (item) {
             ObsSchedService.verifyUnassignedScheduleBlock(item.id_code);
         };
