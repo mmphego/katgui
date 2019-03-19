@@ -142,7 +142,7 @@
                                 title="Restart Maintenance Device" ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resourceAlloc[0], $event); $event.stopPropagation()"></span>
 
                             <span class="icon-button fa fa-repeat"
-                                ng-show="parent.vm.showReactivateReceptor(vm.subarray.name, resourceAlloc[0])"
+                                ng-show="parent.vm.showReactivateReceptor(vm.subarray.name, resourceAlloc[0]) && parent.vm.iAmAtLeastCA()"
                                 md-ink-ripple title="{{'Retry activation of ' + resourceAlloc[0]}}"
                                 ng-click="vm.reactivateReceptor(resourceAlloc[0])"></span>
 
