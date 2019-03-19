@@ -63,6 +63,10 @@
             ObsSchedService.verifyScheduleBlock(item.sub_nr, item.id_code);
         };
 
+        vm.verifyUnassignedDraft = function (item) {
+            ObsSchedService.verifyUnassignedScheduleBlock(item.id_code);
+        };
+
         vm.removeDraft = function (item) {
             ObsSchedService.deleteScheduleDraft(item.id_code);
         };
