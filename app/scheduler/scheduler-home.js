@@ -913,6 +913,9 @@
 
         vm.showReactivateReceptor = function(subarray, resourceName) {
 
+            if (!vm.sensorValues[subarray + '_allocations'])
+              return false;
+
             var resources = vm.sensorValues[subarray + '_allocations'].parsedValue
 
             // return true only if
@@ -946,6 +949,10 @@
         }
 
         vm.getAllErroredReceptors = function(subarray) {
+
+            if (!vm.sensorValues[subarray + '_allocations'])
+              return '';
+
             var resources = vm.sensorValues[subarray + '_allocations'].parsedValue
 
             // return comma separated list of receptor names which are not in 'active' state if:
