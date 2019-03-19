@@ -58,8 +58,8 @@
             ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resourceName);
         };
 
-        vm.reactivateReceptor = function (receptor) {
-            ObsSchedService.reactivateSubarrayReceptor(vm.subarray.id, receptor);
+        vm.reactivateReceptor = function (receptors) {
+            ObsSchedService.reactivateSubarrayReceptor(vm.subarray.id, receptors);
         };
 
         vm.openTemplateListDialog = function ($event) {
