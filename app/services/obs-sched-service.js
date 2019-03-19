@@ -246,6 +246,11 @@
             return $http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/activate'), true);
         };
 
+        api.reactivateSubarrayReceptor = function(sub_nr, receptors) {
+            return $http(createRequest('post', urlBase() + '/subarray/'
+                            + sub_nr + '/reactivate-receptors/' + receptors), true);
+        }
+
         api.setSubarrayMaintenance = function(sub_nr, maintenance) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/maintenance/' + maintenance)));
         };

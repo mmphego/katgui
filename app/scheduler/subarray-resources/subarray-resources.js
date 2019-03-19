@@ -58,6 +58,10 @@
             ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resourceName);
         };
 
+        vm.reactivateReceptor = function (receptors) {
+            ObsSchedService.reactivateSubarrayReceptor(vm.subarray.id, receptors);
+        };
+
         vm.openTemplateListDialog = function ($event) {
             $mdDialog
                 .show({
