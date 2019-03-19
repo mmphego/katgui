@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 {"version": "1.0.1", "buildDate": "1553075713781"}
 =======
 {"version": "1.0.1", "buildDate": "1552988768847"}
 >>>>>>> c43a49a... Merge branch 'master' into user/BuntuN/MT-530
+=======
+{"version": "1.0.1", "buildDate": "1553005894061"}
+>>>>>>> 2c75b10... Merge pull request #443 from ska-sa/user/BuntuN/MT-530/execute-a-dryrun-with-unassigned-sb
