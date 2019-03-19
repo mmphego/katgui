@@ -911,11 +911,18 @@
             return classes;
         };
 
-        vm.showReactivateReceptor = function(resources, resourceName) {
+        vm.showReactivateReceptor = function(subarray, resourceName) {
+
+            var resources = vm.sensorValues[subarray + '_allocations'].parsedValue
+
             // return true only if
+            // - the subarray is in 'error' state
             // - all resources other than receptors are in 'activated' states
             // - given resourceName is a receptor and is in 'error' state
-            if (!resourceName.startsWith('m0'))
+            if (!resourceName.startsWith('m0') || !resourceName.startsWith('s0'))
+              return false;
+
+            if (vm.sensorValues[subarray + '_state'].value != 'error')
               return false;
 
             var resourceStateSensor = vm.sensorValues[resourceName + '_state'];
@@ -926,7 +933,7 @@
 
             for (var i=0; i<resources.length; i++) {
               var resource = resources[i];
-              if (!resource[0].startsWith('m0')) {
+              if (!resource[0].startsWith('m0') || !resource[0].startsWith('s0')) {
                 resourceStateSensor = vm.sensorValues[resource[0] + '_state'];
                 if (resourceStateSensor) {
                     if (resourceStateSensor.value != 'activated')
