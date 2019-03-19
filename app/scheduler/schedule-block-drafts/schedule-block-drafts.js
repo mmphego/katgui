@@ -9,7 +9,6 @@
         vm.selectedScheduleDraft = null;
         vm.types = SCHEDULE_BLOCK_TYPES;
         vm.scheduleDraftData = ObsSchedService.scheduleDraftData;
-        vm.subarrayColors = d3.scale.category20().domain(d3.range(1,20));
         $scope.$parent.vm.subarray = null;
         $scope.parent = $scope.$parent;
 
@@ -63,14 +62,6 @@
         vm.verifyDraft = function (item) {
             ObsSchedService.verifyScheduleBlock(item.sub_nr, item.id_code);
         };
-
-        vm.getSubArrayColor = function(sub_nr) {
-          if (sub_nr) {
-            color = vm.subarrayColors(sub_nr);
-            return color;
-          }
-          return 'none';
-        }
 
         vm.verifyUnassignedDraft = function (item) {
             ObsSchedService.verifyUnassignedScheduleBlock(item.id_code);
