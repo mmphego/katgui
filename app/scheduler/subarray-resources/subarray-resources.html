@@ -45,6 +45,11 @@
                             </md-menu-content>
                         </md-menu>
 
+                        <span class="fa fa-repeat subarray-action-icon hover-opacity"
+                            title="Retry errored receptors - {{parent.vm.getAllErroredReceptors(vm.subarray.name)}}"
+                            md-ink-ripple ng-show="parent.vm.getAllErroredReceptors(vm.subarray.name)!='' && parent.vm.iAmAtLeastCA()"
+                            ng-click="vm.reactivateReceptor(parent.vm.getAllErroredReceptors(vm.subarray.name))"></span>
+
                         <span class="fa fa-cubes subarray-action-icon hover-opacity"
                             title="Load last known subarray configuration - {{vm.lastKnownSubarrayConfig? vm.lastKnownSubarrayConfig : 'Could not find the last known configuration for any subarrays'}}"
                             md-ink-ripple ng-show="parent.vm.iAmAtLeastCA()"
