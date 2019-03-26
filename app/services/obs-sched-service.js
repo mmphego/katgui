@@ -158,6 +158,10 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/verify')));
         };
 
+        api.verifyUnassignedScheduleBlock = function(id_code) {
+            api.handleRequestResponse($http(createRequest('get', urlBase() + '/sb/' + id_code + '/dryrun')));
+        };
+
         api.executeSchedule = function(sub_nr, id_code) {
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/execute')));
         };
