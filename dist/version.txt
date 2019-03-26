@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version": "1.0.1", "buildDate": "1553075713781"}
+=======
+{"version": "1.0.1", "buildDate": "1552988768847"}
+>>>>>>> c43a49a... Merge branch 'master' into user/BuntuN/MT-530
