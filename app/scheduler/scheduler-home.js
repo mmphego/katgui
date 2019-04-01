@@ -23,9 +23,11 @@
         vm.subarray = null;
         vm.products = [];
         vm.bandsMap = {};
+        vm.subBandsMap = {};
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.bands = [];
+        vm.sub_bands = [];
         vm.users = [];
         vm.resourceBusyStates = ['deactivating', 'configuring', 'configured', 'activating'];
         vm.iAmCA = false;
@@ -39,6 +41,7 @@
             "subarray_._product",
             "subarray_._state",
             "subarray_._band",
+            "subarray_._sub_band",
             "subarray_._config_label",
             "subarray_._maintenance",
             "subarray_._delegated_ca",
@@ -121,6 +124,27 @@
                         vm.bandsMap[product] = [];
                     }
                 });
+            });
+
+
+        ConfigService.getSubBandConfig()
+            .then(function(subBandConfig) {
+                vm.sub_bands = [];
+                vm.subBandsMap = {};
+                var subBandKeys = Object.keys(subBandConfig);
+                subBandKeys.forEach(function(sub_band) {
+                      vm.sub_bands.push({
+                          name: sub_band,
+                          l_sub_band: subBandConfig["l"].sub_bands,
+                          s_sub_band: subBandConfig["s"].sub_bands,
+                          u_sub_band: subBandConfig["u"].sub_bands,
+                          x_sub_band: subBandConfig["x"].sub_bands
+                      });
+                      if (subBandConfig[sub_band].sub_bands) {
+                        vm.subBandsMap[sub_band] = subBandConfig.sub_bands
+                  };
+              });
+
             });
 
         vm.iAmAtLeastCA = function() {

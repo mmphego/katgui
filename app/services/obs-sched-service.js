@@ -738,6 +738,10 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/bands/' + sub_nr + '/' + band)));
         };
 
+        api.setSubBand = function(sub_nr, sub_band) {
+            api.handleRequestResponse($http(createRequest('post', urlBase() + '/centre-frequency/' + sub_nr + '/' + sub_band)));
+        };
+
         api.setProduct = function(sub_nr, product, dumpRate) {
             api.handleRequestResponse(
                 $http(createRequest('post', urlBase() + '/product/' + sub_nr, {
