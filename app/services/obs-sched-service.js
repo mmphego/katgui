@@ -446,6 +446,7 @@
                                             }).join(","),
                                         band: api.subarrays[subarrayIndex].band,
                                         product: api.subarrays[subarrayIndex].product,
+                                        requested_rx_centre_frequency: api.subarrays[subarrayIndex].requested_rx_centre_frequency,
                                         dump_rate: api.subarrays[subarrayIndex].dump_rate
                                     };
                                 }
@@ -734,8 +735,23 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/config-labels/' + sub_nr + '/' + config_label)));
         };
 
-        api.setBand = function(sub_nr, band) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/bands/' + sub_nr + '/' + band)));
+        api.setBand = function(sub_nr, band, freq) {
+            $http(createRequest('post', urlBase() + '/bands/' + sub_nr + '/' + band))
+                .then(function(result) {
+                    if (!result.data.error) {
+                        var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                        if (result.data.result.split(' ')[1] === 'ok') {
+                            NotifyService.showSimpleToast(message);
+                        } else {
+                            NotifyService.showPreDialog('Error Processing Request', message);
+                        }
+                        api.setFrequency(sub_nr, freq);
+                    } else {
+                        NotifyService.showPreDialog('Error Processing Request', result.data.error);
+                    }
+                }, function(error) {
+                    NotifyService.showHttpErrorDialog('Error sending request', error);
+                });
         };
 
         api.setFrequency = function(sub_nr, freq) {
@@ -914,9 +930,11 @@
                         api.assignResourcesToSubarray(subarrayNumber, resourcesGoingToAllocate.join(','));
                     }
                 }
-                if (subarray.band !== lastKnownConfig.band) {
-                    api.setBand(subarrayNumber, lastKnownConfig.band);
+                if (subarray.band !== lastKnownConfig.band ||
+                    subarray.requested_rx_centre_frequency !== lastKnownConfig.requested_rx_centre_frequency) {
+                    api.setBand(subarrayNumber, lastKnownConfig.band, lastKnownConfig.requested_rx_centre_frequency);
                 }
+
                 if (lastKnownConfig.dump_rate) {
                     api.setProduct(subarrayNumber, lastKnownConfig.product ? lastKnownConfig.product : '', lastKnownConfig.dump_rate);
                 } else if (subarray.product !== lastKnownConfig.product) {

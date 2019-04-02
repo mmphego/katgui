@@ -290,12 +290,10 @@
         };
 
         vm.setBand = function(band) {
-            ObsSchedService.setBand(vm.subarray.id, band);
-            vm.setFrequency(vm.subBandsMap[band][0]);
+            ObsSchedService.setBand(vm.subarray.id, band, vm.subBandsMap[band][0]);
         };
 
         vm.setFrequency = function(freq) {
-          // TODO: create method on ObsSchedService
           ObsSchedService.setFrequency(vm.subarray.id, freq);
         };
 

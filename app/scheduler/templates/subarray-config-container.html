@@ -58,7 +58,7 @@
     <md-menu>
         <span ng-disabled="!$root.expertOrLO" title="Selected Centre Frequency" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
-             <i>f: </i><b>{{vm.subarray.requested_rx_centre_frequency==0 ? ''+vm.subarray.requested_rx_centre_frequency/1000000+'MHz' : 'None'}}</b>
+             <i>f: </i><b>{{vm.subarray.requested_rx_centre_frequency==0 ? 'None' : vm.subarray.requested_rx_centre_frequency}}</b>
         </span>
        <md-menu-content>
            <md-menu-item ng-if="!vm.subarray.band">
