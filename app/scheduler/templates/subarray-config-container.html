@@ -58,17 +58,17 @@
     <md-menu>
         <span ng-disabled="!$root.expertOrLO" title="Selected Centre Frequency" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
-             <i>f: </i><b>{{vm.subarray.sub_band ? vm.subarray.sub_band : 'None'}}</b>
+             <i>f: </i><b>{{vm.subarray.requested_rx_centre_frequency==0 ? ''+vm.subarray.requested_rx_centre_frequency/1000000+'MHz' : 'None'}}</b>
         </span>
        <md-menu-content>
-           <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
+           <md-menu-item ng-if="!vm.subarray.band">
                <span>
-                   Select a product first...
+                   Select a product and band first...
                </span>
            </md-menu-item>
-        <md-menu-item ng-repeat="sub_band in parent.vm.bandsMap[vm.subarray.product] | orderBy:sub_band track by $index">
-            <md-button ng-click="parent.vm.setBand(band)">
-                {{sub_band}}
+        <md-menu-item ng-repeat="freq in parent.vm.subBandsMap[vm.subarray.band] | orderBy:freq track by $index">
+            <md-button ng-click="parent.vm.setFrequency(freq)">
+                {{'' + freq + ' MHz'}}
             </md-button>
         </md-menu-item>
        </md-menu-content>

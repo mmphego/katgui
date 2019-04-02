@@ -41,7 +41,7 @@
             "subarray_._product",
             "subarray_._state",
             "subarray_._band",
-            "subarray_._sub_band",
+            "subarray_._requested_rx_centre_frequency",
             "subarray_._config_label",
             "subarray_._maintenance",
             "subarray_._delegated_ca",
@@ -141,7 +141,7 @@
                           x_sub_band: subBandConfig["x"].sub_bands
                       });
                       if (subBandConfig[sub_band].sub_bands) {
-                        vm.subBandsMap[sub_band] = subBandConfig.sub_bands
+                        vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
                   };
               });
 
@@ -291,6 +291,12 @@
 
         vm.setBand = function(band) {
             ObsSchedService.setBand(vm.subarray.id, band);
+            vm.setFrequency(vm.subBandsMap[band][0]);
+        };
+
+        vm.setFrequency = function(freq) {
+          // TODO: create method on ObsSchedService
+          ObsSchedService.setFrequency(vm.subarray.id, freq);
         };
 
         vm.openBandsDialog = function(event) {
