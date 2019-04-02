@@ -58,7 +58,7 @@
     <md-menu>
         <span ng-disabled="!$root.expertOrLO" title="Selected Centre Frequency" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
-             <i>f: </i><b>{{vm.subarray.requested_rx_centre_frequency==0 ? 'None' : vm.subarray.requested_rx_centre_frequency}}</b>
+             <i>f: </i><b>{{vm.subarray.requested_rx_centre_frequency==0 ? 'None' : vm.subarray.requested_rx_centre_frequency/1000000.}} MHz</b>
         </span>
        <md-menu-content>
            <md-menu-item ng-if="!vm.subarray.band">
@@ -76,7 +76,7 @@
     <md-menu>
         <span ng-disabled="!$root.expertOrLO" title="Selected Dump Rate" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
-             <i>DR: </i><b>{{vm.subarray.dump_rate}}Hz ({{vm.subarray.dump_rate_seconds}}s)</b>
+             <i>DR: </i><b>{{vm.subarray.dump_rate}} Hz ({{vm.subarray.dump_rate_seconds}}s)</b>
          </span>
         <md-menu-content>
             <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
@@ -86,7 +86,7 @@
             </md-menu-item>
             <md-menu-item ng-repeat="dumpRate in parent.vm.dumpRatesMap[vm.subarray.product] track by $index">
                 <md-button ng-click="parent.vm.setDumpRate(dumpRate.hz)">
-                    {{dumpRate.hz + 'hz (' + dumpRate.seconds + 's)' + (parent.vm.defaultDumpRatesMap[vm.subarray.product] === dumpRate.hz? ' - default': '')}}
+                    {{dumpRate.hz + 'Hz (' + dumpRate.seconds + 's)' + (parent.vm.defaultDumpRatesMap[vm.subarray.product] === dumpRate.hz? ' - default': '')}}
                 </md-button>
             </md-menu-item>
         </md-menu-content>

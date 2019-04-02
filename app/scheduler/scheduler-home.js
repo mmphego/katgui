@@ -135,13 +135,10 @@
                 subBandKeys.forEach(function(sub_band) {
                       vm.sub_bands.push({
                           name: sub_band,
-                          l_sub_band: subBandConfig["l"].sub_bands,
-                          s_sub_band: subBandConfig["s"].sub_bands,
-                          u_sub_band: subBandConfig["u"].sub_bands,
-                          x_sub_band: subBandConfig["x"].sub_bands
+                          sub_bands: subBandConfig[sub_band].sub_bands
                       });
                       if (subBandConfig[sub_band].sub_bands) {
-                        vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
+                          vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
                   };
               });
 
