@@ -24,6 +24,7 @@
         vm.products = [];
         vm.bandsMap = {};
         vm.subBandsMap = {};
+        vm.defaultCentreFreqMap = {};
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.bands = [];
@@ -128,10 +129,12 @@
         ConfigService.getSubBandConfig()
             .then(function(subBandConfig) {
                 vm.subBandsMap = {};
+                vm.defaultCentreFreqMap = {};
                 var subBandKeys = Object.keys(subBandConfig);
                 subBandKeys.forEach(function(sub_band) {
                       if (subBandConfig[sub_band].sub_bands) {
                           vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
+                          vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default
                   };
               });
 
@@ -280,7 +283,7 @@
         };
 
         vm.setBand = function(band) {
-            ObsSchedService.setBand(vm.subarray.id, band, vm.subBandsMap[band][0]);
+            ObsSchedService.setBand(vm.subarray.id, band, vm.defaultCentreFreqMap[band]);
         };
 
         vm.setFrequency = function(freq) {
