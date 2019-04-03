@@ -23,6 +23,8 @@
         vm.subarray = null;
         vm.products = [];
         vm.bandsMap = {};
+        vm.subBandsMap = {};
+        vm.defaultCentreFreqMap = {};
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.bands = [];
@@ -39,6 +41,7 @@
             "subarray_._product",
             "subarray_._state",
             "subarray_._band",
+            "subarray_._requested_rx_centre_frequency",
             "subarray_._config_label",
             "subarray_._maintenance",
             "subarray_._delegated_ca",
@@ -121,6 +124,20 @@
                         vm.bandsMap[product] = [];
                     }
                 });
+            });
+
+        ConfigService.getSubBandConfig()
+            .then(function(subBandConfig) {
+                vm.subBandsMap = {};
+                vm.defaultCentreFreqMap = {};
+                var subBandKeys = Object.keys(subBandConfig);
+                subBandKeys.forEach(function(sub_band) {
+                      if (subBandConfig[sub_band].sub_bands) {
+                          vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
+                          vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default
+                  };
+              });
+
             });
 
         vm.iAmAtLeastCA = function() {
@@ -266,7 +283,11 @@
         };
 
         vm.setBand = function(band) {
-            ObsSchedService.setBand(vm.subarray.id, band);
+            ObsSchedService.setBand(vm.subarray.id, band, vm.defaultCentreFreqMap[band]);
+        };
+
+        vm.setFrequency = function(freq) {
+          ObsSchedService.setFrequency(vm.subarray.id, freq);
         };
 
         vm.openBandsDialog = function(event) {
