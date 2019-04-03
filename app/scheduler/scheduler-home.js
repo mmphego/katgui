@@ -27,7 +27,6 @@
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.bands = [];
-        vm.sub_bands = [];
         vm.users = [];
         vm.resourceBusyStates = ['deactivating', 'configuring', 'configured', 'activating'];
         vm.iAmCA = false;
@@ -131,9 +130,6 @@
                 vm.subBandsMap = {};
                 var subBandKeys = Object.keys(subBandConfig);
                 subBandKeys.forEach(function(sub_band) {
-                      vm.sub_bands.push({
-                          name: sub_band
-                      });
                       if (subBandConfig[sub_band].sub_bands) {
                           vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
                   };
