@@ -126,16 +126,13 @@
                 });
             });
 
-
         ConfigService.getSubBandConfig()
             .then(function(subBandConfig) {
-                vm.sub_bands = [];
                 vm.subBandsMap = {};
                 var subBandKeys = Object.keys(subBandConfig);
                 subBandKeys.forEach(function(sub_band) {
                       vm.sub_bands.push({
-                          name: sub_band,
-                          sub_bands: subBandConfig[sub_band].sub_bands
+                          name: sub_band
                       });
                       if (subBandConfig[sub_band].sub_bands) {
                           vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
