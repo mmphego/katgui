@@ -1043,12 +1043,17 @@
                             systemConfig['katconn:resources'].single_ctl,
                             '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').state$', true)
                         .then(handleListSensorsResult, handleListSensorsError);
+                    MonitorService.listSensorsHttp(
+                        systemConfig['katconn:arrays'].ants,
+                        '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
+                    .then(handleListSensorsResult, handleListSensorsError);
 
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),
                         vm.schedSensorNames.join('|'),
                         vm.katpoolSensorNames.join('|'),
-                        'state$'
+                        'state$',
+                        'ridx_position'
                     ].join('|');
                 });
             MonitorService.subscribe('portal.sched');
