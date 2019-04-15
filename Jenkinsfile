@@ -29,11 +29,6 @@ pipeline {
             }
         }
 
-        stage('Build .deb') {
-            steps {
-            }
-        }
-
         stage('Build & publish packages') {
             when {
                 branch 'master'
