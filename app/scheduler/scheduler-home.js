@@ -1043,6 +1043,7 @@
                             systemConfig['katconn:resources'].single_ctl,
                             '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').state$', true)
                         .then(handleListSensorsResult, handleListSensorsError);
+                    // systemConfig['katconn:arrays'].ants example: m011,m022,s0003
                     MonitorService.listSensorsHttp(
                         systemConfig['katconn:arrays'].ants,
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
