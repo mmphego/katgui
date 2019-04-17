@@ -214,6 +214,10 @@
         $scope.$on('$destroy', function () {
             vm.unbindShortcuts('keydown');
         });
+
+        vm.sensorClass = function(status) {
+            return status + '-sensor-list-item';
+        };
     }
 
 })();

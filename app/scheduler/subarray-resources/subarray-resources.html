@@ -1,4 +1,4 @@
-<div flex layout="column" style="min-width: 1270px; min-height: 600px" class="unselectable subarray_resources" ng-controller="SubArrayResourcesCtrl as vm"
+<div flex layout="column" style="min-width: 1270px; min-height: 600px" class="unselectable sensoClass resource-sensor-status-item" ng-controller="SubArrayResourcesCtrl as vm"
     ng-mouseup="vm.dragSelect = false">
     <div flex layout="row">
         <div flex layout="column" style="padding: 0 8px">
@@ -136,9 +136,9 @@
                             ng-repeat="resourceAlloc in parent.vm.sensorValues[vm.subarray.name + '_allocations'].parsedValue" ng-class="parent.vm.classForResource(resourceAlloc[0])">
                             <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resourceAlloc[0]}}</span>
                             <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resourceAlloc[0] + '_state'].value}}</span>
-                            <span class="{{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status}}"
+                            <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
                                 style="position: absolute; left: 90px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
-                                {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}} </span>
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}</span>
 
                             <span class="icon-button fa fa-angle-double-down"
                                 style="position: absolute; left: 80px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
