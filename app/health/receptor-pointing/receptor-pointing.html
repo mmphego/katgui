@@ -61,7 +61,7 @@
                  class="{{vm.receptors[receptorName]['class_names']}}"
                  ng-click="vm.toggleHorizonMask(receptor)" title="{{'Click to toggle the horizon mask for ' + receptorName}}"
                  style="overflow: visible; display: inline-block" ng-class="{'border-black-2px': receptor.showHorizonMask}"
-                 ng-mouseenter="vm.receptorHoverName=receptorName" ng-mouseleave="vm.receptorHoverName=''">
+                 ng-mouseenter="vm.receptorHoverName=receptorName">
                 <div class="receptor-legend-item-text">{{receptorName}}</div>
                 <span ng-show="vm.receptors[receptorName].mode.value === 'POINT'" class="pointing-showing">P</span>
                 <span ng-show="vm.receptors[receptorName].lock.value" class="fa fa-asterisk on-target-span"
@@ -110,7 +110,15 @@
     <div class="md-whiteframe-z3 receptor-pointing-tooltip-top" ng-show="vm.receptorHoverName.length > 0"
          style="top: 120px; left: 8px; min-width: 268px"
          layout="column" layout-align="start">
-        <span ng-if="vm.receptorHoverName.length > 0" class="{{vm.receptorHoverName+ '_actual'}}" style="width: 100%; text-align: center"><b>{{vm.receptorHoverName}}</b></span>
+        <div>
+          <span ng-if="vm.receptorHoverName.length > 0" class="{{vm.receptorHoverName+ '_actual'}}"
+            style="width: 250px; text-align: center; float: left">
+            <b>{{vm.receptorHoverName}}</b>
+          </span>
+          <i class="fa fa-times-circle close-receptor-info" title='close'
+            ng-click="vm.receptorHoverName=''"></i>
+        </div>
+
         <span>azim: <b>{{vm.receptors[vm.receptorHoverName].pos_actual_pointm_azim.value | number:2}}</b>, elev: <b>{{vm.receptors[vm.receptorHoverName].pos_actual_pointm_elev.value | number:2}}</b></span>
         <span>azim: <b>{{vm.receptors[vm.receptorHoverName].pos_request_pointm_azim.value | number:2}}</b>, elev: <b>{{vm.receptors[vm.receptorHoverName].pos_request_pointm_elev.value | number:2}}</b> (requested)</span>
         <span>ra: <b>{{vm.receptors[vm.receptorHoverName].pos_request_base_ra.value | number:2}}</b>, dec: <b>{{vm.receptors[vm.receptorHoverName].pos_request_base_dec.value | number:2}}</b> (requested)</span>
