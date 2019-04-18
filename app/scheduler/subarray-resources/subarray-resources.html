@@ -45,8 +45,10 @@
                             </md-menu-content>
                         </md-menu>
 
+                        <md-menu style="margin: 0 4px; padding:0; position: relative" ></md-menu>
+
                         <span class="fa fa-repeat subarray-action-icon hover-opacity"
-                            title="Retry errored receptors - {{parent.vm.getAllErroredReceptors(vm.subarray.name)}}"
+                            title="Retry errored receptors - {{parent.vm._getAllErroredReceptors(vm.subarray.name)}}"
                             md-ink-ripple ng-show="parent.vm.getAllErroredReceptors(vm.subarray.name)!='' && parent.vm.iAmAtLeastCA()"
                             ng-click="vm.reactivateReceptor(parent.vm.getAllErroredReceptors(vm.subarray.name))"></span>
 
@@ -134,6 +136,15 @@
                             ng-repeat="resourceAlloc in parent.vm.sensorValues[vm.subarray.name + '_allocations'].parsedValue" ng-class="parent.vm.classForResource(resourceAlloc[0])">
                             <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resourceAlloc[0]}}</span>
                             <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resourceAlloc[0] + '_state'].value}}</span>
+                            <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
+                                style="position: absolute; left: 90px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}</span>
+
+                            <span class="icon-button fa fa-angle-double-down"
+                                style="position: absolute; left: 80px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
+                                <md-tooltip>Indexer Position</md-tooltip>
+                            </span>
+
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">
                                 <a ng-repeat="link in parent.vm.guiUrls[resourceAlloc[0]] track by $index" target="_blank"
                                     href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
