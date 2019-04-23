@@ -325,41 +325,45 @@
             var deferred = $q.defer();
             $http(createRequest('get', urlBase() + '/pb/observation-schedule'))
                 .then(function(result) {
-                    var activeSBsProgress = {};
-                    // retain progress meter for active sb's
-                    api.observationSchedule.forEach(function (pb) {
-                        pb.schedule_blocks.forEach(function (sb) {
-                            if (sb.state === 'ACTIVE') {
-                                activeSBsProgress[sb.id_code] = sb.progress;
-                            }
-                        });
-                    });
-                    api.observationSchedule.splice(0, api.observationSchedule.length);
-                    var jsonResult = JSON.parse(result.data.result);
-                    jsonResult.forEach(function(jsonItem) {
-                        if (jsonItem.schedule_blocks) {
-                            jsonItem.schedule_blocks.forEach(function (sb) {
-                                if (sb.queue_position && sb.queue_position.length > 0) {
-                                    // attempt parsing this field, but don't spaz if it doesn't parse
-                                    // it could mean that the auto scheduler has never ran on this sb
-                                    try {
-                                        sb.queue_position = JSON.parse(sb.queue_position);
-                                    } catch (error) {
-                                        $log.error(error);
-                                    }
-                                }
-                                sb.progress = activeSBsProgress[sb.id_code];
-                            });
-                        }
-                        api.observationSchedule.push(jsonItem);
-                    });
-                    api.populateObservationPbExpectedDurations();
+                    api.processScheduleBlocks(result.data.result);
                     deferred.resolve(api.observationSchedule);
                 }, function(error) {
                     $log.error(error);
                     deferred.reject(error);
                 });
             return deferred.promise;
+        };
+
+        api.processScheduleBlocks = function(result) {
+            var activeSBsProgress = {};
+            // retain progress meter for active sb's
+            api.observationSchedule.forEach(function (pb) {
+                pb.schedule_blocks.forEach(function (sb) {
+                    if (sb.state === 'ACTIVE') {
+                        activeSBsProgress[sb.id_code] = sb.progress;
+                    }
+                });
+            });
+            api.observationSchedule.splice(0, api.observationSchedule.length);
+            var jsonResult = JSON.parse(result);
+            jsonResult.forEach(function(jsonItem) {
+                if (jsonItem.schedule_blocks) {
+                    jsonItem.schedule_blocks.forEach(function (sb) {
+                        if (sb.queue_position && sb.queue_position.length > 0) {
+                            // attempt parsing this field, but don't spaz if it doesn't parse
+                            // it could mean that the auto scheduler has never ran on this sb
+                            try {
+                                sb.queue_position = JSON.parse(sb.queue_position);
+                            } catch (error) {
+                                $log.error(error);
+                            }
+                        }
+                        sb.progress = activeSBsProgress[sb.id_code];
+                    });
+                }
+                api.observationSchedule.push(jsonItem);
+            });
+            api.populateObservationPbExpectedDurations();
         };
 
         api.populateObservationPbExpectedDurations = function() {
@@ -379,8 +383,6 @@
                 }
             });
         };
-
-        api.throttleGetProgramBlocksObservationSchedule = _.throttle(api.getProgramBlocksObservationSchedule, 10000);
 
         api.getCompletedScheduleBlocks = function(sub_nr, max_nr) {
             //TODO smoothly combine the existing list with the new list so that there isnt a screen flicker
@@ -497,14 +499,14 @@
             var action = commandList[1];
             var id_to_action = commandList[2];
             if (table === 'schedule_block') {
-                api.receivedSBMessage(obj, action, id_to_action);
+                api.receivedSBMessage(obj, action, id_to_action, message.data);
             } else {
-                api.receivedPBMessage(obj, action, id_to_action);
+                api.receivedPBMessage(obj, action, id_to_action, message.data);
             }
             api.debounceRootScopeSafeDigest();
         };
 
-        api.receivedPBMessage = function(pb, action, id_to_action) {
+        api.receivedPBMessage = function(pb, action, id_to_action, data) {
             var pbDataToAdd = [];
             var orderChangeCall = false;
 
@@ -553,7 +555,7 @@
                 $log.error(pb);
             }
             if (orderChangeCall) {
-                api.throttleGetProgramBlocksObservationSchedule();
+                api.processScheduleBlocks(data);
             } else {
                 api.populateObservationPbExpectedDurations();
             }
@@ -596,7 +598,7 @@
             }
         };
 
-        api.receivedSBMessage = function(sb, action, id_to_action) {
+        api.receivedSBMessage = function(sb, action, id_to_action, data) {
             var scheduleDataToAdd = [];
             var draftDataToAdd = [];
             var completedDataToAdd = [];
@@ -704,7 +706,7 @@
                 Array.prototype.push.apply(api.scheduleCompletedData, completedDataToAdd);
             }
             if (orderChangeCall) {
-                api.throttleGetProgramBlocksObservationSchedule();
+                api.processScheduleBlocks(data);
             } else {
                 api.populateObservationPbExpectedDurations();
             }
