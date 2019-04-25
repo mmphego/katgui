@@ -334,7 +334,7 @@
             return deferred.promise;
         };
 
-        api.processScheduleBlocks = function(result) {
+        api.processScheduleBlocks = function(jsonResult) {
             var activeSBsProgress = {};
             // retain progress meter for active sb's
             api.observationSchedule.forEach(function (pb) {
@@ -345,7 +345,6 @@
                 });
             });
             api.observationSchedule.splice(0, api.observationSchedule.length);
-            var jsonResult = JSON.parse(result);
             jsonResult.forEach(function(jsonItem) {
                 if (jsonItem.schedule_blocks) {
                     jsonItem.schedule_blocks.forEach(function (sb) {
