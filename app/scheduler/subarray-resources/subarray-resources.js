@@ -18,15 +18,10 @@
             ObsSchedService.loadLastKnownSubarrayConfig(vm.subarray.id);
         };
 
-        if (!$scope.$parent.vm.subarray) {
-            $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
-                vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
-                vm.initLastKnownConfig();
-            });
-        } else {
-            vm.subarray = $scope.$parent.vm.subarray;
+        $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
+            vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
             vm.initLastKnownConfig();
-        }
+        });
 
         vm.toggleSelectAllUnassignedResources = function () {
             var anySelected = _.any(vm.poolResourcesFree, function(resource) {
