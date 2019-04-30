@@ -6,7 +6,7 @@
     function DataService($http, $rootScope) {
 
         function urlBase() {
-            return $rootScope.portalUrl? $rootScope.portalUrl + '/katstore/' : '';
+            return $rootScope.portalUrl? $rootScope.portalUrl + '/katstore2/' : '';
         }
         var api = {};
 
