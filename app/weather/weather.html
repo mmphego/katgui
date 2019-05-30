@@ -40,13 +40,13 @@
             </div>
         </md-toolbar>
         <div class="md-whiteframe-z1" flex style="padding: 8px;" layout="row">
-            <compass-chart redraw-function="vm.redrawCompass" style="min-width: 140px; min-height: 140px;">
+            <compass-chart redraw-function="vm.redrawCompass" style="min-width: 140px; max-width:158px min-height: 140px;">
             </compass-chart>
-            <div flex layout="column" layout-wrap style="margin-left: 56px;">
+            <div flex layout="column" layout-wrap style="margin-left: 35px;">
                 <div ng-repeat="sensorName in vm.ancSensors track by $index" class="{{'anc_' + sensorName + ' resource-sensor-item'}}"
                     ng-if="sensorName !== 'wind direction'" layout="row">
                     <span style="min-width: 140px">{{sensorName}}</span>
-                    <span class="resource-sensor-value-item"style="width: 80px"
+                    <span class="resource-sensor-value-item"style="min-width: 80px !important"
                           ng-show="vm.sensorValues['anc_' + sensorName]">{{vm.sensorValues['anc_' + sensorName].value | number:1}}</span>
                     <span style="margin-left: 8px; width: 60px" ng-if="vm.maxSensorValue['anc_' + sensorName]">
                         {{vm.maxSensorValue['anc_' + sensorName].value | number:1}}

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version": "1.0.1", "buildDate": "1556616697452"}
+=======
+{"version": "1.0.1", "buildDate": "1559205031237"}
+>>>>>>> a185372... Merge pull request #458 from ska-sa/user/bulelani/MT-705/Weather_sensor_values_line_up
