@@ -140,7 +140,7 @@
                             '</md-dialog-content>',
                             '<md-dialog-actions  md-theme="{{$root.themePrimaryButtons}}" layout="row">',
                                 '<span flex></span>',
-                                '<md-button ng-disabled="userForm.$invalid" ng-click="accept()">{{user.id? "Edit User": "Create User"}}</md-button>',
+                                '<md-button ng-disabled="userForm.$invalid" ng-click="accept()">{{user.id? "SAVE": "Create User"}}</md-button>',
                                 '<md-button ng-click="cancel()">Cancel</md-button>',
                             '</md-dialog-actions>',
                             '</form>',
