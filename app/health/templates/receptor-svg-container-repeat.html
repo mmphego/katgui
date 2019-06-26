@@ -4,7 +4,7 @@
         <div ng-include="'images/receptor.svg'"></div>
     </div>
     <div class="receptor-graphic-svg" ng-if="receptor.name.startsWith('s')">
-        <div ng-include="'images/mpi.svg'"></div>
+        <div ng-include="'images/mpi_receptor.svg'"></div>
     </div>
     <h2 class="receptor-graphic-name">{{receptorName}}{{vm.sensorValues[receptorName + '_lock'].value.value? '*' : ''}}</h2>
     <div class="receptor-graphic-labels" layout="column">
