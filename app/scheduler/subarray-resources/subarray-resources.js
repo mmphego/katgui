@@ -53,13 +53,15 @@
             var specificResources = [];
             var generic_resources = ConfigService.systemConfig['internals']['multiples'].split(',');
             var defaultResources = ['anc', 'ptuse_1', 'ptuse_2'];
-            for (var i=0; i < generic_resources.length; i++) {
-                var specificResource = generic_resources[i] + (vm.subarray.id);
-                specificResources.push(specificResource);
-            }
-            if (specificResources.includes(resourceName) || resourceName.startsWith('m0') ||
-                defaultResources.includes(resourceName) || resourceName.endsWith(vm.subarray.id)) {
-                return true;
+            if (vm.subarray) {
+                for (var i=0; i < generic_resources.length; i++) {
+                    var specificResource = generic_resources[i] + (vm.subarray.id);
+                    specificResources.push(specificResource);
+                }
+                if (specificResources.includes(resourceName) || resourceName.startsWith('m0') ||
+                    defaultResources.includes(resourceName) || resourceName.endsWith(vm.subarray.id)) {
+                    return true;
+                }
             }
         };
 
