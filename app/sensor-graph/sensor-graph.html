@@ -4,13 +4,10 @@
     <div layout="column" style="margin: 8px; min-height: 600px" ng-style="{width: vm.searchWidth + 'px'}">
         <md-toolbar layout="row" class="md-whiteframe-z1 md-toolbar-tools-medium">
             <span flex>Tools</span>
-            <span class="fa fa-caret-left opacity-hover" style="margin-left: -28px;margin-right: 4px" ng-click="vm.decreaseSearchWidth(); $event.stopPropagation()"></span>
-            <span class="opacity-hover" ng-click="vm.resetSearchWidth(366)">|</span>
-            <span class="fa fa-caret-right opacity-hover" style="margin: 0 4px" ng-click="vm.increaseSearchWidth(); $event.stopPropagation()"></span>
+	    <a class="fa fa-database flaplink" ng-if="vm.flap_sensorgraph" ng-href="{{vm.flap_sensorgraph}}" title="Go to Flap Sensorgraph"></a>
         </md-toolbar>
         <div flex class="md-whiteframe-z1" layout="column" layout-align="start center" md-theme="{{themePrimaryButtons}}">
 
-            <a ng-if="vm.new_katstore_url" ng-href="{{vm.new_katstore_url}}">Link To New Katstore Sensorgraph</a>
             <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showDatePicker = false"
                 style="position: absolute; left:23px; top: 89px; color: #333333;" ng-show="vm.showDatePicker"
                 data-ng-model="vm.sensorStartDatetime" ng-keypress="vm.showDatePicker = false" ng-click="$event.stopPropagation()"

@@ -27,7 +27,7 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
-        vm.new_katstore_url = false;
+        vm.flap_sensorgraph = "something";
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
@@ -87,16 +87,16 @@
         vm.getNewKatstoreLink = function () {
 	    ConfigService.getSystemConfig()
                 .then(function(systemConfig){
-                    if (systemConfig.other.katstore){
-                        vm.new_katstore_url = systemConfig.other.katstore;
+                    if (systemConfig.other.flap_sensorgraph){
+                        vm.flap_sensorgraph = systemConfig.other.flap_sensorgraph;
                     }
 		    else{
-		        vm.new_katstore_url =  false;
+		        vm.flap_sensorgraph = false;
 		    }
 		 }, function(error){
                         $log.error(error);
 		    });
-	        return vm.new_katstore_url;
+	        return vm.flap_sensorgraph;
          };
 	vm.getNewKatstoreLink();
         vm.includeValueTimestampChanged = function () {
