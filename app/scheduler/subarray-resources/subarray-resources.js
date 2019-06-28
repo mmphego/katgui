@@ -50,15 +50,22 @@
         };
 
         vm.resourceAllowedInSubarray = function (resourceName) {
-            var specificResources = [];
-            var generic_resources = ConfigService.systemConfig['internals']['multiples'].split(',');
-            var defaultResources = ['anc', 'ptuse_1', 'ptuse_2'];
+            var dataProxies = [];
+            var defaultResources = [];
+            var controlled_resources = ConfigService.systemConfig['katobs']['controlled_resources'].split(',');
+            var generic_to_specifc_resources = ConfigService.systemConfig['internals']['generic_to_specific_resources'].split(',');
+            var available_receptors = ConfigService.systemConfig['antenna_labels']['ALL'].split(',');
             if (vm.subarray) {
-                for (var i=0; i < generic_resources.length; i++) {
-                    var specificResource = generic_resources[i] + (vm.subarray.id);
-                    specificResources.push(specificResource);
+                for (var proxy of generic_to_specifc_resources) {
+                    var dataProxy = proxy.split(':');
+                    dataProxies.push(dataProxy[1]);
                 }
-                if (specificResources.includes(resourceName) || resourceName.startsWith('m0') ||
+                for (var ancilliary of controlled_resources) {
+                    if (ancilliary.startsWith('anc') || ancilliary.startsWith('ptuse')) {
+                       defaultResources.push(ancilliary);
+                  }
+                }
+                if (dataProxies.includes(resourceName) || available_receptors.includes(resourceName) ||
                     defaultResources.includes(resourceName) || resourceName.endsWith(vm.subarray.id)) {
                     return true;
                 }
