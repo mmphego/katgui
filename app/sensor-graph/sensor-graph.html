@@ -10,6 +10,7 @@
         </md-toolbar>
         <div flex class="md-whiteframe-z1" layout="column" layout-align="start center" md-theme="{{themePrimaryButtons}}">
 
+            <a ng-if="vm.new_katstore_url" ng-href="{{vm.new_katstore_url}}">Link To New Katstore Sensorgraph</a>
             <datetimepicker id="datePickerMenu" class="datepickerMenu md-whiteframe-z3" ng-init="vm.showDatePicker = false"
                 style="position: absolute; left:23px; top: 89px; color: #333333;" ng-show="vm.showDatePicker"
                 data-ng-model="vm.sensorStartDatetime" ng-keypress="vm.showDatePicker = false" ng-click="$event.stopPropagation()"

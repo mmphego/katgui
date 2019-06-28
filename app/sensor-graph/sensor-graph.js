@@ -4,7 +4,7 @@
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
     function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q, KatGuiUtil,
-                             MonitorService, UserLogService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
+                             MonitorService, UserLogService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT, ConfigService) {
 
         var vm = this;
         var SAMPLES_QUERY_LIMIT = 1000000;
@@ -27,7 +27,7 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
-
+        vm.new_katstore_url = false;
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
@@ -84,6 +84,21 @@
           }
         ];
 
+        vm.getNewKatstoreLink = function () {
+	    ConfigService.getSystemConfig()
+                .then(function(systemConfig){
+                    if (systemConfig.other.katstore){
+                        vm.new_katstore_url = systemConfig.other.katstore;
+                    }
+		    else{
+		        vm.new_katstore_url =  false;
+		    }
+		 }, function(error){
+                        $log.error(error);
+		    });
+	        return vm.new_katstore_url;
+         };
+	vm.getNewKatstoreLink();
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
         };
