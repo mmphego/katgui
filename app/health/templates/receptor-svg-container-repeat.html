@@ -1,6 +1,6 @@
 <div ng-repeat="(receptorName, receptor) in vm.receptors" ng-if="!subarray || receptor.subNr === subarray.subNr" class="md-whiteframe-z1 receptor-svg-container"
         style="display: -webkit-inline-box; position: relative; margin: 2px" ng-class="vm.getReceptorSvgClass(receptorName)">
-    <div class="receptor-graphic-svg" ng-if="receptor.name.startsWith('m')">
+    <div class="receptor-graphic-svg" ng-if="!receptor.name.startsWith('s')">
         <div ng-include="'images/receptor.svg'"></div>
     </div>
     <div class="receptor-graphic-svg" ng-if="receptor.name.startsWith('s')">
