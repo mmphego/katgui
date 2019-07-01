@@ -27,7 +27,7 @@
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
         vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
-        vm.flap_sensorgraph = "something";
+        vm.flap_sensorgraph = false;
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
