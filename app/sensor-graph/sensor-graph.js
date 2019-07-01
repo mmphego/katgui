@@ -98,7 +98,7 @@
 		    });
 	        return vm.flap_sensorgraph;
          };
-	vm.getNewKatstoreLink();
+        vm.getNewKatstoreLink();
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
         };
