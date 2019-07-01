@@ -49,28 +49,49 @@
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
+
         vm.resourceAllowedInSubarray = function (resourceName) {
-            var dataProxies = [];
+            var genericResources = [];
             var defaultResources = [];
-            var controlled_resources = ConfigService.systemConfig['katobs']['controlled_resources'].split(',');
+            var controlledResources = ConfigService.systemConfig['katobs']['controlled_resources'].split(',');
             var generic_to_specifc_resources = ConfigService.systemConfig['internals']['generic_to_specific_resources'].split(',');
             var available_receptors = ConfigService.systemConfig['antenna_labels']['ALL'].split(',');
             if (vm.subarray) {
-                for (var proxy of generic_to_specifc_resources) {
-                    var dataProxy = proxy.split(':');
-                    dataProxies.push(dataProxy[1]);
+                for (var p=0; p<generic_to_specifc_resources.length; p++) {
+                    var dataProxy = generic_to_specifc_resources[p].split(':')[1];
+                    genericResources.push(dataProxy);
                 }
-                for (var ancilliary of controlled_resources) {
-                    if (ancilliary.startsWith('anc') || ancilliary.startsWith('ptuse')) {
-                       defaultResources.push(ancilliary);
+                for (var a=0; a<controlledResources.length; a++) {
+                    if (controlledResources[a].startsWith('anc') || controlledResources[a].startsWith('ptuse')) {
+                       defaultResources.push(controlledResources[a]);
                   }
                 }
-                if (dataProxies.includes(resourceName) || available_receptors.includes(resourceName) ||
+                if (genericResources.includes(resourceName) || available_receptors.includes(resourceName) ||
                     defaultResources.includes(resourceName) || resourceName.endsWith(vm.subarray.id)) {
                     return true;
                 }
             }
         };
+
+        // vm.resourceAllowedInSubarray = function (resourceName) {
+        //     var genericResources = [];
+        //     var generic_to_specifc_resources = ConfigService.systemConfig['internals']['generic_to_specific_resources'].split(',');
+        //     var available_receptors = ConfigService.systemConfig['antenna_labels']['ALL'].split(',');
+        //     if (vm.subarray) {
+        //         for (var p=0; p < generic_to_specifc_resources.length; p++) {
+        //             var dataProxy = generic_to_specifc_resources[p].split(':')[1];
+        //             var genericResource = dataProxy.split(/(_)/g)
+        //             genericResources.push(genericResource);
+        //         }
+        //
+        //         var resName = resourceName.split(/(_)/g);
+        //         for (i=0; i < genericResources; i++) {
+        //              if (genericResources[i][0] == resName[0] || resName[resName-1] == subarray.id) {
+        //                  return true;
+        //                }
+        //              }
+        //         }
+        // };
 
         vm.freeAssignedResource = function (resourceName) {
             ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resourceName);
