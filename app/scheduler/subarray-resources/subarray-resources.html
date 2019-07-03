@@ -188,6 +188,7 @@
                 <div flex style="overflow: auto" layout="column" layout-wrap>
                     <div style="max-height: 40px; position: relative; cursor: pointer" flex="25" class="resource-item" layout="row"
                         layout-align="start center" ng-repeat="resource in vm.poolResourcesFree | orderBy:'name'"
+                        ng-show="vm.resourceAllowedInSubarray(resource.name)"
                         ng-class="{'selected-resource-item': resource.selected, 'maintenance-bg-hover': parent.vm.isResourceInMaintenance(resource.name), 'faulty-border': parent.vm.isResourceFaulty(resource.name)}"
                         ng-disabled="!$root.expertOrLO" ng-mousedown="vm.dragSelect = true; vm.dragSelectUnselect = resource.selected; resource.selected = !resource.selected"
                         ng-mouseenter="vm.dragSelect && !vm.dragSelectUnselect? resource.selected = !resource.selected : vm.dragSelect && vm.dragSelectUnselect? resource.selected = !resource.selected : ''">

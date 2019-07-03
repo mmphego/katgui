@@ -49,6 +49,27 @@
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
+
+        vm.resourceAllowedInSubarray = function (resourceName) {
+            var genericResources = [];
+            var generic_to_specific_resources = ConfigService.systemConfig['internals']['generic_to_specific_resources'].split(',');
+            if (vm.subarray) {
+                for (var p=0; p<generic_to_specific_resources.length; p++) {
+                    var dataProxy = (generic_to_specific_resources[p].split(':')[1]);
+                    genericResources.push(dataProxy);
+                }
+
+                for (var i=0; i<genericResources.length; i++) {
+                    if (resourceName.startsWith(genericResources[i]))
+                       return resourceName.endsWith('_' + vm.subarray.id);
+                }
+
+                return true;
+            }
+
+            return false;
+        };
+
         vm.freeAssignedResource = function (resourceName) {
             ObsSchedService.unassignResourcesFromSubarray(vm.subarray.id, resourceName);
         };
