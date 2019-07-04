@@ -144,12 +144,17 @@
             <md-list>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('home')">
+                        <md-button><span class="fa fa-home fa-camera-retro"></span><span>Disable Alarms</span></md-button>
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('home')">
                         <md-button><span class="fa fa-home"></span><span>Home</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="vm.sideNavStateGo('alarms')">
-                        <md-button><span class="fa fa-warning"></span><span>Alarms</span></md-button>
+                        <md-button><span class="fa fa-warning"></span><span>Alarmsie</span></md-button>
                     </md-item-content>
                 </md-item>
                 <md-item>
@@ -360,10 +365,36 @@
                     </md-item-content>
                 </md-item>
                 <md-item>
+                    <md-subheader >Configuration Shortcuts</md-subheader >
+                    <md-item-content class="menu-item" layout="row" layout-align="start center">
+
+                      <md-checkbox class="md-primary checkbox" ng-model="$root.showAlarms"
+                             ng-change="$rootScope.saveToLocalStorage('showAlarmsNotify', $rootScope.showAlarms)">Show Alarm Notifications
+                      </md-checkbox>
+                        </md-item-content>
+                    <md-item-content class="menu-item" layout="row" layout-align="start center">
+                                        <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.showLargeAlarms"
+                             ng-change="$rootScope.saveToLocalStorage('showLargeAlarms', $rootScope.showLargeAlarms)">Show Detailed Alarm Notifications
+                </md-checkbox>
+                    </md-item-content>
+                <md-item-content class="menu-item" layout="row" layout-align="start center">
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.disableAlarmSounds"
+                             ng-change="$rootScope.saveToLocalStorage('disableAlarmSounds', $rootScope.disableAlarmSounds)">Disable Alarm Sounds
+                </md-checkbox>
+
+                    </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
+                    </md-item-content>
+                </md-item>
+                <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.logout()">
                         <md-button><span class="fa"></span><span>Logout</span></md-button>
                     </md-item-content>
+
                 </md-item>
+
             </md-list>
         </md-content>
     </md-sidenav>
