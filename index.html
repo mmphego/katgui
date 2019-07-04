@@ -380,7 +380,14 @@
                 <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.disableAlarmSounds"
                              ng-change="cfg.saveToLocalStorage('disableAlarmSounds', $root.disableAlarmSounds)">Disable Alarm Sounds
                 </md-checkbox>
-                    </md-item-content>
+                </md-item-content>
+                <md-subheader>Theme</md-subheader>
+                <md-select md-theme="{{themePrimaryButtons}}" ng-model="cfg.selectedTheme" class="config-md-select"
+                           style="width: 150px; margin-left: 8px;" placeholder="Select a Theme..."
+                           ng-change="cfg.themeChanged()">
+                    <md-option ng-value="theme.name" ng-repeat="theme in cfg.themes">{{theme.name}}</md-option>
+                </md-select>
+
                 </md-item>
                 <md-item>
                     <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
