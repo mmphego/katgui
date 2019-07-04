@@ -318,20 +318,11 @@
             SessionService.logout();
             vm.showNavbar = false;
         };
-
-        $rootScope.toggleAlarmsNotifier = function() {
-            $mdSidenav('right-sidenav').close();
-            $localStorage['showAlarmsNotify'] = !$localStorage['showAlarmsNotify'];
-            $rootScope.showAlarms = $localStorage['showAlarmsNotify'];
-        };
-
-
         $rootScope.saveToLocalStorage = function (key, value) {
             console.log(value);
             $localStorage[key] = value;
             $rootScope[key] = value;
         };
-
         $rootScope.stateGo = function(newState, params) {
             $state.go(newState, params);
         };
