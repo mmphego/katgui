@@ -13,6 +13,8 @@
         api.resources = {};
         api.receptorHealthTree = {};
         api.receptorList = [];
+        api.correlatorHealthTree = {};
+        api.correlatorList = [];
         api.KATObsPortalURL = null;
         api.systemConfig = null;
         api.productConfig = null;
@@ -180,6 +182,10 @@
             return $http(createRequest('get', urlBase() + '/statustrees/receptors_view/' + healthView));
         };
 
+        api.getStatusTreeForCorrelator = function() {
+            return $http(createRequest('get', urlBase() + '/statustrees/correlators_view/correlators'));
+        };
+
         api.getStatusTreesForTop = function() {
             return $http(createRequest('get', urlBase() + '/statustrees/top_view'));
         };
@@ -202,6 +208,46 @@
                         api.receptorList.push(item);
                     });
                     deferred.resolve(api.receptorList);
+                }, function(result) {
+                    $log.error(result);
+                    deferred.reject();
+                });
+
+            return deferred.promise;
+        };
+
+        api.getCorrelatorList = function() {
+            api.correlatorList.splice(0, api.correlatorList.length);
+
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase() + '/installed-config/receptors'))
+                .then(function(result) {
+                    result.data.forEach(function(item) {
+                        if (api.correlatorList.length < 4) {
+                            api.correlatorList.push(item);
+                        }
+                    });
+                    deferred.resolve(api.correlatorList);
+                }, function(result) {
+                    $log.error(result);
+                    deferred.reject();
+                });
+
+            return deferred.promise;
+        };
+
+
+        api.getCorrelatorListBAC = function() {
+            api.correlatorList.splice(0, api.correlatorList.length);
+
+            var deferred = $q.defer();
+            $http(createRequest('get', urlBase() + '/system-config/sections/system/dataproxy_nrs'))
+                .then(function(result) {
+                    var correlators = result.data.split(',');
+                    correlators.forEach(function(item) {
+                        api.correlatorList.push('m00' + item);
+                    });
+                    deferred.resolve(api.correlatorList);
                 }, function(result) {
                     $log.error(result);
                     deferred.reject();
@@ -248,6 +294,10 @@
 
         api.getCam2SpeadList = function() {
             return $http(createRequest('get', urlBase() + '/config-file/katconfig/user/cam2spead'));
+        };
+
+        api.getCorrelatorsList = function() {
+            return $http(createRequest('get', urlBase() + '/config-file/katconfig/user/correlators'));
         };
 
         api.getApodForDate = function(date) {
