@@ -557,11 +557,6 @@
             templateUrl: 'app/health/skarab-health/skarab-health.html',
             title: 'SKARAB Health'
         });
-        $stateProvider.state('correlatorHealth', {
-            url: '/correlator-health',
-            templateUrl: 'app/health/correlator-health/correlator-health.html',
-            title: 'Correlator Health'
-        });
         $stateProvider.state('receptorHealth', {
             url: '/receptor-health/{healthView}',
             templateUrl: 'app/health/receptor-health/receptor-health.html',
