@@ -318,11 +318,6 @@
             SessionService.logout();
             vm.showNavbar = false;
         };
-        $rootScope.saveToLocalStorage = function (key, value) {
-            console.log(value);
-            $localStorage[key] = value;
-            $rootScope[key] = value;
-        };
         $rootScope.stateGo = function(newState, params) {
             $state.go(newState, params);
         };
