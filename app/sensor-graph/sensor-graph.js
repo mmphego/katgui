@@ -4,7 +4,7 @@
         .controller('SensorGraphCtrl', SensorGraphCtrl);
 
     function SensorGraphCtrl($scope, $rootScope, $localStorage, $timeout, DataService, $q, KatGuiUtil,
-                             MonitorService, UserLogService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT) {
+                             MonitorService, UserLogService, $interval, $log, NotifyService, $stateParams, $state, MOMENT_DATETIME_FORMAT, ConfigService) {
 
         var vm = this;
         var SAMPLES_QUERY_LIMIT = 1000000;
@@ -16,7 +16,9 @@
         vm.sensorEndDatetime = new Date(new Date().getTime());
         vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
         vm.sensorSearchNames = [];
+        vm.sensorSearchStr = "";
         vm.waitingForSearchResult = false;
+        vm.showTips = false;
         vm.showContextZoom = true;
         vm.showRelativeTime = false;
         vm.liveData = false;
@@ -24,7 +26,8 @@
         vm.useFixedXAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
-
+        vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
+        vm.flap_sensorgraph = false;
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
             $localStorage['sensorGraphAutoCompleteList'] = [];
@@ -82,6 +85,21 @@
           }
         ];
 
+        vm.getNewKatstoreLink = function () {
+	    ConfigService.getSystemConfig()
+                .then(function(systemConfig){
+                    if (systemConfig.other.flap_sensorgraph){
+                        vm.flap_sensorgraph = systemConfig.other.flap_sensorgraph;
+                    }
+		    else{
+		        vm.flap_sensorgraph = false;
+		    }
+		 }, function(error){
+                        $log.error(error);
+		    });
+	        return vm.flap_sensorgraph;
+         };
+        vm.getNewKatstoreLink();
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
         };
