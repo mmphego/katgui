@@ -152,11 +152,6 @@
                             <span class="icon-button fa fa-refresh" ng-disabled="!$root.expertOrLO" md-ink-ripple ng-show="parent.vm.isResourceInMaintenance(resourceAlloc[0])"
                                 title="Restart Maintenance Device" ng-click="!$root.expertOrLO || parent.vm.listResourceMaintenanceDevicesDialog(resourceAlloc[0], $event); $event.stopPropagation()"></span>
 
-                            <span class="icon-button fa fa-repeat"
-                                ng-show="parent.vm.showReactivateReceptor(vm.subarray.name, resourceAlloc[0]) && parent.vm.iAmAtLeastCA()"
-                                md-ink-ripple title="{{'Retry activation of ' + resourceAlloc[0]}}"
-                                ng-click="vm.reactivateReceptor(resourceAlloc[0])"></span>
-
                             <span md-ink-ripple ng-click="parent.vm.showResourceLogs(resourceAlloc[0])" class="icon-button fa fa-file-text-o" title="{{'Show ' + resourceAlloc[0] + ' logs'}}"></span>
                             <span class="icon-button fa" ng-disabled="!parent.vm.iAmAtLeastCA()" md-ink-ripple title="Mark Resource As Faulty"
                                 ng-class="{'fa-exclamation-circle': !parent.vm.isResourceFaulty(resourceAlloc[0]), 'fa-warning error-text opaque': parent.vm.isResourceFaulty(resourceAlloc[0])}"
