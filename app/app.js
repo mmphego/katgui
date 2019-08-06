@@ -590,6 +590,7 @@
                 }
             },
         });
+
         $stateProvider.state('config-health-view', {
             url: '/config-health-view/{configItem}',
             templateUrl: 'app/health/config-health-view/config-health-view.html',
@@ -601,6 +602,19 @@
                 }
             },
         });
+
+        $stateProvider.state('cbf-health-view', {
+            url: '/cbf-health-view/cbf_health',
+            templateUrl: 'app/health/cbf-health-view/cbf-health-view.html',
+            title: 'Config Health',
+            params: {
+                configItem: {
+                    value: null,
+                    squash: true
+                }
+            },
+        });
+
         $stateProvider.state('receptorStatus', {
             url: '/receptor-status',
             templateUrl: 'app/health/receptor-status/receptor-status.html',

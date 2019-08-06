@@ -86,6 +86,7 @@
 <script src="app/d3/status-single-level-tree-map.js"></script>
 <script src="app/d3/timeline.js"></script>
 <script src="app/d3/skarab-health-view.js"></script>
+<script src="app/d3/semi-circle-with-label.js"></script>
 
 <script src="app/app.js"></script>
 <script src="app/about/about.js"></script>
@@ -103,6 +104,7 @@
 <script src="app/health/custom-health/custom-health.js"></script>
 <script src="app/health/custom-health-view/custom-health-view.js"></script>
 <script src="app/health/config-health-view/config-health-view.js"></script>
+<script src="app/health/cbf-health-view/cbf-health-view.js"></script>
 <script src="app/sensor-graph/sensor-graph.js"></script>
 <script src="app/sensor-list/sensor-list.js"></script>
 <script src="app/sensor-groups/sensor-groups.js"></script>
@@ -195,8 +197,21 @@
                         <div class="menu-item" layout="row" layout-align="start center" >
                             <md-button><span class="fa fa-heart"></span><span>Config Health</span></md-button>
                         </div>
-                        <div ng-repeat="configItem in $root.configHealthViews | orderBy track by $index" class="menu-item menu-item-indented" layout="row" layout-align="start center">
-                            <md-button ng-click="vm.sideNavStateGo('config-health-view', {configItem: configItem})"><span class="fa fa-file-code-o"></span> <span>{{configItem.toUpperCase()}}</span></md-button>
+
+                        <div class="menu-item menu-item-indented" layout="row" layout-align="start center">
+                            <md-button ng-click="vm.sideNavStateGo('cbf-health-view')">
+                              <span class="fa fa-file-code-o"></span>
+                              <span>CBF Health</span>
+                            </md-button>
+                        </div>
+
+                        <div ng-repeat="configItem in $root.configHealthViews | orderBy track by $index"
+                          class="menu-item menu-item-indented"
+                          layout="row" layout-align="start center">
+                            <md-button ng-click="vm.sideNavStateGo('config-health-view', {configItem: configItem})">
+                              <span class="fa fa-file-code-o"></span>
+                              <span>{{configItem.toUpperCase()}}</span>
+                            </md-button>
                         </div>
                     </md-item-content>
                 </md-item>
