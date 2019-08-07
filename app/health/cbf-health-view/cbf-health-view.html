@@ -3,35 +3,49 @@
   <md-grid-list md-cols='2' md-row-height="2:1" md-gutter="12px">
 
     <md-grid-tile md-rowspan='1' md-colspan='1' >
+      <div class='band-status-card md-whiteframe-1dp' layout="column" layout-align="none center">
+        <h3 class='band-status-title'>subarray 1</h3>
+        <div class='band-status-content' layout="row" layout-align="center center">
+          <div class='band-status'>
+              <div semi-circle-with-label class='semi-circle-with-label' type='top' vm=vm></div>
+              <div semi-circle-with-label class='semi-circle-with-label' type='bottom' vm=vm></div>
+          </div>
 
-        <div class='band-status-container'>
-          <semi-circle-with-label id='top'>
-          </semi-circle-with-label>
-          <semi-circle-with-label id='bottom'>
-          </semi-circle-with-label>
+          <div class='band-status'>
+              <div class='semi-circle-with-label'>
+                <semi-circle-with-label type='top' vm=vm></semi-circle-with-label>
+              </div>
+              <div class='semi-circle-with-label'>
+                <semi-circle-with-label type='bottom' vm=vm></semi-circle-with-label>
+              </div>
+          </div>
         </div>
-
-        <div class='band-status-container'>
-          <div class='band-status'></div>
-          <div class='band-status'></div>
+        <div class='band-status-footer' layout="row">
+          <span class='band-status-footer-text'>xhost</span>
+          <span class='band-status-footer-text'>fhost</span>
         </div>
-
-      <md-grid-tile-footer>
-        <h3>CBFMON1</h3>
-      </md-grid-tile-footer>
-
+      </div>
     </md-grid-tile>
 
     <md-grid-tile md-rowspan='1' md-colspan='1' >
-      <md-card md-theme='dark-grey'>
-        <md-card-title>
-          <md-card-title-text>
-            <span class="md-headline">CBFMON1</span>
-          </md-card-title-text>
-        </md-card-title>
-        <md-card-content>
-        </md-card-content>
-      </md-card>
+      <div class='band-status-card md-whiteframe-1dp inactive' layout="column" layout-align="none center">
+        <h3 class='band-status-title'>subarray 2</h3>
+        <div class='band-status-content' layout="row" layout-align="center center">
+          <div class='band-status'>
+              <semi-circle-with-label type='top' vm=vm></semi-circle-with-label>
+              <semi-circle-with-label type='bottom' vm=vm></semi-circle-with-label>
+          </div>
+
+          <div class='band-status'>
+              <semi-circle-with-label type='top' vm=vm></semi-circle-with-label>
+              <semi-circle-with-label type='bottom' vm=vm></semi-circle-with-label>
+          </div>
+        </div>
+        <div class='band-status-footer' layout="row">
+          <span class='band-status-footer-text'>xhost</span>
+          <span class='band-status-footer-text'>fhost</span>
+        </div>
+      </div>
     </md-grid-tile>
 
   </md-grid-list>
