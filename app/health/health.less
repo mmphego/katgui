@@ -637,44 +637,40 @@ skarab-health-view {
   }
 }
 
-.cbf-health-view .band-status-card {
-  width: 100%;
-  height: 100%;
-}
+.cbf-health-view {
+  .band-status-card {
+    width: 100%;
+    height: 100%;
+  }
+  .band-status-content {
+    height: 100%;
+    width: 100%;
+  }
+  .band-status {
+    width: 50%;
+    height: 100%;
+  }
+  .band-status-title {
+    margin-top: 0;
+    padding: 10px;
+    font-size: 120%;
+    width: 100%;
+    color: white;
+  }
 
-.cbf-health-view .band-status-content {
-  height: 100%;
-  width: 100%;
-}
+  .band-status-footer {
+    width: 100%;
+    padding: 10px;
+    font-size: 120%;
 
-
-.cbf-health-view .band-status-title {
-  margin-top: 0;
-  background-color: #4CAF50;
-  padding: 10px;
-  font-size: 120%;
-  width: 100%;
-  color: white;
-}
-
-.cbf-health-view .band-status-footer {
-  width: 100%;
-  padding: 10px;
-  font-size: 120%;
-}
-
-.cbf-health-view .band-status-footer-text {
-  width: 50%;
-  text-align: center;
-}
-
-.cbf-health-view .inactive {
+    .band-status-footer-text {
+      width: 50%;
+      text-align: center;
+    }
+  }
+  .inactive {
     width: 50%;
     height: 50%;
-
-    .band-status-title {
-      background-color: grey;
-    }
 
     .band-status-content {
       display: none;
@@ -683,9 +679,28 @@ skarab-health-view {
     .band-status-footer {
       display: none;
     }
-}
 
-.cbf-health-view .band-status {
-  width: 50%;
-  height: 100%;
+    .band-status-title {
+      background-color: rgb(158,158,158);
+    }
+  }
+
+  .active {
+    .band-status-title {
+      background-color: rgb(46,125,50);
+    }
+  }
+
+  .initialising {
+    .band-status-title {
+      background-color: rgb(69,39,160);
+    }
+  }
+
+  .error {
+    .band-status-title {
+      background-color: rgb(255,143,0);
+    }
+  }
+
 }

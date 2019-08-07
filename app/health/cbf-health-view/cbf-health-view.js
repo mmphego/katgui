@@ -10,22 +10,32 @@
         vm.desired_columns = 4;
         vm.num_sub_array
         vm.svgList = [];
-        vm.subarrayNrs = [1, 2, 3, 4, 5, 6, 7];
+        vm.subarrayNrs = [1, 2, 3, 4];
         vm.subarrays = [];
 
 
         ConfigService.getSystemConfig()
             .then(function(systemConfig) {
-                vm.subarrayNrs = systemConfig.system.subarray_nrs.split(',');
+                vm.subarrayNrs = systemConfig.system.dataproxy_nrs.split(',');
                 vm.subarrays = vm.subarrayNrs.map(function(subNr) {
                     return {
-                      'name': 'subarray_' + subNr,
-                      'state': 'inactive',
-                      'cbf_fhost_errors': 0,
-                      'cbf_xhost_errors': 0,
-                      'cbf_fhost_warnings': 0,
-                      'cbf_xhost_warnings': 0,
-                    }
+                      name: 'subarray_' + subNr,
+                      state: 'inactive',
+                      cbf_fhost_errors: 0,
+                      cbf_xhost_errors: 0,
+                      cbf_fhost_warnings: 0,
+                      cbf_xhost_warnings: 0,
+                      get theme() {
+                        if (this.state == 'inactive')
+                          return 'grey';
+                        else if (this.state == 'active')
+                          return 'green';
+                        else if (this.state == 'error')
+                          return 'amber';
+                        else
+                          return 'deep-purple';
+                        }
+                      }
                 });
         });
 
