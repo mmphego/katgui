@@ -11,17 +11,17 @@
         </h3>
         <div class='band-status-content' layout="row" layout-align="center center">
           <div class='band-status'>
-              <div semi-circle-with-label class='semi-circle-with-label' type='top' vm=vm></div>
-              <div semi-circle-with-label class='semi-circle-with-label' type='bottom' vm=vm></div>
+              <div semi-circle-with-label class='semi-circle-with-label'
+                type='fhost_errors' vm=vm subarray=sub_array></div>
+              <div semi-circle-with-label class='semi-circle-with-label'
+                type='fhost_warnings' vm=vm subarray=sub_array></div>
           </div>
 
           <div class='band-status'>
-              <div class='semi-circle-with-label'>
-                <semi-circle-with-label type='top' vm=vm></semi-circle-with-label>
-              </div>
-              <div class='semi-circle-with-label'>
-                <semi-circle-with-label type='bottom' vm=vm></semi-circle-with-label>
-              </div>
+              <div semi-circle-with-label class='semi-circle-with-label'
+                type='xhost_errors' vm=vm subarray=sub_array></div>
+              <div semi-circle-with-label class='semi-circle-with-label'
+                type='xhost_warnings' vm=vm subarray=sub_array></div>
           </div>
         </div>
         <div class='band-status-footer' layout="row">

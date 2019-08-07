@@ -6,6 +6,8 @@
     function CbfHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, MonitorService,
                                   ConfigService, StatusService, NotifyService, $stateParams) {
 
+        var SUBARRAY_CBF_COUNT_REGEX = 'subarray_._cbf\..*';
+        var SUBARRAY_STATE_REGEX = 'subarray_._state';
         var vm = this;
         vm.desired_columns = 4;
         vm.num_sub_array
@@ -13,6 +15,7 @@
         vm.subarrayNrs = [1, 2, 3, 4];
         vm.subarrays = [];
 
+        vm.subscribedSensors = [];
 
         ConfigService.getSystemConfig()
             .then(function(systemConfig) {
@@ -20,119 +23,98 @@
                 vm.subarrays = vm.subarrayNrs.map(function(subNr) {
                     return {
                       name: 'subarray_' + subNr,
-                      state: 'inactive',
-                      cbf_fhost_errors: 0,
-                      cbf_xhost_errors: 0,
-                      cbf_fhost_warnings: 0,
-                      cbf_xhost_warnings: 0,
-                      get theme() {
-                        if (this.state == 'inactive')
-                          return 'grey';
-                        else if (this.state == 'active')
-                          return 'green';
-                        else if (this.state == 'error')
-                          return 'amber';
-                        else
-                          return 'deep-purple';
-                        }
-                      }
+                      state: 'active',
+                      fhost_errors: 0,
+                      xhost_errors: 0,
+                      fhost_warnings: 0,
+                      xhost_warnings: 0,
+                    }
                 });
+                vm.initSensors();
         });
 
+        vm.updateCbfCount = function(sensor) {
+          for (var i=0; i<vm.subarrays.length; i++) {
+            var subarray = vm.subarrays[i];
+            if (sensor.name.includes(subarray.name)) {
+              // get rid of subarray_n_
+              var type = sensor.name.substring(11);
+              subarray[type] = sensor.value;
 
-        vm.populateSensorNames = function(viewName, parent) {
-            if (!StatusService.configHealthSensors[viewName]) {
-                StatusService.configHealthSensors[viewName] = {
-                    sensors: []
-                };
+              for (var j=0; j<vm.svgList.length; j++) {
+                var svg = vm.svgList[j];
+                if (svg['subarray'].name == subarray.name)
+                  vm.redraw(svg);
+              }
+              return;
             }
-            // Only populate if parent.sensor defined
-            if (parent.sensor) {
-                if (parent.component && parent.component !== 'all' ) {
-                    StatusService.configHealthSensors[viewName].sensors.push(parent.component+'_'+parent.sensor);
-                }
-                else {
-                    StatusService.configHealthSensors[viewName].sensors.push(parent.sensor);
-                }
-            }
-            if (parent.children && parent.children.length > 0) {
-                parent.children.forEach(function(child) {
-                    vm.populateSensorNames(viewName, child);
-                });
-            }
-        };
+          }
+        }
 
-        ConfigService.getConfigHealthViews().then(
-            function(result) {
-                vm.configHealthViews = result.data;
-                Object.keys(vm.configHealthViews).forEach(function (viewKey) {
-                    vm.configHealthViews[viewKey].forEach(function (view) {
-                        vm.populateSensorNames(viewKey, view);
-                    });
-                });
-                $rootScope.configHealthViews = Object.keys(vm.configHealthViews);
-                vm.redrawCharts();
-                vm.initSensors();
-            },
-            function(error) {
-                $log.error(error);
-                NotifyService.showSimpleDialog("Error retrieving config health views from katconf-webserver, is the service running?");
-            });
+        vm.updateSubarrayState = function(sensor) {
+          for (var i=0; i<vm.subarrays.length; i++) {
+            var subarray = vm.subarrays[i];
+            if (sensor.name.includes(subarray.name)) {
+              subarray.state = sensor.value;
+              for (var j=0; j<vm.svgList.length; j++) {
+                var svg = vm.svgList[j];
+                if (svg['subarray'].name == subarray.name)
+                  vm.redraw(svg);
+              }
+              return;
+            }
+          }
+        }
 
         vm.initSensors = function() {
-            if (vm.selectedConfigView) {
-                vm.subscribedSensors.forEach(function (sensor) {
-                    MonitorService.unsubscribeSensor(sensor);
-                });
-                vm.subscribedSensors = [];
-                vm.view = StatusService.configHealthSensors[vm.selectedConfigView];
-                if (vm.view) {
-                    MonitorService.listSensorsHttp('all', vm.view.sensors.join('|')).then(function (result) {
-                        result.data.forEach(function (sensor) {
-                            MonitorService.subscribeSensor(sensor);
-                            vm.subscribedSensors.push(sensor);
-                            StatusService.sensorValues[sensor.name] = sensor;
-                            $log.info("Register "+sensor.name);
-                            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
-                        });
-                    }, function(error) {
-                        $log.error(error);
-                    });
+            var sensorsRegex = SUBARRAY_STATE_REGEX;
+            MonitorService.listSensorsHttp('all', sensorsRegex).then(
+              function (result) {
+                  for (var i=0; i<result.data.length; i++) {
+                      var sensor = result.data[i];
+                      vm.updateSubarrayState(sensor);
+                      MonitorService.subscribeSensor(sensor);
+                      vm.subscribedSensors.push(sensor);
+                  }
+              },
+              function(error) {
+                  $log.error(error);
+              }
+            );
+
+            sensorsRegex = SUBARRAY_CBF_COUNT_REGEX;
+            MonitorService.listSensorsHttp('all', sensorsRegex).then(
+              function (result) {
+                for (var i=0; i<result.data.length; i++) {
+                    var sensor = result.data[i];
+                    vm.updateCbfCount(sensor);
+                    MonitorService.subscribeSensor(sensor);
+                    vm.subscribedSensors.push(sensor);
                 }
-            }
+              }, function(error) {
+                  $log.error(error);
+              });
         };
 
-        vm.redrawCharts = function () {
-            $rootScope.$emit('redrawChartMessage', {size: vm.treeChartSize});
-        };
-
-        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function (event, sensor, subject) {
-            var view = StatusService.configHealthSensors[vm.selectedConfigView];
-            if (!view || sensor.name.search(view.sensors.join('|')) < 0) {
-                return;
-            }
-            /* Remove the mon_N from the sensor name,
-               this is because for now static portal config does not know about
-               monitor(e.g mon_proxy01, mon_monctl) prefix
-            */
-            if (sensor.name.startsWith('mon_')) {
-                sensor.name = sensor.name.replace(/^mon_.*agg_/, 'agg_');
-            }
-            StatusService.sensorValues[sensor.name] = sensor;
-            d3.selectAll('.' + sensor.name).attr('class', sensor.status + '-child ' + sensor.name);
+        var unbindUpdate = $rootScope.$on('sensorUpdateMessage', function(event, sensor, subject) {
+          if (sensor.name.match(/subarray_._state/)) {
+            vm.updateSubarrayState(sensor);
+            return;
+          }
+          if (sensor.name.match(/subarray_._cbf\..*/)) {
+            vm.updateSubarrayState(sensor);
+            return;
+          }
         });
 
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
-        vm.initSensors();
 
-        $scope.$on('$destroy', function () {
-            vm.subscribedSensors.forEach(function (sensor) {
+        $scope.$on('$destroy', function() {
+            vm.subscribedSensors.forEach(function(sensor) {
                 MonitorService.unsubscribeSensor(sensor);
             });
             unbindUpdate();
-            handleInterfaceChanged();
             unbindReconnected();
-            StatusService.sensorValues = {};
         });
     }
 })();
