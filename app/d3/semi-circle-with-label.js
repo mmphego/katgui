@@ -98,7 +98,7 @@ angular.module('katGui.d3')
 
             angular.element($window).bind('resize', function(){
               for (var i=0; i<scope.vm.svgList.length; i++)
-                redrawStatus(scope.vm.svgList[i]);
+                scope.vm.redrawStatus(scope.vm.svgList[i]);
             });
 
             //allow for some time for the dom elements to complete resizing

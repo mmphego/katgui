@@ -34,19 +34,16 @@
         });
 
         vm.updateCbfCount = function(sensor) {
-          for (var i=0; i<vm.subarrays.length; i++) {
-            var subarray = vm.subarrays[i];
-            if (sensor.name.includes(subarray.name)) {
-              // get rid of subarray_n_
-              var type = sensor.name.substring(11);
-              subarray[type] = sensor.value;
+          // get rid of subarray_n_cbf_
+          var type = sensor.name.substring(15);
+          var subarray_name = sensor.name.substring(0, 10);
 
-              for (var j=0; j<vm.svgList.length; j++) {
-                var svg = vm.svgList[j];
-                if (svg['subarray'].name == subarray.name)
-                  vm.redraw(svg);
-              }
-              return;
+          for (var j=0; j<vm.svgList.length; j++) {
+            var svg = vm.svgList[j];
+            var subarray = svg['subarray'];
+            if (subarray.name==subarray_name && svg.type==type) {
+              subarray[type] = sensor.value;
+              vm.redraw(svg);
             }
           }
         }
@@ -101,8 +98,8 @@
             vm.updateSubarrayState(sensor);
             return;
           }
-          if (sensor.name.match(/subarray_._cbf\..*/)) {
-            vm.updateSubarrayState(sensor);
+          if (sensor.name.match(/subarray_._cbf_/)) {
+            vm.updateCbfCount(sensor);
             return;
           }
         });
