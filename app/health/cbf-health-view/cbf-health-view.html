@@ -4,29 +4,29 @@
 
     <md-grid-tile ng-repeat="sub_array in vm.subarrays"
       md-rowspan='1' md-colspan='2'>
-      <div class='band-status-card md-whiteframe-1dp' ng-class='sub_array.state'
+      <div class='cbf-health-card md-whiteframe-1dp' ng-class='sub_array.state'
             layout="column" layout-align="none center">
-        <h3 class='band-status-title' >
+        <h3 class='cbf-health-title' >
           {{sub_array.name}}: {{sub_array.state}}
         </h3>
-        <div class='band-status-content' layout="row" layout-align="center center">
-          <div class='band-status'>
+        <div class='cbf-health-content' layout="row" layout-align="center center">
+          <div class='cbf-health-status'>
               <div semi-circle-with-label class='semi-circle-with-label'
                 type='fhost_errors' vm=vm subarray=sub_array></div>
               <div semi-circle-with-label class='semi-circle-with-label'
                 type='fhost_warnings' vm=vm subarray=sub_array></div>
           </div>
 
-          <div class='band-status'>
+          <div class='cbf-health-status'>
               <div semi-circle-with-label class='semi-circle-with-label'
                 type='xhost_errors' vm=vm subarray=sub_array></div>
               <div semi-circle-with-label class='semi-circle-with-label'
                 type='xhost_warnings' vm=vm subarray=sub_array></div>
           </div>
         </div>
-        <div class='band-status-footer' layout="row">
-          <span class='band-status-footer-text'>fhost</span>
-          <span class='band-status-footer-text'>xhost</span>
+        <div class='cbf-health-footer' layout="row">
+          <span class='cbf-health-footer-text'>fhost</span>
+          <span class='cbf-health-footer-text'>xhost</span>
         </div>
       </div>
     <md-grid-tile>
