@@ -6,11 +6,10 @@
     function CbfHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, MonitorService,
                                   ConfigService, StatusService, NotifyService, $stateParams) {
 
-        var SUBARRAY_CBF_COUNT_REGEX = 'subarray_._cbf\..*';
+        var SUBARRAY_CBF_COUNT_REGEX = 'subarray_._cbf_.*';
         var SUBARRAY_STATE_REGEX = 'subarray_._state';
         var vm = this;
-        vm.desired_columns = 4;
-        vm.num_sub_array
+        vm.desiredColumns = 4;
         vm.svgList = [];
         vm.subarrayNrs = [1, 2, 3, 4];
         vm.subarrays = [];
@@ -23,7 +22,7 @@
                 vm.subarrays = vm.subarrayNrs.map(function(subNr) {
                     return {
                       name: 'subarray_' + subNr,
-                      state: 'active',
+                      state: 'inactive',
                       fhost_errors: 0,
                       xhost_errors: 0,
                       fhost_warnings: 0,
@@ -34,8 +33,10 @@
         });
 
         vm.updateCbfCount = function(sensor) {
-          // get rid of subarray_n_cbf_
+          // get rid of subarray_n_cbf_,
+          // eg: subarray_2_cbf_xhost_errors becomes xhost_errors
           var type = sensor.name.substring(15);
+          // and subarray name is subarray_2
           var subarray_name = sensor.name.substring(0, 10);
 
           for (var j=0; j<vm.svgList.length; j++) {

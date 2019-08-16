@@ -606,13 +606,7 @@
         $stateProvider.state('cbf-health-view', {
             url: '/cbf-health-view/cbf_health',
             templateUrl: 'app/health/cbf-health-view/cbf-health-view.html',
-            title: 'Config Health',
-            params: {
-                configItem: {
-                    value: null,
-                    squash: true
-                }
-            },
+            title: 'CBF Health',
         });
 
         $stateProvider.state('receptorStatus', {
