@@ -26,7 +26,6 @@
         vm.useFixedXAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
-        vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
         vm.flap_sensorgraph = false;
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
@@ -85,7 +84,7 @@
           }
         ];
 
-        vm.getNewKatstoreLink = function () {
+        vm.getFlapKatstoreLink = function () {
 	    ConfigService.getSystemConfig()
                 .then(function(systemConfig){
                     if (systemConfig.other.flap_sensorgraph){
@@ -99,7 +98,7 @@
 		    });
 	        return vm.flap_sensorgraph;
          };
-        vm.getNewKatstoreLink();
+        vm.getFlapKatstoreLink();
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
         };
