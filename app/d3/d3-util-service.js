@@ -65,9 +65,9 @@ angular.module('katGui.d3')
                 d.prefix = '';
             }
             if (d.depth > 0) {
-                return d.prefix + rootName + "_" + d.sensor;
+                return d.prefix + rootName + "_" + (d.sensor || d.name);
             } else {
-                return d.prefix + d.name + "_" + d.sensor;
+                return d.prefix + d.name + "_" + (d.sensor || d.name);
             }
         };
 
@@ -103,10 +103,10 @@ angular.module('katGui.d3')
 
         api.updateTooltipValues = function (d, tooltip, rootName) {
             var sensorValue;
-            var pythonIdentifier = d.sensor.replace(/\./g, '_');
+            var pythonIdentifier = (d.sensor || d.name).replace(/\./g, '_');
             var prefix = d.prefix? d.prefix : '';
-            var fullSensorName = prefix + (rootName? rootName + '_' : '') + d.sensor;
-            if (d.sensor && StatusService.sensorValues[pythonIdentifier]) {
+            var fullSensorName = prefix + (rootName? rootName + '_' : '') + (d.sensor || d.name);
+            if ((d.sensor || d.name) && StatusService.sensorValues[pythonIdentifier]) {
                 sensorValue = StatusService.sensorValues[pythonIdentifier];
             }
             else if (StatusService.sensorValues && StatusService.sensorValues[fullSensorName]) {

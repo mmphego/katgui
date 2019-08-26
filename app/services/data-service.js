@@ -10,64 +10,38 @@
         }
         var api = {};
 
-        api.sensorsInfo = function (sensorNames, type, limit) {
+        api.sensorsInfo = function (sensorsRegex, searchNumericOnly, includeStaleSensors) {
+            // example: katstore/api/search/?stale=true&q=device.status&numeric=true
             var requestStr = urlBase() +
-                'sensors?sensors=' + sensorNames +
-                '&sensor_type=' + type +
-                '&limit=' + limit;
+                'api/search/?meta=true&q=' + sensorsRegex +
+                '&numeric=' + (searchNumericOnly? 'true' : 'false') +
+                '&stale=' + (includeStaleSensors? 'true' : 'false');
             return $http.get(requestStr);
         };
 
-        api.sensorData = function (namespace, sensorName, startDate, endDate, limit, interval) {
+        api.sensorData = function (params) {
+            // example: katstore/api/query/?sensor=anc_air_relative_humidity&start_time=1515040457&end_time=1515562457&limit=1000000&interval=600&avg=1
             var requestStr = urlBase() +
-                'samples?sensor=' + sensorName +
-                '&start=' + startDate +
-                '&end=' + endDate +
-                '&limit=' + limit +
-                '&time_type=ms';
-
-            if (namespace) {
-                requestStr += '&namespace=' + encodeURI(namespace);
-                requestStr += '&results_in_chunks=' + 1;
-                requestStr += '&chunk_size=' + 43200; //12 hour chunks if 1 sample every second
+                'api/query/?sensor=' + params.name +
+                '&start_time=' + params.start +
+                '&end_time=' + params.end +
+                '&limit=' + params.limit +
+                '&include_value_time=True';
+            if (params.interval > 0) {
+                requestStr += '&interval=' + params.interval + '&avg=1';
             }
-            if (interval) {
-                requestStr += '&interval=' + interval;
+            if (params.allFields) {
+                requestStr += '&all_fields=1';
             }
             return $http.get(requestStr);
-        };
-
-        api.sensorDataRegex = function (namespace, sensorNames, startDate, endDate, limit, interval) {
-            var data = {
-                sensors: sensorNames,
-                start_ts: startDate,
-                end_ts: endDate,
-                limit: limit,
-                time_type: 'ms'
-            };
-            if (namespace) {
-                data.namespace = namespace;
-            }
-            if (interval) {
-                data.interval = interval;
-            }
-
-            var req = {
-                method: 'post',
-                url: urlBase() + 'samples',
-                headers: {},
-                data: data
-            };
-            req.headers['Content-Type'] = 'application/json';
-            return $http(req);
         };
 
         api.sampleValueDuration = function (sensorNames, startDate, endDate) {
+            // example: katstore/sample-value-duration?sensors=agg*&start_time=1520180800&end_time=1520380800
             var requestStr = urlBase() +
                 'sample-value-duration?sensors=' + sensorNames +
-                '&start=' + startDate +
-                '&end=' + endDate +
-                '&time_type=s';
+                '&start_time=' + startDate +
+                '&end_time=' + endDate;
                 return $http.get(requestStr);
         };
 

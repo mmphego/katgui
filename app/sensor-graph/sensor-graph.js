@@ -26,7 +26,6 @@
         vm.useFixedXAxis = false;
         vm.yAxisMinValue = 0;
         vm.yAxisMaxValue = 100;
-        vm.clientSubject = 'katgui.sensor_graph.' + KatGuiUtil.generateUUID();
         vm.flap_sensorgraph = false;
         vm.sensorServiceConnected = MonitorService.connected;
         if (!$localStorage['sensorGraphAutoCompleteList']) {
@@ -36,6 +35,7 @@
         vm.plotUsingValueTimestamp = $localStorage['plotUsingValueTimestamp']? true: false;
         vm.includeValueTimestamp = $localStorage['includeValueTimestamp']? true: false;
         vm.useUnixTimestamps = $localStorage['useUnixTimestamps']? true: false;
+        vm.searchStaleSensors = $localStorage['searchStaleSensors']? true: false;
         vm.searchWidth = $localStorage['sensorGraphSearchWidth']? $localStorage['sensorGraphSearchWidth'] : 366;
 
         vm.openUserLog = function() {
@@ -84,7 +84,7 @@
           }
         ];
 
-        vm.getNewKatstoreLink = function () {
+        vm.getFlapKatstoreLink = function () {
 	    ConfigService.getSystemConfig()
                 .then(function(systemConfig){
                     if (systemConfig.other.flap_sensorgraph){
@@ -98,13 +98,17 @@
 		    });
 	        return vm.flap_sensorgraph;
          };
-        vm.getNewKatstoreLink();
+        vm.getFlapKatstoreLink();
         vm.includeValueTimestampChanged = function () {
             $localStorage['includeValueTimestamp'] = vm.includeValueTimestamp;
         };
 
         vm.useUnixTimestampsChanged = function () {
             $localStorage['useUnixTimestamps'] = vm.useUnixTimestamps;
+        };
+
+        vm.searchStaleSensorsChanged = function () {
+            $localStorage['searchStaleSensors'] = vm.searchStaleSensors;
         };
 
         vm.plotUsingValueTimestampChanged = function () {
@@ -114,8 +118,6 @@
         };
 
         vm.initSensors = function () {
-            MonitorService.subscribe(
-                [vm.clientSubject + '.katstore.data', vm.clientSubject + '.katstore.error']);
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
                     MonitorService.subscribeSensor(sensor);
@@ -232,15 +234,15 @@
         };
 
         vm.reloadAllData = function() {
-            vm.sensorNames.forEach(function (sensor) {
+            for (var i = 0; i < vm.sensorNames.length; i++) {
                 // stagger the katstore-webserver calls
-                $timeout(function () {
+                setTimeout(function (sensor) {
                     vm.findSensorData(sensor);
-                }, 500);
-            });
+                }, i * 250, vm.sensorNames[i]);
+            }
         };
 
-        vm.findSensorNames = function (searchStr, event) {
+        vm.findSensorNames = function (searchStr, searchStale, event) {
             var deferred = $q.defer();
             if (event) {
                 event.stopPropagation();
@@ -248,17 +250,19 @@
             if (searchStr && searchStr.length > 2 && !vm.waitingForSearchResult) {
                 vm.sensorSearchNames = [];
                 vm.waitingForSearchResult = true;
-                DataService.sensorsInfo(searchStr.trim().replace(' ', '.'), vm.searchDiscrete? 'discrete' : 'numeric', 1000)
+                // params: regex, search numeric, search stale sensors
+                DataService.sensorsInfo(searchStr.trim().replace(' ', '.'), !vm.searchDiscrete, searchStale)
                     .then(function (result) {
                         vm.waitingForSearchResult = false;
-                        if (result.data.error) {
-                            NotifyService.showPreDialog('Error retrieving sensors', result.data.error);
-                        } else if (result.data) {
-                            result.data.forEach(function (sensor) {
+                        if (!result.data.data) {
+                            // NotifyService.showPreDialog('Error retrieving sensors', result.data.error);
+                            NotifyService.showPreDialog('Error retrieving sensors', 'No sensor metadata returned.');
+                        } else if (result.data.data) {
+                            result.data.data.forEach(function (sensor) {
                                 vm.sensorSearchNames.push({
-                                    name: sensor[0],
-                                    component: sensor[1],
-                                    attributes: sensor[2],
+                                    name: sensor.name,
+                                    component: sensor.component,
+                                    attributes: sensor.attributes,
                                     type: vm.searchDiscrete? 'discrete' : 'numeric'
                                 });
                             });
@@ -278,20 +282,23 @@
         };
 
         vm.findSensorData = function (sensor, suppressToast) {
-            var startDate = vm.sensorStartDatetime.getTime();
-            var endDate = vm.sensorEndDatetime.getTime();
+            var startDateMs = vm.sensorStartDatetime.getTime();
+            var endDateMs = vm.sensorEndDatetime.getTime();
             if (vm.showRelativeTime) {
-                endDate = (vm.getMillisecondsDifference(
+                endDateMs = (vm.getMillisecondsDifference(
                     vm.plusMinus,
-                    startDate,
+                    startDateMs,
                     vm.intervalNum,
                     vm.intervalType));
             }
 
-            if (endDate < startDate) {
-                startDate = endDate;
-                endDate = vm.sensorStartDatetime.getTime();
+            if (endDateMs < startDateMs) {
+                startDateMs = endDateMs;
+                endDateMs = vm.sensorStartDatetime.getTime();
             }
+            // katstore api takes seconds, we have it as ms here
+            startDateSec = startDateMs / 1000;
+            endDateSec = endDateMs / 1000;
 
             if (vm.useFixedXAxis) {
                 vm.showOptionsChanged();
@@ -305,23 +312,32 @@
             vm.waitingForSearchResult = true;
             vm.showTips = false;
             var interval = null;
-            if (vm.searchDiscrete !== 'numeric') {
+            if (!vm.searchDiscrete) {
                 interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
             }
-
-            var requestParams;
-            if (sensor.type === 'discrete' || vm.intervalType === 'n') { // discrete sensors and user selected no interval
-                // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
-                requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
-            } else {
-                // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
-                requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, interval];
+            else {
+                interval = 0;
             }
 
-            DataService.sensorData.apply(this, requestParams)
+            var requestParams = {
+                name: sensor.name,
+                start: startDateSec,
+                end: endDateSec,
+                limit: SAMPLES_QUERY_LIMIT,
+                allFields: vm.includeValueTimestamp
+            };
+            if (vm.intervalType !== 'n') {
+                requestParams.interval = interval;
+            }
+            else {
+                requestParams.interval = 0;
+            }
+
+
+            DataService.sensorData.call(this, requestParams)
                 .then(function (result) {
-                    if (result.data instanceof Array) {
-                        vm.sensorDataReceived(null, result.data, 'katstore.data');
+                    if (result.data.data && result.data.data.length > 0) {
+                        vm.redrawChart(result.data.data, interval > 0);
                     }
                     if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
                         vm.sensorNames.push(sensor);
@@ -330,10 +346,10 @@
                         MonitorService.subscribeSensor(sensor);
                     }
                     vm.updateGraphUrl();
+                    vm.waitingForSearchResult = false;
                 }, function (error) {
                     vm.waitingForSearchResult = false;
-                    vm.sensorDataReceived(null, error, 'katstore.error');
-                    $log.info(error);
+                    $log.error(error);
                 });
         };
 
@@ -389,7 +405,7 @@
         vm.sensorTypeChanged = function () {
             vm.clearData();
             vm.sensorSearchNames = [];
-            vm.findSensorNames(vm.searchText); //simulate keypress
+            vm.findSensorNames(vm.searchText, vm.searchStaleSensors);
             vm.loadOptions({
                 plotUsingValueTimestamp: vm.plotUsingValueTimestamp,
                 showGridLines: vm.showGridLines,
@@ -402,42 +418,16 @@
         };
 
         vm.sensorDataReceived = function (event, message, subject) {
-            var hasMinMax = vm.intervalType !== 'n' && !vm.searchDiscrete;
-            if (subject.endsWith('katstore.data')) {
-                vm.waitingForSearchResult = false;
-                if (message.inform_data) {
-                    // inform message from katstore_ws about samples to be published
-                    return;
-                }
-                if (!(message instanceof Array)) {
-                    message = [message];
-                }
-                var newData = message.map(function(sample) {
-                    return {
-                        status: sample[5],
-                        sensor: sample[4],
-                        value: sample[3],
-                        value_ts: sample[1],
-                        sample_ts: sample[0],
-                        minValue: sample[6],
-                        maxValue: sample[7]
-                    };
-                });
-                if (newData.length > 0) {
-                    vm.redrawChart(newData, hasMinMax);
-                }
-            } else if (subject.startsWith('sensor.')) {
+            if (subject.startsWith('sensor.')) {
                 if (angular.isDefined(_.findWhere(vm.sensorNames, {name: message.name}))) {
                     vm.redrawChart([{
                         sensor: message.name,
                         value_ts: message.value_ts * 1000,
                         sample_ts: message.time * 1000,
-                        value: message.value
-                    }], hasMinMax);
+                        value: message.value,
+                        avg_value: message.value
+                    }], vm.intervalType !== 'n' && !vm.searchDiscrete);
                 }
-            } else if (subject.endsWith('katstore.error')) {
-                vm.waitingForSearchResult = false;
-                NotifyService.showPreDialog(message.err_code + ': Error retrieving katstore data', message.err_msg);
             }
         };
 
@@ -541,8 +531,8 @@
                 vm.sensorEndDatetime = moment.utc($stateParams.endTime, MOMENT_DATETIME_FORMAT, true).toDate();
                 vm.sensorStartDateReadable = moment.utc(vm.sensorStartDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
                 vm.sensorEndDateReadable = moment.utc(vm.sensorEndDatetime.getTime()).format(MOMENT_DATETIME_FORMAT);
-                var startDate = vm.sensorStartDatetime.getTime();
-                var endDate = vm.sensorEndDatetime.getTime();
+                var startDateMs = vm.sensorStartDatetime.getTime();
+                var endDateMs = vm.sensorEndDatetime.getTime();
                 var intervalParams = $stateParams.interval.split(',');
                 var discreteParam = $stateParams.discrete;
                 if (discreteParam === 'discrete') {
@@ -562,11 +552,13 @@
                     vm.intervalNum = '10';
                     vm.intervalType = 'm';
                 }
-                var sensorNames = $stateParams.sensors.split(',').map(function (sensorName) {
-                    return '^(' + sensorName + ')$';
-                });
+                var sensorNames = $stateParams.sensors.split(',');
 
-                vm.findSensorNames(sensorNames.join('|')).then(function (sensors) {
+                // katstore api takes seconds, we have it as ms here
+                startDateSec = startDateMs / 1000;
+                endDateSec = endDateMs / 1000;
+
+                vm.findSensorNames(sensorNames.join('|'), true).then(function (sensors) {
                     var sensorTypes = [];
                     sensors.forEach(function (sensor) {
                         if (sensorTypes.indexOf(sensor.type) === -1) {
@@ -579,21 +571,26 @@
                         return;
                     }
                     vm.waitingForSearchResult = true;
+                    var interval = null;
+                    if (!vm.searchDiscrete) {
+                        interval = vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType);
+                    }
                     sensors.forEach(function (sensor) {
-                        var requestParams = [];
-                        if (vm.searchDiscrete || vm.intervalType === 'n') {
-                            // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
-                            requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT];
-                        } else {
-                            // requestParams = [vm.clientSubject, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
-                            requestParams = [null, sensor.name, startDate, endDate, SAMPLES_QUERY_LIMIT, vm.relativeTimeToSeconds(vm.intervalNum, vm.intervalType)];
+                        var requestParams = {
+                            name: sensor.name,
+                            start: startDateSec,
+                            end: endDateSec,
+                            limit: SAMPLES_QUERY_LIMIT,
+                            allFields: vm.includeValueTimestamp
+                        };
+                        if (vm.intervalType !== 'n') {
+                            requestParams.interval = interval;
                         }
-                        vm.sensorNames.push(sensor);
 
-                        DataService.sensorData.apply(this, requestParams)
+                        DataService.sensorData.call(this, requestParams)
                             .then(function (result) {
-                                if (result.data instanceof Array) {
-                                    vm.sensorDataReceived(null, result.data, 'katstore.data');
+                                if (result.data.data && result.data.data.length > 0) {
+                                    vm.redrawChart(result.data.data, vm.intervalType !== 'n');
                                 }
                                 if (!angular.isDefined(_.findWhere(vm.sensorNames, {name: sensor.name}))) {
                                     vm.sensorNames.push(sensor);
@@ -602,10 +599,10 @@
                                     MonitorService.subscribeSensor(sensor);
                                 }
                                 vm.updateGraphUrl();
+                                vm.waitingForSearchResult = false;
                             }, function (error) {
                                 vm.waitingForSearchResult = false;
-                                vm.sensorDataReceived(null, error, 'katstore.error');
-                                $log.info(error);
+                                $log.error(error);
                             });
                     });
                 });
@@ -619,8 +616,6 @@
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
 
         $scope.$on('$destroy', function () {
-            MonitorService.unsubscribe(vm.clientSubject + '.kastore.data');
-            MonitorService.unsubscribe(vm.clientSubject + '.kastore.error');
             if (vm.liveData) {
                 vm.sensorNames.forEach(function (sensor) {
                     MonitorService.unsubscribeSensor(sensor);

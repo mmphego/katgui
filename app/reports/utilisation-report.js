@@ -309,21 +309,20 @@
                 vm.creatingSubarrayReport = true;
 
                 DataService.sampleValueDuration(vm.subarrayReportSensorsRegex, startDate, endDate).then(function (result) {
-                    if (result.data) {
-
-                        result.data.forEach(function (item) {
+                    if (result.data.data) {
+                        result.data.data.forEach(function (item) {
                             var subNr;
-                            var duration = moment.duration(item[2], 's');
+                            var duration = moment.duration(item.sum, 's');
                             var reportItem = {
-                                sensorName: item[0],
-                                value: item[1],
-                                durationSeconds: item[2],
+                                sensorName: item.name,
+                                value: item.value,
+                                durationSeconds: duration.asSeconds(),
                                 duration: vm.durationToString(duration)
                             };
-
                             if (reportItem.duration) {
                                 reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
+
                             if (reportItem.sensorName.search('_mode_.') > -1) {
                                 subNr = _.last(reportItem.sensorName.split('_'));
                                 if (!vm.schedModeDurations[reportItem.value]) {
@@ -383,24 +382,23 @@
 
                 DataService.sampleValueDuration(vm.receptorsReportSensorsRegex, startDate, endDate).then(function (result) {
                     vm.creatingReceptorReport = false;
-                    if (result.data) {
-
-                        result.data.map(function (item, itemIndex, data) {
+                    if (result.data.data) {
+                        result.data.data.map(function (item, itemIndex, data) {
                             if (itemIndex > 0) {
                                 data[itemIndex - 1][2] = data[itemIndex][2];
                             }
                         });
 
-                        result.data.forEach(function (item, itemIndex, data) {
+                        result.data.data.forEach(function (item, itemIndex, data) {
                             var subNr;
-                            var duration = moment.duration(item[2], 's');
-                            var reportItem = {
-                                sensorName: item[0],
-                                value: item[1],
-                                durationSeconds: item[2] !== null? item[2]: 0,
-                                duration: vm.durationToString(duration)
-                            };
 
+                            var reportItem = {
+                                sensorName: item.name,
+                                value: item.value,
+                                durationSeconds: item.sum !== null? item.sum: 0,
+                                duration: vm.durationToString(moment.duration(item.sum, 's'))
+
+                            };
                             if (reportItem.duration) {
                                 reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
@@ -415,7 +413,6 @@
                                 } else {
                                     key = _.last(reportItem.sensorName.split('_'));
                                 }
-
                                 resources.forEach(function (resource) {
                                     if (!vm.poolResourcesAssignedDurations[resource]) {
                                         vm.poolResourcesAssignedDurations[resource] = {durationTotalSeconds: 0, percentageTotal: '0%', durationTotal: '0:00:00'};
@@ -430,30 +427,31 @@
                                         vm.poolResourcesAssignedDurations[resource].percentageTotal = vm.percentageOfTotalToString(vm.poolResourcesAssignedDurations[resource].durationTotalSeconds);
                                     }
 
-                                    if (!vm.poolResourcesAssignedDurations[resource][key].value) {
-                                        vm.poolResourcesAssignedDurations[resource][key] = {
-                                            duration: reportItem.duration,
-                                            durationSeconds: reportItem.durationSeconds,
-                                            percentageOfTotal: reportItem.percentageOfTotal,
-                                            sensorName: reportItem.sensorName,
-                                            value: resource
-                                        };
-                                    } else {
-                                        var existingResourceItem = vm.poolResourcesAssignedDurations[resource][key];
-                                        existingResourceItem.durationSeconds += reportItem.durationSeconds;
-                                        duration = moment.duration(existingResourceItem.durationSeconds, 's');
-                                        existingResourceItem.duration = vm.durationToString(duration);
-                                        existingResourceItem.percentageOfTotal = vm.percentageOfTotalToString(existingResourceItem.durationSeconds);
-                                        vm.poolResourcesAssignedDurations[resource][key] = existingResourceItem;
-                                    }
-                                });
+                                      if (vm.poolResourcesAssignedDurations[resource][key]) {
+                                          if (!vm.poolResourcesAssignedDurations[resource][key].value) {
+                                              vm.poolResourcesAssignedDurations[resource][key] = {
+                                                  duration: reportItem.duration,
+                                                  durationSeconds: reportItem.durationSeconds,
+                                                  percentageOfTotal: vm.percentageOfTotalToString(reportItem.durationSeconds),
+                                                  sensorName: reportItem.sensorName,
+                                                  value: resource
+                                              };
+                                          } else {
+                                            var existingResourceItem = vm.poolResourcesAssignedDurations[resource][key];
+                                            existingResourceItem.durationSeconds += reportItem.durationSeconds;
+                                            existingResourceItem.duration = reportItem.duration;
+                                            existingResourceItem.percentageOfTotal = vm.percentageOfTotalToString(existingResourceItem.durationSeconds);
+                                            vm.poolResourcesAssignedDurations[resource][key] = existingResourceItem;
+                                          }
+                                     }
+                                 });
                             }
                         });
                     }
                     deferred.resolve();
                 }, function (result) {
                     vm.creatingReceptorReport = false;
-                    NotifyService.showSimpleDialog('Error creating report', result.data);
+                    NotifyService.showSimpleDialog('Error creating report', result.data.data);
                     $log.error(result);
                     deferred.reject();
                 });
@@ -466,14 +464,13 @@
 
                 DataService.sampleValueDuration(vm.scheduleReportSensorsRegex, startDate, endDate).then(function (result) {
                     var SBIdCodes = {};
-                    if (result.data) {
-                        result.data.forEach(function (item) {
-                            var duration = moment.duration(item[2], 's');
+                    if (result.data.data) {
+                        result.data.data.forEach(function (item) {
                             var reportItem = {
-                                sensorName: item[0],
-                                value: item[1],
-                                durationSeconds: item[2],
-                                duration: vm.durationToString(duration)
+                                sensorName: item.name,
+                                value: item.value,
+                                duration: vm.durationToString(moment.duration(item.sum, 's')),
+                                durationSeconds: item.sum
                             };
 
                             if (reportItem.duration) {
@@ -495,7 +492,7 @@
                     deferred.resolve();
                 }, function (result) {
                     vm.creatingScheduleReport = false;
-                    NotifyService.showSimpleDialog('Error creating report', result.data);
+                    NotifyService.showSimpleDialog('Error creating report', result.data.data);
                     $log.error(result);
                     deferred.reject();
                 });
@@ -508,16 +505,14 @@
 
                 DataService.sampleValueDuration(vm.interlockReportSensorsRegex, startDate, endDate).then(function (result) {
                     vm.creatingInterlockReport = false;
-                    if (result.data) {
-                        result.data.forEach(function (item) {
-                            var duration = moment.duration(item[2], 's');
+                    if (result.data.data) {
+                        result.data.data.forEach(function (item) {
                             var reportItem = {
-                                sensorName: item[0],
-                                value: item[1],
-                                durationSeconds: item[2] !== null? item[2]: 0,
-                                duration: vm.durationToString(duration)
+                                sensorName: item.name,
+                                value: item.value,
+                                durationSeconds: item.sum !== null? item.sum: 0,
+                                duration: vm.durationToString(moment.duration(item.sum, 's'))
                             };
-
                             if (reportItem.duration) {
                                 reportItem.percentageOfTotal = vm.percentageOfTotalToString(reportItem.durationSeconds);
                             }
@@ -527,7 +522,7 @@
                     deferred.resolve();
                 }, function (result) {
                     vm.creatingInterlockReport = false;
-                    NotifyService.showSimpleDialog('Error creating report', result.data);
+                    NotifyService.showSimpleDialog('Error creating report', result.data.data);
                     $log.error(result);
                     deferred.reject();
                 });
