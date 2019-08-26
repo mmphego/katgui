@@ -350,6 +350,28 @@
                     <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
                     </md-item-content>
                 </md-item>
+                <md-item ng-controller="ConfigCtrl as cfg" >
+                    <md-subheader >Configuration Shortcuts</md-subheader >
+                    <md-item-content class="menu-item config-checkbox-shortcut" layout="row" layout-align="start center">
+                      <md-checkbox class="md-primary checkbox" ng-model="$root.showAlarms"
+                             ng-change="cfg.saveToLocalStorage('showAlarmsNotify', $root.showAlarms)">Show Alarm Notifications
+                      </md-checkbox>
+                    </md-item-content>
+                    <md-item-content class="menu-item config-checkbox-shortcut" layout="row" layout-align="start center">
+                      <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.showLargeAlarms"
+                             ng-change="cfg.saveToLocalStorage('showLargeAlarms', $root.showLargeAlarms)">Show Detailed Alarm Notifications
+                </md-checkbox>
+                    </md-item-content>
+                <md-item-content class="menu-item config-checkbox-shortcut" layout="row" layout-align="start center">
+                <md-checkbox class="md-primary alarms-tools-checkbox" ng-model="$root.disableAlarmSounds"
+                             ng-change="cfg.saveToLocalStorage('disableAlarmSounds', $root.disableAlarmSounds)">Disable Alarm Sounds
+                </md-checkbox>
+                </md-item-content>
+                </md-item>
+                <md-item>
+                    <md-item-content class="menu-item-divider" layout="row" layout-align="start center">
+                    </md-item-content>
+                </md-item>
                 <md-item>
                     <md-item-content class="menu-item" layout="row" layout-align="start center" ng-click="$root.logout()">
                         <md-button><span class="fa"></span><span>Logout</span></md-button>
