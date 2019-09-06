@@ -497,7 +497,7 @@
                 .ok('Yes')
                 .cancel('Cancel');
             if (confirm == 'Yes' && sb.proposal_id.startsWith('SCI')) {
-                addUserLog
+                addUserLog(sb.id_code)
             }
         };
 
@@ -516,7 +516,7 @@
                 .ok('Yes')
                 .cancel('Cancel');
             if (confirm == 'Yes' && sb.proposal_id.startsWith('SCI')) {
-                addUserLog
+                addUserLog(sb.id_code)
             }
         };
 
