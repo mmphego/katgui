@@ -486,11 +486,37 @@
             if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
                 ObsSchedService.stopSchedule(item.sub_nr, item.id_code);
             }
+            var confirm = $mdDialog.prompt()
+                .title('Stop execution of schedule block ' + sb.id_code)
+                .textContent('Are you sure you want to STOP execution of schedule block ' + sb.id_code)
+                .placeholder('Stop Schedule Block Execution')
+                .ariaLabel('Stop Schedule Block Execution')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Yes')
+                .cancel('Cancel');
+            if (confirm == 'Yes' && sb.proposal_id.startsWith('SCI')) {
+                addUserLog
+            }
         };
 
         vm.cancelExecuteSchedule = function(item) {
             if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
                 ObsSchedService.cancelExecuteSchedule(item.sub_nr, item.id_code);
+            }
+            var confirm = $mdDialog.prompt()
+                .title('Cancel execution of schedule block ' + sb.id_code)
+                .textContent('Are you sure you want to CANCEL execution of schedule block ' + sb.id_code)
+                .placeholder('Cancel Schedule Block Execution')
+                .ariaLabel('Cancel Schedule Block Execution')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Yes')
+                .cancel('Cancel');
+            if (confirm == 'Yes' && sb.proposal_id.startsWith('SCI')) {
+                addUserLog
             }
         };
 
@@ -864,6 +890,16 @@
 
         vm.moveScheduleRowToFinished = function(item) {
             ObsSchedService.scheduleToComplete(item.sub_nr, item.id_code);
+            var confirm = $mdDialog.prompt()
+                .title('Move Schedule Block To Finish')
+                .textContent('Move schedule block ' + sb.id_code + 'to finish')
+                .placeholder('Move Schedule Block To Finish')
+                .ariaLabel('Move Schedule Block To Finish')
+                .initialValue(initValue)
+                .targetEvent(event)
+                .theme($rootScope.themePrimaryButtons)
+                .ok('Yes')
+                .cancel('Cancel');
         };
 
         vm.moveScheduleRowToApproved = function(item) {
