@@ -1,5 +1,6 @@
 (function() {
 
+
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
@@ -154,7 +155,7 @@
             NotifyService.showImportantConfirmDialog(null, 'Set Executing Schedule To Complete', 'Are you sure you want to send schedule block - ' + id_code + 'to Complete?', 'Yes', 'Cancel').then(function() {
                 api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/complete')));
             }, function() {
-                NotifyService.showSimpleToast('Stopped executing ' + id_code);
+                NotifyService.showSimpleToast('Cancelled setting sb- ' + item.id_code + 'to completion');
             });
         };
 
@@ -170,20 +171,18 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/execute')));
         };
 
-        api.stopSchedule = function(sub_nr, id_code) {
-            NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule', 'Are you sure you want to stop executing schedule block - ' + id_code + '?', 'Yes', 'Cancel').then(function() {
-                api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/stop')));
-            }, function() {
-                NotifyService.showSimpleToast('Stopped executing ' + id_code);
+        api.stopSchedule = function(item) {
+            NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule', 'Are you sure you want to stop executing schedule block - ' + item.id_code + '?', 'Yes', 'Cancel').then(
+                function() {
+                    if ($rootScope.currentUser.req_role === 'lead_operator' && item.state === 'ACTIVE') {
+                        if (item.proposal_id.startsWith('SCI')) {
+                            UserLogService.addUserLog(item);
+                            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + item.sub_nr + '/' + item.id_code + '/stop')));
+                        }
+                    }
+                }, function() {
+                    NotifyService.showSimpleToast('Cancelled stopping sb ' + item.id_code);
             });
-        };
-
-        api.cancelExecuteSchedule = function(sub_nr, id_code) {
-            NotifyService.showImportantConfirmDialog(null, 'Cancel Executing Schedule', 'Are you sure you want to cancel executing schedule block - ' + id_code + '?', 'Yes', 'Cancel').then(function() {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
-        }, function() {
-            NotifyService.showSimpleToast('Cancelled executing ' + id_code);
-        });
         };
 
         api.updateScheduleBlockWithProgramBlockID = function(sb, pb) {
