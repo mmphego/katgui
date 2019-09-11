@@ -421,6 +421,55 @@
                 });
         };
 
+        vm.addUserLog = function ($event, sb) {
+            var content = '';
+            var end_time = '';
+            var allocations = [];
+            var assignedResources = [];
+            var start_time = $rootScope.utcDateTime;
+            var compoundTag = null;
+
+            if (sb) {
+                dryrun_link = ConfigService.GetKATTaskFileServerURL() + "/tailtask/" + sb.id_code + "/dryrun"
+                content = "Schedule block: " + sb.id_code + "\n\nDry run link: " + dryrun_link;
+                compoundTag = ["SB_:{" + sb.id_code + "}:_"]
+                if (sb.actual_start_time) {
+                    start_time = sb.actual_start_time.split('.')[0];
+                }
+                if (sb.actual_end_time) {
+                    end_time = sb.actual_end_time.split('.')[0];
+                }
+                allocations = vm.getResources(sb.antenna_spec, sb.antennas_dry_run_alloc,
+                    sb.antennas_alloc).concat(vm.getResources(sb.controlled_resources_spec,
+                      sb.controlled_resources_dry_run_alloc, sb.controlled_resources_alloc));
+                for (var i = 0; i < allocations.length; i++) {
+                    var tag = _.findWhere(UserLogService.tags, {name: allocations[i]})
+                    if (tag) {
+                        assignedResources.push(tag);
+                    }
+                }
+            }
+            else {
+                allocations = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue;
+                for (var i = 0; i < allocations.length; i++) {
+                    var tag = _.findWhere(UserLogService.tags, {name: allocations[i][0]})
+                    if (tag) {
+                        assignedResources.push(tag);
+                    }
+                }
+            }
+            var newUserLog = {
+                start_time: start_time,
+                end_time: end_time,
+                tags: assignedResources,
+                compound_tags: compoundTag,
+                user_id: $rootScope.currentUser.id,
+                content: content,
+                attachments: []
+            };
+            $rootScope.editUserLog(newUserLog, event);
+        };
+
         vm.setSubarrayInMaintenance = function() {
             ObsSchedService.setSubarrayMaintenance(
                 vm.subarray.id, vm.sensorValues[vm.subarray.name + '_maintenance'].value ? 'clear' : 'set');
@@ -484,39 +533,7 @@
 
         vm.stopExecuteSchedule = function(item) {
             if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
-                ObsSchedService.stopSchedule(item.sub_nr, item.id_code);
-            }
-            var confirm = $mdDialog.prompt()
-                .title('Stop execution of schedule block ' + sb.id_code)
-                .textContent('Are you sure you want to STOP execution of schedule block ' + sb.id_code)
-                .placeholder('Stop Schedule Block Execution')
-                .ariaLabel('Stop Schedule Block Execution')
-                .initialValue(initValue)
-                .targetEvent(event)
-                .theme($rootScope.themePrimaryButtons)
-                .ok('Yes')
-                .cancel('Cancel');
-            if (confirm == 'Yes' && sb.proposal_id.startsWith('SCI')) {
-                addUserLog(sb.id_code)
-            }
-        };
-
-        vm.cancelExecuteSchedule = function(item) {
-            if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
-                ObsSchedService.cancelExecuteSchedule(item.sub_nr, item.id_code);
-            }
-            var confirm = $mdDialog.prompt()
-                .title('Cancel execution of schedule block ' + sb.id_code)
-                .textContent('Are you sure you want to CANCEL execution of schedule block ' + sb.id_code)
-                .placeholder('Cancel Schedule Block Execution')
-                .ariaLabel('Cancel Schedule Block Execution')
-                .initialValue(initValue)
-                .targetEvent(event)
-                .theme($rootScope.themePrimaryButtons)
-                .ok('Yes')
-                .cancel('Cancel');
-            if (confirm == 'Yes' && sb.proposal_id.startsWith('SCI')) {
-                addUserLog(sb.id_code)
+                ObsSchedService.stopSchedule(item);
             }
         };
 
@@ -890,16 +907,6 @@
 
         vm.moveScheduleRowToFinished = function(item) {
             ObsSchedService.scheduleToComplete(item.sub_nr, item.id_code);
-            var confirm = $mdDialog.prompt()
-                .title('Move Schedule Block To Finish')
-                .textContent('Move schedule block ' + sb.id_code + 'to finish')
-                .placeholder('Move Schedule Block To Finish')
-                .ariaLabel('Move Schedule Block To Finish')
-                .initialValue(initValue)
-                .targetEvent(event)
-                .theme($rootScope.themePrimaryButtons)
-                .ok('Yes')
-                .cancel('Cancel');
         };
 
         vm.moveScheduleRowToApproved = function(item) {
@@ -1142,55 +1149,6 @@
             }
             return resources;
         }
-
-        vm.addUserLog = function ($event, sb) {
-            var content = '';
-            var end_time = '';
-            var allocations = [];
-            var assignedResources = [];
-            var start_time = $rootScope.utcDateTime;
-            var compoundTag = null;
-
-            if (sb) {
-                dryrun_link = ConfigService.GetKATTaskFileServerURL() + "/tailtask/" + sb.id_code + "/dryrun"
-                content = "Schedule block: " + sb.id_code + "\n\nDry run link: " + dryrun_link;
-                compoundTag = ["SB_:{" + sb.id_code + "}:_"]
-                if (sb.actual_start_time) {
-                    start_time = sb.actual_start_time.split('.')[0];
-                }
-                if (sb.actual_end_time) {
-                    end_time = sb.actual_end_time.split('.')[0];
-                }
-                allocations = vm.getResources(sb.antenna_spec, sb.antennas_dry_run_alloc,
-                    sb.antennas_alloc).concat(vm.getResources(sb.controlled_resources_spec,
-                      sb.controlled_resources_dry_run_alloc, sb.controlled_resources_alloc));
-                for (var i = 0; i < allocations.length; i++) {
-                    var tag = _.findWhere(UserLogService.tags, {name: allocations[i]})
-                    if (tag) {
-                        assignedResources.push(tag);
-                    }
-                }
-            }
-            else {
-                allocations = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue;
-                for (var i = 0; i < allocations.length; i++) {
-                    var tag = _.findWhere(UserLogService.tags, {name: allocations[i][0]})
-                    if (tag) {
-                        assignedResources.push(tag);
-                    }
-                }
-            }
-            var newUserLog = {
-                start_time: start_time,
-                end_time: end_time,
-                tags: assignedResources,
-                compound_tags: compoundTag,
-                user_id: $rootScope.currentUser.id,
-                content: content,
-                attachments: []
-            };
-            $rootScope.editUserLog(newUserLog, event);
-        };
 
         var unbindUpdate = $rootScope.$on('sensorUpdateMessage', vm.sensorUpdateMessage);
         var unbindReconnected = $rootScope.$on('websocketReconnected', vm.initSensors);
