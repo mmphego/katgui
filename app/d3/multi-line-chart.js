@@ -166,7 +166,7 @@ angular.module('katGui.d3')
                         if (!scope.options.yAxisValues) {
                             scope.options.yAxisValues = [];
                         }
-                        d.value = d.value.toString();
+                        d.value = String(d.value);
                         newYAxisValues[d.value.replace(/\'/g, '"')] = {};
                     }
 
