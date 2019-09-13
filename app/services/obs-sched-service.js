@@ -172,16 +172,16 @@
         };
 
         api.stopSchedule = function(item) {
-            NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule', 'Are you sure you want to stop executing schedule block - ' + item.id_code + '?', 'Yes', 'Cancel').then(
-                function() {
-                    if ($rootScope.currentUser.req_role === 'lead_operator' && item.state === 'ACTIVE') {
-                        if (item.proposal_id.startsWith('SCI')) {
-                            UserLogService.addUserLog(item);
-                            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + item.sub_nr + '/' + item.id_code + '/stop')));
-                        }
-                    }
+            NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule', 'Are you sure you want to stop executing schedule block - ' + item.id_code + '?', 'Yes', 'Cancel').then(function() {
+                    api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + item.sub_nr + '/' + item.id_code + '/stop')));
                 }, function() {
                     NotifyService.showSimpleToast('Cancelled stopping sb ' + item.id_code);
+            });
+        };
+
+        api.cancelExecuteSchedule = function(sub_nr, id_code) {
+            NotifyService.showImportantConfirmDialog(null, 'Cancel Executing Schedule', 'Are you sure you want to cancel executing schedule block - ' + item.id_code + '?', 'Yes', 'Cancel').then(function() {
+                api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
             });
         };
 
