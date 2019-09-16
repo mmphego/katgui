@@ -226,7 +226,7 @@
             var allocations = [];
             var start_time = $rootScope.utcDateTime;
 
-            content = "User Stopped observation " + sb.id_code
+            content = "User stopped observation " + sb.id_code
                           + ", proposal ID: " + sb.proposal_id
                           + ' for the following reason \n';
             var compoundTag = ["SB_:{" + sb.id_code + "}:_"]
