@@ -863,7 +863,7 @@
         };
 
         vm.moveScheduleRowToFinished = function(item) {
-            ObsSchedService.scheduleToComplete(item.sub_nr, item.id_code);
+            ObsSchedService.scheduleToComplete(item);
         };
 
         vm.moveScheduleRowToApproved = function(item) {
