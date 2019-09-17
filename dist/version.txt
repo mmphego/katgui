@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version": "1.0.1", "buildDate": "1568296880370"}
+=======
+{"version": "1.0.1", "buildDate": "1568645502404"}
+>>>>>>> e03d754f... Merge branch 'master' into user/bulelani/MT-916/gui-confirmation-before-observation-stopping
