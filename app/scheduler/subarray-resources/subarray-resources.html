@@ -174,6 +174,12 @@
             <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
         </md-button>
 
+        <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" style="min-height: 50%; max-width: 14px; min-width: 41px; margin: 2px 4px 8px 0;"
+            ng-disabled="!$root.expertOrLO" ng-click="vm.assignAllResources();"
+            title="Assign All Resources to Subarray">
+            <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
+        </md-button>
+
         <div flex layout="column" style="max-width:400px; min-height: 500px; margin-right: 8px">
             <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
                 <md-toolbar class="md-whiteframe-z1" layout="row" layout-align="start center" title="" style="max-height: 40px; min-height: 40px;">

@@ -49,6 +49,10 @@
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
+        vm.assignAllResources = function () {
+            var allResources = vm.poolResourcesFree
+            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, allResources);
+        };
 
         vm.resourceAllowedInSubarray = function (resourceName) {
             var genericResources = [];
