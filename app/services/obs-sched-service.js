@@ -163,7 +163,7 @@
                                 + item.sub_nr + '/' + item.id_code + '/complete')));
 
                         // show userlog if proposal starts with SCI xxx
-                        api.addStopScheduleUserLog(item);
+                        api.addStopScheduleUserLog(item, 'completed');
                     }, function() {
                         NotifyService.showSimpleToast('Cancelled setting sb- ' + item.id_code + 'to completion');
                     });
@@ -192,7 +192,7 @@
                             + sb.sub_nr + '/' + sb.id_code + '/stop')));
 
                             // show userlog if proposal starts with SCI xxx
-                            api.addStopScheduleUserLog(sb);
+                            api.addStopScheduleUserLog(sb, 'stopped');
                     }, function() {
                         NotifyService.showSimpleToast('Cancelled stopping sb ' + item.id_code);
             });
@@ -210,13 +210,13 @@
                             + '/cancel-execute')));
 
                         // show userlog if proposal starts with SCI xxx
-                        api.addStopScheduleUserLog(item);
+                        api.addStopScheduleUserLog(item, 'canceled');
                     }, function() {
                         NotifyService.showSimpleToast('Cancelled stopping sb ' + item.id_code);
             });
         };
 
-        api.addStopScheduleUserLog = function(sb) {
+        api.addStopScheduleUserLog = function(sb, action) {
             // show userlog if proposal starts with SCI xxx
             if (!sb.proposal_id.startsWith('SCI'))
                 return;
@@ -226,7 +226,7 @@
             var allocations = [];
             var start_time = $rootScope.utcDateTime;
 
-            content = "User stopped observation " + sb.id_code
+            content = "User " + action + " observation " + sb.id_code
                           + ", proposal ID: " + sb.proposal_id
                           + ' for the following reason \n';
             var compoundTag = ["SB_:{" + sb.id_code + "}:_"]
