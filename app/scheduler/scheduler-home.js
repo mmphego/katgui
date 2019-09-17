@@ -484,15 +484,15 @@
 
         vm.stopExecuteSchedule = function(item) {
             if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
-                ObsSchedService.stopSchedule(item.sub_nr, item.id_code);
+                ObsSchedService.stopSchedule(item);
             }
         };
 
         vm.cancelExecuteSchedule = function(item) {
             if (vm.iAmAtLeastCA() && item.state === 'ACTIVE') {
-                ObsSchedService.cancelExecuteSchedule(item.sub_nr, item.id_code);
+                ObsSchedService.cancelExecuteSchedule(item)
             }
-        };
+        }
 
         vm.cloneSB = function(item) {
             ObsSchedService.cloneSB(item.id_code);
@@ -863,7 +863,7 @@
         };
 
         vm.moveScheduleRowToFinished = function(item) {
-            ObsSchedService.scheduleToComplete(item.sub_nr, item.id_code);
+            ObsSchedService.scheduleToComplete(item);
         };
 
         vm.moveScheduleRowToApproved = function(item) {

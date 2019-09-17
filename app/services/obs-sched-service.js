@@ -1,5 +1,6 @@
 (function() {
 
+
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
