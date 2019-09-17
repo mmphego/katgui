@@ -1,5 +1,6 @@
 (function() {
 
+
     angular.module('katGui.services')
         .service('ObsSchedService', ObsSchedService);
 
@@ -150,8 +151,22 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/to-approved')));
         };
 
-        api.scheduleToComplete = function(sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/complete')));
+        api.scheduleToComplete = function(item) {
+            NotifyService.showImportantConfirmDialog(null,
+                'Set Executing Schedule To Complete',
+                'Are you sure you want to send schedule block - '
+                + item.id_code + 'to Complete?', 'Yes', 'Cancel').then(
+                    function() {
+                        api.handleRequestResponse(
+                          $http(
+                            createRequest('post', urlBase() + '/sb/'
+                                + item.sub_nr + '/' + item.id_code + '/complete')));
+
+                        // show userlog if proposal starts with SCI xxx
+                        api.addStopScheduleUserLog(item, 'completed');
+                    }, function() {
+                        NotifyService.showSimpleToast('Cancelled setting sb- ' + item.id_code + 'to completion');
+                    });
         };
 
         api.verifyScheduleBlock = function(sub_nr, id_code) {
@@ -166,17 +181,66 @@
             api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/execute')));
         };
 
-        api.stopSchedule = function(sub_nr, id_code) {
-            NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule', 'Are you sure you want to stop executing ' + id_code + '?', 'Yes', 'Cancel').then(function() {
-                api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/stop')));
-            }, function() {
-                NotifyService.showSimpleToast('Cancelled stop executing ' + id_code);
+        api.stopSchedule = function(sb) {
+            NotifyService.showImportantConfirmDialog(null, 'Stop Executing Schedule',
+                  'Are you sure you want to stop executing schedule block - '
+                  + sb.id_code + '?', 'Yes', 'Cancel').then(
+                    function() {
+                        api.handleRequestResponse(
+                          $http(
+                            createRequest('post', urlBase() + '/sb/'
+                            + sb.sub_nr + '/' + sb.id_code + '/stop')));
+
+                            // show userlog if proposal starts with SCI xxx
+                            api.addStopScheduleUserLog(sb, 'stopped');
+                    }, function() {
+                        NotifyService.showSimpleToast('Cancelled stopping sb ' + item.id_code);
             });
         };
 
-        api.cancelExecuteSchedule = function(sub_nr, id_code) {
-            api.handleRequestResponse($http(createRequest('post', urlBase() + '/sb/' + sub_nr + '/' + id_code + '/cancel-execute')));
+        api.cancelExecuteSchedule = function(item) {
+            NotifyService.showImportantConfirmDialog(null, 'Cancel Executing Schedule',
+                  'Are you sure you want to cancel executing schedule block - '
+                  + item.id_code + '?', 'Yes', 'Cancel').then(
+                    function() {
+                        api.handleRequestResponse(
+                          $http(
+                            createRequest('post', urlBase()
+                            + '/sb/' + item.sub_nr + '/' + item.id_code
+                            + '/cancel-execute')));
+
+                        // show userlog if proposal starts with SCI xxx
+                        api.addStopScheduleUserLog(item, 'canceled');
+                    }, function() {
+                        NotifyService.showSimpleToast('Cancelled stopping sb ' + item.id_code);
+            });
         };
+
+        api.addStopScheduleUserLog = function(sb, action) {
+            // show userlog if proposal starts with SCI xxx
+            if (!sb.proposal_id.startsWith('SCI'))
+                return;
+
+            var content = '';
+            var end_time = '';
+            var allocations = [];
+            var start_time = $rootScope.utcDateTime;
+
+            content = "User " + action + " observation " + sb.id_code
+                          + ", proposal ID: " + sb.proposal_id
+                          + ' for the following reason \n';
+            var compoundTag = ["SB_:{" + sb.id_code + "}:_"]
+
+            var newUserLog = {
+                start_time: start_time,
+                tags: [],
+                end_time: end_time,
+                compound_tags: compoundTag,
+                user_id: $rootScope.currentUser.id,
+                content: content,
+            };
+            $rootScope.editUserLog(newUserLog, true);
+        }
 
         api.updateScheduleBlockWithProgramBlockID = function(sb, pb) {
             var body = {};
