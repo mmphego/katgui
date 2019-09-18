@@ -50,7 +50,12 @@
         };
 
         vm.assignAllReceptors = function (resources) {
-            var receptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',')
+            var receptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
+            // var inMaintenanceReceptor = ObsSchedService.sensorValues[receptors[i] + '_marked_in_maintenance'];
+            // var faultyReceptor = ObsSchedService.sensorValues[receptors[i] + '_marked_faulty'];
+            // if (!faultyReceptor || !inMaintenanceReceptor) {
+            //      assignAllReceptors
+            // }
             for (var i=0; i<receptors.length; i++) {
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, receptors[i]);
             }
