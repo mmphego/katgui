@@ -361,7 +361,7 @@ angular.module('katGui.d3')
                         return x(d.date);
                     })
                     .y(function(d) {
-                        return y(d.value || d.avg_value);
+                        return y(d.value || (d.avg_value || 0));
                     });
 
                 minline = d3.svg.line()
@@ -412,7 +412,7 @@ angular.module('katGui.d3')
                             return x2(d.date);
                         })
                         .y(function(d) {
-                            return y2(d.value || d.avg_value);
+                            return y2(d.value || (d.avg_value || 0));
                         });
 
                     context = svg.append("g")
@@ -528,9 +528,9 @@ angular.module('katGui.d3')
                                     if (d.min_value) {
                                         return d.min_value;
                                     }
-                                    var parsedValue = parseFloat(d.value || d.avg_value);
+                                    var parsedValue = parseFloat(d.value || (d.avg_value || 0));
                                     if (isNaN(parsedValue)) {
-                                        return d.value || d.avg_value;
+                                        return d.value || (d.avg_value || 0);
                                     }
                                     return parsedValue;
                                 });
@@ -540,9 +540,9 @@ angular.module('katGui.d3')
                                     if (d.max_value) {
                                         return d.max_value;
                                     }
-                                    var parsedValue = parseFloat(d.value || d.avg_value);
+                                    var parsedValue = parseFloat(d.value || (d.avg_value || 0));
                                     if (isNaN(parsedValue)) {
-                                        return d.value || d.avg_value;
+                                        return d.value || (d.avg_value || 0);
                                     }
                                     return parsedValue;
                                 });
@@ -813,19 +813,19 @@ angular.module('katGui.d3')
                     if (scope.options.discreteSensors && d0) {
                         d = d0;
                         xTranslate = (x(d.date) + margin.left);
-                        yTranslate = (y(d.value || d.avg_value) + margin.top);
+                        yTranslate = (y(d.value || (d.avg_value || 0)) + margin.top);
                         focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                         focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                        d.TooltipValue = d.value || d.avg_value;
+                        d.TooltipValue = d.value || (d.avg_value || 0);
                         tooltipValues.push(d);
                     }
                     else if (d0 && d0.date && d1 && d1.date) {
                         d = x0 - d0.date > d1.date - x0 ? d1 : d0;
                         xTranslate = (x(d.date) + margin.left);
-                        yTranslate = (y(d.value || d.avg_value) + margin.top);
+                        yTranslate = (y(d.value || (d.avg_value || 0)) + margin.top);
                         focusToolTip = d3.selectAll("." + data.key + "-tooltip");
                         focusToolTip.attr("transform", "translate(" + xTranslate + "," + yTranslate + ")");
-                        d.TooltipValue = d.value || d.avg_value;
+                        d.TooltipValue = d.value || (d.avg_value || 0);
                         tooltipValues.push(d);
                     }
                 });
