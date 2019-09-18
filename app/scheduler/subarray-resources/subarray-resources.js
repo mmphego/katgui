@@ -49,9 +49,11 @@
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
-        vm.assignAllResources = function () {
-            var allResources = vm.poolResourcesFree
-            ObsSchedService.assignResourcesToSubarray(vm.subarray.id, allResources);
+        vm.assignAllReceptors = function (resources) {
+            var receptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',')
+            for (var i=0; i<receptors.length; i++) {
+                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, receptors[i]);
+            }
         };
 
         vm.resourceAllowedInSubarray = function (resourceName) {
