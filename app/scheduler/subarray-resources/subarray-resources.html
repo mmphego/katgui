@@ -168,17 +168,16 @@
             </div>
         </div>
 
-        <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" style="min-height: 90%; max-width: 41px; min-width: 41px; margin: 2px 4px 8px 0;"
-            ng-disabled="!$root.expertOrLO" ng-click="vm.assignSelectedResources();"
-            title="Assign Selected">
-            <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
-        </md-button>
-
-        <md-button md-theme="{{themeSecondary}}" class="md-raised md-primary" style="min-height: 90%; max-width: 41px; min-width: 41px; margin: 2px 4px 8px 0;"
-            ng-disabled="!$root.expertOrLO" ng-click="vm.assignAllReceptors();"
-            title="Assign All">
-            <md-icon class="fa" md-font-icon="fa-chevron-left" style="width: auto; height: auto;"></md-icon>
-        </md-button>
+        <div class="md-raised md-primary" style="min-height: 90%; max-width: 40px; min-width: 40px; margin: 2px 4px 8px 0;">
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" ng-disabled="!$root.expertOrLO" ng-click="vm.assignSelectedResources();"
+                title="Assign Selected" style="height: 50%; min-width:30px">
+                    <md-icon class="fa" md-font-icon="fa-chevron-left"></md-icon>
+            </md-button>
+            <md-button md-theme="{{themeSecondary}}" class="md-raised md-primary" ng-disabled="!$root.expertOrLO" ng-click="vm.assignAllReceptors();"
+                title="Assign All Receptors" style="height: 50%; min-width:30px">
+                    <md-icon class="fa" md-font-icon="fa-chevron-left"></md-icon>
+            </md-button>
+        </div>
 
         <div flex layout="column" style="max-width:400px; min-height: 500px; margin-right: 8px">
             <div flex layout="column" class="md-whiteframe-z2" style="margin-bottom: 8px;">
