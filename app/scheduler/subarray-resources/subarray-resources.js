@@ -49,20 +49,18 @@
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
-        vm.assignAllReceptors = function (resources) {
-            var receptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
-            for (var i=0; i<receptors.length; i++) {
-            // TODO (BN) 
-            //var inMaintenanceReceptor = ObsSchedService.sensorValues[receptors[i] + '_marked_in_maintenance'].parsedValue;
-            // var faultyReceptor = ObsSchedService.sensorValues[receptors[i] + '_marked_faulty'].parsedValue;
-            // var subarrayInMaintenance = ObsSchedService.setSubarrayMaintenance(vm.subarray.id, vm.sensorValues[vm.subarray.name + '_maintenance'].value ? 'clear' : 'set');
-            // if (!inMaintenanceReceptor) {}
-                // if (!faultyReceptor) {}
-                    // if (!subarrayInMaintenance){
-                        // assignAllReceptors()
-                        // }
-                // else {assignAllReceptors}
-                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, receptors[i]);
+        vm.assignAllReceptors = function (ants) {
+            var configReceptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
+            for (var i=0; i<configReceptors.length; i++) {
+                var isReceptorInMaintenance = $scope.parent.vm.isResourceInMaintenance(configReceptors[i]);
+                var isReceptorFaulty = $scope.parent.vm.isResourceFaulty(configReceptors[i]);
+                var subarrayInMaintenance = $scope.parent.vm.sensorValues[vm.subarray.name + '_maintenance'].value;
+                if (!subarrayInMaintenance) {
+                    if (isReceptorInMaintenance || isReceptorFaulty)
+                        continue;
+                }
+
+                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, configReceptors[i]);
             }
         };
 
