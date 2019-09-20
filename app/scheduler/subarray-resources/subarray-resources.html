@@ -168,13 +168,13 @@
             </div>
         </div>
 
-        <div class="md-raised md-primary" style="min-height: 90%; max-width: 40px; min-width: 40px; margin: 2px 4px 8px 0;">
-            <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" ng-disabled="!$root.expertOrLO" ng-click="vm.assignSelectedResources();"
-                title="Assign Selected" style="height: 45%; min-width:30px">
-                    <md-icon class="fa" md-font-icon="fa-chevron-left"></md-icon>
+        <div class="md-raised md-primary" style="min-height: 100%; max-width: 40px; min-width: 40px; margin: 2px 4px 8px 0;">
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" ng-disabled="!$root.expertOrLO" ng-click="vm.assignAllReceptors();"
+                title="Assign All Available Receptors" style="height: 51.7%; min-width:30px; margin: 2px 4px 8px 0;">
+                    <md-icon class="fa-3x" md-font-icon="fa-angle-double-left"></md-icon>
             </md-button>
-            <md-button md-theme="green" class="md-raised md-primary" ng-disabled="!$root.expertOrLO" ng-click="vm.assignAllReceptors();"
-                title="Assign All Receptors" style="height: 45%; min-width:30px">
+            <md-button md-theme="{{themePrimaryButtons}}" class="md-raised md-primary" ng-disabled="!$root.expertOrLO" ng-click="vm.assignSelectedResources();"
+                title="Assign Selected Resources" style="height: 45%; min-width:30px; margin: 2px 4px 8px 0;">
                     <md-icon class="fa" md-font-icon="fa-chevron-left"></md-icon>
             </md-button>
         </div>

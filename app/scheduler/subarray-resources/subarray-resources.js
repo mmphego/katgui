@@ -49,18 +49,19 @@
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
-        vm.assignAllReceptors = function (ants) {
-            var configReceptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
-            for (var i=0; i<configReceptors.length; i++) {
-                var isReceptorInMaintenance = $scope.parent.vm.isResourceInMaintenance(configReceptors[i]);
-                var isReceptorFaulty = $scope.parent.vm.isResourceFaulty(configReceptors[i]);
+        vm.assignAllReceptors = function () {
+            var allReceptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
+            for (var i=0; i<allReceptors.length; i++) {
+                var isReceptorInMaintenance = $scope.parent.vm.isResourceInMaintenance(allReceptors[i]);
+                var isReceptorFaulty = $scope.parent.vm.isResourceFaulty(allReceptors[i]);
                 var subarrayInMaintenance = $scope.parent.vm.sensorValues[vm.subarray.name + '_maintenance'].value;
-                if (!subarrayInMaintenance) {
-                    if (isReceptorInMaintenance || isReceptorFaulty)
-                        continue;
+                if (vm.poolResourcesFree) {
+                    if (!subarrayInMaintenance) {
+                        if (isReceptorInMaintenance || isReceptorFaulty)
+                            continue;
+                    }
+                    ObsSchedService.assignResourcesToSubarray(vm.subarray.id, allReceptors[i]);
                 }
-
-                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, configReceptors[i]);
             }
         };
 
