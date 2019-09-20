@@ -49,6 +49,28 @@
             ObsSchedService.assignResourcesToSubarray(vm.subarray.id, resourceName);
         };
 
+        vm.assignAllReceptors = function () {
+            var allReceptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
+            var freeResources = [];
+            for (var j=0; j<vm.poolResourcesFree.length; j++)
+                freeResources.push(vm.poolResourcesFree[j].name);
+
+            for (var i=0; i<allReceptors.length; i++) {
+                var receptorName = allReceptors[i];
+                var isReceptorInMaintenance = $scope.parent.vm.isResourceInMaintenance(receptorName);
+                var isReceptorFaulty = $scope.parent.vm.isResourceFaulty(receptorName);
+                var subarrayInMaintenance = $scope.parent.vm.sensorValues[vm.subarray.name + '_maintenance'].value;
+                if (!freeResources.includes(receptorName))
+                    continue;
+
+                if (!subarrayInMaintenance) {
+                    if (isReceptorInMaintenance || isReceptorFaulty)
+                        continue;
+                }
+
+                ObsSchedService.assignResourcesToSubarray(vm.subarray.id, receptorName);
+            }
+        };
 
         vm.resourceAllowedInSubarray = function (resourceName) {
             var genericResources = [];
