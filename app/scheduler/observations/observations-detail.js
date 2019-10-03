@@ -80,20 +80,7 @@
         };
 
         vm.activateSubarray = function () {
-            ObsSchedService.activateSubarray(vm.subarray.id)
-                .then(function (result) {
-                    var splitMessage = result.data.result.split(' ');
-                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
-                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
-                        NotifyService.showPreDialog('Error activating subarray', message);
-                    } else {
-                        NotifyService.showSimpleToast(result.data.result);
-                    }
-                    vm.subarray.showProgress = false;
-                }, function (error) {
-                    NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
-                    vm.subarray.showProgress = false;
-                });
+            ObsSchedService.activateSubarray(vm.subarray.id);
         };
 
         vm.setSubarrayMaintenance = function (maintenance) {

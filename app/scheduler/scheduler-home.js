@@ -283,11 +283,12 @@
         };
 
         vm.setBand = function(band) {
-            ObsSchedService.setBand(vm.subarray.id, band, vm.defaultCentreFreqMap[band]);
+            vm.subarray.band = band;
+            vm.subarray.requested_rx_centre_frequency = vm.defaultCentreFreqMap[band];
         };
 
         vm.setFrequency = function(freq) {
-          ObsSchedService.setFrequency(vm.subarray.id, freq);
+          vm.subarray.requested_rx_centre_frequency = freq;
         };
 
         vm.openBandsDialog = function(event) {
@@ -324,28 +325,16 @@
         };
 
         vm.setProduct = function(product) {
-            if (!product || product.length === 0) {
-                ObsSchedService.setProduct(vm.subarray.id, '');
-            }
-            else if (vm.bandsMap[product].length > 0) {
-                ObsSchedService.setProduct(vm.subarray.id, product, vm.defaultDumpRatesMap[product]);
-                if (vm.bandsMap[product].indexOf(vm.subarray.band) === -1) {
-                    vm.setBand(vm.bandsMap[product][0]);
-                }
-            } else {
-                NotifyService.showSimpleDialog(
-                    'Error setting the product',
-                    'The selected product does not have any allowable bands configured. Cannot set the product ' + product + '.');
+            vm.subarray.product = product;
+            if (product) {
+              vm.setDumpRate(vm.defaultDumpRatesMap[product]);
+              vm.setBand(vm.bandsMap[product][0]);
             }
         };
 
         vm.setDumpRate = function(dumpRate) {
-            if (vm.subarray.product) {
-                ObsSchedService.setProduct(vm.subarray.id, vm.subarray.product, dumpRate);
-            } else {
-                NotifyService.showSimpleDialog(
-                    'Error setting the dump rate', 'Please select a product before selecting a dump rate');
-            }
+            vm.subarray.dump_rate = dumpRate;
+            vm.subarray.dump_rate_seconds = Math.round(1e2 / dumpRate) / 1e2;
         };
 
         vm.openProductsDialog = function(event) {
@@ -448,20 +437,7 @@
 
         vm.activateSubarray = function() {
             vm.subarray.showProgress = true;
-            ObsSchedService.activateSubarray(vm.subarray.id)
-                .then(function(result) {
-                    var splitMessage = result.data.result.split(' ');
-                    var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
-                    if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
-                        NotifyService.showPreDialog('Error activating subarray', message);
-                    } else {
-                        NotifyService.showSimpleToast(result.data.result);
-                    }
-                    vm.subarray.showProgress = false;
-                }, function(error) {
-                    NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
-                    vm.subarray.showProgress = false;
-                });
+            ObsSchedService.activateSubarray(vm.subarray.id);
         };
 
         vm.freeSubarray = function() {
