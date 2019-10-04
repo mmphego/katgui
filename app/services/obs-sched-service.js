@@ -1077,7 +1077,8 @@
                 }
 
                 subarray.product = lastKnownConfig.product;
-                subarray.dumpRate = lastKnownConfig.dumpRate;
+                subarray.dump_rate = lastKnownConfig.dump_rate;
+                subarray.dump_rate_seconds = Math.round(1e2 / subarray.dump_rate) / 1e2;
                 subarray.band = lastKnownConfig.band;
                 subarray.requested_rx_centre_frequency = lastKnownConfig.requested_rx_centre_frequency;
             }
