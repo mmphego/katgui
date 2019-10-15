@@ -307,8 +307,42 @@
         };
 
         api.activateSubarray = function(sub_nr) {
-            return $http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/activate'), true);
-        };
+            var subarrayIndex = _.findIndex(api.subarrays, function(item) {
+                return item.id === sub_nr;
+            });
+
+            api.setUserProducts(sub_nr, api.subarrays[subarrayIndex].product,
+                  api.subarrays[subarrayIndex].dump_rate, api.subarrays[subarrayIndex].band,
+                  api.subarrays[subarrayIndex].requested_rx_centre_frequency)
+              .then(function(result) {
+
+                  if (!result.data.result.includes('error')) {
+                      var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                      NotifyService.showSimpleToast(message);
+
+                      $http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/activate'))
+                        .then(function (result) {
+                            var splitMessage = result.data.result.split(' ');
+                            var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
+                            if (splitMessage.length > 2 && splitMessage[1] !== 'ok') {
+                                NotifyService.showPreDialog('Error activating subarray', message);
+                            } else {
+                                NotifyService.showSimpleToast(result.data.result);
+                            }
+                            api.subarrays[subarrayIndex].showProgress = false;
+                        }, function (error) {
+                            NotifyService.showSimpleDialog('Could not activate Subarray', error.data.result);
+                            api.subarrays[subarrayIndex].showProgress = false;
+                        });
+
+                  } else {
+                      NotifyService.showPreDialog('Error Processing Request', result.data.error);
+                  }
+              },
+              function(error) {
+                  NotifyService.showHttpErrorDialog('Error sending request', error);
+              });
+        }
 
         api.reactivateSubarrayReceptor = function(sub_nr, receptors) {
             return $http(createRequest('post', urlBase() + '/subarray/'
@@ -320,7 +354,15 @@
         };
 
         api.freeSubarray = function(sub_nr) {
-            return api.handleRequestResponse($http(createRequest('post', urlBase() + '/subarray/' + sub_nr + '/free')), true);
+            api.handleRequestResponse($http(createRequest('post',
+              urlBase() + '/subarray/' + sub_nr + '/free')), true).then(
+                function(result) {
+                  var subarrayIndex = _.findIndex(api.subarrays, function(item) {
+                      return item.id === sub_nr;
+                  });
+                  api.updateSubarrayConfig(subarrayIndex);
+                }
+            );
         };
 
         api.getScheduleBlocks = function() {
@@ -484,9 +526,7 @@
                 });
                 if (subarrayIndex > -1) {
                     var trimmedSensorName = sensorName.replace('subarray_' + api.subarrays[subarrayIndex].id + '_', '');
-                    if (sensorName.endsWith('allocations')) {
-                        api.sensorValues[sensorName].parsedValue = sensor.value !== "" ? JSON.parse(sensor.value) : [];
-                    } else if (sensorName.endsWith('delegated_ca')) {
+                    if (sensorName.endsWith('delegated_ca')) {
                         api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
                         var iAmCA;
                         for (var idx in api.subarrays) {
@@ -495,28 +535,26 @@
                             }
                         }
                         $rootScope.iAmCA = iAmCA && $rootScope.currentUser.req_role === 'control_authority';
-                    } else if (sensorName.endsWith('dump_rate')) {
-                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
-                        api.subarrays[subarrayIndex][trimmedSensorName + '_seconds'] = Math.round(1e2 / sensor.value) / 1e2;
-                    } else {
-                        api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
-                        if (sensorName.endsWith('state')) {
-                            //wait a while to make sure on initial load that we get all the subarray sensor values
-                            $timeout(function() {
-                                if (api.subarrays[subarrayIndex].state !== 'inactive') {
-                                    $localStorage.lastKnownSubarrayConfig[api.subarrays[subarrayIndex].name] = {
-                                        allocations: api.sensorValues[api.subarrays[subarrayIndex].name + '_allocations'].parsedValue.map(
-                                            function(resource) {
-                                                return resource[0];
-                                            }).join(","),
-                                        band: api.subarrays[subarrayIndex].band,
-                                        product: api.subarrays[subarrayIndex].product,
-                                        requested_rx_centre_frequency: api.subarrays[subarrayIndex].requested_rx_centre_frequency,
-                                        dump_rate: api.subarrays[subarrayIndex].dump_rate
-                                    };
-                                }
-                            }, 1000);
+                    }
+
+                    if (sensorName.endsWith('state')) {
+                        if (api.subarrays[subarrayIndex].state != sensor.value) {
+                            api.subarrays[subarrayIndex].state = sensor.value;
+                        } else {
+                          // do no update anything except delegated_ca info if in inactive state
+                          // and not just transitioned to inactive
+                          if (api.subarrays[subarrayIndex].state == 'inactive')
+                              return;
                         }
+                    } else if (sensorName.endsWith('allocations')) {
+                        api.sensorValues[sensorName].parsedValue = sensor.value !== "" ? JSON.parse(sensor.value) : [];
+                    } else {
+                      if (api.subarrays[subarrayIndex].state != 'inactive')
+                          api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                    }
+
+                    if (sensorName.endsWith('state')) {
+                        api.updateSubarrayConfig(subarrayIndex);
                     }
                 } else {
                     $log.error('Unknown subarray sensor value: ');
@@ -539,6 +577,39 @@
                     subarray.mode = sensor.value;
                 }
             }
+        };
+
+        api.updateSubarrayConfig = function(subarrayIndex) {
+            // wait a while to make sure on initial load that we get all the subarray sensor values
+            $timeout(function() {
+                api.subarrays[subarrayIndex].product
+                    = api.sensorValues[api.subarrays[subarrayIndex].name + '_product'].value;
+                api.subarrays[subarrayIndex].band
+                    = api.sensorValues[api.subarrays[subarrayIndex].name + '_band'].value;
+
+                api.subarrays[subarrayIndex].dump_rate
+                    = api.sensorValues[api.subarrays[subarrayIndex].name + '_dump_rate'].value;
+                api.subarrays[subarrayIndex].dump_rate_seconds
+                    = Math.round(1e2 / api.subarrays[subarrayIndex].dump_rate) / 1e2;
+
+                api.subarrays[subarrayIndex].requested_rx_centre_frequency
+                    = api.sensorValues[api.subarrays[subarrayIndex].name + '_requested_rx_centre_frequency'].value;
+
+                if (api.subarrays[subarrayIndex].state == 'inactive')
+                  return;
+
+                var allocation = api.sensorValues[api.subarrays[subarrayIndex].name + '_allocations'];
+                $localStorage.lastKnownSubarrayConfig[api.subarrays[subarrayIndex].name] = {
+                    allocations: allocation.parsedValue.map(
+                        function(resource) {
+                            return resource[0];
+                        }).join(","),
+                    band: api.subarrays[subarrayIndex].band,
+                    product: api.subarrays[subarrayIndex].product,
+                    requested_rx_centre_frequency: api.subarrays[subarrayIndex].requested_rx_centre_frequency,
+                    dump_rate: api.subarrays[subarrayIndex].dump_rate
+                };
+            }, 1000);
         };
 
         api.guiUrlsMessageReceived = function(sensor) {
@@ -825,6 +896,15 @@
             })));
         };
 
+        api.setUserProducts = function(sub_nr, product, dumpRate, band, centre_frequency) {
+            return $http(createRequest('post', urlBase() + '/user-products/' + sub_nr, {
+                          product: product,
+                          dump_rate: dumpRate,
+                          band: band,
+                          centre_frequency: centre_frequency
+                      }));
+        };
+
         api.setProduct = function(sub_nr, product, dumpRate) {
             api.handleRequestResponse(
                 $http(createRequest('post', urlBase() + '/product/' + sub_nr, {
@@ -995,16 +1075,12 @@
                         api.assignResourcesToSubarray(subarrayNumber, resourcesGoingToAllocate.join(','));
                     }
                 }
-                if (subarray.band !== lastKnownConfig.band ||
-                    subarray.requested_rx_centre_frequency !== lastKnownConfig.requested_rx_centre_frequency) {
-                    api.setBand(subarrayNumber, lastKnownConfig.band, lastKnownConfig.requested_rx_centre_frequency);
-                }
 
-                if (lastKnownConfig.dump_rate) {
-                    api.setProduct(subarrayNumber, lastKnownConfig.product ? lastKnownConfig.product : '', lastKnownConfig.dump_rate);
-                } else if (subarray.product !== lastKnownConfig.product) {
-                    api.setProduct(subarrayNumber, lastKnownConfig.product);
-                }
+                subarray.product = lastKnownConfig.product;
+                subarray.dump_rate = lastKnownConfig.dump_rate;
+                subarray.dump_rate_seconds = Math.round(1e2 / subarray.dump_rate) / 1e2;
+                subarray.band = lastKnownConfig.band;
+                subarray.requested_rx_centre_frequency = lastKnownConfig.requested_rx_centre_frequency;
             }
         };
 
