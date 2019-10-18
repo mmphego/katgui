@@ -4,7 +4,7 @@
         .controller('ConfigHealthViewCtrl', ConfigHealthViewCtrl);
 
     function ConfigHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, MonitorService,
-                                  ConfigService, StatusService, NotifyService, $stateParams) {
+                                  ConfigService, StatusService, NotifyService, UserLogService, $stateParams) {
 
         var vm = this;
         // OJ Temporarily disable map types, details in CB-2770
@@ -54,6 +54,70 @@
                 });
             }
         };
+
+        vm.openUserLog = function() {
+            UserLogService.listTags();
+            var content = '';
+            var endTime = '';
+            var allocations = [];
+            var compoundTags = [];
+            var assignedResources = [];
+            var startTime = $rootScope.utcDateTime;
+            
+            if (vm.selectedSensor) {
+                var sensor = vm.sensorValues[vm.selectedSensor]
+                content = "Sensor: " + sensor.shortName +
+                " Status: " + sensor.status +
+                " Time: " + sensor.received_timestamp +
+                "\nValue: " + sensor.value
+                startTime = sensor.timestamp
+                if (sensor.original_name) {
+                  compoundTag = $rootScope.deriveCompoundTag(sensor.original_name)
+                  if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                  }
+                } else  {
+                    deviceName = sensor.shortName.split(/_(.+)/)[0]
+                    sensorName = sensor.shortName.split(/_(.+)/)[1]
+                    if (deviceName && sensorName) {
+                      sensor.shortName = deviceName.concat('.', sensorName)
+                    }
+                    original_name = sensor.component.concat('.', sensor.shortName)
+                    compoundTag = $rootScope.deriveCompoundTag(original_name)
+                    if (compoundTag) {
+                      compoundTags.push(compoundTag)
+                    }
+                  }
+            }
+            var tag = _.findWhere(
+                UserLogService.tags,
+                {name: vm.resourceSensorsBeingDisplayed})
+            if (tag) {
+                assignedResources.push(tag);
+            }
+  
+            var newUserLog = {
+                start_time: startTime,
+                end_time: endTime,
+                tags: assignedResources,
+                compound_tags: compoundTags,
+                user_id: $rootScope.currentUser.id,
+                content: content,
+                attachments: []
+            };
+            $rootScope.editUserLog(newUserLog, event);
+          };
+
+        vm.menuItems = [
+            {
+              text:"Add user log...",
+              callback: vm.openUserLog
+            },
+            {
+              text:"Go to sensor graph...",
+              callback: vm.navigateToSensorGraph
+            }
+        ];
 
         vm.chartSizeChanged = function() {
             $localStorage['configHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);
