@@ -27,6 +27,7 @@
         api.scheduleData = [];
         api.guiUrls = {};
         api.draftArrayStates = ['DRAFT', 'DEFINED', 'APPROVED'];
+        api.numberOfNarrowBands = 5;
         api.sensorValues = {};
 
         api.handleRequestResponse = function(request, defer) {
@@ -311,12 +312,22 @@
                 return item.id === sub_nr;
             });
 
+            var narrowFreqList = [];
+            for (var i=1; i<=api.numberOfNarrowBands; i++) {
+              var narrowFreqName = 'requested_narrow' + i + '_centre_frequency';
+              if (api.subarrays[subarrayIndex][narrowFreqName]) {
+                narrowFreqList.push(api.subarrays[subarrayIndex][narrowFreqName]*1000000);
+              }
+            }
+
             api.setUserProducts(sub_nr, api.subarrays[subarrayIndex].product,
                   api.subarrays[subarrayIndex].dump_rate, api.subarrays[subarrayIndex].band,
-                  api.subarrays[subarrayIndex].requested_rx_centre_frequency)
+                  api.subarrays[subarrayIndex].requested_rx_centre_frequency,
+                  narrowFreqList)
               .then(function(result) {
 
-                  if (!result.data.result.includes('error')) {
+                  if (!(result.data.result.includes('error')
+                      || result.data.result.includes('fail'))) {
                       var message = KatGuiUtil.sanitizeKATCPMessage(result.data.result);
                       NotifyService.showSimpleToast(message);
 
@@ -336,11 +347,13 @@
                         });
 
                   } else {
-                      NotifyService.showPreDialog('Error Processing Request', result.data.error);
+                      NotifyService.showPreDialog('Error Processing Request', result.data.result);
+                      api.subarrays[subarrayIndex].showProgress = false;
                   }
               },
               function(error) {
                   NotifyService.showHttpErrorDialog('Error sending request', error);
+                  api.subarrays[subarrayIndex].showProgress = false;
               });
         }
 
@@ -595,6 +608,17 @@
                 api.subarrays[subarrayIndex].requested_rx_centre_frequency
                     = api.sensorValues[api.subarrays[subarrayIndex].name + '_requested_rx_centre_frequency'].value;
 
+                var narrowFreqList = [];
+                for (var i=1; i<=api.numberOfNarrowBands; i++) {
+                  var narrowFreqName = 'requested_narrow' + i + '_centre_frequency';
+                  var fullName = api.subarrays[subarrayIndex].name + '_' + narrowFreqName;
+                  if (api.sensorValues[fullName]) {
+                    var value = api.sensorValues[fullName].value/1000000;
+                    api.subarrays[subarrayIndex][narrowFreqName] = value;
+                    narrowFreqList.push(value);
+                  }
+                }
+
                 if (api.subarrays[subarrayIndex].state == 'inactive')
                   return;
 
@@ -607,6 +631,7 @@
                     band: api.subarrays[subarrayIndex].band,
                     product: api.subarrays[subarrayIndex].product,
                     requested_rx_centre_frequency: api.subarrays[subarrayIndex].requested_rx_centre_frequency,
+                    requested_narrow_frequencies: narrowFreqList.join(','),
                     dump_rate: api.subarrays[subarrayIndex].dump_rate
                 };
             }, 1000);
@@ -896,12 +921,13 @@
             })));
         };
 
-        api.setUserProducts = function(sub_nr, product, dumpRate, band, centre_frequency) {
+        api.setUserProducts = function(sub_nr, product, dumpRate, band, centre_frequency, narrow_frequencies) {
             return $http(createRequest('post', urlBase() + '/user-products/' + sub_nr, {
                           product: product,
                           dump_rate: dumpRate,
                           band: band,
-                          centre_frequency: centre_frequency
+                          centre_frequency: centre_frequency,
+                          narrow_frequencies: narrow_frequencies
                       }));
         };
 
@@ -1081,6 +1107,14 @@
                 subarray.dump_rate_seconds = Math.round(1e2 / subarray.dump_rate) / 1e2;
                 subarray.band = lastKnownConfig.band;
                 subarray.requested_rx_centre_frequency = lastKnownConfig.requested_rx_centre_frequency;
+
+                if (lastKnownConfig.requested_narrow_frequencies) {
+                  var narrowFreqList = lastKnownConfig.requested_narrow_frequencies.split(',');
+                  for (var i=0; i<=narrowFreqList.length; i++) {
+                    var narrowFreqName = 'requested_narrow' + (i+1) + '_centre_frequency';
+                    subarray[narrowFreqName] = Number(narrowFreqList[i]);
+                  }
+                }
             }
         };
 
