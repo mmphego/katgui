@@ -562,8 +562,15 @@
                     } else if (sensorName.endsWith('allocations')) {
                         api.sensorValues[sensorName].parsedValue = sensor.value !== "" ? JSON.parse(sensor.value) : [];
                     } else {
-                      if (api.subarrays[subarrayIndex].state != 'inactive')
-                          api.subarrays[subarrayIndex][trimmedSensorName] = sensor.value;
+                      if (api.subarrays[subarrayIndex].state != 'inactive') {
+                        if (trimmedSensorName.match(/requested_narrow._centre_frequency/g)) {
+                          api.subarrays[subarrayIndex][trimmedSensorName]
+                                    = sensor.value/1000000;
+                        } else {
+                          api.subarrays[subarrayIndex][trimmedSensorName]
+                                    = sensor.value;
+                        }
+                      }
                     }
 
                     if (sensorName.endsWith('state')) {
