@@ -24,9 +24,11 @@
         vm.products = [];
         vm.bandsMap = {};
         vm.subBandsMap = {};
+        vm.bandwidthMap = {};
         vm.defaultCentreFreqMap = {};
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
+        vm.productsWithNarrowBands = [];
         vm.bands = [];
         vm.users = [];
         vm.resourceBusyStates = ['deactivating', 'configuring', 'configured', 'activating'];
@@ -42,6 +44,7 @@
             "subarray_._state",
             "subarray_._band",
             "subarray_._requested_rx_centre_frequency",
+            "subarray_._requested_narrow._centre_frequency",
             "subarray_._config_label",
             "subarray_._maintenance",
             "subarray_._delegated_ca",
@@ -123,6 +126,8 @@
                     } else {
                         vm.bandsMap[product] = [];
                     }
+                    if (productConfig[product].narrowband_cbf_products)
+                      vm.productsWithNarrowBands.push(product);
                 });
             });
 
@@ -130,12 +135,16 @@
             .then(function(subBandConfig) {
                 vm.subBandsMap = {};
                 vm.defaultCentreFreqMap = {};
+                vm.bandwidthMap = {};
                 var subBandKeys = Object.keys(subBandConfig);
                 subBandKeys.forEach(function(sub_band) {
-                      if (subBandConfig[sub_band].sub_bands) {
-                          vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands
-                          vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default
-                  };
+                    if (subBandConfig[sub_band].sub_bands) {
+                        vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands;
+                        vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default;
+                    }
+
+                    if (subBandConfig[sub_band].bandwidth)
+                        vm.bandwidthMap[sub_band] = subBandConfig[sub_band].bandwidth;
               });
 
             });
@@ -282,13 +291,57 @@
                 });
         };
 
+        vm.setProduct = function(product) {
+            vm.subarray.product = product;
+            if (product) {
+              vm.setDumpRate(vm.defaultDumpRatesMap[product]);
+              vm.setBand(vm.bandsMap[product][0]);
+            }
+        };
+
+        vm.setDumpRate = function(dumpRate) {
+            vm.subarray.dump_rate = dumpRate;
+            vm.subarray.dump_rate_seconds = Math.round(1e2 / dumpRate) / 1e2;
+        };
+
         vm.setBand = function(band) {
             vm.subarray.band = band;
-            vm.subarray.requested_rx_centre_frequency = vm.defaultCentreFreqMap[band];
+            vm.setFrequency(vm.defaultCentreFreqMap[band]);
         };
 
         vm.setFrequency = function(freq) {
           vm.subarray.requested_rx_centre_frequency = freq;
+
+          var defaultNarrowFreq = 0;
+          if (vm.productsWithNarrowBands.includes(vm.subarray.product))
+            defaultNarrowFreq = freq;
+
+          for (var i=0; i<=ObsSchedService.numberOfNarrowBands; i++)
+            vm.setNarrowFrequency(defaultNarrowFreq, i);
+        };
+
+        // index start at 1
+        vm.getNarrowFreqLimits = function(index) {
+          var bandwidth = vm.bandwidthMap[vm.subarray.band]/2;
+          var centreFreq = vm.subarray.requested_rx_centre_frequency;
+          return [(centreFreq-bandwidth)/1000000, (centreFreq+bandwidth)/1000000];
+        }
+
+        // index start at 1
+        vm.setNarrowFrequency = function(freq, index) {
+          vm.subarray['requested_narrow' + index + '_centre_frequency'] = freq/1000000;
+        };
+
+        // index start at 1
+        vm.isNarrowBandFreqValid = function(index) {
+          var bandwidth = vm.bandwidthMap[vm.subarray.band]/2;
+          var centreFreq = vm.subarray.requested_rx_centre_frequency;
+          var narrowFreq = vm.subarray['requested_narrow' + index + '_centre_frequency'];
+          if (narrowFreq)
+            narrowFreq = narrowFreq * 1000000;
+
+          return narrowFreq && (narrowFreq<=centreFreq+bandwidth)
+                    && (narrowFreq>=centreFreq-bandwidth);
         };
 
         vm.openBandsDialog = function(event) {
@@ -322,19 +375,6 @@
                         '</md-dialog>',
                     targetEvent: event
                 });
-        };
-
-        vm.setProduct = function(product) {
-            vm.subarray.product = product;
-            if (product) {
-              vm.setDumpRate(vm.defaultDumpRatesMap[product]);
-              vm.setBand(vm.bandsMap[product][0]);
-            }
-        };
-
-        vm.setDumpRate = function(dumpRate) {
-            vm.subarray.dump_rate = dumpRate;
-            vm.subarray.dump_rate_seconds = Math.round(1e2 / dumpRate) / 1e2;
         };
 
         vm.openProductsDialog = function(event) {
