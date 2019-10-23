@@ -72,7 +72,24 @@
             </md-button>
         </md-menu-item>
        </md-menu-content>
-</md-menu>
+    </md-menu>
+<!--
+    ng-if="vm.productConfig['narrowband_cbf_products'] && vm.subarray.band"
+ -->
+    <div ng-if="parent.vm.productsWithNarrowBands.includes(vm.subarray.product) && vm.subarray.band"
+        class='narrow-band-configs'>
+      <md-tooltip>Narrow 1 Frequency in MHz must be between
+        {{parent.vm.getNarrowFreqLimits(1)[0]}}
+        and {{parent.vm.getNarrowFreqLimits(1)[1]}}</md-tooltip>
+      <i>Narrow1 (MHz):</i>
+      <input flex name='narrow_1'
+        ng-class="{'invalid-narrow-freq': !parent.vm.isNarrowBandFreqValid(1)}"
+        class="fade-in narrow-freq-input-box ng-pristine ng-untouched ng-empty"
+        ng-disabled="!$root.expertOrLO"
+        ng-model="vm.subarray.requested_narrow1_centre_frequency"
+        type="number">
+    </div>
+
     <md-menu>
         <span ng-disabled="!$root.expertOrLO" title="Selected Dump Rate" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
@@ -86,7 +103,9 @@
             </md-menu-item>
             <md-menu-item ng-repeat="dumpRate in parent.vm.dumpRatesMap[vm.subarray.product] track by $index">
                 <md-button ng-click="parent.vm.setDumpRate(dumpRate.hz)">
-                    {{dumpRate.hz + 'Hz (' + dumpRate.seconds + 's)' + (parent.vm.defaultDumpRatesMap[vm.subarray.product] === dumpRate.hz? ' - default': '')}}
+                    {{dumpRate.hz + 'Hz (' + dumpRate.seconds + 's)'
+                    + (parent.vm.defaultDumpRatesMap[vm.subarray.product]
+                    === dumpRate.hz? ' - default': '')}}
                 </md-button>
             </md-menu-item>
         </md-menu-content>
