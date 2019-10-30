@@ -60,6 +60,10 @@ angular.module('katGui.d3')
                     }
                 };
 
+                scope.whichTooltip = function () {
+                    return tooltip.attr("sensor");
+                };
+
                 scope.redraw = function () {
                     if (!scope.data()) {
                         return;
@@ -99,6 +103,7 @@ angular.module('katGui.d3')
                             return Math.max(0, y(d.y + d.dy));
                         });
 
+                    
                     //create each child node svg:g element
                     var g = svg.selectAll("g")
                         .data(mapLayout.nodes(scope.data()))
@@ -196,8 +201,8 @@ angular.module('katGui.d3')
                                         });
                                 }
                             });
-                    }
-
+                        };
+                    
                     function arcTween(d) {
                         var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
                             yd = d3.interpolate(y.domain(), [d.y, 1]),

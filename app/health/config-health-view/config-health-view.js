@@ -15,6 +15,7 @@
         vm.subscribedSensors = [];
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
         vm.view = [];
+        vm.sensor = null;
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -51,43 +52,41 @@
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function(child) {
                     vm.populateSensorNames(viewName, child);
+                    vm.selectedSensor = parent.children.sensor;
                 });
             }
         };
+
+        vm.openMenuItems = function($event) {
+            var sunburstScope = angular.element($event.currentTarget).isolateScope();
+            var rightClickScope = angular.element($event.currentTarget).scope();
+            vm.sensor = sunburstScope.whichTooltip();
+            if (vm.sensor) {
+                rightClickScope.$menuItems = [
+                    {
+                      text:"Add user log...",
+                      callback: vm.openUserLog
+                    },
+                ];
+            }
+            else {
+                rightClickScope.$menuItems = [];
+            }
+        }
 
         vm.openUserLog = function() {
             UserLogService.listTags();
             var content = '';
             var endTime = '';
-            var allocations = [];
-            var compoundTags = [];
-            var assignedResources = [];
+            // var allocations = [];
+            // var compoundTags = [];
+            // var assignedResources = [];
             var startTime = $rootScope.utcDateTime;
             
-            if (vm.selectedSensor) {
-                var sensor = vm.sensorValues[vm.selectedSensor]
-                content = "Sensor: " + sensor.shortName +
-                " Status: " + sensor.status +
-                " Time: " + sensor.received_timestamp +
-                "\nValue: " + sensor.value
-                startTime = sensor.timestamp
-                if (sensor.original_name) {
-                  compoundTag = $rootScope.deriveCompoundTag(sensor.original_name)
-                  if (compoundTag) {
-                    compoundTags.push(compoundTag)
-                  }
-                } else  {
-                    deviceName = sensor.shortName.split(/_(.+)/)[0]
-                    sensorName = sensor.shortName.split(/_(.+)/)[1]
-                    if (deviceName && sensorName) {
-                      sensor.shortName = deviceName.concat('.', sensorName)
-                    }
-                    original_name = sensor.component.concat('.', sensor.shortName)
-                    compoundTag = $rootScope.deriveCompoundTag(original_name)
-                    if (compoundTag) {
-                      compoundTags.push(compoundTag)
-                    }
-                  }
+            if (vm.sensor) {
+                content = "Sensor: " + vm.sensor +
+                " Time: " + sensor.received_timestamp
+                compoundTag = $rootScope.deriveCompoundTag(vm.sensor)
             }
             var tag = _.findWhere(
                 UserLogService.tags,
@@ -102,22 +101,12 @@
                 tags: assignedResources,
                 compound_tags: compoundTags,
                 user_id: $rootScope.currentUser.id,
-                content: content,
-                attachments: []
+                content: content
             };
             $rootScope.editUserLog(newUserLog, event);
           };
 
-        vm.menuItems = [
-            {
-              text:"Add user log...",
-              callback: vm.openUserLog
-            },
-            {
-              text:"Go to sensor graph...",
-              callback: vm.navigateToSensorGraph
-            }
-        ];
+        vm.menuItems = [];
 
         vm.chartSizeChanged = function() {
             $localStorage['configHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);

@@ -94,9 +94,11 @@ angular.module('katGui.d3')
                     tooltip
                         .style("top", (y + 15 + angular.element(uiViewDiv).scrollTop()) + "px")
                         .style("left", (x + 5 + angular.element(uiViewDiv).scrollLeft()) + "px");
+                    tooltip.attr("sensor", d);
 
                 }).on("mouseout", function () {
                     tooltip.style("visibility", "hidden");
+                    tooltip.attr("sensor", null);
                 });
             }
         };

@@ -435,6 +435,48 @@
             return compoundTag
         }
 
+        vm.openUserLog = function() {
+            UserLogService.listTags();
+            var content = '';
+            var endTime = '';
+            var allocations = [];
+            var compoundTags = [];
+            var assignedResources = [];
+            var startTime = $rootScope.utcDateTime;
+            
+            if (vm.selectedSensor) {
+                var sensor = vm.sensorValues[vm.selectedSensor]
+                content = "Sensor: " + sensor.shortName +
+                " Status: " + sensor.status +
+                " Time: " + sensor.received_timestamp +
+                "\nValue: " + sensor.value
+                startTime = sensor.timestamp
+                if (sensor.original_name) {
+                  compoundTag = $rootScope.deriveCompoundTag(sensor.original_name)
+                  if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                  }
+                } else  {
+                    deviceName = sensor.shortName.split(/_(.+)/)[0]
+                    sensorName = sensor.shortName.split(/_(.+)/)[1]
+                    if (deviceName && sensorName) {
+                      sensor.shortName = deviceName.concat('.', sensorName)
+                    }
+                    original_name = sensor.component.concat('.', sensor.shortName)
+                    compoundTag = $rootScope.deriveCompoundTag(original_name)
+                    if (compoundTag) {
+                      compoundTags.push(compoundTag)
+                    }
+                  }
+            }
+            var tag = _.findWhere(
+                UserLogService.tags,
+                {name: vm.resourceSensorsBeingDisplayed})
+            if (tag) {
+                assignedResources.push(tag);
+            }
+        };
+
         $rootScope.openKibanaInNewTab = function(programName) {
             var kibanaUrl;
             if (programName) {
