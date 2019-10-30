@@ -16,6 +16,9 @@
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
         vm.view = [];
         vm.sensor = null;
+        vm.component = null;
+        vm.sensorValue = null;
+        vm.status = null;
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -60,7 +63,11 @@
         vm.openMenuItems = function($event) {
             var sunburstScope = angular.element($event.currentTarget).isolateScope();
             var rightClickScope = angular.element($event.currentTarget).scope();
-            vm.sensor = sunburstScope.whichTooltip();
+            vm.sensor = sunburstScope.whichTooltip()
+            vm.component = sunburstScope.dataMapName.component
+            var fullSensorName = vm.component + '_' + vm.sensor
+            vm.sensorValue = StatusService.sensorValues[fullSensorName]
+            vm.status = vm.sensorValue.status
             if (vm.sensor) {
                 rightClickScope.$menuItems = [
                     {
@@ -78,30 +85,27 @@
             UserLogService.listTags();
             var content = '';
             var endTime = '';
-            // var allocations = [];
-            // var compoundTags = [];
-            // var assignedResources = [];
+            var compoundTags = [];
             var startTime = $rootScope.utcDateTime;
+            var original_name = vm.sensorValue.original_name;
             
-            if (vm.sensor) {
-                content = "Sensor: " + vm.sensor +
-                " Time: " + sensor.received_timestamp
-                compoundTag = $rootScope.deriveCompoundTag(vm.sensor)
+            content = "Sensor: " + vm.sensor +
+            "\nDescription: " + vm.sensorValue.description +
+            "\nStatus: " + vm.status
+
+            var compoundTag = $rootScope.deriveCompoundTag(original_name)
+            if (compoundTag) {
+                compoundTags.push(compoundTag)
             }
-            var tag = _.findWhere(
-                UserLogService.tags,
-                {name: vm.resourceSensorsBeingDisplayed})
-            if (tag) {
-                assignedResources.push(tag);
-            }
-  
+
             var newUserLog = {
                 start_time: startTime,
                 end_time: endTime,
-                tags: assignedResources,
+                tags: [],
                 compound_tags: compoundTags,
                 user_id: $rootScope.currentUser.id,
-                content: content
+                content: content,
+                attachments: []
             };
             $rootScope.editUserLog(newUserLog, event);
           };
