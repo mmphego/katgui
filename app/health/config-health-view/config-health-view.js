@@ -87,7 +87,8 @@
             
             content = "Sensor: " + vm.sensor +
             "\nDescription: " + vm.sensorValue.description +
-            "\nStatus: " + vm.sensorValue.status
+            "\nStatus: " + vm.sensorValue.status +
+            "\nValue: " + vm.sensorValue.value
 
             var compoundTag = $rootScope.deriveCompoundTag(original_name)
             if (compoundTag) {
