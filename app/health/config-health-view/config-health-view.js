@@ -4,7 +4,7 @@
         .controller('ConfigHealthViewCtrl', ConfigHealthViewCtrl);
 
     function ConfigHealthViewCtrl($log, $interval, $rootScope, $scope, $localStorage, MonitorService,
-                                  ConfigService, StatusService, NotifyService, UserLogService, $stateParams) {
+                                  ConfigService, StatusService, NotifyService, $stateParams) {
 
         var vm = this;
         // OJ Temporarily disable map types, details in CB-2770
@@ -18,7 +18,6 @@
         vm.sensor = null;
         vm.component = null;
         vm.sensorValue = null;
-        vm.status = null;
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -55,7 +54,6 @@
             if (parent.children && parent.children.length > 0) {
                 parent.children.forEach(function(child) {
                     vm.populateSensorNames(viewName, child);
-                    vm.selectedSensor = parent.children.sensor;
                 });
             }
         };
@@ -67,7 +65,6 @@
             vm.component = sunburstScope.dataMapName.component
             var fullSensorName = vm.component + '_' + vm.sensor
             vm.sensorValue = StatusService.sensorValues[fullSensorName]
-            vm.status = vm.sensorValue.status
             if (vm.sensor) {
                 rightClickScope.$menuItems = [
                     {
@@ -82,7 +79,6 @@
         }
 
         vm.openUserLog = function() {
-            UserLogService.listTags();
             var content = '';
             var endTime = '';
             var compoundTags = [];
@@ -91,7 +87,7 @@
             
             content = "Sensor: " + vm.sensor +
             "\nDescription: " + vm.sensorValue.description +
-            "\nStatus: " + vm.status
+            "\nStatus: " + vm.sensorValue.status
 
             var compoundTag = $rootScope.deriveCompoundTag(original_name)
             if (compoundTag) {
