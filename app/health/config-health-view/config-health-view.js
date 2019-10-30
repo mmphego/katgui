@@ -18,6 +18,7 @@
         vm.sensor = null;
         vm.component = null;
         vm.sensorValue = null;
+        vm.fullSensorName = null;
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -63,8 +64,13 @@
             var rightClickScope = angular.element($event.currentTarget).scope();
             vm.sensor = sunburstScope.whichTooltip()
             vm.component = sunburstScope.dataMapName.component
-            var fullSensorName = vm.component + '_' + vm.sensor
-            vm.sensorValue = StatusService.sensorValues[fullSensorName]
+            if (vm.component){
+                vm.fullSensorName = vm.component + '_' + vm.sensor
+                vm.sensorValue = StatusService.sensorValues[vm.fullSensorName]
+            } else {
+                vm.fullSensorName = vm.sensor
+                vm.sensorValue = StatusService.sensorValues[vm.fullSensorName]
+            }
             if (vm.sensor) {
                 rightClickScope.$menuItems = [
                     {
@@ -90,9 +96,21 @@
             "\nStatus: " + vm.sensorValue.status +
             "\nValue: " + vm.sensorValue.value
 
-            var compoundTag = $rootScope.deriveCompoundTag(original_name)
-            if (compoundTag) {
-                compoundTags.push(compoundTag)
+            if (original_name) {
+                var compoundTag = $rootScope.deriveCompoundTag(original_name)
+                if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                } 
+            } else {
+                deviceName = vm.fullSensorName.split(/_(.+)/)[0]
+                sensorName = vm.fullSensorName.split(/_(.+)/)[1]
+                if (deviceName && sensorName) {
+                    vm.fullSensorName = deviceName.concat('.', sensorName)
+                }
+                compoundTag = $rootScope.deriveCompoundTag(vm.fullSensorName)
+                if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                }
             }
 
             var newUserLog = {
