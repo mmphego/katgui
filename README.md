@@ -4,6 +4,7 @@ After cloning the repo do:
 
 - Download and install http://nodejs.org/
 - Download and install http://yarnpkg.com/
+- Install gulp: `npm install -g gulp`
 
 
 You could be lucky by trying the following:
@@ -22,10 +23,6 @@ sudo apt-get update && sudo apt-get install yarn
 Navigate to the project folder:
 
 `yarn install`
-
-To install all packages in package.json:
-
-`npm install`
 
 To use gulp to host the project locally on port 8000 do:
 
