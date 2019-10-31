@@ -1,4 +1,7 @@
 {
+    "engines": {
+        "node": "~10.10"
+    },
     "name": "katGui",
     "version": "1.0.1",
     "description": "SKA-SA MeerKAT GUI",

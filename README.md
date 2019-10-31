@@ -4,6 +4,9 @@ After cloning the repo do:
 
 - Download and install http://nodejs.org/
 - Download and install http://yarnpkg.com/
+- Install gulp: `yarn global add gulp`
+
+Ensure that `gulp` is in your path. e.g.`~/.yarn/bin/gulp`
 
 
 You could be lucky by trying the following:
@@ -23,15 +26,9 @@ Navigate to the project folder:
 
 `yarn install`
 
-To install all packages in package.json:
-
-`npm install`
-
 To use gulp to host the project locally on port 8000 do:
 
 `gulp webserver`
-
-(If needed install the gulp task runner globally using `sudo npm install -g gulp`)
 
 Note: that running the webserver task will open a browser window to `http://localhost:8000/localhostindex.html`.
 
