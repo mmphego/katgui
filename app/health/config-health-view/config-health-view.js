@@ -16,9 +16,7 @@
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
         vm.view = [];
         vm.sensor = null;
-        vm.component = null;
         vm.sensorValue = null;
-        vm.fullSensorName = null;
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -63,15 +61,15 @@
             var sunburstScope = angular.element($event.currentTarget).isolateScope();
             var rightClickScope = angular.element($event.currentTarget).scope();
             vm.sensor = sunburstScope.whichTooltip()
-            vm.component = sunburstScope.dataMapName.component
-            if (vm.component){
-                vm.fullSensorName = vm.component + '_' + vm.sensor
-                vm.sensorValue = StatusService.sensorValues[vm.fullSensorName]
+            var component = sunburstScope.dataMapName.component
+            if (component){
+                fullSensorName = component + '_' + vm.sensor
+                vm.sensorValue = StatusService.sensorValues[fullSensorName]
             } else {
-                vm.fullSensorName = vm.sensor
-                vm.sensorValue = StatusService.sensorValues[vm.fullSensorName]
+                fullSensorName = vm.sensor
+                vm.sensorValue = StatusService.sensorValues[fullSensorName]
             }
-            if (vm.sensor) {
+            if (vm.sensorValue) {
                 rightClickScope.$menuItems = [
                     {
                       text:"Add user log...",
@@ -80,7 +78,7 @@
                 ];
             }
             else {
-                rightClickScope.$menuItems = [];
+                rightClickScope.$menuItems = undefined;
             }
         }
 
@@ -100,14 +98,14 @@
                 var compoundTag = $rootScope.deriveCompoundTag(original_name)
                 if (compoundTag) {
                     compoundTags.push(compoundTag)
-                } 
-            } else {
-                deviceName = vm.fullSensorName.split(/_(.+)/)[0]
-                sensorName = vm.fullSensorName.split(/_(.+)/)[1]
-                if (deviceName && sensorName) {
-                    vm.fullSensorName = deviceName.concat('.', sensorName)
                 }
-                compoundTag = $rootScope.deriveCompoundTag(vm.fullSensorName)
+            } else {
+                deviceName = fullSensorName.split(/_(.+)/)[0]
+                sensorName = fullSensorName.split(/_(.+)/)[1]
+                if (deviceName && sensorName) {
+                    fullSensorName = deviceName.concat('.', sensorName)
+                }
+                compoundTag = $rootScope.deriveCompoundTag(fullSensorName)
                 if (compoundTag) {
                     compoundTags.push(compoundTag)
                 }
