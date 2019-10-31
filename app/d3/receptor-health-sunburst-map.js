@@ -60,6 +60,10 @@ angular.module('katGui.d3')
                     }
                 };
 
+                scope.whichTooltip = function () {
+                    return tooltip.attr("sensor");
+                };
+
                 scope.redraw = function () {
                     if (!scope.data()) {
                         return;

@@ -15,6 +15,8 @@
         vm.subscribedSensors = [];
         vm.selectedConfigView = $stateParams.configItem ? $stateParams.configItem : '';
         vm.view = [];
+        vm.sensor = null;
+        vm.sensorValue = null;
 
         if ($localStorage['configHealthDisplayMapType']) {
             vm.mapType = $localStorage['configHealthDisplayMapType'];
@@ -54,6 +56,74 @@
                 });
             }
         };
+
+        vm.openMenuItems = function($event) {
+            var sunburstScope = angular.element($event.currentTarget).isolateScope();
+            var rightClickScope = angular.element($event.currentTarget).scope();
+            vm.sensor = sunburstScope.whichTooltip()
+            var component = sunburstScope.dataMapName.component
+            if (component){
+                fullSensorName = component + '_' + vm.sensor
+                vm.sensorValue = StatusService.sensorValues[fullSensorName]
+            } else {
+                fullSensorName = vm.sensor
+                vm.sensorValue = StatusService.sensorValues[fullSensorName]
+            }
+            if (vm.sensorValue) {
+                rightClickScope.$menuItems = [
+                    {
+                      text:"Add user log...",
+                      callback: vm.openUserLog
+                    },
+                ];
+            }
+            else {
+                rightClickScope.$menuItems = undefined;
+            }
+        }
+
+        vm.openUserLog = function() {
+            var content = '';
+            var endTime = '';
+            var compoundTags = [];
+            var startTime = $rootScope.utcDateTime;
+            var original_name = vm.sensorValue.original_name;
+            
+            content = "Sensor: " + vm.sensor +
+            "\nDescription: " + vm.sensorValue.description +
+            "\nStatus: " + vm.sensorValue.status +
+            "\nValue: " + vm.sensorValue.value
+
+            if (original_name) {
+                var compoundTag = $rootScope.deriveCompoundTag(original_name)
+                if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                }
+            } else {
+                deviceName = fullSensorName.split(/_(.+)/)[0]
+                sensorName = fullSensorName.split(/_(.+)/)[1]
+                if (deviceName && sensorName) {
+                    fullSensorName = deviceName.concat('.', sensorName)
+                }
+                compoundTag = $rootScope.deriveCompoundTag(fullSensorName)
+                if (compoundTag) {
+                    compoundTags.push(compoundTag)
+                }
+            }
+
+            var newUserLog = {
+                start_time: startTime,
+                end_time: endTime,
+                tags: [],
+                compound_tags: compoundTags,
+                user_id: $rootScope.currentUser.id,
+                content: content,
+                attachments: []
+            };
+            $rootScope.editUserLog(newUserLog, event);
+          };
+
+        vm.menuItems = [];
 
         vm.chartSizeChanged = function() {
             $localStorage['configHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);
