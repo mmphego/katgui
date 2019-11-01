@@ -98,7 +98,7 @@ angular.module('katGui.d3')
                               if (d.name) {
                                 var components = d.name.split('\.');
                                 scope.vm.navigateToSensorList(components[0],
-                                  components[2].substring(0, 11));
+                                  components[2]);
                               }
                             });
                  };
