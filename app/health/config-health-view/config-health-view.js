@@ -58,28 +58,10 @@
         };
 
         vm.openMenuItems = function($event) {
-            var sunburstScope = angular.element($event.currentTarget).isolateScope();
-            var rightClickScope = angular.element($event.currentTarget).scope();
-            vm.sensor = sunburstScope.whichTooltip()
-            var component = sunburstScope.dataMapName.component
-            if (component){
-                fullSensorName = component + '_' + vm.sensor
-                vm.sensorValue = StatusService.sensorValues[fullSensorName]
-            } else {
-                fullSensorName = vm.sensor
-                vm.sensorValue = StatusService.sensorValues[fullSensorName]
-            }
-            if (vm.sensorValue) {
-                rightClickScope.$menuItems = [
-                    {
-                      text:"Add user log...",
-                      callback: vm.openUserLog
-                    },
-                ];
-            }
-            else {
-                rightClickScope.$menuItems = undefined;
-            }
+            var sunburstScopeTooltip = angular.element($event.currentTarget)
+                                        .prop('sunburstScopeTooltip');
+            vm.sensor = sunburstScopeTooltip.attr("sensor");
+            vm.sensorValue = StatusService.sensorValues[vm.sensor];
         }
 
         vm.openUserLog = function() {
@@ -88,7 +70,7 @@
             var compoundTags = [];
             var startTime = $rootScope.utcDateTime;
             var original_name = vm.sensorValue.original_name;
-            
+
             content = "Sensor: " + vm.sensor +
             "\nDescription: " + vm.sensorValue.description +
             "\nStatus: " + vm.sensorValue.status +
@@ -123,7 +105,12 @@
             $rootScope.editUserLog(newUserLog, event);
           };
 
-        vm.menuItems = [];
+        vm.menuItems = [
+            {
+              text:"Add user log...",
+              callback: vm.openUserLog
+            },
+        ];
 
         vm.chartSizeChanged = function() {
             $localStorage['configHealthDisplaySize'] = JSON.stringify(vm.treeChartSize);
