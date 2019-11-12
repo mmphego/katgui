@@ -72,7 +72,7 @@
                 attachments: []
             };
             $rootScope.editUserLog(newUserLog, event);
-          };
+        };
 
         vm.menuItems = [
             {
