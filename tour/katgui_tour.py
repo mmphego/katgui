@@ -10,12 +10,15 @@ KATGUI_URL = "http://monctl.devx.camlab.kat.ac.za/katgui/login"
 
 
 class MyTourClass(BaseCase):
+
     def enter_stage(self, func, *args, **kwargs):
+        """Wrapper function for creating and playing the tour"""
         self.create_tour(theme=THEME)
         func(*args, **kwargs)
         self.play_tour()
 
     def login_katgui(self):
+        """Detailed login in instructions for KATGUI end-user."""
         self.open(KATGUI_URL)
         self.wait_for_element("#input_1")
 
@@ -50,5 +53,6 @@ class MyTourClass(BaseCase):
         self.enter_stage(self.add_tour_step, "Or press [ENTER] after entry.", selector)
         self.click(selector)
 
-    def test_google_tour(self):
+    def test_katgui_tour(self):
+        """KATGUI Tour/Demonstration"""
         self.login_katgui()
