@@ -2,6 +2,8 @@ import os
 
 from seleniumbase import BaseCase
 
+import utils
+
 KATGUI_USER = os.getenv("KATGUI_USER")
 KATGUI_PASS = os.getenv("KATGUI_PASS")
 
@@ -40,7 +42,7 @@ class MyTourClass(BaseCase):
             "Ensure that KATGUI_PASS as defined an environmental variables.",
         )
         self.enter_stage(self.add_tour_step, "Type in your password here.", "#input_2")
-        self.highlight_update_text("#input_2", KATGUI_PASS)
+        self.higselectorselectorhlight_update_text("#input_2", KATGUI_PASS)
 
         self.enter_stage(
             self.add_tour_step, "Login as 'Expert User'.", "#select_value_label_0"
