@@ -38,7 +38,7 @@ class MyTourClass(BaseCase):
             self.add_tour_step, "Type in your email account here.", "#input_1"
         )
         self.speak(
-            "Please enter you S K A email address to login.", "enter_email"
+            "Please enter your S K A email address to login.", "enter_email"
         ).play_speech()
 
         self.assertIsNotNone(
@@ -54,12 +54,12 @@ class MyTourClass(BaseCase):
         self.enter_stage(self.add_tour_step, "Type in your password here.", "#input_2")
         self.speak("Please enter your password!", "enter_pass").play_speech()
 
-        self.higselectorselectorhlight_update_text("#input_2", KATGUI_PASS)
+        self.highlight_update_text("#input_2", KATGUI_PASS)
 
         self.speak(
             "In order to have full control of the interface, "
             "you will need to login as an Expert User!",
-            "enter_pass",
+            "expert_user",
         ).play_speech()
 
         self.enter_stage(
@@ -68,7 +68,7 @@ class MyTourClass(BaseCase):
         self.click("#select_value_label_0")
         self.click("#select_option_6")
         self.speak(
-            "Click login button or hit Enter on your keyboard to login!", "enter_pass",
+            "Click login button or hit Enter on your keyboard to login!", "login",
         ).play_speech()
 
         selector = "#ui-view-container-div > div > form > button"
