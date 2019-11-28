@@ -76,6 +76,62 @@ class MyTourClass(BaseCase):
         self.enter_stage(self.add_tour_step, "Or press [ENTER] after entry.", selector)
         self.click(selector)
 
+    def disable_alarms(self):
+        self.enter_stage(
+            self.add_tour_step,
+            "You might need to disable the alarms and notification.",
+            title="Disable Alarms",
+        )
+
+        user_icon = "#main-top-toolbar > div > button:nth-child(7) > span"
+        self.enter_stage(
+            self.add_tour_step, "Click on the user icon on the top-right.", user_icon
+        )
+        self.click(user_icon)
+
+        alarm_not = (
+            "body > md-content > md-sidenav.md-sidenav-right._md.md-deep-"
+            "purple-theme.layout-column > md-content > md-list > md-item:nth-child(5) > "
+            "md-item-content:nth-child(2) > md-checkbox > div.md-label"
+        )
+        self.enter_stage(
+            self.add_tour_step,
+            "Click on the checkbox to disable 'Alarm Notifications'.",
+            alarm_not,
+        )
+        self.click(alarm_not)
+
+        alarm_sound = (
+            "body > md-content > md-sidenav.md-sidenav-right._md.md-deep-purple-theme."
+            "layout-column > md-content > md-list > md-item:nth-child(5) > "
+            "md-item-content:nth-child(4) > md-checkbox > div.md-container.md-ink-ripple"
+        )
+        self.enter_stage(
+            self.add_tour_step,
+            "Click on the checkbox to disable 'Alarm Sounds'.",
+            alarm_sound,
+        )
+        self.click(alarm_sound)
+
+        home = '//*[@id="main-top-toolbar"]/div/span'
+        self.enter_stage(
+            self.add_tour_step,
+            "Click anywhere on the page to exit the configuration menu.",
+            home,
+        )
+        self.refresh_page()
+
+    def create_subarray(self):
+        self.enter_stage(
+            self.add_tour_step,
+            "Let us create a simple subarray containing 4 antennas, CBF and SDP.",
+            title="Create a subarray",
+        )
+        subarray = '//*[@id="ui-view-container-div"]/div/div[1]/div/div[1]/div/button[1]'
+        self.click(subarray)
+
     def test_katgui_tour(self) -> None:
         """KATGUI Tour/Demonstration"""
         self.login_katgui()
+        self.disable_alarms()
+        self.create_subarray()
