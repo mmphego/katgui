@@ -33,6 +33,13 @@
 
                         <span flex></span>
 
+                        <md-menu style="margin: 0 108px; padding: 0; position: relative" class="subarray-mode-button">
+                            <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)" title="Remaining Time to Next Global">
+                                <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
+                                <span style="margin-left: 16px">NGS: {{ vm.minGlobalSyncTime() ? vm.minGlobalSyncTime() : 'None ' }}<b> Hrs</b></span>
+                            </span>
+                        </md-menu>
+
                         <md-menu style="margin: 0 8px; padding: 0; position: relative" class="subarray-mode-button">
                             <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)">
                                 <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
@@ -143,6 +150,15 @@
                             <span class="icon-button fa fa-angle-double-down"
                                 style="position: absolute; left: 80px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
                                 <md-tooltip>Indexer Position</md-tooltip>
+                            </span>
+
+                            <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_dig_l_band_time_remaining'].status)"
+                                style="position: absolute; left: 115px; bottom: 4px; font-size: 12px" >
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_dig_l_band_time_remaining'].value}}</span>
+
+                            <span class="icon-button fa fa-history"
+                                style="position: absolute; left: 110px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_dig_l_band_time_remaining'].value">
+                                <md-tooltip>Remaining Time to Next Global Sync</md-tooltip>
                             </span>
 
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">

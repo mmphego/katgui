@@ -111,6 +111,20 @@
         </md-menu-content>
     </md-menu>
     <span ng-show="vm.subarray.config_label" title="Subarray Config Label" style="cursor: default">
-         <i>CL: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
-     </span>
+        <i>CL: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
+    </span>  
+     <!-- <md-menu>
+        <span title="Remaining Time to Next Global Sync" style="cursor: default">
+            <i>NGS: {{ vm.minGlobalSyncTime() ? vm.minGlobalSyncTime() : 'None' }}</i><b> Hrs</b>
+        </span>  
+        <md-menu-content>
+            <md-menu-item ng-repeat="dumpRate in parent.vm.dumpRatesMap[vm.subarray.product] track by $index">
+                <md-button ng-click="parent.vm.setDumpRate(dumpRate.hz)">
+                    {{dumpRate.hz + 'Hz (' + dumpRate.seconds + 's)'
+                    + (parent.vm.defaultDumpRatesMap[vm.subarray.product]
+                    === dumpRate.hz? ' - default': '')}}
+                </md-button>
+            </md-menu-item>
+        </md-menu-content>
+    </md-menu> -->
 </div>
