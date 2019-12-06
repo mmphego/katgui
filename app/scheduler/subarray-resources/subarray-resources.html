@@ -152,15 +152,6 @@
                                 <md-tooltip>Indexer Position</md-tooltip>
                             </span>
 
-                            <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_dig_l_band_time_remaining'].status)"
-                                style="position: absolute; left: 115px; bottom: 4px; font-size: 12px" >
-                                {{parent.vm.sensorValues[resourceAlloc[0] + '_dig_l_band_time_remaining'].value}}</span>
-
-                            <span class="icon-button fa fa-history"
-                                style="position: absolute; left: 110px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_dig_l_band_time_remaining'].value">
-                                <md-tooltip>Remaining Time to Next Global Sync</md-tooltip>
-                            </span>
-
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">
                                 <a ng-repeat="link in parent.vm.guiUrls[resourceAlloc[0]] track by $index" target="_blank"
                                     href="{{link.href}}" title="{{link.description}}" style="padding: 0">{{link.title}}</a>
