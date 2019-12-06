@@ -68,18 +68,6 @@
                         continue;
                 }
 
-                // var allReceptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
-                // var nextGlobalSyncTime = [];
-                // for (var i=0; i<allReceptors.length; i++) {
-                //     receptorName = allReceptors[i]
-                //     if (vm.subarray.band) {
-                //         var nextGlobalSync= $scope.parent.vm.sensorValues[receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"].value;
-                //     }
-                //     nextGlobalSyncTime.push(nextGlobalSync)
-                // }
-                // console.log(Math.min.apply(null, nextGlobalSyncTime))
-                // return Math.min.apply(null, nextGlobalSyncTime);
-
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, receptorName);
             }
         };
@@ -94,7 +82,6 @@
                     }
                     nextGlobalSyncTime.push(nextGlobalSync)
                 }
-            console.log(Math.min.apply(null, nextGlobalSyncTime))
             return Math.min.apply(null, nextGlobalSyncTime);
         }
 
