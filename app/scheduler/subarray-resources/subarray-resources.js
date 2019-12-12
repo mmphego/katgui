@@ -74,14 +74,16 @@
 
         vm.minGlobalSyncTime = function () {
             var allReceptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
-                var nextGlobalSyncTime = [];
-                for (var i=0; i<allReceptors.length; i++) {
-                    receptorName = allReceptors[i]
-                    if (vm.subarray.band) {
-                        var nextGlobalSync= $scope.parent.vm.sensorValues[receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"].value;
-                    }
-                    nextGlobalSyncTime.push(nextGlobalSync)
+            var nextGlobalSyncTime = [];
+            var assignedResources = [];
+            allocations = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue;
+            for (var i=0; i<allocations.length; i++) {
+                receptorName = allocations[i][0]
+                if (vm.subarray.band) {
+                    var nextGlobalSync= $scope.parent.vm.sensorValues[receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"].value;
                 }
+                nextGlobalSyncTime.push(nextGlobalSync)
+            }
             return Math.min.apply(null, nextGlobalSyncTime);
         }
 
