@@ -1064,23 +1064,18 @@
                         systemConfig['katconn:arrays'].ants,
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
                     .then(handleListSensorsResult, handleListSensorsError);
-                    MonitorService.listSensorsHttp(
-                        systemConfig['katconn:arrays'].ants,
-                        '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').dig_l_band_time_remaining$', true)
-                    .then(handleListSensorsResult, handleListSensorsError);
-                    MonitorService.listSensorsHttp(
-                        systemConfig['katconn:arrays'].ants,
-                        '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').dig_u_band_time_remaining$', true)
-                    .then(handleListSensorsResult, handleListSensorsError);
 
+                    MonitorService.listSensorsHttp(
+                        systemConfig['katconn:arrays'].ants,
+                        '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').(dig_[lsux]_band_time_remaining)$', true)
+                    .then(handleListSensorsResult, handleListSensorsError);
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),
                         vm.schedSensorNames.join('|'),
                         vm.katpoolSensorNames.join('|'),
                         'state$',
                         'ridx_position',
-                        'dig_l_band_time_remaining',
-                        'dig_u_band_time_remaining'
+                        'dig_[lsux]_band_time_remaining',
                     ].join('|');
                 });
             MonitorService.subscribe('portal.sched');
