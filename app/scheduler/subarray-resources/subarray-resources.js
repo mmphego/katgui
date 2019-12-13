@@ -73,18 +73,38 @@
         };
 
         vm.minGlobalSyncTime = function () {
-            var allReceptors = ConfigService.systemConfig["antenna_labels"]["ALL"].split(',');
-            var nextGlobalSyncTime = [];
-            var assignedResources = [];
-            allocations = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'].parsedValue;
-            for (var i=0; i<allocations.length; i++) {
-                receptorName = allocations[i][0]
-                if (vm.subarray.band) {
-                    var nextGlobalSync= $scope.parent.vm.sensorValues[receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"].value;
-                }
-                nextGlobalSyncTime.push(nextGlobalSync)
-            }
-            return Math.min.apply(null, nextGlobalSyncTime);
+
+          // can't work out sync time if initialisation has not finished
+          if (!ConfigService.systemConfig || !vm.subarray)
+            return undefined;
+
+          var sensorValues = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'];
+
+          if (!sensorValues)
+            return undefined;
+
+          var allReceptors = ConfigService.systemConfig["antenna_labels"]
+                                ["ALL"].split(',');
+          var nextGlobalSyncTime = [];
+          var assignedResources = [];
+          var allocations = sensorValues.parsedValue;
+          for (var i=0; i<allocations.length; i++) {
+              var receptorName = allocations[i][0];
+              var nextGlobalSync = undefined;
+
+              if (vm.subarray.band) {
+                var sensor = $scope.parent.vm.sensorValues
+                    [receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"];
+                if (sensor)
+                  nextGlobalSync = sensor.value;
+              }
+              if (nextGlobalSync) {
+                nextGlobalSyncTime.push(nextGlobalSync);
+              } else {
+                return undefined;
+              }
+          }
+          return Math.min.apply(null, nextGlobalSyncTime);
         }
 
         vm.resourceAllowedInSubarray = function (resourceName) {
