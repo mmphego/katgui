@@ -88,6 +88,7 @@
           var nextGlobalSyncTime = [];
           var assignedResources = [];
           var allocations = sensorValues.parsedValue;
+
           for (var i=0; i<allocations.length; i++) {
               var receptorName = allocations[i][0];
               var nextGlobalSync = undefined;
@@ -104,7 +105,11 @@
                 return undefined;
               }
           }
-          return Math.min.apply(null, nextGlobalSyncTime);
+            function sortNumber(a, b) {
+              return a - b;
+            }
+            var minTime = nextGlobalSyncTime.sort(sortNumber);
+            return minTime[0];
         }
 
         vm.resourceAllowedInSubarray = function (resourceName) {
