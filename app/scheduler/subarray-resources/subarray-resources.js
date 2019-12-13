@@ -101,15 +101,15 @@
               }
               if (nextGlobalSync) {
                 nextGlobalSyncTime.push(nextGlobalSync);
-              } else {
-                return undefined;
               }
           }
-            function sortNumber(a, b) {
-              return a - b;
+
+            var minTime = -1;
+            for (var i=0; i<nextGlobalSyncTime.length; i++) {
+              if (minTime < nextGlobalSyncTime[i]) {
+                return nextGlobalSyncTime[i];
+              }
             }
-            var minTime = nextGlobalSyncTime.sort(sortNumber);
-            return minTime[0];
         }
 
         vm.resourceAllowedInSubarray = function (resourceName) {
