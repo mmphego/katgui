@@ -73,40 +73,33 @@
         };
 
         vm.minGlobalSyncTime = function () {
-
           // can't work out sync time if initialisation has not finished
           if (!ConfigService.systemConfig || !vm.subarray)
             return undefined;
 
-          var allocationSensorValues = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'];
-          if (!allocationSensorValues)
+          var poolResourcesSensor = ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources'];
+          if (!poolResourcesSensor)
             return undefined;
-          var allocations = allocationSensorValues.parsedValue;
+          var availableReceptors = poolResourcesSensor.value.split(',');
 
-          var nextGlobalSyncTimes = [];
-          var assignedResources = [];
+          var minTimeRemaining = undefined;
 
-          for (var i=0; i<allocations.length; i++) {
-              var receptorName = allocations[i][0];
-              var receptorTimeRemaining = undefined;
-
+          for (var i=0; i<availableReceptors.length; i++) {
+              var receptorName = availableReceptors[i];
               if (vm.subarray.band) {
-                var sensor = $scope.parent.vm.sensorValues
-                    [receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"];
-                if (sensor)
-                  receptorTimeRemaining = sensor.value;
-              }
-              if (receptorTimeRemaining) {
-                nextGlobalSyncTimes.push(receptorTimeRemaining);
+                var sensor = $scope.parent.vm.sensorValues[receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"];
+                if (sensor) {
+                  var receptorTimeRemaining = sensor.value;
+                  if (minTimeRemaining==undefined) {
+                    minTimeRemaining = receptorTimeRemaining;
+                  }
+                  else if (receptorTimeRemaining && (receptorTimeRemaining<minTimeRemaining)) {
+                    minTimeRemaining = receptorTimeRemaining;
+                  }
+                }
               }
           }
-
-            var minTime = -1;
-            for (var i=0; i<nextGlobalSyncTimes.length; i++) {
-              if (minTime < nextGlobalSyncTimes[i]) {
-                return nextGlobalSyncTimes[i];
-              }
-            }
+          return minTimeRemaining;
         }
 
         vm.resourceAllowedInSubarray = function (resourceName) {
