@@ -30,7 +30,7 @@
                                 </md-menu-item>
                             </md-menu-content>
                         </md-menu>
-                        <md-menu style="margin: 0; padding: 0; position: absolute">
+                        <md-menu-content style="margin: 0; padding: 0; position: absolute">
                             <md-button class="subarray-config-menu-button" title="Remaining Time to Next Global Sync" ng-click="$mdMenu.open($event); $event.stopPropagation()"
                                 style="font-size: 20px">
                                 <span class="subarray-select-chevron" style="top: 12px"></span>
@@ -38,14 +38,14 @@
                                     NGS : <b>{{vm.minGlobalSyncTime()==undefined ? '--- ' : vm.minGlobalSyncTime()}} Hrs</b>
                                 </span>
                             </md-button>
-                        </md-menu>
+                        </md-menu-content>
 
                         <span flex></span>
 
                         <md-menu style="margin: 0 8px; padding: 0; position: relative" class="subarray-mode-button">
                             <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)">
                                 <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
-                                <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
+                                <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span>
                             </span>
                             <md-menu-content>
                                 <md-menu-item ng-repeat="type in parent.vm.modeTypes">
