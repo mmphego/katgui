@@ -93,7 +93,7 @@
                   if (minTimeRemaining==undefined) {
                     minTimeRemaining = receptorTimeRemaining;
                   }
-                  else if (receptorTimeRemaining && (receptorTimeRemaining<minTimeRemaining)) {
+                  else if (receptorTimeRemaining<minTimeRemaining) {
                     minTimeRemaining = receptorTimeRemaining;
                   }
                 }
