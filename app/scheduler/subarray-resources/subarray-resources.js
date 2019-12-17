@@ -3,7 +3,7 @@
     angular.module('katGui.scheduler')
         .controller('SubArrayResourcesCtrl', SubArrayResourcesCtrl);
 
-    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, MonitorService, $rootScope, $stateParams,
+    function SubArrayResourcesCtrl($state, $scope, ObsSchedService, $rootScope, $stateParams,
                                    NotifyService, ConfigService, $mdDialog) {
 
         var vm = this;
@@ -78,36 +78,33 @@
           if (!ConfigService.systemConfig || !vm.subarray)
             return undefined;
 
-          var sensorValues = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'];
-
-          if (!sensorValues)
+          var allocationSensorValues = ObsSchedService.sensorValues[vm.subarray.name + '_allocations'];
+          if (!allocationSensorValues)
             return undefined;
+          var allocations = allocationSensorValues.parsedValue;
 
-          var allReceptors = ConfigService.systemConfig["antenna_labels"]
-                                ["ALL"].split(',');
-          var nextGlobalSyncTime = [];
+          var nextGlobalSyncTimes = [];
           var assignedResources = [];
-          var allocations = sensorValues.parsedValue;
 
           for (var i=0; i<allocations.length; i++) {
               var receptorName = allocations[i][0];
-              var nextGlobalSync = undefined;
+              var receptorTimeRemaining = undefined;
 
               if (vm.subarray.band) {
                 var sensor = $scope.parent.vm.sensorValues
                     [receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"];
                 if (sensor)
-                  nextGlobalSync = sensor.value;
+                  receptorTimeRemaining = sensor.value;
               }
-              if (nextGlobalSync) {
-                nextGlobalSyncTime.push(nextGlobalSync);
+              if (receptorTimeRemaining) {
+                nextGlobalSyncTimes.push(receptorTimeRemaining);
               }
           }
 
             var minTime = -1;
-            for (var i=0; i<nextGlobalSyncTime.length; i++) {
-              if (minTime < nextGlobalSyncTime[i]) {
-                return nextGlobalSyncTime[i];
+            for (var i=0; i<nextGlobalSyncTimes.length; i++) {
+              if (minTime < nextGlobalSyncTimes[i]) {
+                return nextGlobalSyncTimes[i];
               }
             }
         }
