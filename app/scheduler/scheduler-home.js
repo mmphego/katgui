@@ -410,6 +410,24 @@
                 });
         };
 
+        vm.navigateToSensorSensorGroup = function() {
+            /* Go to the sensor group page, Note that the band parameter will be used to
+            note that a call was from scheduler display page */
+            if (vm.subarray.band) {
+                try {
+                    $state.go('sensor-groups',
+                    {
+                        band: vm.subarray.band
+                    });
+                }
+                catch (error) {
+                    NotifyService.showSimpleDialog('Error',
+                      'Unexpected error occurred (' + error
+                +')');
+                }
+            }
+        };
+
         vm.openCADialog = function(event) {
             $mdDialog
                 .show({

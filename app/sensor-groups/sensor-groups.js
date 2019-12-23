@@ -4,7 +4,7 @@
         .controller('SensorGroupsCtrl', SensorGroupsCtrl);
 
     function SensorGroupsCtrl($scope, $rootScope, MonitorService, $timeout, $interval, NotifyService,
-                              ConfigService, $log, MOMENT_DATETIME_FORMAT, KatGuiUtil) {
+                              $stateParams, ConfigService, $log, MOMENT_DATETIME_FORMAT, KatGuiUtil) {
 
         var vm = this;
         vm.sensorGroups = {};
@@ -14,10 +14,14 @@
         vm.sensorValues = {};
         vm.hideNominalSensors = false;
         vm.sensorsRegex = '';
+        vm.band = $stateParams.band
 
         ConfigService.loadSensorGroups().then(function (result) {
             vm.sensorGroupList = Object.keys(result);
             vm.sensorGroups = result;
+            /* We need to wait for the results first, before we automatically select
+            the group, otherwise we will select from nothing.*/
+            vm.selectSensorGroup();
         });
 
         vm.sensorsOrderByFields = [
@@ -63,10 +67,22 @@
             vm.subscribedSensors.forEach(function (sensor) {
                 MonitorService.unsubscribeSensor(sensor);
             });
+
             vm.subscribedSensors = [];
             vm.sensorValues = {};
             vm.sensorsGroupBeingDisplayed = sensorGroupName;
             vm.initSensors();
+        };
+
+        vm.selectSensorGroup = function() {
+            /* Select the 'Dig BAND(l, x, s, u) Sync remaining' sensor group
+            the only time the band will not be empty is when we are routing
+            from the scheduler display. */
+
+            if(vm.band && vm.band != '') {
+               var sensorGroupName = 'Dig ' + vm.band + ' Sync remaining'
+               vm.setSensorGroupStrategy(sensorGroupName)
+            }
         };
 
         vm.displaySensorValue = function ($event, sensor) {
