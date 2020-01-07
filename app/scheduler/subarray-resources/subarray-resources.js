@@ -34,8 +34,9 @@
         };
 
         vm.navigateToSensorSensorGroup = function() {
-            /* Go to the sensor group page, Note that the band parameter will be used to
-            note that a call was from scheduler display page */
+            /*Go to the SENSOR-GROUPS page.
+            Note that the band parameter will be used to determine if
+            a call was from scheduler display page or not */
             if (vm.subarray.band) {
                 try {
                     $state.go('sensor-groups',
