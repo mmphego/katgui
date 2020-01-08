@@ -33,6 +33,25 @@
             });
         };
 
+        vm.navigateToSensorSensorGroup = function() {
+            /*Go to the SENSOR-GROUPS page.
+            Note that the band parameter will be used to determine if
+            a call was from scheduler display page or not */
+            if (vm.subarray.band) {
+                try {
+                    $state.go('sensor-groups',
+                    {
+                        band: vm.subarray.band
+                    });
+                }
+                catch (error) {
+                    NotifyService.showSimpleDialog('Error',
+                      'Unexpected error occurred (' + error
+                +')');
+                }
+            }
+        };
+
         vm.assignSelectedResources = function () {
             var selectedResources = vm.poolResourcesFree.filter(function(resource) {
                 return resource.selected;
@@ -71,6 +90,36 @@
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, receptorName);
             }
         };
+
+        vm.minGlobalSyncTime = function () {
+          // can't work out sync time if initialisation has not finished
+          if (!ConfigService.systemConfig || !vm.subarray)
+            return undefined;
+
+          var poolResourcesSensor = ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources'];
+          if (!poolResourcesSensor)
+            return undefined;
+          var availableReceptors = poolResourcesSensor.value.split(',');
+
+          var minTimeRemaining = undefined;
+
+          for (var i=0; i<availableReceptors.length; i++) {
+              var receptorName = availableReceptors[i];
+              if (vm.subarray.band) {
+                var sensor = $scope.parent.vm.sensorValues[receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"];
+                if (sensor) {
+                  var receptorTimeRemaining = sensor.value;
+                  if (minTimeRemaining==undefined) {
+                    minTimeRemaining = receptorTimeRemaining;
+                  }
+                  else if (receptorTimeRemaining<minTimeRemaining) {
+                    minTimeRemaining = receptorTimeRemaining;
+                  }
+                }
+              }
+          }
+          return minTimeRemaining;
+        }
 
         vm.resourceAllowedInSubarray = function (resourceName) {
             var genericResources = [];
