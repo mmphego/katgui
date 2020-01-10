@@ -410,6 +410,24 @@
                 });
         };
 
+        vm.navigateToSensorSensorGroup = function() {
+            /* Go to the sensor group page, Note that the band parameter will be used to
+            note that a call was from scheduler display page */
+            if (vm.subarray.band) {
+                try {
+                    $state.go('sensor-groups',
+                    {
+                        band: vm.subarray.band
+                    });
+                }
+                catch (error) {
+                    NotifyService.showSimpleDialog('Error',
+                      'Unexpected error occurred (' + error
+                +')');
+                }
+            }
+        };
+
         vm.openCADialog = function(event) {
             $mdDialog
                 .show({
@@ -1065,12 +1083,17 @@
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
                     .then(handleListSensorsResult, handleListSensorsError);
 
+                    MonitorService.listSensorsHttp(
+                        systemConfig['katconn:arrays'].ants,
+                        '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').(dig_[lsux]_band_time_remaining)$', true)
+                    .then(handleListSensorsResult, handleListSensorsError);
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),
                         vm.schedSensorNames.join('|'),
                         vm.katpoolSensorNames.join('|'),
                         'state$',
-                        'ridx_position'
+                        'ridx_position',
+                        'dig_[lsux]_band_time_remaining',
                     ].join('|');
                 });
             MonitorService.subscribe('portal.sched');
