@@ -467,12 +467,12 @@
 
         vm.isResourceInMaintenance = function(resourceName) {
             return vm.sensorValues['katpool_resources_in_maintenance'] &&
-                vm.sensorValues['katpool_resources_in_maintenance'].value.indexOf(resourceName) > -1;
+                vm.sensorValues['katpool_resources_in_maintenance'].value.split(',').indexOf(resourceName) > -1;
         };
 
         vm.isResourceFaulty = function(resourceName) {
             return vm.sensorValues['katpool_resources_faulty'] &&
-                vm.sensorValues['katpool_resources_faulty'].value.indexOf(resourceName) > -1;
+                vm.sensorValues['katpool_resources_faulty'].value.split(',').indexOf(resourceName) > -1;
         };
 
         vm.activateSubarray = function() {

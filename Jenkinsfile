@@ -1,7 +1,7 @@
 pipeline {
 
     agent {
-        label 'camguinode'
+        label 'cambase_bionic'
     }
 
     stages {
