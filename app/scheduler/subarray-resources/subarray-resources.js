@@ -21,6 +21,18 @@
         $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
             vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
             vm.initLastKnownConfig();
+            /* Subarray object is created when the subarray-resources page is opened.
+            Again subarray object is created when the scheduler-home page is opened.
+            The subarray-resources page call functions like setProduct() defined in scheduler-home page.
+            When routing or transitioning to scheduler-resources page it is possible to not
+            open scheduler-home this will imply the subarray object(scheduler-home) will be the old one,
+            as an example when the user set the product from subarray-resources page(config-container)
+            the old subarray object in scheduler-home will be used, and nothing will happen
+            because scheduler-resources page now have a new subarray object.
+            The function below(checkCASubarrays) ensure that we update the scheduler-home subarray object
+            TODO OJ(2020-01-16):
+            In future we should consider using only one subarray object, I suggest parent subarray object. */
+            $scope.$parent.vm.checkCASubarrays();
         });
 
         vm.toggleSelectAllUnassignedResources = function () {
