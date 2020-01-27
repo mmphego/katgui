@@ -32,8 +32,15 @@
                             <md-button class="subarray-config-menu-button" title="Remaining Time to Next Global Sync" ng-click="vm.navigateToSensorSensorGroup($event); $event.stopPropagation()"
                                 style="font-size: 20px">
                                 <span class="subarray-select-chevron" style="top: 12px"></span>
-                                <span style="margin-left: 400px">
+                                <span style="margin-left: 350px">
                                     NGS : <b>{{vm.minGlobalSyncTime()==undefined ? '--- ' : vm.minGlobalSyncTime()}} Hrs</b>
+                                </span>
+                            </md-button>
+                            <md-button class="subarray-config-menu-button" title="Number of Available SKARABs" ng-click="vm.navigateToSensorSensorGroup($event); $event.stopPropagation()"
+                                style="font-size: 20px">
+                                <span class="subarray-select-chevron" style="top: 12px"></span>
+                                <span style="margin-left: 40px">
+                                    BOARDS : <b>{{parent.vm.sensorValues['cbf_1' + 'boards-marked-up'].values + ' / ' + parent.vm.sensorValues['cbf_1' + 'boards-marked-standby'].values }}</b>
                                 </span>
                             </md-button>
                         </md-menu>
