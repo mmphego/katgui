@@ -1,0 +1,2 @@
+gTTS==2.0.4
+seleniumbase==1.33.2
