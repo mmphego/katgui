@@ -40,7 +40,7 @@
                                 style="font-size: 20px">
                                 <span class="subarray-select-chevron" style="top: 12px"></span>
                                 <span style="margin-left: 40px">
-                                    BOARDS : <b>{{parent.vm.sensorValues['cbf_1' + 'boards-marked-up'].values + ' / ' + parent.vm.sensorValues['cbf_1' + 'boards-marked-standby'].values }}</b>
+                                    BOARDS : <b>{{(vm.boardsMarkedUp()==undefined ? '---' : vm.boardsMarkedUp()) + ' / ' + (vm.totalBoards()==undefined ? '---' : vm.totalBoards())}}</b>
                                 </span>
                             </md-button>
                         </md-menu>
@@ -155,6 +155,10 @@
                                 style="position: absolute; left: 80px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
                                 <md-tooltip>Indexer Position</md-tooltip>
                             </span>
+
+                            <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
+                                style="position: absolute; left: 90px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}</span>
 
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">
                                 <a ng-repeat="link in parent.vm.guiUrls[resourceAlloc[0]] track by $index" target="_blank"

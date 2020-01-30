@@ -133,6 +133,17 @@
           return minTimeRemaining;
         }
 
+        vm.boardsMarkedUp = function () {
+            return $scope.parent.vm.sensorValues["cbf_1_boards_marked_up"].value;
+        };
+
+        vm.totalBoards = function () {
+            var boards_marked_standy = $scope.parent.vm.sensorValues["cbf_1_boards_marked_standby"].value;
+            var boards_marked_up = $scope.parent.vm.sensorValues["cbf_1_boards_marked_up"].value;
+            return boards_marked_standy + boards_marked_up;
+
+        };
+
         vm.resourceAllowedInSubarray = function (resourceName) {
             var genericResources = [];
             var generic_to_specific_resources = ConfigService.systemConfig['internals']['generic_to_specific_resources'].split(',');

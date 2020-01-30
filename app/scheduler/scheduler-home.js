@@ -1073,6 +1073,10 @@
                         systemConfig['katconn:resources'].single_ctl,
                         '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').(boards_marked_up)$', true)
                     .then(handleListSensorsResult, handleListSensorsError);
+                    MonitorService.listSensorsHttp(
+                        systemConfig['katconn:resources'].single_ctl,
+                        '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').(boards_marked_standby)$', true)
+                    .then(handleListSensorsResult, handleListSensorsError);
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),
                         vm.schedSensorNames.join('|'),
@@ -1081,6 +1085,7 @@
                         'ridx_position',
                         'dig_[lsux]_band_time_remaining',
                         'boards_marked_up',
+                        'boards_marked_standby',
                     ].join('|');
                 });
             MonitorService.subscribe('portal.sched');
