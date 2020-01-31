@@ -1071,11 +1071,7 @@
                     .then(handleListSensorsResult, handleListSensorsError);
                     MonitorService.listSensorsHttp(
                         systemConfig['katconn:resources'].single_ctl,
-                        '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').(boards_marked_up)$', true)
-                    .then(handleListSensorsResult, handleListSensorsError);
-                    MonitorService.listSensorsHttp(
-                        systemConfig['katconn:resources'].single_ctl,
-                        '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').(boards_marked_standby)$', true)
+                        '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').(boards_marked_(up|standby))$', true)
                     .then(handleListSensorsResult, handleListSensorsError);
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),

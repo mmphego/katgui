@@ -36,13 +36,6 @@
                                     NGS : <b>{{vm.minGlobalSyncTime()==undefined ? '--- ' : vm.minGlobalSyncTime()}} Hrs</b>
                                 </span>
                             </md-button>
-                            <md-button class="subarray-config-menu-button" title="Number of Available SKARABs" ng-click="vm.navigateToSensorSensorGroup($event); $event.stopPropagation()"
-                                style="font-size: 20px">
-                                <span class="subarray-select-chevron" style="top: 12px"></span>
-                                <span style="margin-left: 40px">
-                                    BOARDS : <b>{{(vm.boardsMarkedUp()==undefined ? '---' : vm.boardsMarkedUp()) + ' / ' + (vm.totalBoards()==undefined ? '---' : vm.totalBoards())}}</b>
-                                </span>
-                            </md-button>
                         </md-menu>
                         <span flex></span>
 
@@ -157,8 +150,10 @@
                             </span>
 
                             <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
-                                style="position: absolute; left: 90px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
-                                {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}</span>
+                                style="position: absolute; left: 90px; bottom: 4px; font-size: 12px" >
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}
+                                <md-tooltip>{{(vm.boardsMarkedUp()==undefined ? '---' : vm.boardsMarkedUp()) + '/' + (vm.totalBoards()==undefined ? '---' : vm.totalBoards())}}  Available SKARAB Boards</md-tooltip>
+                            </span>
 
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">
                                 <a ng-repeat="link in parent.vm.guiUrls[resourceAlloc[0]] track by $index" target="_blank"
