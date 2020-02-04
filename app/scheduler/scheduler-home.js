@@ -1080,8 +1080,7 @@
                         'state$',
                         'ridx_position',
                         'dig_[lsux]_band_time_remaining',
-                        'boards_marked_up',
-                        'boards_marked_standby',
+                        'boards_marked_(up|standby)',
                     ].join('|');
                 });
             MonitorService.subscribe('portal.sched');
