@@ -133,25 +133,17 @@
           return minTimeRemaining;
         }
 
-        vm.boardsMarkedUp = function () {
-            vm.poolResourcesFree.forEach(function (item) {
-                if (!item.name.startsWith('cbf'))
-                    return undefined;
-                return $scope.parent.vm.sensorValues[item.name + "_boards_marked_up"].value;
-                });
+        vm.boardsMarkedUp = function (resourceName) {
+            if (!resourceName.startsWith('cbf'))
+                return undefined;
+            return $scope.parent.vm.sensorValues[resourceName + "_boards_marked_up"].value;
         };
 
-        vm.totalBoards = function () {
-            vm.poolResourcesFree.forEach(function (item){
-                var boards_marked_standby;
-                var boards_marked_up;
-                if (!item.name.startsWith('cbf'))
-                    return undefined;
-                boards_marked_standby = $scope.parent.vm.sensorValues[item.name + "_boards_marked_standby"].value;
-                boards_marked_up = $scope.parent.vm.sensorValues[item.name + "_boards_marked_up"].value;
-            })
-            return boards_marked_standby + boards_marked_up;
-
+        vm.totalBoards = function (resourceName) {
+            if (resourceName.startsWith('cbf'))
+                var boards_marked_standby = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_standby"].value;
+                var boards_marked_up = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_up"].value;
+                return boards_marked_standby + boards_marked_up;
         };
 
         vm.resourceAllowedInSubarray = function (resourceName) {
