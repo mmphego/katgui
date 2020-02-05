@@ -141,16 +141,16 @@
                             <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resourceAlloc[0]}}</span>
                             <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resourceAlloc[0] + '_state'].value}}</span>
                             <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
-                                style="position: absolute; left: 90px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
+                                style="position: absolute; left: 100px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
                                 {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}</span>
 
                             <span class="icon-button fa fa-angle-double-down"
-                                style="position: absolute; left: 80px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
+                                style="position: absolute; left: 90px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
                                 <md-tooltip>Indexer Position</md-tooltip>
                             </span>
 
-                            <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
-                                style="position: absolute; left: 90px; bottom: 4px; font-size: 12px" >
+                            <span ng-class="{'badge': vm.boardsMarkedUp(resourceAlloc[0])!=undefined}"
+                                style="background-color: #01717e; position: absolute; left: 100px; top: 4px; font-size: 12px">
                                 {{vm.boardsMarkedUp(resourceAlloc[0])}}
                                 <md-tooltip>{{(vm.boardsMarkedUp(resourceAlloc[0])==undefined ? '---' : vm.boardsMarkedUp(resourceAlloc[0])) + '/' + (vm.totalBoards(resourceAlloc[0])==undefined ? '---' : vm.totalBoards(resourceAlloc[0]))}}  Available SKARAB Boards</md-tooltip>
                             </span>
