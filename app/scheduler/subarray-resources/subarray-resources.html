@@ -149,10 +149,16 @@
                                 <md-tooltip>Indexer Position</md-tooltip>
                             </span>
 
-                            <span ng-class="{'badge': vm.boardsMarkedUp(resourceAlloc[0])!=undefined}"
+                            <span ng-class="{'badge': (parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value) !=undefined}"
                                 style="background-color: #01717e; position: absolute; left: 100px; top: 4px; font-size: 12px">
-                                {{vm.boardsMarkedUp(resourceAlloc[0])}}
-                                <md-tooltip>{{(vm.boardsMarkedUp(resourceAlloc[0])==undefined ? '---' : vm.boardsMarkedUp(resourceAlloc[0])) + '/' + (vm.totalBoards(resourceAlloc[0])==undefined ? '---' : vm.totalBoards(resourceAlloc[0]))}}  Available SKARAB Boards</md-tooltip>
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}
+                                <md-tooltip class="skarab-boards-tooltip">
+                                    <b><u>Number of SKARAB Boards</u></b><br>
+                                    Available: {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}<br>
+                                    In Use: {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_assigned'].value}}<br>
+                                    Standby: {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_standby'].value}}<br>
+                                    Total: {{vm.totalBoards(resourceAlloc[0])}}
+                                </md-tooltip>
                             </span>
 
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">

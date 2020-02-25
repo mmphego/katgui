@@ -133,21 +133,14 @@
           return minTimeRemaining;
         }
 
-        vm.boardsMarkedUp = function (resourceName) {
-            if (!resourceName.startsWith('cbf'))
-                return undefined;
-            var boards_marked_up_sensor = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_up"];
-            if(boards_marked_up_sensor)
-                return boards_marked_up_sensor.value;
-        };
-
         vm.totalBoards = function (resourceName) {
             if (!resourceName.startsWith('cbf'))
                 return undefined;
             var boards_marked_standby_sensor = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_standby"];
             var boards_marked_up_sensor = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_up"];
-            if (boards_marked_standby_sensor && boards_marked_up_sensor) {
-                var total_boards = boards_marked_standby_sensor.value + boards_marked_up_sensor.value;
+            var boards_marked_assigned_sensor = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_assigned"];
+            if (boards_marked_standby_sensor && boards_marked_up_sensor && boards_marked_assigned_sensor) {
+                var total_boards = boards_marked_standby_sensor.value + boards_marked_up_sensor.value + boards_marked_assigned_sensor.value;
                 return total_boards;
             }
         };
