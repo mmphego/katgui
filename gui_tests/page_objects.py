@@ -17,5 +17,5 @@ class SubArray:
     button = "(//button[@type='button'])[112]"
     cbf = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div[3]/div/div/div[2]/span"
     antennas = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div[3]/div/div/div[10]/span"
-    sdp = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div[3]/div/div/div[79]/span"
+    sdp = "//*[@id="ui-view-container-div"]/div/div[3]/div/div/div[3]/div/div/div[90]/span[1]"
     initialize = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div/div/div[2]/md-toolbar/span[4]"
