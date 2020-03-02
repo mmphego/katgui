@@ -6,7 +6,8 @@ from contextlib import suppress
 
 from gtts import gTTS
 
-ENABLE_SPEECH = literal_eval(pathlib.os.getenv("ENABLE_SPEECH", 'False'))
+ENABLE_SPEECH = literal_eval(pathlib.os.getenv("ENABLE_SPEECH", "False"))
+
 
 class TexttoSpeech:
     def __init__(
@@ -67,4 +68,6 @@ class TexttoSpeech:
             )
 
             if ret_code != 0:
-                raise RuntimeError(f"Failed to play {self.filename} through {player_cmd}.")
+                raise RuntimeError(
+                    f"Failed to play {self.filename} through {player_cmd}."
+                )

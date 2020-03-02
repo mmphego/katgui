@@ -1,14 +1,15 @@
 import os
 
+from .page_objects import Page
 from seleniumbase import BaseCase
 
 from .utils import TexttoSpeech
 
 KATGUI_USER = os.getenv("KATGUI_USER")
 KATGUI_PASS = os.getenv("KATGUI_PASS")
+KATGUI_URL = os.getenv("KATGUI_URL")
 
 THEME = "dark"
-KATGUI_URL = "http://monctl.devx.camlab.kat.ac.za/katgui/login"
 
 
 class MyTourClass(BaseCase):
@@ -23,8 +24,11 @@ class MyTourClass(BaseCase):
 
     def login_katgui(self) -> None:
         """Detailed login in instructions for KATGUI end-user."""
+        self.assertIsNotNone(
+            KATGUI_URL, "Ensure that KATGUI_URL as defined an environmental variables.",
+        )
         self.open(KATGUI_URL)
-        self.wait_for_element("#input_1")
+        self.wait_for_element(Page.enter_input)
         self.speak(
             "Welcome to the Karoo Array Telescope Graphical User Interface, "
             "I will walk you through it!",
@@ -35,26 +39,28 @@ class MyTourClass(BaseCase):
         )
 
         self.enter_stage(
-            self.add_tour_step, "Type in your email account here.", "#input_1"
+            self.add_tour_step, "Type in your email account here.", Page.enter_input
         )
         self.speak(
-            "Please enter your S K A email address to login.", "enter_email"
+            "Please enter your S K A email address to login.", Page.user_email
         ).play_speech()
 
         self.assertIsNotNone(
             KATGUI_USER,
             "Ensure that KATGUI_USER as defined an environmental variables.",
         )
-        self.highlight_update_text("#input_1", KATGUI_USER)
+        self.highlight_update_text(Page.enter_input, KATGUI_USER)
 
         self.assertIsNotNone(
             KATGUI_PASS,
             "Ensure that KATGUI_PASS as defined an environmental variables.",
         )
-        self.enter_stage(self.add_tour_step, "Type in your password here.", "#input_2")
+        self.enter_stage(
+            self.add_tour_step, "Type in your password here.", Page.user_pass
+        )
         self.speak("Please enter your password!", "enter_pass").play_speech()
 
-        self.highlight_update_text("#input_2", KATGUI_PASS)
+        self.highlight_update_text(Page.user_pass, KATGUI_PASS)
 
         self.speak(
             "In order to have full control of the interface, "
@@ -63,18 +69,21 @@ class MyTourClass(BaseCase):
         ).play_speech()
 
         self.enter_stage(
-            self.add_tour_step, "Login as 'Expert User'.", "#select_value_label_0"
+            self.add_tour_step, "Login as 'Expert User'.", Page.select_user
         )
-        self.click("#select_value_label_0")
-        self.click("#select_option_6")
+        self.click(Page.select_user)
+        self.click(Page.expert)
         self.speak(
             "Click login button or hit Enter on your keyboard to login!", "login",
         ).play_speech()
 
-        selector = "#ui-view-container-div > div > form > button"
-        self.enter_stage(self.add_tour_step, "Then click to 'Login'.", selector)
-        self.enter_stage(self.add_tour_step, "Or press [ENTER] after entry.", selector)
-        self.click(selector)
+        self.enter_stage(
+            self.add_tour_step, "Then click to 'Login'.", Page.submit_button
+        )
+        self.enter_stage(
+            self.add_tour_step, "Or press [ENTER] after entry.", Page.submit_button
+        )
+        self.click(Page.submit_button)
 
     def disable_alarms(self):
         self.enter_stage(
@@ -83,41 +92,31 @@ class MyTourClass(BaseCase):
             title="Disable Alarms",
         )
 
-        user_icon = "#main-top-toolbar > div > button:nth-child(7) > span"
         self.enter_stage(
-            self.add_tour_step, "Click on the user icon on the top-right.", user_icon
+            self.add_tour_step,
+            "Click on the user icon on the top-right.",
+            Page.user_icon,
         )
-        self.click(user_icon)
+        self.click(Page.user_icon)
 
-        alarm_not = (
-            "body > md-content > md-sidenav.md-sidenav-right._md.md-deep-"
-            "purple-theme.layout-column > md-content > md-list > md-item:nth-child(5) > "
-            "md-item-content:nth-child(2) > md-checkbox > div.md-label"
-        )
         self.enter_stage(
             self.add_tour_step,
             "Click on the checkbox to disable 'Alarm Notifications'.",
-            alarm_not,
+            Page.alarm_notification,
         )
-        self.click(alarm_not)
+        self.click(Page.alarm_notification)
 
-        alarm_sound = (
-            "body > md-content > md-sidenav.md-sidenav-right._md.md-deep-purple-theme."
-            "layout-column > md-content > md-list > md-item:nth-child(5) > "
-            "md-item-content:nth-child(4) > md-checkbox > div.md-container.md-ink-ripple"
-        )
         self.enter_stage(
             self.add_tour_step,
             "Click on the checkbox to disable 'Alarm Sounds'.",
-            alarm_sound,
+            Page.alarm_sounds,
         )
-        self.click(alarm_sound)
+        self.click(Page.alarm_sounds)
 
-        home = '//*[@id="main-top-toolbar"]/div/span'
         self.enter_stage(
             self.add_tour_step,
             "Click anywhere on the page to exit the configuration menu.",
-            home,
+            Page.back_drop,
         )
         self.refresh_page()
 
@@ -127,8 +126,8 @@ class MyTourClass(BaseCase):
             "Let us create a simple subarray containing 4 antennas, CBF and SDP.",
             title="Create a subarray",
         )
-        subarray = '//*[@id="ui-view-container-div"]/div/div[1]/div/div[1]/div/button[1]'
-        self.click(subarray)
+
+        self.click(Page.subarray_1)
 
     def test_katgui_tour(self) -> None:
         """KATGUI Tour/Demonstration"""
