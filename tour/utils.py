@@ -1,22 +1,37 @@
+from random import choice
 import pathlib
 import subprocess
+import requests
 
 from ast import literal_eval
 from contextlib import suppress
 
-from gtts import gTTS
-
-ENABLE_SPEECH = literal_eval(pathlib.os.getenv("ENABLE_SPEECH", "False"))
-
 
 class TexttoSpeech:
+
+    ENABLE_SPEECH = literal_eval(pathlib.os.getenv("ENABLE_SPEECH", "False"))
+    API_URL = "http://responsivevoice.org/responsivevoice/getvoice.php"
+
     def __init__(
-        self, text: str, filename: str, assets_dir: str = "assets", ext: str = "mp3"
+        self,
+        gender: str = "",
+        lang: str = "en-ZA",
+        pitch: float = 0.5,
+        rate: float = 0.5,
+        service: str = "",
+        voice_name: str = "",
+        vol: int = 1,
+        token: list = ["FQ9r4hgY", "HY7lTyiS"],
     ) -> None:
-        self.text = text
-        if not pathlib.Path(assets_dir).is_dir():
-            pathlib.Path(assets_dir).mkdir()
-        self.filename = pathlib.Path(f"{assets_dir}/{filename}.{ext}").absolute()
+        self.file_path = None
+        self.gender = gender
+        self.lang = lang
+        self.pitch = pitch
+        self.rate = rate
+        self.service = service
+        self.voice_name = voice_name
+        self.vol = vol
+        self.token = choice(token)
 
     @staticmethod
     def which(program: str) -> str:
@@ -26,22 +41,44 @@ class TexttoSpeech:
         with suppress(Exception):
             return subprocess.check_output(["which", program]).strip().decode()
 
-    def text_to_speech(self) -> gTTS:
-        """Generate speech from text using Google TTS API."""
-        tts = gTTS(self.text)
-        return tts
+    def text_to_speech(
+        self,
+        text: str,
+        filename: str,
+        assets_dir: str = "assets",
+        ext: str = "mp3",
+        play_speech: bool = False,
+        re_download: bool = False,
+    ) -> None:
+        """Generate Speech from text."""
+        params = {
+            "gender": self.gender,
+            "key": self.token,
+            "pitch": self.pitch,
+            "rate": self.rate,
+            "sv": self.service,
+            "t": text,
+            "tl": self.lang,
+            "vn": self.voice_name,
+            "vol": self.vol,
+        }
 
-    def save_to_mp3(self) -> None:
-        """Save generated TTS as mp3 files."""
-        tts = self.text_to_speech()
-        tts.save(self.filename)
+        if not pathlib.Path(assets_dir).is_dir():
+            pathlib.Path(assets_dir).mkdir()
+
+        self.file_path = pathlib.Path(f"{assets_dir}/{filename}.{ext}").absolute()
+        if not self.file_path.exists() or re_download:
+            req = requests.get(self.API_URL, params)
+            assert req.status_code == 200
+            with open(self.file_path, "wb") as f:
+                f.write(req.content)
+
+        if play_speech:
+            self.play_speech()
 
     def play_speech(self, play_with: str = "cvlc") -> None:
         """Play generated TTS as mp3 files."""
-        if ENABLE_SPEECH:
-            if not self.filename.is_file():
-                self.save_to_mp3()
-
+        if self.ENABLE_SPEECH:
             FNULL = open(subprocess.os.devnull, "wb")
             play_with = (
                 self.which(play_with)
@@ -61,7 +98,7 @@ class TexttoSpeech:
                 player_cmd = f"{play_with}"
 
             ret_code = subprocess.call(
-                f"{player_cmd} {self.filename}",
+                f"{player_cmd} {self.file_path} >/dev/null 2>&1 &",
                 shell=True,
                 stdout=FNULL,
                 stderr=subprocess.STDOUT,
@@ -69,5 +106,9 @@ class TexttoSpeech:
 
             if ret_code != 0:
                 raise RuntimeError(
-                    f"Failed to play {self.filename} through {player_cmd}."
+                    f"Failed to play {self.file_path} through {player_cmd}."
                 )
+
+    def cleanup(self):
+        if self.file_path.parent.is_dir():
+            pathlib.os.system(f"rm -rf {self.file_path.parent.as_posix()}")

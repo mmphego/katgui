@@ -14,7 +14,13 @@ THEME = "dark"
 
 class MyTourClass(BaseCase):
 
-    speak = TexttoSpeech
+    speak = TexttoSpeech()
+
+    def setUp(self):
+        super(MyTourClass, self).setUp()
+
+    def tearDown(self):
+        self.speak.cleanup()
 
     def enter_stage(self, func, *args: str, **kwargs: str) -> None:
         """Wrapper function for creating and playing the tour"""
@@ -29,21 +35,24 @@ class MyTourClass(BaseCase):
         )
         self.open(KATGUI_URL)
         self.wait_for_element(Page.enter_input)
-        self.speak(
+        self.speak.text_to_speech(
             "Welcome to the Karoo Array Telescope Graphical User Interface, "
             "I will walk you through it!",
             "walkthrough",
-        ).play_speech()
+            play_speech=True,
+        )
         self.enter_stage(
             self.add_tour_step, "Welcome to KATGUI!", title="MeerKAT KatGUI"
         )
 
+        self.speak.text_to_speech(
+            "Please enter your S K A email address to login.",
+            Page.user_email,
+            play_speech=True,
+        )
         self.enter_stage(
             self.add_tour_step, "Type in your email account here.", Page.enter_input
         )
-        self.speak(
-            "Please enter your S K A email address to login.", Page.user_email
-        ).play_speech()
 
         self.assertIsNotNone(
             KATGUI_USER,
@@ -55,27 +64,32 @@ class MyTourClass(BaseCase):
             KATGUI_PASS,
             "Ensure that KATGUI_PASS as defined an environmental variables.",
         )
+        self.speak.text_to_speech(
+            "Please enter your password!", "enter_pass", play_speech=True
+        )
         self.enter_stage(
             self.add_tour_step, "Type in your password here.", Page.user_pass
         )
-        self.speak("Please enter your password!", "enter_pass").play_speech()
 
         self.highlight_update_text(Page.user_pass, KATGUI_PASS)
 
-        self.speak(
+        self.speak.text_to_speech(
             "In order to have full control of the interface, "
             "you will need to login as an Expert User!",
             "expert_user",
-        ).play_speech()
+            play_speech=True,
+        )
 
         self.enter_stage(
             self.add_tour_step, "Login as 'Expert User'.", Page.select_user
         )
         self.click(Page.select_user)
         self.click(Page.expert)
-        self.speak(
-            "Click login button or hit Enter on your keyboard to login!", "login",
-        ).play_speech()
+        self.speak.text_to_speech(
+            "Click login button or hit Enter on your keyboard to login!",
+            "login",
+            play_speech=True,
+        )
 
         self.enter_stage(
             self.add_tour_step, "Then click to 'Login'.", Page.submit_button
@@ -85,7 +99,12 @@ class MyTourClass(BaseCase):
         )
         self.click(Page.submit_button)
 
-    def disable_alarms(self):
+    def disable_alarms(self) -> None:
+        self.speak.text_to_speech(
+            "The alarm was not pleasant, was it! Let's disable the alarm for the duration of this tour.",
+            "alarm",
+            play_speech=True,
+        )
         self.enter_stage(
             self.add_tour_step,
             "You might need to disable the alarms and notification.",
@@ -120,11 +139,16 @@ class MyTourClass(BaseCase):
         )
         self.refresh_page()
 
-    def create_subarray(self):
+    def create_subarray(self) -> None:
+        self.speak.text_to_speech(
+            "For the purpose of this tour, we will create a simple subarray containing 4 antennas, C B F and S D P.",
+            "subarray",
+            play_speech=True,
+        )
         self.enter_stage(
             self.add_tour_step,
             "Let us create a simple subarray containing 4 antennas, CBF and SDP.",
-            title="Create a subarray",
+            title="Create a subarray.",
         )
 
         self.click(Page.subarray_1)
