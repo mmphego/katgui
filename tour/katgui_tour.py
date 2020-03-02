@@ -1,8 +1,8 @@
 import os
 
-from .page_objects import Page
 from seleniumbase import BaseCase
 
+from .page_objects import Page
 from .utils import TexttoSpeech
 
 KATGUI_USER = os.getenv("KATGUI_USER")

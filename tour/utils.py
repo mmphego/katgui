@@ -1,10 +1,11 @@
-from random import choice
 import pathlib
 import subprocess
-import requests
 
 from ast import literal_eval
 from contextlib import suppress
+from random import choice
+
+import requests
 
 
 class TexttoSpeech:

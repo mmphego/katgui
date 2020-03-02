@@ -1,2 +1,2 @@
-gTTS==2.0.4
+requests==2.23.0
 seleniumbase==1.33.2
