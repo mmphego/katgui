@@ -3,9 +3,6 @@
 
 
 class Page(object):
-    subarray_1 = (
-            '//*[@id="ui-view-container-div"]/div/div[1]/div/div[1]/div/button[1]'
-        )
     back_drop = '//*[@id="main-top-toolbar"]/div/span'
     alarm_sounds = (
         "body > md-content > md-sidenav.md-sidenav-right._md.md-deep-purple-theme."
@@ -25,3 +22,45 @@ class Page(object):
     submit_button = "#ui-view-container-div > div > form > button"
     user_email = "enter_email"
     user_pass = "#input_2"
+
+
+class SubArray:
+    html = "html"
+    subarray_1 = '//*[@id="ui-view-container-div"]/div/div[1]/div/div[1]/div/button[1]'
+    free = (
+        "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(1) > div > "
+        "div.md-whiteframe-z2.layout-column.flex > md-toolbar > "
+        "span.fa.fa-recycle.subarray-action-icon.hover-opacity.md-ink-ripple "
+    )
+    # select_product = (
+    #     "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div/div/div["
+    #     "2]/md-toolbar/div/div/md-menu[2]/span/b "
+    # )
+    select_product = (
+        "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(1) > div > "
+        "div.md-whiteframe-z2.layout-column.flex > md-toolbar > div > div > md-menu:nth-child(3) > span"
+    )
+    product = (
+        "#menu_container_24 > md-menu-content > md-menu-item:nth-child(4) > button"
+    )
+    cbf = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div[3]/div/div/div[2]/span[1]"
+    cbf_select = (
+        "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(3) > div > "
+        "div > div:nth-child(2) > span.resource-name.flex"
+    )
+    antennas = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div[3]/div/div/div[9]/span"
+    antennas_select = (
+        "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(3) > div >"
+        " div > div:nth-child(9) > span.resource-name.flex"
+    )
+    sdp = '//*[@id="ui-view-container-div"]/div/div[3]/div/div/div[3]/div/div/div[95]/span[1]'
+    sdp_select = (
+        "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(3) > div "
+        "> div > div:nth-child(95) > span.resource-name.flex"
+    )
+    initialize = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div/div/div[2]/md-toolbar/span[4]"
+    initialize_select = (
+        "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(1) > div > "
+        "div.md-whiteframe-z2.layout-column.flex > md-toolbar > "
+        "span.fa.fa-power-off.subarray-action-icon.hover-opacity.md-ink-ripple"
+    )
