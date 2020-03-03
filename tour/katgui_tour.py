@@ -2,7 +2,7 @@ import os
 
 from seleniumbase import BaseCase
 
-from .page_objects import Page
+from .page_objects import Page, SubArray
 from .utils import TexttoSpeech
 
 KATGUI_USER = os.getenv("KATGUI_USER")
@@ -16,13 +16,14 @@ class MyTourClass(BaseCase):
 
     speak = TexttoSpeech()
 
-    def setUp(self):
+    def setUp(self, **kwargs):
         super(MyTourClass, self).setUp()
 
-    def tearDown(self):
-        self.speak.cleanup()
+    @classmethod
+    def tearDownClass(cls):
+        cls.speak.cleanup()
 
-    def enter_stage(self, func, *args: str, **kwargs: str) -> None:
+    def enter_stage(self, func: object, *args: str, **kwargs: dict) -> None:
         """Wrapper function for creating and playing the tour"""
         self.create_tour(theme=THEME)
         func(*args, **kwargs)
@@ -152,17 +153,94 @@ class MyTourClass(BaseCase):
             "Let us create a simple subarray containing 4 antennas, CBF and SDP.",
             title="Create a subarray.",
         )
+
         msg = "From the home page, select Subarray 1"
         self.speak.text_to_speech(
             msg, "subarray1", play_speech=True,
         )
         self.enter_stage(
-            self.add_tour_step, msg, Page.subarray_1,
+            self.add_tour_step, msg, SubArray.subarray_1,
         )
-        self.click(Page.subarray_1)
+        self.click(SubArray.subarray_1)
+
+        msg = "Let's free the sub-array, just in case there was still something running in the background"
+        self.speak.text_to_speech(
+            msg, "free", play_speech=True,
+        )
+        self.enter_stage(
+            self.add_tour_step, msg, SubArray.free,
+        )
+        self.click(SubArray.free)
+
+        msg = (
+            "Select the user product, for this demo we will select a"
+            " beamformer-correlator with a frequency of 856 MHz and 4k channels"
+        )
+        self.speak.text_to_speech(
+            msg, "product", play_speech=True,
+        )
+        self.enter_stage(
+            self.add_tour_step, msg, SubArray.select_product,
+        )
+        self.click(SubArray.select_product)
+        self.sleep(1)
+        self.click(SubArray.product)
+        self.sleep(0.5)
+        msg = "Let's assign CBF resource into our subarray"
+        self.speak.text_to_speech(
+            msg, "cbf", play_speech=True,
+        )
+        self.enter_stage(
+            self.add_tour_step, msg, SubArray.cbf_select,
+        )
+        self.click(SubArray.cbf)
+
+        msg = "Let's assign SDP resource into our subarray"
+        self.speak.text_to_speech(
+            msg, "sdp", play_speech=True,
+        )
+        self.enter_stage(
+            self.add_tour_step, msg, SubArray.sdp_select,
+        )
+        self.click(SubArray.sdp)
+
+        msg = "Now let's assign 4 antennas into our subarray."
+        self.speak.text_to_speech(
+            msg, "antennas", play_speech=True,
+        )
+        self.enter_stage(
+            self.add_tour_step, msg, SubArray.antennas_select,
+        )
+        for _ in range(4):
+            self.click(SubArray.antennas)
+
+        msg = (
+            "Now we can initialize our subarray with 4 antennas, CBF and SDP."
+            " Note this should take at least 30-60 seconds."
+            "In the mean time grab some coffee!"
+        )
+        self.speak.text_to_speech(
+            msg, "init", play_speech=True,
+        )
+        self.enter_stage(
+            self.add_tour_step, msg, SubArray.initialize_select,
+        )
+        self.click(SubArray.initialize)
+        self.sleep(25)
+        msg = (
+            "Congratulations! You now have a running sub array which simply means that "
+            "you have control over the Karoo Radio Telescope."
+        )
+        self.speak.text_to_speech(
+            msg, "done", play_speech=True,
+        )
+
+    def create_schedule_block(self):
+        pass
 
     def test_katgui_tour(self) -> None:
         """KATGUI Tour/Demonstration"""
         self.login_katgui()
         self.disable_alarms()
         self.create_subarray()
+        self.create_schedule_block()
