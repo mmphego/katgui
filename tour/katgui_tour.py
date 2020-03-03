@@ -12,12 +12,12 @@ KATGUI_URL = os.getenv("KATGUI_URL")
 THEME = "dark"
 
 
-class MyTourClass(BaseCase):
+class KATGUITourClass(BaseCase):
 
     speak = TexttoSpeech()
 
     def setUp(self, **kwargs):
-        super(MyTourClass, self).setUp()
+        super(KATGUITourClass, self).setUp()
 
     @classmethod
     def tearDownClass(cls):
