@@ -9,16 +9,14 @@ from random import choice
 import requests
 
 
-class CountCalls:
-    def __init__(self, func):
-        functools.update_wrapper(self, func)
-        self.func = func
-        self.num_calls = 0
+def CountCalls(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        wrapper.calls += 1
+        return func(*args, **kwargs)
 
-    def __call__(self, *args, **kwargs):
-        self.num_calls += 1
-        print(f"Call {self.num_calls} of {self.func.__name__!r}")
-        return self.func(*args, **kwargs)
+    wrapper.calls = 0
+    return wrapper
 
 
 class TexttoSpeech:
