@@ -1,3 +1,4 @@
+import functools
 import pathlib
 import subprocess
 
@@ -6,6 +7,18 @@ from contextlib import suppress
 from random import choice
 
 import requests
+
+
+class CountCalls:
+    def __init__(self, func):
+        functools.update_wrapper(self, func)
+        self.func = func
+        self.num_calls = 0
+
+    def __call__(self, *args, **kwargs):
+        self.num_calls += 1
+        print(f"Call {self.num_calls} of {self.func.__name__!r}")
+        return self.func(*args, **kwargs)
 
 
 class TexttoSpeech:
@@ -42,6 +55,7 @@ class TexttoSpeech:
         with suppress(Exception):
             return subprocess.check_output(["which", program]).strip().decode()
 
+    @CountCalls
     def text_to_speech(
         self,
         text: str,
@@ -111,5 +125,5 @@ class TexttoSpeech:
                 )
 
     def cleanup(self):
-        if hasattr(self.file_path, 'parent') and self.file_path.parent.is_dir():
+        if hasattr(self.file_path, "parent") and self.file_path.parent.is_dir():
             pathlib.os.system(f"rm -rf {self.file_path.parent.as_posix()}")
