@@ -57,7 +57,7 @@ class TexttoSpeech:
     def text_to_speech(
         self,
         text: str,
-        filename: str,
+        filename: str = "",
         assets_dir: str = "assets",
         ext: str = "mp3",
         play_speech: bool = False,
@@ -78,7 +78,8 @@ class TexttoSpeech:
 
         if not pathlib.Path(assets_dir).is_dir():
             pathlib.Path(assets_dir).mkdir()
-
+        if not filename:
+            filename = f"filename_{str(self.text_to_speech.calls).zfill(2)}"
         self.file_path = pathlib.Path(f"{assets_dir}/{filename}.{ext}").absolute()
         if not self.file_path.exists() or re_download:
             req = requests.get(self.API_URL, params)

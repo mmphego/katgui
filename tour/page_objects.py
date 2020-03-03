@@ -25,6 +25,7 @@ class Page(object):
 
 
 class SubArray:
+    no_antennas = 4
     html = "html"
     subarray_1 = '//*[@id="ui-view-container-div"]/div/div[1]/div/div[1]/div/button[1]'
     free = (

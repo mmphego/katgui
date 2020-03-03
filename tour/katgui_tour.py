@@ -37,9 +37,8 @@ class MyTourClass(BaseCase):
         self.open(KATGUI_URL)
         self.wait_for_element(Page.enter_input)
         self.speak.text_to_speech(
-            "Welcome to the Karoo Array Telescope Graphical User Interface, "
+            "Welcome to the Karoo Array Telescope Graphical User Interface demonstration, "
             "I will walk you through it!",
-            "walkthrough",
             play_speech=True,
         )
         self.enter_stage(
@@ -47,9 +46,7 @@ class MyTourClass(BaseCase):
         )
 
         self.speak.text_to_speech(
-            "Please enter your S K A email address to login.",
-            Page.user_email,
-            play_speech=True,
+            "Please enter your SKA email address to login.", play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, "Type in your email account here.", Page.enter_input
@@ -65,9 +62,7 @@ class MyTourClass(BaseCase):
             KATGUI_PASS,
             "Ensure that KATGUI_PASS as defined an environmental variables.",
         )
-        self.speak.text_to_speech(
-            "Please enter your password!", "enter_pass", play_speech=True
-        )
+        self.speak.text_to_speech("Please enter your password!", play_speech=True)
         self.enter_stage(
             self.add_tour_step, "Type in your password here.", Page.user_pass
         )
@@ -77,7 +72,6 @@ class MyTourClass(BaseCase):
         self.speak.text_to_speech(
             "In order to have full control of the interface, "
             "you will need to login as an Expert User!",
-            "expert_user",
             play_speech=True,
         )
 
@@ -88,7 +82,6 @@ class MyTourClass(BaseCase):
         self.click(Page.expert)
         self.speak.text_to_speech(
             "Click login button or hit Enter on your keyboard to login!",
-            "login",
             play_speech=True,
         )
 
@@ -103,7 +96,6 @@ class MyTourClass(BaseCase):
     def disable_alarms(self) -> None:
         self.speak.text_to_speech(
             "The alarm was not pleasant, was it! Let's disable the alarm for the duration of this tour.",
-            "alarm",
             play_speech=True,
         )
         self.enter_stage(
@@ -112,7 +104,7 @@ class MyTourClass(BaseCase):
             title="Disable Alarms",
         )
         self.speak.text_to_speech(
-            "Click on the user icon on the top-right.", "icon", play_speech=True,
+            "Click on the user icon on the top-right.", play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step,
@@ -122,21 +114,21 @@ class MyTourClass(BaseCase):
         self.click(Page.user_icon)
 
         msg = "Click on the checkbox to disable 'Alarm Notifications'."
-        self.speak.text_to_speech(msg, "alarm_not", play_speech=True)
+        self.speak.text_to_speech(msg, play_speech=True)
         self.enter_stage(
             self.add_tour_step, msg, Page.alarm_notification,
         )
         self.click(Page.alarm_notification)
 
         msg = "Click on the checkbox to disable 'Alarm Sounds'."
-        self.speak.text_to_speech(msg, "alarm_sounds", play_speech=True)
+        self.speak.text_to_speech(msg, play_speech=True)
         self.enter_stage(
             self.add_tour_step, msg, Page.alarm_sounds,
         )
         self.click(Page.alarm_sounds)
 
         msg = "Click anywhere on the page to exit the configuration menu."
-        self.speak.text_to_speech(msg, "backdrop", play_speech=True)
+        self.speak.text_to_speech(msg, play_speech=True)
         self.enter_stage(
             self.add_tour_step, msg, Page.back_drop,
         )
@@ -144,8 +136,7 @@ class MyTourClass(BaseCase):
 
     def create_subarray(self) -> None:
         self.speak.text_to_speech(
-            "For the purpose of this tour, we will create a simple subarray containing 4 antennas, C B F and S D P.",
-            "subarray",
+            "For the purpose of this tour, we will create a simple subarray containing 4 antennas, CBF and SDP.",
             play_speech=True,
         )
         self.enter_stage(
@@ -156,7 +147,7 @@ class MyTourClass(BaseCase):
 
         msg = "From the home page, select Subarray 1"
         self.speak.text_to_speech(
-            msg, "subarray1", play_speech=True,
+            msg, play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, msg, SubArray.subarray_1,
@@ -165,7 +156,7 @@ class MyTourClass(BaseCase):
 
         msg = "Let's free the sub-array, just in case there was still something running in the background"
         self.speak.text_to_speech(
-            msg, "free", play_speech=True,
+            msg, play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, msg, SubArray.free,
@@ -177,7 +168,7 @@ class MyTourClass(BaseCase):
             " beamformer-correlator with a frequency of 856 MHz and 4k channels"
         )
         self.speak.text_to_speech(
-            msg, "product", play_speech=True,
+            msg, play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, msg, SubArray.select_product,
@@ -188,7 +179,7 @@ class MyTourClass(BaseCase):
         self.sleep(0.5)
         msg = "Let's assign CBF resource into our subarray"
         self.speak.text_to_speech(
-            msg, "cbf", play_speech=True,
+            msg, play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, msg, SubArray.cbf_select,
@@ -197,21 +188,21 @@ class MyTourClass(BaseCase):
 
         msg = "Let's assign SDP resource into our subarray"
         self.speak.text_to_speech(
-            msg, "sdp", play_speech=True,
+            msg, play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, msg, SubArray.sdp_select,
         )
         self.click(SubArray.sdp)
 
-        msg = "Now let's assign 4 antennas into our subarray."
+        msg = f"Now let's assign {SubArray.no_antennas} antennas into our subarray."
         self.speak.text_to_speech(
-            msg, "antennas", play_speech=True,
+            msg, play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, msg, SubArray.antennas_select,
         )
-        for _ in range(4):
+        for _ in range(SubArray.no_antennas):
             self.click(SubArray.antennas)
 
         msg = (
@@ -220,7 +211,7 @@ class MyTourClass(BaseCase):
             "In the mean time grab some coffee!"
         )
         self.speak.text_to_speech(
-            msg, "init", play_speech=True,
+            msg, play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, msg, SubArray.initialize_select,
@@ -232,7 +223,7 @@ class MyTourClass(BaseCase):
             "you have control over the Karoo Radio Telescope."
         )
         self.speak.text_to_speech(
-            msg, "done", play_speech=True,
+            msg, play_speech=True,
         )
 
     def create_schedule_block(self):
