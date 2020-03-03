@@ -15,7 +15,7 @@ class Page(object):
     alarm_notification = (
         "body > md-content > md-sidenav.md-sidenav-right._md.md-deep-"
         "purple-theme.layout-column > md-content > md-list > md-item:nth-child(5) > "
-        "md-item-content:nth-child(2) > md-checkbox > div.md-label"
+        "md-item-content:nth-child(2) > md-checkbox > div.md-container.md-ink-ripple"
     )
     user_icon = "#main-top-toolbar > div > button:nth-child(7) > span"
     enter_input = "#input_1"

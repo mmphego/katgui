@@ -111,5 +111,5 @@ class TexttoSpeech:
                 )
 
     def cleanup(self):
-        if self.file_path.parent.is_dir():
+        if hasattr(self.file_path, 'parent') and self.file_path.parent.is_dir():
             pathlib.os.system(f"rm -rf {self.file_path.parent.as_posix()}")

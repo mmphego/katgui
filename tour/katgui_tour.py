@@ -110,7 +110,9 @@ class MyTourClass(BaseCase):
             "You might need to disable the alarms and notification.",
             title="Disable Alarms",
         )
-
+        self.speak.text_to_speech(
+            "Click on the user icon on the top-right.", "icon", play_speech=True,
+        )
         self.enter_stage(
             self.add_tour_step,
             "Click on the user icon on the top-right.",
@@ -118,24 +120,24 @@ class MyTourClass(BaseCase):
         )
         self.click(Page.user_icon)
 
+        msg = "Click on the checkbox to disable 'Alarm Notifications'."
+        self.speak.text_to_speech(msg, "alarm_not", play_speech=True)
         self.enter_stage(
-            self.add_tour_step,
-            "Click on the checkbox to disable 'Alarm Notifications'.",
-            Page.alarm_notification,
+            self.add_tour_step, msg, Page.alarm_notification,
         )
         self.click(Page.alarm_notification)
 
+        msg = "Click on the checkbox to disable 'Alarm Sounds'."
+        self.speak.text_to_speech(msg, "alarm_sounds", play_speech=True)
         self.enter_stage(
-            self.add_tour_step,
-            "Click on the checkbox to disable 'Alarm Sounds'.",
-            Page.alarm_sounds,
+            self.add_tour_step, msg, Page.alarm_sounds,
         )
         self.click(Page.alarm_sounds)
 
+        msg = "Click anywhere on the page to exit the configuration menu."
+        self.speak.text_to_speech(msg, "backdrop", play_speech=True)
         self.enter_stage(
-            self.add_tour_step,
-            "Click anywhere on the page to exit the configuration menu.",
-            Page.back_drop,
+            self.add_tour_step, msg, Page.back_drop,
         )
         self.refresh_page()
 
@@ -150,7 +152,13 @@ class MyTourClass(BaseCase):
             "Let us create a simple subarray containing 4 antennas, CBF and SDP.",
             title="Create a subarray.",
         )
-
+        msg = "From the home page, select Subarray 1"
+        self.speak.text_to_speech(
+            msg, "subarray1", play_speech=True,
+        )
+        self.enter_stage(
+            self.add_tour_step, msg, Page.subarray_1,
+        )
         self.click(Page.subarray_1)
 
     def test_katgui_tour(self) -> None:
