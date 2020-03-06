@@ -44,6 +44,10 @@ class SubArray:
         "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(3) > div > "
         "div > div:nth-child(2) > span.resource-name.flex"
     )
+    cbf_resources = (
+        "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(1) > div > "
+        "div.md-whiteframe-z2.layout-column.flex > div > div:nth-child(1)"
+    )
     antennas = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div[3]/div/div/div[9]/span"
     antennas_select = (
         "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(3) > div >"
@@ -77,4 +81,3 @@ class Obs:
         "#ui-view-container-div > div > div.hover-opacity.md-whiteframe-z3.layout-align-center-center.layout-row > "
         "div:nth-child(6)"
     )
-
