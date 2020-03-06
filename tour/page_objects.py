@@ -46,7 +46,7 @@ class SubArray:
     )
     cbf_resources = (
         "#ui-view-container-div > div > div.layout-column.flex > div > div > div:nth-child(1) > div > "
-        "div.md-whiteframe-z2.layout-column.flex > div > div:nth-child(1)"
+        "div.md-whiteframe-z2.layout-column.flex > div > div > span.badge"
     )
     antennas = "//md-content[@id='ui-view-container-div']/div/div[3]/div/div/div[3]/div/div/div[9]/span"
     antennas_select = (
@@ -81,3 +81,10 @@ class Obs:
         "#ui-view-container-div > div > div.hover-opacity.md-whiteframe-z3.layout-align-center-center.layout-row > "
         "div:nth-child(6)"
     )
+
+    approved_obs = "#right-resize > md-toolbar > div"
+    approved_sb = "#right-resize > div > div:nth-child(1) > span.icon-button.fa.fa-chevron-left.md-ink-ripple"
+    sb_schedule = "#scheduleDraftDataRepeat > div > span.icon-button.fa.fa-chevron-circle-down.md-ink-ripple"
+    ellipsis_select = "#bottom-div > div > div > div > div > md-menu > span"
+    dry_run = "#menu_container_265 > md-menu-content > md-menu-item:nth-child(2) > button"
+    execute = "#bottom-div > div > div > div > div > span.icon-button.fa.md-ink-ripple.fa-play.green-color"
