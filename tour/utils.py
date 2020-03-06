@@ -9,7 +9,7 @@ from random import choice
 import requests
 
 
-def CountCalls(func):
+def count_calls(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         wrapper.calls += 1
@@ -28,21 +28,13 @@ class TexttoSpeech:
         self,
         gender: str = "",
         lang: str = "en-ZA",
-        pitch: float = 0.5,
         rate: float = 0.5,
-        service: str = "",
-        voice_name: str = "",
-        vol: int = 1,
         token: list = ["FQ9r4hgY", "HY7lTyiS"],
     ) -> None:
         self.file_path = None
-        self.gender = gender
+        self.gender = pathlib.os.getenv("VOICE_GENDER", gender)
         self.lang = lang
-        self.pitch = pitch
-        self.rate = rate
-        self.service = service
-        self.voice_name = voice_name
-        self.vol = vol
+        self.rate = pathlib.os.getenv("VOICE_SPEED", rate)
         self.token = choice(token)
 
     @staticmethod
@@ -53,7 +45,7 @@ class TexttoSpeech:
         with suppress(Exception):
             return subprocess.check_output(["which", program]).strip().decode()
 
-    @CountCalls
+    @count_calls
     def text_to_speech(
         self,
         text: str,
@@ -67,15 +59,10 @@ class TexttoSpeech:
         params = {
             "gender": self.gender,
             "key": self.token,
-            "pitch": self.pitch,
             "rate": self.rate,
-            "sv": self.service,
             "t": text,
             "tl": self.lang,
-            "vn": self.voice_name,
-            "vol": self.vol,
         }
-
         if not pathlib.Path(assets_dir).is_dir():
             pathlib.Path(assets_dir).mkdir()
         if not filename:
