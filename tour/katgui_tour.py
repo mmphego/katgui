@@ -23,7 +23,7 @@ class KATGUITourClass(BaseCase):
     def tearDownClass(cls):
         cls.speak.cleanup()
 
-    def enter_stage(self, func: object, *args: str, **kwargs: dict) -> None:
+    def enter_stage(self, func, *args, **kwargs) -> None:
         """Wrapper function for creating and playing the tour"""
         self.create_tour(theme=THEME)
         func(*args, **kwargs)
