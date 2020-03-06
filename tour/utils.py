@@ -2,7 +2,6 @@ import functools
 import pathlib
 import subprocess
 
-from ast import literal_eval
 from contextlib import suppress
 from random import choice
 
@@ -20,8 +19,6 @@ def count_calls(func):
 
 
 class TexttoSpeech:
-
-    ENABLE_SPEECH = literal_eval(pathlib.os.getenv("ENABLE_SPEECH", "False"))
     API_URL = "http://responsivevoice.org/responsivevoice/getvoice.php"
 
     def __init__(
@@ -30,12 +27,14 @@ class TexttoSpeech:
         lang: str = "en-ZA",
         rate: float = 0.5,
         token: list = ["FQ9r4hgY", "HY7lTyiS"],
+        speech_enabled=False,
     ) -> None:
         self.file_path = None
         self.gender = pathlib.os.getenv("VOICE_GENDER", gender)
         self.lang = lang
         self.rate = pathlib.os.getenv("VOICE_SPEED", rate)
         self.token = choice(token)
+        self.speech_enabled = speech_enabled
 
     @staticmethod
     def which(program: str) -> str:
@@ -73,42 +72,38 @@ class TexttoSpeech:
             assert req.status_code == 200
             with open(self.file_path, "wb") as f:
                 f.write(req.content)
-
-        if play_speech:
+        if self.file_path.exists() and self.speech_enabled:
             self.play_speech()
 
     def play_speech(self, play_with: str = "cvlc") -> None:
         """Play generated TTS as mp3 files."""
-        if self.ENABLE_SPEECH:
-            FNULL = open(subprocess.os.devnull, "wb")
-            play_with = (
-                self.which(play_with)
-                if self.which(play_with) is not None
-                else self.which("mpg123")
-            )
-            err_msg = (
-                "No Player installed, ensure that either 'mpg123' or 'vlc' is installed "
-                "in your system.\n"
-                "Run: 'sudo apt install --install-recommends mpg123 vlc vlc-bin'"
-            )
-            assert play_with, err_msg
+        FNULL = open(subprocess.os.devnull, "wb")
+        play_with = (
+            self.which(play_with)
+            if self.which(play_with) is not None
+            else self.which("mpg123")
+        )
+        err_msg = (
+            "No Player installed, ensure that either 'mpg123' or 'vlc' is installed "
+            "in your system.\n"
+            "Run: 'sudo apt install --install-recommends mpg123 vlc vlc-bin'"
+        )
+        assert play_with, err_msg
 
-            if "cvlc" in play_with:
-                player_cmd = f"{play_with} --play-and-exit --no-loop"
-            elif "mpg123" in play_with:
-                player_cmd = f"{play_with}"
+        if "cvlc" in play_with:
+            player_cmd = f"{play_with} --play-and-exit --no-loop"
+        elif "mpg123" in play_with:
+            player_cmd = f"{play_with}"
 
-            ret_code = subprocess.call(
-                f"{player_cmd} {self.file_path} >/dev/null 2>&1 &",
-                shell=True,
-                stdout=FNULL,
-                stderr=subprocess.STDOUT,
-            )
+        ret_code = subprocess.call(
+            f"{player_cmd} {self.file_path} >/dev/null 2>&1 &",
+            shell=True,
+            stdout=FNULL,
+            stderr=subprocess.STDOUT,
+        )
 
-            if ret_code != 0:
-                raise RuntimeError(
-                    f"Failed to play {self.file_path} through {player_cmd}."
-                )
+        if ret_code != 0:
+            raise RuntimeError(f"Failed to play {self.file_path} through {player_cmd}.")
 
     def cleanup(self):
         if hasattr(self.file_path, "parent") and self.file_path.parent.is_dir():

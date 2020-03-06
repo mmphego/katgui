@@ -60,3 +60,21 @@ class SubArray:
         "div.md-whiteframe-z2.layout-column.flex > md-toolbar > "
         "span.fa.fa-power-off.subarray-action-icon.hover-opacity.md-ink-ripple"
     )
+
+
+class Obs:
+    manage_obs = (
+        "#ui-view-container-div > div > div.hover-opacity.md-whiteframe-z3."
+        "layout-align-center-center.layout-row > div:nth-child(5)"
+    )
+
+    manage_obs_sel = (
+        "#ui-view-container-div > div > div.hover-opacity.md-whiteframe-z3."
+        "layout-align-center-center.layout-row > div:nth-child(5) > button"
+    )
+
+    obs = (
+        "#ui-view-container-div > div > div.hover-opacity.md-whiteframe-z3.layout-align-center-center.layout-row > "
+        "div:nth-child(6)"
+    )
+

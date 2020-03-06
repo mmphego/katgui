@@ -1,5 +1,7 @@
 import os
 
+from ast import literal_eval
+
 from seleniumbase import BaseCase
 
 from .page_objects import Page, SubArray
@@ -8,13 +10,14 @@ from .utils import TexttoSpeech
 KATGUI_USER = os.getenv("KATGUI_USER")
 KATGUI_PASS = os.getenv("KATGUI_PASS")
 KATGUI_URL = os.getenv("KATGUI_URL")
+ENABLE_SPEECH = literal_eval(os.getenv("ENABLE_SPEECH", "False"))
 
 THEME = "dark"
 
 
 class KATGUITourClass(BaseCase):
 
-    speak = TexttoSpeech()
+    speak = TexttoSpeech(speech_enabled=ENABLE_SPEECH)
 
     def setUp(self, **kwargs):
         super(KATGUITourClass, self).setUp()
@@ -39,15 +42,12 @@ class KATGUITourClass(BaseCase):
         self.speak.text_to_speech(
             "Welcome to the Karoo Array Telescope Graphical User Interface demonstration, "
             "I will walk you through it!",
-            play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step, "Welcome to KATGUI!", title="MeerKAT KatGUI"
         )
 
-        self.speak.text_to_speech(
-            "Please enter your SKA email address to login.", play_speech=True,
-        )
+        self.speak.text_to_speech("Please enter your SKA email address to login.")
         self.enter_stage(
             self.add_tour_step, "Type in your email account here.", Page.enter_input
         )
@@ -62,7 +62,7 @@ class KATGUITourClass(BaseCase):
             KATGUI_PASS,
             "Ensure that KATGUI_PASS as defined an environmental variables.",
         )
-        self.speak.text_to_speech("Please enter your password!", play_speech=True)
+        self.speak.text_to_speech("Please enter your password!")
         self.enter_stage(
             self.add_tour_step, "Type in your password here.", Page.user_pass
         )
@@ -72,7 +72,6 @@ class KATGUITourClass(BaseCase):
         self.speak.text_to_speech(
             "In order to have full control of the interface, "
             "you will need to login as an Expert User!",
-            play_speech=True,
         )
 
         self.enter_stage(
@@ -82,7 +81,6 @@ class KATGUITourClass(BaseCase):
         self.click(Page.expert)
         self.speak.text_to_speech(
             "Click login button or hit Enter on your keyboard to login!",
-            play_speech=True,
         )
 
         self.enter_stage(
@@ -96,39 +94,35 @@ class KATGUITourClass(BaseCase):
     def disable_alarms(self) -> None:
         self.speak.text_to_speech(
             "The alarm was not pleasant, was it! Let's disable the alarm for the duration of this tour.",
-            play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step,
             "You might need to disable the alarms and notification.",
             title="Disable Alarms",
         )
-        self.speak.text_to_speech(
-            "Click on the user icon on the top-right.", play_speech=True,
-        )
+        msg = "Click on the user icon on the top-right."
+        self.speak.text_to_speech(msg)
         self.enter_stage(
-            self.add_tour_step,
-            "Click on the user icon on the top-right.",
-            Page.user_icon,
+            self.add_tour_step, msg, Page.user_icon,
         )
         self.click(Page.user_icon)
 
         msg = "Click on the checkbox to disable 'Alarm Notifications'."
-        self.speak.text_to_speech(msg, play_speech=True)
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, Page.alarm_notification,
         )
         self.click(Page.alarm_notification)
 
         msg = "Click on the checkbox to disable 'Alarm Sounds'."
-        self.speak.text_to_speech(msg, play_speech=True)
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, Page.alarm_sounds,
         )
         self.click(Page.alarm_sounds)
 
         msg = "Click anywhere on the page to exit the configuration menu."
-        self.speak.text_to_speech(msg, play_speech=True)
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, Page.back_drop,
         )
@@ -137,7 +131,6 @@ class KATGUITourClass(BaseCase):
     def create_subarray(self) -> None:
         self.speak.text_to_speech(
             "For the purpose of this tour, we will create a simple subarray containing 4 antennas, CBF and SDP.",
-            play_speech=True,
         )
         self.enter_stage(
             self.add_tour_step,
@@ -146,18 +139,14 @@ class KATGUITourClass(BaseCase):
         )
 
         msg = "From the home page, select Subarray 1"
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, SubArray.subarray_1,
         )
         self.click(SubArray.subarray_1)
 
         msg = "Let's free the sub-array, just in case there was still something running in the background"
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, SubArray.free,
         )
@@ -167,9 +156,7 @@ class KATGUITourClass(BaseCase):
             "Select the user product, for this demo we will select a"
             " beamformer-correlator with a frequency of 856 MHz and 4k channels"
         )
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, SubArray.select_product,
         )
@@ -177,28 +164,23 @@ class KATGUITourClass(BaseCase):
         self.sleep(1)
         self.click(SubArray.product)
         self.sleep(0.5)
+
         msg = "Let's assign CBF resource into our subarray"
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, SubArray.cbf_select,
         )
         self.click(SubArray.cbf)
 
         msg = "Let's assign SDP resource into our subarray"
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, SubArray.sdp_select,
         )
         self.click(SubArray.sdp)
 
         msg = f"Now let's assign {SubArray.no_antennas} antennas into our subarray."
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, SubArray.antennas_select,
         )
@@ -210,9 +192,7 @@ class KATGUITourClass(BaseCase):
             " Note this should take at least 30-60 seconds."
             "In the mean time grab some coffee!"
         )
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
         self.enter_stage(
             self.add_tour_step, msg, SubArray.initialize_select,
         )
@@ -222,9 +202,7 @@ class KATGUITourClass(BaseCase):
             "Congratulations! You now have a running sub array which simply means that "
             "you have control over the Karoo Radio Telescope."
         )
-        self.speak.text_to_speech(
-            msg, play_speech=True,
-        )
+        self.speak.text_to_speech(msg)
 
     def create_schedule_block(self):
         pass
