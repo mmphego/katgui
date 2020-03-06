@@ -26,7 +26,7 @@ class KATGUITourClass(BaseCase):
     def tearDownClass(cls):
         cls.speak.cleanup()
 
-    def enter_stage(self, func, *args, **kwargs) -> None:
+    def enter_stage(self, func, *args, **kwargs):
         """Wrapper function for creating, playing the tour and text-to-speech."""
         self.create_tour(theme=THEME)
         if kwargs.get("speech"):
@@ -35,8 +35,8 @@ class KATGUITourClass(BaseCase):
         func(*args, **kwargs)
         self.play_tour()
 
-    def login_katgui(self) -> None:
-        """Detailed login in instructions for KATGUI end-user."""
+    def login_katgui(self):
+        """Detailed login instructions for KATGUI end-user."""
         self.assertIsNotNone(
             KATGUI_URL, "Ensure that KATGUI_URL as defined an environmental variables.",
         )
@@ -103,7 +103,7 @@ class KATGUITourClass(BaseCase):
         )
         self.click(Page.submit_button)
 
-    def disable_alarms(self) -> None:
+    def disable_alarms(self):
         self.speak.text_to_speech()
         self.enter_stage(
             self.add_tour_step,
@@ -127,7 +127,7 @@ class KATGUITourClass(BaseCase):
         self.enter_stage(self.add_tour_step, msg, Page.back_drop, speech=msg)
         self.refresh_page()
 
-    def create_subarray(self) -> None:
+    def create_subarray(self):
         self.enter_stage(
             self.add_tour_step,
             "Let us create a simple subarray containing 4 antennas, CBF and SDP.",
@@ -177,7 +177,7 @@ class KATGUITourClass(BaseCase):
             self.add_tour_step, msg, SubArray.initialize_select, speech=msg
         )
         self.click(SubArray.initialize)
-        self.sleep(25)
+        self.sleep(20)
 
         self.speak.text_to_speech(
             "Congratulations! You now have a running sub array which simply means that "
@@ -185,9 +185,58 @@ class KATGUITourClass(BaseCase):
         )
 
     def create_schedule_block(self):
+        msg = (
+            "Let's run a pre-approved schedule block. Click on Managed Schedule Blocks."
+        )
+        self.enter_stage(self.add_tour_step, msg, Obs.manage_obs_sel, speech=msg)
         self.click(Obs.manage_obs_sel)
 
-    def test_katgui_tour(self) -> None:
+        msg = "From the approved schedule blocks, let's select the first one from the list and verify it."
+        self.enter_stage(self.add_tour_step, msg, Obs.approved_obs, speech=msg)
+
+        msg = "Let's assign schedule block to our subarray"
+        self.enter_stage(self.add_tour_step, msg, Obs.approved_sb, speech=msg)
+        self.click(Obs.approved_sb)
+
+        msg = "Schedule and verify the block, before we run it."
+
+        self.enter_stage(self.add_tour_step, msg, Obs.sb_schedule, speech=msg)
+        self.click(Obs.sb_schedule)
+        self.sleep(1)
+
+        msg = "Select the ellipsis icon to access more options."
+        self.enter_stage(self.add_tour_step, msg, Obs.ellipsis_select, speech=msg)
+        self.click(Obs.ellipsis_select)
+
+        msg = "From the menu, select 'View Dryrun' output. This will open a new window."
+        self.enter_stage(self.add_tour_step, msg, Obs.dry_run, speech=msg)
+        self.speak.text_to_speech(
+            "Browse through the logs and check for any anomalies."
+        )
+        self.click(Obs.dry_run)
+        open_windows = self.driver.window_handles
+        if len(open_windows) > 1:
+            self.sleep(2)
+            self.switch_to_window(open_windows[0])
+
+        msg = (
+            "If you are happy with the dry-run output, we can execute the observation."
+        )
+        self.enter_stage(self.add_tour_step, msg, Obs.execute, speech=msg)
+        self.click(Obs.execute)
+
+        msg = (
+            "Well done, you have successfully built a subarray and ran an observation. "
+            "The Observation will take a while to execute, while it runs let's check the sensors. "
+        )
+        self.enter_stage(
+            self.add_tour_step,
+            "Subarray and Observation created successfully!",
+            title="Well Done!",
+            speech=msg,
+        )
+
+    def test_katgui_tour(self):
         """KATGUI Tour/Demonstration"""
         self.login_katgui()
         self.disable_alarms()
