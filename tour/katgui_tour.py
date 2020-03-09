@@ -104,7 +104,6 @@ class KATGUITourClass(BaseCase):
         self.click(Page.submit_button)
 
     def disable_alarms(self):
-        self.speak.text_to_speech()
         self.enter_stage(
             self.add_tour_step,
             "You might need to disable the alarms and notification.",
