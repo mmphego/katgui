@@ -171,6 +171,7 @@ gulp.task('webserver', function() {
     gulp.src('.')
         .pipe(webserver({
             livereload: true,
+            host : '0.0.0.0',
             open: "http://localhost:8000/localhostindex.html",
             fallback: 'localhostindex.html'
         }));
