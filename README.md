@@ -45,12 +45,17 @@ Which will minify and concat to the dist/ folder.
 After the production version has been built, make sure to commit and the new version to GitHub. This effectively creates a new release that is 'deployed' when pulling the KATGUI  project on the target CAM portal node.
 
 ### Debugging
-**TODO**
+
 For debugging purposes run KATGUI in a docker container.
 Ensure docker is installed else follow this [guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04)
 
 ```bash
-docker build  -t "$USER/$(basename $PWD)" .
-docker run -ti --rm -p 8080:8080 "$USER/$(basename $PWD)" bash
+docker build -t "$USER/$(basename $PWD)" .
+docker run -ti --rm -p 8000:8000 "$USER/$(basename $PWD)"
 ```
 
+Access the KATGUI: [http://localhost:8000/localhostindex.html](http://localhost:8000/localhostindex.html)
+
+You should see the development KATGUI, enter your development box URL, username and password.
+
+![image](https://user-images.githubusercontent.com/7910856/76946015-0f926d80-690c-11ea-8ee8-f977668712d2.png)
