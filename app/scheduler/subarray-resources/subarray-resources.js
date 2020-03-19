@@ -21,6 +21,18 @@
         $scope.$parent.vm.waitForSubarrayToExist().then(function (subarrayId) {
             vm.subarray = _.findWhere(ObsSchedService.subarrays, {id: subarrayId});
             vm.initLastKnownConfig();
+            /* Subarray object is created when the subarray-resources page is opened.
+            Again subarray object is created when the scheduler-home page is opened.
+            The subarray-resources page call functions like setProduct() defined in scheduler-home page.
+            When routing or transitioning to scheduler-resources page it is possible to not
+            open scheduler-home this will imply the subarray object(scheduler-home) will be the old one,
+            as an example when the user set the product from subarray-resources page(config-container)
+            the old subarray object in scheduler-home will be used, and nothing will happen
+            because scheduler-resources page now have a new subarray object.
+            The function below(checkCASubarrays) ensure that we update the scheduler-home subarray object
+            TODO OJ(2020-01-16):
+            In future we should consider using only one subarray object, I suggest parent subarray object. */
+            $scope.$parent.vm.checkCASubarrays();
         });
 
         vm.toggleSelectAllUnassignedResources = function () {
@@ -31,6 +43,25 @@
             vm.poolResourcesFree.forEach(function (item) {
                 item.selected = select;
             });
+        };
+
+        vm.navigateToSensorSensorGroup = function() {
+            /*Go to the SENSOR-GROUPS page.
+            Note that the band parameter will be used to determine if
+            a call was from scheduler display page or not */
+            if (vm.subarray.band) {
+                try {
+                    $state.go('sensor-groups',
+                    {
+                        band: vm.subarray.band
+                    });
+                }
+                catch (error) {
+                    NotifyService.showSimpleDialog('Error',
+                      'Unexpected error occurred (' + error
+                +')');
+                }
+            }
         };
 
         vm.assignSelectedResources = function () {
@@ -69,6 +100,48 @@
                 }
 
                 ObsSchedService.assignResourcesToSubarray(vm.subarray.id, receptorName);
+            }
+        };
+
+        vm.minGlobalSyncTime = function () {
+          // can't work out sync time if initialisation has not finished
+          if (!ConfigService.systemConfig || !vm.subarray)
+            return undefined;
+
+          var poolResourcesSensor = ObsSchedService.sensorValues[vm.subarray.name + '_pool_resources'];
+          if (!poolResourcesSensor)
+            return undefined;
+          var availableReceptors = poolResourcesSensor.value.split(',');
+
+          var minTimeRemaining = undefined;
+
+          for (var i=0; i<availableReceptors.length; i++) {
+              var receptorName = availableReceptors[i];
+              if (vm.subarray.band) {
+                var sensor = $scope.parent.vm.sensorValues[receptorName +"_dig_" + vm.subarray.band + "_band_time_remaining"];
+                if (sensor) {
+                  var receptorTimeRemaining = sensor.value;
+                  if (minTimeRemaining==undefined) {
+                    minTimeRemaining = receptorTimeRemaining;
+                  }
+                  else if (receptorTimeRemaining<minTimeRemaining) {
+                    minTimeRemaining = receptorTimeRemaining;
+                  }
+                }
+              }
+          }
+          return minTimeRemaining;
+        }
+
+        vm.totalBoards = function (resourceName) {
+            if (!resourceName.startsWith('cbf'))
+                return undefined;
+            var boards_marked_standby_sensor = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_standby"];
+            var boards_marked_up_sensor = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_up"];
+            var boards_marked_assigned_sensor = $scope.parent.vm.sensorValues[resourceName + "_boards_marked_assigned"];
+            if (boards_marked_standby_sensor && boards_marked_up_sensor && boards_marked_assigned_sensor) {
+                var total_boards = boards_marked_standby_sensor.value + boards_marked_up_sensor.value + boards_marked_assigned_sensor.value;
+                return total_boards;
             }
         };
 

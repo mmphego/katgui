@@ -766,7 +766,14 @@
         $stateProvider.state('sensor-groups', {
             url: '/sensor-groups',
             templateUrl: 'app/sensor-groups/sensor-groups.html',
-            title: 'Sensor Groups'
+            title: 'Sensor Groups',
+            //makes the params optional
+            params: {
+                band: {
+                    value: null,
+                    squash: true
+                }
+            }
         });
         $stateProvider.state('about', {
             url: '/about',

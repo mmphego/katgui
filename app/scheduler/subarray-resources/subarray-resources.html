@@ -29,14 +29,20 @@
                                     </md-button>
                                 </md-menu-item>
                             </md-menu-content>
+                            <md-button class="subarray-config-menu-button" title="Remaining Time to Next Global Sync" ng-click="vm.navigateToSensorSensorGroup($event); $event.stopPropagation()"
+                                style="font-size: 20px">
+                                <span class="subarray-select-chevron" style="top: 12px"></span>
+                                <span style="margin-left: 400px">
+                                    NGS : <b>{{vm.minGlobalSyncTime()==undefined ? '--- ' : vm.minGlobalSyncTime()}} Hrs</b>
+                                </span>
+                            </md-button>
                         </md-menu>
-
                         <span flex></span>
 
                         <md-menu style="margin: 0 8px; padding: 0; position: relative" class="subarray-mode-button">
                             <span md-ink-ripple style="margin: 0; padding: 0px" ng-click="$mdMenu.open($event)">
                                 <span class="fa fa-chevron-down subarray-select-chevron" style="top: 7px"></span>
-                                <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span> </span>
+                                <span style="margin-left: 16px">MODE: <b>{{vm.subarray.mode}}</b></span>
                             </span>
                             <md-menu-content>
                                 <md-menu-item ng-repeat="type in parent.vm.modeTypes">
@@ -44,8 +50,6 @@
                                 </md-menu-item>
                             </md-menu-content>
                         </md-menu>
-
-                        <md-menu style="margin: 0 4px; padding:0; position: relative" ></md-menu>
 
                         <span class="fa fa-repeat subarray-action-icon hover-opacity"
                             title="Retry errored receptors - {{parent.vm._getAllErroredReceptors(vm.subarray.name)}}"
@@ -137,12 +141,24 @@
                             <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resourceAlloc[0]}}</span>
                             <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resourceAlloc[0] + '_state'].value}}</span>
                             <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
-                                style="position: absolute; left: 90px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
+                                style="position: absolute; left: 100px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
                                 {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}</span>
 
                             <span class="icon-button fa fa-angle-double-down"
-                                style="position: absolute; left: 80px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
+                                style="position: absolute; left: 90px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
                                 <md-tooltip>Indexer Position</md-tooltip>
+                            </span>
+
+                            <span ng-class="{'badge': (parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value) !=undefined}"
+                                style="background-color: #01717e; position: absolute; left: 100px; top: 4px; font-size: 12px">
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}
+                                <md-tooltip class="skarab-boards-tooltip">
+                                    <b><u>Number of SKARAB Boards</u></b><br>
+                                    Available: {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}<br>
+                                    In Use: {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_assigned'].value}}<br>
+                                    Standby: {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_standby'].value}}<br>
+                                    Total: {{vm.totalBoards(resourceAlloc[0])}}
+                                </md-tooltip>
                             </span>
 
                             <div flex layout="column" layout-wrap class="gui-urls-link-container">

@@ -467,12 +467,12 @@
 
         vm.isResourceInMaintenance = function(resourceName) {
             return vm.sensorValues['katpool_resources_in_maintenance'] &&
-                vm.sensorValues['katpool_resources_in_maintenance'].value.indexOf(resourceName) > -1;
+                vm.sensorValues['katpool_resources_in_maintenance'].value.split(',').indexOf(resourceName) > -1;
         };
 
         vm.isResourceFaulty = function(resourceName) {
             return vm.sensorValues['katpool_resources_faulty'] &&
-                vm.sensorValues['katpool_resources_faulty'].value.indexOf(resourceName) > -1;
+                vm.sensorValues['katpool_resources_faulty'].value.split(',').indexOf(resourceName) > -1;
         };
 
         vm.activateSubarray = function() {
@@ -1065,12 +1065,22 @@
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
                     .then(handleListSensorsResult, handleListSensorsError);
 
+                    MonitorService.listSensorsHttp(
+                        systemConfig['katconn:arrays'].ants,
+                        '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').(dig_[lsux]_band_time_remaining)$', true)
+                    .then(handleListSensorsResult, handleListSensorsError);
+                    MonitorService.listSensorsHttp(
+                        systemConfig['katconn:resources'].single_ctl,
+                        '^(' + systemConfig['katconn:resources'].single_ctl.replace(/,/g, '|') + ').(boards_marked_(up|standby|assigned))$', true)
+                    .then(handleListSensorsResult, handleListSensorsError);
                     vm.sensorsRegex = [
                         vm.subarraySensorNames.join('|'),
                         vm.schedSensorNames.join('|'),
                         vm.katpoolSensorNames.join('|'),
                         'state$',
-                        'ridx_position'
+                        'ridx_position',
+                        'dig_[lsux]_band_time_remaining',
+                        'boards_marked_(up|standby|assigned)'
                     ].join('|');
                 });
             MonitorService.subscribe('portal.sched');
