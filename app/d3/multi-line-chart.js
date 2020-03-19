@@ -58,7 +58,8 @@ angular.module('katGui.d3')
 
             $timeout(function() {
                 scope.unbindResize = scope.$watch(function() {
-                    return element[0].clientHeight - margin.top - margin.bottom + ', ' + element[0].clientWidth;
+                    if (element)
+                        return element[0].clientHeight - margin.top - margin.bottom + ', ' + element[0].clientWidth;
                 }, function(newVal, oldVal) {
                     if (newVal !== oldVal) {
                         scope.lazyResize();
@@ -621,6 +622,13 @@ angular.module('katGui.d3')
                         return "line value-line " + d.key + " path-line";
                     })
                     .attr("d", function(d) {
+                        for (var i = 0; i < d.values.length; i++) {
+                            var obj = d.values[i];
+                            if (obj.value  === "") {
+                                d.values.splice(i, 1);
+                                i--;
+                            }
+                        }
                         return line(d.values);
                     })
                     .attr("clip-path", "url(#clip)");
