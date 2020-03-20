@@ -357,6 +357,7 @@ angular.module('katGui.d3')
                 }
 
                 line = d3.svg.line()
+                    .defined(function(d) { return d.value != ""; })
                     .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                     .x(function(d) {
                         return x(d.date);
@@ -622,13 +623,6 @@ angular.module('katGui.d3')
                         return "line value-line " + d.key + " path-line";
                     })
                     .attr("d", function(d) {
-                        for (var i = 0; i < d.values.length; i++) {
-                            var obj = d.values[i];
-                            if (obj.value  === "") {
-                                d.values.splice(i, 1);
-                                i--;
-                            }
-                        }
                         return line(d.values);
                     })
                     .attr("clip-path", "url(#clip)");
