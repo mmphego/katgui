@@ -168,7 +168,7 @@ angular.module('katGui.d3')
                             scope.options.yAxisValues = [];
                         }
                         d.value = String(d.value);
-                        if(!d.value) {
+                        if (!d.value) {
                             d.empty_value = true;
                             d.value = "(empty)";
                         }
