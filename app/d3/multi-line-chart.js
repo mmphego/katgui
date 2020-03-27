@@ -168,6 +168,10 @@ angular.module('katGui.d3')
                             scope.options.yAxisValues = [];
                         }
                         d.value = String(d.value);
+                        if(!d.value) {
+                            d.empty_value = true;
+                            d.value = "(empty)";
+                        }
                         newYAxisValues[d.value.replace(/\'/g, '"')] = {};
                     }
 
@@ -357,7 +361,6 @@ angular.module('katGui.d3')
                 }
 
                 line = d3.svg.line()
-                    .defined(function(d) { return d.value != ""; })
                     .interpolate(scope.options.discreteSensors ? "step-after" : "linear")
                     .x(function(d) {
                         return x(d.date);
