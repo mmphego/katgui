@@ -58,7 +58,8 @@ angular.module('katGui.d3')
 
             $timeout(function() {
                 scope.unbindResize = scope.$watch(function() {
-                    return element[0].clientHeight - margin.top - margin.bottom + ', ' + element[0].clientWidth;
+                    if (element)
+                        return element[0].clientHeight - margin.top - margin.bottom + ', ' + element[0].clientWidth;
                 }, function(newVal, oldVal) {
                     if (newVal !== oldVal) {
                         scope.lazyResize();
@@ -167,6 +168,9 @@ angular.module('katGui.d3')
                             scope.options.yAxisValues = [];
                         }
                         d.value = String(d.value);
+                        if (!d.value) {
+                            d.value = "(empty)";
+                        }
                         newYAxisValues[d.value.replace(/\'/g, '"')] = {};
                     }
 
