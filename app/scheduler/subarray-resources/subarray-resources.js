@@ -145,6 +145,26 @@
             }
         };
 
+        vm.isReceiverReady = function (receptorName) {
+            // return `true` if the receiver of the currently selected band is ready
+            // false if not ready and undefined otherwise. Do this only for receptors
+            if (!vm.subarray.band)
+                return undefined;
+
+            var subscribedSenors = Object.keys($scope.parent.vm.sensorValues);
+            for (var i=0; i<subscribedSenors.length; i++) {
+                if (subscribedSenors[i].endsWith('ready') && receptorName == subscribedSenors[i].split('_')[3] && subscribedSenors[i].split('_')[5].endsWith(vm.subarray.band)) {
+                    var isReady = $scope.parent.vm.sensorValues[subscribedSenors[i]].value;
+                    if (isReady == true) {
+                        isReady = 'IS ready';
+                    } else if (isReady == false) {
+                        isReady = 'NOT ready'
+                    }
+                }
+            }
+            return isReady;
+        }
+
         vm.resourceAllowedInSubarray = function (resourceName) {
             var genericResources = [];
             var generic_to_specific_resources = ConfigService.systemConfig['internals']['generic_to_specific_resources'].split(',');

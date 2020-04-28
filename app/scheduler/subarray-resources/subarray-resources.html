@@ -149,6 +149,11 @@
                                 <md-tooltip>Indexer Position</md-tooltip>
                             </span>
 
+                            <span class="icon-button fa fa-thumbs-up resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues['mon_monctl_agg_' + resourceAlloc[0] + '_rsc_rx'+ vm.subarray.band + '_ready'].status)"
+                            ng-if="vm.isReceiverReady(resourceAlloc[0])" style="position: absolute; left: 130px; bottom: 20px">
+                                <md-tooltip> Receiver {{vm.isReceiverReady(resourceAlloc[0])}}</md-tooltip>
+                            </span>
+
                             <span ng-class="{'badge': (parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value) !=undefined}"
                                 style="background-color: #01717e; position: absolute; left: 100px; top: 4px; font-size: 12px">
                                 {{parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value}}
