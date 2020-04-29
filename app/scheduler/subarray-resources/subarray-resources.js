@@ -145,27 +145,32 @@
             }
         };
 
-        vm.isReceiverReady = function (receptorName) {
-            // return array [sensor, value] the full name of the receiver ready sensor
-            // and sensor.value: `true` if the receiver of the currently selected band is ready
-            // `false` if not ready and `undefined` otherwise, do this only for receptors
+        vm.isReceiverReadySensor = function (receptorName) {
+            // return array `sensor`, the full receiver ready sensor object
             if (!vm.subarray.band)
                 return undefined;
 
-            var subscribedSenors = Object.keys($scope.parent.vm.sensorValues);
-            for (var i=0; i<subscribedSenors.length; i++) {
-                if (subscribedSenors[i].endsWith('ready') && receptorName == subscribedSenors[i].split('_')[3] && subscribedSenors[i].split('_')[5].endsWith(vm.subarray.band)) {
-                    var sensorName = subscribedSenors[i];
-                    var isReady = $scope.parent.vm.sensorValues[subscribedSenors[i]].value;
-                    if (isReady == true) {
-                        isReady = 'IS ready';
-                    } else if (isReady == false) {
-                        isReady = 'NOT ready'
+            var subscribedSensors = Object.keys($scope.parent.vm.sensorValues);
+            for (var i=0; i<subscribedSensors.length; i++) {
+                if (subscribedSensors[i].endsWith('ready') && receptorName == subscribedSensors[i].split('_')[3] && subscribedSensors[i].split('_')[5].endsWith(vm.subarray.band)) {
+                    var sensor = $scope.parent.vm.sensorValues[subscribedSensors[i]];
+                    if (sensor.value == true) {
+                        sensor.value = 'IS ready';
+                    } else if (sensor.value == false) {
+                        sensor.value = 'NOT ready'
                     }
                 }
             }
-            return [sensorName, isReady];
+            return sensor;
         }
+
+        vm.navigateToSensorList = function(component, receptorName, filter) {
+            var component = vm.isReceiverReadySensor(receptorName).name.split('_').splice(0, 2).join('_');
+            $state.go('sensor-list',{
+                component: component,
+                filter: filter
+                });
+          };
 
         vm.resourceAllowedInSubarray = function (resourceName) {
             var genericResources = [];

@@ -141,17 +141,14 @@
                             <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resourceAlloc[0]}}</span>
                             <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resourceAlloc[0] + '_state'].value}}</span>
                             <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
-                                style="position: absolute; left: 100px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
-                                {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}</span>
-
-                            <span class="icon-button fa fa-angle-double-down"
-                                style="position: absolute; left: 90px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
-                                <md-tooltip>Indexer Position</md-tooltip>
+                                style="position: absolute; left: 109px; bottom: 4px; font-size: 12px; font-family:'Sofia'" md-ink-ripple title= "Indexer Position">
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}
+                                <md-tooltip> Indexer Position </md-tooltip>
                             </span>
 
-                            <span class="icon-button fa fa-thumbs-up resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[vm.isReceiverReady(resourceAlloc[0])[0]].status)"
-                            ng-if="vm.isReceiverReady(resourceAlloc[0])[0]" style="position: absolute; left: 110px; bottom: 20px">
-                                <md-tooltip> Receiver {{vm.isReceiverReady(resourceAlloc[0])[1]}}</md-tooltip>
+                            <span class="icon-button fa fa-square resource-sensor-status-item" ng-class="vm.sensorClass(vm.isReceiverReadySensor(resourceAlloc[0]).status)"
+                            ng-click="vm.navigateToSensorList(component, resourceAlloc[0], 'ready'); $event.stopPropagation()" ng-if="vm.isReceiverReadySensor(resourceAlloc[0]).value" style="position: absolute; left: 70px; bottom: 30px">
+                                <md-tooltip> Receiver {{vm.isReceiverReadySensor(resourceAlloc[0]).value}}</md-tooltip>
                             </span>
 
                             <span ng-class="{'badge': (parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value) !=undefined}"
