@@ -146,16 +146,17 @@
         };
 
         vm.isReceiverReady = function (receptorName) {
-            // return `true` if the receiver of the currently selected band is ready
-            // false if not ready and undefined otherwise. Do this only for receptors
+            // return array [sensor, value] the full name of the receiver ready sensor
+            // and sensor.value: `true` if the receiver of the currently selected band is ready
+            // `false` if not ready and `undefined` otherwise, do this only for receptors
             if (!vm.subarray.band)
                 return undefined;
 
             var subscribedSenors = Object.keys($scope.parent.vm.sensorValues);
             for (var i=0; i<subscribedSenors.length; i++) {
                 if (subscribedSenors[i].endsWith('ready') && receptorName == subscribedSenors[i].split('_')[3] && subscribedSenors[i].split('_')[5].endsWith(vm.subarray.band)) {
+                    var sensorName = subscribedSenors[i];
                     var isReady = $scope.parent.vm.sensorValues[subscribedSenors[i]].value;
-                    var nodeHost = subscribedSenors[i].split('_')[1];
                     if (isReady == true) {
                         isReady = 'IS ready';
                     } else if (isReady == false) {
@@ -163,7 +164,7 @@
                     }
                 }
             }
-            return [isReady, nodeHost];
+            return [sensorName, isReady];
         }
 
         vm.resourceAllowedInSubarray = function (resourceName) {
