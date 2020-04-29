@@ -155,6 +155,7 @@
             for (var i=0; i<subscribedSenors.length; i++) {
                 if (subscribedSenors[i].endsWith('ready') && receptorName == subscribedSenors[i].split('_')[3] && subscribedSenors[i].split('_')[5].endsWith(vm.subarray.band)) {
                     var isReady = $scope.parent.vm.sensorValues[subscribedSenors[i]].value;
+                    var nodeHost = subscribedSenors[i].split('_')[1];
                     if (isReady == true) {
                         isReady = 'IS ready';
                     } else if (isReady == false) {
@@ -162,7 +163,7 @@
                     }
                 }
             }
-            return isReady;
+            return [isReady, nodeHost];
         }
 
         vm.resourceAllowedInSubarray = function (resourceName) {
