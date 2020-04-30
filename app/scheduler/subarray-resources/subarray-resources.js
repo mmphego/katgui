@@ -152,25 +152,32 @@
 
             var subscribedSensors = Object.keys($scope.parent.vm.sensorValues);
             for (var i=0; i<subscribedSensors.length; i++) {
-                if (subscribedSensors[i].endsWith('ready') && receptorName == subscribedSensors[i].split('_')[3] && subscribedSensors[i].split('_')[5].endsWith(vm.subarray.band)) {
+                if (subscribedSensors[i].endsWith('ready') && receptorName == subscribedSensors[i].split('_')[3] &&
+                subscribedSensors[i].split('_')[5].endsWith(vm.subarray.band)) {
                     var sensor = $scope.parent.vm.sensorValues[subscribedSensors[i]];
-                    if (sensor.value == true) {
-                        sensor.value = 'IS ready';
-                    } else if (sensor.value == false) {
-                        sensor.value = 'NOT ready'
-                    }
                 }
             }
             return sensor;
         }
 
-        vm.navigateToSensorList = function(component, receptorName, filter) {
-            var component = vm.isReceiverReadySensor(receptorName).name.split('_').splice(0, 2).join('_');
-            $state.go('sensor-list',{
-                component: component,
-                filter: filter
-                });
-          };
+        vm.navigateToReceiverReadySensorList = function(receptorName) {
+            /* compNode = vm.isReceiverReadySensor().component (e.g. `mon_monctl`)
+             the component to navigate to in sensor-list, filter by `ready` */
+            var sensor = vm.isReceiverReadySensor(receptorName);
+                if (sensor) {
+                    try {
+                        $state.go('sensor-list',{
+                            component: sensor.component,
+                            filter: receptorName + '_rsc_rx' + vm.subarray.band +'_ready'
+                            });
+                        }
+                        catch (error) {
+                            NotifyService.showSimpleDialog('Error',
+                              'Unexpected error occurred (' + error
+                        +')');
+                        }
+                }
+            };
 
         vm.resourceAllowedInSubarray = function (resourceName) {
             var genericResources = [];
