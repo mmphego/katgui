@@ -1,6 +1,6 @@
 {
     "engines": {
-        "node": "~10.19"
+        "node": "~10"
     },
     "name": "katGui",
     "version": "1.0.1",
