@@ -155,9 +155,9 @@
                 if (subscribedSensors[i].endsWith('ready') && receptorName == subscribedSensors[i].split('_')[3] &&
                 subscribedSensors[i].split('_')[5].endsWith(vm.subarray.band)) {
                     var sensor = $scope.parent.vm.sensorValues[subscribedSensors[i]];
+                    return sensor;
                 }
             }
-            return sensor;
         }
 
         vm.navigateToReceiverReadySensorList = function(receptorName) {
