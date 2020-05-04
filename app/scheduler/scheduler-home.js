@@ -1064,7 +1064,7 @@
                         systemConfig['katconn:arrays'].ants,
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
                     .then(handleListSensorsResult, handleListSensorsError);
-
+                    MonitorService.listSensorsHttp('all', 'mon_.*_agg_.*_rsc_rx[lsux]_ready').then(handleListSensorsResult, handleListSensorsError);
                     MonitorService.listSensorsHttp(
                         systemConfig['katconn:arrays'].ants,
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').(dig_[lsux]_band_time_remaining)$', true)
@@ -1079,6 +1079,7 @@
                         vm.katpoolSensorNames.join('|'),
                         'state$',
                         'ridx_position',
+                        'mon_.*_agg_.*_rsc_rx[lsux]_ready',
                         'dig_[lsux]_band_time_remaining',
                         'boards_marked_(up|standby|assigned)'
                     ].join('|');
