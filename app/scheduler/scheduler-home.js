@@ -307,6 +307,7 @@
         vm.setBand = function(band) {
             vm.subarray.band = band;
             vm.setFrequency(vm.defaultCentreFreqMap[band]);
+            vm.setProduct(vm.product)
         };
 
         vm.setFrequency = function(freq) {
@@ -381,8 +382,8 @@
             $mdDialog
                 .show({
                     controller: function($rootScope, $scope, $mdDialog) {
-                        $scope.title = 'Select a Product';
-                        $scope.products = vm.products;
+                        // $scope.title = 'Select a Product';
+                        // $scope.products = vm.products;
 
                         $scope.hide = function() {
                             $mdDialog.hide();
