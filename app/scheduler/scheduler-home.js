@@ -306,6 +306,14 @@
 
         vm.setBand = function(band) {
             vm.subarray.band = band;
+            /* TODO BN:
+            1) if (band) {
+            2) setDumpRate(vm.defaultDumpRatesMap[product])
+            3) vm.setProduct(productsMap[band][0])
+            first one as default productsMap = {band: product1, ...},
+            where product1 = c856M4k say, is the default
+            }
+            */
             vm.setFrequency(vm.defaultCentreFreqMap[band]);
             vm.setProduct(vm.product)
         };
