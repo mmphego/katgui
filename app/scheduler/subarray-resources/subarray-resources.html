@@ -146,11 +146,13 @@
                                 <md-tooltip> Indexer Position </md-tooltip>
                             </span>
 
-                            <span class="icon-button fa fa-square resource-sensor-status-item" ng-class="vm.sensorClass(vm.isReceiverReadySensor(resourceAlloc[0]).status)"
+                            <span class="icon-button fa fa-square"
+                                ng-class="{'receiver-ready': vm.isReceiverReadySensor(resourceAlloc[0]).value === true,
+                                'receiver-not-ready': vm.isReceiverReadySensor(resourceAlloc[0]).value === false}"
                                 ng-click="vm.navigateToReceiverReadySensorList(resourceAlloc[0]); $event.stopPropagation()"
                                 ng-if="vm.isReceiverReadySensor(resourceAlloc[0]).value == true || vm.isReceiverReadySensor(resourceAlloc[0]).value == false"
-                                style="position: absolute; left: 70px; bottom: 30px">
-                                <md-tooltip>{{vm.isReceiverReadySensor(resourceAlloc[0]).value == true ? 'Receiver Ready' : 'Receiver Not Ready'}}</md-tooltip>
+                                style="position: absolute; left: 100px; bottom: 25px">
+                                <md-tooltip>{{vm.isReceiverReadySensor(resourceAlloc[0]).value == true ? vm.subarray.band + '-band Receiver Ready' : vm.subarray.band + '-band Receiver Not Ready'}}</md-tooltip>
                             </span>
 
                             <span ng-class="{'badge': (parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value) !=undefined}"
