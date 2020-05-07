@@ -24,6 +24,7 @@
         vm.products = [];
         vm.bandsMap = {};
         vm.subBandsMap = {};
+        vm.productsMap = {};
         vm.bandwidthMap = {};
         vm.defaultCentreFreqMap = {};
         vm.dumpRatesMap = {};
@@ -123,6 +124,7 @@
                     vm.defaultDumpRatesMap[product] = productConfig[product].default_dumprate;
                     if (productConfig[product].allowed_bands) {
                         vm.bandsMap[product] = productConfig[product].allowed_bands.split(',');
+                        vm.productsMap = _.invert(vm.bandsMap[product]);
                     } else {
                         vm.bandsMap[product] = [];
                     }
@@ -306,16 +308,15 @@
 
         vm.setBand = function(band) {
             vm.subarray.band = band;
-            /* TODO BN:
-            1) if (band) {
-            2) setDumpRate(vm.defaultDumpRatesMap[product])
-            3) vm.setProduct(productsMap[band][0])
-            first one as default productsMap = {band: product1, ...},
-            where product1 = c856M4k say, is the default
+            // TODO BN:
+            if (band) {
+            // vm.setDumpRate(vm.defaultDumpRatesMap[product])
+            vm.setProduct(vm.productsMap[band])
+            // first one as default productsMap = {band: product1, ...},
+            // where product1 = c856M4k say, is the default
             }
-            */
+
             vm.setFrequency(vm.defaultCentreFreqMap[band]);
-            vm.setProduct(vm.product)
         };
 
         vm.setFrequency = function(freq) {
