@@ -24,7 +24,7 @@
         vm.products = [];
         vm.bandsMap = {};
         vm.subBandsMap = {};
-        vm.productsMap = {};
+        // vm.productsMap = {};
         vm.bandwidthMap = {};
         vm.defaultCentreFreqMap = {};
         vm.dumpRatesMap = {};
@@ -124,13 +124,17 @@
                     vm.defaultDumpRatesMap[product] = productConfig[product].default_dumprate;
                     if (productConfig[product].allowed_bands) {
                         vm.bandsMap[product] = productConfig[product].allowed_bands.split(',');
-                        vm.productsMap = _.invert(vm.bandsMap[product]);
                     } else {
                         vm.bandsMap[product] = [];
                     }
                     if (productConfig[product].narrowband_cbf_products)
                       vm.productsWithNarrowBands.push(product);
                 });
+                var invertKeyValues = (obj, fn) => Object.keys(obj).reduce((acc, key) => {var val = fn ? fn(obj[key]) : obj[key]; acc[val] = acc[val] || []; acc[val].push(key); return acc; }, {});
+                console.log(invertKeyValues(vm.bandsMap))
+
+                vm.productsMap = invertKeyValues(vm.bandsMap);
+                console.log(vm.productsMap)
             });
 
         ConfigService.getSubBandConfig()
@@ -311,7 +315,7 @@
             // TODO BN:
             if (band) {
             // vm.setDumpRate(vm.defaultDumpRatesMap[product])
-            vm.setProduct(vm.productsMap[band])
+                vm.setProduct(vm.productsMap[band]);
             // first one as default productsMap = {band: product1, ...},
             // where product1 = c856M4k say, is the default
             }
