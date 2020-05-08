@@ -24,8 +24,6 @@
             md-ink-ripple>
              <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
          </span>
-        <!-- we will work here -->
-
         <md-menu-content>
              <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
                 <span>
@@ -37,15 +35,6 @@
                     {{band}}
                 </md-button>
             </md-menu-item>
-
-        <!-- and here -->
-            <!-- <md-menu-content>
-                <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
-                    <md-button ng-click="parent.vm.setBand(band)">
-                        {{band}}
-                    </md-button>
-                </md-menu-item>
-            </md-menu-content> -->
         </md-menu-content>
     </md-menu>
     <md-menu>
@@ -53,8 +42,6 @@
             md-ink-ripple>
              <i>User Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
          </span>
-        <!-- we will work here -->
-
         <!-- <md-menu-content>
              <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
                 <span>
@@ -66,8 +53,6 @@
                     {{product.name}}
                 </md-button>
             </md-menu-item> -->
-
-        <!-- and here -->
         <md-menu-content>
             <md-menu-item>
                 <md-button ng-click="parent.vm.setProduct('')">
