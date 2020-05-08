@@ -308,10 +308,10 @@
 
         vm.setBand = function(band) {
             vm.subarray.band = band;
-            // var product = vm.productsMap[band];
-            // if (band && !vm.setProduct(product)) {
-            //     vm.setProduct(product);
-            // }
+            if (band) {
+                vm.setDumpRate(vm.defaultDumpRatesMap[vm.productsMap[band]]);
+                vm.setProduct(vm.productsMap[band]);
+            }
 
             vm.setFrequency(vm.defaultCentreFreqMap[band]);
         };
@@ -388,8 +388,8 @@
             $mdDialog
                 .show({
                     controller: function($rootScope, $scope, $mdDialog) {
-                        // $scope.title = 'Select a Product';
-                        // $scope.products = vm.products;
+                        $scope.title = 'Select a Product';
+                        $scope.products = vm.products;
 
                         $scope.hide = function() {
                             $mdDialog.hide();
