@@ -122,14 +122,20 @@
                     }
                     vm.defaultDumpRatesMap[product] = productConfig[product].default_dumprate;
                     if (productConfig[product].allowed_bands) {
-                        vm.bandsMap[product] = productConfig[product].allowed_bands;
+                        vm.bandsMap[product] = productConfig[product].allowed_bands.split(',');
                     } else {
-                        vm.bandsMap[product] = '';
+                        vm.bandsMap[product] = [];
                     }
                     if (productConfig[product].narrowband_cbf_products)
                       vm.productsWithNarrowBands.push(product);
                 });
-                var invertKeyValues = (obj, fn) => Object.keys(obj).reduce((acc, key) => {var val = fn ? fn(obj[key]) : obj[key]; acc[val] = acc[val] || []; acc[val].push(key); return acc; }, {});
+                // Notes: This was the best working way to invert a javascript object that we could find
+                var invertKeyValues = (obj, fn) => Object.keys(obj).reduce((acc, key) => {
+                    var val = fn ? fn(obj[key]) : obj[key];
+                    acc[val] = acc[val] || []; acc[val].push(key);
+                    return acc;
+                },
+                {});
                 vm.productsMap = invertKeyValues(vm.bandsMap);
             });
 
@@ -297,7 +303,6 @@
             vm.subarray.product = product;
             if (product) {
               vm.setDumpRate(vm.defaultDumpRatesMap[product]);
-              vm.setBand(vm.bandsMap[product]);
             }
         };
 
@@ -309,11 +314,9 @@
         vm.setBand = function(band) {
             vm.subarray.band = band;
             if (band) {
-                vm.setDumpRate(vm.defaultDumpRatesMap[vm.productsMap[band]]);
-                vm.setProduct(vm.productsMap[band]);
+                vm.setProduct(vm.productsMap[band][0]);
+                vm.setFrequency(vm.defaultCentreFreqMap[band]);
             }
-
-            vm.setFrequency(vm.defaultCentreFreqMap[band]);
         };
 
         vm.setFrequency = function(freq) {
