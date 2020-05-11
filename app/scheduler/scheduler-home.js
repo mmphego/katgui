@@ -129,11 +129,14 @@
                     if (productConfig[product].narrowband_cbf_products)
                       vm.productsWithNarrowBands.push(product);
                 });
-                // Notes: This was the best working way to invert a javascript object that we could find
-                var invertKeyValues = (obj, fn) => Object.keys(obj).reduce((acc, key) => {
+                /* Notes: This was the best working way to invert a javascript object that we could find.
+                This inverts the key-value pairs of an object, without mutating it.
+                We use Object.keys() and Array.reduce() to invert the key-value pairs of an object
+                */
+                var invertKeyValues = (obj, fn) => Object.keys(obj).reduce((objToInvert, key) => {
                     var val = fn ? fn(obj[key]) : obj[key];
-                    acc[val] = acc[val] || []; acc[val].push(key);
-                    return acc;
+                    objToInvert[val] = objToInvert[val] || []; objToInvert[val].push(key);
+                    return objToInvert;
                 },
                 {});
                 vm.productsMap = invertKeyValues(vm.bandsMap);
