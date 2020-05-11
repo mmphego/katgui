@@ -130,16 +130,24 @@
                       vm.productsWithNarrowBands.push(product);
                 });
                 /* Notes: This was the best working way to invert a javascript object that we could find.
-                This inverts the key-value pairs of an object, without mutating it.
-                We use Object.keys() and Array.reduce() to invert the key-value pairs of an object
                 */
-                var invertKeyValues = (obj, fn) => Object.keys(obj).reduce((objToInvert, key) => {
-                    var val = fn ? fn(obj[key]) : obj[key];
-                    objToInvert[val] = objToInvert[val] || []; objToInvert[val].push(key);
-                    return objToInvert;
-                },
-                {});
-                vm.productsMap = invertKeyValues(vm.bandsMap);
+                var identity = function(x) {
+                    return x;
+                };
+
+                var reverseMapFromMap = function(map, callback) {
+                    callback = callback || identity;
+                    var reversedMap = {};
+                    _.forEach(map, function(value, key) {
+                    key = callback(key);
+                    reversedMap[value] || (reversedMap[value] = []);
+                    reversedMap[value].push(key);
+                    });
+                    return reversedMap;
+                };
+
+                vm.productsMap = reverseMapFromMap(vm.bandsMap);
+
             });
 
         ConfigService.getSubBandConfig()
