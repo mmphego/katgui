@@ -327,6 +327,9 @@
             if (band) {
                 vm.setProduct(vm.productsMap[band][0]);
                 vm.setFrequency(vm.defaultCentreFreqMap[band]);
+            } else {
+                vm.setProduct('');
+                vm.setFrequency();
             }
         };
 
