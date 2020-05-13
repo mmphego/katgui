@@ -129,8 +129,7 @@
                     if (productConfig[product].narrowband_cbf_products)
                       vm.productsWithNarrowBands.push(product);
                 });
-                /* Notes: This was the best working way to invert a javascript object that we could find.
-                */
+                // Notes: This was the best working way to invert a javascript object that we could find.
                 var identity = function(x) {
                     return x;
                 };
@@ -324,9 +323,13 @@
 
         vm.setBand = function(band) {
             vm.subarray.band = band;
+
             if(!band) {
                 vm.setProduct('');
                 vm.setFrequency();
+            } else if(Object.values(vm.productsMap[band]).length == 1) {
+                vm.setProduct(vm.productsMap[band][0]);
+                vm.setFrequency(vm.defaultCentreFreqMap[band]);
             } else {
                 for (var i=0; i<Object.keys(vm.productsMap[band]).length; i++) {
                     if(vm.productsMap[band][i].startsWith('c') && vm.productsMap[band][i].endsWith('4k')) {
