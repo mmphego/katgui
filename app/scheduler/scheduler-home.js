@@ -324,12 +324,16 @@
 
         vm.setBand = function(band) {
             vm.subarray.band = band;
-            if (band) {
-                vm.setProduct(vm.productsMap[band][0]);
-                vm.setFrequency(vm.defaultCentreFreqMap[band]);
-            } else {
+            if(!band) {
                 vm.setProduct('');
                 vm.setFrequency();
+            } else {
+                for (var i=0; i<Object.keys(vm.productsMap[band]).length; i++) {
+                    if(vm.productsMap[band][i].startsWith('c') && vm.productsMap[band][i].endsWith('4k')) {
+                        vm.setProduct(vm.productsMap[band][i]);
+                        vm.setFrequency(vm.defaultCentreFreqMap[band]);
+                    }
+                }
             }
         };
 
