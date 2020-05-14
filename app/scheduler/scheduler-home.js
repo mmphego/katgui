@@ -129,18 +129,16 @@
                     if (productConfig[product].narrowband_cbf_products)
                       vm.productsWithNarrowBands.push(product);
                 });
-                // Notes: This was the best working way to invert a javascript object that we could find.
-                var identity = function(x) {
-                    return x;
-                };
-
-                var reverseMapFromMap = function(map, callback) {
-                    callback = callback || identity;
+                /* Notes: invert a javascript object, turn `keys` into `values` and `values` into `keys`,
+                keep the values. Keep the values as lists.
+                */
+                var reverseMapFromMap = function(map) {
                     var reversedMap = {};
                     _.forEach(map, function(value, key) {
-                    key = callback(key);
-                    reversedMap[value] || (reversedMap[value] = []);
-                    reversedMap[value].push(key);
+                        for (var i=0; i<value.length; i++) {
+                            reversedMap[value[i]] || (reversedMap[value[i]] = []);
+                            reversedMap[value[i]].push(key);
+                        }
                     });
                     return reversedMap;
                 };
@@ -323,16 +321,18 @@
 
         vm.setBand = function(band) {
             vm.subarray.band = band;
-
-            if(!band) {
+            if (!band || Object.values(vm.productsMap[band]).length == 0) {
                 vm.setProduct('');
-                vm.setFrequency();
-            } else if(Object.values(vm.productsMap[band]).length == 1) {
+                vm.setFrequency(0);
+            /* for dev machines only 1 product in band == 'x' => product == '_test_x_c8564k'
+            would need to add below condition `if (band == 'x') {..}, RTS more important
+            */
+            } else if (Object.values(vm.productsMap[band]).length == 1) {
                 vm.setProduct(vm.productsMap[band][0]);
                 vm.setFrequency(vm.defaultCentreFreqMap[band]);
             } else {
                 for (var i=0; i<Object.keys(vm.productsMap[band]).length; i++) {
-                    if(vm.productsMap[band][i].startsWith('c') && vm.productsMap[band][i].endsWith('4k')) {
+                    if (vm.productsMap[band][i].startsWith('c') && vm.productsMap[band][i].endsWith('4k')) {
                         vm.setProduct(vm.productsMap[band][i]);
                         vm.setFrequency(vm.defaultCentreFreqMap[band]);
                     }

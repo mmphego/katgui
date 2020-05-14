@@ -48,7 +48,7 @@
                     Select a band first...
                 </span>
             </md-menu-item>
-            <md-menu-item ng-repeat="product in parent.vm.productsMap[vm.subarray.band] | orderBy:product track by $index">
+            <md-menu-item ng-repeat="product in parent.vm.productsMap[vm.subarray.band] | orderBy:product:true track by $index">
                 <md-button ng-click="parent.vm.setProduct(product)">
                     {{product}}
                 </md-button>
@@ -112,5 +112,5 @@
     </md-menu>
     <span ng-show="vm.subarray.config_label" title="Subarray Config Label" style="cursor: default">
         <i>CL: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
-    </span> 
+    </span>
 </div>
