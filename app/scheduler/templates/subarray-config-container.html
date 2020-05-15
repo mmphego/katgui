@@ -20,32 +20,32 @@
         </md-menu-content>
     </md-menu>
     <md-menu>
-        <span ng-disabled="!$root.expertOrLO" title="Selected User Product" ng-click="$root.expertOrLO && $mdMenu.open($event)"
+        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
-             <i>User Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
-         </span>
+             <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
+        </span>
         <md-menu-content>
             <md-menu-item>
                 <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setProduct('')">
                     None
                 </md-button>
             </md-menu-item>
-            <md-menu-item ng-repeat="product in parent.vm.products | orderBy:'name':true track by $index">
-                <md-button ng-click="parent.vm.setProduct(product.name)" title="{{'SP Product: ' + product.sp_product + ', CBF Product: ' + product.cbf_product}}">
-                    {{product.name}}
+            <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
+                <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setBand(band)" title="{{band.toUpperCase() + '-band'}}">
+                    {{band}}
                 </md-button>
             </md-menu-item>
         </md-menu-content>
     </md-menu>
     <md-menu>
-        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdMenu.open($event)"
+        <span ng-disabled="!$root.expertOrLO" title="Selected User Product" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
-             <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
-         </span>
+             <i>User Product: </i><b>{{vm.subarray.product ? vm.subarray.product : 'None'}}</b>
+        </span>
         <md-menu-content>
             <md-menu-item ng-if="!parent.vm.dumpRatesMap[vm.subarray.product]">
                 <span>
-                    Select a product first...
+                    Select a band first...
                 </span>
             </md-menu-item>
             <md-menu-item ng-repeat="band in parent.vm.bandsMap[vm.subarray.product] | orderBy:band track by $index">
@@ -63,7 +63,7 @@
        <md-menu-content>
            <md-menu-item ng-if="!vm.subarray.band">
                <span>
-                   Select a product and band first...
+                   Select a band and product first...
                </span>
            </md-menu-item>
         <md-menu-item ng-repeat="freq in parent.vm.subBandsMap[vm.subarray.band] | orderBy:freq track by $index">
