@@ -1,10 +1,10 @@
 
-<div layout="column" flex ng-controller="SensorListCtrl as vm" style="min-height: 640px; min-width: 1000px" ng-keypress="setFilterOnEnter($event, searchText)">
+<div layout="column" flex ng-controller="SensorListCtrl as vm" style="min-height: 825px; min-width: 1000px" ng-keypress="setFilterOnEnter($event, searchText)">
     <div flex layout="row" style="margin: 8px">
         <div layout="column" style="width: 220px">
             <div layout="column" ng-repeat="node in vm.nodes | orderBy:node:true track by $index" class="md-whiteframe-z1"
-                style="margin-bottom: 8px;" ng-class="{'at-least-400-high': node === 'Proxies'}">
-                <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="center center">
+                style="margin-bottom: 8px;" ng-class="{'at-least-400-high': node === 'Components' || 'Proxies'}">
+                <md-toolbar class="md-whiteframe-z1 md-toolbar-tools-medium" layout="row" layout-align="none center">
                     <span>{{node}}</span>
                 </md-toolbar>
                 <div style="overflow: auto" layout-wrap layout="row" layout-align="start">
