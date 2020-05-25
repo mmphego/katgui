@@ -93,12 +93,14 @@
                     return item.name === 'maintenance' || item.name === resource;
                 });
                 var content = 'Setting resource ' + resource + ' in maintenance.';
+                var compoundTag = [resource + "_:_into_maintenance"];
                 var newlog = {
                     start_time: $rootScope.utcDateTime,
                     end_time: '',
                     tags: tags,
                     user_id: $rootScope.currentUser.id,
-                    content: content
+                    content: content,
+                    compound_tags: compoundTag,
                 };
                 UserLogService.editUserLog(newlog, true);
             }
