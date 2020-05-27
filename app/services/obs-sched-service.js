@@ -103,6 +103,25 @@
                     compound_tags: compoundTag,
                 };
                 UserLogService.editUserLog(newlog, true);
+            } else if (maintenance === 'clear') {
+                /* find latest open user log of this `resource` with:
+                    tags == tags;
+                    compoundTag == compoundTag;
+                    start_time == start_time;
+                    end_time = $rootScope.utcDateTime;
+
+                As defind above, need to change the below to do that ...
+                */
+                var contentOnClose = $rootScope.currentUser.name + ' ' + 'removed ' + resource + ' out of maintenance.';
+                newlog = {
+                    start_time: newlog.start_time,
+                    end_time: $rootScope.utcDateTime,
+                    tags: tags,
+                    user_id: $rootScope.currentUser.id,
+                    content: content + contentOnClose,
+                    compound_tags: compoundTag,
+                };
+                UserLogService.editUserLog(newlog, true);
             }
         };
 
