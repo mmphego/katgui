@@ -5,7 +5,7 @@
         .service('ObsSchedService', ObsSchedService);
 
     function ObsSchedService($rootScope, $http, ConfigService, KatGuiUtil,
-        UserLogService, $log, $q, $mdDialog, NotifyService,
+        UserLogService, $log, $q, $mdDialog, NotifyService,  $stateParams, $state,
         $timeout, $interval, $localStorage) {
 
         function urlBase() {
@@ -104,24 +104,55 @@
                 };
                 UserLogService.editUserLog(newlog, true);
             } else if (maintenance === 'clear') {
-                /* find latest open user log of this `resource` with:
-                    tags == tags;
-                    compoundTag == compoundTag;
-                    start_time == start_time;
-                    end_time = $rootScope.utcDateTime;
+                var startTime = new Date();
+                var endTime = startTime;
+                var startDatetimeReadable = moment(startTime.getTime()).format('YYYY-MM-DD 00:00:00');
+                var endDatetimeReadable = moment(endTime.getTime()).format('YYYY-MM-DD 23:59:59');
 
-                As defind above, need to change the below to do that ...
-                */
-                var contentOnClose = $rootScope.currentUser.name + ' ' + 'removed ' + resource + ' out of maintenance.';
-                newlog = {
-                    start_time: newlog.start_time,
-                    end_time: $rootScope.utcDateTime,
-                    tags: tags,
-                    user_id: $rootScope.currentUser.id,
-                    content: content + contentOnClose,
-                    compound_tags: compoundTag,
-                };
-                UserLogService.editUserLog(newlog, true);
+                var filterTags = [];
+                var filterTagsList = filterTags.map(function (tag) {
+                    return tag.id;
+                }).join(',');
+                $state.go('userlogs-report', {
+                    startTime: startDatetimeReadable,
+                    endTime: endDatetimeReadable,
+                    tagIds: filterTagsList? filterTagsList : ',',
+                    filter: resource + "_:_into_maintenance"})
+                var reportUserlogs = [];
+                var query = "?";
+                query += "start_time=" + startDatetimeReadable + "&";
+                query += "end_time=" +  endDatetimeReadable;
+                UserLogService.queryUserLogs(query).then(function (result) {
+                    if (result.data) {
+                        result.data.forEach(function (userlog) {
+                            reportUserlogs.push(UserLogService.populateUserlogTagsFromMap(userlog));
+                        });
+                        var times = [];
+                        for (var i=0; i<reportUserlogs.length; i++){
+                            times.push(new Date(reportUserlogs[i].start_time).getTime());
+                            if (new Date(reportUserlogs[i].start_time).getTime() == Math.max.apply(Math, times)) {
+                                console.log(reportUserlogs[i]);
+                                reportUserlogs[i].content +=  '\nTaking resource ' + resource + ' out of maintenance.';
+                                reportUserlogs[i].user_id = $rootScope.currentUser.id;
+                                UserLogService.editUserLog(reportUserlogs[i], true);
+                            }
+                        }
+                    }
+                });
+                // var tags = UserLogService.tags.filter(function(item) {
+                //     return item.name === 'maintenance' || item.name === resource;
+                // });
+                // var content = 'Taking resource ' + resource + ' out of maintenance.';
+                // var compoundTag = [resource + "_:_into_maintenance"];
+                // var newlog = {
+                //     start_time: startDatetimeReadable,
+                //     end_time: endDatetimeReadable,
+                //     tags: tags,
+                //     user_id: $rootScope.currentUser.id,
+                //     content: content,
+                //     compound_tags: compoundTag,
+                // };
+                // UserLogService.editUserLog(newlog, true);
             }
         };
 
