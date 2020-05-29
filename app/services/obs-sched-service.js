@@ -5,7 +5,7 @@
         .service('ObsSchedService', ObsSchedService);
 
     function ObsSchedService($rootScope, $http, ConfigService, KatGuiUtil,
-        UserLogService, $log, $q, $mdDialog, NotifyService,  $stateParams, $state,
+        UserLogService, $log, $q, $mdDialog, NotifyService,  $state,
         $timeout, $interval, $localStorage) {
 
         function urlBase() {
@@ -104,55 +104,31 @@
                 };
                 UserLogService.editUserLog(newlog, true);
             } else if (maintenance === 'clear') {
-                var startTime = new Date();
-                var endTime = startTime;
-                var startDatetimeReadable = moment(startTime.getTime()).format('YYYY-MM-DD 00:00:00');
-                var endDatetimeReadable = moment(endTime.getTime()).format('YYYY-MM-DD 23:59:59');
-
-                var filterTags = [];
-                var filterTagsList = filterTags.map(function (tag) {
-                    return tag.id;
-                }).join(',');
                 $state.go('userlogs-report', {
-                    startTime: startDatetimeReadable,
-                    endTime: endDatetimeReadable,
-                    tagIds: filterTagsList? filterTagsList : ',',
                     filter: resource + "_:_into_maintenance"})
                 var reportUserlogs = [];
                 var query = "?";
-                query += "start_time=" + startDatetimeReadable + "&";
-                query += "end_time=" +  endDatetimeReadable;
                 UserLogService.queryUserLogs(query).then(function (result) {
                     if (result.data) {
                         result.data.forEach(function (userlog) {
                             reportUserlogs.push(UserLogService.populateUserlogTagsFromMap(userlog));
                         });
-                        var times = [];
+                        var startTimes = [];
                         for (var i=0; i<reportUserlogs.length; i++){
-                            times.push(new Date(reportUserlogs[i].start_time).getTime());
-                            if (new Date(reportUserlogs[i].start_time).getTime() == Math.max.apply(Math, times)) {
-                                console.log(reportUserlogs[i]);
-                                reportUserlogs[i].content +=  '\nTaking resource ' + resource + ' out of maintenance.';
-                                reportUserlogs[i].user_id = $rootScope.currentUser.id;
-                                UserLogService.editUserLog(reportUserlogs[i], true);
+                            if (reportUserlogs[i].compound_tags.length > 0) {
+                                var selectedReceptor = reportUserlogs[i].compound_tags[0].split('_:_')[0];
+                                if (resource == selectedReceptor) {
+                                    startTimes.push(new Date(reportUserlogs[i].start_time).getTime());
+                                    if ((new Date(reportUserlogs[i].start_time).getTime() == Math.max.apply(null, startTimes))) {
+                                        var usersName = reportUserlogs[i].user.name;
+                                        reportUserlogs[i].content +=  '\n' + usersName + ' has taken ' + resource + ' out of maintenance.';
+                                        UserLogService.editUserLog(reportUserlogs[i], true);
+                                    }
+                                }
                             }
                         }
                     }
                 });
-                // var tags = UserLogService.tags.filter(function(item) {
-                //     return item.name === 'maintenance' || item.name === resource;
-                // });
-                // var content = 'Taking resource ' + resource + ' out of maintenance.';
-                // var compoundTag = [resource + "_:_into_maintenance"];
-                // var newlog = {
-                //     start_time: startDatetimeReadable,
-                //     end_time: endDatetimeReadable,
-                //     tags: tags,
-                //     user_id: $rootScope.currentUser.id,
-                //     content: content,
-                //     compound_tags: compoundTag,
-                // };
-                // UserLogService.editUserLog(newlog, true);
             }
         };
 
