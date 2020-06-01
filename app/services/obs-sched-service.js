@@ -119,11 +119,10 @@
                             if (reportUserlogs[i].compound_tags.length > 0) {
                                 currentTime = new Date(reportUserlogs[i].start_time).getTime();
                                 latestTime = Math.max(latestTime, currentTime);
-                                var selectedReceptor = reportUserlogs[i].compound_tags[0].split('_:_')[0];
-                                if (resource == selectedReceptor) {
+                                var selectedResource = reportUserlogs[i].compound_tags[0].split('_:_')[0];
+                                if (resource == selectedResource) {
                                     if (new Date(reportUserlogs[i].start_time).getTime() == latestTime) {
-                                        var usersName = reportUserlogs[i].user.name;
-                                        reportUserlogs[i].content +=  '\n' + usersName + ' has taken ' + resource + ' out of maintenance.';
+                                        reportUserlogs[i].content +=  '\n\nTaking resource ' + resource + ' out of maintenance.';
                                         UserLogService.editUserLog(reportUserlogs[i], true);
                                     }
                                 }
