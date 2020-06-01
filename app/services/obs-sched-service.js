@@ -113,13 +113,15 @@
                         result.data.forEach(function (userlog) {
                             reportUserlogs.push(UserLogService.populateUserlogTagsFromMap(userlog));
                         });
-                        var startTimes = [];
                         for (var i=0; i<reportUserlogs.length; i++){
+                            var latestTime = new Date(reportUserlogs[0].start_time).getTime() || null;
+                            var currentTime = null;
                             if (reportUserlogs[i].compound_tags.length > 0) {
+                                currentTime = new Date(reportUserlogs[i].start_time).getTime();
+                                latestTime = Math.max(latestTime, currentTime);
                                 var selectedReceptor = reportUserlogs[i].compound_tags[0].split('_:_')[0];
                                 if (resource == selectedReceptor) {
-                                    startTimes.push(new Date(reportUserlogs[i].start_time).getTime());
-                                    if ((new Date(reportUserlogs[i].start_time).getTime() == Math.max.apply(null, startTimes))) {
+                                    if (new Date(reportUserlogs[i].start_time).getTime() == latestTime) {
                                         var usersName = reportUserlogs[i].user.name;
                                         reportUserlogs[i].content +=  '\n' + usersName + ' has taken ' + resource + ' out of maintenance.';
                                         UserLogService.editUserLog(reportUserlogs[i], true);
