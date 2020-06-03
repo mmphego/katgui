@@ -129,6 +129,20 @@
             return defer.promise;
         };
 
+        api.queryCompoundTags = function (query) {
+            var query_uri = encodeURI(query);
+            var defer = $q.defer();
+            var formData = {compound_tags: query};
+            $http(createRequest('post', urlBase() + '/query', formData)).then(
+                function (result) {
+                    defer.resolve(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Could not retrieve any userlogs", error);
+                    defer.reject(error);
+                });
+            return defer.promise;
+        };
+
         api.queryActivityLogs = function (query) {
             var query_uri = encodeURI(query);
             var defer = $q.defer();

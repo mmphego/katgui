@@ -104,30 +104,40 @@
                 };
                 UserLogService.editUserLog(newlog, true);
             } else if (maintenance === 'clear') {
-                $state.go('userlogs-report', {
-                    filter: resource + "_:_into_maintenance"})
                 var reportUserlogs = [];
-                var query = "?";
-                UserLogService.queryUserLogs(query).then(function (result) {
+                // var query = "?";
+                // query += resource + "_:_into_maintenance";
+                query = resource + "," + resource + "_:_into_maintenance";
+                UserLogService.queryCompoundTags(query).then(function (result) {
                     if (result.data) {
                         result.data.forEach(function (userlog) {
                             reportUserlogs.push(UserLogService.populateUserlogTagsFromMap(userlog));
                         });
-                        for (var i=0; i<reportUserlogs.length; i++){
-                            var latestTime = new Date(reportUserlogs[0].start_time).getTime() || null;
-                            var currentTime = null;
+
+                       /* Or do
+                        var latestStartTime = new Date(Math.max.apply(null, reportUserlogs.map(function(e) {
+                            return new Date(e.start_time);
+                        })));
+                        */
+                        var startTimes = [];
+                        for (var i=0; i<reportUserlogs.length; i++) {
                             if (reportUserlogs[i].compound_tags.length > 0) {
-                                currentTime = new Date(reportUserlogs[i].start_time).getTime();
-                                latestTime = Math.max(latestTime, currentTime);
-                                var selectedResource = reportUserlogs[i].compound_tags[0].split('_:_')[0];
+                               var selectedResource = reportUserlogs[i].compound_tags[0].split('_:_')[0];
+                            //    currentTime = new Date(reportUserlogs[i].start_time).getTime();
+                            //    latestTime = Math.max(latestTime, currentTime);
                                 if (resource == selectedResource) {
-                                    if (new Date(reportUserlogs[i].start_time).getTime() == latestTime) {
-                                        reportUserlogs[i].content +=  '\n\nTaking resource ' + resource + ' out of maintenance.';
-                                        UserLogService.editUserLog(reportUserlogs[i], true);
+                                    startTimes.push(new Date(reportUserlogs[i].start_time).getTime());
+                                    if ((new Date(reportUserlogs[i].start_time).getTime() == Math.max.apply(null, startTimes))) {
+                                    // if (currentTime == latestStartTime) {
+                                        var logToClose = reportUserlogs[i]
                                     }
                                 }
                             }
                         }
+                        var endTime = new Date(new Date().toUTCString().slice(0, -4));
+                        logToClose.content +=  '\n\nTaking resource ' + resource + ' out of maintenance.';
+                        logToClose.end_time = moment(endTime.getTime()).format('YYYY-MM-DD HH:mm:ss');
+                        UserLogService.editUserLog(logToClose, true);
                     }
                 });
             }
