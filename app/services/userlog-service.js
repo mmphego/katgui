@@ -130,7 +130,6 @@
         };
 
         api.queryCompoundTags = function (query) {
-            var query_uri = encodeURI(query);
             var defer = $q.defer();
             var formData = {compound_tags: query};
             $http(createRequest('post', urlBase() + '/query', formData)).then(
