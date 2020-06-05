@@ -119,7 +119,7 @@
                                 var selectedResource = reportUserlogs[i].compound_tags[j].split('_:_')[0];
                                 currentTime = new Date(reportUserlogs[i].start_time).getTime();
                                 latestTime = Math.max(latestTime, currentTime);
-                                if (resource == selectedResource) {
+                                if (resource == selectedResource && !reportUserlogs[i].end_time) {
                                     if (currentTime == latestTime) {
                                         var logToClose = reportUserlogs[i];
                                     }
