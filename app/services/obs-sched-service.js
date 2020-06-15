@@ -5,7 +5,7 @@
         .service('ObsSchedService', ObsSchedService);
 
     function ObsSchedService($rootScope, $http, ConfigService, KatGuiUtil,
-        UserLogService, $log, $q, $mdDialog, NotifyService,  $state,
+        UserLogService, $log, $q, $mdDialog, NotifyService,
         $timeout, $interval, $localStorage) {
 
         function urlBase() {
@@ -135,7 +135,7 @@
                             logToClose.compound_tags.push(compoundTagClear);
                             UserLogService.editUserLog(logToClose, logToClose.user.email === $rootScope.currentUser.email, 'userlogDialogContentElement');
                         } else {
-                            NotifyService.showPreDialog('Error finding userlog to close', logToClose);
+                            NotifyService.showPreDialog('Error finding userlog to close', "No maintenance log was submitted");
                         }
                     }
                 });
