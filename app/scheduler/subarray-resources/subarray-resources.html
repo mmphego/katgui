@@ -153,7 +153,9 @@
                                 ng-click="vm.navigateToReceiverReadySensorList(resourceAlloc[0]); $event.stopPropagation()"
                                 ng-if="vm.isReceiverReadySensor(resourceAlloc[0]).value == true || vm.isReceiverReadySensor(resourceAlloc[0]).value == false"
                                 style="position: absolute; left: 100px; bottom: 25px">
-                                <md-tooltip class="text-capitalize">{{vm.isReceiverReadySensor(resourceAlloc[0]).value == true ? vm.subarray.band + '-band Receiver Ready' : vm.subarray.band + '-band Receiver Not Ready'}}</md-tooltip>
+                                <md-tooltip class="text-capitalize">
+                                    {{vm.isReceiverReadySensor(resourceAlloc[0]).value == true ? vm.subarray.band + '-band Receiver Ready' : vm.subarray.band + '-band Receiver Not Ready'}}
+                                </md-tooltip>
                             </span>
 
                             <span ng-class="{'badge': (parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value) !=undefined}"
