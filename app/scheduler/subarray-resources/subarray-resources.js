@@ -146,7 +146,7 @@
         };
 
         vm.isReceiverReadySensor = function (receptorName) {
-            // return array `sensor`, the full receiver ready sensor object
+            // return `sensor`, the full receiver ready sensor object
             if (!vm.subarray.band)
                 return undefined;
 
@@ -157,6 +157,14 @@
                     var sensor = $scope.parent.vm.sensorValues[subscribedSensors[i]];
                     return sensor;
                 }
+            }
+        }
+
+        vm.isReceiverReady = function(receptorName) {
+            // return if or not a receiver is ready, depending on value and status of the agg sensor
+            var sensor = vm.isReceiverReadySensor(receptorName);
+            if (sensor) {
+                return (sensor.value == true && sensor.status == 'nominal');
             }
         }
 
