@@ -128,8 +128,11 @@
         <span ng-show="uploadingFiles" style="font-weight: bold">
             Uploading Files, please wait...
         </span>
-        <md-button ng-click="hide()">{{!editMode && openedWithoutEndTime && openedWithoutStartTime && chipHasBeenAdded? 'Close' : 'Cancel'}}</md-button>
-        <md-button ng-hide="!editMode && openedWithoutEndTime && openedWithoutStartTime && chipHasBeenAdded" ng-click="submit()" ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime || !content || !validTags">Submit</md-button>
+        <md-button ng-click="hide()">{{!editMode && openedWithoutEndTime && openedWithoutStartTime && !chipHasBeenAdded && !internalModification? 'Close' : 'Cancel'}}</md-button>
+        <md-button ng-hide="!editMode && openedWithoutEndTime && openedWithoutStartTime && !chipHasBeenAdded && !internalModification"
+                   ng-click="submit()"
+                   ng-disabled="endDateTimeError || uploadingFiles || content.length == 0 || !validStartTime || !validEndTime || !content || !validTags">Submit
+        </md-button>
     </md-dialog-actions>
     </div>
 </md-dialog>
