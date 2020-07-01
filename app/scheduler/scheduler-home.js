@@ -129,6 +129,22 @@
                     if (productConfig[product].narrowband_cbf_products)
                       vm.productsWithNarrowBands.push(product);
                 });
+                /* Notes: invert a javascript object, turn `keys` into `values` and `values` into `keys`,
+                          keep the values as lists.
+                */
+                var reverseMapFromMap = function(map) {
+                    var reversedMap = {};
+                    _.forEach(map, function(value, key) {
+                        for (var i=0; i<value.length; i++) {
+                            reversedMap[value[i]] || (reversedMap[value[i]] = []);
+                            reversedMap[value[i]].push(key);
+                        }
+                    });
+                    return reversedMap;
+                };
+
+                vm.productsMap = reverseMapFromMap(vm.bandsMap);
+
             });
 
         ConfigService.getSubBandConfig()
@@ -295,7 +311,6 @@
             vm.subarray.product = product;
             if (product) {
               vm.setDumpRate(vm.defaultDumpRatesMap[product]);
-              vm.setBand(vm.bandsMap[product][0]);
             }
         };
 
@@ -305,8 +320,24 @@
         };
 
         vm.setBand = function(band) {
+            var frequency = 0;
+            if (band) {
+                frequency = vm.defaultCentreFreqMap[band];
+            }
+            var product = '';
+            if (band && Object.values(vm.productsMap[band]).length > 0) {
+                product = vm.productsMap[band][0];
+                // the most commonly used product are c<bandwidth>4k modes, try select one as default
+                for (var i=0; i<Object.keys(vm.productsMap[band]).length; i++) {
+                    if (vm.productsMap[band][i].startsWith('c') && vm.productsMap[band][i].endsWith('4k')) {
+                        product = vm.productsMap[band][i];
+                    }
+                }
+            }
+
             vm.subarray.band = band;
-            vm.setFrequency(vm.defaultCentreFreqMap[band]);
+            vm.setProduct(product);
+            vm.setFrequency(frequency);
         };
 
         vm.setFrequency = function(freq) {
@@ -1064,7 +1095,7 @@
                         systemConfig['katconn:arrays'].ants,
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').ridx_position$', true)
                     .then(handleListSensorsResult, handleListSensorsError);
-
+                    MonitorService.listSensorsHttp('all', 'mon_.*_agg_.*_rsc_rx[lsux]_ready').then(handleListSensorsResult, handleListSensorsError);
                     MonitorService.listSensorsHttp(
                         systemConfig['katconn:arrays'].ants,
                         '^(' + systemConfig['katconn:arrays'].ants.replace(/,/g, '|') + ').(dig_[lsux]_band_time_remaining)$', true)
@@ -1079,6 +1110,7 @@
                         vm.katpoolSensorNames.join('|'),
                         'state$',
                         'ridx_position',
+                        'mon_.*_agg_.*_rsc_rx[lsux]_ready',
                         'dig_[lsux]_band_time_remaining',
                         'boards_marked_(up|standby|assigned)'
                     ].join('|');

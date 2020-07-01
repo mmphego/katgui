@@ -33,7 +33,7 @@
                                 style="font-size: 20px">
                                 <span class="subarray-select-chevron" style="top: 12px"></span>
                                 <span style="margin-left: 400px">
-                                    NGS : <b>{{vm.minGlobalSyncTime()==undefined ? '--- ' : vm.minGlobalSyncTime()}} Hrs</b>
+                                    NGS : <b>{{vm.minGlobalSyncTime() == undefined ? '--- ' : vm.minGlobalSyncTime()}} Hrs</b>
                                 </span>
                             </md-button>
                         </md-menu>
@@ -141,12 +141,22 @@
                             <span flex style="font-size: 18px; margin-left: 4px; margin-bottom: 12px" class="resource-name-text">{{resourceAlloc[0]}}</span>
                             <span style="position: absolute; left: 8px; bottom: 4px; font-size: 12px">{{parent.vm.sensorValues[resourceAlloc[0] + '_state'].value}}</span>
                             <span class="resource-sensor-status-item" ng-class="vm.sensorClass(parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].status)"
-                                style="position: absolute; left: 100px; bottom: 4px; font-size: 12px; font-family:'Sofia'" >
-                                {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}</span>
+                                style="position: absolute; left: 109px; bottom: 4px; font-size: 12px; font-family:'Sofia'">
+                                {{parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value}}
+                                <md-tooltip> Indexer Position </md-tooltip>
+                            </span>
 
-                            <span class="icon-button fa fa-angle-double-down"
-                                style="position: absolute; left: 90px; top: 4px; font-size: 12px" ng-if="parent.vm.sensorValues[resourceAlloc[0] + '_ridx_position'].value">
-                                <md-tooltip>Indexer Position</md-tooltip>
+                            <span class="icon-button fa fa-square"
+                                ng-class="{'nominal-sensor-list-item': vm.isReceiverReady(resourceAlloc[0]),
+                                           'warn-sensor-list-item': !vm.isReceiverReady(resourceAlloc[0])}"
+                                ng-click="vm.navigateToReceiverReadySensorList(resourceAlloc[0]); $event.stopPropagation()"
+                                ng-if="vm.isReceiverReadySensor(resourceAlloc[0]) != undefined"
+                                style="position: absolute; left: 100px; bottom: 25px">
+                                <md-tooltip class="text-capitalize">
+                                    {{vm.isReceiverReady(resourceAlloc[0]) ?
+                                        vm.subarray.band + '-band Receiver Ready' :
+                                        vm.subarray.band + '-band Receiver Not Ready'}}
+                                </md-tooltip>
                             </span>
 
                             <span ng-class="{'badge': (parent.vm.sensorValues[resourceAlloc[0] + '_boards_marked_up'].value) !=undefined}"
