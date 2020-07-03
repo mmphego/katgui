@@ -119,9 +119,9 @@
                         for (var i=0; i<reportUserlogs.length; i++) {
                             for (var j=0; j<reportUserlogs[i].compound_tags.length; j++) {
                                 var selectedResource = reportUserlogs[i].compound_tags[j].split('_:_')[0];
-                                currentTime = new Date(reportUserlogs[i].start_time).getTime();
-                                latestTime = Math.max(latestTime, currentTime);
                                 if (resource == selectedResource && !reportUserlogs[i].end_time) {
+                                    currentTime = new Date(reportUserlogs[i].start_time).getTime();
+                                    latestTime = Math.max(latestTime, currentTime);
                                     if (currentTime == latestTime) {
                                         logToClose = reportUserlogs[i];
                                     }
