@@ -396,7 +396,7 @@
                         $scope.openedWithoutEndTime = $scope.end_time !== null && $scope.end_time.length > 0;
                         $scope.chipHasBeenAdded = false;
                         $scope.focusTarget = focusTarget? focusTarget: 'userlogDialogStartTimeElement';
-                        $scope.internalModification = log.modified !== undefined;
+                        $scope.internalModification = log.modified == true;
 
                         $timeout(function () {
                             var parentElement = document.querySelector('#' + $scope.focusTarget);

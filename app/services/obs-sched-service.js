@@ -133,6 +133,7 @@
                             logToClose.end_time = moment(endTime.getTime()).format('YYYY-MM-DD HH:mm:ss');
                             logToClose.content +=  '\n\nResource ' + resource + ' taken out of maintenance by ' + $rootScope.currentUser.name + ' <' + $rootScope.currentUser.email + '>.';
                             logToClose.compound_tags.push(compoundTagClear);
+                            logToClose.modified = true;
                             UserLogService.editUserLog(logToClose, logToClose.user.email === $rootScope.currentUser.email, 'userlogDialogContentElement');
                         } else {
                             NotifyService.showPreDialog('Error finding userlog to close', "No maintenance log was submitted");
