@@ -129,6 +129,19 @@
             return defer.promise;
         };
 
+        api.queryCompoundTags = function (query) {
+            var defer = $q.defer();
+            var formData = {compound_tags: query};
+            $http(createRequest('post', urlBase() + '/query', formData)).then(
+                function (result) {
+                    defer.resolve(result);
+                }, function (error) {
+                    NotifyService.showHttpErrorDialog("Could not retrieve any userlogs", error);
+                    defer.reject(error);
+                });
+            return defer.promise;
+        };
+
         api.queryActivityLogs = function (query) {
             var query_uri = encodeURI(query);
             var defer = $q.defer();
@@ -383,6 +396,7 @@
                         $scope.openedWithoutEndTime = $scope.end_time !== null && $scope.end_time.length > 0;
                         $scope.chipHasBeenAdded = false;
                         $scope.focusTarget = focusTarget? focusTarget: 'userlogDialogStartTimeElement';
+                        $scope.internalModification = log.modified == true;
 
                         $timeout(function () {
                             var parentElement = document.querySelector('#' + $scope.focusTarget);
