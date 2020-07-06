@@ -92,7 +92,7 @@
                 var tags = UserLogService.tags.filter(function(item) {
                     return item.name === 'maintenance' || item.name === resource;
                 });
-                var content = 'Setting resource ' + resource + ' in maintenance.';
+                var content = 'Setting resource ' + resource + ' in maintenance by ' + $rootScope.currentUser.name + ' <' + $rootScope.currentUser.email + '>.';
                 var compoundTag = [resource + "_:_into_maintenance"];
                 var newlog = {
                     start_time: $rootScope.utcDateTime,
@@ -103,6 +103,43 @@
                     compound_tags: compoundTag,
                 };
                 UserLogService.editUserLog(newlog, true);
+            } else if (maintenance === 'clear') {
+                var reportUserlogs = [];
+                query = resource + "_:_into_maintenance";
+                var compoundTagClear = resource + "_:_end_maintenance";
+                UserLogService.queryCompoundTags(query).then(function (result) {
+                    if (result.data) {
+                        result.data.forEach(function (userlog) {
+                            reportUserlogs.push(UserLogService.populateUserlogTagsFromMap(userlog));
+                        });
+
+                        var latestTime = null;
+                        var currentTime = null;
+                        var logToClose = null;
+                        for (var i=0; i<reportUserlogs.length; i++) {
+                            for (var j=0; j<reportUserlogs[i].compound_tags.length; j++) {
+                                var selectedResource = reportUserlogs[i].compound_tags[j].split('_:_')[0];
+                                if (resource == selectedResource && !reportUserlogs[i].end_time) {
+                                    currentTime = new Date(reportUserlogs[i].start_time).getTime();
+                                    latestTime = Math.max(latestTime, currentTime);
+                                    if (currentTime == latestTime) {
+                                        logToClose = reportUserlogs[i];
+                                    }
+                                }
+                            }
+                        }
+                        if (logToClose) {
+                            var endTime = new Date(new Date().toUTCString().slice(0, -4));
+                            logToClose.end_time = moment(endTime.getTime()).format('YYYY-MM-DD HH:mm:ss');
+                            logToClose.content +=  '\n\nResource ' + resource + ' taken out of maintenance by ' + $rootScope.currentUser.name + ' <' + $rootScope.currentUser.email + '>.';
+                            logToClose.compound_tags.push(compoundTagClear);
+                            logToClose.modified = true;
+                            UserLogService.editUserLog(logToClose, logToClose.user.email === $rootScope.currentUser.email, 'userlogDialogContentElement');
+                        } else {
+                            NotifyService.showPreDialog('Error finding userlog to close', "No maintenance log was submitted");
+                        }
+                    }
+                });
             }
         };
 
