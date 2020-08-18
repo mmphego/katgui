@@ -904,12 +904,16 @@ angular.module('katGui.d3')
                             }
                             dataString += moment.utc(sample_time || sensorInfo.sample_ts).format(MOMENT_DATETIME_FORMAT) + ',';
                         }
-                        if (hasStatus && sensorValues.values[i].status) {
-                            dataString += sensorValues.values[i].status + ',';
+                        if (hasStatus && sensorInfo.status) {
+                            dataString += sensorInfo.status + ',';
                         } else if (hasStatus) {
                             dataString += ',';
                         }
-                        dataString += (sensorValues.values[i].value || sensorValues.values[i].avg_value);
+                        if (sensorInfo.value !== undefined) {
+                            dataString += sensorInfo.value;
+                        } else if (sensorInfo.avg_value !== undefined) {
+                            dataString += sensorInfo.avg_value;
+                        }
                         csvContent.push(dataString);
                     }
                     var csvData = new Blob([csvContent.join('\r\n')], { type: 'text/csv' });
