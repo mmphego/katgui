@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-{"version": "1.0.1", "buildDate": "1585560963958"}
-=======
-{"version": "1.0.1", "buildDate": "1597763791540"}
->>>>>>> 728d1c5d... Merge pull request #559 from ska-sa/user/bngcebetsha/MT-1675/fix-sensor-graph-csv-download
+{"version": "1.0.1", "buildDate": "1597923339876"}
