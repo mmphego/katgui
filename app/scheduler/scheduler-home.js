@@ -310,9 +310,8 @@
         vm.setProduct = function(product) {
             vm.subarray.product = product;
             if (product) {
-                var dumpRate = vm.defaultDumpRatesMap[product];
+              var vm.setDumpRate(vm.defaultDumpRatesMap[product]);
             }
-            vm.setDumpRate(dumpRate);
         };
 
         vm.setDumpRate = function(dumpRate) {
