@@ -86,7 +86,8 @@
         ng-class="{'invalid-narrow-freq': !parent.vm.isNarrowBandFreqValid(1)}"
         class="fade-in narrow-freq-input-box ng-pristine ng-untouched ng-empty"
         ng-disabled="!$root.expertOrLO"
-        ng-model="vm.subarray.requested_narrow1_centre_frequency">
+        ng-model="vm.subarray.requested_narrow1_centre_frequency"
+        type="number">
     </div>
 
     <md-menu>
