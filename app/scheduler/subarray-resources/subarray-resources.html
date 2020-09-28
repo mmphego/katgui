@@ -73,13 +73,13 @@
                             </md-button>
                             <md-menu-content style="min-height: 476px">
                                 <md-menu-item>
-                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.openBandsDialog($event)" title="Select a Band">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'" ng-click="parent.vm.openBandsDialog($event)" title="Select a Band">
                                         <span style="margin-right: 4px" class="fa fa-signal"></span>
                                         <span>Set Band...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.openProductsDialog($event)" title="Select a User Product">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'" ng-click="parent.vm.openProductsDialog($event)" title="Select a User Product">
                                         <span style="margin-right: 4px" class="fa fa-cube"></span>
                                         <span>Set User Product...</span>
                                     </md-button>
@@ -91,14 +91,14 @@
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-item>
-                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.openConfigLabelDialog(vm.subarray.id, $event)">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'" ng-click="parent.vm.openConfigLabelDialog(vm.subarray.id, $event)">
                                         <span style="margin-right: 4px" class="fa fa-at"></span>
                                         <span>Set Config Label...</span>
                                     </md-button>
                                 </md-menu-item>
                                 <md-menu-divider></md-menu-divider>
                                 <md-menu-item>
-                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value === 'active'" ng-click="parent.vm.setSubarrayInMaintenance()" title="Toggle Subarray in Maintenance">
+                                    <md-button ng-disabled="parent.vm.sensorValues[vm.subarray.name + '_state'].value !== 'inactive'" ng-click="parent.vm.setSubarrayInMaintenance()" title="Toggle Subarray in Maintenance">
                                         <span style="margin-right: 4px" class="fa fa-wrench"></span>
                                         <span>Toggle Maintenance</span>
                                     </md-button>
