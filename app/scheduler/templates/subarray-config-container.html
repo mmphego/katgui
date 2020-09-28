@@ -20,7 +20,7 @@
         </md-menu-content>
     </md-menu>
     <md-menu>
-        <span ng-disabled="$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdMenu.open($event) "
+        <span ng-disabled="!$root.expertOrLO" title="Selected Band" ng-click="$root.expertOrLO && $mdMenu.open($event) "
             md-ink-ripple>
              <i>Band: </i><b>{{vm.subarray.band ? vm.subarray.band : 'None'}}</b>
         </span>
