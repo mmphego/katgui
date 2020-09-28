@@ -26,23 +26,13 @@
          </span>
         <md-menu-content>
             <md-menu-item>
-<<<<<<< HEAD
-                <md-button ng-click="parent.vm.setProduct('')">
+                <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setProduct('')">
                     None
                 </md-button>
             </md-menu-item>
             <md-menu-item ng-repeat="product in parent.vm.products | orderBy:'name':true track by $index">
                 <md-button ng-click="parent.vm.setProduct(product.name)" title="{{'SP Product: ' + product.sp_product + ', CBF Product: ' + product.cbf_product}}">
                     {{product.name}}
-=======
-                <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setBand('')">
-                    None
-                </md-button>
-            </md-menu-item>
-            <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
-                <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setBand(band)" title="{{band.toUpperCase() + '-band'}}">
-                    {{band}}
->>>>>>> 9f9fde27... Merge pull request #567 from ska-sa/user/tockards/MT-1740/limit-editing-of-controls-inactive-subarray
                 </md-button>
             </md-menu-item>
         </md-menu-content>
@@ -58,15 +48,9 @@
                     Select a product first...
                 </span>
             </md-menu-item>
-<<<<<<< HEAD
             <md-menu-item ng-repeat="band in parent.vm.bandsMap[vm.subarray.product] | orderBy:band track by $index">
-                <md-button ng-click="parent.vm.setBand(band)">
+                <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setBand(band)">
                     {{band}}
-=======
-            <md-menu-item ng-repeat="product in parent.vm.productsMap[vm.subarray.band] | orderBy:product:true track by $index">
-                <md-button ng-disabled="vm.subarray.state !== 'inactive'"  ng-click="parent.vm.setProduct(product)">
-                    {{product}}
->>>>>>> 9f9fde27... Merge pull request #567 from ska-sa/user/tockards/MT-1740/limit-editing-of-controls-inactive-subarray
                 </md-button>
             </md-menu-item>
         </md-menu-content>
@@ -128,5 +112,5 @@
     </md-menu>
     <span ng-show="vm.subarray.config_label" title="Subarray Config Label" style="cursor: default">
         <i>CL: </i><b>{{vm.subarray.config_label ? vm.subarray.config_label : 'None'}}</b>
-    </span>  
+    </span>
 </div>
