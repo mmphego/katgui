@@ -26,6 +26,7 @@
         vm.subBandsMap = {};
         vm.bandwidthMap = {};
         vm.defaultCentreFreqMap = {};
+        vm.displayFrequency = '';
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.productsWithNarrowBands = [];
@@ -155,8 +156,20 @@
                 var subBandKeys = Object.keys(subBandConfig);
                 subBandKeys.forEach(function(sub_band) {
                     if (subBandConfig[sub_band].sub_bands) {
-                        vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands;
-                        vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default;
+                        var subBandList = subBandConfig[sub_band].sub_bands;
+                        var labelledSubBands = {};
+                        var count = 0;
+                        subBandList.forEach(function(sub_freq) {
+                            var testDict = {};
+                            if (sub_freq == subBandConfig[sub_band].default) {
+                                testDict[sub_band.toUpperCase() + count] = sub_freq;
+                                vm.defaultCentreFreqMap[sub_band] = testDict;
+                            }
+                            labelledSubBands[sub_band.toUpperCase() + count] = sub_freq;
+                            count += 1;
+                        })
+                        vm.subBandsMap[sub_band] = labelledSubBands;
+                        // vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default;
                     }
 
                     if (subBandConfig[sub_band].bandwidth)
@@ -321,8 +334,11 @@
 
         vm.setBand = function(band) {
             var frequency = 0;
+            var label = '';
+            console.log(vm.defaultCentreFreqMap[band]);
             if (band) {
-                frequency = vm.defaultCentreFreqMap[band];
+                label = Object.keys(vm.defaultCentreFreqMap[band])[0];
+                frequency = Object.values(vm.defaultCentreFreqMap[band])[0];
             }
             var product = '';
             if (band && Object.values(vm.productsMap[band]).length > 0) {
@@ -337,7 +353,8 @@
 
             vm.subarray.band = band;
             vm.setProduct(product);
-            vm.setFrequency(frequency);
+            console.log(label, frequency);
+            vm.updateFrequency(label, frequency);
         };
 
         vm.setFrequency = function(freq) {
@@ -351,12 +368,17 @@
             vm.setNarrowFrequency(defaultNarrowFreq, i);
         };
 
+        vm.updateFrequency = function(label, freq) {
+            vm.setFrequency(freq);
+            vm.displayFrequency = label + ' : ' + freq/1000000;
+        };
+
         // index start at 1
         vm.getNarrowFreqLimits = function(index) {
           var bandwidth = vm.bandwidthMap[vm.subarray.band]/2;
           var centreFreq = vm.subarray.requested_rx_centre_frequency;
           return [(centreFreq-bandwidth)/1000000, (centreFreq+bandwidth)/1000000];
-        }
+        };
 
         // index start at 1
         vm.setNarrowFrequency = function(freq, index) {
