@@ -68,7 +68,7 @@
            </md-menu-item>
         <md-menu-item ng-repeat="(label, freq) in parent.vm.subBandsMap[vm.subarray.band]">
             <md-button ng-disabled="vm.subarray.state !== 'inactive'"  ng-click="parent.vm.updateFrequency(label, freq)">
-                {{'(' + label + freq/1000000 + ' MHz)'}}
+                {{parent.vm.updateDisplayOfFrequency(label, freq) + ' MHz'}}
             </md-button>
         </md-menu-item>
        </md-menu-content>
