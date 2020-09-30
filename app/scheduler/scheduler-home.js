@@ -370,7 +370,11 @@
 
         vm.updateFrequency = function(label, freq) {
             vm.setFrequency(freq);
-            vm.displayFrequency = label + ' : ' + freq/1000000;
+            if (Object.keys(vm.subBandsMap[vm.subarray.band]).length > 1) {
+                vm.displayFrequency = label + ' | ' + freq/1000000;
+            } else {
+                vm.displayFrequency = freq/1000000;
+            }
         };
 
         // index start at 1
