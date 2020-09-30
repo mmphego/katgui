@@ -159,8 +159,8 @@
                         var subBandList = subBandConfig[sub_band].sub_bands;
                         var labelledSubBands = {};
                         var count = 0;
+                        var testDict = {};
                         subBandList.forEach(function(sub_freq) {
-                            var testDict = {};
                             if (sub_freq == subBandConfig[sub_band].default) {
                                 testDict[sub_band.toUpperCase() + count] = sub_freq;
                                 vm.defaultCentreFreqMap[sub_band] = testDict;
@@ -169,8 +169,11 @@
                             count += 1;
                         })
                         vm.subBandsMap[sub_band] = labelledSubBands;
+                        if (!(sub_band in vm.defaultCentreFreqMap)) {
+                            testDict[sub_band.toUpperCase()] = 0;
+                            vm.defaultCentreFreqMap[sub_band] = testDict;
+                        }
                     }
-
                     if (subBandConfig[sub_band].bandwidth)
                         vm.bandwidthMap[sub_band] = subBandConfig[sub_band].bandwidth;
               });
