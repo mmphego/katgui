@@ -159,19 +159,19 @@
                         var subBandList = subBandConfig[sub_band].sub_bands;
                         var labelledSubBands = {};
                         var count = 0;
-                        var testDict = {};
+                        var labelledDefaultSubBand = {};
                         subBandList.forEach(function(sub_freq) {
                             if (sub_freq == subBandConfig[sub_band].default) {
-                                testDict[sub_band.toUpperCase() + count] = sub_freq;
-                                vm.defaultCentreFreqMap[sub_band] = testDict;
+                                labelledDefaultSubBand[sub_band.toUpperCase() + count] = sub_freq;
+                                vm.defaultCentreFreqMap[sub_band] = labelledDefaultSubBand;
                             }
                             labelledSubBands[sub_band.toUpperCase() + count] = sub_freq;
                             count += 1;
                         })
                         vm.subBandsMap[sub_band] = labelledSubBands;
                         if (!(sub_band in vm.defaultCentreFreqMap)) {
-                            testDict[sub_band.toUpperCase()] = 0;
-                            vm.defaultCentreFreqMap[sub_band] = testDict;
+                            labelledDefaultSubBand[sub_band.toUpperCase()] = 0;
+                            vm.defaultCentreFreqMap[sub_band] = labelledDefaultSubBand;
                         }
                     }
                     if (subBandConfig[sub_band].bandwidth)
@@ -370,13 +370,13 @@
 
         vm.updateFrequency = function(label, freq) {
             vm.setFrequency(freq);
-            vm.displayFrequency = vm.updateDisplayOfFrequency(label, freq);
+            vm.displayFrequency = vm.generateDisplayFrequency(label, freq);
         };
 
-        vm.updateDisplayOfFrequency = function(label, freq) {
+        vm.generateDisplayFrequency = function(label, freq) {
             var display_frequency = '';
             if (Object.keys(vm.subBandsMap[vm.subarray.band]).length > 1) {
-                display_frequency = label + ' | ' + freq/1000000;
+                display_frequency = freq/1000000 + ' (' +label + ' )';
             } else {
                 display_frequency = freq/1000000;
             }
