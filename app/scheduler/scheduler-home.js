@@ -376,9 +376,9 @@
         vm.generateDisplayFrequency = function(label, freq) {
             var display_frequency = '';
             if (Object.keys(vm.subBandsMap[vm.subarray.band]).length > 1) {
-                display_frequency = freq/1000000 + ' (' +label + ' )';
+                display_frequency = freq/1000000 + ' MHz' + ' (' +label + ' )';
             } else {
-                display_frequency = freq/1000000;
+                display_frequency = freq/1000000 + ' MHz';
             }
             return display_frequency;
         };
