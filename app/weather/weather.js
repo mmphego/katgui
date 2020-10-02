@@ -11,7 +11,7 @@
             'air_pressure',
             'air_temperature',
             'air_relative_humidity',
-            'weather_rainfall',
+            'weather_rain',
             'gust_wind_speed',
             'wind_direction',
             'mean_wind_speed'
