@@ -26,12 +26,12 @@
         </span>
         <md-menu-content>
             <md-menu-item>
-                <md-button ng-click="parent.vm.setBand('')">
+                <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setBand('')">
                     None
                 </md-button>
             </md-menu-item>
             <md-menu-item ng-repeat="band in parent.vm.bands | orderBy:band track by $index">
-                <md-button ng-click="parent.vm.setBand(band)" title="{{band.toUpperCase() + '-band'}}">
+                <md-button ng-disabled="vm.subarray.state !== 'inactive'" ng-click="parent.vm.setBand(band)" title="{{band.toUpperCase() + '-band'}}">
                     {{band}}
                 </md-button>
             </md-menu-item>
@@ -49,7 +49,7 @@
                 </span>
             </md-menu-item>
             <md-menu-item ng-repeat="product in parent.vm.productsMap[vm.subarray.band] | orderBy:product:true track by $index">
-                <md-button ng-click="parent.vm.setProduct(product)">
+                <md-button ng-disabled="vm.subarray.state !== 'inactive'"  ng-click="parent.vm.setProduct(product)">
                     {{product}}
                 </md-button>
             </md-menu-item>
@@ -58,7 +58,7 @@
     <md-menu>
         <span ng-disabled="!$root.expertOrLO" title="Selected On-sky Centre Frequency" ng-click="$root.expertOrLO && $mdMenu.open($event)"
             md-ink-ripple>
-             <i>f: </i><b>{{vm.subarray.requested_rx_centre_frequency==0 ? 'None' : vm.subarray.requested_rx_centre_frequency/1000000.}} MHz</b>
+             <i>f: </i><b>{{vm.subarray.requested_rx_centre_frequency==0 ? 'None' : parent.vm.displayFrequency}}</b>
         </span>
        <md-menu-content>
            <md-menu-item ng-if="!vm.subarray.band">
@@ -66,9 +66,9 @@
                    Select a band and product first...
                </span>
            </md-menu-item>
-        <md-menu-item ng-repeat="freq in parent.vm.subBandsMap[vm.subarray.band] | orderBy:freq track by $index">
-            <md-button ng-click="parent.vm.setFrequency(freq)">
-                {{'' + freq/1000000 + ' MHz'}}
+        <md-menu-item ng-repeat="(label, freq) in parent.vm.subBandsMap[vm.subarray.band]">
+            <md-button ng-disabled="vm.subarray.state !== 'inactive'"  ng-click="parent.vm.updateFrequency(label, freq)">
+                {{parent.vm.generateDisplayFrequency(label, freq)}}
             </md-button>
         </md-menu-item>
        </md-menu-content>
@@ -102,7 +102,7 @@
                 </span>
             </md-menu-item>
             <md-menu-item ng-repeat="dumpRate in parent.vm.dumpRatesMap[vm.subarray.product] track by $index">
-                <md-button ng-click="parent.vm.setDumpRate(dumpRate.hz)">
+                <md-button ng-disabled="vm.subarray.state !== 'inactive'"  ng-click="parent.vm.setDumpRate(dumpRate.hz)">
                     {{dumpRate.hz + 'Hz (' + dumpRate.seconds + 's)'
                     + (parent.vm.defaultDumpRatesMap[vm.subarray.product]
                     === dumpRate.hz? ' - default': '')}}

@@ -26,6 +26,7 @@
         vm.subBandsMap = {};
         vm.bandwidthMap = {};
         vm.defaultCentreFreqMap = {};
+        vm.displayFrequency = '';
         vm.dumpRatesMap = {};
         vm.defaultDumpRatesMap = {};
         vm.productsWithNarrowBands = [];
@@ -155,10 +156,24 @@
                 var subBandKeys = Object.keys(subBandConfig);
                 subBandKeys.forEach(function(sub_band) {
                     if (subBandConfig[sub_band].sub_bands) {
-                        vm.subBandsMap[sub_band] = subBandConfig[sub_band].sub_bands;
-                        vm.defaultCentreFreqMap[sub_band] = subBandConfig[sub_band].default;
+                        var subBandList = subBandConfig[sub_band].sub_bands;
+                        var labelledSubBands = {};
+                        var count = 0;
+                        var labelledDefaultSubBand = {};
+                        subBandList.forEach(function(sub_freq) {
+                            if (sub_freq == subBandConfig[sub_band].default) {
+                                labelledDefaultSubBand[sub_band.toUpperCase() + count] = sub_freq;
+                                vm.defaultCentreFreqMap[sub_band] = labelledDefaultSubBand;
+                            }
+                            labelledSubBands[sub_band.toUpperCase() + count] = sub_freq;
+                            count += 1;
+                        })
+                        vm.subBandsMap[sub_band] = labelledSubBands;
+                        if (!(sub_band in vm.defaultCentreFreqMap)) {
+                            labelledDefaultSubBand[sub_band.toUpperCase()] = 0;
+                            vm.defaultCentreFreqMap[sub_band] = labelledDefaultSubBand;
+                        }
                     }
-
                     if (subBandConfig[sub_band].bandwidth)
                         vm.bandwidthMap[sub_band] = subBandConfig[sub_band].bandwidth;
               });
@@ -321,8 +336,10 @@
 
         vm.setBand = function(band) {
             var frequency = 0;
+            var label = '';
             if (band) {
-                frequency = vm.defaultCentreFreqMap[band];
+                label = Object.keys(vm.defaultCentreFreqMap[band])[0];
+                frequency = Object.values(vm.defaultCentreFreqMap[band])[0];
             }
             var product = '';
             if (band && Object.values(vm.productsMap[band]).length > 0) {
@@ -337,7 +354,7 @@
 
             vm.subarray.band = band;
             vm.setProduct(product);
-            vm.setFrequency(frequency);
+            vm.updateFrequency(label, frequency);
         };
 
         vm.setFrequency = function(freq) {
@@ -351,12 +368,27 @@
             vm.setNarrowFrequency(defaultNarrowFreq, i);
         };
 
+        vm.updateFrequency = function(label, freq) {
+            vm.setFrequency(freq);
+            vm.displayFrequency = vm.generateDisplayFrequency(label, freq);
+        };
+
+        vm.generateDisplayFrequency = function(label, freq) {
+            var display_frequency = '';
+            if (Object.keys(vm.subBandsMap[vm.subarray.band]).length > 1) {
+                display_frequency = freq/1000000 + ' MHz' + ' (' +label + ' )';
+            } else {
+                display_frequency = freq/1000000 + ' MHz';
+            }
+            return display_frequency;
+        };
+
         // index start at 1
         vm.getNarrowFreqLimits = function(index) {
           var bandwidth = vm.bandwidthMap[vm.subarray.band]/2;
           var centreFreq = vm.subarray.requested_rx_centre_frequency;
           return [(centreFreq-bandwidth)/1000000, (centreFreq+bandwidth)/1000000];
-        }
+        };
 
         // index start at 1
         vm.setNarrowFrequency = function(freq, index) {
