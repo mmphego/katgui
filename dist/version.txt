@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"version": "1.0.1", "buildDate": "1602061010006"}
+=======
+{"version": "1.0.1", "buildDate": "1602080156051"}
+>>>>>>> 473617fd... Merge pull request #576 from ska-sa/user/mmphego/user/MT-1851/add-proposal-id-on-report
