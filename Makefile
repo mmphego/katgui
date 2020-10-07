@@ -37,10 +37,14 @@ export PYTHONWARNINGS=ignore
 PYTHON := python3
 BROWSER := $(PYTHON) -c "$$BROWSER_PYSCRIPT"
 
+.SILENT: help
 help:
 	$(PYTHON) -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
 # -------------------------------- Builds and Installations -----------------------------
+
+.PHONY: bootstrap
+bootstrap: install build-image run  ## Installs docker, and runs KATGUI webserver
 
 build-new-image:  ## Pull the latest image and build docker image from local Dockerfile.
 	docker-compose build --pull
@@ -51,9 +55,6 @@ build-image:  ## Build docker image from local Dockerfile.
 dist:  ## Build dist files.
 	docker-compose run $(PACKAGE_NAME) gulp build
 	ls -l dist
-
-.PHONY: bootstrap
-bootstrap: install build-image run ## Installs docker, and runs KATGUI webserver
 
 --check-os:
 	if [ "$$(uname)" == "Darwin" ]; then \
@@ -74,15 +75,13 @@ _install-docker-compose:
 	echo "Installing docker-compose..."
 	$(PYTHON) -m pip install -U docker-compose
 
-
 .SILENT: --check-os install
-install: --check-os ## Check if docker and docker-compose exists, if not install them on host
+install: --check-os  ## Check if docker and docker-compose exists, if not install them on host
 	if [ ! -x "$$(command -v docker)" ]; then \
 		$(MAKE) _install-docker
 	else \
 		echo "Docker is already installed."; \
 	fi; \
-
 	if [ ! -x "$$(command -v docker-compose)" ]; then \
 		$(MAKE) _install-docker-compose
 	else \
@@ -90,17 +89,20 @@ install: --check-os ## Check if docker and docker-compose exists, if not install
 	fi; \
 
 # -------------------------------------- Project Execution -------------------------------
-run:  # Run KATGUI webserver
+run:  ## Run KATGUI webserver
 	docker-compose up
+
+stop:  ## Stop KATGUI webserver
+	docker-compose stop
 
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
-clean: clean-build clean-node-modules clean-docker ## Remove all build, node_modules and docker containers.
+clean: clean-build clean-node-modules clean-docker  ## Remove all build, node_modules and docker containers.
 
-clean-build: ## Remove build artefacts.
+clean-build:  ## Remove build artefacts.
 	rm -fr dist/
 
-clean-node-modules: ## Remove node_modules artefacts.
+clean-node-modules:  ## Remove node_modules artefacts.
 	rm -rf node_modules
 
 clean-docker:  ## Remove docker container.
@@ -108,15 +110,15 @@ clean-docker:  ## Remove docker container.
 
 # -------------------------------------- Code Style  -------------------------------------
 
-lint: ## Check style with `eslint`
-	# NYI: https://eslint.org/docs/user-guide/getting-started
+lint:  ## Check style with `eslint`
+	# TBD: https://eslint.org/docs/user-guide/getting-started
 	$(nop)
 
-formatter: ## Format style with ...
-	# NYI: https://www.npmjs.com/package/js-beautify
+formatter:  ## Format style with ...
+	# TBD: https://www.npmjs.com/package/js-beautify
 	$(nop)
 
 # ---------------------------------------- Tests -----------------------------------------
-test: ## Run tests
-	# NYI: https://gulpjs.com/docs/en/getting-started/creating-tasks
+test:  ## Run tests
+	# TBD: https://gulpjs.com/docs/en/getting-started/creating-tasks
 	$(nop)
