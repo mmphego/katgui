@@ -95,6 +95,15 @@ run:  ## Run KATGUI webserver
 stop:  ## Stop KATGUI webserver
 	docker-compose stop
 
+jenkins-build:
+	echo "## Updating mkatgui code from git ...";
+	git remote update -p;
+	git merge --ff-only origin/master;
+	echo "## Installing npm packages ...";
+	yarn install;
+	echo "## Performing gulp build ...";
+	gulp build;
+
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
 clean: clean-build clean-node-modules clean-docker  ## Remove all build, node_modules and docker containers.
