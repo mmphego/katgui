@@ -12,7 +12,7 @@ Ensure that `gulp` is in your path. e.g.`~/.yarn/bin/gulp`
 You could be lucky by trying the following:
 ```bash
 sudo apt-get install curl
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
