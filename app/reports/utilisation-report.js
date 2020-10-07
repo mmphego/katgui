@@ -256,6 +256,7 @@
 
                 var sbColumns = [
                     {title: "Id Code", dataKey: "id_code"},
+                    {title: "Proposal Id", dataKey: "proposal_id"},
                     {title: "Owner", dataKey: "owner"},
                     {title: "Description", dataKey: "description"},
                     {title: "Subarray", dataKey: "sub_nr"},
@@ -263,6 +264,7 @@
                     {title: "Outcome", dataKey: "outcome"},
                     {title: "Duration", dataKey: "duration"},
                     {title: "% of Total", dataKey: "percentageOfTotal"},
+                    {title: "No. of Ants", dataKey: "n_ants"}
                 ];
 
                 pdf.setFontSize(20);
@@ -275,13 +277,16 @@
                     margin: {top: 8, bottom: 8},
                     columnStyles: {
                         id_code: {columnWidth: 85},
+                        proposal_id: {columnWidth: 85},
                         owner: {columnWidth: 85},
                         description: {overflow: 'linebreak'},
                         subarray: {columnWidth: 65},
                         state: {columnWidth: 85},
                         outcome: {columnWidth: 85},
                         duration: {columnWidth: 80},
-                        percentageOfTotal: {columnWidth: 80}}});
+                        percentageOfTotal: {columnWidth: 80},
+                        n_ants: {columnWidth: 80}
+                    }});
 
                 pdf.save('utilisation_report_' + exportTime.replace(/ /g, '.') + '.pdf');
                 vm.exportingPdf = false;
@@ -540,6 +545,7 @@
                             var duration = moment.duration(sb.durationSeconds, 's');
                             sb.duration = vm.durationToString(duration);
                             sb.percentageOfTotal = vm.percentageOfTotalToString(sb.durationSeconds);
+                            sb.n_ants = sb.antennas_alloc.split(",").length;
                         }
                     });
                 });

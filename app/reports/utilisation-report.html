@@ -188,6 +188,7 @@
             <i style="font-size: 22px; min-height: 42px" class="report-section-title-div">Active Schedule Block Details</i>
             <div class="report-section-sub-title-div" layout="row">
                 <span style="width: 120px">Id Code</span>
+                <span style="width: 120px">Proposal Id</span>
                 <span style="width: 120px">Owner</span>
                 <span style="width: 125px" flex>Description</span>
                 <span style="width: 100px; text-align: right; margin-left: 16px">Subarray</span>
@@ -195,11 +196,13 @@
                 <span style="width: 100px; text-align: right; margin-left: 16px">Outcome</span>
                 <span style="width: 100px; text-align: right; margin-left: 16px">Duration</span>
                 <span style="width: 100px; text-align: right; margin-left: 16px">% of Total</span>
+                <span style="width: 100px; text-align: right; margin-left: 16px">No. of Ants</span>
             </div>
             <div layout="column">
                 <div ng-repeat="sb in vm.SBDetails | orderBy:id_code track by $index"
                     layout="row" class="report-sb-item text-overflow-ellipsis" ng-class="{'light-grey-background-03': $index % 2 == 1}">
                     <span style="width: 120px">{{sb.id_code}}</span>
+                    <span style="width: 120px">{{sb.proposal_id}}</span>
                     <span style="width: 120px">{{sb.owner}}</span>
                     <span flex style="min-width: 200px" title="{{sb.description}}">{{sb.description}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.sub_nr}}</span>
@@ -207,6 +210,7 @@
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.outcome}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.duration}}</span>
                     <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.percentageOfTotal}}</span>
+                    <span style="width: 100px; text-align: right; margin-left: 16px">{{sb.n_ants}}</span>
                 </div>
             </div>
         </div>
