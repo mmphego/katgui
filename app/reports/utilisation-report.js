@@ -31,6 +31,7 @@
             vm.subarrayProductDurations = {};
             vm.subarrayMaintenanceDurations = {};
             vm.resourceItemColumns = [];
+            vm.totalDuration = '';
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -537,6 +538,7 @@
             vm.fetchSBDetails = function (sbIdCodes) {
                 ObsSchedService.getScheduleBlockDetails(sbIdCodes).then(function (result) {
                     vm.SBDetails = JSON.parse(result.data.result);
+                    var totalDurationString = 0;
                     vm.SBDetails.forEach(function (sb) {
                         if (sb.actual_end_time && sb.actual_start_time) {
                             var startSeconds = moment(sb.actual_start_time, MOMENT_DATETIME_FORMAT).unix();
@@ -544,6 +546,8 @@
                             sb.durationSeconds = Math.abs(endSeconds - startSeconds);
                             var duration = moment.duration(sb.durationSeconds, 's');
                             sb.duration = vm.durationToString(duration);
+                            totalDurationString += sb.durationSeconds;
+                            vm.totalDuration  = vm.durationToString(totalDurationString);
                             sb.percentageOfTotal = vm.percentageOfTotalToString(sb.durationSeconds);
                             if (sb.antennas_alloc) {
                                 sb.n_ants = sb.antennas_alloc.split(",").length;
