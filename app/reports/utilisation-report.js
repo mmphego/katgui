@@ -31,7 +31,11 @@
             vm.subarrayProductDurations = {};
             vm.subarrayMaintenanceDurations = {};
             vm.resourceItemColumns = [];
+<<<<<<< Updated upstream
             vm.totalDuration = '';
+=======
+            vm.totalDuration = 0;
+>>>>>>> Stashed changes
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -265,7 +269,8 @@
                     {title: "Outcome", dataKey: "outcome"},
                     {title: "Duration", dataKey: "duration"},
                     {title: "% of Total", dataKey: "percentageOfTotal"},
-                    {title: "No. of Ants", dataKey: "n_ants"}
+                    {title: "No. of Ants", dataKey: "n_ants"},
+                    {title: "Total Duration of All Active Schedule Blocks", dataKey: "total_duration"}
                 ];
 
                 pdf.setFontSize(20);
@@ -538,7 +543,7 @@
             vm.fetchSBDetails = function (sbIdCodes) {
                 ObsSchedService.getScheduleBlockDetails(sbIdCodes).then(function (result) {
                     vm.SBDetails = JSON.parse(result.data.result);
-                    var totalDurationString = 0;
+                    var totDur = 0;
                     vm.SBDetails.forEach(function (sb) {
                         if (sb.actual_end_time && sb.actual_start_time) {
                             var startSeconds = moment(sb.actual_start_time, MOMENT_DATETIME_FORMAT).unix();
@@ -546,8 +551,9 @@
                             sb.durationSeconds = Math.abs(endSeconds - startSeconds);
                             var duration = moment.duration(sb.durationSeconds, 's');
                             sb.duration = vm.durationToString(duration);
-                            totalDurationString += sb.durationSeconds;
-                            vm.totalDuration  = vm.durationToString(totalDurationString);
+                            totDur += duration;
+                            var totalDur = moment.duration(totDur);
+                            vm.totalDuration = vm.durationToString(totalDur);
                             sb.percentageOfTotal = vm.percentageOfTotalToString(sb.durationSeconds);
                             if (sb.antennas_alloc) {
                                 sb.n_ants = sb.antennas_alloc.split(",").length;
