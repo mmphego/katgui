@@ -31,11 +31,7 @@
             vm.subarrayProductDurations = {};
             vm.subarrayMaintenanceDurations = {};
             vm.resourceItemColumns = [];
-<<<<<<< Updated upstream
-            vm.totalDuration = '';
-=======
             vm.totalDuration = 0;
->>>>>>> Stashed changes
 
             if ($stateParams.filter) {
                 vm.searchInputText = $stateParams.filter;
@@ -269,8 +265,7 @@
                     {title: "Outcome", dataKey: "outcome"},
                     {title: "Duration", dataKey: "duration"},
                     {title: "% of Total", dataKey: "percentageOfTotal"},
-                    {title: "No. of Ants", dataKey: "n_ants"},
-                    {title: "Total Duration of All Active Schedule Blocks", dataKey: "total_duration"}
+                    {title: "No. of Ants", dataKey: "n_ants"}
                 ];
 
                 pdf.setFontSize(20);
@@ -292,7 +287,9 @@
                         duration: {columnWidth: 65},
                         percentageOfTotal: {columnWidth: 70},
                         n_ants: {columnWidth: 70}
-                    }});
+                    },
+                    cell : [vm.totalDuration]
+                });q
 
                 pdf.save('utilisation_report_' + exportTime.replace(/ /g, '.') + '.pdf');
                 vm.exportingPdf = false;
