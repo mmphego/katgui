@@ -272,7 +272,7 @@
                 pdf.text('Active Schedule Block Details', 20, pdf.autoTableEndPosY() + 45);
                 pdf.setFontSize(12);
 
-                // vm.SBDetails.push({"Total Active SB Duration": vm.totalDuration});
+                vm.SBDetails.push({"total_duration_title": "Total Active SB Duration", "total_sb_duration": vm.totalDuration});
                 pdf.autoTable(sbColumns, vm.SBDetails, {
                     startY: pdf.autoTableEndPosY() + 60,
                     theme: 'striped',
@@ -293,7 +293,9 @@
                 var duration_column = [
                     {
                         title: "Total Active SB Duration",
-                    },{ title: vm.totalDuration},
+                        dataKey: "total_duration_title",
+                    },
+                    { title: vm.totalDuration, dataKey: "total_sb_duration" },
                 ];
 
                 pdf.autoTable(duration_column, [vm.SBDetails[vm.SBDetails.length - 1]],
