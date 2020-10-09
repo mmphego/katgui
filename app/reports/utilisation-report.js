@@ -287,9 +287,11 @@
                         duration: {columnWidth: 65},
                         percentageOfTotal: {columnWidth: 70},
                         n_ants: {columnWidth: 70}
-                    },
-                    cell : [vm.totalDuration]
-                });q
+                    }});
+
+                pdf.autoTable({
+                    [['Name', 'Email', 'Country']]
+                });
 
                 pdf.save('utilisation_report_' + exportTime.replace(/ /g, '.') + '.pdf');
                 vm.exportingPdf = false;
