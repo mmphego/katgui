@@ -272,6 +272,7 @@
                 pdf.text('Active Schedule Block Details', 20, pdf.autoTableEndPosY() + 45);
                 pdf.setFontSize(12);
 
+                vm.SBDetails.push({"total_duration_title": "Total Active SB Duration", "total_sb_duration": vm.totalDuration});
                 pdf.autoTable(sbColumns, vm.SBDetails, {
                     startY: pdf.autoTableEndPosY() + 60,
                     theme: 'striped',
@@ -289,9 +290,18 @@
                         n_ants: {columnWidth: 70}
                     }});
 
-                pdf.autoTable({
-                    [['Name', 'Email', 'Country']]
-                });
+                var duration_column = [
+                    {title: "TITLE", dataKey: "total_duration_title"},
+                    {title: "VALUE", dataKey: "total_sb_duration"}];
+
+                pdf.autoTable(duration_column, [vm.SBDetails[vm.SBDetails.length - 1]],
+                    {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: 'striped',
+                    margin: {top: 8, bottom: 8},
+                    columnStyles: {
+                        total_duration_title: {columnWidth: 300},
+                        total_sb_duration: {columnWidth: 85}}});
 
                 pdf.save('utilisation_report_' + exportTime.replace(/ /g, '.') + '.pdf');
                 vm.exportingPdf = false;
