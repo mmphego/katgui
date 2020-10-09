@@ -1,20 +1,28 @@
 ## KATGUI is the operator's User Interface for CAM in the MeerKAT project.
 
-After cloning the repo do:
+There's currently two(2) ways you can start developing/debugging/demoing KATGUI (both require a VPN connection if working remotely) either by installing the dependency packages on your system or developing within a docker container.
 
-- Download and install http://nodejs.org/
-- Download and install http://yarnpkg.com/
-- Install gulp: `yarn global add gulp`
+Both methods are explained below.
 
-Ensure that `gulp` is in your path. e.g.`~/.yarn/bin/gulp`
+### 1. Via Local Installation
+#### Installation
 
+- Clone the repository.
 
-You could be lucky by trying the following:
+```bash
+git clone https://github.com/ska-sa/katgui
+cd katgui
+```
+
+- Download and install [nodejs 10.x](http://nodejs.org/)
+
 ```bash
 sudo apt-get install curl
 curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
+
+- Download and install [yarn](http://yarnpkg.com/)
 
 ```bash
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
@@ -22,40 +30,106 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/source
 sudo apt-get update && sudo apt-get install yarn
 ```
 
-Navigate to the project folder:
+- Install [gulp](https://gulpjs.com/) and ensure that `gulp` is in your path. e.g.`~/.yarn/bin/gulp`
 
-`yarn install`
+```bash
+yarn global add gulp@4.0.2
+```
 
-To use gulp to host the project locally on port 8000 do:
+- Installing all the dependencies.
 
-`gulp webserver`
+```bash
+cd katgui
+yarn install
+```
 
-Note: that running the webserver task will open a browser window to: `http://localhost:8000/localhostindex.html`.
+### Usage
+
+To use gulp to host the project locally on port 8000 run:
+
+```bash
+gulp webserver
+```
+
+**Note:** Running the webserver task will open a browser window to: `http://localhost:8000/localhostindex.html`.
 
 The `localhostindex.html` file is created from the `index.html` file by the webserver task.
 This is necessary in order to change the `<base href="/katgui/">` to `<base href="/">` for locally hosted instances of the GUI.
 This allows us to run angularjs in 'HTML5' mode, which removes the hash from the URL. This means that when the `index.html` file is changed, the gulp webserver task needs to be stopped and started again to rebuild the `localhostindex.html` file.
 
-To build the production version do:
+#### Build dist files for deployment
 
-`gulp build`
+To build the production version run:
 
-Which will minify and concat to the dist/ folder.
+```bash
+gulp build
+```
+
+Which will minify and concat to the `dist/` folder.
 
 After the production version has been built, make sure to commit and the new version to GitHub. This effectively creates a new release that is 'deployed' when pulling the KATGUI  project on the target CAM portal node.
 
-### Debugging
+## 2. Via Docker
 
-For debugging purposes run KATGUI in a docker container.
-Ensure docker is installed else follow this [guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04)
+For debugging/developing/demoing purposes run KATGUI in a [docker](https://www.docker.com/) container.
+
+Ensure [docker-ce](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/), alteratively follow the instructions below.
+
+### Installation
+
+Running `make` inside the directory will output useful function as shown below:
 
 ```bash
-docker build -t "$USER/$(basename $PWD)" .
-docker run -ti --rm -p 8000:8000 "$USER/$(basename $PWD)"
+$ make
+Please use `make <target>` where <target> is one of
+
+bootstrap            - Installs docker, and runs KATGUI webserver
+build-new-image      - Pull the latest image and build docker image from local Dockerfile.
+build-image          - Build docker image from local Dockerfile.
+dist                 - Build dist files.
+install              - Check if docker and docker-compose exists, if not install them on host
+run                  - Run KATGUI webserver
+stop                 - Stop KATGUI webserver
+clean                - Remove all build, node_modules and docker containers.
+clean-build          - Remove build artefacts.
+clean-node-modules   - Remove node_modules artefacts.
+clean-docker         - Remove docker container.
+lint                 - Check style with `eslint`
+formatter            - Format style with ...
+test                 - Run tests
 ```
+
+If you do not have docker and docker-compose installed run:
+
+```bash
+make install
+```
+
+This should install docker and docker-compose automatically.
+
+**Note:** This currently applies to Ubuntu/Debian users.
+
+### Usage
+
+In order to use KATGUI for development/debugging/demo run:
+
+```bash
+make run
+```
+
+Which will build and startup a container and exposes port 8000.
 
 Access the KATGUI: [http://localhost:8000/localhostindex.html](http://localhost:8000/localhostindex.html)
 
-You should see the development KATGUI, enter your development box URL, username and password.
+You should see the development KATGUI, enter your development box **URL, Username and Password**.
 
 ![image](https://user-images.githubusercontent.com/7910856/76946015-0f926d80-690c-11ea-8ee8-f977668712d2.png)
+
+### Build dist files for deployment
+
+To build the production version run:
+```bash
+make dist
+```
+
+Which will minify and concat to the `dist/` folder. Then you can commit and push.

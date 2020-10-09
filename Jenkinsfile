@@ -25,7 +25,7 @@ pipeline {
             }
 
             steps {
-                sh './update.sh'
+                sh 'make jenkins-build'
             }
         }
 
