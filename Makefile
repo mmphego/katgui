@@ -108,7 +108,7 @@ jenkins-build:
 push-dist:
 	echo "Pushing dist files upstream."
 	echo "Running commands as user: "
-	apt-get install -y sudo
+	apt-get update && apt-get install -y sudo
 	sudo -H -u $(KATUSER) bash -c "echo $$(whoami)"
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
