@@ -108,9 +108,8 @@ jenkins-build:
 push-dist:
 	echo "Pushing dist files upstream."
 	echo "Running commands as user: "
-	apt-get update
-	DEBIAN_FRONTEND=noninteractive apt-get install -y -q sudo
-	sudo -H -u $(KATUSER) bash -c "echo $$(whoami)"
+	su -s /bin/bash -c "echo $$(whoami)" $(KATUSER)
+
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
 clean: clean-build clean-node-modules clean-docker  ## Remove all build, node_modules and docker containers.
