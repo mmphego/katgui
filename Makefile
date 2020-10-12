@@ -108,7 +108,8 @@ jenkins-build:
 push-dist:
 	echo "Pushing dist files upstream."
 	echo "Running commands as user: "
-	sudo su $(KATUSER) -c "echo $$(whoami)"
+	apt-get install -y sudo
+	sudo -H -u $(KATUSER) bash -c "echo $$(whoami)"
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
 clean: clean-build clean-node-modules clean-docker  ## Remove all build, node_modules and docker containers.
