@@ -107,7 +107,7 @@ jenkins-build:
 
 push-dist:
 	echo "Pushing dist files upstream."
-	su - $(KATUSER) -c "echo $(whoami)"
+	su - $(KATUSER) -c "echo $$(whoami)"
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
 clean: clean-build clean-node-modules clean-docker  ## Remove all build, node_modules and docker containers.
