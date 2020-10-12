@@ -255,7 +255,7 @@
                     theme: 'striped',
                     margin: {top: 8, bottom: 8}});
 
-                var sbColumns = [
+                    var sbColumns = [
                     {title: "Id Code", dataKey: "id_code"},
                     {title: "Proposal Id", dataKey: "proposal_id"},
                     {title: "Owner", dataKey: "owner"},
@@ -272,7 +272,30 @@
                 pdf.text('Active Schedule Block Details', 20, pdf.autoTableEndPosY() + 45);
                 pdf.setFontSize(12);
 
-                vm.SBDetails.push({"total_duration_title": "Total Active SB Duration", "total_sb_duration": vm.totalDuration});
+                var duration_column = [
+                    {
+                        title: "Total Duration of All Active Schedule Blocks",
+                        dataKey: "total_duration_title",
+                    },
+                    { title: "", dataKey: "total_sb_duration" },
+                ];
+
+                var duration_rows = [
+                    {
+                        total_duration_title: "Duration",
+                        total_sb_duration: vm.totalDuration,
+                    }
+                ];
+                pdf.autoTable(duration_column, duration_rows, {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: "striped",
+                    margin: { top: 8, bottom: 8 },
+                    columnStyles: {
+                        total_duration_title: { columnWidth: 685 },
+                        total_sb_duration: { columnWidth: 85 },
+                    },
+                });
+
                 pdf.autoTable(sbColumns, vm.SBDetails, {
                     startY: pdf.autoTableEndPosY() + 60,
                     theme: 'striped',
@@ -289,23 +312,6 @@
                         percentageOfTotal: {columnWidth: 70},
                         n_ants: {columnWidth: 70}
                     }});
-
-                var duration_column = [
-                    {
-                        title: "Total Active SB Duration",
-                        dataKey: "total_duration_title",
-                    },
-                    { title: vm.totalDuration, dataKey: "total_sb_duration" },
-                ];
-
-                pdf.autoTable(duration_column, [vm.SBDetails[vm.SBDetails.length - 1]],
-                    {
-                    startY: pdf.autoTableEndPosY() + 60,
-                    theme: 'striped',
-                    margin: {top: 8, bottom: 8},
-                    columnStyles: {
-                        total_duration_title: {columnWidth: 600},
-                        total_sb_duration: {columnWidth: 85}}});
 
                 pdf.save('utilisation_report_' + exportTime.replace(/ /g, '.') + '.pdf');
                 vm.exportingPdf = false;
