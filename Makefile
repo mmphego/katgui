@@ -107,9 +107,10 @@ jenkins-build:
 
 push-dist:
 	echo "Pushing dist files upstream."
-	git status
 	git add dist
 	git commit -am'Automated commit: Added dist changes'
+	git remove remove origin
+	git remote add origin git@github.com:ska-sa/katgui.git
 	GIT_SSH_COMMAND="ssh -i home/kat/.ssh/id_rsa" git push --set-upstream origin test_branch
 
 # -------------------------------------- Clean Up  --------------------------------------
