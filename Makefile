@@ -107,6 +107,7 @@ jenkins-build:
 
 push-dist:
 	echo "Pushing dist files upstream."
+	echo "Running commands as user: "
 	su - $(KATUSER) -c "echo $$(whoami)"
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean

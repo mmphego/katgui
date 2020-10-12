@@ -36,7 +36,7 @@ pipeline {
                 }
             }
             steps {
-                sh "make jenkins-build"
+                sh "make push-dist"
             }
         }
         stage('Build & publish packages') {
