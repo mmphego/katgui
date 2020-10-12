@@ -4,6 +4,7 @@ SHELL := /bin/bash
 DATE_ID := $(shell date +"%y.%m.%d")
 # Get package name from pwd
 PACKAGE_NAME := $(shell basename $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST)))))
+KATUSER := kat
 
 .DEFAULT_GOAL := help
 
@@ -105,8 +106,8 @@ jenkins-build:
 	gulp build;
 
 push-dist:
-	echo "Pushing dist files upsteam."
-	$(nop)
+	echo "Pushing dist files upstream."
+	su - $(KATUSER) -c "echo $(whoami)"
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
 clean: clean-build clean-node-modules clean-docker  ## Remove all build, node_modules and docker containers.
