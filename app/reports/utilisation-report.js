@@ -24,6 +24,7 @@
             vm.poolResourcesAssignedDurations = {};
             vm.interlockReceptorReportResults = {};
             vm.SBDetails = [];
+            vm.totalSBDuration = "00:00:00";
             vm.subarrayNrs = [];
             vm.schedModeDurations = {};
             vm.subarrayStateDurations = {};
@@ -270,6 +271,30 @@
                 pdf.setFontSize(20);
                 pdf.text('Active Schedule Block Details', 20, pdf.autoTableEndPosY() + 45);
                 pdf.setFontSize(12);
+
+                var duration_column = [
+                    {
+                        title: "Total Duration of All Active Schedule Blocks",
+                        dataKey: "total_duration_title",
+                    },
+                    { title: "", dataKey: "total_sb_duration" },
+                ];
+
+                var duration_rows = [
+                    {
+                        total_duration_title: "Duration",
+                        total_sb_duration: vm.totalSBDuration,
+                    }
+                ];
+                pdf.autoTable(duration_column, duration_rows, {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: "striped",
+                    margin: { top: 8, bottom: 8 },
+                    columnStyles: {
+                        total_duration_title: { columnWidth: 685 },
+                        total_sb_duration: { columnWidth: 85 },
+                    },
+                });
 
                 pdf.autoTable(sbColumns, vm.SBDetails, {
                     startY: pdf.autoTableEndPosY() + 60,
@@ -537,6 +562,7 @@
             vm.fetchSBDetails = function (sbIdCodes) {
                 ObsSchedService.getScheduleBlockDetails(sbIdCodes).then(function (result) {
                     vm.SBDetails = JSON.parse(result.data.result);
+                    var totalDuration = 0;
                     vm.SBDetails.forEach(function (sb) {
                         if (sb.actual_end_time && sb.actual_start_time) {
                             var startSeconds = moment(sb.actual_start_time, MOMENT_DATETIME_FORMAT).unix();
@@ -544,6 +570,7 @@
                             sb.durationSeconds = Math.abs(endSeconds - startSeconds);
                             var duration = moment.duration(sb.durationSeconds, 's');
                             sb.duration = vm.durationToString(duration);
+                            totalDuration += duration;
                             sb.percentageOfTotal = vm.percentageOfTotalToString(sb.durationSeconds);
                             if (sb.antennas_alloc) {
                                 sb.n_ants = sb.antennas_alloc.split(",").length;
@@ -552,6 +579,7 @@
                             }
                         }
                     });
+                    vm.totalSBDuration = vm.durationToString(moment.duration(totalDuration));
                 });
             };
 
