@@ -107,8 +107,10 @@ jenkins-build:
 
 push-dist:
 	echo "Pushing dist files upstream."
-	echo "Running commands as user: "
-	su -s /bin/bash -c "echo $$(whoami)" $(KATUSER)
+	git status
+	git add dist
+	git commit -am'Automated commit: Added dist changes'
+	GIT_SSH_COMMAND="ssh -i home/kat/.ssh/id_rsa" git push -u origin ${env.BRANCH_NAME}
 
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
