@@ -110,7 +110,7 @@ push-dist:
 	git status
 	git add dist
 	git commit -am'Automated commit: Added dist changes'
-	GIT_SSH_COMMAND="ssh -i home/kat/.ssh/id_rsa" git push -u origin ${env.BRANCH_NAME}
+	GIT_SSH_COMMAND="ssh -i home/kat/.ssh/id_rsa" git push --set-upstream origin test_branch
 
 # -------------------------------------- Clean Up  --------------------------------------
 .PHONY: clean
