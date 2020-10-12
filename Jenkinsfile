@@ -36,18 +36,7 @@ pipeline {
                 }
             }
             steps {
-                script {
-                    sshagent(['katpulll_github_key']) {
-                        sh """
-                            su kat
-                            git remote set-url --push origin git@github.com:ska-sa/katgui.git
-                            git add dist
-                            git commit -am'Automatted Jenkins commit: Push dist upstream.'
-                            echo \$(whoami)
-                            git push --set-upstream origin ${env.BRANCH_NAME}
-                        """
-                    }
-                }
+                sh "make jenkins-build"
             }
         }
         stage('Build & publish packages') {
