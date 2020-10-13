@@ -24,6 +24,7 @@
             vm.poolResourcesAssignedDurations = {};
             vm.interlockReceptorReportResults = {};
             vm.SBDetails = [];
+            vm.totalSBDuration = "00:00:00";
             vm.subarrayNrs = [];
             vm.schedModeDurations = {};
             vm.subarrayStateDurations = {};
@@ -256,6 +257,7 @@
 
                 var sbColumns = [
                     {title: "Id Code", dataKey: "id_code"},
+                    {title: "Proposal Id", dataKey: "proposal_id"},
                     {title: "Owner", dataKey: "owner"},
                     {title: "Description", dataKey: "description"},
                     {title: "Subarray", dataKey: "sub_nr"},
@@ -263,11 +265,36 @@
                     {title: "Outcome", dataKey: "outcome"},
                     {title: "Duration", dataKey: "duration"},
                     {title: "% of Total", dataKey: "percentageOfTotal"},
+                    {title: "No. of Ants", dataKey: "n_ants"}
                 ];
 
                 pdf.setFontSize(20);
                 pdf.text('Active Schedule Block Details', 20, pdf.autoTableEndPosY() + 45);
                 pdf.setFontSize(12);
+
+                var duration_column = [
+                    {
+                        title: "Total Duration of All Active Schedule Blocks",
+                        dataKey: "total_duration_title",
+                    },
+                    { title: "", dataKey: "total_sb_duration" },
+                ];
+
+                var duration_rows = [
+                    {
+                        total_duration_title: "Duration",
+                        total_sb_duration: vm.totalSBDuration,
+                    }
+                ];
+                pdf.autoTable(duration_column, duration_rows, {
+                    startY: pdf.autoTableEndPosY() + 60,
+                    theme: "striped",
+                    margin: { top: 8, bottom: 8 },
+                    columnStyles: {
+                        total_duration_title: { columnWidth: 685 },
+                        total_sb_duration: { columnWidth: 85 },
+                    },
+                });
 
                 pdf.autoTable(sbColumns, vm.SBDetails, {
                     startY: pdf.autoTableEndPosY() + 60,
@@ -275,13 +302,16 @@
                     margin: {top: 8, bottom: 8},
                     columnStyles: {
                         id_code: {columnWidth: 85},
-                        owner: {columnWidth: 85},
+                        proposal_id: {columnWidth: 120},
+                        owner: {overflow: 'linebreak'},
                         description: {overflow: 'linebreak'},
                         subarray: {columnWidth: 65},
                         state: {columnWidth: 85},
-                        outcome: {columnWidth: 85},
-                        duration: {columnWidth: 80},
-                        percentageOfTotal: {columnWidth: 80}}});
+                        outcome: {columnWidth: 70},
+                        duration: {columnWidth: 65},
+                        percentageOfTotal: {columnWidth: 70},
+                        n_ants: {columnWidth: 70}
+                    }});
 
                 pdf.save('utilisation_report_' + exportTime.replace(/ /g, '.') + '.pdf');
                 vm.exportingPdf = false;
@@ -532,6 +562,7 @@
             vm.fetchSBDetails = function (sbIdCodes) {
                 ObsSchedService.getScheduleBlockDetails(sbIdCodes).then(function (result) {
                     vm.SBDetails = JSON.parse(result.data.result);
+                    var totalDuration = 0;
                     vm.SBDetails.forEach(function (sb) {
                         if (sb.actual_end_time && sb.actual_start_time) {
                             var startSeconds = moment(sb.actual_start_time, MOMENT_DATETIME_FORMAT).unix();
@@ -539,9 +570,16 @@
                             sb.durationSeconds = Math.abs(endSeconds - startSeconds);
                             var duration = moment.duration(sb.durationSeconds, 's');
                             sb.duration = vm.durationToString(duration);
+                            totalDuration += duration;
                             sb.percentageOfTotal = vm.percentageOfTotalToString(sb.durationSeconds);
+                            if (sb.antennas_alloc) {
+                                sb.n_ants = sb.antennas_alloc.split(",").length;
+                            } else {
+                                sb.n_ants = 0;
+                            }
                         }
                     });
+                    vm.totalSBDuration = vm.durationToString(moment.duration(totalDuration));
                 });
             };
 
