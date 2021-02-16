@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-{"version": "1.0.1", "buildDate": "1597923339876"}
-=======
-{"version": "1.0.1", "buildDate": "1612870836416"}
->>>>>>> 65eaed31... Merge pull request #583 from ska-sa/user/bulelani/OPS-1632/fix_sensograph_display
+{"version": "1.0.1", "buildDate": "1613472044865"}
